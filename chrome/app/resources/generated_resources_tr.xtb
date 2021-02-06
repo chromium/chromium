@@ -399,7 +399,7 @@
 <translation id="143027896309062157">Bilgisayarınızda ve ziyaret ettiğiniz web sitelerinde tüm verilerinizi okuma ve değiştirme</translation>
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1431188203598586230">Son yazılım güncellemesi</translation>
-<translation id="1431402976894535801">Etkin olduğunuzda sitelerin bilmesini engelleyin</translation>
+<translation id="1431402976894535801">Sitelerin etkin olduğumu öğrenmesini engelle</translation>
 <translation id="1431432486300429272">Google, Arama ve diğer Google hizmetlerini kişiselleştirmek için tarama geçmişinizi kullanabilir. Bunu istediğiniz zaman siz veya ebeveyniniz myaccount.google.com/activitycontrols/search adresinden değiştirebilirsiniz</translation>
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1433811987160647649">Erişmeden önce sor</translation>
@@ -1384,7 +1384,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2544853746127077729">Kimlik doğrulama sertifikası ağ tarafından reddedildi</translation>
 <translation id="2546229857744484369">Bu cihazda kayıtlı 1 şifreniz var</translation>
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
-<translation id="2548347166720081527"><ph name="PERMISSION" /> izni verildi</translation>
+<translation id="2548347166720081527">İzin veriliyor: <ph name="PERMISSION" /></translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
 <translation id="2550212893339833758">Değiştirilmiş bellek</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> uzantısının <ph name="FILE_NAME" /> dosyasını açmasına izin verilsin mi?</translation>
@@ -1915,7 +1915,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
 <translation id="3163254451837720982">Aşağıdaki hizmetler verilerinizin güvende kalmasına yardımcı olur. Bu özellikleri istediğiniz zaman devre dışı bırakabilirsiniz.</translation>
 <translation id="3164329792803560526">Bu sekme <ph name="APP_NAME" /> ile paylaşılıyor</translation>
-<translation id="3165371858310906303">Bir site, etkin olduğumu bilmek istediğinde sor</translation>
+<translation id="3165371858310906303">Bir site, etkin olduğumu öğrenmek istediğinde sor</translation>
 <translation id="3165390001037658081">Bazı operatörler bu özelliği engelleyebilir.</translation>
 <translation id="316652501498554287">Eğitim için G Suite hesapları</translation>
 <translation id="3170072451822350649">Ayrıca, oturum açmayı atlayabilir ve <ph name="LINK_START" />misafir olarak göz atabilirsiniz<ph name="LINK_END" />.</translation>
@@ -6328,7 +6328,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="835951711479681002">Google Hesabınızda kaydedin</translation>
 <translation id="8363095875018065315">kararlı</translation>
 <translation id="8363142353806532503">Mikrofon engellendi</translation>
-<translation id="8363763184161554204"><ph name="PERMISSION" /> izni verildi</translation>
+<translation id="8363763184161554204"><ph name="PERMISSION" /> izni veriliyor</translation>
 <translation id="8366396658833131068">Ağ bağlantınız geri yüklendi. Lütfen farklı bir ağ seçin veya kiosk uygulamanızı başlatmak için "Devam Et" düğmesine basın.</translation>
 <translation id="8368027906805972958">Bilinmeyen veya desteklenmeyen cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Tüm yer işaretlerini aç</translation>

@@ -230,6 +230,7 @@
 <translation id="3153444934357957346">ඔබට බහුවිධ පිරීමෙහි ගිණුම් <ph name="MULTI_PROFILE_USER_LIMIT" />ක් දක්වා පමණක් තිබිය හැකිය.</translation>
 <translation id="3154351730702813399">උපාංග පරිපාලක ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් නිරීක්ෂණය කළ හැකිය:</translation>
 <translation id="3181441307743005334">යළි ඇරඹීමට කෙටි වේලාවක් ගත විය හැක</translation>
+<translation id="3190230207529484457">ආරක්ෂිත අන්තර්ගතය ඉදිරිපත් කරන අතරතුර තිර ග්‍රහණයට ඉඩ නොදේ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{උපාංගයකට සම්බන්ධ වී ඇත}one{උපාංග # කට සම්බන්ධ වී ඇත}other{උපාංග # කට සම්බන්ධ වී ඇත}}</translation>
 <translation id="320207200541803018">කාල ගණකය සකසන්න</translation>
 <translation id="3203405173652969239">ප්‍රවේශය මාරු කිරීම සබල කළා</translation>

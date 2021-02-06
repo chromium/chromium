@@ -17,7 +17,7 @@
 <translation id="1104084341931202936">顯示無障礙功能設定</translation>
 <translation id="1104621072296271835">連結您的裝置，以獲得更佳的體驗</translation>
 <translation id="1119348796022671382">主題顏色模式會使用從您桌布擷取的顏色，為介面添上淡雅色彩。</translation>
-<translation id="112308213915226829">自動隱藏檔案櫃</translation>
+<translation id="112308213915226829">自動隱藏捷徑列</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
 <translation id="1175572348579024023">捲動</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -46,7 +46,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">顯示藍牙設定。<ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">訊號強度係 <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1316069254387866896">永遠顯示檔案櫃</translation>
+<translation id="1316069254387866896">永遠顯示捷徑列</translation>
 <translation id="1333308631814936910">已連接「<ph name="DISPLAY_NAME" />」</translation>
 <translation id="1341651618736211726">展開</translation>
 <translation id="1346748346194534595">向右</translation>
@@ -114,7 +114,7 @@
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好：</translation>
 <translation id="1978498689038657292">文字輸入</translation>
 <translation id="1993072747612765854">進一步瞭解有關 <ph name="SYSTEM_APP_NAME" /> 的更新</translation>
-<translation id="1995660704900986789">關閉電源</translation>
+<translation id="1995660704900986789">關機</translation>
 <translation id="2012624427112548395">Ctrl+Search+H 鍵</translation>
 <translation id="2016340657076538683">輸入訊息</translation>
 <translation id="2018630726571919839">講笑話</translation>
@@ -145,7 +145,7 @@
 <translation id="2302092602801625023">此帳戶由 Family Link 管理</translation>
 <translation id="2303600792989757991">切換視窗總覽</translation>
 <translation id="2322173485024759474">往後一個字母</translation>
-<translation id="2339073806695260576">輕按檔案櫃的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用雷射筆或放大鏡。</translation>
+<translation id="2339073806695260576">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用雷射筆或放大鏡。</translation>
 <translation id="2341729377289034582">已鎖定為垂直</translation>
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
@@ -191,7 +191,7 @@
 <translation id="2819276065543622893">現在即將登出。</translation>
 <translation id="28232023175184696">連接唔到互聯網。㩒一下就可以試多次。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解像度已變更為 <ph name="FALLBACK_RESOLUTION" />。</translation>
-<translation id="2825619548187458965">檔案櫃</translation>
+<translation id="2825619548187458965">捷徑列</translation>
 <translation id="2841907151129139818">已切換至平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
 <translation id="2865888419503095837">網絡資訊</translation>
@@ -200,7 +200,7 @@
 <translation id="2903844815300039659">連咗線去 <ph name="NAME" />，<ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">螢幕截圖</translation>
 <translation id="2942350706960889382">固定的放大鏡</translation>
-<translation id="2942516765047364088">檔案櫃位置</translation>
+<translation id="2942516765047364088">捷徑列位置</translation>
 <translation id="2946119680249604491">新增連線</translation>
 <translation id="2961963223658824723">系統發生錯誤，請幾秒後再試。</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -230,6 +230,7 @@
 <translation id="3153444934357957346">使用多重登入功能時，最多只能有 <ph name="MULTI_PROFILE_USER_LIMIT" /> 個帳戶。</translation>
 <translation id="3154351730702813399">裝置管理員可能會監控您的瀏覽活動。</translation>
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
+<translation id="3190230207529484457">當受保護的內容顯示時，無法擷取螢幕畫面</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已連接 1 部裝置}other{已連接 # 部裝置}}</translation>
 <translation id="320207200541803018">設定計時器</translation>
 <translation id="3203405173652969239">已啟用「按鈕控制」</translation>
@@ -686,7 +687,7 @@
 <translation id="7526573455193969409">網絡可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">睡覺時間到了</translation>
-<translation id="7551643184018910560">固定至檔案櫃</translation>
+<translation id="7551643184018910560">固定至捷徑列</translation>
 <translation id="7561982940498449837">關閉選單</translation>
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致非預期的行為。後續的通知、視窗和對話框可能會在不同的桌面上分開顯示。</translation>
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
@@ -711,7 +712,7 @@
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
-<translation id="7796353162336583443">輕按檔案櫃的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用「Google 助理」、雷射筆或放大鏡。</translation>
+<translation id="7796353162336583443">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用「Google 助理」、雷射筆或放大鏡。</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="781126011916719498">快速存取重要檔案。按一下右鍵或輕觸並按住檔案即可將其固定。</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
@@ -788,7 +789,7 @@
 <translation id="8427213022735114808">「語音聽寫」將您的語音傳送給 Google，以便透過語音輸入填寫任何文字欄位。</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8433186206711564395">網絡設定</translation>
-<translation id="8433977262951327081">在檔案櫃中顯示輸入選項選單小視窗的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 以取代原有的 <ph name="OLD_SHORTCUT" />。</translation>
+<translation id="8433977262951327081">在捷徑列中顯示輸入選項選單小視窗的快速鍵已變更，請改用 <ph name="NEW_SHORTCUT" /> 以取代原有的 <ph name="OLD_SHORTCUT" />。</translation>
 <translation id="8444246603146515890">已啟用桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">找不到 SIM 卡</translation>
 <translation id="8454013096329229812">Wi-Fi 已開啟。</translation>

@@ -5,13 +5,13 @@
 <translation id="1071587090247825784">Firewall waargenomen</translation>
 <translation id="1075811647922107217">Paginagrootte</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
-<translation id="1204296502688602597">DNS-wachttijd</translation>
-<translation id="1238612778414822719">HTTPS-wachttijd</translation>
+<translation id="1204296502688602597">DNS-latentie</translation>
+<translation id="1238612778414822719">HTTPS-latentie</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1330426557709298164">Jpg</translation>
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
-<translation id="1398634363027580500">Zeer lange HTTPS-wachttijd</translation>
+<translation id="1398634363027580500">Zeer lange HTTPS-latentie</translation>
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -49,7 +49,7 @@
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
-<translation id="3310640316857623290">DNS-wachttijd aanzienlijk langer dan toelaatbare drempel</translation>
+<translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
 <translation id="3456078764689556234">Pagina <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> afgedrukt.</translation>
 <translation id="3459509316159669723">Afdrukken</translation>
@@ -147,7 +147,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7648838807254605802">Lage HTTPS-wachttijd</translation>
+<translation id="7648838807254605802">Lage HTTPS-latentie</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7805768142964895445">Status</translation>
@@ -164,15 +164,15 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8364946094152050673">Lege naamservers</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
-<translation id="8477551185774834963">DNS-wachttijd is iets langer dan de toelaatbare drempel</translation>
+<translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="871560550817059752">Mislukt - Geen inkt meer</translation>
-<translation id="8723108084122415655">Niet-standaard netwerk overschrijdt drempel voor wachttijd</translation>
+<translation id="8723108084122415655">Niet-standaard netwerk overschrijdt drempel voor latentie</translation>
 <translation id="8726019395068607495">Gestopt: klep geopend</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8747900814994928677">Wijziging bevestigen</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standaard</translation>
-<translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor wachttijd</translation>
+<translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor latentie</translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>
 <translation id="8928727111548978589">Mislukt - Geen papier meer</translation>
 <translation id="89415009803968170"><ph name="ERROR_MESSAGE" /> Nog <ph name="ATTEMPTS_LEFT" /> pogingen</translation>

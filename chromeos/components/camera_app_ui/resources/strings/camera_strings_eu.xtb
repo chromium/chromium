@@ -5,7 +5,7 @@
 <translation id="1430915738399379752">Inprimatu</translation>
 <translation id="1473110567575736769">Hiru segundoko tenporizadorea</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">Ez da grabatu ezer</translation>
 <translation id="1851616744363735765">PAUSATUTA</translation>
 <translation id="1862930711583847113">Ezin da esportatu <ph name="FILE" /></translation>
@@ -42,7 +42,7 @@
 <translation id="4570032796877367747">Aurreko kamera</translation>
 <translation id="4628948037717959914">Argazkia</translation>
 <translation id="4649291346448517080">Ezin da gorde fitxategia</translation>
-<translation id="4890010094662541459">3 x 3</translation>
+<translation id="4890010094662541459">3 × 3</translation>
 <translation id="5057360777601936059">Kamera ez dago erabilgarri une honetan.
         Egiaztatu kamera ongi konektatuta dagoela.</translation>
 <translation id="5152121255775685072">Joan galeriara</translation>
@@ -53,13 +53,13 @@
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
 <translation id="6197807149213783179">Gorde metadatuak</translation>
-<translation id="6233780560267770709">3 x 3</translation>
+<translation id="6233780560267770709">3 × 3</translation>
 <translation id="6243827288366940320">Urrezko proportzioa</translation>
 <translation id="6248749904681914629">Kanpoko kamera</translation>
 <translation id="6353688143752491039">Eskerrik asko Kamera aplikazioari buruzko iritzia emateagatik.
 
 Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazki edo bideo bat lagin gisa eta azal iezaguzu zein den arazoa (adibidez, argazkia ilunegia da edo subjektua ez dago fokuratuta).</translation>
-<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" /> × <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="6681668084120808868">Atera argazkia</translation>
 <translation id="6778482348691154169">Ezin da atera argazkia</translation>
 <translation id="6965382102122355670">Ados</translation>
@@ -69,7 +69,7 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="7243947652761655814">Bideoaren bereizmena</translation>
 <translation id="7337660886763914220">Errore batzuk gertatu dira fitxategi-sisteman.</translation>
 <translation id="7557677699350329807">Aldatu hurrengo kamerara</translation>
-<translation id="7608223098072244877">4 x 4</translation>
+<translation id="7608223098072244877">4 × 4</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7670511624014457267">60 FPS</translation>

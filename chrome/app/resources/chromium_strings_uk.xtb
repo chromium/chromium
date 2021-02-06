@@ -118,7 +118,7 @@
 <translation id="5386450000063123300">Chromium оновлюється (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Дозволити вхід у Chromium</translation>
 <translation id="5398878173008909840">Доступна нова версія Chromium.</translation>
-<translation id="5416696090975899932">Chromium не може відобразити попередній перегляд версії для друку, якщо немає вбудованого засобу для перегляду файлів PDF.</translation>
+<translation id="5416696090975899932">Chromium не може відобразити попередній перегляд друку, якщо немає вбудованого засобу для перегляду файлів PDF.</translation>
 <translation id="5427571867875391349">Зробити Chromium веб-переглядачем за умовчанням</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – Бета-версія Chromium</translation>
 <translation id="5479196819031988440">Неможливо відкрити цю сторінку в ОС Chromium.</translation>

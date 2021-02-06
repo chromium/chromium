@@ -230,6 +230,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3153444934357957346">Vous ne pouvez vous connecter qu'à <ph name="MULTI_PROFILE_USER_LIMIT" /> comptes au maximum dans le cadre de la connexion multicompte.</translation>
 <translation id="3154351730702813399">L'administrateur de l'appareil peut surveiller votre activité de navigation.</translation>
 <translation id="3181441307743005334">Le redémarrage peut prendre un certain temps</translation>
+<translation id="3190230207529484457">Les captures d'écran ne sont pas autorisées lorsque du contenu protégé est présent</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connecté à un appareil}one{Connecté à # appareil}other{Connecté à # appareils}}</translation>
 <translation id="320207200541803018">Règle une minuterie</translation>
 <translation id="3203405173652969239">Switch Access est activé</translation>

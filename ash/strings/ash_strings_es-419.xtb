@@ -230,6 +230,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3153444934357957346">Puedes acceder a un máximo de <ph name="MULTI_PROFILE_USER_LIMIT" /> cuentas con acceso múltiple.</translation>
 <translation id="3154351730702813399">Es posible que el administrador de dispositivos supervise tu actividad de navegación.</translation>
 <translation id="3181441307743005334">El reinicio puede tardar unos minutos</translation>
+<translation id="3190230207529484457">No se permite la captura de pantalla porque se muestra contenido protegido</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a un dispositivo}other{Conectado a # dispositivos}}</translation>
 <translation id="320207200541803018">Establecer temporizador</translation>
 <translation id="3203405173652969239">Se habilitó Accesibilidad con interruptores</translation>

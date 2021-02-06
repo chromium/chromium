@@ -2521,7 +2521,7 @@
 <translation id="3855676282923585394">Імпорт закладок і налаштувань...</translation>
 <translation id="3856096718352044181">Підтвердьте, що цей постачальник активний, або повторіть спробу пізніше</translation>
 <translation id="3856800405688283469">Виберіть часовий пояс</translation>
-<translation id="3857807444929313943">Підніміть і знову торкніться</translation>
+<translation id="3857807444929313943">Підніміть і опустіть палець</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронізацію призупинено</translation>
 <translation id="3861638017150647085">Ім'я користувача "<ph name="USERNAME" />" недоступне</translation>
 <translation id="3862693525629180217">Підтвердити через вбудований датчик</translation>
@@ -4422,7 +4422,7 @@
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="6143186082490678276">Довідка</translation>
 <translation id="6144938890088808325">Допоможіть нам покращити Chromebook</translation>
-<translation id="6147020289383635445">Помилка версії для друку.</translation>
+<translation id="6147020289383635445">Помилка попереднього перегляду друку.</translation>
 <translation id="6148576794665275391">Відкрити зараз</translation>
 <translation id="6149015141270619212">Не вдається під'єднати пристрій до Інтернету</translation>
 <translation id="614940544461990577">Спробуйте:</translation>
@@ -4747,7 +4747,7 @@
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6530186581263215931">Ці налаштування застосовує адміністратор</translation>
 <translation id="6531282281159901044">Завантажити небезпечний файл</translation>
-<translation id="6532101170117367231">Зберегти на Диску Google</translation>
+<translation id="6532101170117367231">Зберегти на Google Диску</translation>
 <translation id="6532106788206463496">Зберегти зміни</translation>
 <translation id="6532206849875187177">Безпека та вхід</translation>
 <translation id="6532527800157340614">Не вдалось отримати маркер доступу та ввійти. Перевірте з'єднання з мережею та повторіть спробу.</translation>
@@ -5745,7 +5745,7 @@
 <translation id="7707922173985738739">Використовувати мобільне передавання даних</translation>
 <translation id="7709152031285164251">Помилка – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Транслювати…</translation>
-<translation id="7712739869553853093">Вікно попереднього перегляду версії для друку</translation>
+<translation id="7712739869553853093">Вікно попереднього перегляду друку</translation>
 <translation id="7712836429117959503">Невідоме розширення з ідентифікатором <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Файли cookie із сайту <ph name="DOMAIN" /> дозволено</translation>
 <translation id="7714464543167945231">Сертифікат</translation>

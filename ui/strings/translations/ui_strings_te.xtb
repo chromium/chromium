@@ -118,7 +118,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 నెల క్రితం}other{# నెలల క్రితం}}</translation>
 <translation id="4289300219472526559">మాట్లాడటాన్ని ప్రారంభించు</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> అనేది <ph name="FOLDER_NAME" /> ఫోల్డర్‌కు తరలించబడింది.</translation>
-<translation id="4316910396681052118">అన్ని అనువర్తనాలు</translation>
+<translation id="4316910396681052118">అన్ని యాప్‌లు</translation>
 <translation id="4491109536499578614">చిత్రం</translation>
 <translation id="4588090240171750605">కుడికి స్క్రోల్ చేయి</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, నక్షత్ర రేటింగ్ <ph name="RATING_SCORE" /></translation>
@@ -262,7 +262,7 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 సెక.}other{# సెక.}}</translation>
 <translation id="9059834730836941392">నోటిఫికేషన్‌ను కుదించు</translation>
 <translation id="9150735707954472829">ట్యాబ్</translation>
-<translation id="9161053988251441839">సూచించబడిన అనువర్తనాలు</translation>
+<translation id="9161053988251441839">సూచించబడిన యాప్‌లు</translation>
 <translation id="9170848237812810038">&amp;అన్డు</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> కోసం 1 ఫలితాన్ని ప్రదర్శిస్తోంది</translation>
 <translation id="932327136139879170">హోమ్</translation>

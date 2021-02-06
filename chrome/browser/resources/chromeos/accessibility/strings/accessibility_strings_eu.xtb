@@ -306,7 +306,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3143851963874289911">cll</translation>
 <translation id="3149472044574196936">Hurrengo lerroa</translation>
 <translation id="3153024374267644603">Aktibatu hizketa</translation>
-<translation id="3153928844647607688"><ph name="TABLENAME" /> taula: <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
+<translation id="3153928844647607688"><ph name="TABLENAME" /> taula: <ph name="TABLEROWS" /> × <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beixa</translation>
 <translation id="316542773973815724">Nabigazioa</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{zuriunea}other{# zuriune}}</translation>
@@ -496,7 +496,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4547556996012970016">5 mailako hurrengo goiburua</translation>
 <translation id="4562381607973973258">Goiburua</translation>
 <translation id="4597532268155981612">inprimakia</translation>
-<translation id="4601367666219428522"><ph name="TABLENAME" /> taula <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4601367666219428522"><ph name="TABLENAME" /> taula <ph name="TABLEROWS" /> × <ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ez ikusi egingo zaio hurrengo tekla-sakatzeari</translation>
 <translation id="4623097797855662355">Azken oharra</translation>
 <translation id="463135993322337640">Berritasunak jakiteko, sakatu ChromeVox, O eta N</translation>
@@ -883,7 +883,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7609342235116740824">Iragarri uneko orriaren URLa</translation>
 <translation id="7609363189280667021">Aktibatu/Desaktibatu braille-oinak</translation>
 <translation id="761303759119251275">Adierazpena</translation>
-<translation id="762020119231868829">Unean erreproduzitzen ari diren multimedia-widgetak pausatzen ditu</translation>
+<translation id="762020119231868829">Une honetan erreproduzitzen ari diren multimedia-widgetak pausatzen ditu</translation>
 <translation id="7625690649919402823">Hurrengo taula</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. maila</translation>
 <translation id="7637342083105831460">Praktikatzeko eremua aurkitzeko, sakatu bilaketa-tekla + eskuinera egiteko gezi-tekla edo "Hurrengo ikasgaia" botoia. Gero, aktibatu bilaketa-tekla + zuriune-barra praktikatzeko eremua aktibatzeko.</translation>
@@ -899,7 +899,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Ez dago beste koadro konbinaturik honen ondoren</translation>
-<translation id="772146615414628379">Zorionak! Lortu dituzu ChromeVox erabiltzeko oinarrizko ezagutzak. Gogoratu: ChromeVox-eko agindu-menua irekitzeko, sakatu bilaketa-tekla eta puntuaren tekla. ChromeVox eta Chrome OS-ri buruzko informazio gehiago lortzeko, irakurri artikulu hauek.
+<translation id="772146615414628379">Zorionak! Lortu dituzu ChromeVox erabiltzeko oinarrizko ezagutzak. Gogoratu: ChromeVox-eko agindu-menua irekitzeko, sakatu bilaketa-tekla eta puntuaren tekla. ChromeVox eta Chrome OS-i buruzko informazio gehiago lortzeko, irakurri artikulu hauek.
     Tutoriala amaitu baduzu, erabili ChromeVox Itxi botoira joan, eta hura sakatzeko.</translation>
 <translation id="7724603315864178912">Ebaki</translation>
 <translation id="7731785449856576010">Ez dago beste multimedia-widgetik honen ondoren</translation>

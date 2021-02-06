@@ -1087,7 +1087,7 @@
 <translation id="2218019600945559112">Мышь и сенсорная панель</translation>
 <translation id="2218320521449013367">При удалении вредоносного ПО произошла ошибка.</translation>
 <translation id="2218515861914035131">Вставить как обычный текст</translation>
-<translation id="2220409419896228519">Добавляйте закладки для любимых приложений Google</translation>
+<translation id="2220409419896228519">Добавьте закладки для любимых приложений Google</translation>
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2224337661447660594">Нет подключения к Интернету</translation>
@@ -5180,7 +5180,7 @@
 <translation id="7043108582968290193">Готово! Несовместимых приложений не обнаружено.</translation>
 <translation id="7044124535091449260">Подробнее о доступе для сайта…</translation>
 <translation id="7044606776288350625">Синхронизация данных</translation>
-<translation id="7047059339731138197">Выберите фон.</translation>
+<translation id="7047059339731138197">Выберите фон</translation>
 <translation id="7049293980323620022">Сохранить файл?</translation>
 <translation id="7051943809462976355">Поиск мыши…</translation>
 <translation id="7052237160939977163">Отправлять данные отслеживания производительности</translation>
@@ -7118,7 +7118,7 @@
 <translation id="964790508619473209">Расположение экранов</translation>
 <translation id="965211523698323809">Отправлять и получать SMS на устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Запретить сайтам доступ к HID-устройствам</translation>
-<translation id="967624055006145463">Объем занятой памяти</translation>
+<translation id="967624055006145463">Объем памяти</translation>
 <translation id="968000525894980488">Включите сервисы Google Play.</translation>
 <translation id="968037381421390582">Вст&amp;авить и найти "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Кеш приложения</translation>

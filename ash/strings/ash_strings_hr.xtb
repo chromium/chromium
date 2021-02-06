@@ -230,6 +230,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3153444934357957346">U višestrukoj prijavi ne možete imati više od <ph name="MULTI_PROFILE_USER_LIMIT" /> računa.</translation>
 <translation id="3154351730702813399">Administrator uređaja može nadzirati vašu aktivnost pregledavanja.</translation>
 <translation id="3181441307743005334">Ponovno pokretanje može potrajati neko vrijeme</translation>
+<translation id="3190230207529484457">Snimanje zaslona nije dopušteno dok se prikazuje zaštićeni sadržaj</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Povezano s jednim uređajem}one{Povezano s # uređajem}few{Povezano s # uređaja}other{Povezano s # uređaja}}</translation>
 <translation id="320207200541803018">Postavi odbrojavanje</translation>
 <translation id="3203405173652969239">Omogućen je prekidač za pristup</translation>

@@ -86,7 +86,7 @@
           Se esta configuração for desativada ou não for configurada, o host de assistência remota será executado no contexto do usuário, e os usuários remotos não poderão interagir com janelas elevadas na área de trabalho.</translation>
 <translation id="1095209545735032039">Bloquear a API Serial nesses sites</translation>
 <translation id="1096105751829466145">Provedor de pesquisa padrão</translation>
-<translation id="1099282607296956954">Ativar o Isolamento de todos os sites</translation>
+<translation id="1099282607296956954">Ativar o isolamento de todos os sites</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
@@ -1892,7 +1892,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
       Se você ativar esta configuração, o <ph name="PRODUCT_NAME" /> e os apps ARC ignorarão todas as opções relacionadas a proxy especificadas na linha de comando.
 
       Deixar estas políticas se definição permitirá que os usuários escolham as configurações de proxy por conta própria.</translation>
-<translation id="3758249152301468420">Desativar Ferramentas de desenvolvedor</translation>
+<translation id="3758249152301468420">Desativar Ferramentas para desenvolvedores</translation>
 <translation id="3760231600118073732">Bloquear a sessão atual.</translation>
 <translation id="3762520180381586267">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> acionará uma reinicialização quando os usuários desligarem o dispositivo. O <ph name="PRODUCT_OS_NAME" /> substitui todos os botões de desligamento na IU por botões de reinicialização. Se os usuários desligarem os dispositivos usando o botão liga/desliga, eles não poderão reinicializar automaticamente, mesmo se a política estiver ativada.
 
@@ -4837,7 +4837,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="780629758750905699">Permitir adicionar contas do Family Link no dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos a serem excluídos da sincronização</translation>
 <translation id="781268256210530471">Configurações de plug-ins</translation>
-<translation id="7816326058023670173">Segredos compartilhado entre os dispositivos do pai/mãe e da criança.</translation>
+<translation id="7816326058023670173">Segredo compartilhado entre os dispositivos do pai/mãe e da criança.</translation>
 <translation id="7818131573217430250">Definir o estado padrão do modo de alto contraste na tela de login</translation>
 <translation id="7823902813460802031">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> impedirá que o dispositivo entre no modo de desenvolvedor.
 
@@ -5135,7 +5135,7 @@ Essas políticas devem ser usadas estritamente para configurar instâncias do <p
 
 Não é necessário definir essas configurações manualmente. Modelos fáceis de usar para Windows, Mac e Linux estão disponíveis para download em <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />.
 
-O modo recomendado para configurar políticas no Windows é por meio de GPO, embora o aprovisionamento de políticas por meio de registro ainda seja compatível com instâncias do Windows que estejam vinculadas a um domínio <ph name="MS_AD_NAME" />.</translation>
+O modo recomendado para configurar políticas no Windows é por meio de GPO, embora o provisionamento de políticas por meio de registro ainda seja compatível com instâncias do Windows que estejam vinculadas a um domínio <ph name="MS_AD_NAME" />.</translation>
 <translation id="8259592978873597235">Se esta política for definida como verdadeira ou for deixada sem definição, o usuário não será considerado inativo enquanto o vídeo estiver sendo reproduzido. Isso impede que o intervalo de inatividade, de escurecimento da tela, de desligamento da tela e de bloqueio da tela seja atingido e que as ações correspondentes sejam realizadas.
 
           Se esta política for definida como falsa, a atividade de vídeo não impedirá que o usuário seja considerado inativo.</translation>
@@ -5577,7 +5577,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8887709920496070892">O tempo, em milissegundos, sem entrada do usuário após o qual uma caixa de diálogo de alerta é exibida.</translation>
 <translation id="8890438048579188548">Ocultar avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Espaço livre em disco necessário para o <ph name="PLUGIN_VM_NAME" /></translation>
-<translation id="8892783613915541293">Intervalos e ações a serem tomadas quando o dispositivo estiver inativo e funcionando com energia CA</translation>
+<translation id="8892783613915541293">Intervalos e ações a serem tomadas quando o dispositivo estiver inativo e funcionando com energia CA.</translation>
 <translation id="8904721489610046109">Se a política for definida, a limitação de rede poderá ser ativada ou desativada. Isso significa que o sistema será limitado para atingir as taxas de upload e download estabelecidas (em kbits/s). Isso se aplica a todos os usuários e interfaces no dispositivo.</translation>
 <translation id="8906768759089290519">Ativa o modo visitante</translation>
 <translation id="8908294717014659003">Permite definir se os sites podem ter acesso a dispositivos de captura de mídia. O acesso a dispositivos de captura de mídia pode ser permitido por padrão, ou uma pergunta será feita ao usuário cada vez que um site quiser ter acesso a dispositivos de captura de mídia.
@@ -5609,10 +5609,10 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       não se aplicam.
 
       O objetivo é permitir que organizações coloquem origens na lista de permissões para aplicativos
-      legados que não implantam TLS, ou que elas configurem um servidor temporário para o
+      legados que não implantam TLS, ou que elas configurem um servidor de preparo para o
       desenvolvimento interno da Web, de modo que os desenvolvedores delas possam testar recursos
       que exigem contextos seguros sem precisar implantar TLS no servidor
-      temporário. Esta política também impedirá que a origem seja rotulada
+      de preparo. Esta política também impedirá que a origem seja rotulada
       como "Não segura" na omnibox.
 
       Definir uma lista de URLs nesta política tem o mesmo efeito que definir a
@@ -5626,8 +5626,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       política.
 
       Para ver mais informações sobre contextos seguros, acesse
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
+      https://www.w3.org/TR/secure-contexts/</translation>
 <translation id="8942616385591203339">Esta política controla se o consentimento de sincronização pode ser exibido para o usuário durante o primeiro login. É necessário defini-la como falsa se o consentimento de sincronização nunca for necessário para o usuário.
       Se definida como falsa, o consentimento de sincronização não será exibido.
       Se definida como verdadeira ou não definida, o consentimento de sincronização poderá ser exibido.</translation>

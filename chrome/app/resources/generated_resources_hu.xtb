@@ -1795,7 +1795,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3016641847947582299">Összetevő frissítve</translation>
 <translation id="3017079585324758401">Háttér</translation>
 <translation id="3019285239893817657">Aloldal gombja</translation>
-<translation id="3020183492814296499">Billentyűparancsok</translation>
+<translation id="3020183492814296499">Parancsikonok</translation>
 <translation id="3020990233660977256">Sorozatszám: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Amíg akkumulátorról működik</translation>
 <translation id="3021066826692793094">Pillangó</translation>
@@ -5948,7 +5948,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7925247922861151263">AAA-ellenőrzés sikertelen</translation>
 <translation id="7925285046818567682">Várakozás a szerverre: <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Nem én voltam.</translation>
-<translation id="7926975587469166629">Kártya beceneve</translation>
+<translation id="7926975587469166629">Egyéni kártyanév</translation>
 <translation id="7928175190925744466">Módosította már ezt a jelszót?</translation>
 <translation id="7928836894214140642">Kezelő: <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="7930294771522048157">Az elmentett fizetési módok itt jelennek meg</translation>

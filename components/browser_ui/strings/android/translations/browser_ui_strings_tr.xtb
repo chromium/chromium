@@ -18,7 +18,7 @@
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1384959399684842514">İndirme işlemi duraklatıldı</translation>
 <translation id="1415402041810619267">URL kısaltıldı</translation>
-<translation id="1431402976894535801">Etkin olduğunuzda sitelerin bilmesini engelleyin</translation>
+<translation id="1431402976894535801">Sitelerin etkin olduğumu öğrenmesini engelle</translation>
 <translation id="1446450296470737166">MIDI cihazlarının tam denetimine izin verme</translation>
 <translation id="1509960214886564027">Birçok sitedeki özellikler çalışmayabilir</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -82,7 +82,7 @@
 <translation id="3114012059975132928">Video oynatıcı</translation>
 <translation id="3115898365077584848">Bilgileri Göster</translation>
 <translation id="3123473560110926937">Bazı sitelerde engellendi</translation>
-<translation id="3165371858310906303">Bir site, etkin olduğumu bilmek istediğinde sor</translation>
+<translation id="3165371858310906303">Bir site, etkin olduğumu öğrenmek istediğinde sor</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> depolanmış veri</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> uygulamasının size bildirim gönderebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da bildirimleri açın.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -193,7 +193,7 @@
 <translation id="6388207532828177975">Temizle ve sıfırla</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
 <translation id="6423924377271166037">Çerezleri sil</translation>
-<translation id="6439114592976064011">Sitelerin sanal gerçeklik cihazınızı ve verilerinizi kullanması engellenir</translation>
+<translation id="6439114592976064011">Sitelerin sanal gerçeklik cihazımı ve verilerimi kullanmasını engelle</translation>
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6527303717912515753">Paylaş</translation>
 <translation id="6545864417968258051">Bluetooth taraması</translation>
@@ -211,7 +211,7 @@
 <translation id="6818926723028410516">Öğe seçin</translation>
 <translation id="6864395892908308021">Bu cihaz NFC'yi okuyamıyor</translation>
 <translation id="6910211073230771657">Silindi</translation>
-<translation id="6912998170423641340">Sitelerin panodaki metni ve resimleri okumasını engelleyin</translation>
+<translation id="6912998170423641340">Sitelerin panodaki metni ve resimleri okumasını engelle</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6963642900430330478">Bu sayfa tehlikeli. Site bilgileri</translation>
 <translation id="6965382102122355670">Tamam</translation>
@@ -234,7 +234,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Bir site mikrofonunuzu kullanıyor</translation>
 <translation id="7561196759112975576">Her zaman</translation>
-<translation id="7572498721684305250">NFC cihazlarına dokunduğunuzda sitelerin bilgi göndermesi ve alması engellenir</translation>
+<translation id="7572498721684305250">NFC cihazlarına dokunduğunuzda sitelerin bilgi göndermesini ve almasını engelle</translation>
 <translation id="757524316907819857">Sitelerin korumalı içeriği oynatmasını engellenir</translation>
 <translation id="7589445247086920869">Geçerli arama motorunu engelle</translation>
 <translation id="7649070708921625228">Yardım</translation>
@@ -284,7 +284,7 @@
 <translation id="8609465669617005112">Yukarı taşı</translation>
 <translation id="8676374126336081632">Girişi temizle</translation>
 <translation id="868929229000858085">Kişilerinizde arama yapın</translation>
-<translation id="8702612070107455751">Tüm çevrimdışı veriler temizlenecektir.</translation>
+<translation id="8702612070107455751">Tüm çevrimdışı veriler temizlenecek.</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ında <ph name="APP_NAME" /> için izni açın.</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8730621377337864115">Bitti</translation>

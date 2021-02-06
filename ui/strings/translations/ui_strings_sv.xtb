@@ -114,7 +114,7 @@
 <translation id="3990502903496589789">Högerkant</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 oläst avisering}other{# olästa aviseringar}}</translation>
 <translation id="4202807286478387388">fortsätta</translation>
-<translation id="4250229828105606438">Skärmdump</translation>
+<translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 månad sedan}other{# månader sedan}}</translation>
 <translation id="4289300219472526559">Börja tala</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> har flyttats till mappen <ph name="FOLDER_NAME" />.</translation>

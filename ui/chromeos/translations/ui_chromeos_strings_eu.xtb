@@ -108,7 +108,7 @@
 <translation id="2085470240340828803">Badago "<ph name="FILENAME" />" izeneko fitxategi bat. Zer egin nahi duzu?</translation>
 <translation id="2121825465123208577">Aldatu tamaina</translation>
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
-<translation id="2198315389084035571">Txinera (sinplifikatua)</translation>
+<translation id="2198315389084035571">Idazkera txinatar sinplifikatua</translation>
 <translation id="2208158072373999562">ZIP artxiboa</translation>
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
@@ -226,7 +226,7 @@
 <translation id="3553048479571901246">Fitxategiak <ph name="APP_NAME" /> aplikazioarekin irekitzeko, lehenik kopia itzazu Windows-eko fitxategien karpetan.</translation>
 <translation id="357479282490346887">Lituaniarra</translation>
 <translation id="3603385196401704894">Frantsesa (Kanada)</translation>
-<translation id="3606220979431771195">Turkierako F teklatua</translation>
+<translation id="3606220979431771195">Turkiarra (F teklatua)</translation>
 <translation id="3608699648194837100">Tamildarra (ITRANS)</translation>
 <translation id="3609785682760573515">Sinkronizatzen…</translation>
 <translation id="3616113530831147358">Audioa</translation>
@@ -407,7 +407,7 @@
 <translation id="5358764674931277">Irudi-abiadura</translation>
 <translation id="5368191757080475556">Partekatu karpeta Linux erabilita</translation>
 <translation id="5402367795255837559">Braillea</translation>
-<translation id="5418923334382419584">Teklatu myanmartarra</translation>
+<translation id="5418923334382419584">Teklatu birmaniarra</translation>
 <translation id="5427022459704612663">Vietnamdarra (VIQR)</translation>
 <translation id="5428105026674456456">Espaniarra</translation>
 <translation id="5438282218546237410">Ez dago "<ph name="SEARCH_TERM" />" bilaketaren emaitzarik.</translation>
@@ -437,7 +437,7 @@
 <translation id="570049376144986742">Frantsesa (Suitza)</translation>
 <translation id="5731409020711461763">Argazki berri bat</translation>
 <translation id="573799789564358869">Ingelesa (AEB), Colemak teklatuarekin</translation>
-<translation id="5752453871435543420">Chrome OS sistemaren babeskopiak hodeian</translation>
+<translation id="5752453871435543420">Chrome OS-en hodeiko babeskopiak</translation>
 <translation id="5756666464756035725">QWERTY teklatu hungariarra</translation>
 <translation id="5776325638577448643">Ezabatu eduki guztia eta formatea ezazu</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
@@ -524,7 +524,7 @@
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Kudeatu Linux-ekin partekatzeko aukera</translation>
 <translation id="6808193438228982088">Azeria</translation>
-<translation id="6819938753873901684">Tigriñarra</translation>
+<translation id="6819938753873901684">Tigrinyarra</translation>
 <translation id="6820687829547641339">Gzip bidez konprimatutako .tar artxiboa</translation>
 <translation id="6823166707458800069">Automatikoki egingo da karpeta honetan gordetako fitxategi guztien babeskopia.</translation>
 <translation id="6825883775269213504">Errusiarra</translation>
@@ -562,7 +562,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;bilatu Drive-n&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="714369685015246514">Txinatarra (matriziala)</translation>
-<translation id="7169438078134535111">Turkiarra, F teklatuarekin</translation>
+<translation id="7169438078134535111">Turkiarra (F teklatua)</translation>
 <translation id="7170467426996704624">Transliterazioa (salam → ሰላም)</translation>
 <translation id="7173380554947442031">Vietnamdarra (VNI)</translation>
 <translation id="7180611975245234373">Freskatu</translation>

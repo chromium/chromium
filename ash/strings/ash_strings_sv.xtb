@@ -56,7 +56,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1419738280318246476">Lås upp enheten så att aviseringen kan göras</translation>
 <translation id="1420408895951708260">Aktivera och inaktivera nattljus. <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">En skärmdump har tagits och sparats i Urklipp</translation>
+<translation id="1420527829902822813">En skärmbild har tagits och sparats i Urklipp</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="144853431011121127">Få aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
@@ -145,7 +145,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2302092602801625023">Det här kontot hanteras av Family Link</translation>
 <translation id="2303600792989757991">Växla fönsteröversikt</translation>
 <translation id="2322173485024759474">Bakåt tecken för tecken</translation>
-<translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmdump eller använda laserpekaren eller förstoringsglaset.</translation>
+<translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda laserpekaren eller förstoringsglaset.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
@@ -175,7 +175,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2575685495496069081">Multiinloggning har inaktiverats</translation>
 <translation id="2582112259361606227">Starta om för att uppdatera</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
-<translation id="2596078834055697711">Ta en skärmdump av fönstret</translation>
+<translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2621713457727696555">Skyddat</translation>
 <translation id="2653659639078652383">Skicka</translation>
@@ -230,6 +230,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3153444934357957346">Du kan högst använda <ph name="MULTI_PROFILE_USER_LIMIT" /> konton för multiinloggning.</translation>
 <translation id="3154351730702813399">Enhetsadministratören kan övervaka din webbaktivitet.</translation>
 <translation id="3181441307743005334">Det kan ta en stund att starta om</translation>
+<translation id="3190230207529484457">Det är inte tillåtet att ta en skärmbild/skärminspelning när skyddat innehåll visas</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ansluten till en enhet}other{Ansluten till # enheter}}</translation>
 <translation id="320207200541803018">Ställ in timer</translation>
 <translation id="3203405173652969239">Brytarstyrning har aktiverats</translation>
@@ -246,7 +247,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
 <translation id="332587331255250389">Byt batteri</translation>
-<translation id="334252345105450327">Ta en skärmdump</translation>
+<translation id="334252345105450327">Ta en skärmbild</translation>
 <translation id="3351879221545518001">Skärmen castas.</translation>
 <translation id="3364721542077212959">Verktyg för e-penna</translation>
 <translation id="3368922792935385530">Ansluten</translation>
@@ -343,7 +344,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4215497585250573029">VPN-inställningar</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4250229828105606438">Skärmdump</translation>
+<translation id="4250229828105606438">Skärmbild</translation>
 <translation id="425364040945105958">Inget SIM-kort</translation>
 <translation id="4261870227682513959">Visa aviseringsinställningar. Aviseringar har inaktiverats</translation>
 <translation id="4267383818855338811">En virtuell maskin använder kameran</translation>
@@ -383,7 +384,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tills batteriet är fullt</translation>
-<translation id="4538824937723742295">Ta en skärmdump av hela skärmen</translation>
+<translation id="4538824937723742295">Ta en skärmbild av hela skärmen</translation>
 <translation id="4544483149666270818">Välj ett fönster att spela in</translation>
 <translation id="4560576029703263363">På</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -395,7 +396,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4623167406982293031">Verifiera konto</translation>
 <translation id="4628757576491864469">Enheter</translation>
-<translation id="4642092649622328492">Ta en skärmdump av en del av skärmen</translation>
+<translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
 <translation id="4659419629803378708">ChromeVox har aktiverats</translation>
 <translation id="4665114317261903604">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
@@ -711,7 +712,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
-<translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmdump eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
+<translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>
 <translation id="781126011916719498">Kom snabbt åt dina viktiga filer. Fäst en fil genom att högerklicka eller trycka länge på den.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> och <ph name="MINUTE" /></translation>

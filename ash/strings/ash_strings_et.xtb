@@ -230,6 +230,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3153444934357957346">Saate korraga sisse logida kuni <ph name="MULTI_PROFILE_USER_LIMIT" /> kontole.</translation>
 <translation id="3154351730702813399">Seadme administraator võib jälgida teie sirvimistegevust.</translation>
 <translation id="3181441307743005334">Taaskäivitamine võib pisut aega võtta</translation>
+<translation id="3190230207529484457">Kui kuvatud on kaitstud sisu, siis pole ekraanikuva jäädvustamine lubatud</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ühendatud ühe seadmega}other{Ühendatud # seadmega}}</translation>
 <translation id="320207200541803018">Määra taimer</translation>
 <translation id="3203405173652969239">Lülitiga juurdepääs on lubatud</translation>

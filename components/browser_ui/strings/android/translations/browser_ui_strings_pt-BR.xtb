@@ -3,7 +3,7 @@
 <translationbundle lang="pt-BR">
 <translation id="1006017844123154345">Abrir on-line</translation>
 <translation id="1044891598689252897">Os sites funcionarão normalmente</translation>
-<translation id="1124090076051167250">Isso limpará <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps na sua tela inicial.</translation>
+<translation id="1124090076051167250">Essa ação apagará <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps na sua tela inicial.</translation>
 <translation id="1124772482545689468">Usuário</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -45,7 +45,7 @@
 <translation id="2107397443965016585">Perguntar antes de permitir que sites mostrem conteúdo protegido (recomendado)</translation>
 <translation id="2146738493024040262">Abrir Instant App</translation>
 <translation id="2148716181193084225">Hoje</translation>
-<translation id="2182457891543959921">Perguntar antes de permitir que sites criem um mapa 3D dos seus arredores ou acompanhem a posição da câmera (recomendado)</translation>
+<translation id="2182457891543959921">Perguntar antes de permitir que sites criem um mapa 3D do ambiente a sua volta ou acompanhem a posição da câmera (recomendado)</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que o app <ph name="APP_NAME" /> acesse sua câmera, ative-a também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
@@ -76,13 +76,13 @@
 <translation id="2910701580606108292">Perguntar antes de permitir que sites mostrem conteúdo protegido</translation>
 <translation id="2913331724188855103">Permitir que os sites salvem e leiam os dados de arquivos "cookies" - que armazenam temporariamente o que você visitou na rede. (Recomendado)</translation>
 <translation id="2968755619301702150">Leitor de certificados</translation>
-<translation id="300526633675317032">Essa ação limpará tudo, <ph name="SIZE_IN_KB" /> de dados de armazenamento de sites.</translation>
+<translation id="300526633675317032">Essa ação apagará tudo, <ph name="SIZE_IN_KB" /> de dados de armazenamento de sites.</translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3114012059975132928">Player de vídeo</translation>
 <translation id="3115898365077584848">Mostrar informações</translation>
 <translation id="3123473560110926937">Bloqueados em alguns sites</translation>
-<translation id="3165371858310906303">Perguntar quando um site quiser saber seu estado de atividade</translation>
+<translation id="3165371858310906303">Perguntar sempre que um site quiser saber quando você está interagindo</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dados armazenados</translation>
 <translation id="321187648315454507">Para permitir que o app <ph name="APP_NAME" /> envie notificações, também é necessário ativá-las nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microfone</translation>
@@ -91,7 +91,7 @@
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3333961966071413176">Todos os contatos</translation>
 <translation id="3386292677130313581">Perguntar antes de permitir que sites saibam seu local (recomendado)</translation>
-<translation id="3538390592868664640">Impedir sites de criar um mapa 3D dos seus arredores ou acompanhar a posição da câmera</translation>
+<translation id="3538390592868664640">Impedir sites de criar um mapa 3D do ambiente a sua volta ou acompanhar a posição da câmera</translation>
 <translation id="3586500876634962664">Uso de câmera e microfone</translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="358794129225322306">Permite que um site faça o download de vários arquivos automaticamente.</translation>
@@ -103,7 +103,7 @@
 <translation id="381841723434055211">Números de telefone</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3859306556332390985">Avançar</translation>
-<translation id="3955193568934677022">Permitir que os sites reproduzam conteúdo protegido (recomendado)</translation>
+<translation id="3955193568934677022">Permitir que os sites mostrem conteúdo protegido (recomendado)</translation>
 <translation id="3987993985790029246">Copiar link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Título</translation>
@@ -148,7 +148,7 @@
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5335288049665977812">Permitir que sites executem o JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5354152178998424783">Essa ação limpará <ph name="DATASIZE" /> de dados e cookies armazenados por sites.</translation>
+<translation id="5354152178998424783">Essa ação apagará <ph name="DATASIZE" /> de dados e cookies armazenados por sites.</translation>
 <translation id="5384883051496921101">Este site está prestes a compartilhar informações com um app fora do modo de navegação anônima.</translation>
 <translation id="5391532827096253100">Sua conexão com este site não é segura. Informações do site</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
@@ -166,7 +166,7 @@
 <translation id="5689516760719285838">Local</translation>
 <translation id="5690795753582697420">A câmera está desativada nas configurações do Android</translation>
 <translation id="5710871682236653961">Perguntar antes de permitir que sites enviem e recebam informações quando você tocar em dispositivos NFC (recomendado)</translation>
-<translation id="5719847187258001597">Isso limpará todos os dados e cookies armazenados por <ph name="ORIGIN" /> ou pelo app dele na sua tela inicial.</translation>
+<translation id="5719847187258001597">Essa ação apagará todos os dados e cookies armazenados por <ph name="ORIGIN" /> ou pelo app dele na sua tela inicial.</translation>
 <translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5860033963881614850">Desativado</translation>
@@ -235,7 +235,7 @@
 <translation id="7554752735887601236">Um site está usando seu microfone</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7572498721684305250">Impedir que sites enviem e recebam informações quando você tocar em dispositivos NFC</translation>
-<translation id="757524316907819857">Impedir que sites reproduzam conteúdos protegidos</translation>
+<translation id="757524316907819857">Impedir que sites mostrem conteúdo protegido</translation>
 <translation id="7589445247086920869">Bloquear o mecanismo de pesquisa atual</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -288,7 +288,7 @@
 <translation id="8719283222052720129">Ative a permissão para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8730621377337864115">Concluído</translation>
-<translation id="8737217482364735741">Isso limpará todos os dados e cookies armazenados por <ph name="ORIGIN" />.</translation>
+<translation id="8737217482364735741">Essa ação apagará todos os dados e cookies armazenados por <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Selecione uma imagem</translation>
 <translation id="8801436777607969138">Bloquear JavaScript para um site específico.</translation>
 <translation id="8816026460808729765">Impedir que sites acessem os sensores</translation>

@@ -189,7 +189,7 @@
 <translation id="2390264819538553347">‏برای ادامه، enter را فشار دهید، برای برگشتن به عقب، پس‌بر را فشار دهید.</translation>
 <translation id="2398579267367951220">‏برای جستجو در صفحه، تایپ کنید. برای رفتن به قسمت نتایج، دکمه Enter را فشار دهید؛ برای مرور کردن نتایج، پیکان بالا یا پایین را فشار دهید؛ برای تغییر دادن نوشتار جستجو، به تایپ کردن ادامه دهید؛ برای لغو کردن، دکمه Escape را فشار دهید.</translation>
 <translation id="240709722712693803">آبی-بنفش</translation>
-<translation id="2416512023405990736">کادر تأیید لغو انتخاب‌شده</translation>
+<translation id="2416512023405990736">چارگوش انتخاب لغو انتخاب‌شده</translation>
 <translation id="2417569100218200841">اطلاعات محتوا</translation>
 <translation id="2417948780551741035">ته‌نویس</translation>
 <translation id="2419852971200420169">فهرست شرح</translation>
@@ -433,7 +433,7 @@
 <translation id="4081085052247739398">{COUNT,plural, =1{علامت مد}one{# علامت مد}other{# علامت مد}}</translation>
 <translation id="409334809956508737">شیء قبلی</translation>
 <translation id="4099274309791143834">دارای منوی فرعی</translation>
-<translation id="4101527861445851766">کادر تأیید علامت‌خورده</translation>
+<translation id="4101527861445851766">چارگوش انتخاب علامت‌خورده</translation>
 <translation id="4115378294792113321">سرخابی</translation>
 <translation id="4116415223832267137">هشدار</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{آکولاد راست}one{# پرانتز راست}other{# آکولاد راست}}</translation>
@@ -538,7 +538,7 @@
 <translation id="4892105484979139179">سبزآبی تیره</translation>
 <translation id="489907760999452556">پیوند داخلی</translation>
 <translation id="4909019435900810068">یک واژه عقب بروید</translation>
-<translation id="4911349081560453449">کادر تأیید قبلی وجود ندارد</translation>
+<translation id="4911349081560453449">چارگوش انتخاب قبلی وجود ندارد</translation>
 <translation id="492295894462528572">پیش‌گفتار</translation>
 <translation id="495046168593986294">پیمایش به بالا</translation>
 <translation id="495170559598752135">کنش‌ها</translation>
@@ -995,7 +995,7 @@
 <translation id="8455868257606149352">حداکثر <ph name="X" /></translation>
 <translation id="84575901236241018">کلید دسترسی دارد، <ph name="KEY" /></translation>
 <translation id="8463645336674919227">خارج شدن از اشتباه دستور زبانی</translation>
-<translation id="847040613207937740">کادر تأیید بعدی وجود ندارد</translation>
+<translation id="847040613207937740">چارگوش انتخاب بعدی وجود ندارد</translation>
 <translation id="8473540203671727883">خواندن نوشتار زیر نشانگر موشواره</translation>
 <translation id="8476408756881832830">‏توقف بازپخش هنگامی که ChromeVox درحال صحبت کردن است</translation>
 <translation id="8476508772960940536">نمای کلی پنجره</translation>

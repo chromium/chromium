@@ -17,7 +17,7 @@
 <translation id="1041998700806130099">Job sheet message</translation>
 <translation id="1048785276086539861">When you edit annotations, this document will return to single-page view</translation>
 <translation id="1050038467049342496">Close other apps</translation>
-<translation id="1055184225775184556">&amp;Undo Add</translation>
+<translation id="1055184225775184556">&amp;Undo add</translation>
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1058479211578257048">Saving cards...</translation>
 <translation id="10614374240317010">Never saved</translation>
@@ -605,7 +605,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3387261909427947069">Payment Methods</translation>
 <translation id="3391030046425686457">Delivery address</translation>
 <translation id="3395827396354264108">Pickup method</translation>
-<translation id="3399952811970034796">Delivery Address</translation>
+<translation id="3399952811970034796">Delivery address</translation>
 <translation id="3402261774528610252">The connection used to load this site used TLS 1.0 or TLS 1.1, which are deprecated and will be disabled in the future. Once disabled, users will be prevented from loading this site. The server should enable TLS 1.2 or later.</translation>
 <translation id="3411120537985775570">Pasting from <ph name="ORIGIN_NAME" /> to this location is blocked by your administrator</translation>
 <translation id="3414952576877147120">Size:</translation>
@@ -1113,7 +1113,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5324080437450482387">Choose contact info</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>
-<translation id="5332219387342487447">Delivery Method</translation>
+<translation id="5332219387342487447">Delivery method</translation>
 <translation id="5334013548165032829">Detailed system logs</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
 <translation id="534295439873310000">NFC devices</translation>
@@ -1831,7 +1831,7 @@ Additional details:
 <translation id="8249296373107784235">Abort</translation>
 <translation id="8249320324621329438">Last fetched:</translation>
 <translation id="8253091569723639551">Billing address required</translation>
-<translation id="825929999321470778">Show All Saved Passwords</translation>
+<translation id="825929999321470778">Show all saved passwords</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8262952874573525464">Edge stitch bottom</translation>
 <translation id="8265992338205884890">Visible data</translation>

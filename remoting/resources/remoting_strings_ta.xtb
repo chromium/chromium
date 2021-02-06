@@ -23,7 +23,7 @@
 
 '<ph name="SERVICE_SCRIPT_NAME" />' பெட்டியானது ஏற்கெனவே தேர்வுசெய்யப்பட்டிருந்தால் அதைத் தேர்வுநீக்கி மீண்டும் தேர்வுசெய்யவும்.</translation>
 <translation id="225614027745146050">நல்வரவு</translation>
-<translation id="2320166752086256636">விசைப்பலகையை மறை</translation>
+<translation id="2320166752086256636">கீபோர்டை மறை</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2366718077645204424">ஹோஸ்ட்டை அடைய முடியவில்லை. இததற்கு நீங்கள் பயன்படுத்தும் நெட்வொர்க்கின் உள்ளமைவு காரணமாக இருக்கலாம்.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> கடைசியாக ஆன்லைனில் இருந்தது <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -105,7 +105,7 @@
 <translation id="5810269635982033450">டிராக்பேட் போல திரை செயல்படும்</translation>
 <translation id="5823658491130719298">தொலைநிலையில் அணுக விரும்பும் கம்ப்யூட்டரில் Chromeமைத் திறந்து, <ph name="INSTALLATION_LINK" /> எனும் இணைப்பிற்குச் செல்லவும்</translation>
 <translation id="5841343754884244200">திரை விருப்பங்கள்</translation>
-<translation id="6033507038939587647">விசைப்பலகை விருப்பங்கள்</translation>
+<translation id="6033507038939587647">கீபோர்டு விருப்பங்கள்</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6062854958530969723">ஹோஸ்ட் துவக்கம் தோல்வியடைந்தது.</translation>
 <translation id="6099500228377758828">Chrome தொலைநிலை டெஸ்க்டாப் சேவை</translation>

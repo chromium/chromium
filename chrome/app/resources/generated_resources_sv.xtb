@@ -245,7 +245,7 @@
 <translation id="1263231323834454256">Läslista</translation>
 <translation id="1263490604593716556">Kontot hanteras av <ph name="FIRST_PARENT_EMAIL" /> och <ph name="SECOND_PARENT_EMAIL" />. Klicka på klockan på skärmen om du vill logga ut från det primära kontot på den här enheten. Klicka på Logga ut i menyn som visas.</translation>
 <translation id="1263733306853729545">Använd tangenterna <ph name="MINUS" /> och <ph name="EQUAL" /> om du vill söka i en kandidatlista</translation>
-<translation id="126387934568812801">Ta med den här skärmdumpen och namnet på öppna flikar</translation>
+<translation id="126387934568812801">Ta med den här skärmbilden och namnet på öppna flikar</translation>
 <translation id="1264337193001759725">Du hittar loggar för nätverksgränssnittet här: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">Översättningsspråk:</translation>
 <translation id="126768002343224824">16x</translation>
@@ -271,7 +271,7 @@
 <translation id="1300415640239881824"><ph name="DOMAIN" /> kräver att enhetens identitet verifieras av Google för att avgöra om enheten är kvalificerad för förbättrad uppspelning av skyddat innehåll.</translation>
 <translation id="1300806585489372370"><ph name="BEGIN_LINK" />Aktivera identifierare<ph name="END_LINK" /> om du vill ändra den här inställningen</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> har redigeringsbehörighet till följande filer</translation>
-<translation id="1302139669997477151">Skärmdump blockeras</translation>
+<translation id="1302139669997477151">Skärmbild blockeras</translation>
 <translation id="1302227299132585524">Tillåt JavaScript från Apple Events</translation>
 <translation id="1303101771013849280">HTML-fil med bokmärken</translation>
 <translation id="1303671224831497365">Inga Bluetooth-enheter hittades</translation>
@@ -415,7 +415,7 @@
 <translation id="144518587530125858">Det gick inte att läsa in <ph name="IMAGE_PATH" /> för temat.</translation>
 <translation id="1451375123200651445">Webbsida, en enda fil</translation>
 <translation id="1451917004835509682">Lägg till kontrollerad person</translation>
-<translation id="1454223536435069390">T&amp;a en skärmdump</translation>
+<translation id="1454223536435069390">T&amp;a en skärmbild</translation>
 <translation id="145432137617179457">Språk för stavningskontroll</translation>
 <translation id="1459693405370120464">Väder</translation>
 <translation id="1459967076783105826">Sökmotorer som lagts till av tilläggsprogram</translation>
@@ -1654,7 +1654,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2861301611394761800">Systemuppdateringen har slutförts. Starta om systemet.</translation>
 <translation id="2861941300086904918">Native Client säkerhetshanterare</translation>
 <translation id="2864601841139725659">Ange profilbild</translation>
-<translation id="2865919525181940183">Skärmdump av program som visas på skärmen</translation>
+<translation id="2865919525181940183">Skärmbild av program som visas på skärmen</translation>
 <translation id="286674810810214575">Kontrollerar strömkällor …</translation>
 <translation id="2867768963760577682">Öppna som en fast flik</translation>
 <translation id="2868746137289129307">Tillägget är inaktuellt och inaktiverat av företagspolicyn. Det kan aktiveras automatiskt när en ny version blir tillgänglig.</translation>
@@ -2404,7 +2404,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3738632186060045350">Data på <ph name="DEVICE_TYPE" /> raderas inom 24 timmar</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vill du öppna <ph name="APPLICATION" />?</translation>
-<translation id="3742055079367172538">Skärmdumpen har tagits</translation>
+<translation id="3742055079367172538">Skärmbilden har tagits</translation>
 <translation id="3742666961763734085">Ingen organisationsenhet med det namnet hittades. Försök igen.</translation>
 <translation id="3744111561329211289">Synkronisering i bakgrunden</translation>
 <translation id="3746127522257263495">Det finns inte stöd för att lägga till G Suite for Education-konton i Android-appar.</translation>
@@ -2832,7 +2832,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4249248555939881673">Väntar på nätverksanslutning ...</translation>
 <translation id="4249373718504745892">Den här sidan har blockerats och kan inte komma åt kameran och mikrofonen.</translation>
 <translation id="424963718355121712">Appar måste visas från värden de är kopplade till</translation>
-<translation id="4250229828105606438">Skärmdump</translation>
+<translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4250680216510889253">Nej</translation>
 <translation id="4252035718262427477">Webbsida, en enda fil (Web Bundle)</translation>
 <translation id="4252852543720145436">Identifierare för skyddat innehåll</translation>
@@ -4530,7 +4530,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6273677812470008672">Kvalitet</translation>
 <translation id="6276210637549544171">Proxyservern <ph name="PROXY_SERVER" /> kräver användarnamn och lösenord.</translation>
 <translation id="6277105963844135994">Tidsgräns för nätverket</translation>
-<translation id="6277518330158259200">T&amp;a en skärmdump</translation>
+<translation id="6277518330158259200">T&amp;a en skärmbild</translation>
 <translation id="6278057325678116358">Använd GTK+</translation>
 <translation id="6278068827862345700">Webbplatser som stängts nyligen får fortsätta att skicka och ta emot data (rekommenderas)</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -6051,7 +6051,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8037357227543935929">Fråga (standard)</translation>
 <translation id="803771048473350947">Arkiv</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
-<translation id="8042142357103597104">Textgenomskinlighet</translation>
+<translation id="8042142357103597104">Textopacitet</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> svarar inte.</translation>
 <translation id="8044899503464538266">Långsam</translation>
 <translation id="8045253504249021590">Synkronisering har stoppats via Google Översikt.</translation>
@@ -7091,13 +7091,13 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="93766956588638423">Reparera tillägg</translation>
 <translation id="938339467127511841">Lagringsutrymme för Linux (beta)</translation>
 <translation id="938470336146445890">Installera ett användarcertifikat.</translation>
-<translation id="939252827960237676">Det gick inte att spara skärmdumpen</translation>
+<translation id="939252827960237676">Det gick inte att spara skärmbilden</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="939736085109172342">Ny mapp</translation>
 <translation id="941070664607309480">Klicka här om du vill göra dig själv synlig så att den kan dela med dig</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> delar ljud och en flik från Chrome.</translation>
-<translation id="942603342650325556">Möjligheten att ta en skärmdump av innehållet på skärmen blockeras av administratören.</translation>
+<translation id="942603342650325556">Möjligheten att ta en skärmbild av innehållet på skärmen blockeras av administratören.</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="947329552760389097">&amp;Inspektera element</translation>
 <translation id="951991426597076286">Godkänn inte</translation>

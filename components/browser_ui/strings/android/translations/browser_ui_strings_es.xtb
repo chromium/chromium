@@ -3,7 +3,7 @@
 <translationbundle lang="es">
 <translation id="1006017844123154345">Abrir versión online</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
-<translation id="1124090076051167250">Esta acción borrará <ph name="DATASIZE" /> de datos y cookies almacenados por sitios web o aplicaciones en tu pantalla de inicio.</translation>
+<translation id="1124090076051167250">Esta acción borrará <ph name="DATASIZE" /> de datos y cookies almacenados por sitios o aplicaciones en tu pantalla de inicio.</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Quitar</translation>
@@ -18,12 +18,12 @@
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Descarga en pausa</translation>
 <translation id="1415402041810619267">URL truncada</translation>
-<translation id="1431402976894535801">Impedir que los sitios web sepan cuándo estás presente</translation>
+<translation id="1431402976894535801">No permitir que los sitios sepan cuándo estás presente</translation>
 <translation id="1446450296470737166">Control total dispositivos MIDI</translation>
 <translation id="1509960214886564027">Es posible que las funciones de muchos sitios no funcionen correctamente.</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1660204651932907780">Permitir que los sitios reproduzcan sonidos (recomendado)</translation>
-<translation id="1677097821151855053">Las cookies y otros datos de los sitios web se usan para recordarte. Así, podrás iniciar sesión o ver anuncios personalizados, entre otras cosas. Para gestionar las cookies de todos los sitios web, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="1677097821151855053">Las cookies y otros datos de los sitios se usan para recordarte. Así, podrás iniciar sesión o ver anuncios personalizados, entre otras cosas. Para gestionar las cookies de todos los sitios, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">¿Borrar datos del sitio web?</translation>
 <translation id="169515064810179024">No permitir que los sitios accedan a los sensores de movimiento</translation>
 <translation id="1717218214683051432">Sensores de movimiento</translation>
@@ -69,7 +69,7 @@
 <translation id="2687403674020088961">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2717722538473713889">Direcciones de correo electrónico</translation>
-<translation id="2822354292072154809">¿Seguro que quieres restablecer todos los permisos de los sitios web de <ph name="CHOSEN_OBJECT_NAME" />?</translation>
+<translation id="2822354292072154809">¿Seguro que quieres restablecer todos los permisos de los sitios de <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2903493209154104877">Direcciones</translation>
@@ -91,13 +91,13 @@
 <translation id="3328801116991980348">Información del sitio</translation>
 <translation id="3333961966071413176">Todos los contactos</translation>
 <translation id="3386292677130313581">Preguntar antes de permitir que los sitios detecten tu ubicación (recomendado)</translation>
-<translation id="3538390592868664640">Impide que los sitios web creen un mapa 3D de tu entorno o hagan un seguimiento de la posición de la cámara</translation>
+<translation id="3538390592868664640">No permitir que los sitios creen un mapa 3D de tu entorno o hagan un seguimiento de la posición de la cámara</translation>
 <translation id="3586500876634962664">Uso de cámara y micrófono</translation>
 <translation id="3587482841069643663">Todo</translation>
 <translation id="358794129225322306">Permitir que un sitio web descargue varios archivos automáticamente.</translation>
 <translation id="3594780231884063836">Silenciar vídeo</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceros en incógnito</translation>
-<translation id="3600792891314830896">Silenciar los sitios web que reproducen sonidos</translation>
+<translation id="3600792891314830896">Silenciar los sitios que reproducen sonidos</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Toca dos veces a la derecha o a la izquierda del vídeo para saltar 10 s</translation>
 <translation id="381841723434055211">Números de teléfono</translation>
@@ -148,7 +148,7 @@
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5335288049665977812">Permitir que los sitios utilicen JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
-<translation id="5354152178998424783">Esta acción borrará <ph name="DATASIZE" /> de datos y cookies almacenados por sitios web.</translation>
+<translation id="5354152178998424783">Esta acción borrará <ph name="DATASIZE" /> de datos y cookies almacenados por sitios.</translation>
 <translation id="5384883051496921101">Este sitio web va a compartir información con una aplicación con la que no se utilizará el modo de incógnito.</translation>
 <translation id="5391532827096253100">Tu conexión a este sitio web no es segura. Información del sitio web</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(y 1 más)}other{(y # más)}}</translation>
@@ -156,7 +156,7 @@
 <translation id="5489227211564503167">Tiempo transcurrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquea anuncios invasivos o engañosos en los sitios que los muestran</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> permitido; <ph name="PERMISSION_2" /> bloqueado</translation>
-<translation id="5505264765875738116">Los sitios web no pueden preguntarte si quieres que te envíen notificaciones</translation>
+<translation id="5505264765875738116">Los sitios no pueden preguntarte si quieres que te envíen notificaciones</translation>
 <translation id="5516455585884385570">Abrir ajustes de notificaciones</translation>
 <translation id="5527111080432883924">Preguntar antes de permitir que los sitios lean texto e imágenes del portapapeles (recomendado)</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
@@ -165,7 +165,7 @@
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en los ajustes de Android</translation>
-<translation id="5710871682236653961">Pregunta antes de permitir que los sitios envíen y reciban información cuando toques dispositivos NFC (recomendado)</translation>
+<translation id="5710871682236653961">Preguntar antes de permitir que los sitios envíen y reciban información cuando toques dispositivos NFC (recomendado)</translation>
 <translation id="5719847187258001597">Esta acción borrará todos los datos y cookies almacenados por <ph name="ORIGIN" /> y su aplicación en tu pantalla de inicio.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloqueado</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -187,13 +187,13 @@
 <translation id="6206551242102657620">La conexión es segura. Información del sitio web</translation>
 <translation id="6216432067784365534">Opciones de <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> bloqueados</translation>
-<translation id="6270391203985052864">Los sitios web pueden preguntarte si quieres que te envíen notificaciones</translation>
+<translation id="6270391203985052864">Los sitios pueden preguntarte si quieres que te envíen notificaciones</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6388207532828177975">Borrar y restablecer</translation>
 <translation id="6398765197997659313">Salir del modo de pantalla completa</translation>
 <translation id="6423924377271166037">Borrar cookies</translation>
-<translation id="6439114592976064011">Impedir que los sitios web usen tu dispositivo y tus datos de realidad virtual</translation>
+<translation id="6439114592976064011">No permitir que los sitios usen tu dispositivo y tus datos de realidad virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
@@ -211,7 +211,7 @@
 <translation id="6818926723028410516">Seleccionar elementos</translation>
 <translation id="6864395892908308021">Este dispositivo no puede leer NFC</translation>
 <translation id="6910211073230771657">Eliminado</translation>
-<translation id="6912998170423641340">Evitar que los sitios web lean texto e imágenes del portapapeles</translation>
+<translation id="6912998170423641340">Evitar que los sitios lean texto e imágenes del portapapeles</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6963642900430330478">Esta página es peligrosa. Información del sitio web</translation>
 <translation id="6965382102122355670">Aceptar</translation>
@@ -234,8 +234,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un sitio web está usando tu micrófono</translation>
 <translation id="7561196759112975576">Siempre</translation>
-<translation id="7572498721684305250">No permite que los sitios web envíen y reciban información cuando toques dispositivos NFC</translation>
-<translation id="757524316907819857">Impedir que los sitios web reproduzcan contenido protegido</translation>
+<translation id="7572498721684305250">No permitir que los sitios envíen y reciban información cuando toques dispositivos NFC</translation>
+<translation id="757524316907819857">No permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="7589445247086920869">Bloquear para el motor de búsqueda actual</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -248,7 +248,7 @@
 <translation id="7835852323729233924">Reproduciendo contenido multimedia</translation>
 <translation id="783819812427904514">Dejar de silenciar vídeo</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
-<translation id="7846621471902887024">Se cerrarán tus sesiones en todos los sitios web.</translation>
+<translation id="7846621471902887024">Se cerrarán tus sesiones en todos los sitios.</translation>
 <translation id="7882806643839505685">Permite que se reproduzcan sonidos en un sitio específico.</translation>
 <translation id="7986741934819883144">Selecciona un contacto</translation>
 <translation id="7993619969781047893">Es posible que las funciones de algunos sitios no funcionen correctamente</translation>
@@ -291,7 +291,7 @@
 <translation id="8737217482364735741">Esta acción borrará todos los datos y cookies guardados por <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Selecciona una imagen</translation>
 <translation id="8801436777607969138">Bloquea JavaScript en un sitio específico.</translation>
-<translation id="8816026460808729765">No permite que los sitios web accedan a los sensores</translation>
+<translation id="8816026460808729765">No permitir que los sitios accedan a los sensores</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">La tecnología NFC está desactivada en este dispositivo. Actívala en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>

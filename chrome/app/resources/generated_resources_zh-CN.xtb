@@ -649,7 +649,7 @@
 <translation id="1709217939274742847">选择用于进行身份验证的票据。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1711935594505774770">此操作会清除 <ph name="SITE_GROUP_NAME" />、其下属所有网站及其安装的应用存储的所有数据和 Cookie</translation>
 <translation id="1714644264617423774">启用无障碍功能，让设备更易于使用。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="1717218214683051432">动态传感器</translation>
+<translation id="1717218214683051432">移动传感器</translation>
 <translation id="1718835860248848330">过去一小时</translation>
 <translation id="1719312230114180055">请注意：指纹识别的安全性可能不及安全系数高的密码或 PIN 码。</translation>
 <translation id="1720318856472900922">TLS WWW 服务器身份验证</translation>
@@ -3055,7 +3055,7 @@
 <translation id="4530494379350999373">来源</translation>
 <translation id="4531924570968473143">您想将谁添加到此 <ph name="DEVICE_TYPE" />？</translation>
 <translation id="4532625150642446981">“<ph name="USB_DEVICE_NAME" />”正在使用中。重新分配正在使用中的设备可能会导致出错。确定要继续吗？</translation>
-<translation id="4532646538815530781">此网站正在使用动态传感器。</translation>
+<translation id="4532646538815530781">此网站正在使用移动传感器。</translation>
 <translation id="4533846798469727141">现在说“Hey Google”</translation>
 <translation id="4533985347672295764">CPU 时间</translation>
 <translation id="4534661889221639075">请重试。</translation>
@@ -3364,7 +3364,7 @@
 <translation id="4893073099212494043">启用下一字词预测</translation>
 <translation id="4893336867552636863">这会将您的浏览数据从这台设备上永久删除。</translation>
 <translation id="4893522937062257019">屏幕锁定时</translation>
-<translation id="489454699928748701">允许网站使用动态传感器</translation>
+<translation id="489454699928748701">允许网站使用移动传感器</translation>
 <translation id="4898011734382862273">证书“<ph name="CERTIFICATE_NAME" />”代表一个证书授权中心</translation>
 <translation id="489985760463306091">要完成有害软件的移除，请重新启动计算机</translation>
 <translation id="4900392736118574277">您的启动页已改为 <ph name="URL" />。</translation>
@@ -3969,7 +3969,7 @@
 <translation id="5620612546311710611">使用情况统计信息</translation>
 <translation id="5620655347161642930">导出密码…</translation>
 <translation id="5621137386706841383">此过程最多可能需要 30 分钟。</translation>
-<translation id="5623282979409330487">此网站正在使用您的动态传感器。</translation>
+<translation id="5623282979409330487">此网站正在使用您的移动传感器。</translation>
 <translation id="5623842676595125836">日志</translation>
 <translation id="5624120631404540903">管理密码</translation>
 <translation id="5626134646977739690">名字：</translation>
@@ -4623,7 +4623,7 @@
 <translation id="6393156038355142111">建议一个安全系数高的密码</translation>
 <translation id="6393550101331051049">允许显示不安全内容</translation>
 <translation id="6395423953133416962">发送<ph name="BEGIN_LINK1" />系统信息<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
-<translation id="6396988158856674517">禁止网站使用动态传感器</translation>
+<translation id="6396988158856674517">禁止网站使用移动传感器</translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="6399774419735315745">间谍</translation>
@@ -4749,7 +4749,7 @@
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538635548667167211">当前的流量使用设置是“数据流量”</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
-<translation id="6541638731489116978">此网站已被禁止使用您的动态传感器。</translation>
+<translation id="6541638731489116978">此网站已被禁止使用您的移动传感器。</translation>
 <translation id="6545665334409411530">重复速度</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6545867563032584178">已在 Mac 系统偏好设置中关闭麦克风</translation>
@@ -5733,7 +5733,7 @@
 <translation id="7704521324619958564">打开 Play 商店</translation>
 <translation id="7705276765467986571">无法加载书签模型。</translation>
 <translation id="7705524343798198388">VPN</translation>
-<translation id="7707108266051544351">此网站已被禁止使用动态传感器。</translation>
+<translation id="7707108266051544351">此网站已被禁止使用移动传感器。</translation>
 <translation id="7707922173985738739">使用移动数据</translation>
 <translation id="7709152031285164251">失败 - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">投射(&amp;C)…</translation>

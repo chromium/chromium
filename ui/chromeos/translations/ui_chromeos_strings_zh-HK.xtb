@@ -592,7 +592,7 @@
 <translation id="7544830582642184299">允許 Linux 應用程式存取「Google 雲端硬碟」的檔案。變更將會同步至您的其他裝置。</translation>
 <translation id="7544853251252956727">隨機播放</translation>
 <translation id="7547811415869834682">荷蘭文</translation>
-<translation id="7551643184018910560">固定至檔案櫃</translation>
+<translation id="7551643184018910560">固定至捷徑列</translation>
 <translation id="7553492409867692754">允許 Linux 應用程式存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="7576032389798113292">6x4</translation>
 <translation id="7585326627181105002">英文 (美國)，國際 (PC) 鍵盤</translation>
@@ -679,7 +679,7 @@
 <translation id="8299269255470343364">日文</translation>
 <translation id="8312871300878166382">貼入資料夾</translation>
 <translation id="8329978297633540474">純文字</translation>
-<translation id="8335587457941836791">從檔案櫃中取消固定</translation>
+<translation id="8335587457941836791">從捷徑列中取消固定</translation>
 <translation id="8336153091935557858">昨天<ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">尼泊爾文 (音譯)</translation>
 <translation id="8342318071240498787">已存在名稱相同的檔案或目錄。</translation>

@@ -61,7 +61,7 @@
 <translation id="1060292118287751956">Дэлгэцийг шинэчлэх давтамжийг тодорхойлно</translation>
 <translation id="1061904396131502319">Завсарлах цаг ойртож байна</translation>
 <translation id="1067048845568873861">Үүсгэсэн</translation>
-<translation id="1067291318998134776">Linux (Бэта)</translation>
+<translation id="1067291318998134776">Linux (Бета)</translation>
 <translation id="1067922213147265141">Google-н бусад үйлчилгээ</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1070377999570795893">Taны компьютерын өөр нэг программ өргөтгөл нэмсэн бөгөөд энэ нь Chrome-н ажиллах зарчмыг өөрчилж магад.
@@ -1258,7 +1258,7 @@
 <translation id="2428939361789119025">Wi-Fi-г унтраах</translation>
 <translation id="2431027948063157455">Google Туслахыг ачаалж чадсангүй. Сүлжээний холболтоо шалгаад дахин оролдоно уу.</translation>
 <translation id="2431846145771260397">Та Linux (Beta)-д тохируулсан хэмжээтэй дискийг хадгалахдаа итгэлтэй байна уу?</translation>
-<translation id="2432753757290432042">Linux (Бэта)-н шинэчлэлт шаардлагатай</translation>
+<translation id="2432753757290432042">Linux (Бета)-н шинэчлэлт шаардлагатай</translation>
 <translation id="2433452467737464329">Холбоос руу query param-ыг нэмж, : chrome://network/?refresh=&lt;sec&gt; дахь хуудсын автоматаар сэргээнэ үү.</translation>
 <translation id="2433490881840073798"><ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START" />, <ph name="RECENT_PERMISSIONS_CHANGE" /></translation>
 <translation id="2433507940547922241">Харагдах байдал</translation>
@@ -2269,7 +2269,7 @@
 <translation id="3600051066689725006">Вебийн хүсэлтийн мэдээлэл</translation>
 <translation id="3600792891314830896">Дуу тоглуулдаг сайтуудын дууг хаах</translation>
 <translation id="360180734785106144">Шинэ онцлогуудыг боломжтой болмогц санал болгох</translation>
-<translation id="3602198818276948261">Таны контейнерыг дискийн хэмжээг өөрчлөхийг дэмжихэд тохируулаагүй. Linux (Бэта)-д нөөцөлсөн зайн хэмжээг тохируулахын тулд хуулбарлаад, шинэ контейнер луу сэргээнэ үү.</translation>
+<translation id="3602198818276948261">Таны контейнерыг дискийн хэмжээг өөрчлөхийг дэмжихэд тохируулаагүй. Linux (Бета)-д нөөцөлсөн зайн хэмжээг тохируулахын тулд хуулбарлаад, шинэ контейнер луу сэргээнэ үү.</translation>
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3603622770190368340">Сүлжээний сертификат авах</translation>
 <translation id="3604713164406837697">Дэлгэцийн зураг солих</translation>
@@ -3356,7 +3356,7 @@
 <translation id="4887424188275796356">Системийн харагчаар нээх</translation>
 <translation id="488785315393301722">Дэлгэрэнгүй мэдээллийг харуул</translation>
 <translation id="4890773143211625964">Нарийвчилсан хэвлэгчийн сонголтыг харуулах</translation>
-<translation id="4891089016822695758">Бэта форум</translation>
+<translation id="4891089016822695758">Бета форум</translation>
 <translation id="4892229439761351791">Сайт Bluetooth ашиглах боломжтой</translation>
 <translation id="489258173289528622">Батарейгаар ажиллах үед идэвхгүй төлөвт хийх үйлдэл</translation>
 <translation id="4892811427319351753"><ph name="EXTENSION_TYPE_PARAMETER" />-г идэвхжүүлэх боломжгүй байна</translation>
@@ -4197,7 +4197,7 @@
 <translation id="5893589697005440881">Эргэн тойрныхоо хүмүүстэй файл хуваалцах</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5900302528761731119">Google-ийн танилцуулга зураг</translation>
-<translation id="5900358982890952556">Linux (Бэта)-г дэвшүүлэх</translation>
+<translation id="5900358982890952556">Linux (Бета)-г дэвшүүлэх</translation>
 <translation id="5901494423252125310">Хэвлэгчийн таг нээлттэй байна</translation>
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5904614460720589786">Тохируулгын асуудлын улмаас <ph name="APP_NAME" />-г тохируулж чадсангүй. Админтайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
@@ -5394,7 +5394,7 @@
 <translation id="7310598146671372464">Нэвтэрч чадсангүй. Сервер нь Kerberos-н тодорхой шифрлэлтийн төрлийг дэмждэггүй. Админтайгаа холбогдоно уу.</translation>
 <translation id="7320213904474460808">Сүлжээг өгөгдмөл болгох</translation>
 <translation id="7321545336522791733">Серверт холбогдох боломжгүй</translation>
-<translation id="7324297612904500502">Бэта Форум</translation>
+<translation id="7324297612904500502">Бета Форум</translation>
 <translation id="7325209047678309347">Цаас гацсан</translation>
 <translation id="7325437708553334317">Өндөр контраст бүхий өргөтгөл</translation>
 <translation id="7326004502692201767">Энэ <ph name="DEVICE_TYPE" />-г хүүхдэд зориулж тохируулах</translation>
@@ -5757,7 +5757,7 @@
 <translation id="7730683939467795481">Энэ хуудсыг "<ph name="EXTENSION_NAME" />" өргөтгөлөөр өөрчилсөн байна</translation>
 <translation id="7732111077498238432">Сүлжээг удирдамжаар хянадаг</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />"-тай хослуулж байна ...</translation>
-<translation id="7737238973539693982">Linux (Бэта)-г устгах</translation>
+<translation id="7737238973539693982">Linux (Бета)-г устгах</translation>
 <translation id="7737948071472253612">Таны камерыг ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="7740996059027112821">Стандарт</translation>
 <translation id="7742706086992565332">Та тодорхой веб сайтууд дээр хэр томруулах эсвэл жижгэрүүлэхээ тохируулах боломжтой</translation>
@@ -6226,7 +6226,7 @@
 <translation id="825238165904109940">Үргэлж бүтэн URL-г харуулах</translation>
 <translation id="8252569384384439529">Байршуулж байна...</translation>
 <translation id="8253198102038551905">Сүлжээний хандалтын сонголтыг нэмэгдүүлэхийн тулд  '+' дээр дарна уу</translation>
-<translation id="8254954272268479918">Linux (Бэта)-г унтраах</translation>
+<translation id="8254954272268479918">Linux (Бета)-г унтраах</translation>
 <translation id="8255451560461371599">Арын дэвсгэр байхгүй</translation>
 <translation id="8256319818471787266">Sparky</translation>
 <translation id="8257950718085972371">Камерын хандалтыг хаах</translation>
@@ -6956,7 +6956,7 @@
 <translation id="9088917181875854783">Энэхүү түлхүүр үг нь <ph name="DEVICE_NAME" /> дээр харагдаж байгаа гэдгийг баталгаажуулна уу:</translation>
 <translation id="9089416786594320554">Оролтын аргууд</translation>
 <translation id="909108997331068008"><ph name="EXISTING_USER" />-н профайл <ph name="NEW_USER" />-д аль хэдийн нэвтэрсэн байна</translation>
-<translation id="9093429538970210897">Сайжруулалтыг дуусгаж чадахгүй тохиолдлыг бодолцож файлуудаа хуулбарлахыг санал болгодог. Сайжруулалтыг эхлүүлснээр Linux (Бэта) унтарна. Үргэлжлүүлэхийн өмнө нээлттэй байгаа файлуудаа хадгална уу.</translation>
+<translation id="9093429538970210897">Сайжруулалтыг дуусгаж чадахгүй тохиолдлыг бодолцож файлуудаа хуулбарлахыг санал болгодог. Сайжруулалтыг эхлүүлснээр Linux (Бета) унтарна. Үргэлжлүүлэхийн өмнө нээлттэй байгаа файлуудаа хадгална уу.</translation>
 <translation id="9094033019050270033">Нууц үг шинэчлэх</translation>
 <translation id="9094038138851891550">Хэрэглэгчийн нэр буруу</translation>
 <translation id="9094982973264386462">Устгах</translation>
@@ -7036,7 +7036,7 @@
 <translation id="9176476835295860688">Ашиглалт болон оношилгооны өгөгдлийг илгээнэ үү. Энэ төхөөрөмж одоогоор оношилгоо, төхөөрөмж болон аппын ашиглалтын өгөгдлийг Google-д автоматаар илгээж байна. Энэ нь систем, аппын тогтвортой байдал болон бусад зүйлийг сайжруулахад тусална. Зарим хуримтлуулсан өгөгдөл нь Google аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд мөн адил тусална. Энэ <ph name="BEGIN_LINK1" />тохиргоог<ph name="END_LINK1" /> хэрэглэгчийн зүгээс хэрэгжүүлнэ. Хэрэв таны Веб, Аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг таны Google бүртгэлд хадгалж болзошгүй. <ph name="BEGIN_LINK2" />Нэмэлт мэдээлэл авах<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth төхөөрөмжийг холбосон</translation>
 <translation id="9179524979050048593">Нэвтрэх дэлгэцийн хэрэглэгчийн нэр</translation>
-<translation id="9179734824669616955">Linux (Бэта)-г <ph name="DEVICE_TYPE" />-д тохируулаарай</translation>
+<translation id="9179734824669616955">Linux (Бета)-г <ph name="DEVICE_TYPE" />-д тохируулаарай</translation>
 <translation id="9180281769944411366">Энэ үйл явцад хэдэн минут шаардлагатай. Linux контейнерыг эхлүүлж байна.</translation>
 <translation id="9180380851667544951">Сайт таны дэлгэцийг хуваалцах боломжтой</translation>
 <translation id="9186963452600581158">Хүүхдийн Google Бүртгэлээр нэвтрэх</translation>
@@ -7077,7 +7077,7 @@
 <translation id="93610034168535821">Сайтуудын ашиглаж байгаа хадгалах сангийн нийт хэмжээ:</translation>
 <translation id="936801553271523408">Системийн оношлогоотой холбоотой өгөгдөл</translation>
 <translation id="93766956588638423">Өргөтгөлийг засах</translation>
-<translation id="938339467127511841">Linux (Бэта) хадгалах сан</translation>
+<translation id="938339467127511841">Linux (Бета) хадгалах сан</translation>
 <translation id="938470336146445890">Хэрэглэгчийн сертификат суулгана уу.</translation>
 <translation id="939252827960237676">Дэлгэцийн зургийг хадгалж чадсангүй</translation>
 <translation id="939519157834106403">SSID</translation>

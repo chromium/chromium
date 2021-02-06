@@ -1444,7 +1444,7 @@
 <translation id="2628770867680720336">必須將 Chromebook 回復原廠設定才能啟用 ADB 偵錯。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
 <translation id="2630681426381349926">連線至 Wi-Fi 即可開始</translation>
-<translation id="2631498379019108537">在檔案櫃中顯示輸入法選項</translation>
+<translation id="2631498379019108537">在捷徑列中顯示輸入法選項</translation>
 <translation id="2633212996805280240">要移除「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> 無法完成安裝，但會繼續透過磁碟影像執行。</translation>
 <translation id="2633764681656412085">FIDO</translation>
@@ -1803,7 +1803,7 @@
 <translation id="3023464535986383522">選取以朗讀</translation>
 <translation id="3024374909719388945">使用 24 小時制時鐘</translation>
 <translation id="3027296729579831126">開啟「咫尺共享」功能</translation>
-<translation id="3029466929721441205">顯示檔案櫃中的觸控筆工具</translation>
+<translation id="3029466929721441205">顯示捷徑列中的觸控筆工具</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
 <translation id="3036327949511794916">此 <ph name="DEVICE_TYPE" /> 的退貨期限已過。</translation>
@@ -2301,7 +2301,7 @@
 <translation id="3628275722731025472">關閉藍牙功能</translation>
 <translation id="3629631988386925734">輸入密碼即可啟用 Smart Lock。下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
 <translation id="3630132874740063857">您的手機</translation>
-<translation id="3630995161997703415">將此網站加到檔案櫃，即可隨時使用</translation>
+<translation id="3630995161997703415">將此網站加到捷徑列，即可隨時使用</translation>
 <translation id="3633309367764744750">從頁面預先擷取資料 (包括您仍未瀏覽的頁面)。擷取的資料可能包括 Cookie (如您允許 Cookie)。</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由管理員管理，詳情</translation>
 <translation id="3635353578505343390">傳送意見給 Google</translation>
@@ -4173,7 +4173,7 @@
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5860494867054883682">正在將您的裝置更新至<ph name="CHANNEL_NAME" />版 (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="5862109781435984885">在檔案櫃中顯示觸控筆工具</translation>
+<translation id="5862109781435984885">在捷徑列中顯示觸控筆工具</translation>
 <translation id="5862319196656206789">設定已連接的裝置</translation>
 <translation id="5863445608433396414">啟用偵錯功能</translation>
 <translation id="5864195618110239517">使用按用量收費的連線</translation>
@@ -5595,7 +5595,7 @@
 <translation id="7548856833046333824">檸檬水</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> 下載失敗</translation>
-<translation id="7551643184018910560">固定至檔案櫃</translation>
+<translation id="7551643184018910560">固定至捷徑列</translation>
 <translation id="7552846755917812628">請嘗試按照以下提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
 <translation id="7553242001898162573">輸入您的密碼</translation>
@@ -6301,7 +6301,7 @@
 <translation id="8327039559959785305">連接 Linux 檔案時發生錯誤，請再試一次。</translation>
 <translation id="8327676037044516220">權限和內容設定</translation>
 <translation id="833256022891467078">Crostini 共用資料夾</translation>
-<translation id="8335587457941836791">從檔案櫃中取消固定</translation>
+<translation id="8335587457941836791">從捷徑列中取消固定</translation>
 <translation id="8336407002559723354">此裝置將於 <ph name="MONTH_AND_YEAR" />停止更新</translation>
 <translation id="8336721153892716270">重新啟動裝置即可以<ph name="LANGUAGE" />顯示系統文字</translation>
 <translation id="8336739000755212683">變更裝置的帳戶圖片</translation>
