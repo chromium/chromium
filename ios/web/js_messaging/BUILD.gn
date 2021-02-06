@@ -82,7 +82,9 @@ source_set("java_script_feature_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    "//base",
     "//ios/web/js_features/context_menu",
+    "//ios/web/js_features/window_error",
     "//ios/web/public/js_messaging",
   ]
 
@@ -152,6 +154,7 @@ source_set("inttests") {
     "//base/test:test_support",
     "//ios/testing:embedded_test_server_support",
     "//ios/web/common",
+    "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

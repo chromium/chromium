@@ -69,8 +69,6 @@ source_set("ui") {
     "crw_wk_ui_handler.h",
     "crw_wk_ui_handler.mm",
     "crw_wk_ui_handler_delegate.h",
-    "js_window_error_manager.h",
-    "js_window_error_manager.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

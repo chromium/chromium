@@ -56,7 +56,6 @@
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
-#import "ios/web/web_state/ui/js_window_error_manager.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -151,9 +150,6 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 
   // Manager for favicon JavaScript messages.
   std::unique_ptr<web::FaviconManager> _faviconManager;
-
-  // Manager for window.error message.
-  std::unique_ptr<web::JsWindowErrorManager> _jsWindowErrorManager;
 
   // Logger for cookie;.error message.
   std::unique_ptr<web::CookieBlockingErrorLogger> _cookieBlockingErrorLogger;
@@ -313,8 +309,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         initWithBrowserState:browserState];
     web::FindInPageManagerImpl::CreateForWebState(_webStateImpl);
     _faviconManager = std::make_unique<web::FaviconManager>(_webStateImpl);
-    _jsWindowErrorManager =
-        std::make_unique<web::JsWindowErrorManager>(_webStateImpl);
     _cookieBlockingErrorLogger =
         std::make_unique<web::CookieBlockingErrorLogger>(_webStateImpl);
 

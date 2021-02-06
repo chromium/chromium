@@ -6,7 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
 #include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
+#import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,6 +20,39 @@ namespace {
 const char kBaseScriptName[] = "base_js";
 const char kCommonScriptName[] = "common_js";
 const char kMessageScriptName[] = "message_js";
+
+const char kMainFrameDescription[] = "Main frame";
+const char kIframeDescription[] = "Iframe";
+
+web::WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
+  // Static storage is ok for |window_error_feature| as it holds no state.
+  static std::unique_ptr<web::WindowErrorJavaScriptFeature>
+      window_error_feature = nullptr;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    window_error_feature =
+        std::make_unique<web::WindowErrorJavaScriptFeature>(base::BindRepeating(
+            ^(web::WindowErrorJavaScriptFeature::ErrorDetails error_details) {
+              // Displays the JavaScript error details in the following format:
+              //   _________ JavaScript error: _________
+              //     {error_message}
+              //     {url} | {filename}:{line_number}
+              //     {kMainFrameDescription|kIframeDescription}
+              const char* frame_description = error_details.is_main_frame
+                                                  ? kMainFrameDescription
+                                                  : kIframeDescription;
+              DLOG(ERROR) << "\n_________ JavaScript error: _________"
+                          << "\n  "
+                          << base::SysNSStringToUTF8(error_details.message)
+                          << "\n  " << error_details.url.spec() << " | "
+                          << base::SysNSStringToUTF8(error_details.filename)
+                          << ":" << error_details.line_number << "\n  "
+                          << frame_description;
+            }));
+  });
+  return window_error_feature.get();
+}
+
 }  // namespace
 
 namespace web {
@@ -24,7 +60,8 @@ namespace java_script_features {
 
 std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
-  return {ContextMenuJavaScriptFeature::FromBrowserState(browser_state)};
+  return {ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
+          GetWindowErrorJavaScriptFeature()};
 }
 
 JavaScriptFeature* GetBaseJavaScriptFeature() {

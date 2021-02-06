@@ -230,7 +230,8 @@ id WebTestWithWebState::ExecuteJavaScript(NSString* script) {
         // Most of executed JS does not return the result, and there is no need
         // to log WKErrorJavaScriptResultTypeIsUnsupported error code.
         if (error && error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
-          DLOG(WARNING) << "Script execution of:" << script
+          DLOG(WARNING) << "Script execution of:"
+                        << base::SysNSStringToUTF8(script)
                         << "\nfailed with error: "
                         << base::SysNSStringToUTF8(error.description);
         }
