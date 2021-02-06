@@ -13,6 +13,7 @@ from __future__ import print_function
 
 import argparse
 import collections
+import functools
 import itertools
 import os
 import re
@@ -82,15 +83,6 @@ WRITE_SPECIAL = set([
     ('xcb', 'Button'),
     ('xcb', 'PropertyNotify'),
 ])
-
-FILE_HEADER = \
-'''// Copyright 2021 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// This file was automatically generated with:
-// %s
-''' % ' \\\n//    '.join(sys.argv)
 
 
 def adjust_type_name(name):
@@ -208,10 +200,6 @@ class FileWriter:
     def write(self, line=''):
         indent = self.indent if line and not line.startswith('#') else 0
         print(('  ' * indent) + line, file=self.file)
-
-    def write_header(self):
-        for header_line in FILE_HEADER.split('\n'):
-            self.write(header_line)
 
 
 class GenXproto(FileWriter):
@@ -1138,14 +1126,16 @@ class GenXproto(FileWriter):
                 return 4
             return 3
 
+        def cmp(type1, type2):
+            return type_order_priority(type1) - type_order_priority(type2)
+
         # sort() is guaranteed to be stable.
-        self.module.all.sort(key=type_order_priority)
+        self.module.all.sort(key=functools.cmp_to_key(cmp))
 
     def gen_header(self):
         self.file = self.header_file
-        self.write_header()
-        include_guard = 'UI_GFX_X_GENERATED_PROTOS_%s_' % (
-            self.header_file.name.split('/')[-1].upper().replace('.', '_'))
+        include_guard = self.header_file.name.replace('/', '_').replace(
+            '.', '_').upper() + '_'
         self.write('#ifndef ' + include_guard)
         self.write('#define ' + include_guard)
         self.write()
@@ -1243,7 +1233,6 @@ class GenXproto(FileWriter):
 
     def gen_source(self):
         self.file = self.source_file
-        self.write_header()
         self.write('#include "%s.h"' % self.module.namespace.header)
         self.write()
         self.write('#include <xcb/xcb.h>')
@@ -1291,9 +1280,8 @@ class GenExtensionManager(FileWriter):
     def gen_header(self):
         self.file = open(os.path.join(self.gen_dir, 'extension_manager.h'),
                          'w')
-        self.write_header()
-        self.write('#ifndef UI_GFX_X_GENERATED_PROTOS_EXTENSION_MANAGER_H_')
-        self.write('#define UI_GFX_X_GENERATED_PROTOS_EXTENSION_MANAGER_H_')
+        self.write('#ifndef UI_GFX_X_EXTENSION_MANAGER_H_')
+        self.write('#define UI_GFX_X_EXTENSION_MANAGER_H_')
         self.write()
         self.write('#include <memory>')
         self.write()
@@ -1327,12 +1315,11 @@ class GenExtensionManager(FileWriter):
         self.write()
         self.write('}  // namespace x11')
         self.write()
-        self.write('#endif  // UI_GFX_X_GENERATED_PROTOS_EXTENSION_MANAGER_H_')
+        self.write('#endif  // UI_GFX_X_EXTENSION_MANAGER_H_')
 
     def gen_source(self):
         self.file = open(os.path.join(self.gen_dir, 'extension_manager.cc'),
                          'w')
-        self.write_header()
         self.write('#include "ui/gfx/x/extension_manager.h"')
         self.write()
         self.write('#include "ui/gfx/x/connection.h"')
@@ -1433,7 +1420,6 @@ class GenReadEvent(FileWriter):
 
     def gen_source(self):
         self.file = open(os.path.join(self.gen_dir, 'read_event.cc'), 'w')
-        self.write_header()
         self.write('#include "ui/gfx/x/event.h"')
         self.write()
         self.write('#include <xcb/xcb.h>')
@@ -1518,7 +1504,6 @@ class GenReadError(FileWriter):
 
     def gen_source(self):
         self.file = open(os.path.join(self.gen_dir, 'read_error.cc'), 'w')
-        self.write_header()
         self.write('#include "ui/gfx/x/connection.h"')
         self.write('#include "ui/gfx/x/error.h"')
         self.write('#include "ui/gfx/x/xproto_internal.h"')
