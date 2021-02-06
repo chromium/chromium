@@ -9,7 +9,6 @@
 #include <map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
@@ -208,9 +207,9 @@ class ActionTracker {
   // TrackedInfo is added to |rules_tracked_| once the navigation commits.
   std::map<ExtensionNavigationIdKey, TrackedInfo> pending_navigation_actions_;
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
-  CheckedPtr<ExtensionPrefs> extension_prefs_;
+  ExtensionPrefs* extension_prefs_;
 };
 
 }  // namespace declarative_net_request

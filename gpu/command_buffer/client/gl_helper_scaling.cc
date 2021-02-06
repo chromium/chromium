@@ -16,7 +16,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -112,8 +111,8 @@ class ShaderProgram : public base::RefCounted<ShaderProgram> {
   friend class base::RefCounted<ShaderProgram>;
   ~ShaderProgram() { gl_->DeleteProgram(program_); }
 
-  CheckedPtr<GLES2Interface> gl_;
-  CheckedPtr<GLHelper> helper_;
+  GLES2Interface* gl_;
+  GLHelper* helper_;
   const GLHelperScaling::ShaderType shader_;
 
   // A program for copying a source texture into a destination texture.
@@ -564,8 +563,8 @@ class ScalerImpl : public GLHelper::ScalerInterface {
     gl_->ActiveTexture(oldActiveTexture);
   }
 
-  CheckedPtr<GLES2Interface> gl_;
-  CheckedPtr<GLHelperScaling> scaler_helper_;
+  GLES2Interface* gl_;
+  GLHelperScaling* scaler_helper_;
   GLHelperScaling::ScalerStage spec_;
   GLfloat color_weights_[3][4];  // A vec4 for each plane.
   GLuint intermediate_texture_;

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 
 namespace bookmarks {
@@ -61,7 +60,7 @@ class TestBookmarkClient : public BookmarkClient {
   // managed_node_ exists only until GetLoadManagedNodeCallback gets called, but
   // unowned_managed_node_ stays around after that.
   std::unique_ptr<BookmarkPermanentNode> managed_node_;
-  CheckedPtr<BookmarkPermanentNode> unowned_managed_node_ = nullptr;
+  BookmarkPermanentNode* unowned_managed_node_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestBookmarkClient);
 };

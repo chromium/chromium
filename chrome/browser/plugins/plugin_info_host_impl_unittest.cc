@@ -7,7 +7,6 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -153,7 +152,7 @@ class PluginInfoHostImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile_;
   PluginInfoHostImpl::Context context_;
-  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
+  HostContentSettingsMap* host_content_settings_map_;
 };
 
 TEST_F(PluginInfoHostImplTest, FindEnabledPlugin) {

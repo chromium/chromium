@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
@@ -358,7 +357,7 @@ class PreflightController::PreflightLoader final {
   }
 
   // PreflightController owns all PreflightLoader instances, and should outlive.
-  const CheckedPtr<PreflightController> controller_;
+  PreflightController* const controller_;
 
   // Holds SimpleURLLoader instance for the CORS-preflight request.
   std::unique_ptr<SimpleURLLoader> loader_;

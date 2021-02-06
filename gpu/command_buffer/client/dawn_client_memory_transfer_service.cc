@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/client/dawn_client_memory_transfer_service.h"
 
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/mapped_memory.h"
 #include "gpu/command_buffer/common/dawn_memory_transfer_handle.h"
@@ -59,9 +58,9 @@ class DawnClientMemoryTransferService::ReadHandleImpl
   }
 
  private:
-  CheckedPtr<void> ptr_;  // Pointer to client-side shared memory.
+  void* ptr_;  // Pointer to client-side shared memory.
   MemoryTransferHandle handle_;
-  CheckedPtr<DawnClientMemoryTransferService> service_;
+  DawnClientMemoryTransferService* service_;
 };
 
 class DawnClientMemoryTransferService::WriteHandleImpl
@@ -103,9 +102,9 @@ class DawnClientMemoryTransferService::WriteHandleImpl
   }
 
  private:
-  CheckedPtr<void> ptr_;
+  void* ptr_;
   MemoryTransferHandle handle_;
-  CheckedPtr<DawnClientMemoryTransferService> service_;
+  DawnClientMemoryTransferService* service_;
 };
 
 DawnClientMemoryTransferService::DawnClientMemoryTransferService(

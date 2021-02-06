@@ -140,8 +140,7 @@ void VerifiedRuleset::Initialize(VerifiedRulesetDealer* dealer) {
 
 VerifiedRuleset::Handle::Handle(VerifiedRulesetDealer::Handle* dealer_handle)
     : task_runner_(dealer_handle->task_runner()),
-      ruleset_(new VerifiedRuleset,
-               base::OnTaskRunnerDeleter(task_runner_.get())) {
+      ruleset_(new VerifiedRuleset, base::OnTaskRunnerDeleter(task_runner_)) {
   dealer_handle->GetDealerAsync(base::BindOnce(
       &VerifiedRuleset::Initialize, base::Unretained(ruleset_.get())));
 }

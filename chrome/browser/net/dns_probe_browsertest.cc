@@ -6,7 +6,6 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
@@ -175,12 +174,12 @@ class DnsProbeBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<FakeHostResolverNetworkContext> network_context_;
   std::unique_ptr<FakeDnsConfigChangeManager> dns_config_change_manager_;
-  CheckedPtr<DelayingDnsProbeService> delaying_dns_probe_service_;
+  DelayingDnsProbeService* delaying_dns_probe_service_;
 
   // Browser that methods apply to.
-  CheckedPtr<Browser> active_browser_;
+  Browser* active_browser_;
   // Helper that current has its DnsProbeStatus messages monitored.
-  CheckedPtr<NetErrorTabHelper> monitored_tab_helper_;
+  NetErrorTabHelper* monitored_tab_helper_;
 
   std::unique_ptr<base::RunLoop> awaiting_dns_probe_status_run_loop_;
   // Queue of statuses received but not yet consumed by WaitForSentStatus().

@@ -6,7 +6,6 @@
 #define NET_PROXY_RESOLUTION_MOCK_PAC_FILE_FETCHER_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/proxy_resolution/pac_file_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -44,7 +43,7 @@ class MockPacFileFetcher : public PacFileFetcher {
  private:
   GURL pending_request_url_;
   CompletionOnceCallback pending_request_callback_;
-  CheckedPtr<base::string16> pending_request_text_;
+  base::string16* pending_request_text_;
   base::OnceClosure on_fetch_complete_;
   bool is_shutdown_;
 };

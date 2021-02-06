@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/payments/content/payment_request.h"
@@ -124,7 +123,7 @@ class SheetView : public views::View, public views::FocusTraversable {
       first_focusable_ = nullptr;
   }
 
-  CheckedPtr<views::View> first_focusable_ = nullptr;
+  views::View* first_focusable_ = nullptr;
   std::unique_ptr<views::FocusSearch> focus_search_ =
       std::make_unique<views::FocusSearch>(/*root=*/this,
                                            /*cycle=*/true,
@@ -175,7 +174,7 @@ class BorderedScrollView : public views::ScrollView {
    private:
     SkColor color_;
     // The scroll view that owns the border that owns this painter.
-    CheckedPtr<BorderedScrollView> scroll_view_;
+    BorderedScrollView* scroll_view_;
   };
 
   BorderedScrollView() {

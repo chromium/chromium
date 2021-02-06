@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
@@ -155,7 +154,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(NavigateToURL(web_contents(), GetWebUIURL(kChromeUIGpuHost)));
     test_handler_ = new TestWebUIMessageHandler();
     web_contents()->GetWebUI()->AddMessageHandler(
-        base::WrapUnique(test_handler_.get()));
+        base::WrapUnique(test_handler_));
   }
 
  protected:
@@ -180,7 +179,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   base::SimpleTestTickClock clock_;
 
   // Owned by the WebUI associated with the WebContents.
-  CheckedPtr<TestWebUIMessageHandler> test_handler_ = nullptr;
+  TestWebUIMessageHandler* test_handler_ = nullptr;
 };
 
 }  // namespace

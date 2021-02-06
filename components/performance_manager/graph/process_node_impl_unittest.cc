@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/graph/process_node_impl.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/process/process.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -138,7 +137,7 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
   }
 
  private:
-  CheckedPtr<const ProcessNode> notified_process_node_ = nullptr;
+  const ProcessNode* notified_process_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

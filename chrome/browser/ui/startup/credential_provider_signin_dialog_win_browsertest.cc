@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/test_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -54,8 +53,8 @@ class CredentialProviderSigninDialogWinBaseTest : public InProcessBrowserTest {
   content::WebContents* web_contents() { return web_contents_; }
   virtual void WaitForDialogToLoad();
 
-  CheckedPtr<views::WebDialogView> web_view_ = nullptr;
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  views::WebDialogView* web_view_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
 };
 
 CredentialProviderSigninDialogWinBaseTest::

@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -73,9 +72,9 @@ class ManagedBookmarksTracker {
                            GURL* url,
                            const base::ListValue** children);
 
-  CheckedPtr<BookmarkModel> model_;
-  CheckedPtr<BookmarkPermanentNode> managed_node_;
-  CheckedPtr<PrefService> prefs_;
+  BookmarkModel* model_;
+  BookmarkPermanentNode* managed_node_;
+  PrefService* prefs_;
   PrefChangeRegistrar registrar_;
   GetManagementDomainCallback get_management_domain_callback_;
 

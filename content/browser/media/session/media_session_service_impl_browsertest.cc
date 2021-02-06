@@ -5,7 +5,6 @@
 #include "content/browser/media/session/media_session_service_impl.h"
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/media_session_player_observer.h"
@@ -81,7 +80,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
  private:
-  CheckedPtr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* render_frame_host_;
 };
 
 void NavigateToURLAndWaitForFinish(Shell* window, const GURL& url) {

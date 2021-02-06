@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
@@ -71,7 +70,7 @@ class NativeViewHostAura::ClippingWindowDelegate : public aura::WindowDelegate {
   void GetHitTestMask(SkPath* mask) const override {}
 
  private:
-  CheckedPtr<aura::Window> native_view_ = nullptr;
+  aura::Window* native_view_ = nullptr;
 };
 
 NativeViewHostAura::NativeViewHostAura(NativeViewHost* host) : host_(host) {}

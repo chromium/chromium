@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RAW_CLIPBOARD_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RAW_CLIPBOARD_HOST_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -52,7 +51,7 @@ class CONTENT_EXPORT RawClipboardHostImpl
   const GlobalFrameRoutingId render_frame_routing_id_;
 
   mojo::Receiver<blink::mojom::RawClipboardHost> receiver_;
-  const CheckedPtr<ui::Clipboard> clipboard_;  // Not owned.
+  ui::Clipboard* const clipboard_;  // Not owned.
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 };
 

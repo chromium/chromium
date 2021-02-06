@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -60,7 +59,8 @@ class WebAppDialogManager {
                  base::UniquePtrComparator>
       dialogs_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
+
 };
 
 }  // namespace web_app

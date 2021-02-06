@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
 #include "gpu/raster_export.h"
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
@@ -40,8 +39,8 @@ class RASTER_EXPORT ClientFontManager
  private:
   static constexpr SkDiscardableHandleId kInvalidSkDiscardableHandleId = -1;
 
-  CheckedPtr<Client> client_;
-  CheckedPtr<CommandBuffer> command_buffer_;
+  Client* client_;
+  CommandBuffer* command_buffer_;
 
   SkDiscardableHandleId last_allocated_handle_id_ = 0u;
   SkStrikeServer strike_server_;

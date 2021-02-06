@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
@@ -160,7 +159,7 @@ class TabModel {
   LocationBarModel* GetLocationBarModel();
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // The LiveTabContext associated with TabModel.
   // Used to restore closed tabs through the TabRestoreService.

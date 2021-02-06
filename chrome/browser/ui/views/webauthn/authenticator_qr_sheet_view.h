@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
@@ -31,7 +30,7 @@ class AuthenticatorQRSheetView : public AuthenticatorRequestSheetView {
   std::unique_ptr<views::View> BuildStepSpecificContent() override;
   void Update();
 
-  CheckedPtr<AuthenticatorQRViewCentered> qr_view_ = nullptr;
+  AuthenticatorQRViewCentered* qr_view_ = nullptr;
   const std::string qr_string_;
   base::RepeatingTimer timer_;
 

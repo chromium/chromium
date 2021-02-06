@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/test/mock_mojo_media_router.h"
 
@@ -392,7 +391,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   std::unique_ptr<mojo::Receiver<mojom::MediaRouter>> router_receiver_;
 
   TestDialMediaSinkServiceImpl mock_sink_service_;
-  CheckedPtr<TestDialActivityManager> activity_manager_ = nullptr;
+  TestDialActivityManager* activity_manager_ = nullptr;
   std::unique_ptr<DialMediaRouteProvider> provider_;
 
   MediaSinkInternal sink_ = CreateDialSink(1);

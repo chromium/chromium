@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node.h"
@@ -367,7 +366,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   //
   // Delegate.  This is a weak reference which owns |this|.
   //
-  CheckedPtr<AXPlatformNodeDelegate> delegate_ = nullptr;
+  AXPlatformNodeDelegate* delegate_ = nullptr;
 
   // Uses the delegate to calculate this node's PosInSet.
   base::Optional<int> GetPosInSet() const;

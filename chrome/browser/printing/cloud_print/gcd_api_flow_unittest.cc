@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -80,7 +79,7 @@ class GCDApiFlowTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<GCDApiFlowImpl> gcd_flow_;
-  CheckedPtr<MockDelegate> mock_delegate_;
+  MockDelegate* mock_delegate_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

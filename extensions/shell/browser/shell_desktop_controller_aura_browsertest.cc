@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -63,7 +62,7 @@ class ShellDesktopControllerAuraBrowserTest : public ShellApiTest {
     ShellApiTest::TearDownOnMainThread();
   }
 
-  CheckedPtr<ShellDesktopControllerAura> desktop_controller_ = nullptr;
+  ShellDesktopControllerAura* desktop_controller_ = nullptr;
   scoped_refptr<const Extension> app_;
 
  private:

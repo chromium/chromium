@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/hover_button.h"
 
@@ -73,9 +72,9 @@ class PageInfoHoverButton : public HoverButton {
 
   void UpdateAccessibleName();
 
-  CheckedPtr<views::StyledLabel> title_ = nullptr;
-  CheckedPtr<views::Label> subtitle_ = nullptr;
-  CheckedPtr<views::View> icon_view_ = nullptr;
+  views::StyledLabel* title_ = nullptr;
+  views::Label* subtitle_ = nullptr;
+  views::View* icon_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoHoverButton);
 };

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_MOCK_INPUT_ROUTER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_MOCK_INPUT_ROUTER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/input/input_router.h"
 
 #include "base/optional.h"
@@ -63,7 +62,7 @@ class MockInputRouter : public InputRouter {
   bool has_handlers_;
 
  private:
-  CheckedPtr<InputRouterClient> client_;
+  InputRouterClient* client_;
 
   DISALLOW_COPY_AND_ASSIGN(MockInputRouter);
 };

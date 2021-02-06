@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -108,7 +107,7 @@ class ReadingListNotificationServiceTest : public testing::Test {
   base::SimpleTestClock clock_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ReadingListModelImpl> reading_list_model_;
-  CheckedPtr<MockDelegate> delegate_;
+  MockDelegate* delegate_;
   MockNotificationScheduleService mock_schedule_service_;
   std::unique_ptr<ReadingListNotificationServiceImpl> service_;
 };

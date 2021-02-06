@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_SERVICE_WORKER_REGISTRATION_WAITER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_SERVICE_WORKER_REGISTRATION_WAITER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "url/gurl.h"
@@ -35,7 +34,7 @@ class ServiceWorkerRegistrationWaiter
   void OnRegistrationCompleted(const GURL& pattern) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
-  CheckedPtr<content::ServiceWorkerContext> service_worker_context_;
+  content::ServiceWorkerContext* service_worker_context_;
   const GURL url_;
   base::RunLoop run_loop_;
 

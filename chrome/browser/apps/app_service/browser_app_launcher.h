@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -63,7 +62,7 @@ class BrowserAppLauncher {
           callback);
 
  private:
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   web_app::WebAppLaunchManager web_app_launch_manager_;
 };
 

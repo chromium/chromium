@@ -10,8 +10,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
-
 namespace device {
 
 // An element of a HID report descriptor.
@@ -166,9 +164,9 @@ class HidReportDescriptorItem {
   size_t GetHeaderSize() const;
   size_t payload_size() const { return payload_size_; }
 
-  CheckedPtr<HidReportDescriptorItem> previous_;
-  CheckedPtr<HidReportDescriptorItem> next_;
-  CheckedPtr<HidReportDescriptorItem> parent_;
+  HidReportDescriptorItem* previous_;
+  HidReportDescriptorItem* next_;
+  HidReportDescriptorItem* parent_;
   Tag tag_;
   uint32_t shortData_;
   size_t payload_size_;

@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -46,8 +45,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) WifiStatusMonitor {
   void RecordStatus(const ReceiverResponse& response);
 
  private:
-  const CheckedPtr<MessageDispatcher>
-      message_dispatcher_;  // Outlives this class.
+  MessageDispatcher* const message_dispatcher_;  // Outlives this class.
 
   base::RepeatingTimer query_timer_;
 

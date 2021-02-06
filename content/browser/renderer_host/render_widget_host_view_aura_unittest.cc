@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -198,7 +197,7 @@ class TestWindowObserver : public aura::WindowObserver {
 
  private:
   // Window that we're observing, or nullptr if it's been destroyed.
-  CheckedPtr<aura::Window> window_;
+  aura::Window* window_;
 
   // Was |window_| destroyed?
   bool destroyed_;
@@ -248,7 +247,7 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
         delegated_frame_host_client_(
             new FakeDelegatedFrameHostClientAura(this)) {
     InstallDelegatedFrameHostClient(
-        this, base::WrapUnique(delegated_frame_host_client_.get()));
+        this, base::WrapUnique(delegated_frame_host_client_));
   }
 
   ~FakeRenderWidgetHostViewAura() override = default;
@@ -295,10 +294,10 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
   }
 
   gfx::Size last_frame_size_;
-  CheckedPtr<FakeWindowEventDispatcher> dispatcher_;
+  FakeWindowEventDispatcher* dispatcher_;
 
  private:
-  CheckedPtr<FakeDelegatedFrameHostClientAura> delegated_frame_host_client_;
+  FakeDelegatedFrameHostClientAura* delegated_frame_host_client_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeRenderWidgetHostViewAura);
 };
@@ -329,7 +328,7 @@ class FullscreenLayoutManager : public aura::LayoutManager {
   }
 
  private:
-  CheckedPtr<aura::Window> owner_;
+  aura::Window* owner_;
   DISALLOW_COPY_AND_ASSIGN(FullscreenLayoutManager);
 };
 
@@ -716,15 +715,15 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  CheckedPtr<RenderWidgetHostImpl> parent_host_;
-  CheckedPtr<RenderWidgetHostViewAura> parent_view_;
+  RenderWidgetHostImpl* parent_host_;
+  RenderWidgetHostViewAura* parent_view_;
 
   // Tests should set these to nullptr if they've already triggered their
   // destruction.
-  CheckedPtr<MockRenderWidgetHostImpl> widget_host_;
-  CheckedPtr<FakeRenderWidgetHostViewAura> view_;
+  MockRenderWidgetHostImpl* widget_host_;
+  FakeRenderWidgetHostViewAura* view_;
 
-  CheckedPtr<IPC::TestSink> sink_ = nullptr;
+  IPC::TestSink* sink_ = nullptr;
   base::test::ScopedFeatureList mojo_feature_list_;
   base::test::ScopedFeatureList feature_list_;
 
@@ -5705,7 +5704,7 @@ class RenderWidgetHostViewAuraWithViewHarnessTest
   }
 
  private:
-  CheckedPtr<RenderWidgetHostViewAura> view_;
+  RenderWidgetHostViewAura* view_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraWithViewHarnessTest);
 };
@@ -5929,16 +5928,16 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     view_->Show();
   }
 
-  CheckedPtr<MockRenderWidgetHostImpl> widget_host_for_first_process_;
-  CheckedPtr<TestRenderWidgetHostView> view_for_first_process_;
+  MockRenderWidgetHostImpl* widget_host_for_first_process_;
+  TestRenderWidgetHostView* view_for_first_process_;
   std::unique_ptr<MockRenderProcessHost> second_process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> second_agent_scheduling_group_host_;
-  CheckedPtr<MockRenderWidgetHostImpl> widget_host_for_second_process_;
-  CheckedPtr<TestRenderWidgetHostView> view_for_second_process_;
+  MockRenderWidgetHostImpl* widget_host_for_second_process_;
+  TestRenderWidgetHostView* view_for_second_process_;
   std::unique_ptr<MockRenderProcessHost> third_process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> third_agent_scheduling_group_host_;
-  CheckedPtr<MockRenderWidgetHostImpl> widget_host_for_third_process_;
-  CheckedPtr<TestRenderWidgetHostView> view_for_third_process_;
+  MockRenderWidgetHostImpl* widget_host_for_third_process_;
+  TestRenderWidgetHostView* view_for_third_process_;
 
   DISALLOW_COPY_AND_ASSIGN(InputMethodAuraTestBase);
 };
@@ -6476,8 +6475,8 @@ class RenderWidgetHostViewAuraInputMethodTest
 
  protected:
   // Not owned.
-  CheckedPtr<ui::MockInputMethod> input_method_ = nullptr;
-  CheckedPtr<const ui::TextInputClient> text_input_client_;
+  ui::MockInputMethod* input_method_ = nullptr;
+  const ui::TextInputClient* text_input_client_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraInputMethodTest);
 };
@@ -6609,8 +6608,7 @@ class RenderWidgetHostViewAuraKeyboardTest
 
  private:
   // Not owned.
-  CheckedPtr<RenderWidgetHostViewAuraKeyboardMockInputMethod> input_method_ =
-      nullptr;
+  RenderWidgetHostViewAuraKeyboardMockInputMethod* input_method_ = nullptr;
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraKeyboardTest);
 };
 
@@ -6873,7 +6871,7 @@ class DelegatedInkPointTest
   // The real compositor that was contained by the |view_| and must be replaced
   // before tear down, and the mock compositor used for getting the delegated
   // ink points.
-  CheckedPtr<ui::Compositor> real_compositor_;
+  ui::Compositor* real_compositor_;
   std::unique_ptr<MockCompositor> compositor_;
 };
 

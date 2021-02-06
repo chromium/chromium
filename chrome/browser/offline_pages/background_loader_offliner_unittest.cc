@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -180,7 +179,7 @@ class TestBackgroundLoaderOffliner : public BackgroundLoaderOffliner {
       content::WebContents* web_contents) override;
   content::PageType GetPageType(content::WebContents* web_contents) override;
 
-  CheckedPtr<background_loader::BackgroundLoaderContentsStub> stub_;
+  background_loader::BackgroundLoaderContentsStub* stub_;
   std::unique_ptr<VisibleSecurityState> custom_visible_security_state_;
   content::PageType page_type_ = content::PageType::PAGE_TYPE_NORMAL;
 };
@@ -297,9 +296,9 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
   content::RenderViewHostTestEnabler rvhte_;
   TestingProfile profile_;
   std::unique_ptr<OfflinerPolicy> policy_;
-  CheckedPtr<TestLoadTerminationListener> load_termination_listener_;
+  TestLoadTerminationListener* load_termination_listener_;
   std::unique_ptr<TestBackgroundLoaderOffliner> offliner_;
-  CheckedPtr<MockOfflinePageModel> model_;
+  MockOfflinePageModel* model_;
   bool completion_callback_called_;
   bool cancel_callback_called_;
   bool can_download_callback_called_;

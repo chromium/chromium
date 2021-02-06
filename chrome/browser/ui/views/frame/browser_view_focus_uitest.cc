@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
 #include "base/macros.h"
@@ -129,7 +128,7 @@ class FocusedViewClassRecorder : public views::FocusChangeListener {
     focus_classes_.push_back(class_name);
   }
 
-  CheckedPtr<views::FocusManager> focus_manager_;
+  views::FocusManager* focus_manager_;
   std::vector<std::string> focus_classes_;
 
   DISALLOW_COPY_AND_ASSIGN(FocusedViewClassRecorder);

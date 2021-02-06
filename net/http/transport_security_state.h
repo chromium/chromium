@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -695,9 +694,9 @@ class NET_EXPORT TransportSecurityState {
   PKPStateMap enabled_pkp_hosts_;
   ExpectCTStateMap enabled_expect_ct_hosts_;
 
-  CheckedPtr<Delegate> delegate_ = nullptr;
+  Delegate* delegate_ = nullptr;
 
-  CheckedPtr<ReportSenderInterface> report_sender_ = nullptr;
+  ReportSenderInterface* report_sender_ = nullptr;
 
   // True if static pins should be used.
   bool enable_static_pins_;
@@ -708,9 +707,9 @@ class NET_EXPORT TransportSecurityState {
   // True if public key pinning bypass is enabled for local trust anchors.
   bool enable_pkp_bypass_for_local_trust_anchors_;
 
-  CheckedPtr<ExpectCTReporter> expect_ct_reporter_ = nullptr;
+  ExpectCTReporter* expect_ct_reporter_ = nullptr;
 
-  CheckedPtr<RequireCTDelegate> require_ct_delegate_ = nullptr;
+  RequireCTDelegate* require_ct_delegate_ = nullptr;
 
   // Keeps track of reports that have been sent recently for
   // rate-limiting.

@@ -183,7 +183,7 @@ void NonClientView::SetOverlayView(View* view) {
 
   overlay_view_ = view;
   if (parent())
-    AddChildView(overlay_view_.get());
+    AddChildView(overlay_view_);
 }
 
 CloseRequestResult NonClientView::OnWindowCloseRequested() {
@@ -303,9 +303,9 @@ void NonClientView::ViewHierarchyChanged(
   // constructor.
   if (details.is_add && GetWidget() && details.child == this) {
     AddChildViewAt(frame_view_.get(), kFrameViewIndex);
-    AddChildViewAt(client_view_.get(), kClientViewIndex);
+    AddChildViewAt(client_view_, kClientViewIndex);
     if (overlay_view_)
-      AddChildView(overlay_view_.get());
+      AddChildView(overlay_view_);
   }
 }
 

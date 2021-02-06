@@ -384,14 +384,14 @@ bool AndroidProviderBackend::UpdateHistoryAndBookmarks(
   if (changed_urls) {
     DCHECK(!changed_urls->empty());
     notifications->push_back(base::BindOnce(&RunNotifyURLsModified,
-                                            base::Unretained(notifier_.get()),
+                                            base::Unretained(notifier_),
                                             base::Passed(&changed_urls)));
   }
 
   if (favicon) {
     DCHECK(!favicon->empty());
     notifications->push_back(base::BindOnce(&RunNotifyFaviconChanged,
-                                            base::Unretained(notifier_.get()),
+                                            base::Unretained(notifier_),
                                             base::Passed(&favicon)));
   }
 
@@ -433,13 +433,13 @@ AndroidURLID AndroidProviderBackend::InsertHistoryAndBookmark(
   }
 
   notifications->push_back(base::BindOnce(&RunNotifyURLsModified,
-                                          base::Unretained(notifier_.get()),
+                                          base::Unretained(notifier_),
                                           base::Passed(&changed_urls)));
 
   if (favicon) {
     DCHECK(!favicon->empty());
     notifications->push_back(base::BindOnce(&RunNotifyFaviconChanged,
-                                            base::Unretained(notifier_.get()),
+                                            base::Unretained(notifier_),
                                             base::Passed(&favicon)));
   }
 
@@ -1097,16 +1097,16 @@ bool AndroidProviderBackend::SimulateUpdateURL(
   changed_urls->push_back(new_url_row);
 
   notifications->push_back(base::BindOnce(&RunNotifyURLsDeleted,
-                                          base::Unretained(notifier_.get()),
+                                          base::Unretained(notifier_),
                                           base::Passed(&deleted_rows)));
   if (favicons) {
     DCHECK(!favicons->empty());
     notifications->push_back(base::BindOnce(&RunNotifyFaviconChanged,
-                                            base::Unretained(notifier_.get()),
+                                            base::Unretained(notifier_),
                                             base::Passed(&favicons)));
   }
   notifications->push_back(base::BindOnce(&RunNotifyURLsModified,
-                                          base::Unretained(notifier_.get()),
+                                          base::Unretained(notifier_),
                                           base::Passed(&changed_urls)));
 
   return true;
@@ -1177,12 +1177,12 @@ bool AndroidProviderBackend::DeleteHistoryInternal(
   }
 
   notifications->push_back(base::BindOnce(&RunNotifyURLsDeleted,
-                                          base::Unretained(notifier_.get()),
+                                          base::Unretained(notifier_),
                                           base::Passed(&deleted_rows)));
   if (favicons) {
     DCHECK(!favicons->empty());
     notifications->push_back(base::BindOnce(&RunNotifyFaviconChanged,
-                                            base::Unretained(notifier_.get()),
+                                            base::Unretained(notifier_),
                                             base::Passed(&favicons)));
   }
   return true;

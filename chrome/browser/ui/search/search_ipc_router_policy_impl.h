@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SEARCH_SEARCH_IPC_ROUTER_POLICY_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/search/search_ipc_router.h"
 
@@ -72,7 +71,7 @@ class SearchIPCRouterPolicyImpl : public SearchIPCRouter::Policy {
     is_incognito_ = is_incognito;
   }
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   bool is_incognito_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchIPCRouterPolicyImpl);

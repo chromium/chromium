@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -73,7 +72,7 @@ class FontSettingsEventRouter {
   FontPrefChangeNotifier::Registrar font_change_registrar_;
 
   // Weak, owns us (transitively via ExtensionService).
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(FontSettingsEventRouter);
 };

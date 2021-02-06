@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -143,30 +142,30 @@ class BrowserViewLayout : public views::LayoutManager {
   gfx::NativeView const host_view_;
 
   // The owning browser view.
-  const CheckedPtr<BrowserView> browser_view_;
+  BrowserView* const browser_view_;
 
   // Child views that the layout manager manages.
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
-  const CheckedPtr<views::View> top_container_;
-  const CheckedPtr<TabStripRegionView> tab_strip_region_view_;
-  const CheckedPtr<views::View> toolbar_;
-  const CheckedPtr<InfoBarContainerView> infobar_container_;
-  const CheckedPtr<views::View> contents_container_;
-  const CheckedPtr<views::View> side_panel_;
-  const CheckedPtr<ImmersiveModeController> immersive_mode_controller_;
-  const CheckedPtr<views::View> web_footer_experiment_;
-  const CheckedPtr<views::View> contents_separator_;
+  views::View* const top_container_;
+  TabStripRegionView* const tab_strip_region_view_;
+  views::View* const toolbar_;
+  InfoBarContainerView* const infobar_container_;
+  views::View* const contents_container_;
+  views::View* const side_panel_;
+  ImmersiveModeController* const immersive_mode_controller_;
+  views::View* const web_footer_experiment_;
+  views::View* const contents_separator_;
 
-  CheckedPtr<views::View> webui_tab_strip_ = nullptr;
-  CheckedPtr<views::View> loading_bar_ = nullptr;
-  CheckedPtr<TabStrip> tab_strip_ = nullptr;
-  CheckedPtr<BookmarkBarView> bookmark_bar_ = nullptr;
-  CheckedPtr<views::View> download_shelf_ = nullptr;
+  views::View* webui_tab_strip_ = nullptr;
+  views::View* loading_bar_ = nullptr;
+  TabStrip* tab_strip_ = nullptr;
+  BookmarkBarView* bookmark_bar_ = nullptr;
+  views::View* download_shelf_ = nullptr;
 
   // The widget displaying a border on top of contents container for
   // highlighting the content. Not created by default.
-  CheckedPtr<views::Widget> contents_border_widget_ = nullptr;
+  views::Widget* contents_border_widget_ = nullptr;
 
   // The bounds within which the vertically-stacked contents of the BrowserView
   // should be laid out within. This is just the local bounds of the

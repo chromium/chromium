@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "content/public/browser/url_data_source.h"
@@ -52,7 +51,7 @@ class ThemeSource : public content::URLDataSource {
                       float scale);
 
   // The profile this object was initialized with.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Whether this source services chrome-unstrusted://theme.
   bool serve_untrusted_;

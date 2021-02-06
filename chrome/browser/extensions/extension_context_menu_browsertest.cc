@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -60,7 +59,7 @@ class StateStoreObserver : public StateStore::TestObserver {
  public:
   explicit StateStoreObserver(content::BrowserContext* context)
       : state_store_(extensions::ExtensionSystem::Get(context)->state_store()) {
-    observed_.Add(state_store_.get());
+    observed_.Add(state_store_);
   }
 
   ~StateStoreObserver() final = default;
@@ -89,7 +88,7 @@ class StateStoreObserver : public StateStore::TestObserver {
   }
 
  private:
-  const CheckedPtr<StateStore> state_store_;
+  StateStore* const state_store_;
   std::set<std::string> ids_with_writes_;
   std::string waiting_for_id_;
   base::RunLoop run_loop_;

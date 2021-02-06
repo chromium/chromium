@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -187,7 +186,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerParams {
       video_frame_compositor_task_runner_;
   AdjustAllocatedMemoryCB adjust_allocated_memory_cb_;
 
-  CheckedPtr<blink::WebContentDecryptionModule> initial_cdm_;
+  blink::WebContentDecryptionModule* initial_cdm_;
   RequestRoutingTokenCallback request_routing_token_cb_;
   base::WeakPtr<MediaObserver> media_observer_;
   bool enable_instant_source_buffer_gc_;

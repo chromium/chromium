@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_allowlist.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -77,7 +76,7 @@ class ExtensionAllowlistUnitTest : public ExtensionServiceTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<ExtensionPrefs> extension_prefs_;
+  ExtensionPrefs* extension_prefs_;
 };
 
 TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {

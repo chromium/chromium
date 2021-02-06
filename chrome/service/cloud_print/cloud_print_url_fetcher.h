@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/url_request/url_fetcher.h"
@@ -160,7 +159,7 @@ class CloudPrintURLFetcher
   void SetupRequestHeaders();
 
   std::unique_ptr<net::URLFetcher> request_;
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
   int num_retries_;
   std::string additional_accept_header_;
   std::string post_data_mime_type_;

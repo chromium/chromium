@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -42,7 +41,7 @@ class SaveAddressProfileBubbleControllerTest : public DialogBrowserTest {
   SaveAddressProfileBubbleController* controller() { return controller_; }
 
  private:
-  CheckedPtr<SaveAddressProfileBubbleController> controller_ = nullptr;
+  SaveAddressProfileBubbleController* controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/download/public/background_service/client.h"
 
 class Profile;
@@ -47,7 +46,7 @@ class PredictionModelDownloadClient : public download::Client {
   // Returns the PredictionModelDownloadManager for the profile.
   PredictionModelDownloadManager* GetPredictionModelDownloadManager();
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace optimization_guide

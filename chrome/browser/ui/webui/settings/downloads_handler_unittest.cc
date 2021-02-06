@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/downloads_handler.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -27,7 +26,7 @@ class DownloadsHandlerTest : public testing::Test {
       : download_manager_(new content::MockDownloadManager()),
         handler_(&profile_) {
     content::BrowserContext::SetDownloadManagerForTesting(
-        &profile_, base::WrapUnique(download_manager_.get()));
+        &profile_, base::WrapUnique(download_manager_));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
         std::make_unique<ChromeDownloadManagerDelegate>(&profile_);
     chrome_download_manager_delegate_ = delegate.get();
@@ -79,10 +78,9 @@ class DownloadsHandlerTest : public testing::Test {
   content::TestWebUI test_web_ui_;
   TestingProfile profile_;
 
-  CheckedPtr<DownloadCoreService> service_;
-  CheckedPtr<content::MockDownloadManager>
-      download_manager_;  // Owned by |profile_|.
-  CheckedPtr<ChromeDownloadManagerDelegate> chrome_download_manager_delegate_;
+  DownloadCoreService* service_;
+  content::MockDownloadManager* download_manager_;  // Owned by |profile_|.
+  ChromeDownloadManagerDelegate* chrome_download_manager_delegate_;
 
   DownloadsHandler handler_;
 };

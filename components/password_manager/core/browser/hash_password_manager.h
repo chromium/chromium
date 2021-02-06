@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -66,7 +65,7 @@ class HashPasswordManager {
   // Encrypts and saves |password_hash_data| to prefs. Returns true on success.
   bool EncryptAndSave(const PasswordHashData& password_hash_data);
 
-  CheckedPtr<PrefService> prefs_ = nullptr;
+  PrefService* prefs_ = nullptr;
 
   // Callbacks when |kPasswordHashDataList| might have changed.
   // Should only be accessed on the UI thread. The callback is only called when

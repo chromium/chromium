@@ -65,7 +65,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/util/type_safety/id_type.h"
 
@@ -170,7 +169,7 @@ class VoteReceipt final {
 
   // A back-pointer to the accepted vote, so that it can be notified when this
   // receipt is destroyed.
-  CheckedPtr<AcceptedVote<VoteImpl>> vote_ = nullptr;
+  AcceptedVote<VoteImpl>* vote_ = nullptr;
 };
 
 // A move-only wrapper for a vote and its associated receipt. AcceptedVotes
@@ -247,19 +246,19 @@ class AcceptedVote final {
   void Take(AcceptedVote&& rhs);
 
   // The consumer that accepted the vote.
-  CheckedPtr<VoteConsumer<VoteImpl>> consumer_ = nullptr;
+  VoteConsumer<VoteImpl>* consumer_ = nullptr;
 
   // The ID of the voter that submitted the vote. This is defined by the
   // VoteConsumer.
   VoterId<VoteImpl> voter_id_;
 
-  CheckedPtr<const ContextType> context_ = nullptr;
+  const ContextType* context_ = nullptr;
 
   // The vote that is being wrapped.
   VoteImpl vote_;
 
   // The associated vote receipt.
-  CheckedPtr<VoteReceipt<VoteImpl>> receipt_ = nullptr;
+  VoteReceipt<VoteImpl>* receipt_ = nullptr;
 
   // Set to true when an associated receipt is destroyed.
   bool invalidated_ = true;
@@ -311,7 +310,7 @@ class VotingChannel final {
 
   // Used to reach back into the factory to decrement the outstanding
   // VotingChannel count, and for routing votes to the consumer.
-  CheckedPtr<VotingChannelFactory<VoteImpl>> factory_ = nullptr;
+  VotingChannelFactory<VoteImpl>* factory_ = nullptr;
   VoterId<VoteImpl> voter_id_;
 };
 
@@ -347,7 +346,7 @@ class VotingChannelFactory final {
 
  private:
   // The consumer that owns this factory.
-  CheckedPtr<VoteConsumer<VoteImpl>> consumer_ = nullptr;
+  VoteConsumer<VoteImpl>* consumer_ = nullptr;
 
   // The number of voting channels issued, and the number that remain
   // outstanding.
@@ -444,7 +443,7 @@ class VoteConsumerDefaultImpl : public VoteConsumer<VoteImpl> {
                        AcceptedVote<VoteImpl>* vote) override;
 
  private:
-  CheckedPtr<VoteObserver<VoteImpl>> vote_observer_;
+  VoteObserver<VoteImpl>* vote_observer_;
 
   VotingChannelFactory<VoteImpl> voting_channel_factory_;
 

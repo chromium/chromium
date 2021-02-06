@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
@@ -162,13 +161,13 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
 
   // Weak pointer into rule_registries_ to make it easier to handle content rule
   // conditions.
-  CheckedPtr<ContentRulesRegistry> content_rules_registry_;
+  ContentRulesRegistry* content_rules_registry_;
 
   // Listen to extension load, unloaded notification.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

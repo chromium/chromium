@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sessions/session_restore.h"
 
 namespace extensions {
@@ -25,7 +24,7 @@ class StateStoreNotificationObserver {
   // Called when a session restore has finished.
   void OnSessionRestoreDone(int num_tabs_restored);
 
-  CheckedPtr<StateStore> state_store_;  // Not owned.
+  StateStore* state_store_;  // Not owned.
 
   // Points to the on-session-restored callback that was registered with
   // SessionRestore's callback list. When objects of this class are destroyed,

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_PAGE_DISCARDING_UTILS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_PAGE_DISCARDING_UTILS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -59,7 +58,7 @@ class GraphTestHarnessWithMockDiscarder : public GraphTestHarness {
   testing::MockPageDiscarder* discarder() { return mock_discarder_; }
 
  private:
-  CheckedPtr<testing::MockPageDiscarder> mock_discarder_;
+  testing::MockPageDiscarder* mock_discarder_;
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       page_node_;
   performance_manager::TestNodeWrapper<performance_manager::ProcessNodeImpl>

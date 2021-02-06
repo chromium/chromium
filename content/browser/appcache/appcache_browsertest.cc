@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -269,7 +268,7 @@ class LoaderFactoryInterceptingBrowserClient : public TestContentBrowserClient {
    private:
     mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
     url::Origin request_initiator_;
-    CheckedPtr<LoaderFactoryInterceptingBrowserClient> client_;
+    LoaderFactoryInterceptingBrowserClient* client_;
     mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
   };
 

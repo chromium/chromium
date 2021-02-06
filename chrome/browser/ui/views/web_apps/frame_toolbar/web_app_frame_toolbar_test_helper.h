@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_
 
-#include "base/memory/checked_ptr.h"
-
 class Browser;
 class BrowserNonClientFrameView;
 class BrowserView;
@@ -32,10 +30,10 @@ class WebAppFrameToolbarTestHelper {
   }
 
  private:
-  CheckedPtr<Browser> app_browser_ = nullptr;
-  CheckedPtr<BrowserView> browser_view_ = nullptr;
-  CheckedPtr<BrowserNonClientFrameView> frame_view_ = nullptr;
-  CheckedPtr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
+  Browser* app_browser_ = nullptr;
+  BrowserView* browser_view_ = nullptr;
+  BrowserNonClientFrameView* frame_view_ = nullptr;
+  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_

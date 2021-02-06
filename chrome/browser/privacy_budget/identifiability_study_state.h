@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PRIVACY_BUDGET_IDENTIFIABILITY_STUDY_STATE_H_
 
 #include "base/containers/mru_cache.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
@@ -135,7 +134,7 @@ class IdentifiabilityStudyState {
   bool DecideSurfaceInclusion(blink::IdentifiableSurface surface);
 
   // Used for persisting active and retired lists.
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // Contains kIdentifiabilityStudyGeneration. After the constructor runs, this
   // will also be the study generation corresponding to persisted state.

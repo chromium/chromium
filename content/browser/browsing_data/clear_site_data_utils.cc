@@ -4,7 +4,6 @@
 
 #include "content/public/browser/clear_site_data_utils.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,7 +41,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
         remover_(nullptr) {
     remover_ = BrowserContext::GetBrowsingDataRemover(browser_context);
     DCHECK(remover_);
-    scoped_observation_.Observe(remover_.get());
+    scoped_observation_.Observe(remover_);
   }
 
   ~SiteDataClearer() override {
@@ -128,7 +127,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
   bool avoid_closing_connections_;
   base::OnceClosure callback_;
   int pending_task_count_;
-  CheckedPtr<BrowsingDataRemover> remover_;
+  BrowsingDataRemover* remover_;
   base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemover::Observer>
       scoped_observation_{this};
 };

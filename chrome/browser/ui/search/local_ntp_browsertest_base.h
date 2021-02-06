@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/common/search/instant_types.h"
@@ -40,7 +39,7 @@ class TestInstantServiceObserver : public InstantServiceObserver {
   void MostVisitedInfoChanged(
       const InstantMostVisitedInfo& most_visited_info) override;
 
-  const CheckedPtr<InstantService> service_;
+  InstantService* const service_;
 
   std::vector<InstantMostVisitedItem> items_;
   NtpTheme theme_;

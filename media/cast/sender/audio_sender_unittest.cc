@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
@@ -110,7 +109,7 @@ class AudioSenderTest : public ::testing::Test {
     transport_ = new TestPacketSender();
     transport_sender_.reset(new CastTransportImpl(
         &testing_clock_, base::TimeDelta(), std::make_unique<TransportClient>(),
-        base::WrapUnique(transport_.get()), task_runner_));
+        base::WrapUnique(transport_), task_runner_));
     OperationalStatus operational_status = STATUS_UNINITIALIZED;
     audio_sender_.reset(new AudioSender(
         cast_environment_, audio_config_,
@@ -123,7 +122,7 @@ class AudioSenderTest : public ::testing::Test {
   ~AudioSenderTest() override = default;
 
   base::SimpleTestTickClock testing_clock_;
-  CheckedPtr<TestPacketSender> transport_;  // Owned by CastTransport.
+  TestPacketSender* transport_;  // Owned by CastTransport.
   std::unique_ptr<CastTransportImpl> transport_sender_;
   scoped_refptr<FakeSingleThreadTaskRunner> task_runner_;
   std::unique_ptr<AudioSender> audio_sender_;

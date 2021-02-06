@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/test_shared_image_backing.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -30,7 +29,7 @@ class TestSharedImageRepresentationGLTexture
   }
 
  private:
-  const CheckedPtr<gles2::Texture> texture_;
+  gles2::Texture* const texture_;
 };
 
 class TestSharedImageRepresentationGLTexturePassthrough

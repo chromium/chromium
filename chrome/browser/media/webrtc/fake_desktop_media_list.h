@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 
 class FakeDesktopMediaList : public DesktopMediaList {
@@ -34,7 +33,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
 
  private:
   std::vector<Source> sources_;
-  CheckedPtr<DesktopMediaListObserver> observer_;
+  DesktopMediaListObserver* observer_;
   gfx::ImageSkia thumbnail_;
   const content::DesktopMediaID::Type type_;
 

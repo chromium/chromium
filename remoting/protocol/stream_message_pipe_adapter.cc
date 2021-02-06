@@ -40,12 +40,11 @@ void StreamMessagePipeAdapter::Start(EventHandler* event_handler) {
                                 base::Unretained(this)));
 
   reader_ = std::make_unique<MessageReader>();
-  reader_->StartReading(
-      socket_.get(),
-      base::BindRepeating(&EventHandler::OnMessageReceived,
-                          base::Unretained(event_handler_.get())),
-      base::BindOnce(&StreamMessagePipeAdapter::CloseOnError,
-                     base::Unretained(this)));
+  reader_->StartReading(socket_.get(),
+                        base::BindRepeating(&EventHandler::OnMessageReceived,
+                                            base::Unretained(event_handler_)),
+                        base::BindOnce(&StreamMessagePipeAdapter::CloseOnError,
+                                       base::Unretained(this)));
 
   event_handler_->OnMessagePipeOpen();
 }

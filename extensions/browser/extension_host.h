@@ -13,7 +13,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/public/browser/media_stream_request.h"
@@ -172,13 +171,13 @@ class ExtensionHost : public DeferredStartRenderHost,
   std::unique_ptr<ExtensionHostDelegate> delegate_;
 
   // The extension that we're hosting in this view.
-  CheckedPtr<const Extension> extension_;
+  const Extension* extension_;
 
   // Id of extension that we're hosting in this view.
   const std::string extension_id_;
 
   // The browser context that this host is tied to.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // The host for our HTML content.
   std::unique_ptr<content::WebContents> host_contents_;

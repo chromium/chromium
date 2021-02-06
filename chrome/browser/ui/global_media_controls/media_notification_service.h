@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -250,7 +249,7 @@ class MediaNotificationService
 
     void MarkActiveIfNecessary();
 
-    CheckedPtr<MediaNotificationService> owner_;
+    MediaNotificationService* owner_;
     const std::string id_;
     std::unique_ptr<media_message_center::MediaSessionNotificationItem> item_;
 

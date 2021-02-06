@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -125,7 +124,7 @@ class VideoEncodeAcceleratorAdapter::SharedMemoryPool
   ~SharedMemoryPool() = default;
 
   size_t region_size_;
-  CheckedPtr<GpuVideoAcceleratorFactories> gpu_factories_;
+  GpuVideoAcceleratorFactories* gpu_factories_;
   std::vector<base::UnsafeSharedMemoryRegion> regions_;
   std::vector<base::WritableSharedMemoryMapping> mappings_;
   std::vector<int32_t> free_buffer_ids_;

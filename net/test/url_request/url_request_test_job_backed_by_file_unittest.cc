@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "net/test/url_request/url_request_test_job_backed_by_file.h"
-#include "base/memory/checked_ptr.h"
 
 #include <memory>
 
@@ -80,10 +79,10 @@ class TestURLRequestTestJobBackedByFile : public URLRequestTestJobBackedByFile {
 
   void DoneReading() override { *done_reading_ = true; }
 
-  const CheckedPtr<int> open_result_;
-  const CheckedPtr<int64_t> seek_position_;
-  CheckedPtr<bool> done_reading_;
-  const CheckedPtr<std::string> observed_content_;
+  int* const open_result_;
+  int64_t* const seek_position_;
+  bool* done_reading_;
+  std::string* const observed_content_;
 };
 
 // Helper function to create a file at |path| filled with |content|.

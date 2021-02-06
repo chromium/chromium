@@ -16,7 +16,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
@@ -528,7 +527,7 @@ class ExtensionPrinterHandlerTest : public testing::Test {
   std::unique_ptr<ExtensionPrinterHandler> extension_printer_handler_;
 
   // Owned by |extension_printer_handler_|.
-  CheckedPtr<FakePwgRasterConverter> pwg_raster_converter_ = nullptr;
+  FakePwgRasterConverter* pwg_raster_converter_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ExtensionPrinterHandlerTest);

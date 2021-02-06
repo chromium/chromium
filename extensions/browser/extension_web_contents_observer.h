@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 
@@ -114,7 +113,7 @@ class ExtensionWebContentsObserver
                  const ExtensionHostMsg_Request_Params& params);
 
   // The BrowserContext associated with the WebContents being observed.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   ExtensionFunctionDispatcher dispatcher_;
 

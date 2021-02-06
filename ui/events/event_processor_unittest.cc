@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,8 +144,8 @@ class ReDispatchEventHandler : public TestEventHandler {
   }
 
  private:
-  CheckedPtr<EventProcessor> processor_;
-  CheckedPtr<EventTarget> expected_target_;
+  EventProcessor* processor_;
+  EventTarget* expected_target_;
 
   DISALLOW_COPY_AND_ASSIGN(ReDispatchEventHandler);
 };

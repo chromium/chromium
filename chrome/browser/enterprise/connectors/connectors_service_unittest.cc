@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -91,7 +90,7 @@ class ConnectorsServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
 };
 
 class ConnectorsServiceAnalysisNoFeatureTest

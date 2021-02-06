@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -139,7 +138,7 @@ class P2PSocketManager::DnsRequest {
   }
 
   std::string host_name_;
-  CheckedPtr<net::HostResolver> resolver_;
+  net::HostResolver* resolver_;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request_;
 
   DoneCallback done_callback_;

@@ -481,7 +481,7 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
     // `accessibility_alert_` to inform screen readers about thatchange.
     accessibility_alert_ =
         root_view->AddChildView(std::make_unique<views::View>());
-    AddChildView(accessibility_alert_.get());
+    AddChildView(accessibility_alert_);
   }
 
   {

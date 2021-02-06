@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
@@ -100,8 +99,8 @@ class LevelDBScope::UndoLogWriter : public leveldb::WriteBatch::Handler {
   const leveldb::Status& error() const { return error_; }
 
  private:
-  const CheckedPtr<LevelDBScope> scope_;
-  const CheckedPtr<leveldb::DB> db_;
+  LevelDBScope* const scope_;
+  leveldb::DB* const db_;
   std::string read_buffer_;
   leveldb::Status error_ = leveldb::Status::OK();
 };

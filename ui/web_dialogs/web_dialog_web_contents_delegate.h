@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
 
@@ -75,7 +74,7 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
 
  private:
   // Weak pointer.  Always an original profile.
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   std::unique_ptr<WebContentsHandler> const handler_;
 

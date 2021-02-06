@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -125,7 +124,7 @@ class NET_EXPORT SSLClientSessionCache {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
   Config config_;
   base::MRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_;

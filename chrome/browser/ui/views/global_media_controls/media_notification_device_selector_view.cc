@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,7 +39,7 @@ class ExpandDeviceSelectorButton : public IconLabelBubbleView {
 
  private:
   bool ShouldShowSeparator() const override { return false; }
-  CheckedPtr<IconLabelBubbleView::Delegate> delegate_;
+  IconLabelBubbleView::Delegate* delegate_;
 };
 
 }  // anonymous namespace

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -84,7 +83,7 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  CheckedPtr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  sync_preferences::TestingPrefServiceSyncable* pref_service_;
   std::unique_ptr<ExtensionManagement> settings_;
 
   PermissionsBasedManagementPolicyProvider provider_;
@@ -115,7 +114,7 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
 
   // Blocks kProxy by default. The test extension should still be allowed.
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.AddBlockedPermission("*",
                               GetAPIPermissionName(APIPermission::kProxy));
   }
@@ -125,7 +124,7 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
 
   // Blocks kCookie this time. The test extension should not be allowed now.
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.AddBlockedPermission("*",
                               GetAPIPermissionName(APIPermission::kCookie));
   }
@@ -135,7 +134,7 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
 
   // Explictly allows kCookie for test extension. It should be allowed again.
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.AddAllowedPermission(extension->id(),
                               GetAPIPermissionName(APIPermission::kCookie));
   }
@@ -145,7 +144,7 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
 
   // Explictly blocks kCookie for test extension. It should still be allowed.
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.AddBlockedPermission(extension->id(),
                               GetAPIPermissionName(APIPermission::kCookie));
   }
@@ -155,7 +154,7 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
 
   // Any extension specific definition overrides all defaults, even if blank.
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.UnsetBlockedPermissions(extension->id());
     pref.UnsetAllowedPermissions(extension->id());
     pref.ClearBlockedPermissions("*");
@@ -168,7 +167,7 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
 
   // Blocks kDownloads by default. It should be blocked.
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.UnsetPerExtensionSettings(extension->id());
     pref.UnsetPerExtensionSettings(extension->id());
     pref.ClearBlockedPermissions("*");
@@ -186,7 +185,7 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
   const std::string blocked_install_message =
       "Visit https://example.com/exception";
   {
-    PrefUpdater pref(pref_service_.get());
+    PrefUpdater pref(pref_service_);
     pref.UnsetPerExtensionSettings(extension->id());
     pref.UnsetPerExtensionSettings(extension->id());
     pref.SetBlockedInstallMessage(extension->id(), blocked_install_message);

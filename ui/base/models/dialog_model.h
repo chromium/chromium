@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/types/pass_key.h"
 #include "ui/base/models/dialog_model_field.h"
@@ -337,7 +336,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   void AddField(std::unique_ptr<DialogModelField> field);
 
   std::unique_ptr<DialogModelDelegate> delegate_;
-  CheckedPtr<DialogModelHost> host_ = nullptr;
+  DialogModelHost* host_ = nullptr;
 
   base::Optional<bool> override_show_close_button_;
   bool close_on_deactivate_ = true;

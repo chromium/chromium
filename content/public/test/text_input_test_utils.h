@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "content/public/test/test_utils.h"
@@ -282,7 +281,7 @@ class TextInputStateSender {
 
  private:
   ui::mojom::TextInputStatePtr text_input_state_;
-  const CheckedPtr<RenderWidgetHostViewBase> view_;
+  RenderWidgetHostViewBase* const view_;
 
   DISALLOW_COPY_AND_ASSIGN(TextInputStateSender);
 };

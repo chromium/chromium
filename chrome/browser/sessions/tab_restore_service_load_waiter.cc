@@ -7,7 +7,7 @@
 TabRestoreServiceLoadWaiter::TabRestoreServiceLoadWaiter(
     sessions::TabRestoreService* service)
     : service_(service) {
-  observer_.Add(service_.get());
+  observer_.Add(service_);
 }
 
 TabRestoreServiceLoadWaiter::~TabRestoreServiceLoadWaiter() = default;

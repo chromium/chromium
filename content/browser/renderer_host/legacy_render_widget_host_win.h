@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_LEGACY_RENDER_WIDGET_HOST_WIN_H_
 
 // Must be included before <atlapp.h>.
-#include "base/memory/checked_ptr.h"
 #include "base/win/atl.h"   // NOLINT(build/include_order)
 
 #include <atlapp.h>
@@ -182,7 +181,7 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Set to true if we turned on mouse tracking.
   bool mouse_tracking_enabled_;
 
-  CheckedPtr<RenderWidgetHostViewAura> host_;
+  RenderWidgetHostViewAura* host_;
 
   // Some assistive software need to track the location of the caret.
   std::unique_ptr<ui::AXSystemCaretWin> ax_system_caret_;

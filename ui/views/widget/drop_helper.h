@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -101,10 +100,10 @@ class VIEWS_EXPORT DropHelper {
   void NotifyDragExit();
 
   // RootView we were created for.
-  CheckedPtr<View> root_view_;
+  View* root_view_;
 
   // View we're targeting events at.
-  CheckedPtr<View> target_view_;
+  View* target_view_;
 
   // The deepest view under the current drop coordinate.
   View* deepest_view_;

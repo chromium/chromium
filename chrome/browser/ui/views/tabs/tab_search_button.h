@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_BUTTON_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
@@ -77,7 +76,7 @@ class TabSearchButton : public NewTabButton,
   // Timestamp for when the current bubble was created.
   base::Optional<base::TimeTicks> bubble_created_time_;
 
-  CheckedPtr<views::MenuButtonController> menu_button_controller_ = nullptr;
+  views::MenuButtonController* menu_button_controller_ = nullptr;
 
   // A lock to keep the TabSearchButton pressed while |bubble_| is showing or
   // in the process of being shown.

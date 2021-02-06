@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/sequence_checker.h"
@@ -248,7 +247,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   std::unique_ptr<MetricsService> metrics_service_;
   std::unique_ptr<ukm::UkmService> ukm_service_;
   content::NotificationRegistrar registrar_;
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
   bool init_finished_ = false;
   bool set_consent_finished_ = false;
   bool user_consent_ = false;

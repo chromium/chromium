@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -54,7 +53,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) WeakWrapperSharedURLLoaderFactory
   base::OnceCallback<mojom::URLLoaderFactory*()> make_factory_ptr_;
 
   // Not owned.
-  CheckedPtr<mojom::URLLoaderFactory> factory_ptr_ = nullptr;
+  mojom::URLLoaderFactory* factory_ptr_ = nullptr;
 };
 
 }  // namespace network

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
@@ -143,7 +142,7 @@ class ArCoreDeviceTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  CheckedPtr<StubArCoreSessionUtils> session_utils;
+  StubArCoreSessionUtils* session_utils;
   mojo::Remote<mojom::XRFrameDataProvider> frame_provider;
   mojo::AssociatedRemote<mojom::XREnvironmentIntegrationProvider>
       environment_provider;

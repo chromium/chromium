@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/image/image_skia.h"
@@ -49,7 +48,7 @@ class TestAppWindowIconObserver
                                const void* key,
                                intptr_t old) override;
 
-  const CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* const context_;
   int icon_updates_ = 0;
   int expected_icon_updates_ = 0;
   std::vector<aura::Window*> windows_;

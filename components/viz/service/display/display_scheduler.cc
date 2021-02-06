@@ -5,7 +5,6 @@
 #include "components/viz/service/display/display_scheduler.h"
 
 #include "base/auto_reset.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/trace_event.h"
 
 namespace viz {
@@ -35,7 +34,7 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
   }
 
  private:
-  const CheckedPtr<DisplayScheduler> scheduler_;
+  DisplayScheduler* const scheduler_;
 };
 
 DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,

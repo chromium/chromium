@@ -5,7 +5,6 @@
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver_factory.h"
@@ -106,7 +105,7 @@ class MockReceiverCreator {
 
   // Retains a reference to |unique_receiver_| even after |this| loses its
   // ownership.
-  const CheckedPtr<MockPresentationReceiver> receiver_;
+  MockPresentationReceiver* const receiver_;
 };
 
 const char kPresentationSource[] = "https://www.example.com/presentation";

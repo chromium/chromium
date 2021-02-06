@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_BIO_ENROLLMENT_SHEET_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_BIO_ENROLLMENT_SHEET_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
@@ -30,7 +29,7 @@ class AuthenticatorBioEnrollmentSheetView
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
-  CheckedPtr<RingProgressBar> ring_progress_bar_;
+  RingProgressBar* ring_progress_bar_;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorBioEnrollmentSheetView);
 };

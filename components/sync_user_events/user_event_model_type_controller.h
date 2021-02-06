@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -33,7 +32,7 @@ class UserEventModelTypeController : public syncer::ModelTypeController,
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
-  CheckedPtr<SyncService> sync_service_;
+  SyncService* sync_service_;
 
   DISALLOW_COPY_AND_ASSIGN(UserEventModelTypeController);
 };

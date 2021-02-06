@@ -15,7 +15,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
@@ -143,7 +142,7 @@ class PasswordManagerPresenter
     void OnFetchCompleted() override;
 
     password_manager::PasswordForm form_;
-    const CheckedPtr<password_manager::PasswordManagerClient> client_;
+    password_manager::PasswordManagerClient* const client_;
     base::OnceClosure done_callback_;
     std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
   };
@@ -201,7 +200,7 @@ class PasswordManagerPresenter
   BooleanPrefMember show_passwords_;
 
   // UI view that owns this presenter.
-  CheckedPtr<PasswordUIView> password_view_;
+  PasswordUIView* password_view_;
 
   // Contains the helpers currently executing moving tasks.
   MovePasswordToAccountStoreHelperList move_to_account_helpers_;

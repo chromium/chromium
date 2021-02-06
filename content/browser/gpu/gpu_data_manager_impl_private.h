@@ -17,7 +17,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list_threadsafe.h"
@@ -206,7 +205,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   void RecordCompositingMode();
 
-  const CheckedPtr<GpuDataManagerImpl> owner_;
+  GpuDataManagerImpl* const owner_;
 
   gpu::GpuFeatureInfo gpu_feature_info_;
   gpu::GPUInfo gpu_info_;

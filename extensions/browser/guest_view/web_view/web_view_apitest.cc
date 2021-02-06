@@ -185,14 +185,14 @@ void WebViewAPITest::RunTest(const std::string& test_name,
     ExtensionTestMessageListener done_listener("TEST_PASSED", false);
     done_listener.set_failure_message("TEST_FAILED");
     ASSERT_TRUE(content::ExecuteScript(
-        embedder_web_contents_.get(),
+        embedder_web_contents_,
         base::StringPrintf("runTest('%s')", test_name.c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
   } else {
     ResultCatcher catcher;
     ASSERT_TRUE(content::ExecuteScript(
-        embedder_web_contents_.get(),
+        embedder_web_contents_,
         base::StringPrintf("runTest('%s')", test_name.c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
   // Run the test and wait until the guest WebContents is available and has
   // finished loading.
   ExtensionTestMessageListener guest_loaded_listener("guest-loaded", false);
-  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_.get(),
+  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_,
                                      "runTest('testRemoveWebviewOnExit')"));
 
   content::WebContents* guest_web_contents = GetGuestWebContents();
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
   content::WebContentsDestroyedWatcher destroyed_watcher(guest_web_contents);
 
   // Tell the embedder to kill the guest.
-  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_.get(),
+  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_,
                                      "removeWebviewOnExitDoCrash()"));
 
   // Wait until the guest WebContents is destroyed.

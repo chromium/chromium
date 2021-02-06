@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
@@ -106,7 +105,7 @@ class FindBarView : public views::BoxLayoutView,
 
   // The OS-specific view for the find bar that acts as an intermediary
   // between us and the WebContentsView.
-  CheckedPtr<FindBarHost> find_bar_host_;
+  FindBarHost* find_bar_host_;
 
   // Used to detect if the input text, not including the IME composition text,
   // has changed or not.

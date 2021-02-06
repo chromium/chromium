@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
@@ -122,7 +121,7 @@ class CONTENT_EXPORT SignedExchangeCertFetcher
   std::string body_string_;
 
   // This is owned by SignedExchangeHandler which is the owner of |this|.
-  CheckedPtr<SignedExchangeDevToolsProxy> devtools_proxy_;
+  SignedExchangeDevToolsProxy* devtools_proxy_;
   bool has_notified_completion_to_devtools_ = false;
   base::Optional<base::UnguessableToken> cert_request_id_;
 

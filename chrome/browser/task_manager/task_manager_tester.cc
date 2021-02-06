@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/task_manager/task_manager_tester.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/browser_process.h"
@@ -55,8 +54,8 @@ class ScopedInterceptTableModelObserver : public ui::TableModelObserver {
   }
 
  private:
-  CheckedPtr<ui::TableModel> model_to_intercept_;
-  CheckedPtr<ui::TableModelObserver> real_table_model_observer_;
+  ui::TableModel* model_to_intercept_;
+  ui::TableModelObserver* real_table_model_observer_;
   base::RepeatingClosure callback_;
 };
 

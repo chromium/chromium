@@ -16,7 +16,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -167,7 +166,7 @@ class VectorIterator {
   }
 
  private:
-  CheckedPtr<std::vector<const BookmarkNode*>> nodes_;
+  std::vector<const BookmarkNode*>* nodes_;
   std::vector<const BookmarkNode*>::iterator current_;
 
   DISALLOW_COPY_AND_ASSIGN(VectorIterator);

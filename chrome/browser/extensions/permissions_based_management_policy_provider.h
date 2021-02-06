@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/management_policy.h"
 
 namespace extensions {
@@ -32,7 +31,7 @@ class PermissionsBasedManagementPolicyProvider
                            base::string16* error) const override;
 
  private:
-  CheckedPtr<ExtensionManagement> settings_;
+  ExtensionManagement* settings_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionsBasedManagementPolicyProvider);
 };

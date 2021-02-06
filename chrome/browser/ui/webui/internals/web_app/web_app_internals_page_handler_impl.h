@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTERNALS_WEB_APP_WEB_APP_INTERNALS_PAGE_HANDLER_IMPL_H_
 #define CHROME_BROWSER_UI_WEBUI_INTERNALS_WEB_APP_WEB_APP_INTERNALS_PAGE_HANDLER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/internals/web_app/web_app_internals.mojom.h"
 
 class Profile;
@@ -36,7 +35,7 @@ class WebAppInternalsPageHandlerImpl
       GetExternallyInstalledWebAppPrefsCallback callback) override;
 
  private:
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_WEB_APP_WEB_APP_INTERNALS_PAGE_HANDLER_IMPL_H_

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,7 +36,7 @@ class ScopedBoolSaver {
   ~ScopedBoolSaver() { *var_ = old_val_; }
 
  private:
-  CheckedPtr<bool> var_;
+  bool* var_;
   bool old_val_;
 };
 }  // namespace

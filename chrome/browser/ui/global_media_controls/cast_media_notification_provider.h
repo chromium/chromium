@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
@@ -57,9 +56,9 @@ class CastMediaNotificationProvider : public MediaNotificationProducer,
   size_t GetItemCount() const;
 
  private:
-  const CheckedPtr<Profile> profile_;
-  const CheckedPtr<media_router::MediaRouter> router_;
-  const CheckedPtr<media_message_center::MediaNotificationController>
+  Profile* const profile_;
+  media_router::MediaRouter* const router_;
+  media_message_center::MediaNotificationController* const
       notification_controller_;
 
   // Maps from notification item IDs to items.

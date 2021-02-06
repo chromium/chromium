@@ -5,7 +5,6 @@
 #ifndef GPU_IPC_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 #define GPU_IPC_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
@@ -206,7 +205,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   // Used to schedule work on the gpu thread. This is a raw pointer for now
   // since the ownership of SingleTaskSequence would be the same as the
   // SharedImageInterfaceInProcess.
-  CheckedPtr<SingleTaskSequence> task_sequence_;
+  SingleTaskSequence* task_sequence_;
   const CommandBufferId command_buffer_id_;
   std::unique_ptr<CommandBufferHelper> command_buffer_helper_;
 
@@ -225,17 +224,17 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   // Accessed on compositor thread.
   // This is used to get NativePixmap, and is only used when SharedImageManager
   // is thread safe.
-  CheckedPtr<SharedImageManager> shared_image_manager_;
+  SharedImageManager* shared_image_manager_;
 
   // Accessed on GPU thread.
   // TODO(weiliangc): Check whether can be removed when !UsesSync().
-  CheckedPtr<MailboxManager> mailbox_manager_;
+  MailboxManager* mailbox_manager_;
   // Used to check if context is lost at destruction time.
   // TODO(weiliangc): SharedImageInterface should become active observer of
   // whether context is lost.
-  CheckedPtr<SharedContextState> context_state_;
+  SharedContextState* context_state_;
   // Created and only used by this SharedImageInterface.
-  CheckedPtr<SyncPointManager> sync_point_manager_;
+  SyncPointManager* sync_point_manager_;
   scoped_refptr<SyncPointClientState> sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
 

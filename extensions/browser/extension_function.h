@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -503,7 +502,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   int request_id_ = -1;
 
   // The id of the profile of this function's extension.
-  CheckedPtr<void> profile_id_ = nullptr;
+  void* profile_id_ = nullptr;
 
   // The name of this function.
   const char* name_ = nullptr;
@@ -540,7 +539,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
       extensions::functions::UNKNOWN;
 
   // The BrowserContext associated with the requesting renderer
-  CheckedPtr<content::BrowserContext> context_ = nullptr;
+  content::BrowserContext* context_ = nullptr;
 
   // The type of the JavaScript context where this call originated.
   extensions::Feature::Context source_context_type_ =
@@ -566,7 +565,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   base::WeakPtr<extensions::ExtensionFunctionDispatcher> dispatcher_;
 
   // The RenderFrameHost we will send responses to.
-  CheckedPtr<content::RenderFrameHost> render_frame_host_ = nullptr;
+  content::RenderFrameHost* render_frame_host_ = nullptr;
 
   std::unique_ptr<RenderFrameHostTracker> tracker_;
 

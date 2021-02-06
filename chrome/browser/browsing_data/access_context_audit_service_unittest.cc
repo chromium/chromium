@@ -6,7 +6,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -182,7 +181,7 @@ class AccessContextAuditServiceTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
   TestCookieManager cookie_manager_;
   content::TestStoragePartition storage_partition_;
-  CheckedPtr<history::HistoryService> history_service_;
+  history::HistoryService* history_service_;
   base::test::ScopedFeatureList feature_list_;
 
   scoped_refptr<base::UpdateableSequencedTaskRunner> task_runner_;

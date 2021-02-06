@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -106,8 +105,8 @@ class FakeMultipartUploadRequest : public MultipartUploadRequestBase {
 
  private:
   const GURL url_;
-  const CheckedPtr<std::string> upload_content_type_;
-  const CheckedPtr<std::string> upload_content_data_;
+  std::string* const upload_content_type_;
+  std::string* const upload_content_data_;
 };
 
 }  // namespace

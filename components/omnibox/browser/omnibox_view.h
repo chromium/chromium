@@ -17,7 +17,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -321,7 +320,7 @@ class OmniboxView {
 
   // |model_| can be NULL in tests.
   std::unique_ptr<OmniboxEditModel> model_;
-  CheckedPtr<OmniboxEditController> controller_;
+  OmniboxEditController* controller_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_

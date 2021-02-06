@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
-#include "base/memory/checked_ptr.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
@@ -66,8 +65,8 @@ class TestTokenValidator : TokenValidatorBase {
  private:
   void StartValidateRequest(const std::string& token) override {}
 
-  CheckedPtr<net::X509Certificate> expected_client_cert_ = nullptr;
-  CheckedPtr<net::SSLPrivateKey> expected_private_key_ = nullptr;
+  net::X509Certificate* expected_client_cert_ = nullptr;
+  net::SSLPrivateKey* expected_private_key_ = nullptr;
 };
 
 TestTokenValidator::TestTokenValidator(const ThirdPartyAuthConfig& config) :

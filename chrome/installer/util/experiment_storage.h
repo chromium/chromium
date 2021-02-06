@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 
@@ -83,7 +82,7 @@ class ExperimentStorage {
 
     explicit Lock(ExperimentStorage* storage);
 
-    CheckedPtr<ExperimentStorage> storage_;
+    ExperimentStorage* storage_;
 
     DISALLOW_COPY_AND_ASSIGN(Lock);
   };

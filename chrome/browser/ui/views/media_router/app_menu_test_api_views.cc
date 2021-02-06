@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 
 #include "base/macros.h"
@@ -29,7 +28,7 @@ class AppMenuTestApiViews : public test::AppMenuTestApi {
   BrowserAppMenuButton* GetAppMenuButton();
   AppMenu* GetAppMenu();
 
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
 
   DISALLOW_COPY_AND_ASSIGN(AppMenuTestApiViews);
 };

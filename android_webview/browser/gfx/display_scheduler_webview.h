@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_DISPLAY_SCHEDULER_WEBVIEW_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_DISPLAY_SCHEDULER_WEBVIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
@@ -32,7 +31,7 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase {
   void OnPendingSurfacesChanged() override {}
 
  private:
-  const CheckedPtr<RootFrameSink> root_frame_sink_;
+  RootFrameSink* const root_frame_sink_;
 
   // This count how many times specific sink damaged display. It's incremented
   // in OnDisplayDamaged and decremented in DidSwapBuffers.

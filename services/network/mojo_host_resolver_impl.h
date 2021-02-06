@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/log/net_log_with_source.h"
@@ -56,7 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MojoHostResolverImpl {
   void DeleteJob(std::list<Job>::iterator job);
 
   // Resolver for resolving incoming requests. Not owned.
-  CheckedPtr<net::HostResolver> resolver_;
+  net::HostResolver* resolver_;
 
   // The NetLogWithSource to be passed to |resolver_| for all requests.
   const net::NetLogWithSource net_log_;

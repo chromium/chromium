@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -135,7 +134,7 @@ class TabManager::TabManagerSessionRestoreObserver final
   }
 
  private:
-  CheckedPtr<TabManager> tab_manager_;
+  TabManager* tab_manager_;
 };
 
 TabManager::TabManager(TabLoadTracker* tab_load_tracker)

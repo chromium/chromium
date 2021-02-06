@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -314,7 +313,7 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   // Enlarge WebContentsView by this size insets in
   // DidStartNavigation.
   gfx::Size wcv_resize_insets_;
-  CheckedPtr<BrowserWindow> browser_window_;  // Weak ptr.
+  BrowserWindow* browser_window_;  // Weak ptr.
 };
 
 }  // namespace

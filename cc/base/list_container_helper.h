@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/base/base_export.h"
 
 namespace cc {
@@ -37,7 +36,7 @@ class CC_BASE_EXPORT ListContainerHelper final {
   // This class points to a certain position inside memory of
   // CharAllocator. It is a base class for ListContainer iterators.
   struct CC_BASE_EXPORT PositionInCharAllocator {
-    CheckedPtr<CharAllocator> ptr_to_container;
+    CharAllocator* ptr_to_container;
     size_t vector_index;
     char* item_iterator;
 

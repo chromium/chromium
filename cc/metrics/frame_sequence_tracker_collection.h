@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
@@ -166,7 +165,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   NotifyCustomerTrackerResutlsCallback custom_tracker_results_added_callback_;
 
   std::vector<std::unique_ptr<FrameSequenceTracker>> removal_trackers_;
-  const CheckedPtr<CompositorFrameReportingController>
+  CompositorFrameReportingController* const
       compositor_frame_reporting_controller_;
 
   base::flat_map<

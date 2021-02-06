@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
@@ -314,8 +313,8 @@ class ProfileAttributesEntry {
   // when this class holds the members required to fulfill its own contract.
   size_t profile_index() const;
 
-  CheckedPtr<ProfileInfoCache> profile_info_cache_ = nullptr;
-  CheckedPtr<PrefService> prefs_ = nullptr;
+  ProfileInfoCache* profile_info_cache_ = nullptr;
+  PrefService* prefs_ = nullptr;
   base::FilePath profile_path_;
   std::string storage_key_;
   base::string16 last_name_to_display_;

@@ -22,7 +22,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
@@ -646,7 +645,7 @@ class WebContentsImpl::WebContentsDestructionObserver
   }
 
  private:
-  CheckedPtr<WebContentsImpl> owner_;
+  WebContentsImpl* owner_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsDestructionObserver);
 };

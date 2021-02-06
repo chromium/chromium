@@ -6,7 +6,6 @@
 
 #include <numeric>
 
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/trace_event/base_tracing.h"
 
@@ -37,7 +36,7 @@ class MemoryPressureVoterImpl : public MemoryPressureVoter {
 
  private:
   // This is the aggregator to which this voter's votes will be cast.
-  const CheckedPtr<MemoryPressureVoteAggregator> aggregator_;
+  MemoryPressureVoteAggregator* const aggregator_;
 
   // Optional<> is used here as the vote will be null until the voter's
   // first vote calculation.

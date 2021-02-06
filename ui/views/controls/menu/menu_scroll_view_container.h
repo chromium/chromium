@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_SCROLL_VIEW_CONTAINER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
@@ -60,20 +59,20 @@ class MenuScrollViewContainer : public View {
   class MenuScrollView;
 
   // The scroll buttons.
-  CheckedPtr<View> scroll_up_button_;
-  CheckedPtr<View> scroll_down_button_;
+  View* scroll_up_button_;
+  View* scroll_down_button_;
 
   // The scroll view.
-  CheckedPtr<MenuScrollView> scroll_view_;
+  MenuScrollView* scroll_view_;
 
   // The content view.
-  CheckedPtr<SubmenuView> content_view_;
+  SubmenuView* content_view_;
 
   // If set the currently set border is a bubble border.
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
 
   // Weak reference to the currently set border.
-  CheckedPtr<BubbleBorder> bubble_border_ = nullptr;
+  BubbleBorder* bubble_border_ = nullptr;
 
   // Corner radius of the background.
   int corner_radius_ = 0;

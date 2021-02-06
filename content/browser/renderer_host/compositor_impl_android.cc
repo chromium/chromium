@@ -21,7 +21,6 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
@@ -217,7 +216,7 @@ class CompositorImpl::AndroidHostDisplayClient : public viz::HostDisplayClient {
   }
 
  private:
-  CheckedPtr<CompositorImpl> compositor_;
+  CompositorImpl* compositor_;
 };
 
 class CompositorImpl::ScopedCachedBackBuffer {

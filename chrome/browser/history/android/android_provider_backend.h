@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "components/history/core/browser/android/android_cache_database.h"
@@ -178,8 +177,8 @@ class AndroidProviderBackend : public base::SupportsUserData::Data {
     void Commit();
 
    private:
-    CheckedPtr<HistoryDatabase> history_db_;
-    CheckedPtr<favicon::FaviconDatabase> favicon_db_;
+    HistoryDatabase* history_db_;
+    favicon::FaviconDatabase* favicon_db_;
     // Whether the transaction was committed.
     bool committed_;
     // The count of the nested transaction in history database.
@@ -335,18 +334,18 @@ class AndroidProviderBackend : public base::SupportsUserData::Data {
   const base::FilePath android_cache_db_filename_;
 
   // The history db's connection.
-  CheckedPtr<sql::Database> db_;
+  sql::Database* db_;
 
-  CheckedPtr<HistoryDatabase> history_db_;
+  HistoryDatabase* history_db_;
 
-  CheckedPtr<favicon::FaviconDatabase> favicon_db_;
+  favicon::FaviconDatabase* favicon_db_;
 
-  CheckedPtr<HistoryBackendClient> backend_client_;
+  HistoryBackendClient* backend_client_;
 
   // Whether AndroidProviderBackend has been initialized.
   bool initialized_;
 
-  CheckedPtr<HistoryBackendNotifier> notifier_;
+  HistoryBackendNotifier* notifier_;
 
   DISALLOW_COPY_AND_ASSIGN(AndroidProviderBackend);
 };

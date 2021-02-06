@@ -17,7 +17,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -242,7 +241,7 @@ class MockDownloadManagerObserver : public DownloadManager::Observer {
   MOCK_METHOD1(MockManagerGoingDown, void(DownloadManager*));
 
  private:
-  CheckedPtr<DownloadManager> manager_;
+  DownloadManager* manager_;
 };
 
 class DownloadFileWithDelayFactory;
@@ -658,8 +657,8 @@ class DownloadCreateObserver : DownloadManager::Observer {
   }
 
  private:
-  CheckedPtr<DownloadManager> manager_;
-  CheckedPtr<download::DownloadItem> item_;
+  DownloadManager* manager_;
+  download::DownloadItem* item_;
   base::OnceClosure completion_closure_;
 };
 
@@ -689,7 +688,7 @@ class DownloadInProgressObserver : public DownloadTestObserverInProgress {
   }
 
  private:
-  CheckedPtr<DownloadManager> manager_;
+  DownloadManager* manager_;
 };
 
 class DownloadCountingObserver : public download::DownloadItem::Observer {
@@ -727,7 +726,7 @@ class DownloadCountingObserver : public download::DownloadItem::Observer {
   virtual bool IsCountReached(download::DownloadItem* download, int count) = 0;
 
  private:
-  CheckedPtr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   int count_;
   base::OnceClosure completion_closure_;
 };
@@ -4676,7 +4675,7 @@ class MhtmlDownloadTest : public DownloadContentTest {
 
  private:
   DownloadTestContentBrowserClient new_client_;
-  CheckedPtr<ContentBrowserClient> old_client_;
+  ContentBrowserClient* old_client_;
 };
 
 // Test allow list for non http schemes which should not trigger

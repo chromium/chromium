@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_loader.h"
 
@@ -55,8 +54,8 @@ class ExternalPolicyLoader : public ExternalLoader,
 
   ~ExternalPolicyLoader() override;
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<ExtensionManagement> settings_;
+  Profile* profile_;
+  ExtensionManagement* settings_;
   InstallationType type_;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalPolicyLoader);

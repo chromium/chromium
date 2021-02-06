@@ -11,7 +11,6 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -94,17 +93,17 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
       std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult> result);
 
   // The object to which the actual decoding can be delegated.
-  CheckedPtr<ImageDecodeAcceleratorWorker> worker_ = nullptr;
+  ImageDecodeAcceleratorWorker* worker_ = nullptr;
 
   base::Lock lock_;
-  CheckedPtr<GpuChannel> channel_ GUARDED_BY(lock_) = nullptr;
+  GpuChannel* channel_ GUARDED_BY(lock_) = nullptr;
   SequenceId sequence_ GUARDED_BY(lock_);
   scoped_refptr<SyncPointClientState> sync_point_client_state_
       GUARDED_BY(lock_);
   base::queue<std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult>>
       pending_completed_decodes_ GUARDED_BY(lock_);
 
-  CheckedPtr<ImageFactory> external_image_factory_for_testing_ = nullptr;
+  ImageFactory* external_image_factory_for_testing_ = nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

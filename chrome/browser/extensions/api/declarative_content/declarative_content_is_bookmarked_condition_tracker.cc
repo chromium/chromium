@@ -187,7 +187,7 @@ void DeclarativeContentIsBookmarkedConditionTracker::TrackForWebContents(
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents,
       base::BindRepeating(&Delegate::RequestEvaluation,
-                          base::Unretained(delegate_.get())),
+                          base::Unretained(delegate_)),
       base::BindOnce(&DeclarativeContentIsBookmarkedConditionTracker::
                          DeletePerWebContentsTracker,
                      base::Unretained(this)));

@@ -6,7 +6,6 @@
 #define UI_VIEWS_WINDOW_NATIVE_FRAME_VIEW_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/non_client_view.h"
@@ -41,7 +40,7 @@ class VIEWS_EXPORT NativeFrameView : public NonClientFrameView {
 
  private:
   // Our containing frame.
-  CheckedPtr<Widget> frame_;
+  Widget* frame_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NativeFrameView, NonClientFrameView)

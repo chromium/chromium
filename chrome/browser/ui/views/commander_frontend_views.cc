@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/commander_frontend_views.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -65,7 +64,7 @@ class CommanderWebView : public views::WebView {
 
  private:
   views::UnhandledKeyboardEventHandler event_handler_;
-  CheckedPtr<views::View> owner_;
+  views::View* owner_;
 };
 
 CommanderFrontendViews::CommanderFrontendViews(

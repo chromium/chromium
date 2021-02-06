@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -51,7 +50,7 @@ class BlobHolder : public base::SupportsUserData::Data {
   bool ContainsBlobHandle(content::BlobHandle* handle) const;
 
   // A reference to the owner of this class.
-  CheckedPtr<content::RenderProcessHost> render_process_host_;
+  content::RenderProcessHost* render_process_host_;
 
   BlobHandleMultimap held_blobs_;
 

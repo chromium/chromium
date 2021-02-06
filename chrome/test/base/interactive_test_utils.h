@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -47,7 +46,7 @@ class BrowserActivationWaiter : public BrowserListObserver {
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
 
-  const CheckedPtr<const Browser> browser_;
+  const Browser* const browser_;
   bool observed_ = false;
   base::RunLoop run_loop_;
 };
@@ -72,7 +71,7 @@ class BrowserDeactivationWaiter : public BrowserListObserver {
   // BrowserListObserver:
   void OnBrowserNoLongerActive(Browser* browser) override;
 
-  const CheckedPtr<const Browser> browser_;
+  const Browser* const browser_;
   bool observed_ = false;
   base::RunLoop run_loop_;
 };

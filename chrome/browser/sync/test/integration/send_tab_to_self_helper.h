@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -46,7 +45,7 @@ class SendTabToSelfUrlChecker
 
  private:
   const GURL url_;
-  const CheckedPtr<send_tab_to_self::SendTabToSelfSyncService> service_;
+  send_tab_to_self::SendTabToSelfSyncService* const service_;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfUrlChecker);
 };
@@ -80,7 +79,7 @@ class SendTabToSelfUrlOpenedChecker
 
  private:
   const GURL url_;
-  const CheckedPtr<send_tab_to_self::SendTabToSelfSyncService> service_;
+  send_tab_to_self::SendTabToSelfSyncService* const service_;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfUrlOpenedChecker);
 };
@@ -110,8 +109,8 @@ class SendTabToSelfModelEqualityChecker
       const std::vector<std::string>& guids_removed) override;
 
  private:
-  const CheckedPtr<send_tab_to_self::SendTabToSelfSyncService> service0_;
-  const CheckedPtr<send_tab_to_self::SendTabToSelfSyncService> service1_;
+  send_tab_to_self::SendTabToSelfSyncService* const service0_;
+  send_tab_to_self::SendTabToSelfSyncService* const service1_;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfModelEqualityChecker);
 };
@@ -139,7 +138,7 @@ class SendTabToSelfActiveChecker
       const std::vector<std::string>& guids_removed) override;
 
  private:
-  const CheckedPtr<send_tab_to_self::SendTabToSelfSyncService> service_;
+  send_tab_to_self::SendTabToSelfSyncService* const service_;
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfActiveChecker);
 };
 
@@ -159,7 +158,7 @@ class SendTabToSelfMultiDeviceActiveChecker
   void OnDeviceInfoChange() override;
 
  private:
-  const CheckedPtr<syncer::DeviceInfoTracker> tracker_;
+  syncer::DeviceInfoTracker* const tracker_;
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfMultiDeviceActiveChecker);
 };
 
@@ -179,7 +178,7 @@ class SendTabToSelfDeviceDisabledChecker
   void OnDeviceInfoChange() override;
 
  private:
-  const CheckedPtr<syncer::DeviceInfoTracker> tracker_;
+  syncer::DeviceInfoTracker* const tracker_;
   std::string device_guid_;
 };
 
@@ -207,7 +206,7 @@ class SendTabToSelfUrlDeletedChecker
 
  private:
   const GURL url_;
-  const CheckedPtr<send_tab_to_self::SendTabToSelfSyncService> service_;
+  send_tab_to_self::SendTabToSelfSyncService* const service_;
 
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfUrlDeletedChecker);
 };

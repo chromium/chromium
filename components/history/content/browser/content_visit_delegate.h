@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/visit_delegate.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
@@ -44,7 +43,7 @@ class ContentVisitDelegate : public VisitDelegate,
   void RebuildTable(const scoped_refptr<
       visitedlink::VisitedLinkDelegate::URLEnumerator>& enumerator) override;
 
-  CheckedPtr<HistoryService> history_service_;  // Weak.
+  HistoryService* history_service_;  // Weak.
   std::unique_ptr<visitedlink::VisitedLinkWriter> visitedlink_writer_;
   base::CancelableTaskTracker task_tracker_;
 

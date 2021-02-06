@@ -16,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
@@ -165,7 +164,7 @@ class RulesetLoadObserver : public RulesMonitorService::TestObserver {
       run_loop_.Quit();
   }
 
-  const CheckedPtr<RulesMonitorService> service_;
+  RulesMonitorService* const service_;
   const ExtensionId extension_id_;
   base::RunLoop run_loop_;
 };

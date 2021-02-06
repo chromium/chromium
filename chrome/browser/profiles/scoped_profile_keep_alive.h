@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PROFILES_SCOPED_PROFILE_KEEP_ALIVE_H_
 #define CHROME_BROWSER_PROFILES_SCOPED_PROFILE_KEEP_ALIVE_H_
 
-#include "base/memory/checked_ptr.h"
-
 class Profile;
 enum class ProfileKeepAliveOrigin;
 
@@ -22,7 +20,7 @@ class ScopedProfileKeepAlive {
   ProfileKeepAliveOrigin origin() { return origin_; }
 
  private:
-  const CheckedPtr<const Profile> profile_;
+  const Profile* const profile_;
   const ProfileKeepAliveOrigin origin_;
 };
 

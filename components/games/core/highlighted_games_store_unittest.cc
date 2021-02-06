@@ -8,7 +8,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -119,7 +118,7 @@ class HighlightedGamesStoreTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<HighlightedGamesStore> highlighted_games_store_;
-  CheckedPtr<test::MockDataFilesParser> mock_parser_;
+  test::MockDataFilesParser* mock_parser_;
   test::MockClock mock_clock_;
   base::FilePath fake_install_dir_ =
       base::FilePath(FILE_PATH_LITERAL("some/path"));

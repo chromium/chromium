@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_handle.h"
@@ -179,7 +178,7 @@ class AppContainerProfileTest : public ::testing::Test {
   }
 
   std::wstring package_name_;
-  CheckedPtr<BrokerServices> broker_services_;
+  BrokerServices* broker_services_;
   scoped_refptr<AppContainerProfileBase> profile_;
   scoped_refptr<TargetPolicy> policy_;
   base::win::ScopedProcessInformation scoped_process_info_;

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -51,7 +50,7 @@ class PrivetInfoOperationImpl : public PrivetJSONOperation,
                     bool has_error) override;
 
  private:
-  const CheckedPtr<PrivetHTTPClient> privet_client_;
+  PrivetHTTPClient* const privet_client_;
   PrivetJSONOperation::ResultCallback callback_;
   std::unique_ptr<PrivetURLLoader> url_loader_;
 };
@@ -120,8 +119,8 @@ class PrivetRegisterOperationImpl
   const std::string user_;
   std::string current_action_;
   std::unique_ptr<PrivetURLLoader> url_loader_;
-  const CheckedPtr<PrivetRegisterOperation::Delegate> delegate_;
-  const CheckedPtr<PrivetHTTPClient> privet_client_;
+  PrivetRegisterOperation::Delegate* const delegate_;
+  PrivetHTTPClient* const privet_client_;
   ResponseHandler next_response_handler_;
   // Required to ensure destroying completed register operations doesn't cause
   // extraneous cancelations.
@@ -154,7 +153,7 @@ class PrivetJSONOperationImpl : public PrivetJSONOperation,
   void OnNeedPrivetToken(PrivetURLLoader::TokenCallback callback) override;
 
  private:
-  const CheckedPtr<PrivetHTTPClient> privet_client_;
+  PrivetHTTPClient* const privet_client_;
   const std::string path_;
   const std::string query_params_;
   PrivetJSONOperation::ResultCallback callback_;

@@ -5,7 +5,6 @@
 #include "chrome/browser/notifications/scheduler/internal/notification_store.h"
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/notifications/scheduler/internal/proto_conversion.h"
@@ -94,7 +93,7 @@ class NotificationStoreTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   // Database test objects.
-  CheckedPtr<FakeDB<proto::NotificationEntry, NotificationEntry>> db_;
+  FakeDB<proto::NotificationEntry, NotificationEntry>* db_;
   std::map<std::string, proto::NotificationEntry> db_protos_;
 
   std::unique_ptr<CollectionStore<NotificationEntry>> store_;

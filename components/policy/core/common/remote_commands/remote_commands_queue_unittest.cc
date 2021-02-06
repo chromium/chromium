@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -91,8 +90,8 @@ class RemoteCommandsQueueTest : public testing::Test {
   RemoteCommandsQueue queue_;
   StrictMock<MockRemoteCommandsQueueObserver> observer_;
   base::TimeTicks test_start_time_;
-  CheckedPtr<const base::Clock> clock_;
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::Clock* clock_;
+  const base::TickClock* tick_clock_;
 
  private:
   void VerifyCommandIssuedTime(RemoteCommandJob* job,

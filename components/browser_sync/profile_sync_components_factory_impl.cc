@@ -426,7 +426,7 @@ ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
       sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
       engines_and_directory_deletion_thread_,
       base::BindRepeating(&syncer::SyncClient::OnLocalSyncTransportDataCleared,
-                          base::Unretained(sync_client_.get())));
+                          base::Unretained(sync_client_)));
 }
 
 void ProfileSyncComponentsFactoryImpl::

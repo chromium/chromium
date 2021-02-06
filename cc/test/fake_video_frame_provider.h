@@ -5,7 +5,6 @@
 #ifndef CC_TEST_FAKE_VIDEO_FRAME_PROVIDER_H_
 #define CC_TEST_FAKE_VIDEO_FRAME_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "cc/layers/video_frame_provider.h"
 #include "media/base/video_frame.h"
 
@@ -35,7 +34,7 @@ class FakeVideoFrameProvider : public VideoFrameProvider {
 
  private:
   scoped_refptr<media::VideoFrame> frame_;
-  CheckedPtr<Client> client_;
+  Client* client_;
   int put_current_frame_count_;
 };
 

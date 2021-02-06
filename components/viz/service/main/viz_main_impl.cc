@@ -281,7 +281,7 @@ void VizMainImpl::ExitProcess(base::Optional<ExitCode> immediate_exit_code) {
     // thread is still running to avoid deadlock. Quit GPU thread TaskRunner
     // after cleanup on compositor thread is finished.
     viz_compositor_thread_runner_->CleanupForShutdown(base::BindOnce(
-        &Delegate::QuitMainMessageLoop, base::Unretained(delegate_.get())));
+        &Delegate::QuitMainMessageLoop, base::Unretained(delegate_)));
   } else {
     delegate_->QuitMainMessageLoop();
   }

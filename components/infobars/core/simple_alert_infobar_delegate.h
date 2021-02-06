@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -50,7 +49,7 @@ class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
 
   infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier_;
-  CheckedPtr<const gfx::VectorIcon> vector_icon_;
+  const gfx::VectorIcon* vector_icon_;
   base::string16 message_;
   bool auto_expire_;  // Should it expire automatically on navigation?
   bool should_animate_;

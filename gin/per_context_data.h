@@ -6,7 +6,6 @@
 #define GIN_PER_CONTEXT_DATA_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8.h"
@@ -38,8 +37,8 @@ class GIN_EXPORT PerContextData : public base::SupportsUserData {
   ContextHolder* context_holder() { return context_holder_; }
 
  private:
-  CheckedPtr<ContextHolder> context_holder_;
-  CheckedPtr<Runner> runner_;
+  ContextHolder* context_holder_;
+  Runner* runner_;
 
   DISALLOW_COPY_AND_ASSIGN(PerContextData);
 };

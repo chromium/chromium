@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -135,7 +134,7 @@ class MockStreamFactory : public audio::FakeStreamFactory {
     stream_request_data_->created_callback = std::move(created_callback);
   }
 
-  CheckedPtr<StreamRequestData> stream_request_data_;
+  StreamRequestData* stream_request_data_;
   DISALLOW_COPY_AND_ASSIGN(MockStreamFactory);
 };
 

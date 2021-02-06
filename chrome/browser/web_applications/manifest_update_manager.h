@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
@@ -84,11 +83,11 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
                     const AppId& app_id,
                     ManifestUpdateResult result);
 
-  CheckedPtr<AppRegistrar> registrar_ = nullptr;
-  CheckedPtr<AppIconManager> icon_manager_ = nullptr;
-  CheckedPtr<WebAppUiManager> ui_manager_ = nullptr;
-  CheckedPtr<InstallManager> install_manager_ = nullptr;
-  CheckedPtr<SystemWebAppManager> system_web_app_manager_ = nullptr;
+  AppRegistrar* registrar_ = nullptr;
+  AppIconManager* icon_manager_ = nullptr;
+  WebAppUiManager* ui_manager_ = nullptr;
+  InstallManager* install_manager_ = nullptr;
+  SystemWebAppManager* system_web_app_manager_ = nullptr;
 
   ScopedObserver<AppRegistrar, AppRegistrarObserver> registrar_observer_{this};
 

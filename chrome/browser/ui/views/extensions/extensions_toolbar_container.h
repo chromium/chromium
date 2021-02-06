@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -169,7 +168,7 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // are associated with. This is used to keep track of icons that are popped
   // out due to a widget showing (or being queued to show).
   struct AnchoredWidget {
-    CheckedPtr<views::Widget> widget;
+    views::Widget* widget;
     std::string extension_id;
   };
 

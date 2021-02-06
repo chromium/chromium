@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_WEBAUTH_VIRTUAL_AUTHENTICATOR_REQUEST_DELEGATE_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 
 namespace content {
@@ -32,7 +31,7 @@ class VirtualAuthenticatorRequestDelegate
       override;
 
  private:
-  const CheckedPtr<FrameTreeNode> frame_tree_node_;
+  FrameTreeNode* const frame_tree_node_;
 
   DISALLOW_COPY_AND_ASSIGN(VirtualAuthenticatorRequestDelegate);
 };

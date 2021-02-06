@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -375,7 +374,7 @@ class TabStrip : public views::View,
                                     ui::MenuSourceType source_type) override;
 
    private:
-    const CheckedPtr<TabStrip> parent_;
+    TabStrip* const parent_;
   };
 
   // Used during a drop session of a url. Tracks the position of the drop as
@@ -410,9 +409,9 @@ class TabStrip : public views::View,
     bool point_down_ = false;
 
     // Renders the drop indicator.
-    CheckedPtr<views::Widget> arrow_window_ = nullptr;
+    views::Widget* arrow_window_ = nullptr;
 
-    CheckedPtr<views::ImageView> arrow_view_ = nullptr;
+    views::ImageView* arrow_view_ = nullptr;
 
     base::ScopedObservation<views::Widget, views::WidgetObserver>
         scoped_observation_{this};
@@ -661,7 +660,7 @@ class TabStrip : public views::View,
 
   // The view tracker is used to keep track of if the hover card has been
   // destroyed by its widget.
-  CheckedPtr<TabHoverCardBubbleView> hover_card_ = nullptr;
+  TabHoverCardBubbleView* hover_card_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       hover_card_observation_{this};
   std::unique_ptr<ui::EventHandler> hover_card_event_sniffer_;

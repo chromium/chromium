@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_TEST_API_H_
 #define UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_TEST_API_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace views {
@@ -61,7 +60,7 @@ class TextfieldTestApi {
   void SetDisplayOffsetX(int x) const;
 
  private:
-  CheckedPtr<Textfield> textfield_;
+  Textfield* textfield_;
 };
 
 }  // namespace views

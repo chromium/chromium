@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "sql/database.h"
 
@@ -47,7 +46,7 @@ class AppCacheBackfillerVersion8 {
   bool UpdateCachePaddingSize(int64_t padding_size, int64_t cache_id);
 
   // The AppCacheDatabase instance being backfilled.
-  const CheckedPtr<sql::Database> db_;
+  sql::Database* const db_;
 };
 
 // Backfills an AppCache database after it has been migrated to version 9.
@@ -78,7 +77,7 @@ class AppCacheBackfillerVersion9 {
   base::Optional<std::string> GetManifestUrlForGroup(int64_t group_id);
 
   // The AppCacheDatabase instance being backfilled.
-  const CheckedPtr<sql::Database> db_;
+  sql::Database* const db_;
 };
 
 }  // namespace content

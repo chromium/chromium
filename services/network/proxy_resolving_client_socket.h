@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/host_port_pair.h"
@@ -127,9 +126,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
 
   int ReconsiderProxyAfterError(int error);
 
-  CheckedPtr<net::HttpNetworkSession> network_session_;
+  net::HttpNetworkSession* network_session_;
 
-  CheckedPtr<const net::CommonConnectJobParams> common_connect_job_params_;
+  const net::CommonConnectJobParams* common_connect_job_params_;
   std::unique_ptr<net::ConnectJob> connect_job_;
   std::unique_ptr<net::StreamSocket> socket_;
 

@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "components/ukm/debug/ukm_debug_data_extractor.h"
 #include "components/ukm/ukm_service.h"
 #include "content/grit/content_resources.h"
@@ -50,7 +49,7 @@ class UkmMessageHandler : public WebUIMessageHandler {
  private:
   void HandleRequestUkmData(const base::ListValue* args);
 
-  CheckedPtr<const ukm::UkmService> ukm_service_;
+  const ukm::UkmService* ukm_service_;
 
   DISALLOW_COPY_AND_ASSIGN(UkmMessageHandler);
 };

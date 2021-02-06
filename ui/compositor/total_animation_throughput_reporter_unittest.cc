@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -294,7 +293,7 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
     ~DeleteTestReporter() override { *deleted_ = true; }
 
    private:
-    CheckedPtr<bool> deleted_;
+    bool* deleted_;
   };
 
   Layer layer;

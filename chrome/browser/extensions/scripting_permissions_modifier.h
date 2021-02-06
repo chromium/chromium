@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 
 class GURL;
@@ -129,11 +128,11 @@ class ScriptingPermissionsModifier {
   // Revokes any granted host permissions.
   void WithholdHostPermissions();
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   scoped_refptr<const Extension> extension_;
 
-  CheckedPtr<ExtensionPrefs> extension_prefs_;
+  ExtensionPrefs* extension_prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(ScriptingPermissionsModifier);
 };

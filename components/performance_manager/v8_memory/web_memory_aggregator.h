@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
@@ -141,7 +140,7 @@ class WebMemoryAggregator {
 
   // The node that the graph traversal should start from, found from
   // |requesting_node| using FindAggregationStartNode.
-  CheckedPtr<const FrameNode> aggregation_start_node_;
+  const FrameNode* aggregation_start_node_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

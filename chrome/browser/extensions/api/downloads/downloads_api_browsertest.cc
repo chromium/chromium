@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -188,13 +187,15 @@ class DownloadsEventsListener : public content::NotificationObserver {
     }
 
     std::string Debug() {
-      return base::StringPrintf("Event(%p, %s, %s, %f)", profile_.get(),
-                                event_name_.c_str(), json_args_.c_str(),
+      return base::StringPrintf("Event(%p, %s, %s, %f)",
+                                profile_,
+                                event_name_.c_str(),
+                                json_args_.c_str(),
                                 caught_.ToJsTime());
     }
 
    private:
-    CheckedPtr<Profile> profile_;
+    Profile* profile_;
     std::string event_name_;
     std::string json_args_;
     std::unique_ptr<base::Value> args_;
@@ -305,7 +306,7 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
 
   ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
       open_observer_;
-  CheckedPtr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   base::OnceClosure completion_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadOpenObserver);
@@ -665,16 +666,16 @@ class DownloadExtensionTest : public ExtensionApiTest {
       // Recreate the tab each time for insulation.
       content::WebContents* tab = chrome::AddSelectedTabWithURL(
           current_browser(), url, ui::PAGE_TRANSITION_LINK);
-      function->set_extension(extension_.get());
+      function->set_extension(extension_);
       function->SetRenderFrameHost(tab->GetMainFrame());
       function->set_source_process_id(
           tab->GetMainFrame()->GetProcess()->GetID());
     }
   }
 
-  CheckedPtr<const Extension> extension_;
-  CheckedPtr<Browser> incognito_browser_;
-  CheckedPtr<Browser> current_browser_;
+  const Extension* extension_;
+  Browser* incognito_browser_;
+  Browser* current_browser_;
   std::unique_ptr<DownloadsEventsListener> events_listener_;
 
   std::unique_ptr<net::test_server::ControllableHttpResponse> first_download_;
@@ -743,7 +744,7 @@ class ScopedCancellingItem {
   }
   DownloadItem* get() { return item_; }
  private:
-  CheckedPtr<DownloadItem> item_;
+  DownloadItem* item_;
   DISALLOW_COPY_AND_ASSIGN(ScopedCancellingItem);
 };
 
@@ -767,7 +768,7 @@ class ScopedItemVectorCanceller {
   }
 
  private:
-  CheckedPtr<DownloadManager::DownloadVector> items_;
+  DownloadManager::DownloadVector* items_;
   DISALLOW_COPY_AND_ASSIGN(ScopedItemVectorCanceller);
 };
 
@@ -1763,8 +1764,8 @@ class CustomResponse : public net::test_server::HttpResponse {
   }
 
  private:
-  CheckedPtr<net::test_server::SendCompleteCallback> callback_;
-  CheckedPtr<base::TaskRunner*> task_runner_;
+  net::test_server::SendCompleteCallback* callback_;
+  base::TaskRunner** task_runner_;
   bool first_request_;
 
   DISALLOW_COPY_AND_ASSIGN(CustomResponse);

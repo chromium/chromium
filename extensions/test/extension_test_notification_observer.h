@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -120,7 +119,7 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   // Quits the message loop if |condition_| is met.
   void MaybeQuit();
 
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 
  private:
   content::NotificationRegistrar registrar_;

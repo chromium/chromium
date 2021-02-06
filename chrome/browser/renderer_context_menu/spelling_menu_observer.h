@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_member.h"
@@ -69,7 +68,7 @@ class SpellingMenuObserver : public RenderViewContextMenuObserver {
 
   // The interface to add a context-menu item and update it. This class uses
   // this interface to avoid accesing context-menu items directly.
-  CheckedPtr<RenderViewContextMenuProxy> proxy_;
+  RenderViewContextMenuProxy* proxy_;
 
   // Suggested words from the local spellchecker. If the spelling service
   // returns a word in this list, we hide the context-menu item to prevent

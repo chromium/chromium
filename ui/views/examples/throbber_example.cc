@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
@@ -52,7 +51,7 @@ class ThrobberView : public View {
   }
 
  private:
-  CheckedPtr<Throbber> throbber_;
+  Throbber* throbber_;
   bool is_checked_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ThrobberView);

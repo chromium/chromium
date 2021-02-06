@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
@@ -67,9 +66,8 @@ class BASE_EXPORT JobDelegate {
  private:
   static constexpr uint8_t kInvalidTaskId = std::numeric_limits<uint8_t>::max();
 
-  const CheckedPtr<internal::JobTaskSource> task_source_;
-  const CheckedPtr<internal::PooledTaskRunnerDelegate>
-      pooled_task_runner_delegate_;
+  internal::JobTaskSource* const task_source_;
+  internal::PooledTaskRunnerDelegate* const pooled_task_runner_delegate_;
   uint8_t task_id_ = kInvalidTaskId;
 
 #if DCHECK_IS_ON()

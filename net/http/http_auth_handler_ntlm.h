@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 
 // This contains the portable and the SSPI implementations for NTLM.
@@ -113,7 +112,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
 
 #if defined(NTLM_SSPI)
   HttpAuthSSPI mechanism_;
-  CheckedPtr<const HttpAuthPreferences> http_auth_preferences_;
+  const HttpAuthPreferences* http_auth_preferences_;
 #elif defined(NTLM_PORTABLE)
   HttpAuthNtlmMechanism mechanism_;
 #endif

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -37,8 +36,8 @@ class FreezingVoteTokenPMImpl : public PageNode::ObserverDefaultImpl {
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
  private:
-  CheckedPtr<const PageNode> page_node_ = nullptr;
-  CheckedPtr<Graph> graph_ = nullptr;
+  const PageNode* page_node_ = nullptr;
+  Graph* graph_ = nullptr;
 
   // Voting channel wrapper. This objects should only be used on the PM
   // sequence.

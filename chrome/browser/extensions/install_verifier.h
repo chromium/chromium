@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/management_policy.h"
@@ -193,7 +192,7 @@ class ScopedInstallVerifierBypassForTest {
 
  private:
   ForceType value_;
-  CheckedPtr<ForceType> old_value_;
+  ForceType* old_value_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedInstallVerifierBypassForTest);
 };

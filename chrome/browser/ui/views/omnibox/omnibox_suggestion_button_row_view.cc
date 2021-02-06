@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -125,7 +124,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
  private:
   const gfx::VectorIcon& icon_;
-  CheckedPtr<OmniboxPopupContentsView> popup_contents_view_;
+  OmniboxPopupContentsView* popup_contents_view_;
   OmniboxPopupModel::Selection selection_;
   base::Optional<SkColor> omnibox_bg_color_;
 };

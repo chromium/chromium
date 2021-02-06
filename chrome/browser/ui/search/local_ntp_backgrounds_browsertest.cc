@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -46,7 +45,7 @@ class TestInstantService {
   InstantService* get_instant_service() { return instant_service; }
 
  private:
-  CheckedPtr<InstantService> instant_service;
+  InstantService* instant_service;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalNTPCustomBackgroundsTest,
@@ -538,7 +537,7 @@ class LocalNTPBackgroundsAndDarkModeTest
         new testing::NiceMock<image_fetcher::MockImageFetcher>());
   }
 
-  CheckedPtr<InstantService> instant_service;
+  InstantService* instant_service;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalNTPBackgroundsAndDarkModeTest,

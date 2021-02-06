@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -64,7 +63,7 @@ class PdfNupConverterClient
   // mojo::Remote.
   std::map<int, mojo::Remote<mojom::PdfNupConverter>> pdf_nup_converter_map_;
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

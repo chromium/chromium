@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -102,7 +101,7 @@ class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
   bool got_changes() const { return got_changes_; }
 
  private:
-  CheckedPtr<ui::MenuModel> model_;
+  ui::MenuModel* model_;
   bool got_changes_;
 
   DISALLOW_COPY_AND_ASSIGN(TestRecentTabsMenuModelDelegate);
@@ -168,7 +167,7 @@ class RecentTabsSubMenuModelTest
   }
 
  private:
-  CheckedPtr<sync_sessions::SessionSyncService> session_sync_service_;
+  sync_sessions::SessionSyncService* session_sync_service_;
   std::unique_ptr<syncer::ModelTypeProcessor> sync_processor_;
 
   DISALLOW_COPY_AND_ASSIGN(RecentTabsSubMenuModelTest);

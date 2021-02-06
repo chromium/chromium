@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -154,7 +153,7 @@ class ContentIndexTest : public InProcessBrowserTest,
   }
 
   std::map<std::string, OfflineItem> offline_items_;
-  CheckedPtr<ContentIndexProviderImpl> provider_;
+  ContentIndexProviderImpl* provider_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::OnceClosure wait_for_tab_change_;
 };

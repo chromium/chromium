@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/controls/table/table_grouper.h"
@@ -55,12 +54,12 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
 
  private:
   // The table to be tested.
-  CheckedPtr<TableView> table_ = nullptr;
+  TableView* table_ = nullptr;
 
-  CheckedPtr<Checkbox> column1_visible_checkbox_ = nullptr;
-  CheckedPtr<Checkbox> column2_visible_checkbox_ = nullptr;
-  CheckedPtr<Checkbox> column3_visible_checkbox_ = nullptr;
-  CheckedPtr<Checkbox> column4_visible_checkbox_ = nullptr;
+  Checkbox* column1_visible_checkbox_ = nullptr;
+  Checkbox* column2_visible_checkbox_ = nullptr;
+  Checkbox* column3_visible_checkbox_ = nullptr;
+  Checkbox* column4_visible_checkbox_ = nullptr;
 
   SkBitmap icon1_;
   SkBitmap icon2_;

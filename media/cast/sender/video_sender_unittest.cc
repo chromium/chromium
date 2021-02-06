@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
@@ -171,7 +170,7 @@ class VideoSenderTest : public ::testing::Test {
     transport_ = new TestPacketSender();
     transport_sender_.reset(new CastTransportImpl(
         &testing_clock_, base::TimeDelta(), std::make_unique<TransportClient>(),
-        base::WrapUnique(transport_.get()), task_runner_));
+        base::WrapUnique(transport_), task_runner_));
   }
 
   ~VideoSenderTest() override = default;
@@ -244,7 +243,7 @@ class VideoSenderTest : public ::testing::Test {
   const scoped_refptr<CastEnvironment> cast_environment_;
   OperationalStatus operational_status_;
   FakeVideoEncodeAcceleratorFactory vea_factory_;
-  CheckedPtr<TestPacketSender> transport_;  // Owned by CastTransport.
+  TestPacketSender* transport_;  // Owned by CastTransport.
   std::unique_ptr<CastTransportImpl> transport_sender_;
   std::unique_ptr<PeerVideoSender> video_sender_;
   int last_pixel_value_;

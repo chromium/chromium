@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -95,8 +94,8 @@ class DataObserver : public bookmarks::BookmarkModelObserver,
   base::RepeatingCallback<void(void)> data_changed_callback_;
   base::RepeatingCallback<void(void)> data_cleared_callback_;
   base::RepeatingCallback<void(void)> stop_reporting_callback_;
-  CheckedPtr<DeltaFileService> delta_file_service_;
-  CheckedPtr<UsageReportsBufferService> usage_reports_buffer_service_;
+  DeltaFileService* delta_file_service_;
+  UsageReportsBufferService* usage_reports_buffer_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DataObserver);
 };

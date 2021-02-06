@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -53,7 +52,7 @@ class DeviceOAuth2TokenStoreDesktop : public DeviceOAuth2TokenStore {
   // |refresh_token_|.
   void DecryptToken() const;
 
-  const CheckedPtr<PrefService> local_state_;
+  PrefService* const local_state_;
 
   // This and the |token_decrypted_| field are mutable because they are modified
   // on the first call to |GetRefreshToken()|, which is const.

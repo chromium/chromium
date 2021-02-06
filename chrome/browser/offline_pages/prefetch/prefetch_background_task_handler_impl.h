@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_background_task_handler.h"
 
 class PrefService;
@@ -62,8 +61,8 @@ class PrefetchBackgroundTaskHandlerImpl : public PrefetchBackgroundTaskHandler {
   std::unique_ptr<net::BackoffEntry> GetCurrentBackoff() const;
   void UpdateBackoff(net::BackoffEntry* backoff);
 
-  CheckedPtr<PrefService> prefs_;
-  CheckedPtr<const base::TickClock> tick_clock_;
+  PrefService* prefs_;
+  const base::TickClock* tick_clock_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchBackgroundTaskHandlerImpl);
 };

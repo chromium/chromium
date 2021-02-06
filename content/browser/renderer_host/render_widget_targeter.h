@@ -7,7 +7,6 @@
 
 #include <queue>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -42,7 +41,7 @@ struct CONTENT_EXPORT RenderWidgetTargetResult {
                            bool latched_target);
   ~RenderWidgetTargetResult();
 
-  CheckedPtr<RenderWidgetHostViewBase> view = nullptr;
+  RenderWidgetHostViewBase* view = nullptr;
   bool should_query_view = false;
   base::Optional<gfx::PointF> target_location = base::nullopt;
   // When |latched_target| is false, we explicitly hit-tested events instead of

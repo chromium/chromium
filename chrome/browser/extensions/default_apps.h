@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_DEFAULT_APPS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "extensions/common/manifest.h"
@@ -57,7 +56,7 @@ class Provider : public extensions::ExternalProviderImpl {
   void SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) override;
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   bool is_migration_;
 
   DISALLOW_COPY_AND_ASSIGN(Provider);

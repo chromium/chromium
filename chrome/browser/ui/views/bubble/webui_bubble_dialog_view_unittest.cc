@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -54,8 +53,8 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<TestingProfile> profile_;
   views::UniqueWidgetPtr anchor_widget_;
-  CheckedPtr<Widget> bubble_widget_ = nullptr;
-  CheckedPtr<WebUIBubbleDialogView> bubble_view_ = nullptr;
+  Widget* bubble_widget_ = nullptr;
+  WebUIBubbleDialogView* bubble_view_ = nullptr;
 };
 
 TEST_F(WebUIBubbleDialogViewTest, BubbleRespondsToWebViewPreferredSizeChanges) {

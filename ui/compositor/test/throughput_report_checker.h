@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 
 namespace ui {
@@ -49,7 +48,7 @@ class ThroughputReportChecker {
  private:
   void OnReport(const cc::FrameSequenceMetrics::CustomReportData&);
 
-  CheckedPtr<AnimationThroughputReporterTestBase> test_base_;
+  AnimationThroughputReporterTestBase* test_base_;
   bool reported_ = false;
   bool fail_if_reported_ = false;
 };

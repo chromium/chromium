@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/accessibility/ax_export.h"
 
@@ -115,8 +114,8 @@ class AX_EXPORT AXTableInfo {
   AXNode* CreateExtraMacTableHeaderNode();
   void UpdateExtraMacColumnNodeAttributes(size_t col_index);
 
-  CheckedPtr<AXTree> tree_ = nullptr;
-  CheckedPtr<AXNode> table_node_ = nullptr;
+  AXTree* tree_ = nullptr;
+  AXNode* table_node_ = nullptr;
   bool valid_ = false;
   std::map<int, std::map<int, CellData>> incremental_row_col_map_;
 };

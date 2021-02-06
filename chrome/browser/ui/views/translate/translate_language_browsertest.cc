@@ -1,7 +1,6 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 
 #if defined(USE_AURA)
@@ -198,7 +197,7 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
 
   void SimulateURLFetch() {
     controllable_http_response_->WaitForRequest();

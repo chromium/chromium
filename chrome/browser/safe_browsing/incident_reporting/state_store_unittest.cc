@@ -9,7 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -102,7 +101,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
   // Removes the safebrowsing.incidents_sent preference from the profile's pref
   // store.
   void TrimPref() {
-    ASSERT_EQ(nullptr, profile_.get());
+    ASSERT_EQ(nullptr, profile_);
     std::unique_ptr<base::Value> prefs(JSONFileValueDeserializer(GetPrefsPath())
                                            .Deserialize(nullptr, nullptr));
     ASSERT_NE(nullptr, prefs.get());
@@ -113,7 +112,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
   }
 
   void CreateProfile() {
-    ASSERT_EQ(nullptr, profile_.get());
+    ASSERT_EQ(nullptr, profile_);
     // Create the testing profile with a file-backed user pref store.
     sync_preferences::PrefServiceSyncableFactory factory;
     factory.SetUserPrefsFile(GetPrefsPath(), task_runner_.get());
@@ -129,7 +128,7 @@ class StateStoreTest : public PlatformStateStoreTestBase {
   static const char kProfileName_[];
   static const TestData kTestData_[];
   content::BrowserTaskEnvironment task_environment_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
  private:

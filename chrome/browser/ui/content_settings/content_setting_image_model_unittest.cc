@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -110,8 +109,8 @@ class ContentSettingImageModelTest : public BrowserWithTestWindowTest {
 
  protected:
   permissions::MockPermissionRequest request_;
-  CheckedPtr<permissions::PermissionRequestManager> manager_ = nullptr;
-  CheckedPtr<content::NavigationController> controller_ = nullptr;
+  permissions::PermissionRequestManager* manager_ = nullptr;
+  content::NavigationController* controller_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ContentSettingImageModelTest);

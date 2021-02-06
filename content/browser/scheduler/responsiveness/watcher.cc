@@ -69,7 +69,7 @@ void Watcher::DidRunTaskOnIOThread(const base::PendingTask* task) {
   // invoked.
   TaskOrEventFinishedCallback callback =
       base::BindOnce(&Calculator::TaskOrEventFinishedOnIOThread,
-                     base::Unretained(calculator_io_.get()));
+                     base::Unretained(calculator_io_));
   DidRunTask(task, &currently_running_metadata_io_,
              &mismatched_task_identifiers_io_, std::move(callback));
 }

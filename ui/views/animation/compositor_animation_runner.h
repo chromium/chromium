@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -51,12 +50,12 @@ class VIEWS_EXPORT CompositorAnimationRunner
 
   // When |widget_| is nullptr, it means the widget has been destroyed and
   // |compositor_| must also be nullptr.
-  CheckedPtr<Widget> widget_;
+  Widget* widget_;
 
   // When |compositor_| is nullptr, it means either the animation is not
   // running, or the compositor or |widget_| associated with the compositor_ has
   // been destroyed during animation.
-  CheckedPtr<ui::Compositor> compositor_ = nullptr;
+  ui::Compositor* compositor_ = nullptr;
 
   base::TimeDelta min_interval_ = base::TimeDelta::Max();
   base::TimeTicks last_tick_;

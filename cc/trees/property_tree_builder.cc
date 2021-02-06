@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/memory/checked_ptr.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -45,7 +44,7 @@ struct DataForRecursion {
   bool animation_axis_aligned_since_render_target;
   bool not_axis_aligned_since_last_clip;
   gfx::Transform compound_transform_since_render_target;
-  CheckedPtr<bool> subtree_has_rounded_corner;
+  bool* subtree_has_rounded_corner;
 };
 
 class PropertyTreeBuilderContext {
@@ -90,8 +89,8 @@ class PropertyTreeBuilderContext {
                                    bool subtree_has_rounded_corner,
                                    bool created_transform_node) const;
 
-  CheckedPtr<LayerTreeHost> layer_tree_host_;
-  CheckedPtr<Layer> root_layer_;
+  LayerTreeHost* layer_tree_host_;
+  Layer* root_layer_;
   MutatorHost& mutator_host_;
   PropertyTrees& property_trees_;
   TransformTree& transform_tree_;

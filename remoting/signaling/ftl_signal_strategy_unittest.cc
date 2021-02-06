@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -239,9 +238,9 @@ class FtlSignalStrategyTest : public testing::Test,
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  CheckedPtr<MockOAuthTokenGetter> token_getter_ = nullptr;
-  CheckedPtr<FakeRegistrationManager> registration_manager_ = nullptr;
-  CheckedPtr<FakeMessagingClient> messaging_client_ = nullptr;
+  MockOAuthTokenGetter* token_getter_ = nullptr;
+  FakeRegistrationManager* registration_manager_ = nullptr;
+  FakeMessagingClient* messaging_client_ = nullptr;
   std::unique_ptr<FtlSignalStrategy> signal_strategy_;
 
   std::vector<SignalStrategy::State> state_history_;

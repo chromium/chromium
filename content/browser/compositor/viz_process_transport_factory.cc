@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -119,7 +118,7 @@ class HostDisplayClient : public viz::HostDisplayClient {
 #endif
 
  private:
-  const CheckedPtr<ui::Compositor> compositor_;
+  ui::Compositor* const compositor_;
 };
 
 }  // namespace

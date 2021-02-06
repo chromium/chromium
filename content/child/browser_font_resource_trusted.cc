@@ -8,7 +8,6 @@
 
 #include "base/i18n/uchar.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_canvas.h"
@@ -107,7 +106,7 @@ class TextRunCollection {
 
  private:
   // Will be null if we skipped autodetection.
-  CheckedPtr<UBiDi> bidi_;
+  UBiDi* bidi_;
 
   // Text of all the runs.
   base::string16 text_;

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 #define CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -56,7 +55,7 @@ class DeviceServiceImpl final
   // ManagedConfigurationAPI::Observer:
   void OnManagedConfigurationChanged() override;
 
-  const CheckedPtr<content::RenderFrameHost> host_;
+  content::RenderFrameHost* const host_;
   PrefChangeRegistrar pref_change_registrar_;
 
   mojo::Remote<blink::mojom::ManagedConfigurationObserver>

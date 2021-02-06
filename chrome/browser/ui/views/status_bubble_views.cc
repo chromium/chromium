@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -116,7 +115,7 @@ class StatusBubbleViews::StatusViewAnimation
   // gfx::AnimationDelegate:
   void AnimationEnded(const Animation* animation) override;
 
-  CheckedPtr<StatusView> status_view_;
+  StatusView* status_view_;
 
   // Start and end opacities for the current transition - note that as a
   // fade-in can easily turn into a fade out, opacity_start_ is sometimes
@@ -615,10 +614,10 @@ class StatusBubbleViews::StatusViewExpander
   void AnimationEnded(const gfx::Animation* animation) override;
 
   // The status bubble that manages the popup widget and this object.
-  CheckedPtr<StatusBubbleViews> status_bubble_;
+  StatusBubbleViews* status_bubble_;
 
   // Change the bounds and text of this view.
-  CheckedPtr<StatusView> status_view_;
+  StatusView* status_view_;
 
   // Text elided (if needed) to fit maximum status bar width.
   base::string16 expanded_text_;

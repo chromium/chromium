@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -65,7 +64,7 @@ class PasswordManagerSigninInterceptTestHelper {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<const net::test_server::EmbeddedTestServer> https_test_server_;
+  const net::test_server::EmbeddedTestServer* https_test_server_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_SIGNIN_INTERCEPT_TEST_HELPER_H_

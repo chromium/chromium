@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -221,7 +220,7 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
   int file_size() { return file_->data_size(); }
 
  private:
-  CheckedPtr<base::WaitableEvent> event_;
+  base::WaitableEvent* event_;
   int pos_;
   scoped_refptr<DecoderBuffer> file_;
 
@@ -293,10 +292,10 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
   void OnError() override {}
 
  private:
-  CheckedPtr<base::WaitableEvent> event_;
+  base::WaitableEvent* event_;
   AudioParameters params_;
   std::unique_ptr<media::SeekableBuffer> buffer_;
-  CheckedPtr<FILE> binary_file_;
+  FILE* binary_file_;
 
   DISALLOW_COPY_AND_ASSIGN(FileAudioSink);
 };
@@ -576,7 +575,7 @@ class AudioAndroidOutputTest : public testing::Test {
   std::unique_ptr<AudioManager> audio_manager_;
   AudioDeviceInfoAccessorForTests audio_manager_device_info_;
   AudioParameters audio_output_parameters_;
-  CheckedPtr<AudioOutputStream> audio_output_stream_;
+  AudioOutputStream* audio_output_stream_;
   base::TimeTicks start_time_;
   base::TimeTicks end_time_;
 
@@ -710,7 +709,7 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest,
     audio_input_stream_ = nullptr;
   }
 
-  CheckedPtr<AudioInputStream> audio_input_stream_;
+  AudioInputStream* audio_input_stream_;
   AudioParameters audio_input_parameters_;
 
  private:
@@ -757,7 +756,7 @@ TEST_P(AudioAndroidInputTest, CreateAndCloseInputStream) {
   AudioParameters params = GetInputStreamParameters();
   MakeAudioInputStreamOnAudioThread(params);
   RunOnAudioThread(base::BindOnce(&AudioInputStream::Close,
-                                  base::Unretained(audio_input_stream_.get())));
+                                  base::Unretained(audio_input_stream_)));
 }
 
 // Ensure that a default output stream can be created and closed.
@@ -767,8 +766,8 @@ TEST_P(AudioAndroidInputTest, CreateAndCloseInputStream) {
 TEST_F(AudioAndroidOutputTest, CreateAndCloseOutputStream) {
   GetDefaultOutputStreamParametersOnAudioThread();
   MakeAudioOutputStreamOnAudioThread(audio_output_parameters());
-  RunOnAudioThread(base::BindOnce(
-      &AudioOutputStream::Close, base::Unretained(audio_output_stream_.get())));
+  RunOnAudioThread(base::BindOnce(&AudioOutputStream::Close,
+                                  base::Unretained(audio_output_stream_)));
 }
 
 // Ensure that a default input stream can be opened and closed.

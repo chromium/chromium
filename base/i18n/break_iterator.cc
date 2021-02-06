@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/i18n/uchar.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "third_party/icu/source/common/unicode/ubrk.h"
@@ -103,7 +102,7 @@ class DefaultLocaleBreakIteratorCache {
 
  private:
   UErrorCode main_status_;
-  CheckedPtr<UBreakIterator> main_;
+  UBreakIterator* main_;
   bool main_could_be_leased_ GUARDED_BY(lock_);
   Lock lock_;
 };

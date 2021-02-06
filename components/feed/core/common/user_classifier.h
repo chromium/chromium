@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/feed/core/common/enums.h"
 
 class PrefRegistrySimple;
@@ -87,8 +86,8 @@ class UserClassifier {
   void SetRate(Event event, double rate);
   void ClearRate(Event event);
 
-  CheckedPtr<PrefService> pref_service_;
-  CheckedPtr<const base::Clock> clock_;
+  PrefService* pref_service_;
+  const base::Clock* clock_;
 
   DISALLOW_COPY_AND_ASSIGN(UserClassifier);
 };

@@ -14,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/delegated_ink_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -345,8 +344,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Resets member variables that were used during Aggregate().
   void ResetAfterAggregate();
 
-  const CheckedPtr<SurfaceManager> manager_;
-  const CheckedPtr<DisplayResourceProvider> provider_;
+  SurfaceManager* const manager_;
+  DisplayResourceProvider* const provider_;
 
   const bool aggregate_only_damaged_;
 
@@ -395,7 +394,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   base::flat_set<SurfaceId> valid_surfaces_;
 
   // This is the pass list for the aggregated frame.
-  CheckedPtr<AggregatedRenderPassList> dest_pass_list_ = nullptr;
+  AggregatedRenderPassList* dest_pass_list_ = nullptr;
 
   // The target display time for the aggregated frame.
   base::TimeTicks expected_display_time_;
@@ -422,7 +421,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   // A pointer to the list of surface damage rects from the current
   // AggregatedFrame, used for overlay optimization.
-  CheckedPtr<SurfaceDamageRectList> surface_damage_rect_list_;
+  SurfaceDamageRectList* surface_damage_rect_list_;
 
   // The aggregate color content usage of the currently-aggregating frame. This
   // is computed by the prewalk, and is used to determine the format and color

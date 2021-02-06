@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INITIATOR_CSP_CONTEXT_H_
 #define CONTENT_BROWSER_INITIATOR_CSP_CONTEXT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/navigation_params.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -40,7 +39,7 @@ class InitiatorCSPContext : public network::CSPContext {
       network::mojom::SourceLocation* source_location) const override;
 
  private:
-  CheckedPtr<RenderFrameHostImpl> reporting_render_frame_host_impl_;
+  RenderFrameHostImpl* reporting_render_frame_host_impl_;
   mojo::Remote<blink::mojom::NavigationInitiator> initiator;
 
   DISALLOW_COPY_AND_ASSIGN(InitiatorCSPContext);

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "url/gurl.h"
@@ -43,8 +42,8 @@ class CredentialLeakDialogControllerImpl
   // Release |credential_leak_dialog_| and close the open dialog.
   void ResetDialog();
 
-  CheckedPtr<CredentialLeakPrompt> credential_leak_dialog_ = nullptr;
-  CheckedPtr<PasswordsLeakDialogDelegate> delegate_;
+  CredentialLeakPrompt* credential_leak_dialog_ = nullptr;
+  PasswordsLeakDialogDelegate* delegate_;
   const password_manager::CredentialLeakType leak_type_;
   const GURL origin_;
 

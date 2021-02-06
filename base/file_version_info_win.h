@@ -15,7 +15,6 @@
 
 #include "base/base_export.h"
 #include "base/file_version_info.h"
-#include "base/memory/checked_ptr.h"
 #include "base/version.h"
 
 struct tagVS_FIXEDFILEINFO;
@@ -66,7 +65,7 @@ class BASE_EXPORT FileVersionInfoWin : public FileVersionInfo {
   FileVersionInfoWin(void* data, WORD language, WORD code_page);
 
   const std::vector<uint8_t> owned_data_;
-  const CheckedPtr<const void> data_;
+  const void* const data_;
   const WORD language_;
   const WORD code_page_;
 

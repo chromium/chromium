@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -2029,7 +2028,7 @@ class CorsInjectingUrlLoader : public blink::URLLoaderThrottle {
 
  private:
   // See |NavigationCorsExemptBrowserTest::last_cors_header_value_| for details.
-  CheckedPtr<std::string> last_cors_header_value_;
+  std::string* last_cors_header_value_;
 };
 
 // ContentBrowserClient responsible for creating CorsInjectingUrlLoader.
@@ -2054,7 +2053,7 @@ class CorsContentBrowserClient : public TestContentBrowserClient {
 
  private:
   // See |NavigationCorsExemptBrowserTest::last_cors_header_value_| for details.
-  CheckedPtr<std::string> last_cors_header_value_;
+  std::string* last_cors_header_value_;
 };
 
 class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
@@ -2088,7 +2087,7 @@ class NavigationCorsExemptBrowserTest : public NavigationBaseBrowserTest {
   std::string last_cors_header_value_;
   CorsContentBrowserClient cors_content_browser_client_{
       &last_cors_header_value_};
-  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
 };
 
 // Verifies a header added by way of SetRequestHeader() makes it into
@@ -2163,7 +2162,7 @@ class CreateWebContentsOnCrashObserver : public NotificationObserver {
   bool observed_ = false;
 
   GURL url_;
-  CheckedPtr<WebContents> first_web_contents_;
+  WebContents* first_web_contents_;
 
   ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 
@@ -3308,7 +3307,7 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
 
  private:
   std::unique_ptr<BrowserClient> browser_client_;
-  CheckedPtr<ContentBrowserClient> old_browser_client_;
+  ContentBrowserClient* old_browser_client_;
   url::ScopedSchemeRegistryForTests scoped_registry_;
 };
 

@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/site_instance_impl.h"
@@ -177,10 +176,10 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void ReattachToOuterWebContentsFrame() override {}
   void SetPageFrozen(bool frozen) override;
 
-  CheckedPtr<RenderViewHostDelegateView> delegate_view_override_;
+  RenderViewHostDelegateView* delegate_view_override_;
 
   // See set_web_preferences_changed_counter() above. May be nullptr.
-  CheckedPtr<int> web_preferences_changed_counter_;
+  int* web_preferences_changed_counter_;
   std::string save_frame_headers_;
   base::string16 suggested_filename_;
   // Map keyed by image URL. Values are <id, callback> pairs.

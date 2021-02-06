@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,7 +39,7 @@ class CONTENT_EXPORT KeyboardLockServiceImpl final
   // |this| can only be destroyed by FrameServiceBase.
   ~KeyboardLockServiceImpl() override;
 
-  const CheckedPtr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* const render_frame_host_;
 };
 
 }  // namespace content

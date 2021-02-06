@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/proto/entry.pb.h"
@@ -64,7 +63,7 @@ class DownloadStoreTest : public testing::Test {
 
  protected:
   std::map<std::string, protodb::Entry> db_entries_;
-  CheckedPtr<leveldb_proto::test::FakeDB<protodb::Entry>> db_;
+  leveldb_proto::test::FakeDB<protodb::Entry>* db_;
   std::unique_ptr<DownloadStore> store_;
   base::Optional<bool> hard_recover_result_;
 

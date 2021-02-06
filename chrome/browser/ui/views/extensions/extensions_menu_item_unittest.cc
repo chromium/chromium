@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
@@ -66,8 +65,8 @@ class ExtensionsMenuItemViewTest : public BrowserWithTestWindowTest {
   const base::string16 initial_extension_name_;
   const base::string16 initial_tooltip_;
   std::unique_ptr<views::Widget> widget_;
-  CheckedPtr<ExtensionsMenuButton> primary_button_on_menu_ = nullptr;
-  CheckedPtr<TestToolbarActionViewController> controller_ = nullptr;
+  ExtensionsMenuButton* primary_button_on_menu_ = nullptr;
+  TestToolbarActionViewController* controller_ = nullptr;
 };
 
 TEST_F(ExtensionsMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {

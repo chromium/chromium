@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -193,7 +192,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
   }
 
   base::queue<FetchCallExpectation> expected_fetch_commands_calls_;
-  CheckedPtr<TestingRemoteCommandsServer> server_;
+  TestingRemoteCommandsServer* server_;
 
   DISALLOW_COPY_AND_ASSIGN(TestingCloudPolicyClientForRemoteCommands);
 };
@@ -569,7 +568,7 @@ class RemoteCommandsServiceHistogramTest : public RemoteCommandsServiceTest {
                                        metrics.size());
   }
 
-  CheckedPtr<MockTestRemoteCommandFactory> factory_ptr;
+  MockTestRemoteCommandFactory* factory_ptr;
   base::HistogramTester histogram_tester_;
 };
 

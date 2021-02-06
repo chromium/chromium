@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/common/enums.h"
 #include "components/feed/core/common/refresh_throttler.h"
@@ -148,10 +147,10 @@ class FeedSchedulerHost : web_resource::EulaAcceptedNotifier::Observer {
   void CancelFixedTimerWakeUp();
 
   // Non-owning reference to pref service providing durable storage.
-  CheckedPtr<PrefService> profile_prefs_;
+  PrefService* profile_prefs_;
 
   // Non-owning reference to clock to get current time.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Persists NTP and article usage over time and provides a classification.
   UserClassifier user_classifier_;

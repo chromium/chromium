@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -33,7 +32,7 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   void UnrefResources(const std::vector<ReturnedResource>& resources);
 
  private:
-  CheckedPtr<SurfaceResourceHolderClient> client_;
+  SurfaceResourceHolderClient* client_;
 
   struct ResourceRefs {
     int refs_received_from_child = 0;

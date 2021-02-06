@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string16.h"
@@ -123,7 +122,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
  private:
   // This raw pointer is safe because all DatabaseImpl instances are owned by
   // an IndexedDBDispatcherHost.
-  CheckedPtr<IndexedDBDispatcherHost> dispatcher_host_;
+  IndexedDBDispatcherHost* dispatcher_host_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBConnection> connection_;
   const url::Origin origin_;

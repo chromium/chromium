@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "services/device/geolocation/fake_location_provider.h"
@@ -103,7 +102,7 @@ class TestingLocationArbitrator : public LocationArbitrator {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key) override {
     network_location_provider_ = new FakeLocationProvider;
-    return base::WrapUnique(network_location_provider_.get());
+    return base::WrapUnique(network_location_provider_);
   }
 
   std::unique_ptr<LocationProvider> NewSystemLocationProvider() override {
@@ -112,11 +111,11 @@ class TestingLocationArbitrator : public LocationArbitrator {
     }
 
     system_location_provider_ = new FakeLocationProvider;
-    return base::WrapUnique(system_location_provider_.get());
+    return base::WrapUnique(system_location_provider_);
   }
 
-  CheckedPtr<FakeLocationProvider> network_location_provider_ = nullptr;
-  CheckedPtr<FakeLocationProvider> system_location_provider_ = nullptr;
+  FakeLocationProvider* network_location_provider_ = nullptr;
+  FakeLocationProvider* system_location_provider_ = nullptr;
   bool should_use_system_location_provider_;
 };
 

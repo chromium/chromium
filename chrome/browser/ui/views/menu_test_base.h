@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -87,8 +86,8 @@ class MenuTestBase : public ViewEventTestBase,
  private:
   void ButtonPressed();
 
-  CheckedPtr<views::MenuButton> button_ = nullptr;
-  CheckedPtr<views::MenuItemView> menu_ = nullptr;
+  views::MenuButton* button_ = nullptr;
+  views::MenuItemView* menu_ = nullptr;
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The command id of the last pressed menu item since the menu was opened.

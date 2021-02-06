@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -86,7 +85,7 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
   const HostPortPair host_port_pair_;
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> network_session_;
-  CheckedPtr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
+  WebSocketEndpointLockManager* websocket_endpoint_lock_manager_;
 };
 
 TEST_F(WebSocketClientSocketHandleAdapterTest, Uninitialized) {

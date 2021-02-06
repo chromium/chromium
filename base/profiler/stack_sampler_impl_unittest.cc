@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
@@ -53,7 +52,7 @@ class TestProfileBuilder : public ProfileBuilder {
   TimeTicks last_timestamp() { return last_timestamp_; }
 
  private:
-  CheckedPtr<ModuleCache> module_cache_;
+  ModuleCache* module_cache_;
   TimeTicks last_timestamp_;
 };
 
@@ -136,8 +135,8 @@ class TestUnwinder : public Unwinder {
 
  private:
   size_t stack_size_;
-  CheckedPtr<std::vector<uintptr_t>> stack_copy_;
-  CheckedPtr<uintptr_t> stack_copy_bottom_;
+  std::vector<uintptr_t>* stack_copy_;
+  uintptr_t* stack_copy_bottom_;
 };
 
 // Records invocations of calls to OnStackCapture()/UpdateModules().

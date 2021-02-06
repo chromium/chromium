@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/win/pe_image_reader.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,7 +51,7 @@ class PeImageReaderTest : public testing::TestWithParam<const TestData*> {
         image_reader_.Initialize(data_file_.data(), data_file_.length()));
   }
 
-  CheckedPtr<const TestData> expected_data_;
+  const TestData* expected_data_;
   FilePath data_file_path_;
   MemoryMappedFile data_file_;
   PeImageReader image_reader_;
@@ -226,7 +225,7 @@ class PeImageReaderCertificateTest
         image_reader_.Initialize(data_file_.data(), data_file_.length()));
   }
 
-  CheckedPtr<const CertificateTestData> expected_data_;
+  const CertificateTestData* expected_data_;
   FilePath data_file_path_;
   MemoryMappedFile data_file_;
   PeImageReader image_reader_;

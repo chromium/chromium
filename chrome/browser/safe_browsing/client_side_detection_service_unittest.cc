@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -200,7 +199,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
   std::unique_ptr<ClientSideDetectionService> csd_service_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;

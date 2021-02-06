@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/test/bind.h"
@@ -73,7 +72,7 @@ class FidoDeviceAuthenticatorTest : public testing::Test {
 
   scoped_refptr<VirtualFidoDevice::State> authenticator_state_;
   std::unique_ptr<FidoDeviceAuthenticator> authenticator_;
-  CheckedPtr<VirtualCtap2Device> virtual_device_;
+  VirtualCtap2Device* virtual_device_;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;

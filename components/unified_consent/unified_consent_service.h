@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -104,9 +103,9 @@ class UnifiedConsentService
   // |OnStateChanged| when the sync engine is initialized.
   void UpdateSettingsForMigration();
 
-  CheckedPtr<sync_preferences::PrefServiceSyncable> pref_service_;
-  CheckedPtr<signin::IdentityManager> identity_manager_;
-  CheckedPtr<syncer::SyncService> sync_service_;
+  sync_preferences::PrefServiceSyncable* pref_service_;
+  signin::IdentityManager* identity_manager_;
+  syncer::SyncService* sync_service_;
 
   // Used for tracking the service pref states during the advanced sync opt-in.
   const std::vector<std::string> service_pref_names_;

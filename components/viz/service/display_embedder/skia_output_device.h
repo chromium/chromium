@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -211,7 +210,7 @@ class SkiaOutputDevice {
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 
-  const CheckedPtr<GrDirectContext> gr_context_;
+  GrDirectContext* const gr_context_;
 
   OutputSurface::Capabilities capabilities_;
 

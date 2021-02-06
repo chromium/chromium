@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -110,7 +109,7 @@ class SigninErrorHandlerTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SigninErrorUI> signin_error_ui_;
-  CheckedPtr<TestingSigninErrorHandler> handler_;  // Not owned.
+  TestingSigninErrorHandler* handler_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(SigninErrorHandlerTest);
 };

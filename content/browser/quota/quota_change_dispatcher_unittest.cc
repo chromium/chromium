@@ -8,7 +8,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -96,7 +95,7 @@ class QuotaChangeDispatcherTest : public testing::Test {
 
  private:
   // If not null, will be stopped when a quota change notification is received.
-  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
+  base::RunLoop* run_loop_ = nullptr;
 };
 
 TEST_F(QuotaChangeDispatcherTest, AddChangeListener) {

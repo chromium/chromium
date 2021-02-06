@@ -12,7 +12,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
@@ -325,7 +324,7 @@ class GPU_EXPORT GpuControlList {
   static OsType GetOsType();
 
   size_t entry_count_;
-  CheckedPtr<const Entry> entries_;
+  const Entry* entries_;
   // This records all the entries that are appliable to the current user
   // machine.  It is updated everytime MakeDecision() is called and is used
   // later by GetDecisionEntries().
@@ -344,7 +343,7 @@ class GPU_EXPORT GpuControlList {
 
 struct GPU_EXPORT GpuControlListData {
   size_t entry_count;
-  CheckedPtr<const GpuControlList::Entry> entries;
+  const GpuControlList::Entry* entries;
 
   GpuControlListData() : entry_count(0u), entries(nullptr) {}
 
