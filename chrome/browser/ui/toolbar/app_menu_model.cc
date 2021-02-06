@@ -109,6 +109,13 @@ namespace {
 
 constexpr size_t kMaxAppNameLength = 30;
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Put "New" badge behind a separate flag so it can be enabled separately during
+// the experiment and early rollout to stable, then deprecated.
+const base::Feature kChromeTipsInMainMenuNewBadge{
+    "ChromeTipsInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_MAC)
 // An empty command used because of a bug in AppKit menus.
 // See comment in CreateActionToolbarOverflowMenu().
@@ -190,8 +197,11 @@ class HelpMenuModel : public ui::SimpleMenuModel {
     AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenu))
+    if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenu)) {
       AddItem(IDC_CHROME_TIPS, l10n_util::GetStringUTF16(IDS_CHROME_TIPS));
+      if (base::FeatureList::IsEnabled(kChromeTipsInMainMenuNewBadge))
+        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_TIPS), true);
+    }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
     if (browser_defaults::kShowHelpMenuItemIcon) {
@@ -614,7 +624,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.About", delta);
       LogMenuAction(MENU_ACTION_ABOUT);
       break;
-
     // Help menu.
     case IDC_HELP_PAGE_VIA_MENU:
       base::RecordAction(UserMetricsAction("ShowHelpTabViaWrenchMenu"));
@@ -633,6 +642,11 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Feedback", delta);
       LogMenuAction(MENU_ACTION_FEEDBACK);
+      break;
+    case IDC_CHROME_TIPS:
+      if (!uma_action_recorded_)
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ChromeTips", delta);
+      LogMenuAction(MENU_ACTION_CHROME_TIPS);
       break;
 #endif
 

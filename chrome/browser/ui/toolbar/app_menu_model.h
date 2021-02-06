@@ -80,6 +80,7 @@ enum AppMenuAction {
   // Only used by WebAppMenuModel:
   MENU_ACTION_UNINSTALL_APP = 51,
   MENU_ACTION_SHOW_KALEIDOSCOPE = 52,
+  MENU_ACTION_CHROME_TIPS = 53,
   LIMIT_MENU_ACTION
 };
 
