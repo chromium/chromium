@@ -50,7 +50,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Erakutsi Bluetooth-aren ezarpenak. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1316069254387866896">Erakutsi beti biltegia</translation>
+<translation id="1316069254387866896">Erakutsi beti apala</translation>
 <translation id="1316811122439383437">Tote: azken pantaila-argazkiak, deskargak eta ainguratutako fitxategiak</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> konektatuta</translation>
 <translation id="1341651618736211726">Luzapena</translation>
@@ -776,7 +776,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
 <translation id="776344839111254542">Egin klik eguneratzearen xehetasunak ikusteko</translation>
 <translation id="7780159184141939021">Biratu pantaila</translation>
-<translation id="7796353162336583443">Sakatu biltegiko arkatzaren botoia oharrak idazteko, pantaila-argazkiak ateratzeko, edo Google-ren Laguntzailea, laser-erakuslea nahiz lupa erabiltzeko.</translation>
+<translation id="7796353162336583443">Sakatu apaleko arkatzaren botoia oharrak idazteko, pantaila-argazkiak ateratzeko, edo Google-ren Laguntzailea, laser-erakuslea nahiz lupa erabiltzeko.</translation>
 <translation id="7798302898096527229">Bertan behera uzteko, sakatu Bilatu edo Maius.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> eta <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Seinale indartsua</translation>
@@ -857,7 +857,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8427213022735114808">Diktaketak ahotsa bidaltzen dio Google-ri, testu-eremuetan diktatu ahal izateko.</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8433186206711564395">Sarearen ezarpenak</translation>
-<translation id="8433977262951327081">Aldatu egin da idazketa-aukeren burbuila biltegian erakusteko lasterbidea. Aurrerantzean, erabili <ph name="NEW_SHORTCUT" />, eta ez <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8433977262951327081">Aldatu egin da idazketa-aukeren burbuila apalean erakusteko lasterbidea. Aurrerantzean, erabili <ph name="NEW_SHORTCUT" />, eta ez <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> lan-eremua aktibatu da</translation>
 <translation id="8452135315243592079">SIM txartela falta da</translation>
 <translation id="8454013096329229812">Wi-Fi konexioa aktibatuta dago.</translation>
@@ -889,7 +889,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Potentzia txikiko kargagailua konektatu da</translation>
 <translation id="8683506306463609433">Aktibo dago funtzionamenduaren jarraipena egiteko aukera</translation>
-<translation id="8703634754197148428">Hasi grabatzen. Grabatzen hasi ondoren, sakatu Alt + Maius + L biltegira joateko; bertan ikusiko duzu grabaketa gelditzeko botoia.</translation>
+<translation id="8703634754197148428">Hasi grabatzen. Grabatzen hasi ondoren, sakatu Alt + Maius + L apalera joateko; bertan ikusiko duzu grabaketa gelditzeko botoia.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Erabili ezkerrera edo eskuinera egiteko gezi-tekla eginbide hori kudeatzeko.</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8721053961083920564">Aldatu bolumena. <ph name="STATE_TEXT" /></translation>

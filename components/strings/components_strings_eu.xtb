@@ -87,7 +87,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
         <ph name="END_BOLD" />
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />leiho honetan ikusten dituzun orriak,
-          <ph name="LIST_ITEM" />cookieak eta webgunearen datuak,
+          <ph name="LIST_ITEM" />cookieak eta webguneetako datuak,
           <ph name="LIST_ITEM" />kontuaren informazioa (<ph name="LINK_BEGIN" />amaitu saioa<ph name="LINK_END" />).
         <ph name="END_LIST" /></translation>
 <translation id="1270502636509132238">Jasotzeko modua</translation>
@@ -485,7 +485,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2859806420264540918">Webgune honek iragarki oztopatzaile edo iruzurrezkoak erakusten ditu.</translation>
 <translation id="2878197950673342043">Horma-irudi tolestura</translation>
 <translation id="2878424575911748999">A1</translation>
-<translation id="2880660355386638022">Leihoaren kokalekua</translation>
+<translation id="2880660355386638022">Leihoen agerpena</translation>
 <translation id="2881276955470682203">Txartela gorde nahi duzu?</translation>
 <translation id="2882949212241984732">Leiho bikoitz erako tolestura</translation>
 <translation id="2903493209154104877">Helbideak</translation>
@@ -593,9 +593,9 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3360103848165129075">Ordainketa kudeatzeko orria</translation>
 <translation id="3361596688432910856">Chrome-k <ph name="BEGIN_EMPHASIS" />ez du gordeko<ph name="END_EMPHASIS" /> informazio hau:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Arakatze-historia
-          <ph name="LIST_ITEM" />Cookieak eta webguneko datuak
-          <ph name="LIST_ITEM" />Inprimakietan idatzitako datuak
+          <ph name="LIST_ITEM" />arakatze-historia,
+          <ph name="LIST_ITEM" />cookieak eta webguneetako datuak,
+          <ph name="LIST_ITEM" />inprimakietan idatzitako datuak.
         <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467"><ph name="OLD_POLICY" /> gidalerro zaharkituaren kopia automatikoa da gidalerro hau. Horren ordez gidalerro hau erabili beharko zenuke.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> webguneak errealitate birtualeko gailua eta datuak erabili nahi ditu</translation>
@@ -886,7 +886,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4414290883293381923">Webgune engainagarri batean idatzi duzu pasahitza. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> eta <ph name="WEBSITE_3" /> webguneetara eta pasahitz hori erabili duzun beste webgune batzuetara joatea gomendatzen dizu Chrome-k.</translation>
 <translation id="4415426530740016218">Jasotzeko helbidea</translation>
 <translation id="4424024547088906515">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Chrome ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
-<translation id="443121186588148776">Serie-ataka</translation>
+<translation id="443121186588148776">Serieko ataka</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> webguneak ez du onartu edo jaso saioa hasteko ziurtagiria.</translation>
 <translation id="4432792777822557199"><ph name="SOURCE_LANGUAGE" /> darabilten orriak <ph name="TARGET_LANGUAGE" /> hizkuntzara itzuliko dira</translation>
 <translation id="4434045419905280838">Leiho gainerak. / Birbideratzeak</translation>
@@ -1438,7 +1438,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6630809736994426279">Baliteke une honetan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webgunean dauden erasotzaileak informazioa (besteak beste, argazkiak, pasahitzak, mezuak eta kreditu-txartelen datuak) lapurtzen edo ezabatzen duten programa arriskutsuak instalatzen saiatzea. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Garbitu</translation>
-<translation id="6645291930348198241">Cookieak eta webgunearen datuak atzitu.</translation>
+<translation id="6645291930348198241">Cookieak eta webguneko datuak atzitu.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Bat ere ez}=1{1 gune (ez da amaituko Google-ko kontuko saioa)}other{# gune (ez da amaituko Google-ko kontuko saioa)}}</translation>
 <translation id="6648459603387803038">Administratzaileak urrunetik alda dezake arakatzailearen konfigurazioa. Baliteke gailu honetako jarduerak Chrome-tik kanpo ere kudeatzea.</translation>
 <translation id="6648524591329069940">Serif letra</translation>
@@ -1684,7 +1684,7 @@ Xehetasun gehiago:
 <translation id="7633909222644580952">Errendimenduaren datuak eta hutsegite-txostenak</translation>
 <translation id="7637571805876720304">Kreditu-txartela Chromium-etik kendu nahi duzu?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Bat ere ez}=1{1 pasahitz daukazu kontuan (<ph name="DOMAIN_LIST" />)}other{# pasahitz dauzkazu kontuan (<ph name="DOMAIN_LIST" />)}}</translation>
-<translation id="7638605456503525968">Serie-atakak</translation>
+<translation id="7638605456503525968">Serieko atakak</translation>
 <translation id="7639968568612851608">Gris iluna</translation>
 <translation id="7647206758853451655">Inprimatze-kalitatea</translation>
 <translation id="7648992873808071793">Gorde fitxategiak gailu honetan</translation>
@@ -1917,7 +1917,7 @@ Xehetasun gehiago:
         <ph name="END_BOLD" />
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />leiho honetan ikusten dituzun orriak,
-          <ph name="LIST_ITEM" />cookieak eta webgunearen datuak.
+          <ph name="LIST_ITEM" />cookieak eta webguneetako datuak.
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">Erabili Touch ID txartelak bizkorrago berresteko</translation>
 <translation id="858637041960032120">Gehitu telefono-zenbakia</translation>

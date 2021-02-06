@@ -362,7 +362,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4805759445554688327">Txartel-zenbakiak ez du balio</translation>
 <translation id="4808744395915275922">Eguneratzeak</translation>
 <translation id="4818522717893377262">Gehitu hizkuntza bat…</translation>
-<translation id="481968316161811770">Cookieak, webguneko datuak</translation>
+<translation id="481968316161811770">Cookieak, webguneetako datuak</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} eta beste bat}other{{domain} eta beste {count}}}</translation>
 <translation id="4826218269716039351">Blokeatu hirugarrenen cookieak</translation>
 <translation id="48274138579728272">Markatu irakurritako gisa</translation>

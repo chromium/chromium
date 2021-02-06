@@ -1250,7 +1250,7 @@
 <translation id="2387052489799050037">முகப்பிற்குச் செல்லுதல்</translation>
 <translation id="2387458720915042159">ப்ராக்ஸி இணைப்பு வகை</translation>
 <translation id="2390347491606624519">ப்ராக்ஸியுடன் இணைக்க முடியவில்லை, மீண்டும் உள்நுழையவும்</translation>
-<translation id="2390782873446084770">Wi-Fi ஒத்திசைவு</translation>
+<translation id="2390782873446084770">வைஃபை ஒத்திசைவு</translation>
 <translation id="2391419135980381625">நிலையான எழுத்துரு</translation>
 <translation id="2392163307141705938"><ph name="IDS_SHORT_PRODUCT_NAME" /> ஐப் பயன்படுத்த உங்கள் பெற்றோர் அமைத்த நேர வரம்பை அடைந்துவிட்டீர்கள்.</translation>
 <translation id="2392369802118427583">செயல்படுத்து</translation>
@@ -2580,7 +2580,7 @@
 <translation id="3884152383786131369">பல மொழிகளில் கிடைக்கும் இணைய உள்ளடக்கம், இந்தப் பட்டியலில் முதலில் உள்ள ஆதரிக்கப்படும் மொழியைப் பயன்படுத்தும். இந்த விருப்பத்தேர்வுகள் உங்கள் உலாவி அமைப்புகளுடன் ஒத்திசைக்கப்படும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">இந்தத் தளத்தை அணுகுவதற்கான உங்கள் கோரிக்கை <ph name="NAME" />க்கு அனுப்பப்பட்டது</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> மூலம் குறிப்புகளை எடுத்தல்</translation>
-<translation id="3890064827463908288">Wi-Fi ஒத்திசைவைப் பயன்படுத்த Chrome ஒத்திசைவை இயக்க வேண்டும்</translation>
+<translation id="3890064827463908288">வைஃபை ஒத்திசைவைப் பயன்படுத்த Chrome ஒத்திசைவை இயக்க வேண்டும்</translation>
 <translation id="3892414795099177503">OpenVPN / L2TPஐச் சேர்...</translation>
 <translation id="3893536212201235195">உங்கள் அணுகல்தன்மை அமைப்புகளைப் படித்தல் மற்றும் மாற்றுதல்</translation>
 <translation id="3893630138897523026">ChromeVox (பேச்சுவடிவ கருத்து)</translation>
@@ -4021,7 +4021,7 @@
 <translation id="5602765853043467355">இந்தச் சாதனத்திலிருந்து புக்மார்க்குகள், வரலாறு, கடவுச்சொற்கள் மற்றும் பலவற்றை அழிக்கவும்</translation>
 <translation id="5605623530403479164">பிற தேடல் இன்ஜின்கள்</translation>
 <translation id="5605758115928394442">அது நீங்கள்தான் என்பதை உறுதிப்படுத்த உங்கள் ஃபோனுக்கு ஓர் அறிவிப்பு அனுப்பப்பட்டுள்ளது.</translation>
-<translation id="560834977503641186">Wi-Fi ஒத்திசைவு, மேலும் அறிக</translation>
+<translation id="560834977503641186">வைஃபை ஒத்திசைவு, மேலும் அறிக</translation>
 <translation id="5608580678041221894">செதுக்கும் பகுதியைச் சரிசெய்ய அல்லது நகர்த்த, பின்வரும் விசைகளைத் தட்டவும்</translation>
 <translation id="5609231933459083978">ஆப்ஸ் தவறானது என்பதுபோல் தெரிகிறது.</translation>
 <translation id="5610038042047936818">கேமரா பயன்முறைக்கு மாறு</translation>
@@ -7224,6 +7224,6 @@
 <translation id="994289308992179865">&amp;சுழற்சி</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">பாதுகாப்பான இணைப்பை உருவாக்குகிறது...</translation>
-<translation id="99731366405731005">Wi-Fi ஒத்திசைவைப் பயன்படுத்த <ph name="LINK1_BEGIN" />Chrome ஒத்திசைவை<ph name="LINK1_END" /> இயக்கவும். <ph name="LINK2_BEGIN" />மேலும் அறிக<ph name="LINK2_END" /></translation>
+<translation id="99731366405731005">வைஃபை ஒத்திசைவைப் பயன்படுத்த <ph name="LINK1_BEGIN" />Chrome ஒத்திசைவை<ph name="LINK1_END" /> இயக்கவும். <ph name="LINK2_BEGIN" />மேலும் அறிக<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">க&amp;ண்காணி</translation>
 </translationbundle>

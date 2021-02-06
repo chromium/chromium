@@ -83,7 +83,7 @@
 <translation id="2981684127883932071">Iradokizunak daude ikusgai</translation>
 <translation id="3036649622769666520">Ireki fitxategiak</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3068711042108640621">Biltegia ezkerraldean dago</translation>
+<translation id="3068711042108640621">Apala ezkerraldean dago</translation>
 <translation id="3087734570205094154">Behekoa</translation>
 <translation id="3126026824346185272">Ktrl</translation>
 <translation id="3157931365184549694">Leheneratu</translation>
@@ -95,7 +95,7 @@
 <translation id="335581015389089642">Hizketa</translation>
 <translation id="3389286852084373014">Testua luzeegia da</translation>
 <translation id="3406306243914553062">HTML edukia</translation>
-<translation id="348799646910989694">Biltegia automatikoki ezkutatuko da</translation>
+<translation id="348799646910989694">Apala automatikoki ezkutatuko da</translation>
 <translation id="3554637740840164787">Ainguratu da <ph name="ITEM_TITLE" /></translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 egun gelditzen da}other{# egun gelditzen dira}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> fitxategia</translation>
@@ -126,7 +126,7 @@
 <translation id="4588090240171750605">Joan eskuinera</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> aplikazioa. <ph name="RATING_SCORE" /> izarreko balorazioa dauka.</translation>
 <translation id="4648249871170053485">Gomendatutako aplikazioa (<ph name="APP_NAME" />)</translation>
-<translation id="4690510401873698237">Biltegia behealdean dago</translation>
+<translation id="4690510401873698237">Apala behealdean dago</translation>
 <translation id="4724120544754982507">Jakinarazpen-zentroa: irakurri gabeko <ph name="UNREAD_NOTIFICATION_COUNT" /> jakinarazpen dituzu</translation>
 <translation id="4730374152663651037">MAIZ ERABILTZEN DIREN APLIKAZIOAK</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 hilabete gelditzen da}other{# hilabete gelditzen dira}}</translation>
@@ -145,13 +145,13 @@
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> aplikazioaren gainean dago <ph name="DRAGGED_APP_NAME" />; aska ezazu karpeta bat sortzeko.</translation>
 <translation id="5463830097259460683">Emojiak eta ikurrak</translation>
 <translation id="5476505524087279545">desautatu</translation>
-<translation id="547979256943495781">Biltegia eskuinaldean dago</translation>
+<translation id="547979256943495781">Apala eskuinaldean dago</translation>
 <translation id="5528053674512161860">Ezin izan da kargatu orria ez dagoelako instalatuta garatzailearen erabiltzaile-interfazearen modulua (dev_ui)</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> sistema</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5613020302032141669">Ezkerrera gezia</translation>
 <translation id="5652575806481723716">Zure arreta behar du <ph name="FOCUSED_APP_NAME" /> aplikazioak.</translation>
-<translation id="5675363643668471212">Biltegiko elementua</translation>
+<translation id="5675363643668471212">Apaleko elementua</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktibo gaur}=1{Aktibo duela 1 egun}other{Aktibo duela # egun}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 egun eta }other{# egun eta }}</translation>
@@ -247,7 +247,7 @@
 <translation id="8394908167088220973">Erreproduzitu/Pausatu multimedia-elementua</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 urte}other{# urte}}</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> fitxategia (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="8649597172973390955">Biltegia beti dago ikusgai</translation>
+<translation id="8649597172973390955">Apala beti dago ikusgai</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8685326675965865247">Bilatu gailuan, aplikazioetan, ezarpenetan eta sarean. Aplikazio batetik bestera pasatzeko, erabili gezi-teklak.</translation>
 <translation id="8725488761726303204">eta beste <ph name="NUMBER" /></translation>
@@ -260,7 +260,7 @@
 <translation id="8867568208303837180">Bidaltzen…</translation>
 <translation id="8876215549894133151">Formatua:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="8926951137623668982">Biltegia beti dago ezkutatuta</translation>
+<translation id="8926951137623668982">Apala beti dago ezkutatuta</translation>
 <translation id="8996630695507351249">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> gailua Internetera konektatuta dagoela.</translation>
 <translation id="9002566407876343676">ireki</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}other{# s}}</translation>

@@ -190,7 +190,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2916171785467530738">Autocomplete searches and URLs</translation>
 <translation id="291754862089661335">Position QR code or bar code in this frame</translation>
 <translation id="2921219216347069551">Cannot Share Page</translation>
-<translation id="2923448633003185837">Paste and Go</translation>
+<translation id="2923448633003185837">Paste and go</translation>
 <translation id="292639812446257861">Mark Unread</translation>
 <translation id="2952581218264071393">1. Open Chrome settings</translation>
 <translation id="2958718410589002129">Passwords</translation>
@@ -425,7 +425,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5489208564673669003">To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
 <translation id="5508435575041083207">Sign out and clear data from this device</translation>
-<translation id="5525269841082836315">Create a Pass phrase</translation>
+<translation id="5525269841082836315">Create passphrase</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>

@@ -346,7 +346,7 @@
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
 <translation id="1389342855416376185">Block protected content</translation>
-<translation id="1390548061267426325">Open as a Standard Tab</translation>
+<translation id="1390548061267426325">Open as a standard tab</translation>
 <translation id="1393283411312835250">Sun and clouds</translation>
 <translation id="1395730723686586365">Updater started</translation>
 <translation id="1396139853388185343">Error setting up printer</translation>
@@ -2388,7 +2388,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3680683624079082902">Text-to-speech voice</translation>
 <translation id="3681311097828166361">Thank you for your feedback. You are offline now, and your report will be sent later.</translation>
 <translation id="3682824389861648626">Movement threshold</translation>
-<translation id="3683524264665795342"><ph name="APP_NAME" /> Screen Sharing Request</translation>
+<translation id="3683524264665795342"><ph name="APP_NAME" /> screen sharing request</translation>
 <translation id="3685598397738512288">Linux USB preferences</translation>
 <translation id="368789413795732264">There was an error while trying to write the file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Write to files and folders that you open in the application</translation>
@@ -2754,7 +2754,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4066207411788646768">Please check your connection to see available printers in your network</translation>
 <translation id="4068776064906523561">Saved fingerprints</translation>
 <translation id="407173827865827707">On click</translation>
-<translation id="4074900173531346617">Email Signer Certificate</translation>
+<translation id="4074900173531346617">Email signer certificate</translation>
 <translation id="407520071244661467">Scale</translation>
 <translation id="407543464472585404"><ph name="NAME" />'s profile is linked to <ph name="EMAIL" /></translation>
 <translation id="4075639477629295004">Unable to cast <ph name="FILE_NAME" />.</translation>
@@ -3867,7 +3867,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5425042808445046667">Continue downloading</translation>
 <translation id="5425863515030416387">Sign in easily across devices</translation>
 <translation id="5427278936122846523">Always Translate</translation>
-<translation id="5427459444770871191">Rotate &amp;Clockwise</translation>
+<translation id="5427459444770871191">Rotate &amp;clockwise</translation>
 <translation id="542872847390508405">You’re browsing as a Guest</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update is available)</translation>
 <translation id="542948651837270806">An update for the trusted platform module firmware needs to be installed. See <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
@@ -4767,7 +4767,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6459488832681039634">Use Selection for Find</translation>
 <translation id="6459799433792303855">Active window moved to another display.</translation>
 <translation id="6460566145397380451">Allowed to connect to MIDI devices</translation>
-<translation id="6460601847208524483">Find Next</translation>
+<translation id="6460601847208524483">Find next</translation>
 <translation id="6461170143930046705">Searching for networks...</translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
 <translation id="6464094930452079790">images</translation>
@@ -6516,7 +6516,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> needs your permission to run</translation>
 <translation id="8466417995783206254">This tab is playing a video in picture-in-picture mode.</translation>
 <translation id="8467326454809944210">Choose another language</translation>
-<translation id="8470214316007448308">Other People</translation>
+<translation id="8470214316007448308">Other people</translation>
 <translation id="8470513973197838199">Saved passwords for <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features like printing a document or saving to a storage device</translation>
 <translation id="8472623782143987204">hardware-backed</translation>
