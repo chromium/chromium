@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
@@ -44,7 +43,6 @@
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/metrics_proto/translate_event.pb.h"
 #include "ui/base/ui_base_features.h"
@@ -368,12 +366,10 @@ void ChromeTranslateClient::OnLanguageDetermined(
   translate::TranslateBrowserMetrics::ReportLanguageDetectionContentLength(
       details.contents.size());
 
-  // TODO(268984): Remove language detection notifications and have the
-  // clients be TranslateDriver::LanguageDetectionObserver directly instead.
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_TAB_LANGUAGE_DETERMINED,
-      content::Source<content::WebContents>(web_contents()),
-      content::Details<const translate::LanguageDetectionDetails>(&details));
+  if (!web_contents()->GetBrowserContext()->IsOffTheRecord() &&
+      IsTranslatableURL(details.url)) {
+    GetTranslateManager()->NotifyLanguageDetected(details);
+  }
 
 #if defined(OS_ANDROID)
   // See ChromeTranslateClient::ManualTranslateOnReady

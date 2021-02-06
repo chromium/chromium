@@ -43,6 +43,7 @@ namespace testing {
 class TranslateManagerTest;
 }  // namespace testing
 
+struct LanguageDetectionDetails;
 struct TranslateErrorDetails;
 struct TranslateInitDetails;
 
@@ -151,6 +152,14 @@ class TranslateManager {
   // under options in the translate infobar.
   void ReportLanguageDetectionError();
 
+  // Global Callbacks
+
+  // The three callbacks below (translate error, translate initialization, and
+  // language detected) are global for all WebContentses and should only be used
+  // by translate-internals. All other clients should (probably) care about
+  // which WebContents is being translated and therefore should instead use
+  // LanguageDetectionObserver.
+
   // Callback types for translate errors.
   using TranslateErrorCallbackList =
       base::RepeatingCallbackList<void(const TranslateErrorDetails&)>;
@@ -161,6 +170,11 @@ class TranslateManager {
       base::RepeatingCallbackList<void(const TranslateInitDetails&)>;
   using TranslateInitCallback = TranslateInitCallbackList::CallbackType;
 
+  // Callback types for language detection.
+  using LanguageDetectedCallbackList =
+      base::RepeatingCallbackList<void(const LanguageDetectionDetails&)>;
+  using LanguageDetectedCallback = LanguageDetectedCallbackList::CallbackType;
+
   // Registers a callback for translate errors.
   static base::CallbackListSubscription RegisterTranslateErrorCallback(
       const TranslateErrorCallback& callback);
@@ -168,6 +182,10 @@ class TranslateManager {
   // Registers a callback for translate initialization.
   static base::CallbackListSubscription RegisterTranslateInitCallback(
       const TranslateInitCallback& callback);
+
+  // Registers a callback for language detection.
+  static base::CallbackListSubscription RegisterLanguageDetectedCallback(
+      const LanguageDetectedCallback& callback);
 
   // Gets the LanguageState associated with the TranslateManager
   LanguageState* GetLanguageState();
@@ -215,6 +233,9 @@ class TranslateManager {
   // |translate_metrics_logger|.
   void RegisterTranslateMetricsLogger(
       base::WeakPtr<TranslateMetricsLogger> translate_metrics_logger);
+
+  // Called when the language of a page has been detected.
+  void NotifyLanguageDetected(const LanguageDetectionDetails& details);
 
  private:
   friend class translate::testing::TranslateManagerTest;

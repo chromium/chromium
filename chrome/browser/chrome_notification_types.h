@@ -55,12 +55,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174777): Remove.
   NOTIFICATION_BROWSER_CLOSE_CANCELLED,
 
-  // Sent when the language (English, French...) for a page has been detected.
-  // The details Details<std::string> contain the ISO 639-1 language code and
-  // the source is Source<WebContents>.
-  // TODO(https://crbug.com/1174778): Remove.
-  NOTIFICATION_TAB_LANGUAGE_DETERMINED,
-
   // The user has changed the browser theme. The source is a
   // Source<ThemeService>. There are no details.
   // TODO(https://crbug.com/1174780): Remove.

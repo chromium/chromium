@@ -64,6 +64,10 @@ TranslateManager::TranslateErrorCallbackList* g_error_callback_list_ = nullptr;
 // Callbacks for translate initializations.
 TranslateManager::TranslateInitCallbackList* g_init_callback_list_ = nullptr;
 
+// Callbacks for language detection.
+TranslateManager::LanguageDetectedCallbackList* g_detection_callback_list_ =
+    nullptr;
+
 const char kReportLanguageDetectionErrorURL[] =
     "https://translate.google.com/translate_error?client=cr&action=langidc";
 
@@ -128,6 +132,15 @@ base::CallbackListSubscription TranslateManager::RegisterTranslateInitCallback(
   if (!g_init_callback_list_)
     g_init_callback_list_ = new TranslateInitCallbackList;
   return g_init_callback_list_->Add(callback);
+}
+
+// static
+base::CallbackListSubscription
+TranslateManager::RegisterLanguageDetectedCallback(
+    const TranslateManager::LanguageDetectedCallback& callback) {
+  if (!g_detection_callback_list_)
+    g_detection_callback_list_ = new LanguageDetectedCallbackList;
+  return g_detection_callback_list_->Add(callback);
 }
 
 TranslateManager::TranslateManager(TranslateClient* translate_client,
@@ -496,6 +509,14 @@ void TranslateManager::NotifyTranslateInit(std::string page_language_code,
   details.ui_shown = ui_shown;
 
   g_init_callback_list_->Notify(details);
+}
+
+void TranslateManager::NotifyLanguageDetected(
+    const translate::LanguageDetectionDetails& details) {
+  if (!g_detection_callback_list_)
+    return;
+
+  g_detection_callback_list_->Notify(details);
 }
 
 void TranslateManager::PageTranslated(const std::string& source_lang,

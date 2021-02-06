@@ -7,17 +7,15 @@
 
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/macros.h"
 #include "components/translate/translate_internals/translate_internals_handler.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 // The handler for JavaScript messages for chrome://translate-internals.
 class ChromeTranslateInternalsHandler
     : public translate::TranslateInternalsHandler,
-      public content::WebUIMessageHandler,
-      public content::NotificationObserver {
+      public content::WebUIMessageHandler {
  public:
   ChromeTranslateInternalsHandler();
   ~ChromeTranslateInternalsHandler() override;
@@ -34,13 +32,10 @@ class ChromeTranslateInternalsHandler
   // content::WebUIMessageHandler methods:
   void RegisterMessages() override;
 
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void LanguageDetected(const translate::LanguageDetectionDetails& details);
 
  private:
-  content::NotificationRegistrar notification_registrar_;
+  base::CallbackListSubscription detection_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeTranslateInternalsHandler);
 };
