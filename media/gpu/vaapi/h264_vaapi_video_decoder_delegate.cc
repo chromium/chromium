@@ -278,7 +278,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
   auto surface = vaapi_wrapper_->CreateVASurfaceForUserPtr(
       gfx::Size(kCencStatusSurfaceDimension, kCencStatusSurfaceDimension),
       buffer_ptr,
-      2 * kCencStatusSurfaceDimension * kCencStatusSurfaceDimension);
+      3 * kCencStatusSurfaceDimension * kCencStatusSurfaceDimension);
   if (!surface) {
     DVLOG(1) << "Failed allocating surface for decrypt status";
     return DecodeStatus::kFail;

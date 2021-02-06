@@ -2149,14 +2149,18 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
     uintptr_t* buffers,
     size_t buffer_size) {
   VASurfaceAttribExternalBuffers va_attrib_extbuf{};
+  va_attrib_extbuf.num_planes = 3;
   va_attrib_extbuf.buffers = buffers;
   va_attrib_extbuf.data_size = buffer_size;
   va_attrib_extbuf.num_buffers = 1u;
   va_attrib_extbuf.width = size.width();
   va_attrib_extbuf.height = size.height();
+  va_attrib_extbuf.offsets[0] = 0;
+  va_attrib_extbuf.offsets[1] = size.GetArea();
+  va_attrib_extbuf.offsets[2] = size.GetArea() * 2;
   std::fill(va_attrib_extbuf.pitches, va_attrib_extbuf.pitches + 3,
             size.width());
-  va_attrib_extbuf.pixel_format = VA_FOURCC_NV12;
+  va_attrib_extbuf.pixel_format = VA_FOURCC_RGBP;
 
   std::vector<VASurfaceAttrib> va_attribs(2);
   va_attribs[0].flags = VA_SURFACE_ATTRIB_SETTABLE;
