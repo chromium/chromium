@@ -313,6 +313,67 @@ TEST_F(
   run_loop.Run();
 }
 
+TEST_F(
+    AdapterTest,
+    TestConnectToServiceInsecurely_UnknownDevice_Failure_WaitForServicesToResolve_DeviceRemoved) {
+  EXPECT_CALL(*mock_bluetooth_adapter_,
+              ConnectDevice(kUnknownDeviceAddress, _, _, _))
+      .WillOnce(RunOnceCallback<2>(mock_unknown_bluetooth_device_.get()));
+
+  // Return false to force |adapter_| to wait for the value to change.
+  EXPECT_CALL(*mock_unknown_bluetooth_device_,
+              IsGattServicesDiscoveryComplete())
+      .WillOnce(Return(false));
+
+  adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
+
+  base::RunLoop run_loop;
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
+            EXPECT_FALSE(connect_to_service_result);
+            run_loop.Quit();
+          }));
+  // Device is removed before GATT service discovery is complete, resulting in a
+  // failed connect-to-service result
+  adapter_->DeviceRemoved(mock_bluetooth_adapter_.get(),
+                          mock_unknown_bluetooth_device_.get());
+  run_loop.Run();
+}
+
+TEST_F(
+    AdapterTest,
+    TestConnectToServiceInsecurely_UnknownDevice_Failure_WaitForServicesToResolve_DeviceChangedWithNoRssi) {
+  EXPECT_CALL(*mock_bluetooth_adapter_,
+              ConnectDevice(kUnknownDeviceAddress, _, _, _))
+      .WillOnce(RunOnceCallback<2>(mock_unknown_bluetooth_device_.get()));
+
+  // Return false to force |adapter_| to wait for the value to change.
+  EXPECT_CALL(*mock_unknown_bluetooth_device_,
+              IsGattServicesDiscoveryComplete())
+      .WillOnce(Return(false));
+
+  adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
+
+  base::RunLoop run_loop;
+  adapter_->ConnectToServiceInsecurely(
+      kUnknownDeviceAddress, device::BluetoothUUID(kServiceId),
+      base::BindLambdaForTesting(
+          [&](mojom::ConnectToServiceResultPtr connect_to_service_result) {
+            EXPECT_FALSE(connect_to_service_result);
+            run_loop.Quit();
+          }));
+  // Before GATT service discovery is complete, we are notified of a device
+  // change where the device has no RSSI. This will result in a failed
+  // connect-to-service result.
+  EXPECT_CALL(*mock_unknown_bluetooth_device_, GetInquiryRSSI())
+      .WillRepeatedly(Return(base::nullopt));
+  adapter_->DeviceChanged(mock_bluetooth_adapter_.get(),
+                          mock_unknown_bluetooth_device_.get());
+  run_loop.Run();
+}
+
 TEST_F(AdapterTest, TestConnectToServiceInsecurely_UnknownDevice_Error) {
   EXPECT_CALL(*mock_bluetooth_adapter_,
               ConnectDevice(kUnknownDeviceAddress, _, _, _))
