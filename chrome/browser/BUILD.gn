@@ -6585,11 +6585,6 @@ grit("resources") {
     ]
   }
 
-  if (is_chromeos_ash && optimize_webui) {
-    deps +=
-        [ "//chrome/browser/resources/chromeos/internet_detail_dialog:build" ]
-  }
-
   if (safe_browsing_mode == 1) {
     deps += [ "//chrome/browser/ui/webui/reset_password:mojo_bindings_js" ]
   }

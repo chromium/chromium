@@ -2,16 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_apnlist.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_choose_mobile.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_ip_config.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_nameservers.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_property_list_mojo.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_proxy.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_shared_css.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_siminfo.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_page_host_style_css.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import './strings.m.js';
+
+import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {NetworkListenerBehavior} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * @fileoverview
  * 'internet-detail-dialog' is used in the login screen to show a subset of
  * internet details and allow configuration of proxy, IP, and nameservers.
  */
-(function() {
-'use strict';
 
 Polymer({
   is: 'internet-detail-dialog',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [
     NetworkListenerBehavior,
@@ -66,8 +91,8 @@ Polymer({
 
   /** @override */
   created() {
-    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
-                              .getMojoServiceRemote();
+    this.networkConfig_ =
+        MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   },
 
   /** @override */
@@ -547,4 +572,3 @@ Polymer({
     return fields;
   },
 });
-})();

@@ -2640,6 +2640,7 @@ static_library("ui") {
       "//chrome/browser/nearby_sharing/proto",
       "//chrome/browser/resources:bluetooth_pairing_dialog_resources",
       "//chrome/browser/resources:internet_config_dialog_resources",
+      "//chrome/browser/resources:internet_detail_dialog_resources",
       "//chrome/browser/ui/app_list/search/cros_action_history:cros_action_proto",
       "//chrome/browser/ui/app_list/search/search_result_ranker:app_launch_event_logger_proto",
       "//chrome/browser/ui/app_list/search/search_result_ranker:app_launch_predictor_proto",

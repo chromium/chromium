@@ -245,6 +245,10 @@
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_config_dialog/internet_config_dialog_resources.grd": {
     "META": {"sizes": {"includes": [10],}},
+    "includes": [2040],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_detail_dialog/internet_detail_dialog_resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
     "includes": [2050],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/gaia_auth_host/resources.grd": {
