@@ -321,6 +321,9 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     return false;  // <area> without ancestor <map> is not relevant.
   }
 
+  if (IsA<HTMLMapElement>(node))
+    return false;  // Contains children for an img, but is not its own object.
+
   // When there is a layout object, the element is known to be visible, so
   // consider it relevant and return early. Checking the layout object is only
   // useful when display locking (content-visibility) is not used.
@@ -430,10 +433,6 @@ Node* AXObjectCacheImpl::FocusedElement() {
   if (!focused_node)
     focused_node = document_;
 
-  // If it's an image map, get the focused link within the image map.
-  if (IsA<HTMLAreaElement>(focused_node))
-    return focused_node;
-
   // See if there's a page popup, for example a calendar picker.
   Element* adjusted_focused_element = document_->AdjustedFocusedElement();
   if (auto* input = DynamicTo<HTMLInputElement>(adjusted_focused_element)) {
@@ -448,10 +447,6 @@ Node* AXObjectCacheImpl::FocusedElement() {
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
-  // If it's an image map, get the focused link within the image map.
-  if (auto* area = DynamicTo<HTMLAreaElement>(node))
-    return FocusedImageMapUIElement(area);
-
   if (node->GetDocument() != GetDocument() &&
       node->GetDocument().Lifecycle().GetState() <
           DocumentLifecycle::kLayoutClean) {
@@ -478,36 +473,6 @@ AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
   return obj;
 }
 
-AXObject* AXObjectCacheImpl::FocusedImageMapUIElement(
-    HTMLAreaElement* area_element) {
-  // Find the corresponding accessibility object for the HTMLAreaElement. This
-  // should be in the list of children for its corresponding image.
-  if (!area_element)
-    return nullptr;
-
-  HTMLImageElement* image_element = area_element->ImageElement();
-  if (!image_element)
-    return nullptr;
-
-  AXObject* ax_layout_image = GetOrCreate(image_element);
-  if (!ax_layout_image)
-    return nullptr;
-
-  const AXObject::AXObjectVector& image_children =
-      ax_layout_image->ChildrenIncludingIgnored();
-  unsigned count = image_children.size();
-  for (unsigned k = 0; k < count; ++k) {
-    AXObject* child = image_children[k];
-    auto* ax_object = DynamicTo<AXImageMapLink>(child);
-    if (!ax_object)
-      continue;
-
-    if (ax_object->AreaElement() == area_element)
-      return child;
-  }
-
-  return nullptr;
-}
 
 AXObject* AXObjectCacheImpl::FocusedObject() {
   return GetOrCreateFocusedObjectFromNode(this->FocusedElement());
@@ -665,6 +630,14 @@ AXObject* AXObjectCacheImpl::Get(AccessibleNode* accessible_node) {
       << "AXID#" << ax_id << " Node=" << accessible_node->element();
 #endif
   return result;
+}
+
+AXObject* AXObjectCacheImpl::GetAXImageForMap(HTMLMapElement& map) {
+  HTMLElement* first_area = Traversal<HTMLAreaElement>::FirstWithin(map);
+  AXObject* ax_child_area = Get(first_area);
+  if (!ax_child_area)
+    return nullptr;
+  return ax_child_area->CachedParentObject();
 }
 
 AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
@@ -1602,6 +1575,13 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
                                                        AXObject* obj) {
+  if (HTMLMapElement* map_element = DynamicTo<HTMLMapElement>(optional_node)) {
+    obj = GetAXImageForMap(*map_element);
+    if (!obj)
+      return;
+    optional_node = obj->GetNode();
+  }
+
   if (obj ? obj->IsDetached() : !optional_node)
     return;
 
@@ -1612,7 +1592,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (obj && !obj->IsDetached())
+  if (obj)
     obj->ChildrenChanged();
 
   if (optional_node)
@@ -2277,6 +2257,10 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
     MarkElementDirty(element, false);
   } else if (attr_name == html_names::kStepAttr) {
     MarkElementDirty(element, false);
+  } else if (attr_name == html_names::kUsemapAttr) {
+    HandleUseMapAttributeChangedWithCleanLayout(element);
+  } else if (attr_name == html_names::kNameAttr) {
+    HandleNameAttributeChangedWithCleanLayout(element);
   }
 
   if (!attr_name.LocalName().StartsWith("aria-"))
@@ -2313,6 +2297,38 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
       relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
   } else {
     PostNotification(element, ax::mojom::Event::kAriaAttributeChanged);
+  }
+}
+
+void AXObjectCacheImpl::HandleUseMapAttributeChangedWithCleanLayout(
+    Element* element) {
+  if (!IsA<HTMLImageElement>(element))
+    return;
+  // Get an area (aka image link) from the previous usemap.
+  AXObject* ax_image = Get(element);
+  AXObject* ax_image_link =
+      ax_image ? ax_image->FirstChildIncludingIgnored() : nullptr;
+  HTMLMapElement* previous_map =
+      ax_image_link
+          ? Traversal<HTMLMapElement>::FirstAncestor(*ax_image_link->GetNode())
+          : nullptr;
+  // Both the old and new image may change image <--> image map.
+  HandleRoleChangeWithCleanLayout(element);
+  if (previous_map)
+    HandleRoleChangeWithCleanLayout(previous_map->ImageElement());
+}
+
+void AXObjectCacheImpl::HandleNameAttributeChangedWithCleanLayout(
+    Element* element) {
+  // Changing a map name can alter an image's role and children.
+  // The name has already changed, so we can no longer find the primary image
+  // via the DOM. Use an area child's parent to find the old image.
+  // If the old image was treated as a map, and now isn't, it will take care
+  // of updating any other image that is newly associated with the map,
+  // via AXNodeObject::AddImageMapChildren().
+  if (HTMLMapElement* map = DynamicTo<HTMLMapElement>(element)) {
+    if (AXObject* ax_previous_image = GetAXImageForMap(*map))
+      HandleRoleChangeWithCleanLayout(ax_previous_image->GetNode());
   }
 }
 

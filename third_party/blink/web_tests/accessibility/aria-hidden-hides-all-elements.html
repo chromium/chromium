@@ -41,18 +41,18 @@ function expectUnignoredChildren(parent, expected_unignored_child_indices) {
 
 test(function(t) {
     var content = accessibilityController.accessibleElementById("main");
-    assert_equals(content.childrenCount, 9);
+    assert_equals(content.childrenCount, 8);
     assert_true(content.isIgnored);
     expectUnignoredChildren(content, [0, 1, 2, 3, 6]);
 
     document.getElementById("ul").tabIndex = -1;
-    assert_equals(content.childrenCount, 9,
+    assert_equals(content.childrenCount, 8,
                       "Making list focusable should make it unignored");
     assert_true(content.isIgnored);
     expectUnignoredChildren(content, [0, 1, 2, 3, 5, 6]);
 
     document.getElementById("ul").removeAttribute("tabindex");
-    assert_equals(content.childrenCount, 9,
+    assert_equals(content.childrenCount, 8,
                           "Making list unfocusable should make it ignored again");
     assert_true(content.isIgnored);
     expectUnignoredChildren(content, [0, 1, 2, 3, 6]);

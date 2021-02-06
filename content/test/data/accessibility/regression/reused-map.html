@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:focus*
+@AURALINUX-ALLOW:focus*
+@WAIT-FOR:done
+-->
+<!-- Reusing image map causes serialization error and reset -->
+<!-- In addition, reusing a map does not work for non-AT users, therefore, only
+  the first time an image map is used should it work -->
+<!-- TODO: add DCHECKs around reparenting in the wrong place -->
+<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="star1" usemap="#map">
+<img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="star2" usemap="#map">
+<map name="map">
+  <area shape="rect" coords="0,0,5,5" href="about:blank" alt="Area">
+  <area shape="rect" coords="3,3,8,8" href="about:blank" alt="Area2">
+</map>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const area1 = document.querySelector('area');
+      area1.parentNode.removeChild(area1);
+      const area2 = document.querySelector('area');
+      area2.focus();
+      document.title = 'done';
+    }, 50);
+  });
+</script>

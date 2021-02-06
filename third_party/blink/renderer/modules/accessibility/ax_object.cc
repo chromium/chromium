@@ -682,11 +682,27 @@ bool AXObject::IsDetached() const {
   return !ax_object_cache_;
 }
 
-void AXObject::SetParent(AXObject* parent) {
-  DCHECK(parent || IsA<Document>(GetNode()))
+void AXObject::SetParent(AXObject* new_parent) {
+  DCHECK(new_parent || IsA<Document>(GetNode()))
       << "Parent cannot be null, except at the root, was null at " << GetNode()
       << " " << GetLayoutObject();
-  parent_ = parent;
+
+#if DCHECK_IS_ON()
+  // Check to ensure that if the parent is changing from a previous parent,
+  // that |this| is not still a child of that one.
+  // This is similar to the IsParentUnignoredOf() check in
+  // BlinkAXTreeSource, but closer to where the problem would occur.
+  if (parent_ && new_parent != parent_ && !parent_->NeedsToUpdateChildren() &&
+      !parent_->IsDetached()) {
+    for (const auto& child : parent_->ChildrenIncludingIgnored()) {
+      DCHECK(child != this) << "Previous parent still has |this| child:\n"
+                            << ToString(true, true) << " should be a child of "
+                            << new_parent->ToString(true, true) << " not of "
+                            << parent_->ToString(true, true);
+    }
+  }
+#endif
+  parent_ = new_parent;
 }
 
 // In many cases, ComputeParent() is not called, because the parent adding
@@ -3357,7 +3373,8 @@ const AXObject::AXObjectVector AXObject::UnignoredChildren() {
 
   if (!AccessibilityIsIncludedInTree()) {
     NOTREACHED() << "We don't support finding the unignored children of "
-                    "objects excluded from the accessibility tree.";
+                    "objects excluded from the accessibility tree: "
+                 << ToString(true, true);
     return {};
   }
 
