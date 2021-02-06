@@ -212,9 +212,6 @@ TEST_F(SharedPasswordControllerTest,
                              isMainFrame:YES
                                 webState:&web_state_
                        completionHandler:mock_completion_handler];
-  EXPECT_CALL(password_manager_,
-              UpdateStateOnUserInput(_, form_query.uniqueFormID,
-                                     form_query.uniqueFieldID, _));
 
   __block BOOL completion_was_called = NO;
   [controller_ checkIfSuggestionsAvailableForForm:form_query

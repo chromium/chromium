@@ -292,11 +292,11 @@ NSString* const kSuggestionSuffix = @" ••••••••";
     if ([formQuery.type isEqual:@"input"]) {
       [self.formHelper updateFieldDataOnUserInput:formQuery.uniqueFieldID
                                        inputValue:formQuery.typedValue];
-    }
 
-    _passwordManager->UpdateStateOnUserInput(
-        _delegate.passwordManagerDriver, formQuery.uniqueFormID,
-        formQuery.uniqueFieldID, SysNSStringToUTF16(formQuery.typedValue));
+      _passwordManager->UpdateStateOnUserInput(
+          _delegate.passwordManagerDriver, formQuery.uniqueFormID,
+          formQuery.uniqueFieldID, SysNSStringToUTF16(formQuery.typedValue));
+    }
   }
 }
 
