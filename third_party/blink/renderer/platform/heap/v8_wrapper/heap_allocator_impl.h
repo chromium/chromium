@@ -134,7 +134,7 @@ class PLATFORM_EXPORT HeapAllocator {
   template <typename T>
   static void TraceBackingStoreIfMarked(T** slot) {
     HeapConsistency::WriteBarrierParams params;
-    if (HeapConsistency::GetWriteBarrierType(slot, params) ==
+    if (HeapConsistency::GetWriteBarrierType(slot, *slot, params) ==
         HeapConsistency::WriteBarrierType::kMarking) {
       HeapConsistency::SteeleWriteBarrier(params, *slot);
     }
@@ -145,11 +145,13 @@ class PLATFORM_EXPORT HeapAllocator {
     HeapConsistency::WriteBarrierParams params;
     // `slot_in_backing` points into a backing store and T is not necessarily a
     // garbage collected type but may be kept inline.
-    switch (HeapConsistency::GetWriteBarrierType(slot_in_backing, params)) {
+    switch (HeapConsistency::GetWriteBarrierType(
+        slot_in_backing, params, []() -> cppgc::HeapHandle& {
+          return ThreadState::Current()->cpp_heap().GetHeapHandle();
+        })) {
       case HeapConsistency::WriteBarrierType::kMarking:
         HeapConsistency::DijkstraWriteBarrierRange(
-            params, ThreadState::Current()->cpp_heap().GetHeapHandle(),
-            slot_in_backing, sizeof(T), 1,
+            params, slot_in_backing, sizeof(T), 1,
             TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
         break;
       case HeapConsistency::WriteBarrierType::kGenerational:
@@ -167,11 +169,13 @@ class PLATFORM_EXPORT HeapAllocator {
     HeapConsistency::WriteBarrierParams params;
     // `first_element` points into a backing store and T is not necessarily a
     // garbage collected type but may be kept inline.
-    switch (HeapConsistency::GetWriteBarrierType(first_element, params)) {
+    switch (HeapConsistency::GetWriteBarrierType(
+        first_element, params, []() -> cppgc::HeapHandle& {
+          return ThreadState::Current()->cpp_heap().GetHeapHandle();
+        })) {
       case HeapConsistency::WriteBarrierType::kMarking:
         HeapConsistency::DijkstraWriteBarrierRange(
-            params, ThreadState::Current()->cpp_heap().GetHeapHandle(),
-            first_element, sizeof(T), length,
+            params, first_element, sizeof(T), length,
             TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
         break;
       case HeapConsistency::WriteBarrierType::kGenerational:

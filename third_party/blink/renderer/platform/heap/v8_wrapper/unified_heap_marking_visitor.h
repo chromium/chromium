@@ -20,8 +20,10 @@ class PLATFORM_EXPORT UnifiedHeapMarkingVisitor final {
   static ALWAYS_INLINE void WriteBarrier(
       const v8::TracedReference<v8::Value>& ref) {
     v8::JSHeapConsistency::WriteBarrierParams params;
-    if (v8::JSHeapConsistency::GetWriteBarrierType(ref, params) ==
-        v8::JSHeapConsistency::WriteBarrierType::kMarking) {
+    if (v8::JSHeapConsistency::GetWriteBarrierType(
+            ref, params, []() -> cppgc::HeapHandle& {
+              return ThreadState::Current()->cpp_heap().GetHeapHandle();
+            }) == v8::JSHeapConsistency::WriteBarrierType::kMarking) {
       v8::JSHeapConsistency::DijkstraMarkingBarrier(
           params, ThreadState::Current()->cpp_heap().GetHeapHandle(), ref);
     }
@@ -33,8 +35,10 @@ class PLATFORM_EXPORT UnifiedHeapMarkingVisitor final {
                                          const void* wrappable) {
     v8::JSHeapConsistency::WriteBarrierParams params;
     if (v8::JSHeapConsistency::GetWriteBarrierType(
-            wrapper, kV8DOMWrapperObjectIndex, wrappable, params) ==
-        v8::JSHeapConsistency::WriteBarrierType::kMarking) {
+            wrapper, kV8DOMWrapperObjectIndex, wrappable, params,
+            []() -> cppgc::HeapHandle& {
+              return ThreadState::Current()->cpp_heap().GetHeapHandle();
+            }) == v8::JSHeapConsistency::WriteBarrierType::kMarking) {
       v8::JSHeapConsistency::DijkstraMarkingBarrier(
           params, ThreadState::Current()->cpp_heap().GetHeapHandle(),
           wrappable);
