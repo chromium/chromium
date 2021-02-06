@@ -139,7 +139,7 @@ void PepperPlatformVideoCapture::OnFrameReady(
     base::TimeTicks estimated_capture_time) {
   if (handler_ && stop_capture_cb_) {
     // The scaled video frames are ignored by Pepper.
-    handler_->OnFrameReady(*video_frame);
+    handler_->OnFrameReady(std::move(video_frame));
   }
 }
 
