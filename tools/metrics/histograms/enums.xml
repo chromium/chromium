@@ -31297,6 +31297,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3796" label="ElementInternalsStates"/>
   <int value="3797" label="WebPImage"/>
   <int value="3798" label="AVIFImage"/>
+  <int value="3799" label="SVGTextEdited"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

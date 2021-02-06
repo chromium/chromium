@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_item.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -130,6 +132,9 @@ void LayoutSVGText::SubtreeStructureChanged(
   SetNeedsTextMetricsUpdate();
   // TODO(fs): Restore the passing of |reason| here.
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this);
+
+  if (StyleRef().UserModify() != EUserModify::kReadOnly)
+    UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 
 void LayoutSVGText::NotifySubtreeStructureChanged(

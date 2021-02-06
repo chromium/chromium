@@ -28,10 +28,12 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/line/svg_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/bidi_character_run.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -62,6 +64,9 @@ void LayoutSVGInlineText::TextDidChange() {
   LayoutText::TextDidChange();
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
+
+  if (StyleRef().UserModify() != EUserModify::kReadOnly)
+    UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 
 void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
