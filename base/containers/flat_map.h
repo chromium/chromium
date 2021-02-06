@@ -53,7 +53,10 @@ struct GetFirst {
 //
 // IMPORTANT NOTES
 //
-//  - Iterators are invalidated across mutations.
+//  - Iterators are invalidated across mutations. This means that the following
+//    line of code has undefined behavior since adding a new element could
+//    resize the container, invalidating all iterators:
+//      container["new element"] = it.second;
 //  - If possible, construct a flat_map in one operation by inserting into
 //    a container and moving that container into the flat_map constructor.
 //
