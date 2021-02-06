@@ -172,13 +172,6 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   int64_t root_task_id() const { return root_task_id_; }
   void set_root_task_id(int64_t root_task_id) { root_task_id_ = root_task_id; }
 
-  const std::vector<int64_t>& children_task_ids() const {
-    return children_task_ids_;
-  }
-  void set_children_task_ids(std::vector<int64_t> children_task_ids) {
-    children_task_ids_ = children_task_ids;
-  }
-
   size_t EstimateMemoryUsage() const;
 
  private:
@@ -226,7 +219,6 @@ class SESSIONS_EXPORT SerializedNavigationEntry {
   int64_t task_id_ = -1;
   int64_t parent_task_id_ = -1;
   int64_t root_task_id_ = -1;
-  std::vector<int64_t> children_task_ids_;
 };
 
 }  // namespace sessions

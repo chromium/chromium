@@ -44,7 +44,6 @@ extern const std::string kExtendedInfoValue2;
 extern const int64_t kParentTaskId;
 extern const int64_t kRootTaskId;
 extern const int64_t kTaskId;
-extern const std::vector<int64_t> kChildrenTaskIds;
 
 // TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
 // function.

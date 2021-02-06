@@ -170,9 +170,9 @@ void SerializedNavigationEntry::WriteToPickle(int max_size,
   pickle->WriteInt64(parent_task_id_);
   pickle->WriteInt64(root_task_id_);
 
-  pickle->WriteInt(children_task_ids_.size());
-  for (auto& child_task_id : children_task_ids_)
-    pickle->WriteInt64(child_task_id);
+  // This was used for the number of child task ids, followed by an int64
+  // for each child task id.
+  pickle->WriteInt(0);
 }
 
 bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
@@ -265,15 +265,9 @@ bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
     if (!iterator->ReadInt64(&root_task_id_))
       root_task_id_ = -1;
 
+    // Child task ids are no longer used.
     int children_task_ids_size = 0;
-    if (iterator->ReadInt(&children_task_ids_size) &&
-        children_task_ids_size > 0) {
-      for (int i = 0; i < children_task_ids_size; ++i) {
-        int64_t child_task_id;
-        if (iterator->ReadInt64(&child_task_id))
-          children_task_ids_.push_back(child_task_id);
-      }
-    }
+    ignore_result(iterator->ReadInt(&children_task_ids_size));
   }
 
   SerializedNavigationDriver::Get()->Sanitize(this);

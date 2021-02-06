@@ -70,7 +70,6 @@ ContentSerializedNavigationBuilder::FromNavigationEntry(
   navigation.task_id_ = NavigationTaskId::Get(entry)->id();
   navigation.parent_task_id_ = NavigationTaskId::Get(entry)->parent_id();
   navigation.root_task_id_ = NavigationTaskId::Get(entry)->root_id();
-  navigation.children_task_ids_ = NavigationTaskId::Get(entry)->children_ids();
 
   for (const auto& handler_entry :
        ContentSerializedNavigationDriver::GetInstance()
