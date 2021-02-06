@@ -269,7 +269,10 @@ TEST_F(DocumentLoaderSimTest, FramePolicyIntegrityOnNavigationCommit) {
 // policy are incompatible and calling
 // |Document::IsFeatureEnabled(DocumentPolicyFeature...)| should always return
 // true.
-TEST_F(DocumentLoaderSimTest, DocumentPolicyNoEffectWhenFlagNotSet) {
+// TODO(crbug.com/1168960): Convert the test into a browsertest so that
+// the initialization of static |GetAvailableDocumentPolicyFeatures| set
+// is not affecting subsequent tests.
+TEST_F(DocumentLoaderSimTest, DISABLED_DocumentPolicyNoEffectWhenFlagNotSet) {
   blink::ScopedDocumentPolicyForTest sdp(false);
   blink::ScopedDocumentPolicyNegotiationForTest sdpn(false);
 
