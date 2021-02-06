@@ -23,13 +23,11 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
@@ -53,6 +51,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.state.LoadCallbackHelper;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -71,6 +70,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 /** Tests for the TabPersistentStore. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -372,27 +373,45 @@ public class TabPersistentStoreTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature("TabPersistentStore")
     @DisableFeatures({ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA + "<Study"})
-    @DisabledTest(message = "https://crbug.com/1174097")
-    public void testCleanup() throws Exception {
-        MockTabModelSelector mockSelector = new MockTabModelSelector(1, 1, null);
+    public void testCleanup() throws TimeoutException, ExecutionException {
+        MockTabModelSelector mockSelector = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return new MockTabModelSelector(1, 1, null); });
         Tab regularTab = mockSelector.getModel(false).getTabAt(0);
         Tab incognitoTab = mockSelector.getModel(true).getTabAt(0);
-        enableTabSaving(regularTab);
-        enableTabSaving(incognitoTab);
-        CriticalPersistedTabData.from(regularTab).save();
-        CriticalPersistedTabData.from(incognitoTab).save();
-        Assert.assertNotNull(CriticalPersistedTabData.restore(regularTab.getId(), false));
-        Assert.assertNotNull(CriticalPersistedTabData.restore(incognitoTab.getId(), true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            enableTabSaving(regularTab);
+            enableTabSaving(incognitoTab);
+            CriticalPersistedTabData.from(regularTab).save();
+            CriticalPersistedTabData.from(incognitoTab).save();
+        });
+        verifyIfTabIsSaved(regularTab.getId(), regularTab.isIncognito(), false);
+        verifyIfTabIsSaved(incognitoTab.getId(), incognitoTab.isIncognito(), false);
+
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         TabPersistencePolicy persistencePolicy =
                 new TabbedModeTabPersistencePolicy(/* selectorIndex = */ 0, false);
         final TabPersistentStore store =
                 buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
-        Assert.assertNull(CriticalPersistedTabData.restore(regularTab.getId(), false));
-        Assert.assertNull(CriticalPersistedTabData.restore(incognitoTab.getId(), true));
+        verifyIfTabIsSaved(regularTab.getId(), regularTab.isIncognito(), true);
+        verifyIfTabIsSaved(incognitoTab.getId(), incognitoTab.isIncognito(), true);
+    }
+
+    public void verifyIfTabIsSaved(int tabId, boolean isIncognito, boolean isNull)
+            throws TimeoutException {
+        LoadCallbackHelper callbackHelper = new LoadCallbackHelper();
+        int chCount = callbackHelper.getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            CriticalPersistedTabData.restore(
+                    tabId, isIncognito, (res) -> { callbackHelper.notifyCalled(res); });
+        });
+        callbackHelper.waitForCallback(chCount);
+        if (isNull) {
+            Assert.assertNull(callbackHelper.getRes());
+        } else {
+            Assert.assertNotNull(callbackHelper.getRes());
+        }
     }
 
     private void enableTabSaving(Tab tab) {
