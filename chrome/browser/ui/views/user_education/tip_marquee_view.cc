@@ -17,7 +17,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
@@ -213,9 +212,6 @@ TipMarqueeView::TipMarqueeView(int text_context, int text_style) {
   // TODO(dfried): Figure out how to set elide behavior.
   // tip_text_label_->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 
-  chrome_icon_ = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_PRODUCT_LOGO_16);
-
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets(0, kTipMarqueeIconTotalWidth, 0, 0)));
 
@@ -307,8 +303,10 @@ void TipMarqueeView::Layout() {
 
 void TipMarqueeView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
-  canvas->DrawImageInt(chrome_icon_, 0, 0, kTipMarqueeIconSize,
-                       kTipMarqueeIconSize, 0,
+  gfx::ImageSkia* const icon =
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_PRODUCT_LOGO_16);
+  canvas->DrawImageInt(*icon, 0, 0, kTipMarqueeIconSize, kTipMarqueeIconSize, 0,
                        (height() - kTipMarqueeIconSize) / 2,
                        kTipMarqueeIconSize, kTipMarqueeIconSize, true);
 }

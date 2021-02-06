@@ -17,10 +17,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 namespace views {
 class StyledLabel;
 }
@@ -86,7 +82,6 @@ class TipMarqueeView : public views::View, public views::WidgetObserver {
 
   base::string16 tip_text_;
   views::StyledLabel* tip_text_label_ = nullptr;
-  gfx::ImageSkia chrome_icon_;
   LearnMoreLinkClickedCallback learn_more_link_clicked_callback_;
   bool collapsed_ = false;
   views::Widget* show_tip_widget_ = nullptr;
