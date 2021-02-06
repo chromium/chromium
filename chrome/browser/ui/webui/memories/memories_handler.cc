@@ -24,3 +24,8 @@ void MemoriesHandler::SetPage(
     mojo::PendingRemote<memories::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
 }
+
+void MemoriesHandler::GetSampleMemory(MemoryCallback callback) {
+  auto memory = memories::mojom::Memory::New();
+  std::move(callback).Run(std::move(memory));
+}

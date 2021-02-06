@@ -6,4 +6,5 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "memories.mojom" ]
+  deps = [ "//components/memories/common:mojo_bindings" ]
 }

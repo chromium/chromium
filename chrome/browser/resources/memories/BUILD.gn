@@ -40,13 +40,25 @@ preprocess_if_expr("preprocess") {
   ]
 }
 
-generate_grd("build_memories_mojo_grdp") {
-  grd_prefix = "$grd_prefix"
-  out_grd = "$target_gen_dir/memories_mojo_resources.grdp"
+generate_grd("build_memories_api_mojo_grdp") {
+  grd_prefix = "$grd_prefix" + "_API"
+  out_grd = "$target_gen_dir/memories_api_mojo_resources.grdp"
   input_files = [ "memories.mojom-lite.js" ]
+  resource_path_rewrites =
+      [ "memories.mojom-lite.js|memories_api.mojom-lite.js" ]
   input_files_base_dir =
       rebase_path("$root_gen_dir/chrome/browser/ui/webui/memories",
                   root_build_dir)
+}
+
+generate_grd("build_memories_definition_mojo_grdp") {
+  grd_prefix = "$grd_prefix" + "_DEFINITION"
+  out_grd = "$target_gen_dir/memories_definition_mojo_resources.grdp"
+  input_files = [ "memories.mojom-lite.js" ]
+  resource_path_rewrites =
+      [ "memories.mojom-lite.js|memories_definition.mojom-lite.js" ]
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/components/memories/common", root_build_dir)
 }
 
 generate_grd("build_grd") {
@@ -54,9 +66,13 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "memories.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  grdp_files = [ "$target_gen_dir/memories_mojo_resources.grdp" ]
+  grdp_files = [
+    "$target_gen_dir/memories_api_mojo_resources.grdp",
+    "$target_gen_dir/memories_definition_mojo_resources.grdp",
+  ]
   deps = [
-    ":build_memories_mojo_grdp",
+    ":build_memories_api_mojo_grdp",
+    ":build_memories_definition_mojo_grdp",
     ":preprocess",
   ]
   manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
@@ -69,6 +85,7 @@ grit("resources") {
   deps = [
     ":build_grd",
     "//chrome/browser/ui/webui/memories:mojo_bindings_js",
+    "//components/memories/common:mojo_bindings_js",
   ]
   outputs = [
     "grit/memories_resources.h",

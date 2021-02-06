@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
 
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
+#include "components/memories/common/memories.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,6 +33,9 @@ class MemoriesHandler : public memories::mojom::PageHandler {
   // memories::mojom::PageHandler:
   void SetPage(
       mojo::PendingRemote<memories::mojom::Page> pending_page) override;
+
+  using MemoryCallback = base::OnceCallback<void(memories::mojom::MemoryPtr)>;
+  void GetSampleMemory(MemoryCallback callback) override;
 
  private:
   Profile* profile_;

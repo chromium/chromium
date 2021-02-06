@@ -4,4 +4,7 @@
 
 import {BrowserProxy} from './browser_proxy.js';
 
-BrowserProxy.getInstance();
+BrowserProxy.getInstance().handler.getSampleMemory().then(
+    (/** @type {!memories.mojom.Memory} */ memory) => {
+      console.log(memory);
+    });

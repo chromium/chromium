@@ -2,11 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 source_set("common") {
   sources = [
     "memories_features.cc",
     "memories_features.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "memories.mojom" ]
 }
