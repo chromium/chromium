@@ -11,6 +11,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "media/mojo/mojom/cdm_service.mojom.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/win/sandbox_win.h"
@@ -238,6 +239,16 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
   if (utility_sub_type == network::mojom::NetworkService::Name_)
     return true;
   return false;
+}
+
+bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
+  auto utility_sub_type =
+      cmd_line_.GetSwitchValueASCII(switches::kUtilitySubType);
+  // TODO(crbug.com/1173700) CDM loads widevinecdm.dll
+  // which is not CET-compliant.
+  if (utility_sub_type == media::mojom::CdmService::Name_)
+    return false;
+  return true;
 }
 
 }  // namespace content
