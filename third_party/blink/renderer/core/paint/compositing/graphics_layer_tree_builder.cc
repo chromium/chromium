@@ -143,6 +143,8 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
                    ->ShouldThrottleRendering() ||
                inner_compositor->InCompositingMode());
         layer_vector_for_children->push_back(inner_root_graphics_layer);
+        CHECK(layer.Compositor()->RootLayer()->GetCompositingReasons() &
+              CompositingReason::kRoot);
       }
       inner_compositor->ClearRootLayerAttachmentDirty();
     }
