@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/win/scoped_handle.h"
@@ -65,7 +66,7 @@ class UnprivilegedProcessDelegate : public IPC::Listener,
   // process.
   std::unique_ptr<IPC::ChannelProxy> channel_;
 
-  WorkerProcessLauncher* event_handler_;
+  CheckedPtr<WorkerProcessLauncher> event_handler_;
 
   // The handle of the worker process, if launched.
   base::win::ScopedHandle worker_process_;

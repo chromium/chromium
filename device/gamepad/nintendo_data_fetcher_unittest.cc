@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
@@ -87,10 +88,10 @@ class NintendoDataFetcherTest : public DeviceServiceTestBase {
     polling_thread_->FlushForTesting();
   }
 
-  MockHidService* mock_hid_service_;
+  CheckedPtr<MockHidService> mock_hid_service_;
   std::unique_ptr<GamepadProvider> provider_;
-  NintendoDataFetcher* fetcher_;
-  base::Thread* polling_thread_;
+  CheckedPtr<NintendoDataFetcher> fetcher_;
+  CheckedPtr<base::Thread> polling_thread_;
 
   DISALLOW_COPY_AND_ASSIGN(NintendoDataFetcherTest);
 };

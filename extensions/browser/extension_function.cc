@@ -11,6 +11,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -372,7 +373,7 @@ class ExtensionFunction::RenderFrameHostTracker
         function_->OnMessageReceived(message);
   }
 
-  ExtensionFunction* function_;  // Owns us.
+  CheckedPtr<ExtensionFunction> function_;  // Owns us.
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameHostTracker);
 };

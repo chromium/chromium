@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
@@ -207,13 +208,13 @@ class CONTENT_EXPORT ContentClient {
   friend class InternalTestInitializer;
 
   // The embedder API for participating in browser logic.
-  ContentBrowserClient* browser_;
+  CheckedPtr<ContentBrowserClient> browser_;
   // The embedder API for participating in gpu logic.
-  ContentGpuClient* gpu_;
+  CheckedPtr<ContentGpuClient> gpu_;
   // The embedder API for participating in renderer logic.
-  ContentRendererClient* renderer_;
+  CheckedPtr<ContentRendererClient> renderer_;
   // The embedder API for participating in utility logic.
-  ContentUtilityClient* utility_;
+  CheckedPtr<ContentUtilityClient> utility_;
 };
 
 }  // namespace content

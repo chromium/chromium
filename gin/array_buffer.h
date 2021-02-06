@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
@@ -40,7 +41,7 @@ class GIN_EXPORT ArrayBuffer {
   class Private;
 
   scoped_refptr<Private> private_;
-  void* bytes_;
+  CheckedPtr<void> bytes_;
   size_t num_bytes_;
 
   DISALLOW_COPY(ArrayBuffer);

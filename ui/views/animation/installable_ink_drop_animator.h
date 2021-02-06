@@ -6,6 +6,7 @@
 #define UI_VIEWS_ANIMATION_INSTALLABLE_INK_DROP_ANIMATOR_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -89,7 +90,7 @@ class VIEWS_EXPORT InstallableInkDropAnimator : public gfx::AnimationDelegate {
   gfx::Size size_;
 
   // The visual state we are controlling.
-  InstallableInkDropPainter::State* const visual_state_;
+  const CheckedPtr<InstallableInkDropPainter::State> visual_state_;
 
   // Called when |visual_state_| changes so the user can repaint.
   base::RepeatingClosure repaint_callback_;

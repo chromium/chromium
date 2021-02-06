@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace gfx {
 class RenderText;
@@ -33,7 +34,7 @@ class TooltipAuraTestApi {
   void GetAccessibleNodeData(ui::AXNodeData* node_data);
 
  private:
-  TooltipAura* tooltip_aura_;
+  CheckedPtr<TooltipAura> tooltip_aura_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipAuraTestApi);
 };

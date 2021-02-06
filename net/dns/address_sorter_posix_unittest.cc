@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -132,7 +133,7 @@ class TestUDPClientSocket : public DatagramClientSocket {
 
  private:
   NetLogWithSource net_log_;
-  const AddressMapping* mapping_;
+  CheckedPtr<const AddressMapping> mapping_;
   bool connected_;
   IPEndPoint local_endpoint_;
 

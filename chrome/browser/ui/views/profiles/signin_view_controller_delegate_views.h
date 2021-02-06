@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_SIGNIN_VIEW_CONTROLLER_DELEGATE_VIEWS_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
@@ -113,10 +114,10 @@ class SigninViewControllerDelegateViews
 
   Browser* browser() { return browser_; }
 
-  content::WebContents* web_contents_;  // Not owned.
-  Browser* const browser_;              // Not owned.
-  views::WebView* content_view_;
-  views::Widget* modal_signin_widget_;  // Not owned.
+  CheckedPtr<content::WebContents> web_contents_;  // Not owned.
+  const CheckedPtr<Browser> browser_;              // Not owned.
+  CheckedPtr<views::WebView> content_view_;
+  CheckedPtr<views::Widget> modal_signin_widget_;  // Not owned.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
   bool should_show_close_button_;
 };

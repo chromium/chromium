@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "cc/base/synced_property.h"
@@ -786,10 +787,10 @@ class CC_EXPORT LayerTreeImpl {
       const gfx::PointF& screen_space_point,
       const Functor& func);
 
-  LayerTreeHostImpl* host_impl_;
+  CheckedPtr<LayerTreeHostImpl> host_impl_;
   int source_frame_number_;
   int is_first_frame_after_commit_tracker_;
-  HeadsUpDisplayLayerImpl* hud_layer_;
+  CheckedPtr<HeadsUpDisplayLayerImpl> hud_layer_;
   PropertyTrees property_trees_;
   SkColor background_color_;
 

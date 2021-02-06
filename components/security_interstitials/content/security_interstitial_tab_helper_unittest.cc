@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -61,7 +62,7 @@ class TestInterstitialPage : public SecurityInterstitialPage {
       base::DictionaryValue* load_time_data) override {}
 
  private:
-  bool* destroyed_tracker_;
+  CheckedPtr<bool> destroyed_tracker_;
 };
 
 class SecurityInterstitialTabHelperTest

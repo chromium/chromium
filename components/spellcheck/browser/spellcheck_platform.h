@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
@@ -166,7 +167,7 @@ class ScopedEnglishLanguageForTest {
   ScopedEnglishLanguageForTest();
   ~ScopedEnglishLanguageForTest();
  private:
-  SpellcheckerStateInternal* state_;
+  CheckedPtr<SpellcheckerStateInternal> state_;
 };
 
 }  // namespace spellcheck_platform

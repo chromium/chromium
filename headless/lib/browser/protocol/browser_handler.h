@@ -5,6 +5,7 @@
 #ifndef HEADLESS_LIB_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 #define HEADLESS_LIB_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
 #include "headless/lib/browser/protocol/dp_browser.h"
@@ -37,7 +38,7 @@ class BrowserHandler : public DomainHandler, public Browser::Backend {
   Response SetDockTile(Maybe<std::string> label, Maybe<Binary> image) override;
 
  private:
-  HeadlessBrowserImpl* browser_;
+  CheckedPtr<HeadlessBrowserImpl> browser_;
   std::string target_id_;
   DISALLOW_COPY_AND_ASSIGN(BrowserHandler);
 };

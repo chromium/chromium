@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/rect.h"
@@ -81,7 +82,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   bool remove_standard_frame = false;
   std::string workspace;
 
-  WorkspaceExtensionDelegate* workspace_extension_delegate = nullptr;
+  CheckedPtr<WorkspaceExtensionDelegate> workspace_extension_delegate = nullptr;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool prefer_dark_theme = false;

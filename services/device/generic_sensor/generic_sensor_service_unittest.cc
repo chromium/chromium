@@ -6,6 +6,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -158,7 +159,7 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
 
     fake_platform_sensor_provider_ = new FakePlatformSensorProvider();
     device_service_impl()->SetPlatformSensorProviderForTesting(
-        base::WrapUnique(fake_platform_sensor_provider_));
+        base::WrapUnique(fake_platform_sensor_provider_.get()));
     device_service()->BindSensorProvider(
         sensor_provider_.BindNewPipeAndPassReceiver());
   }
@@ -167,7 +168,7 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // This object is owned by the DeviceService instance.
-  FakePlatformSensorProvider* fake_platform_sensor_provider_;
+  CheckedPtr<FakePlatformSensorProvider> fake_platform_sensor_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(GenericSensorServiceTest);
 };

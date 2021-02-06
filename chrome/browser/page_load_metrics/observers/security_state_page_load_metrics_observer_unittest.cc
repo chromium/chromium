@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -48,7 +49,7 @@ class SecurityStatePageLoadMetricsObserverTest
   SecurityStateTabHelper* security_state_tab_helper() { return helper_; }
 
  private:
-  SecurityStateTabHelper* helper_;
+  CheckedPtr<SecurityStateTabHelper> helper_;
 
   // The clock used by the ui::ScopedVisibilityTracker.
   std::unique_ptr<base::SimpleTestTickClock> clock_;

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 
@@ -56,7 +57,7 @@ class PlatformSensorFusionAlgorithm {
                                     SensorReading* fused_reading) = 0;
 
   // This raw pointer is safe because |fusion_sensor_| owns this object.
-  PlatformSensorFusion* fusion_sensor_ = nullptr;
+  CheckedPtr<PlatformSensorFusion> fusion_sensor_ = nullptr;
 
  private:
   // Default threshold for comparing SensorReading values. If a

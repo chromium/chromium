@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -114,7 +115,7 @@ class ImageWithBadge : public views::ImageView {
   gfx::ImageSkia GetBadge() const;
   void Render();
 
-  const gfx::VectorIcon* main_vector_icon_ = nullptr;
+  CheckedPtr<const gfx::VectorIcon> main_vector_icon_ = nullptr;
   base::Optional<gfx::ImageSkia> main_image_skia_;
   base::Optional<gfx::ImageSkia> badge_image_skia_;
 };
@@ -226,8 +227,8 @@ class MoveToAccountStoreBubbleView::MovingBannerView : public views::View {
   void UpdateFavicon(const gfx::ImageSkia& favicon);
 
  private:
-  ImageWithBadge* from_view;
-  ImageWithBadge* to_view;
+  CheckedPtr<ImageWithBadge> from_view;
+  CheckedPtr<ImageWithBadge> to_view;
 };
 
 MoveToAccountStoreBubbleView::MovingBannerView::MovingBannerView(

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -37,7 +38,8 @@ class ChromeBrowserExtraSetUp : public ChromeBrowserMainExtraParts {
   }
 
  private:
-  policy::ChromeBrowserCloudManagementController::Observer* observer_;
+  CheckedPtr<policy::ChromeBrowserCloudManagementController::Observer>
+      observer_;
 };
 
 class ReportSchedulerTest

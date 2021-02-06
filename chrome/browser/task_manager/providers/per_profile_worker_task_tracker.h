@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "content/public/browser/dedicated_worker_service.h"
@@ -108,7 +109,7 @@ class PerProfileWorkerTaskTracker
       base::flat_map<WorkerId, std::unique_ptr<WorkerTask>>* out_worker_tasks);
 
   // The provider that gets notified when a WorkerTask is created/deleted.
-  WorkerTaskProvider* const worker_task_provider_;  // Owner.
+  const CheckedPtr<WorkerTaskProvider> worker_task_provider_;  // Owner.
 
   // For dedicated workers:
   ScopedObserver<content::DedicatedWorkerService,

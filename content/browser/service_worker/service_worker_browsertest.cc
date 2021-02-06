@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -176,7 +177,7 @@ class WorkerStateObserver
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
 
   base::RunLoop run_loop_;
-  ServiceWorkerContextWrapper* context_;
+  CheckedPtr<ServiceWorkerContextWrapper> context_;
   const ServiceWorkerVersion::Status target_;
   DISALLOW_COPY_AND_ASSIGN(WorkerStateObserver);
 };
@@ -428,7 +429,7 @@ class ConsoleMessageContextObserver
   std::vector<base::string16> messages_;
   size_t expected_message_count_ = 0;
   base::RunLoop run_loop_;
-  ServiceWorkerContextWrapper* context_;
+  CheckedPtr<ServiceWorkerContextWrapper> context_;
 
   DISALLOW_COPY_AND_ASSIGN(ConsoleMessageContextObserver);
 };
@@ -2439,8 +2440,8 @@ class CodeCacheHostInterceptor
   // These can be held as raw pointers since we use the
   // RenderProcessHostObserver interface to clear them before they are
   // destroyed.
-  RenderProcessHost* render_process_host_;
-  CodeCacheHostImpl* code_cache_host_impl_;
+  CheckedPtr<RenderProcessHost> render_process_host_;
+  CheckedPtr<CodeCacheHostImpl> code_cache_host_impl_;
 };
 
 class CacheStorageControlForBadOrigin

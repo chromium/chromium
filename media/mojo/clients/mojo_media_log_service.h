@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "media/base/media_log.h"
 #include "media/mojo/mojom/media_log.mojom.h"
 
@@ -23,7 +24,7 @@ class MojoMediaLogService final : public mojom::MediaLog {
   void AddLogRecord(const media::MediaLogRecord& event) final;
 
  private:
-  media::MediaLog* media_log_;
+  CheckedPtr<media::MediaLog> media_log_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoMediaLogService);
 };

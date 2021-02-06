@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_INTERVENTION_POLICY_DATABASE_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_INTERVENTION_POLICY_DATABASE_COMPONENT_INSTALLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/component_updater/component_installer.h"
 
 namespace resource_coordinator {
@@ -43,7 +44,7 @@ class InterventionPolicyDatabaseComponentInstallerPolicy
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  resource_coordinator::InterventionPolicyDatabase* database_;
+  CheckedPtr<resource_coordinator::InterventionPolicyDatabase> database_;
 
   DISALLOW_COPY_AND_ASSIGN(InterventionPolicyDatabaseComponentInstallerPolicy);
 };

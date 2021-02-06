@@ -5,6 +5,7 @@
 #include "chrome/browser/offline_pages/prefetch/gcm_token.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -49,7 +50,7 @@ class PrefetchInstanceIDProxyTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
-  gcm::FakeGCMProfileService* gcm_profile_service_;
+  CheckedPtr<gcm::FakeGCMProfileService> gcm_profile_service_;
 
 #if defined(OS_ANDROID)
   instance_id::InstanceIDAndroid::ScopedBlockOnAsyncTasksForTesting

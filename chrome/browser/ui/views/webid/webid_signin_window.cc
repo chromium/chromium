@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/webid/webid_signin_window.h"
+#include "base/memory/checked_ptr.h"
 
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webid/identity_dialogs.h"
@@ -195,11 +196,11 @@ class SigninDialogView : public views::BubbleDialogDelegateView,
   }
 
  private:
-  content::WebContents* initiator_web_contents_;
+  CheckedPtr<content::WebContents> initiator_web_contents_;
   // The header of the dialog, owned by the view hierarchy.
-  views::View* header_view_;
+  CheckedPtr<views::View> header_view_;
   // The contents of the dialog, owned by the view hierarchy.
-  views::WebView* web_view_;
+  CheckedPtr<views::WebView> web_view_;
 };
 
 BEGIN_METADATA(SigninDialogView, views::BubbleDialogDelegateView)

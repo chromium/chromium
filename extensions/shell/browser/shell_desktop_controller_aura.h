@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
@@ -143,7 +144,7 @@ class ShellDesktopControllerAura
   gfx::Size GetPrimaryDisplaySize();
 #endif
 
-  content::BrowserContext* const browser_context_;
+  const CheckedPtr<content::BrowserContext> browser_context_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<display::DisplayConfigurator> display_configurator_;
@@ -175,7 +176,7 @@ class ShellDesktopControllerAura
   std::list<AppWindow*> app_windows_;
 
   // A pointer to the main message loop if this is run by ShellBrowserMainParts.
-  base::RunLoop* run_loop_ = nullptr;
+  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ShellDesktopControllerAura);
 };

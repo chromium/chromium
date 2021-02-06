@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "gpu/command_buffer/client/program_info_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -169,7 +170,7 @@ class ProgramInfoManagerTest : public testing::Test {
   }
 
   std::unique_ptr<ProgramInfoManager> program_info_manager_;
-  Program* program_;
+  CheckedPtr<Program> program_;
 };
 
 TEST_F(ProgramInfoManagerTest, UpdateES2) {

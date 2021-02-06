@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/base/request_priority.h"
 #include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/http/http_encoder.h"
@@ -488,7 +489,7 @@ class QuicTestPacketMaker {
   // Parameters used throughout the lifetime of the class.
   quic::ParsedQuicVersion version_;
   quic::QuicConnectionId connection_id_;
-  const quic::QuicClock* clock_;  // Not owned.
+  CheckedPtr<const quic::QuicClock> clock_;  // Not owned.
   std::string host_;
   quic::QuicStreamId max_allowed_push_id_;
   spdy::SpdyFramer spdy_request_framer_;

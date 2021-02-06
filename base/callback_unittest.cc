@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_internal.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -708,7 +709,7 @@ class CallbackOwner : public base::RefCounted<CallbackOwner> {
   }
 
   RepeatingClosure callback_;
-  bool* deleted_;
+  CheckedPtr<bool> deleted_;
 };
 
 TEST_F(CallbackTest, CallbackHasLastRefOnContainingObject) {

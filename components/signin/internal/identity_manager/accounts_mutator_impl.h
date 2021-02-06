@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 
@@ -57,11 +58,11 @@ class AccountsMutatorImpl : public AccountsMutator {
 #endif
 
  private:
-  ProfileOAuth2TokenService* token_service_;
-  AccountTrackerService* account_tracker_service_;
-  PrimaryAccountManager* primary_account_manager_;
+  CheckedPtr<ProfileOAuth2TokenService> token_service_;
+  CheckedPtr<AccountTrackerService> account_tracker_service_;
+  CheckedPtr<PrimaryAccountManager> primary_account_manager_;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(AccountsMutatorImpl);

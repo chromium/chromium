@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/external_loader.h"
 
 class Profile;
@@ -34,7 +35,7 @@ class ExtensionMigrator : public ExternalLoader {
  private:
   bool IsAppPresent(const std::string& app_id);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   const std::string old_id_;
   const std::string new_id_;
 

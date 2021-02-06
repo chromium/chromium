@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -117,7 +118,7 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
   GURL GetObservedUnknownSchemeUrl() { return browser_client_.observed_url(); }
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient browser_client_;
   base::test::ScopedFeatureList feature_list_;
 };

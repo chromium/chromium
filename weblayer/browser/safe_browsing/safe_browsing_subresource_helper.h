@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_SUBRESOURCE_HELPER_H_
 #define WEBLAYER_BROWSER_SAFE_BROWSING_SAFE_BROWSING_SUBRESOURCE_HELPER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -34,7 +35,7 @@ class SafeBrowsingSubresourceHelper
                                          SafeBrowsingUIManager* ui_manager);
   friend class content::WebContentsUserData<SafeBrowsingSubresourceHelper>;
 
-  SafeBrowsingUIManager* ui_manager_;
+  CheckedPtr<SafeBrowsingUIManager> ui_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingSubresourceHelper);

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/syslog_logging.h"
 #include "base/win/win_util.h"
@@ -411,7 +412,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   // through the dialog.
   mutable HandleGcpwSigninCompleteResult signin_callback_;
 
-  mutable CredentialProviderWebUIMessageHandler* handler_ = nullptr;
+  mutable CheckedPtr<CredentialProviderWebUIMessageHandler> handler_ = nullptr;
 };
 
 bool ValidateSigninCompleteResult(const std::string& access_token,

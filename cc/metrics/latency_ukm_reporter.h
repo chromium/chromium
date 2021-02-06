@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/event_metrics.h"
@@ -52,7 +53,7 @@ class CC_EXPORT LatencyUkmReporter {
   // pointer is initialized, there should be no trackers yet. Moreover, the
   // LayerTreeHostImpl::ukm_manager_ lives as long as the LayerTreeHostImpl, so
   // this pointer should never be null as long as LayerTreeHostImpl is alive.
-  UkmManager* ukm_manager_ = nullptr;
+  CheckedPtr<UkmManager> ukm_manager_ = nullptr;
 
   std::unique_ptr<SamplingController> compositor_latency_sampling_controller_;
   std::unique_ptr<SamplingController> event_latency_sampling_controller_;

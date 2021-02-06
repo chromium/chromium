@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -40,9 +41,9 @@ class PasswordStoreSigninNotifierImpl
   // Passes signed-out to |store_|.
   void NotifySignedOut(const std::string& username, bool primary_account);
 
-  signin::IdentityManager* identity_manager_ = nullptr;
+  CheckedPtr<signin::IdentityManager> identity_manager_ = nullptr;
 
-  PasswordStore* store_ = nullptr;  // weak
+  CheckedPtr<PasswordStore> store_ = nullptr;  // weak
 };
 
 }  // namespace password_manager

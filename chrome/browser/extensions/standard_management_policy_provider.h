@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "extensions/browser/management_policy.h"
 
@@ -46,7 +47,7 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
                             base::string16* error) const override;
 
  private:
-  const ExtensionManagement* settings_;
+  CheckedPtr<const ExtensionManagement> settings_;
   bool ReturnLoadError(const extensions::Extension* extension,
                        base::string16* error) const;
 };
