@@ -13,7 +13,6 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -168,11 +167,6 @@ void ScreenOrientationController::NotifyOrientationChanged() {
                             reinterpret_cast<uintptr_t>(GetExecutionContext()));
     SCOPED_CRASH_KEY_BOOL("debug-1154141", "is_context_destroyed",
                           GetSupplementable()->IsContextDestroyed());
-    SCOPED_CRASH_KEY_NUMBER("debug-1154141", "window_proxy_lifecycle",
-                            static_cast<int>(GetSupplementable()
-                                                 ->GetFrame()
-                                                 ->GetWindowProxyManager()
-                                                 ->LifecycleForDebugging()));
     base::debug::DumpWithoutCrashing();
     return;
   }
