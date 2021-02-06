@@ -18,9 +18,9 @@ component("chromeos") {
   ]
   defines = [ "UI_CHROMEOS_IMPLEMENTATION" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base/third_party/dynamic_annotations",
-    "//chromeos/constants",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/device_event_log",

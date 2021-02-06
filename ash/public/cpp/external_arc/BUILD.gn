@@ -35,9 +35,9 @@ static_library("external_arc") {
   ]
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
   deps = [
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chromeos/constants",
     "//components/account_id",
     "//components/arc:arc_base_utils",
     "//components/arc:arc_metrics_constants",

@@ -27,8 +27,6 @@ component("userspace_swap") {
     ":chromeos_implementation",
     "//build/config/linux/nss:system_nss_no_ssl_config",
   ]
-
-  public_deps = [ "//chromeos/constants" ]
   deps = [
     ":mojom",
     "//base",

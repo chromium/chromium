@@ -62,12 +62,12 @@ enum {
 };
 
 // Call once to register the provider for the path keys defined above.
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) void RegisterPathProvider();
+COMPONENT_EXPORT(ASH_CONSTANTS) void RegisterPathProvider();
 
 // Overrides some of the paths listed above so that those files can be used
 // when not running on ChromeOS. The stubs files will be relative to
 // |stubs_dir|. It is not valid to call this when running on ChromeOS.
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+COMPONENT_EXPORT(ASH_CONSTANTS)
 void RegisterStubPathOverrides(const base::FilePath& stubs_dir);
 
 }  // namespace chromeos

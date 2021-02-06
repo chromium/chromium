@@ -519,6 +519,7 @@ test("chromevox_tests") {
 
   deps = [
     ":chromevox_unitjs_tests",
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
@@ -534,7 +535,6 @@ test("chromevox_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test/data:web_ui_test_bindings",
-    "//chromeos/constants:constants",
     "//components/webapps/browser",
     "//content/test:test_support",
     "//extensions/browser:test_support",

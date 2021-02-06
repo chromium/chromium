@@ -11,9 +11,9 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 component("network") {
   defines = [ "IS_CHROMEOS_NETWORK_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base:i18n",
-    "//chromeos/constants",
     "//chromeos/dbus:common",
     "//chromeos/dbus/hermes",
     "//chromeos/dbus/hermes",
@@ -235,11 +235,11 @@ source_set("unit_tests") {
   deps = [
     ":network",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
     "//chromeos:test_utils",
-    "//chromeos/constants",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/hermes:hermes_clients",
     "//chromeos/dbus/hermes:hermes_fakes",

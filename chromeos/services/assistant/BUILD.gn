@@ -42,10 +42,10 @@ component("lib") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/assistant:buildflags",
     "//chromeos/audio",
-    "//chromeos/constants",
     "//chromeos/dbus",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
@@ -148,12 +148,12 @@ source_set("tests") {
   deps = [
     ":lib",
     ":test_support",
+    "//ash/constants",
     "//ash/public/cpp/assistant/test_support",
     "//ash/public/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/audio",
-    "//chromeos/constants",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/power",

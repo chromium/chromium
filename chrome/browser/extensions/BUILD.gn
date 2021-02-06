@@ -1050,6 +1050,7 @@ static_library("extensions") {
     }
     deps += [
       "//ash",
+      "//ash/constants",
       "//ash/keyboard/ui:resources_grit_grit",
       "//ash/public/cpp",
       "//chrome/browser/chromeos/crostini:crostini_installer_types_mojom",
@@ -1065,7 +1066,6 @@ static_library("extensions") {
       "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/proximity_auth",
       "//chromeos/components/remote_apps/mojom",
-      "//chromeos/constants",
       "//chromeos/cryptohome",
       "//chromeos/dbus",
       "//chromeos/dbus/cryptohome",

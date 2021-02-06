@@ -19,7 +19,7 @@ static_library("eche_app_ui") {
   ]
 
   deps = [
-    "//chromeos/constants",
+    "//ash/constants",
     "//chromeos/resources:eche_app_resources",
     "//content/public/browser",
     "//ui/webui",

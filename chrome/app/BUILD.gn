@@ -168,6 +168,7 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/constants",
       "//chrome/browser/chromeos",
       "//chromeos",
       "//chromeos/dbus/constants",

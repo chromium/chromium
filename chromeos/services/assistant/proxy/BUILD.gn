@@ -23,10 +23,10 @@ source_set("proxy") {
     public_deps = [ "//chromeos/services/libassistant/public/mojom" ]
 
     deps += [
+      "//ash/constants",
       "//base",
       "//chromeos/assistant/internal",
       "//chromeos/assistant/internal/proto/google3",
-      "//chromeos/constants",
       "//chromeos/services/assistant/public/cpp",
       "//chromeos/services/assistant/public/cpp/migration",
       "//chromeos/services/libassistant",

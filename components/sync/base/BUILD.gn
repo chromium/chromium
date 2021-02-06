@@ -95,7 +95,7 @@ static_library("base") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 
   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]

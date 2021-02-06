@@ -12,13 +12,13 @@
 
 namespace chromeos {
 
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FilePath::CharType kDriveCacheDirname[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FilePath::CharType kNssCertDbPath[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FilePath::CharType kNssDirPath[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FilePath::CharType kNssKeyDbPath[];
 
 }  // namespace chromeos

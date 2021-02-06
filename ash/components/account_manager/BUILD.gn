@@ -25,8 +25,8 @@ component("account_manager") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//components/prefs:prefs",
     "//google_apis",

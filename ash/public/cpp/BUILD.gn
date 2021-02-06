@@ -316,8 +316,8 @@ component("cpp") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base/util/values:values_util",
-    "//chromeos/constants",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/cellular_setup:in_process_esim_manager",

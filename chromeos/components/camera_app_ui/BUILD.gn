@@ -33,7 +33,6 @@ static_library("camera_app_ui") {
     ":mojo_bindings_js",
     "//ash/public/cpp",
     "//chromeos/components/web_applications",
-    "//chromeos/constants",
     "//chromeos/strings",
     "//chromeos/system",
     "//components/arc",

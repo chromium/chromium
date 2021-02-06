@@ -25,11 +25,11 @@ static_library("help_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
+    "//ash/constants",
     "//chromeos/components/local_search_service/public/cpp",
     "//chromeos/components/local_search_service/public/mojom",
     "//chromeos/components/local_search_service/public/mojom:mojom_js",
     "//chromeos/components/web_applications",
-    "//chromeos/constants",
     "//chromeos/resources:help_app_bundle_resources",
     "//chromeos/resources:help_app_resources",
     "//chromeos/strings",
@@ -67,7 +67,7 @@ js2gtest("browser_tests_js") {
 
   deps = [
     ":browser_test_support",
-    "//chromeos/constants",
+    "//ash/constants",
   ]
 }
 

@@ -336,8 +336,8 @@ component("capture_lib") {
     ]
     public_deps += [ "//media/capture/video/chromeos/public" ]
     deps += [
+      "//ash/constants",
       "//build/config/linux/libdrm",
-      "//chromeos/constants",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//components/chromeos_camera/common",
       "//components/device_event_log",

@@ -16,7 +16,6 @@ static_library("connectivity_diagnostics") {
     "../network_ui:network_diagnostics_resource_provider",
     "../network_ui:network_health_resource_provider",
     "//chromeos/components/web_applications",
-    "//chromeos/constants",
     "//chromeos/resources:connectivity_diagnostics_resources",
     "//chromeos/services/network_health/public/mojom:mojom",
     "//chromeos/strings/",

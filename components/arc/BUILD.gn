@@ -97,12 +97,12 @@ static_library("arc") {
 
   deps = [
     "//ash:ash",
+    "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//base",
     "//chromeos/audio",
     "//chromeos/components/sensors:sensors",
-    "//chromeos/constants",
     "//chromeos/cryptohome",
     "//chromeos/dbus",
     "//chromeos/dbus/cryptohome",
@@ -203,9 +203,9 @@ static_library("arc_base_utils") {
 
   public_deps = [ ":arc_features" ]
   deps = [
+    "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chromeos/constants",
     "//chromeos/dbus:concierge_proto",
     "//chromeos/dbus:dbus",
     "//chromeos/dbus/session_manager",
@@ -252,12 +252,12 @@ static_library("arc_base") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc",
     "//base",
     "//chromeos/components/sensors:buildflags",
     "//chromeos/components/sensors/mojom",
-    "//chromeos/constants",
     "//chromeos/cryptohome",
     "//chromeos/dbus:common",
     "//chromeos/dbus:concierge_proto",
@@ -427,13 +427,13 @@ source_set("unit_tests") {
 
   deps = [
     ":arc_test_support",
+    "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//base/util/timer",
     "//chromeos",
-    "//chromeos/constants",
     "//chromeos/cryptohome:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/permission_broker",

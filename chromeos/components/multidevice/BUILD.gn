@@ -50,8 +50,8 @@ static_library("stub_multidevice_util") {
 
   deps = [
     ":multidevice",
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//chromeos/services/device_sync/proto",
   ]
 }

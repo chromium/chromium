@@ -40,7 +40,7 @@ static_library("browser_sync") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 }
 

@@ -104,13 +104,13 @@ source_set("web_applications") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/constants",
       "//ash/public/cpp",
       "//chromeos/components/camera_app_ui",
       "//chromeos/components/connectivity_diagnostics",
       "//chromeos/components/eche_app_ui",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/media_app_ui",
-      "//chromeos/constants",
       "//chromeos/strings",
       "//components/arc:arc_base",
       "//components/arc/mojom",
@@ -243,8 +243,8 @@ source_set("web_applications_unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/constants",
       "//chrome/browser/chromeos",
-      "//chromeos/constants",
       "//components/arc:arc",
       "//components/arc:arc_test_support",
       "//components/arc/mojom",

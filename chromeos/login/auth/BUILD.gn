@@ -11,9 +11,9 @@ component("auth") {
   defines = [ "IS_CHROMEOS_LOGIN_AUTH_IMPL" ]
   public_deps = [ ":challenge_response_key" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//base:i18n",
-    "//chromeos/constants",
     "//chromeos/cryptohome",
     "//chromeos/dbus/authpolicy",
     "//chromeos/dbus/authpolicy:authpolicy_proto",

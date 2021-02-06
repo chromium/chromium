@@ -9,8 +9,8 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 component("audio") {
   defines = [ "IS_CHROMEOS_AUDIO_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//chromeos/dbus/audio",
     "//components/prefs",
     "//media/base:video_facing",
@@ -35,8 +35,8 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":audio",
+    "//ash/constants",
     "//base/test:test_support",
-    "//chromeos/constants",
     "//chromeos/dbus/audio",
     "//components/prefs:test_support",
     "//media/base:video_facing",

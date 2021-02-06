@@ -23,7 +23,6 @@ static_library("scanning") {
 
   deps = [
     "//chromeos/components/scanning/mojom",
-    "//chromeos/constants",
     "//chromeos/resources:scanning_app_resources",
     "//chromeos/strings/",
     "//content/public/browser",

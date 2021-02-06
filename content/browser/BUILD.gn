@@ -2713,9 +2713,9 @@ source_set("browser") {
     ]
 
     deps += [
+      "//ash/constants",
       "//chromeos/assistant:buildflags",
       "//chromeos/audio",
-      "//chromeos/constants",
       "//chromeos/dbus",
       "//chromeos/dbus/power",
       "//chromeos/dbus/power:power_manager_proto",

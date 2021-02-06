@@ -8,9 +8,9 @@ component("system") {
   output_name = "chromeos_system"
   defines = [ "IS_CHROMEOS_SYSTEM_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos:chromeos_export",
-    "//chromeos/constants",
     "//ui/ozone:ozone_base",
   ]
   sources = [

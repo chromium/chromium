@@ -2404,6 +2404,7 @@ static_library("browser") {
       "apps/digital_goods/util.h",
     ]
     deps += [
+      "//ash/constants",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",

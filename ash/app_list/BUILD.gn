@@ -232,6 +232,7 @@ test("app_list_unittests") {
   deps = [
     ":app_list",
     ":test_support",
+    "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//ash/public/cpp:test_support",
@@ -239,7 +240,6 @@ test("app_list_unittests") {
     "//ash/search_box",
     "//base",
     "//base/test:test_support",
-    "//chromeos/constants",
     "//chromeos/services/assistant/public/cpp",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",

@@ -124,9 +124,9 @@ static_library("exo") {
   if (is_chromeos_ash) {
     deps += [
       "//ash",
+      "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
-      "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
@@ -311,11 +311,11 @@ source_set("unit_tests") {
     deps += [
       "//ash",
       "//ash:test_support",
+      "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
       "//build:chromeos_buildflags",
-      "//chromeos/constants",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//ui/base:test_support",

@@ -28,7 +28,7 @@ static_library("sync_preferences") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 }
 
@@ -71,6 +71,6 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 }

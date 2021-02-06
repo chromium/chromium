@@ -58,10 +58,10 @@ static_library("multidevice_setup") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/constants:constants",
     "//chromeos/services/device_sync/proto:util",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/device_sync/public/mojom",
@@ -151,11 +151,11 @@ source_set("unit_tests") {
   deps = [
     ":multidevice_setup",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
-    "//chromeos/constants:constants",
     "//chromeos/services/device_sync/public/cpp:test_support",
     "//chromeos/services/multidevice_setup/public/cpp:oobe_completion_tracker",
     "//chromeos/services/multidevice_setup/public/cpp:prefs",

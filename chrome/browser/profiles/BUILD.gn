@@ -33,7 +33,7 @@ source_set("profile") {
     deps += [ "//extensions/browser" ]
   }
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]

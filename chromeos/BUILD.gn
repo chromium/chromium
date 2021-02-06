@@ -33,10 +33,7 @@ component("chromeos") {
   if (is_chromeos_device) {
     configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
   }
-  public_deps = [
-    "//chromeos/constants",
-    "//components/policy/proto",
-  ]
+  public_deps = [ "//components/policy/proto" ]
   deps = [
     ":chromeos_export",
     "//base",

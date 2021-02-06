@@ -95,7 +95,7 @@ Some useful flags:
 *    `--enable-features=Feature1,OtherFeature2`: Enable specified features.
      Features are often listed in chrome://flags, or in source files such as
      [chrome_features.cc](https://source.chromium.org/chromium/chromium/src/+/master:chrome/common/chrome_features.cc)
-     or [chromeos_features.cc](https://source.chromium.org/chromium/chromium/src/+/master:chromeos/constants/chromeos_features.cc).
+     or [ash_features.cc](https://source.chromium.org/chromium/chromium/src/+/master:ash/constants/ash_features.cc).
      Note that changing values in chrome://flags does not work for
      linux-chromeos, and this flag must be used.
 *    `--enable-ui-devtools[=9223]`: Allow debugging of the system UI through

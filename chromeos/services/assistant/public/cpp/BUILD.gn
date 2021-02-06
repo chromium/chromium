@@ -27,8 +27,8 @@ component("cpp") {
   ]
 
   public_deps = [
+    "//ash/constants",
     "//ash/public/mojom",
-    "//chromeos/constants:constants",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/assistant/public/shared",
     "//chromeos/services/network_config/public/mojom",

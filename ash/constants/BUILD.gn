@@ -1,0 +1,30 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+component("constants") {
+  output_name = "ash_constants"
+  defines = [ "IS_ASH_CONSTANTS_IMPL" ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
+  sources = [
+    "ash_constants.cc",
+    "ash_constants.h",
+    "ash_features.cc",
+    "ash_features.h",
+    "ash_paths.cc",
+    "ash_paths.h",
+    "ash_pref_names.cc",
+    "ash_pref_names.h",
+    "ash_switches.cc",
+    "ash_switches.h",
+    "devicetype.cc",
+    "devicetype.h",
+  ]
+}

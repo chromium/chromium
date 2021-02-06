@@ -352,7 +352,7 @@ static_library("common") {
       "extensions/api/input_ime/input_components_handler.h",
     ]
     public_deps += [ "//ash/keyboard/ui" ]
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 
   if (enable_nacl) {

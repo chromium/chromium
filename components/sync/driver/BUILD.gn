@@ -110,7 +110,7 @@ static_library("driver") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/constants" ]
+    deps += [ "//ash/constants" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

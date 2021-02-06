@@ -20,8 +20,8 @@ source_set("events") {
     "pref_names.h",
   ]
   deps = [
+    "//ash/constants",
     "//base",
-    "//chromeos/constants",
     "//device/udev_linux",
     "//ui/base:features",
     "//ui/base/ime/chromeos",

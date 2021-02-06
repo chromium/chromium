@@ -40,11 +40,11 @@ source_set("quick_answers") {
     "utils/quick_answers_utils.h",
   ]
   deps = [
+    "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/mojom",
     "//base",
     "//chromeos/components/quick_answers/public/cpp:prefs",
-    "//chromeos/constants:constants",
     "//chromeos/services/assistant/public/shared",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/mojom",
@@ -81,12 +81,12 @@ source_set("unit_tests") {
 
   deps = [
     ":quick_answers",
+    "//ash/constants",
     "//ash/public/cpp",
     "//ash/public/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/quick_answers/public/cpp:prefs",
-    "//chromeos/constants:constants",
     "//chromeos/services/assistant/public/shared",
     "//chromeos/services/machine_learning/public/cpp:test_support",
     "//chromeos/services/machine_learning/public/mojom",
