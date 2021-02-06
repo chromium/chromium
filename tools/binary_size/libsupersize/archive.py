@@ -10,6 +10,7 @@ import calendar
 import collections
 import copy
 import datetime
+import functools
 import gzip
 import itertools
 import logging
@@ -61,7 +62,6 @@ _OutputDirectoryContext = collections.namedtuple('_OutputDirectoryContext', [
     'elf_object_paths',  # Only when elf_path is also provided.
     'known_inputs',  # Only when elf_path is also provided.
     'output_directory',
-    'source_mapper',
     'thin_archives',
 ])
 
@@ -284,15 +284,21 @@ def _NormalizeSourcePath(path):
 
 def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, source_mapper):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
+  logging.info('Normalizing dex symbol paths')
+  dex_and_other = models.DEX_SECTIONS + (models.SECTION_OTHER, )
+  for symbol in raw_symbols:
+    if symbol.source_path and symbol.section_name in dex_and_other:
+      symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
+          symbol.source_path)
+
   if source_mapper:
     logging.info('Looking up source paths from ninja files')
     for symbol in raw_symbols:
-      object_path = symbol.object_path
       if symbol.IsDex() or symbol.IsOther():
-        if symbol.source_path:
-          symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
-              symbol.source_path)
-      elif object_path:
+        continue
+      # Native symbols and pak symbols use object paths.
+      object_path = symbol.object_path
+      if object_path:
         # We don't have source info for prebuilt .a files.
         if not os.path.isabs(object_path) and not object_path.startswith('..'):
           source_path = source_mapper.FindSourceForPath(object_path)
@@ -820,7 +826,7 @@ def CreateMetadata(args, linker_name, build_config):
   if linker_name:
     update_build_config(models.BUILD_CONFIG_LINKER_NAME, linker_name)
 
-  # Deduce GIT revision.
+  # Deduce GIT revision (cached via @lru_cache).
   git_rev = _DetectGitRevision(args.source_directory)
   if git_rev:
     update_build_config(models.BUILD_CONFIG_GIT_REVISION, git_rev)
@@ -1555,23 +1561,18 @@ def CreateContainerAndSymbols(knobs=None,
 
   outdir_context = None
   source_mapper = None
-  if output_directory:
+  section_ranges = {}
+  raw_symbols = []
+  if opts.analyze_native and output_directory:
     # Start by finding the elf_object_paths, so that nm can run on them while
     # the linker .map is being parsed.
-    logging.info('Parsing ninja files.')
-    source_mapper, ninja_elf_object_paths = (
-        ninja_parser.Parse(output_directory, elf_path))
+    target_elf_path = elf_path
+    if map_path and '__combined.so.map' in map_path:
+      target_elf_path = elf_path.replace('.so', '__combined.so')
+    logging.info('Parsing ninja files, looking for %s.', target_elf_path)
 
-    # If no symbols came from the library, it's because it's a partition
-    # extracted from a combined library. Look there instead.
-    if not ninja_elf_object_paths and elf_path:
-      combined_elf_path = elf_path.replace('.so', '__combined.so')
-      logging.info('Found no objects in %s, trying %s', elf_path,
-                   combined_elf_path)
-      source_mapper, ninja_elf_object_paths = (ninja_parser.Parse(
-          output_directory, combined_elf_path))
-      if ninja_elf_object_paths:
-        assert map_path and '__combined.so.map' in map_path
+    source_mapper, ninja_elf_object_paths = ninja_parser.Parse(
+        output_directory, target_elf_path)
 
     logging.debug('Parsed %d .ninja files.', source_mapper.parsed_file_count)
     assert not elf_path or ninja_elf_object_paths, (
@@ -1598,7 +1599,6 @@ def CreateContainerAndSymbols(knobs=None,
         elf_object_paths=elf_object_paths,
         known_inputs=known_inputs,
         output_directory=output_directory,
-        source_mapper=source_mapper,
         thin_archives=thin_archives)
 
   if opts.analyze_native:
@@ -1609,8 +1609,6 @@ def CreateContainerAndSymbols(knobs=None,
         opts.track_string_literals,
         outdir_context=outdir_context,
         linker_name=linker_name)
-  else:
-    section_ranges, raw_symbols, object_paths_by_name = {}, [], None
 
   if apk_elf_result:
     section_ranges, elf_overhead_size = _ParseApkElfSectionRanges(
@@ -1746,6 +1744,7 @@ def CreateSizeInfo(build_config,
   return models.SizeInfo(build_config, container_list, all_raw_symbols)
 
 
+@functools.lru_cache
 def _DetectGitRevision(directory):
   """Runs git rev-parse to get the SHA1 hash of the current revision.
 
@@ -1810,6 +1809,7 @@ def _CountRelocationsFromElf(elf_path, tool_prefix):
   return int(relocations, 16)
 
 
+@functools.lru_cache
 def _ParseGnArgs(args_path):
   """Returns a list of normalized "key=value" strings."""
   args = {}
