@@ -716,6 +716,7 @@ void HandleOOM(size_t unused_size) {
 static constexpr PartitionOptions kOpts = {
     PartitionOptions::Alignment::kRegular,
     PartitionOptions::ThreadCache::kDisabled,
+    base::PartitionOptions::Quarantine::kDisallowed,
     PartitionOptions::RefCount::kEnabled};
 
 TEST(BackupRefPtrImpl, Basic) {
