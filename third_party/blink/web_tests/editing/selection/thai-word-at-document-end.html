@@ -5,6 +5,7 @@
 <script>
 // Thai word selection misbehaves for the last sentence in the document.
 // rdar://problem/6764359
+const isMac = navigator.platform.indexOf('Mac') === 0;
 
 const kSegment0 = '\u0E04\u0E27\u0E32\u0E21';
 const kSegment1 = '\u0E2B\u0E21\u0E32\u0E22';
@@ -39,7 +40,9 @@ selection_test(
 selection_test(
   `<div conntenteditable>${kSegment0}${kSegment1}${kSegment2}|${kSegment3} ${kSentence1}.</div>`,
   selection => selection.modify('move', 'forward', 'word'),
-  `<div conntenteditable>${kSentence0} ${kSegment4}|${kSegment5}${kSegment6}${kSegment7}.</div>`,
+  isMac
+      ? `<div conntenteditable>${kSentence0} ${kSegment4}|${kSegment5}${kSegment6}${kSegment7}.</div>`
+      : `<div conntenteditable>${kSentence0} |${kSegment4}${kSegment5}${kSegment6}${kSegment7}.</div>`,
   '4 Move forward word with period');
 
 selection_test(
@@ -94,7 +97,9 @@ selection_test(
 selection_test(
   `<div conntenteditable>${kSegment0}${kSegment1}${kSegment2}|${kSegment3} ${kSentence1}</div>`,
   selection => selection.modify('move', 'forward', 'word'),
-  `<div conntenteditable>${kSentence0} ${kSegment4}|${kSegment5}${kSegment6}${kSegment7}</div>`,
+  isMac
+      ? `<div conntenteditable>${kSentence0} ${kSegment4}|${kSegment5}${kSegment6}${kSegment7}</div>`
+      : `<div conntenteditable>${kSentence0} |${kSegment4}${kSegment5}${kSegment6}${kSegment7}</div>`,
   '4 Move forward word without period');
 
 selection_test(

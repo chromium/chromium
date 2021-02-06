@@ -64,7 +64,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\n Just^\n <span>testing| what</span>\n ever\n</div>'
-      : '<div contenteditable dir="rtl">\n Just^\n <span>testing |what</span>\n ever\n</div>',
+      : '<div contenteditable dir="rtl">\n Just^\n| <span>testing what</span>\n ever\n</div>',
   `${behavior} 15-6 rtl forward word`);
 
 selection_test(
@@ -136,7 +136,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\n Just\n <span>testing^ what|</span>\n ever\n</div>'
-      : '<div contenteditable dir="rtl">\n Just\n <span>testing^ what</span>\n| ever\n</div>',
+      : '<div contenteditable dir="rtl">\n Just\n <span>testing^ |what</span>\n ever\n</div>',
   `${behavior} 15-15 rtl forward word`);
 
 selection_test(
@@ -174,7 +174,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">\n Just\n <span>testing what</span>|\n ever\n</div>',
   selection => selection.modify('extend', 'forward', 'word'),
-  '<div contenteditable dir="rtl">\n Just\n <span>testing what</span>^\n ever|\n</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="rtl">\n Just\n <span>testing what</span>^\n ever|\n</div>'
+      : '<div contenteditable dir="rtl">\n Just\n <span>testing what</span>^\n| ever\n</div>',
   `${behavior} 15-20 rtl forward word`);
 
 selection_test(

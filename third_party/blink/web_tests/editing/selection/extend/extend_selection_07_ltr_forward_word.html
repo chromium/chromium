@@ -56,7 +56,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="ltr">Lorem^ <span style="direction: ltr">ipsum| dolor<div> just a test</div> sit</span> amet</div>'
-      : '<div contenteditable dir="ltr">Lorem^ <span style="direction: ltr">ipsum |dolor<div> just a test</div> sit</span> amet</div>',
+      : '<div contenteditable dir="ltr">Lorem^ |<span style="direction: ltr">ipsum dolor<div> just a test</div> sit</span> amet</div>',
   `${behavior} 7-5 ltr forward word`);
 
 selection_test(
@@ -102,7 +102,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum| dolor<div > just a test</div> sit</span> amet</div>',
   selection => selection.modify('extend', 'forward', 'word'),
-  '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum^ dolor|<div> just a test</div> sit</span> amet</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum^ dolor|<div> just a test</div> sit</span> amet</div>'
+      : '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum^ |dolor<div> just a test</div> sit</span> amet</div>',
   `${behavior} 7-11 ltr forward word`);
 
 selection_test(
@@ -180,7 +182,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just^ a| test</div> sit</span> amet</div>'
-      : '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just^ a |test</div> sit</span> amet</div>',
+      : '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just^ |a test</div> sit</span> amet</div>',
   `${behavior} 7-22 ltr forward word`);
 
 selection_test(
@@ -194,7 +196,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div > just a| test</div> sit</span> amet</div>',
   selection => selection.modify('extend', 'forward', 'word'),
-  '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just a^ test|</div> sit</span> amet</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just a^ test|</div> sit</span> amet</div>'
+      : '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just a^ |test</div> sit</span> amet</div>',
   `${behavior} 7-24 ltr forward word`);
 
 selection_test(
@@ -256,7 +260,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div > just a test</div> sit</span>| amet</div>',
   selection => selection.modify('extend', 'forward', 'word'),
-  '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just a test</div> sit</span>^ amet|</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just a test</div> sit</span>^ amet|</div>'
+      : '<div contenteditable dir="ltr">Lorem <span style="direction: ltr">ipsum dolor<div> just a test</div> sit</span>^ |amet</div>',
   `${behavior} 7-33 ltr forward word`);
 
 selection_test(

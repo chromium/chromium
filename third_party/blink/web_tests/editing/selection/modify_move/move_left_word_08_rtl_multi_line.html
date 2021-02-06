@@ -35,7 +35,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">abc| ghi<div></div><div></div><div></div></div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>',
+  isMac
+      ? '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>'
+      : '<div contenteditable dir="rtl">abc |ghi<div></div><div></div><div></div></div>',
   '8-3 rtl left word');
 
 selection_test(

@@ -64,7 +64,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="ltr">\n Just^\n <span>testing| \u05E8\u05E7</span>\n \u05D1\u05D5\u05D3\u05E7\n</div>'
-      : '<div contenteditable dir="ltr">\n Just^\n <span>testing |\u05E8\u05E7</span>\n \u05D1\u05D5\u05D3\u05E7\n</div>',
+      : '<div contenteditable dir="ltr">\n Just^\n| <span>testing \u05E8\u05E7</span>\n \u05D1\u05D5\u05D3\u05E7\n</div>',
   `${behavior} 14-6 ltr forward word`);
 
 selection_test(
@@ -136,7 +136,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="ltr">\n Just\n <span>testing^ \u05E8\u05E7|</span>\n \u05D1\u05D5\u05D3\u05E7\n</div>'
-      : '<div contenteditable dir="ltr">\n Just\n <span>testing^ \u05E8\u05E7</span>\n| \u05D1\u05D5\u05D3\u05E7\n</div>',
+      : '<div contenteditable dir="ltr">\n Just\n <span>testing^ |\u05E8\u05E7</span>\n \u05D1\u05D5\u05D3\u05E7\n</div>',
   `${behavior} 14-15 ltr forward word`);
 
 selection_test(
@@ -158,7 +158,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">\n Just\n <span>testing \u05E8\u05E7</span>|\n \u05D1\u05D5\u05D3\u05E7\n</div>',
   selection => selection.modify('extend', 'forward', 'word'),
-  '<div contenteditable dir="ltr">\n Just\n <span>testing \u05E8\u05E7</span>^\n \u05D1\u05D5\u05D3\u05E7|\n</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="ltr">\n Just\n <span>testing \u05E8\u05E7</span>^\n \u05D1\u05D5\u05D3\u05E7|\n</div>'
+      : '<div contenteditable dir="ltr">\n Just\n <span>testing \u05E8\u05E7</span>^\n| \u05D1\u05D5\u05D3\u05E7\n</div>',
   `${behavior} 14-18 ltr forward word`);
 
 selection_test(

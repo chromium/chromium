@@ -48,7 +48,7 @@ selection_test(
   selection => selection.modify('extend', 'left', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">they^ said| "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>'
-      : '<div contenteditable dir="rtl">they^ said |"\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
+      : '<div contenteditable dir="rtl">they^ |said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
   `${behavior} 18-4 rtl left word`);
 
 selection_test(
@@ -136,7 +136,7 @@ selection_test(
   selection => selection.modify('extend', 'left', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">they said "\u202Bcar^ \u05D3\u05D4\u05D5| \u05D0\u05D1\u05D2\u202C."</div>'
-      : '<div contenteditable dir="rtl">they said "\u202Bcar^ \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2\u202C."</div>',
+      : '<div contenteditable dir="rtl">they said "\u202Bcar^ |\u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
   `${behavior} 18-15 rtl left word`);
 
 selection_test(
@@ -166,7 +166,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">they said "\u202Bcar \u05D3\u05D4\u05D5| \u05D0\u05D1\u05D2\u202C."</div>',
   selection => selection.modify('extend', 'left', 'word'),
-  '<div contenteditable dir="rtl">they said "\u202Bcar \u05D3\u05D4\u05D5^ \u05D0\u05D1\u05D2\u202C."|</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="rtl">they said "\u202Bcar \u05D3\u05D4\u05D5^ \u05D0\u05D1\u05D2\u202C."|</div>'
+      : '<div contenteditable dir="rtl">they said "\u202Bcar \u05D3\u05D4\u05D5^ |\u05D0\u05D1\u05D2\u202C."</div>',
   `${behavior} 18-19 rtl left word`);
 
 selection_test(

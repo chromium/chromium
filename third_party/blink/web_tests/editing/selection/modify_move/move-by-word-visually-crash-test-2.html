@@ -75,7 +75,7 @@ selection_test(
 selection_test(
   '<div contenteditable><vkern></vkern><marquee><div>abc| def</div></marquee></div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable><vkern></vkern><marquee><div>abc def|</div></marquee></div>',
+  '<div contenteditable><vkern></vkern><marquee><div>abc |def</div></marquee></div>',
   '1-3 right word');
 
 selection_test(

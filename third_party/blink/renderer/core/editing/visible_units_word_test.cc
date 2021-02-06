@@ -513,7 +513,7 @@ TEST_P(ParameterizedVisibleUnitsWordTest, NextWordSkipSpacesBasic) {
             DoNextWordSkippingSpaces("<p> (|1) abc def</p>"));
   EXPECT_EQ("<p> (1) |abc def</p>",
             DoNextWordSkippingSpaces("<p> (1|) abc def</p>"));
-  EXPECT_EQ("<p> (1) abc |def</p>",
+  EXPECT_EQ("<p> (1) |abc def</p>",
             DoNextWordSkippingSpaces("<p> (1)| abc def</p>"));
   EXPECT_EQ("<p> (1) abc |def</p>",
             DoNextWordSkippingSpaces("<p> (1) |abc def</p>"));
@@ -521,7 +521,7 @@ TEST_P(ParameterizedVisibleUnitsWordTest, NextWordSkipSpacesBasic) {
             DoNextWordSkippingSpaces("<p> (1) a|bc def</p>"));
   EXPECT_EQ("<p> (1) abc |def</p>",
             DoNextWordSkippingSpaces("<p> (1) ab|c def</p>"));
-  EXPECT_EQ("<p> (1) abc def|</p>",
+  EXPECT_EQ("<p> (1) abc |def</p>",
             DoNextWordSkippingSpaces("<p> (1) abc| def</p>"));
   EXPECT_EQ("<p> (1) abc def|</p>",
             DoNextWordSkippingSpaces("<p> (1) abc |def</p>"));

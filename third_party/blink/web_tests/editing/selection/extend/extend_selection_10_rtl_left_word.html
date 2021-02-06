@@ -48,7 +48,7 @@ selection_test(
   selection => selection.modify('extend', 'left', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">\nabc^ \u05D0\u05D1\u05D2| xyz\n</div>'
-      : '<div contenteditable dir="rtl">\nabc^ \u05D0\u05D1\u05D2 |xyz\n</div>',
+      : '<div contenteditable dir="rtl">\nabc^ |\u05D0\u05D1\u05D2 xyz\n</div>',
   `${behavior} 10-4 rtl left word`);
 
 selection_test(
@@ -78,7 +78,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">\nabc \u05D0\u05D1\u05D2| xyz\n</div>',
   selection => selection.modify('extend', 'left', 'word'),
-  '<div contenteditable dir="rtl">\nabc \u05D0\u05D1\u05D2^ xyz|\n</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="rtl">\nabc \u05D0\u05D1\u05D2^ xyz|\n</div>'
+      : '<div contenteditable dir="rtl">\nabc \u05D0\u05D1\u05D2^ |xyz\n</div>',
   `${behavior} 10-8 rtl left word`);
 
 selection_test(
