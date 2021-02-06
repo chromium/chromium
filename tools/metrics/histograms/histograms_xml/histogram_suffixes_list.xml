@@ -15374,6 +15374,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="RelaunchNotificationStyle" separator=".">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <suffix name="Recommended" label="The relaunch recommended bubble."/>
   <suffix name="Required" label="The relaunch required dialog."/>
   <affected-histogram name="RelaunchNotification.ShowResult"/>

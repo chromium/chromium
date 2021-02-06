@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
-#include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_metrics.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_timer.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -28,15 +27,7 @@ RelaunchNotificationControllerPlatformImpl::
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
     base::Time /*detection_time*/,
     bool past_deadline) {
-  RecordRecommendedShowResult();
   RefreshRelaunchRecommendedTitle(past_deadline);
-}
-
-void RelaunchNotificationControllerPlatformImpl::RecordRecommendedShowResult() {
-  if (!recorded_shown_) {
-    relaunch_notification::RecordRecommendedShowResult();
-    recorded_shown_ = true;
-  }
 }
 
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
@@ -48,8 +39,6 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
         base::BindRepeating(&RelaunchNotificationControllerPlatformImpl::
                                 RefreshRelaunchRequiredTitle,
                             base::Unretained(this)));
-
-    relaunch_notification::RecordRequiredShowResult();
   }
 
   RefreshRelaunchRequiredTitle();
@@ -65,7 +54,6 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
 void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
   SystemTrayClient::Get()->SetUpdateNotificationState(
       ash::NotificationStyle::kDefault, base::string16(), base::string16());
-  recorded_shown_ = false;
   relaunch_required_timer_.reset();
   on_visible_.Reset();
   StopObserving();

@@ -12835,6 +12835,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="RelaunchNotification.ShowResult"
     enum="RelaunchNotificationShowResult" expires_after="2021-06-20">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <owner>ayaelattar@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>

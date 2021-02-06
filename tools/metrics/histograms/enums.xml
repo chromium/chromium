@@ -64877,6 +64877,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="RelaunchNotificationShowResult">
+  <obsolete>
+    Removed in M90.
+  </obsolete>
   <int value="0" label="Shown"/>
   <int value="1" label="Not shown for unknown reason (deprecated)"/>
   <int value="2"
