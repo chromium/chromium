@@ -111,6 +111,13 @@ class WaylandWindow : public PlatformWindow,
   // Returns current type of the window.
   PlatformWindowType type() const { return type_; }
 
+  gfx::Size visual_size_px() const { return visual_size_px_; }
+
+  // This is never intended to be used except in unit tests.
+  void set_update_visual_size_immediately(bool update_immediately) {
+    update_visual_size_immediately_ = update_immediately;
+  }
+
   // WmDragHandler
   bool StartDrag(const ui::OSExchangeData& data,
                  int operation,
@@ -158,12 +165,14 @@ class WaylandWindow : public PlatformWindow,
   // Handles the configuration events coming from the shell objects.
   // The width and height come in DIP of the output that the surface is
   // currently bound to.
-  virtual void HandleSurfaceConfigure(int32_t widht,
-                                      int32_t height,
-                                      bool is_maximized,
-                                      bool is_fullscreen,
-                                      bool is_activated);
+  virtual void HandleSurfaceConfigure(uint32_t serial);
+  virtual void HandleToplevelConfigure(int32_t widht,
+                                       int32_t height,
+                                       bool is_maximized,
+                                       bool is_fullscreen,
+                                       bool is_activated);
   virtual void HandlePopupConfigure(const gfx::Rect& bounds);
+  virtual void UpdateVisualSize(const gfx::Size& size_px);
 
   // Handles close requests.
   virtual void OnCloseRequest();
@@ -268,10 +277,23 @@ class WaylandWindow : public PlatformWindow,
   // The current cursor bitmap (immutable).
   scoped_refptr<BitmapCursorOzone> bitmap_;
 
-  // Current bounds of the platform window.
+  // Current bounds of the platform window. This is either initialized, or the
+  // requested size by the Wayland compositor. When this is set in SetBounds(),
+  // delegate_->OnBoundsChanged() is called and updates current_surface_size in
+  // Viz. However, it is not guaranteed that the next arriving frame will match
+  // |bounds_px_|.
   gfx::Rect bounds_px_;
   // The bounds of the platform window before it went maximized or fullscreen.
   gfx::Rect restored_bounds_px_;
+  // The size presented by the gpu process. This is the visible size of the
+  // window, which can be different from |bounds_px_| due to renderers taking
+  // time to produce a compositor frame.
+  // The rough flow of size changes:
+  //   Wayland compositor -> xdg_surface.configure()
+  //   -> WaylandWindow::SetBounds() -> IPC -> DisplayPrivate::Resize()
+  //   -> OutputSurface::SwapBuffers() -> WaylandWindow::UpdateVisualSize()
+  //   -> xdg_surface.ack_configure() -> Wayland compositor.
+  gfx::Size visual_size_px_;
 
   bool has_pointer_focus_ = false;
   bool has_keyboard_focus_ = false;
@@ -299,6 +321,12 @@ class WaylandWindow : public PlatformWindow,
 
   // Set when the window enters in shutdown process.
   bool shutting_down_ = false;
+
+  // In a non-test environment, a frame update makes a SetBounds() change
+  // visible in |visual_size_px_|, but in some unit tests there will never be
+  // any frame updates. This flag causes UpdateVisualSize() to be invoked during
+  // SetBounds() in unit tests.
+  bool update_visual_size_immediately_ = false;
 
   // AcceleratedWidget for this window. This will be unique even over time.
   gfx::AcceleratedWidget accelerated_widget_;

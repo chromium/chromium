@@ -126,6 +126,11 @@ void XDGToplevelWrapperImpl::SetDecoration(DecorationMode decoration) {
   SetTopLevelDecorationMode(decoration);
 }
 
+void XDGToplevelWrapperImpl::AckConfigure(uint32_t serial) {
+  DCHECK(xdg_surface_wrapper_);
+  xdg_surface_wrapper_->AckConfigure(serial);
+}
+
 // static
 void XDGToplevelWrapperImpl::ConfigureTopLevel(
     void* data,
@@ -143,8 +148,8 @@ void XDGToplevelWrapperImpl::ConfigureTopLevel(
   bool is_activated =
       CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED);
 
-  surface->wayland_window_->HandleSurfaceConfigure(width, height, is_maximized,
-                                                   is_fullscreen, is_activated);
+  surface->wayland_window_->HandleToplevelConfigure(
+      width, height, is_maximized, is_fullscreen, is_activated);
 }
 
 // static

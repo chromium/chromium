@@ -184,6 +184,11 @@ bool ZXDGPopupV6WrapperImpl::InitializeV6(
   return true;
 }
 
+void ZXDGPopupV6WrapperImpl::AckConfigure(uint32_t serial) {
+  DCHECK(zxdg_surface_v6_wrapper_);
+  zxdg_surface_v6_wrapper_->AckConfigure(serial);
+}
+
 zxdg_positioner_v6* ZXDGPopupV6WrapperImpl::CreatePositioner(
     WaylandConnection* connection,
     WaylandWindow* parent_window,

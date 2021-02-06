@@ -122,6 +122,11 @@ void ZXDGToplevelV6WrapperImpl::SetAppId(const std::string& app_id) {
 
 void ZXDGToplevelV6WrapperImpl::SetDecoration(DecorationMode decoration) {}
 
+void ZXDGToplevelV6WrapperImpl::AckConfigure(uint32_t serial) {
+  DCHECK(zxdg_surface_v6_wrapper_);
+  zxdg_surface_v6_wrapper_->AckConfigure(serial);
+}
+
 // static
 void ZXDGToplevelV6WrapperImpl::ConfigureTopLevel(
     void* data,
@@ -139,8 +144,8 @@ void ZXDGToplevelV6WrapperImpl::ConfigureTopLevel(
   bool is_activated =
       CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_ACTIVATED);
 
-  surface->wayland_window_->HandleSurfaceConfigure(width, height, is_maximized,
-                                                   is_fullscreen, is_activated);
+  surface->wayland_window_->HandleToplevelConfigure(
+      width, height, is_maximized, is_fullscreen, is_activated);
 }
 
 // static

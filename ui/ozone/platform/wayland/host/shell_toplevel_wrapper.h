@@ -66,6 +66,9 @@ class ShellToplevelWrapper {
   // Sets a title of a native window.
   virtual void SetTitle(const base::string16& title) = 0;
 
+  // Sends acknowledge configure event back to wayland.
+  virtual void AckConfigure(uint32_t serial) = 0;
+
   // Sets a desired window geometry once wayland requests client to do so.
   virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
 

@@ -180,6 +180,11 @@ bool XDGPopupWrapperImpl::InitializeStable(
   return true;
 }
 
+void XDGPopupWrapperImpl::AckConfigure(uint32_t serial) {
+  DCHECK(xdg_surface_wrapper_);
+  xdg_surface_wrapper_->AckConfigure(serial);
+}
+
 struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
     WaylandConnection* connection,
     WaylandWindow* parent_window,

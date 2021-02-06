@@ -27,6 +27,7 @@ class WaylandPopup : public WaylandWindow {
  private:
   // WaylandWindow overrides:
   void HandlePopupConfigure(const gfx::Rect& bounds) override;
+  void HandleSurfaceConfigure(uint32_t serial) override;
   void OnCloseRequest() override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
 

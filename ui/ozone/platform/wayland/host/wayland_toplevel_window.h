@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
+#include "base/containers/circular_deque.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -60,11 +61,13 @@ class WaylandToplevelWindow : public WaylandWindow,
 
  private:
   // WaylandWindow overrides:
-  void HandleSurfaceConfigure(int32_t width,
-                              int32_t height,
-                              bool is_maximized,
-                              bool is_fullscreen,
-                              bool is_activated) override;
+  void HandleToplevelConfigure(int32_t width,
+                               int32_t height,
+                               bool is_maximized,
+                               bool is_fullscreen,
+                               bool is_activated) override;
+  void HandleSurfaceConfigure(uint32_t serial) override;
+  void UpdateVisualSize(const gfx::Size& size_px) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
   // Calls UpdateWindowShape, set_input_region and set_opaque_region
@@ -151,6 +154,14 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool use_native_frame_ = false;
 
   base::Optional<std::vector<gfx::Rect>> window_shape_in_dips_;
+
+  // Pending xdg-shell configures, once this window is drawn to |size_dip|,
+  // ack_configure with |serial| will be sent to the Wayland compositor.
+  struct PendingConfigure {
+    gfx::Size size_dip;
+    uint32_t serial;
+  };
+  base::circular_deque<PendingConfigure> pending_configures_;
 };
 
 }  // namespace ui

@@ -69,6 +69,7 @@ void WaylandTest::SetUp() {
   properties.type = PlatformWindowType::kWindow;
   window_ = WaylandWindow::Create(&delegate_, connection_.get(),
                                   std::move(properties));
+  window_->set_update_visual_size_immediately(true);
   ASSERT_NE(widget_, gfx::kNullAcceleratedWidget);
 
   window_->Show(false);
@@ -118,17 +119,17 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
   // Please note that toplevel surfaces may not exist if the surface was created
   // for the popup role.
   if (GetParam() == kXdgShellV6) {
-    zxdg_surface_v6_send_configure(xdg_surface->resource(), serial);
     if (xdg_surface->xdg_toplevel()) {
       zxdg_toplevel_v6_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                       width, height, states);
     }
+    zxdg_surface_v6_send_configure(xdg_surface->resource(), serial);
   } else {
-    xdg_surface_send_configure(xdg_surface->resource(), serial);
     if (xdg_surface->xdg_toplevel()) {
       xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
                                   width, height, states);
     }
+    xdg_surface_send_configure(xdg_surface->resource(), serial);
   }
 }
 

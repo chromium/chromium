@@ -121,6 +121,10 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   SetBoundsDip(new_bounds_dip);
 }
 
+void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {
+  shell_popup()->AckConfigure(serial);
+}
+
 void WaylandPopup::OnCloseRequest() {
   // Before calling OnCloseRequest, the |shell_popup_| must become hidden and
   // only then call OnCloseRequest().

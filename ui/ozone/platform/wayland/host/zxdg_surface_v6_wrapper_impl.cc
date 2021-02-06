@@ -41,10 +41,9 @@ bool ZXDGSurfaceV6WrapperImpl::Initialize() {
   return true;
 }
 
-void ZXDGSurfaceV6WrapperImpl::AckConfigure() {
+void ZXDGSurfaceV6WrapperImpl::AckConfigure(uint32_t serial) {
   DCHECK(zxdg_surface_v6_);
-  zxdg_surface_v6_ack_configure(zxdg_surface_v6_.get(),
-                                pending_configure_serial_);
+  zxdg_surface_v6_ack_configure(zxdg_surface_v6_.get(), serial);
   connection_->wayland_window_manager()->NotifyWindowConfigured(
       wayland_window_);
 }
@@ -63,9 +62,8 @@ void ZXDGSurfaceV6WrapperImpl::Configure(
     uint32_t serial) {
   auto* surface = static_cast<ZXDGSurfaceV6WrapperImpl*>(data);
   DCHECK(surface);
-  surface->pending_configure_serial_ = serial;
 
-  surface->AckConfigure();
+  surface->wayland_window_->HandleSurfaceConfigure(serial);
 }
 
 zxdg_surface_v6* ZXDGSurfaceV6WrapperImpl::zxdg_surface() const {

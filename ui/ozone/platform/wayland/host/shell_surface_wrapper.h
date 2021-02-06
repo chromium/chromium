@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_SURFACE_WRAPPER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_SURFACE_WRAPPER_H_
 
+#include <cstdint>
+
 namespace gfx {
 class Rect;
 }
@@ -20,7 +22,7 @@ class ShellSurfaceWrapper {
   virtual bool Initialize() = 0;
 
   // Sends acknowledge configure event back to wayland.
-  virtual void AckConfigure() = 0;
+  virtual void AckConfigure(uint32_t serial) = 0;
 
   // Sets a desired window geometry once wayland requests client to do so.
   virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;

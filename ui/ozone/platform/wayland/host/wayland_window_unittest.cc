@@ -273,6 +273,146 @@ TEST_P(WaylandWindowTest, SetTitle) {
   window_->SetTitle(base::ASCIIToUTF16("hello"));
 }
 
+TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
+  const auto kNormalBounds = gfx::Rect{0, 0, 500, 300};
+  uint32_t serial = 0;
+  auto state = InitializeWlArrayWithActivatedState();
+
+  window_->set_update_visual_size_immediately(false);
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  // Configure event makes Wayland update bounds, but does not change toplevel
+  // input region, opaque region or window geometry immediately. Such actions
+  // are postponed to UpdateVisualSize();
+  EXPECT_CALL(delegate_, OnBoundsChanged(kNormalBounds));
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds.width(),
+                                               kNormalBounds.height()))
+      .Times(0);
+  EXPECT_CALL(*xdg_surface_, AckConfigure(1)).Times(0);
+  EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(0);
+  EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(0);
+  SendConfigureEvent(xdg_surface_, kNormalBounds.width(),
+                     kNormalBounds.height(), ++serial, state.get());
+
+  Sync();
+
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds.width(),
+                                               kNormalBounds.height()));
+  EXPECT_CALL(*xdg_surface_, AckConfigure(1));
+  EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
+  EXPECT_CALL(*mock_surface, SetInputRegion(_));
+  window_->UpdateVisualSize(kNormalBounds.size());
+}
+
+TEST_P(WaylandWindowTest, ShuffledUpdateVisualSizeOrder) {
+  const auto kNormalBounds1 = gfx::Rect{0, 0, 500, 300};
+  const auto kNormalBounds2 = gfx::Rect{0, 0, 800, 600};
+  const auto kNormalBounds3 = gfx::Rect{0, 0, 700, 400};
+  uint32_t serial = 1;
+
+  window_->set_update_visual_size_immediately(false);
+
+  // Send 3 configures and only ack the second one, the first pending configure
+  // is cleared. The second can still be ack'ed.
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds1.width(),
+                                               kNormalBounds1.height()))
+      .Times(0);
+  EXPECT_CALL(*xdg_surface_, AckConfigure(2)).Times(0);
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds2.width(),
+                                               kNormalBounds2.height()));
+  EXPECT_CALL(*xdg_surface_, AckConfigure(3));
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds3.width(),
+                                               kNormalBounds3.height()));
+  EXPECT_CALL(*xdg_surface_, AckConfigure(4));
+
+  auto state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, kNormalBounds1.width(),
+                     kNormalBounds1.height(), ++serial, state.get());
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, kNormalBounds2.width(),
+                     kNormalBounds2.height(), ++serial, state.get());
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, kNormalBounds3.width(),
+                     kNormalBounds3.height(), ++serial, state.get());
+  Sync();
+
+  window_->UpdateVisualSize(kNormalBounds2.size());
+  window_->UpdateVisualSize(kNormalBounds1.size());
+  window_->UpdateVisualSize(kNormalBounds3.size());
+}
+
+TEST_P(WaylandWindowTest, MismatchUpdateVisualSize) {
+  const auto kNormalBounds1 = gfx::Rect{0, 0, 500, 300};
+  const auto kNormalBounds2 = gfx::Rect{0, 0, 800, 600};
+  const auto kNormalBounds3 = gfx::Rect{0, 0, 700, 400};
+  uint32_t serial = 1;
+
+  window_->set_update_visual_size_immediately(false);
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  // UpdateVisualSize with different size from configure events does not
+  // acknowledge toplevel configure.
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(_, _, _, _)).Times(0);
+  EXPECT_CALL(*xdg_surface_, AckConfigure(_)).Times(0);
+  EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
+  EXPECT_CALL(*mock_surface, SetInputRegion(_));
+
+  auto state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, kNormalBounds1.width(),
+                     kNormalBounds1.height(), ++serial, state.get());
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, kNormalBounds2.width(),
+                     kNormalBounds2.height(), ++serial, state.get());
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, kNormalBounds3.width(),
+                     kNormalBounds3.height(), ++serial, state.get());
+  Sync();
+
+  window_->UpdateVisualSize({100, 100});
+}
+
+TEST_P(WaylandWindowTest, UpdateVisualSizeClearsPreviousUnackedConfigures) {
+  const auto kNormalBounds1 = gfx::Rect{0, 0, 500, 300};
+  const auto kNormalBounds2 = gfx::Rect{0, 0, 800, 600};
+  const auto kNormalBounds3 = gfx::Rect{0, 0, 700, 400};
+  uint32_t serial = 1;
+  auto state = InitializeWlArrayWithActivatedState();
+
+  window_->set_update_visual_size_immediately(false);
+
+  // Send 3 configures and only ack the second one, the first pending configure
+  // is cleared. The second can still be ack'ed.
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds1.width(),
+                                               kNormalBounds1.height()))
+      .Times(0);
+  EXPECT_CALL(*xdg_surface_, AckConfigure(2)).Times(0);
+  SendConfigureEvent(xdg_surface_, kNormalBounds1.width(),
+                     kNormalBounds1.height(), ++serial, state.get());
+  Sync();
+
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds2.width(),
+                                               kNormalBounds2.height()));
+  EXPECT_CALL(*xdg_surface_, AckConfigure(3));
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, kNormalBounds2.width(),
+                     kNormalBounds2.height(), ++serial, state.get());
+  Sync();
+
+  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, kNormalBounds3.width(),
+                                               kNormalBounds3.height()));
+  EXPECT_CALL(*xdg_surface_, AckConfigure(4));
+  state = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(xdg_surface_, kNormalBounds3.width(),
+                     kNormalBounds3.height(), ++serial, state.get());
+  Sync();
+
+  window_->UpdateVisualSize(kNormalBounds2.size());
+  window_->UpdateVisualSize(kNormalBounds1.size());
+  window_->UpdateVisualSize(kNormalBounds3.size());
+}
+
 TEST_P(WaylandWindowTest, MaximizeAndRestore) {
   const auto kNormalBounds = gfx::Rect{0, 0, 500, 300};
   const auto kMaximizedBounds = gfx::Rect{0, 0, 800, 600};

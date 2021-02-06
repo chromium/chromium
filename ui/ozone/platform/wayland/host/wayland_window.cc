@@ -196,7 +196,8 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
     return;
   bounds_px_ = bounds_px;
 
-  UpdateWindowMask();
+  if (update_visual_size_immediately_)
+    UpdateVisualSize(bounds_px.size());
   delegate_->OnBoundsChanged(bounds_px_);
 }
 
@@ -388,17 +389,27 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
   return DispatchEventToDelegate(native_event);
 }
 
-void WaylandWindow::HandleSurfaceConfigure(int32_t widht,
-                                           int32_t height,
-                                           bool is_maximized,
-                                           bool is_fullscreen,
-                                           bool is_activated) {
+void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
   NOTREACHED()
       << "Only shell surfaces must receive HandleSurfaceConfigure calls.";
 }
 
+void WaylandWindow::HandleToplevelConfigure(int32_t widht,
+                                            int32_t height,
+                                            bool is_maximized,
+                                            bool is_fullscreen,
+                                            bool is_activated) {
+  NOTREACHED()
+      << "Only shell toplevels must receive HandleToplevelConfigure calls.";
+}
+
 void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   NOTREACHED() << "Only shell popups must receive HandlePopupConfigure calls.";
+}
+
+void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px) {
+  visual_size_px_ = size_px;
+  UpdateWindowMask();
 }
 
 void WaylandWindow::OnCloseRequest() {
@@ -411,7 +422,7 @@ base::Optional<std::vector<gfx::Rect>> WaylandWindow::GetWindowShape() const {
 
 void WaylandWindow::UpdateWindowMask() {
   UpdateWindowShape();
-  root_surface_->SetOpaqueRegion(bounds_px_);
+  root_surface_->SetOpaqueRegion(gfx::Rect(visual_size_px()));
 }
 
 void WaylandWindow::UpdateWindowShape() {}
@@ -486,6 +497,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   // OK to assign.  The bounds will be recalculated when the buffer scale
   // changes.
   bounds_px_ = properties.bounds;
+  UpdateVisualSize(bounds_px_.size());
   opacity_ = properties.opacity;
   type_ = properties.type;
 
@@ -766,7 +778,8 @@ bool WaylandWindow::CommitOverlays(
 
   if (!num_primary_planes && overlays.front()->z_order == INT32_MIN)
     split = overlays.begin();
-  root_surface_->SetViewportDestination((*split)->bounds_rect.size());
+  UpdateVisualSize((*split)->bounds_rect.size());
+  root_surface_->SetViewportDestination(visual_size_px_);
 
   if (!wayland_overlay_delegation_enabled_) {
     root_surface_->SetViewportSource((*split)->crop_rect);

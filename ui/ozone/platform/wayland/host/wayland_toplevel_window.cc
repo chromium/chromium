@@ -72,7 +72,6 @@ void WaylandToplevelWindow::ApplyPendingBounds() {
   DCHECK(shell_toplevel_);
 
   SetBoundsDip(pending_bounds_dip_);
-  shell_toplevel_->SetWindowGeometry(pending_bounds_dip_);
   pending_bounds_dip_ = gfx::Rect();
   connection()->ScheduleFlush();
 }
@@ -231,11 +230,11 @@ base::Optional<std::vector<gfx::Rect>> WaylandToplevelWindow::GetWindowShape()
   return window_shape_in_dips_;
 }
 
-void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
-                                                   int32_t height,
-                                                   bool is_maximized,
-                                                   bool is_fullscreen,
-                                                   bool is_activated) {
+void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width,
+                                                    int32_t height,
+                                                    bool is_maximized,
+                                                    bool is_fullscreen,
+                                                    bool is_activated) {
   // Store the old state to propagte state changes if Wayland decides to change
   // the state to something else.
   PlatformWindowState old_state = state_;
@@ -278,7 +277,6 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
         gfx::ScaleToRoundedSize(GetRestoredBoundsInPixels().IsEmpty()
                                     ? GetBounds().size()
                                     : GetRestoredBoundsInPixels().size(),
-
                                 1.0 / buffer_scale()));
   }
 
@@ -286,7 +284,6 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
   // It can be client or compositor side change from normal to something else.
   // Thus, we must store previous bounds to restore later.
   SetOrResetRestoredBounds();
-  ApplyPendingBounds();
 
   if (did_window_show_state_change) {
     previous_state_ = old_state;
@@ -295,6 +292,47 @@ void WaylandToplevelWindow::HandleSurfaceConfigure(int32_t width,
 
   if (did_active_change)
     delegate()->OnActivationChanged(is_active_);
+}
+
+void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
+  if (pending_bounds_dip_.size() ==
+      gfx::ScaleToRoundedSize(GetBounds().size(), 1.f / buffer_scale())) {
+    // If |pending_bounds_dip_| matches GetBounds(), then a frame matching
+    // |pending_bounds_dip_| may not arrive soon, despite the window delegate
+    // receives the updated bounds. Without a new frame, UpdateVisualSize() is
+    // not invoked, leaving this |configure| unacknowledged.
+    //   E.g. With static window content, |configure| that does not
+    //     change window size will not cause the window to redraw.
+    // Hence, acknowledge this |configure| now to tell the Wayland compositor
+    // that this window has been configured.
+    shell_toplevel()->SetWindowGeometry(pending_bounds_dip_);
+    shell_toplevel()->AckConfigure(serial);
+  } else {
+    // Otherwise, push the pending |configure| to |pending_configures_|, wait
+    // for a frame update, which will invoke UpdateVisualSize().
+    DCHECK_LT(pending_configures_.size(), 25u);
+    pending_configures_.push_back({pending_bounds_dip_.size(), serial});
+  }
+
+  ApplyPendingBounds();
+}
+
+void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
+  WaylandWindow::UpdateVisualSize(size_px);
+
+  if (!shell_toplevel_)
+    return;
+  auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / buffer_scale());
+  auto result = std::find_if(
+      pending_configures_.begin(), pending_configures_.end(),
+      [&size_dip](auto& configure) { return size_dip == configure.size_dip; });
+
+  if (result == pending_configures_.end())
+    return;
+
+  shell_toplevel()->SetWindowGeometry(gfx::Rect(size_dip));
+  shell_toplevel()->AckConfigure(result->serial);
+  pending_configures_.erase(pending_configures_.begin(), ++result);
 }
 
 bool WaylandToplevelWindow::OnInitialize(
@@ -443,7 +481,7 @@ void WaylandToplevelWindow::UpdateWindowMask() {
   // TODO(http://crbug.com/1158733): When supporting PlatformWindow::SetShape,
   // update window region with the given |shape|.
   WaylandWindow::UpdateWindowMask();
-  root_surface()->SetInputRegion(GetBounds());
+  root_surface()->SetInputRegion(gfx::Rect(visual_size_px()));
 }
 
 void WaylandToplevelWindow::UpdateWindowShape() {

@@ -75,6 +75,9 @@ class ShellPopupWrapper {
   virtual bool Initialize(WaylandConnection* connection,
                           const gfx::Rect& bounds) = 0;
 
+  // Sends acknowledge configure event back to wayland.
+  virtual void AckConfigure(uint32_t serial) = 0;
+
   MenuType GetMenuTypeForPositioner(WaylandConnection* connection,
                                     WaylandWindow* parent_window) const;
   bool CanGrabPopup(WaylandConnection* connection) const;

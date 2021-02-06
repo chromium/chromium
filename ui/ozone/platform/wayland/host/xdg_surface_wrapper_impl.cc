@@ -39,9 +39,9 @@ bool XDGSurfaceWrapperImpl::Initialize() {
   return true;
 }
 
-void XDGSurfaceWrapperImpl::AckConfigure() {
+void XDGSurfaceWrapperImpl::AckConfigure(uint32_t serial) {
   DCHECK(xdg_surface_);
-  xdg_surface_ack_configure(xdg_surface_.get(), pending_configure_serial_);
+  xdg_surface_ack_configure(xdg_surface_.get(), serial);
   connection_->wayland_window_manager()->NotifyWindowConfigured(
       wayland_window_);
 }
@@ -58,9 +58,8 @@ void XDGSurfaceWrapperImpl::Configure(void* data,
                                       uint32_t serial) {
   auto* surface = static_cast<XDGSurfaceWrapperImpl*>(data);
   DCHECK(surface);
-  surface->pending_configure_serial_ = serial;
 
-  surface->AckConfigure();
+  surface->wayland_window_->HandleSurfaceConfigure(serial);
 }
 
 xdg_surface* XDGSurfaceWrapperImpl::xdg_surface() const {

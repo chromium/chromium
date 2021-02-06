@@ -36,6 +36,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SurfaceMove(WaylandConnection* connection) override;
   void SurfaceResize(WaylandConnection* connection, uint32_t hittest) override;
   void SetTitle(const base::string16& title) override;
+  void AckConfigure(uint32_t serial) override;
   void SetWindowGeometry(const gfx::Rect& bounds) override;
   void SetMinSize(int32_t width, int32_t height) override;
   void SetMaxSize(int32_t width, int32_t height) override;
