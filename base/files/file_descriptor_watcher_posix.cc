@@ -155,12 +155,14 @@ void FileDescriptorWatcher::Controller::Watcher::
   if (callback_task_runner_->RunsTasksInCurrentSequence()) {
     // |controller_| can be accessed directly when Watcher runs on the same
     // thread.
-    controller_->watcher_.reset();
+    Watcher* watcher = controller_->watcher_;
+    controller_->watcher_ = nullptr;
+    delete watcher;
   } else {
     // If the Watcher and the Controller live on different threads, delete
     // |this| synchronously. Pending tasks bound to an unretained Watcher* will
-    // not run since this loop is dead. The associated Controller still
-    // technically owns this via unique_ptr but it never uses it directly and
+    // not run since this loop is dead. The associated Controller will not know
+    // whether the Watcher has been destroyed but it never uses it directly and
     // will ultimately send it to this thread for deletion (and that also  won't
     // run since the loop being dead).
     delete this;
@@ -174,8 +176,8 @@ FileDescriptorWatcher::Controller::Controller(MessagePumpForIO::Mode mode,
       io_thread_task_runner_(GetTlsFdWatcher().Get()->io_thread_task_runner()) {
   DCHECK(!callback_.is_null());
   DCHECK(io_thread_task_runner_);
-  watcher_ = std::make_unique<Watcher>(weak_factory_.GetWeakPtr(),
-                                       on_watcher_destroyed_, mode, fd);
+  watcher_ =
+      new Watcher(weak_factory_.GetWeakPtr(), on_watcher_destroyed_, mode, fd);
   StartWatching();
 }
 
@@ -184,7 +186,8 @@ FileDescriptorWatcher::Controller::~Controller() {
 
   if (io_thread_task_runner_->BelongsToCurrentThread()) {
     // If the MessagePumpForIO and the Controller live on the same thread.
-    watcher_.reset();
+    if (watcher_)
+      delete watcher_;
   } else {
     // Synchronously wait until |watcher_| is deleted on the MessagePumpForIO
     // thread. This ensures that the file descriptor is never accessed after
@@ -214,7 +217,7 @@ FileDescriptorWatcher::Controller::~Controller() {
           // is deleted before it gets to run.
           delete watcher;
         },
-        Unretained(watcher_.release()));
+        Unretained(watcher_));
     io_thread_task_runner_->PostTask(FROM_HERE, std::move(delete_task));
     ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
     on_watcher_destroyed_.Wait();
@@ -235,8 +238,7 @@ void FileDescriptorWatcher::Controller::StartWatching() {
     // Controller's destructor. Since this delete task hasn't been posted yet,
     // it can't run before the task posted below.
     io_thread_task_runner_->PostTask(
-        FROM_HERE,
-        BindOnce(&Watcher::StartWatching, Unretained(watcher_.get())));
+        FROM_HERE, BindOnce(&Watcher::StartWatching, Unretained(watcher_)));
   }
 }
 
