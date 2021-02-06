@@ -262,7 +262,9 @@ void EncoderBase<Traits>::ProcessRequests() {
 
 template <typename Traits>
 void EncoderBase<Traits>::ContextDestroyed() {
+  state_ = V8CodecState(V8CodecState::Enum::kClosed);
   logger_->Neuter();
+  media_encoder_.reset();
 }
 
 template <typename Traits>

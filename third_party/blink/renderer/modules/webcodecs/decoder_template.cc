@@ -581,7 +581,9 @@ void DecoderTemplate<Traits>::OnOutput(uint32_t reset_generation,
 
 template <typename Traits>
 void DecoderTemplate<Traits>::ContextDestroyed() {
+  state_ = V8CodecState(V8CodecState::Enum::kClosed);
   logger_->Neuter();
+  decoder_.reset();
 }
 
 template <typename Traits>
