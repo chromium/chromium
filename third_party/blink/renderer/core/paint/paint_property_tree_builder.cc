@@ -1699,53 +1699,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
     context_.current.clip = border_radius_clip;
 }
 
-static bool CanOmitOverflowClip(const LayoutObject& object) {
-  DCHECK(NeedsOverflowClip(object));
-
-  // Some non-block boxes and SVG objects have special overflow rules.
-  const auto* block = DynamicTo<LayoutBlock>(object);
-  if (!block || object.IsSVG())
-    return false;
-
-  // Selection may overflow.
-  if (block->IsSelected())
-    return false;
-  // Other cases that the contents may overflow. The conditions are copied from
-  // BlockPainter for SPv1 clip. TODO(wangxianzhu): clean up.
-  if (block->HasControlClip() || block->ShouldPaintCarets())
-    return false;
-
-  // We need OverflowClip for hit-testing if the clip rect excluding overlay
-  // scrollbars is different from the normal clip rect.
-  auto clip_rect = block->OverflowClipRect(PhysicalOffset());
-  auto clip_rect_excluding_overlay_scrollbars = block->OverflowClipRect(
-      PhysicalOffset(), kExcludeOverlayScrollbarSizeForHitTesting);
-  if (clip_rect != clip_rect_excluding_overlay_scrollbars)
-    return false;
-
-  // Visual overflow extending beyond the clip rect must be clipped.
-  // ContentsVisualOverflowRect() does not include self-painting descendants
-  // (see comment above |BoxOverflowModel|) so, as a simplification, do not
-  // omit the clip if there are any PaintLayer descendants.
-  if (block->HasLayer() && block->Layer()->FirstChild())
-    return false;
-
-  if (!clip_rect.Contains(block->PhysicalContentsVisualOverflowRect()))
-    return false;
-
-  // Content can scroll, and needs to be clipped, if the layout overflow extends
-  // beyond the clip rect.
-  if (!clip_rect.Contains(block->PhysicalLayoutOverflowRect()))
-    return false;
-
-  return true;
-}
-
 void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
-    if (NeedsOverflowClip(object_) && !CanOmitOverflowClip(object_)) {
+    if (NeedsOverflowClip(object_)) {
       ClipPaintPropertyNode::State state(context_.current.transform,
                                          FloatRoundedRect());
 
@@ -2476,12 +2434,6 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
     return;
 
   const LayoutBox& box = To<LayoutBox>(object_);
-
-  if (NeedsOverflowClip(box)) {
-    bool had_overflow_clip = properties_ && properties_->OverflowClip();
-    if (had_overflow_clip == CanOmitOverflowClip(box))
-      box.GetMutableForPainting().SetNeedsPaintPropertyUpdate();
-  }
 
   if (box.IsLayoutReplaced() &&
       box.PreviousPhysicalContentBoxRect() != box.PhysicalContentBoxRect())

@@ -5708,66 +5708,6 @@ TEST_P(PaintPropertyTreeBuilderTest, IframeDoesNotRequireCompositedScrolling) {
       DocScrollTranslation(&ChildDocument())->HasDirectCompositingReasons());
 }
 
-TEST_P(PaintPropertyTreeBuilderTest, OmitOverflowClip) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      .sized-container { width: 100px; height: 100px }
-      .small-content { width: 50px; height: 50px }
-      .big-content { width: 200px; height: 200px }
-    </style>
-    <div id="auto-size" style="overflow: hidden">
-      <div class="small-content"></div>
-    </div>
-    <div id="overflow-hidden-no-overflow" class="sized-container"
-        style="overflow: hidden">
-      <div class="small-content"></div>
-    </div>
-    <div id="overflow-hidden-overflow" class="sized-container"
-        style="overflow: hidden">
-      <div class="big-content"></div>
-    </div>
-    <div id="contain-paint-no-overflow" class="sized-container"
-        style="contain: paint">
-      <div class="small-content"></div>
-    </div>
-    <div id="contain-paint-overflow" class="sized-container"
-        style="contain: paint">
-      <div class="big-content"></div>
-    </div>
-    <div id="has-self-painting-descendant" class="sized-container"
-        style="overflow: hidden">
-      <div class="small-content" style="position: relative; left: 100px"></div>
-    </div>
-    <div id="overflow-auto-no-overflow" class="sized-container"
-        style="overflow: auto">
-      <div class="small-content"></div>
-    </div>
-    <div id="overflow-auto-overflow" class="sized-container"
-        style="overflow: auto">
-      <div class="big-content"></div>
-    </div>
-    <input id="button" type="button" value="button">
-  )HTML");
-  CHECK(GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
-
-  EXPECT_FALSE(PaintPropertiesForElement("auto-size")->OverflowClip());
-  EXPECT_FALSE(
-      PaintPropertiesForElement("overflow-hidden-no-overflow")->OverflowClip());
-  EXPECT_TRUE(
-      PaintPropertiesForElement("overflow-hidden-overflow")->OverflowClip());
-  EXPECT_FALSE(
-      PaintPropertiesForElement("contain-paint-no-overflow")->OverflowClip());
-  EXPECT_TRUE(
-      PaintPropertiesForElement("contain-paint-overflow")->OverflowClip());
-  EXPECT_TRUE(PaintPropertiesForElement("has-self-painting-descendant")
-                  ->OverflowClip());
-  EXPECT_FALSE(
-      PaintPropertiesForElement("overflow-auto-no-overflow")->OverflowClip());
-  EXPECT_TRUE(
-      PaintPropertiesForElement("overflow-auto-overflow")->OverflowClip());
-  EXPECT_TRUE(PaintPropertiesForElement("button")->OverflowClip());
-}
-
 TEST_P(PaintPropertyTreeBuilderTest, ClipHitTestChangeDoesNotCauseFullRepaint) {
   SetBodyInnerHTML(R"HTML(
     <html>

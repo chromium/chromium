@@ -1246,45 +1246,6 @@ TEST_P(PaintPropertyTreeUpdateTest, SVGForeignObjectOverflowChange) {
             properties->OverflowClip()->UnsnappedClipRect().Rect());
 }
 
-TEST_P(PaintPropertyTreeBuilderTest, OmitOverflowClipOnSelectionChange) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="target" style="overflow: hidden">
-      <img style="width: 50px; height: 50px">
-    </div>
-  )HTML");
-
-  EXPECT_FALSE(PaintPropertiesForElement("target")->OverflowClip());
-
-  GetDocument().GetFrame()->Selection().SelectAll();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(PaintPropertiesForElement("target")->OverflowClip());
-
-  GetDocument().GetFrame()->Selection().Clear();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(PaintPropertiesForElement("target")->OverflowClip());
-}
-
-TEST_P(PaintPropertyTreeBuilderTest, OmitOverflowClipOnCaretChange) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="target" contentEditable="true" style="overflow: hidden">
-      <img style="width: 50px; height: 50px">
-    </div>
-  )HTML");
-
-  GetDocument().GetPage()->GetFocusController().SetActive(true);
-  GetDocument().GetPage()->GetFocusController().SetFocused(true);
-  auto* target = GetDocument().getElementById("target");
-  EXPECT_FALSE(PaintPropertiesForElement("target")->OverflowClip());
-
-  target->focus();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(PaintPropertiesForElement("target")->OverflowClip());
-
-  target->blur();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(PaintPropertiesForElement("target")->OverflowClip());
-}
-
 TEST_P(PaintPropertyTreeUpdateTest,
        FragmentClipUpdateOnMulticolContainerWidthChange) {
   SetBodyInnerHTML(R"HTML(
