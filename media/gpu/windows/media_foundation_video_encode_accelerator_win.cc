@@ -245,7 +245,10 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
   main_client_weak_factory_.reset(new base::WeakPtrFactory<Client>(client));
   main_client_ = main_client_weak_factory_->GetWeakPtr();
   input_visible_size_ = config.input_visible_size;
-  frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
+  if (config.initial_framerate.has_value())
+    frame_rate_ = config.initial_framerate.value();
+  else
+    frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
   target_bitrate_ = config.initial_bitrate;
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
 

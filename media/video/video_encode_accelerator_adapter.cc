@@ -36,10 +36,15 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
     const VideoEncoder::Options& opts,
     VideoPixelFormat format,
     VideoFrame::StorageType storage_type) {
+  base::Optional<uint32_t> initial_framerate;
+  if (opts.framerate.has_value())
+    initial_framerate = static_cast<uint32_t>(opts.framerate.value());
+
   auto config = VideoEncodeAccelerator::Config(
       format, opts.frame_size, profile,
       opts.bitrate.value_or(opts.frame_size.width() * opts.frame_size.height() *
-                            kVEADefaultBitratePerPixel));
+                            kVEADefaultBitratePerPixel),
+      initial_framerate);
 
   const bool is_rgb =
       format == PIXEL_FORMAT_XBGR || format == PIXEL_FORMAT_XRGB ||
@@ -593,11 +598,8 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(Status status) {
 
   if (!status.is_ok()) {
     // Report the error to all encoding-done callbacks
-    for (auto& encode : pending_encodes_) {
-      auto status = Status(StatusCode::kEncoderFailedEncode,
-                           "VideoEncodeAccelerator encountered an error");
+    for (auto& encode : pending_encodes_)
       std::move(encode->done_callback).Run(status);
-    }
 
     if (pending_flush_)
       FlushCompleted(false);
