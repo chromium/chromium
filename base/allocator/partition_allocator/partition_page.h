@@ -343,14 +343,18 @@ ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
   // Check if the slot span is actually used and valid.
   if (!slot_span->bucket)
     return nullptr;
+#if DCHECK_IS_ON()
   PA_DCHECK(PartitionRoot<thread_safe>::IsValidSlotSpan(slot_span));
+#endif
   char* const slot_span_begin = static_cast<char*>(
       SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
   const ptrdiff_t ptr_offset = maybe_inner_ptr - slot_span_begin;
+#if DCHECK_IS_ON()
   PA_DCHECK(0 <= ptr_offset &&
             ptr_offset < static_cast<ptrdiff_t>(
                              slot_span->bucket->get_pages_per_slot_span() *
                              PartitionPageSize()));
+#endif
   // Slot span size in bytes is not necessarily multiple of partition page.
   if (ptr_offset >=
       static_cast<ptrdiff_t>(slot_span->bucket->get_bytes_per_span()))
@@ -597,9 +601,9 @@ template <bool thread_safe, typename Callback>
 size_t IterateActiveAndFullSlotSpans(char* super_page_base,
                                      bool with_quarantine,
                                      Callback callback) {
+#if DCHECK_IS_ON()
   PA_DCHECK(
       !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
-#if DCHECK_IS_ON()
   auto* extent_entry =
       reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
           PartitionSuperPageToMetadataArea(super_page_base));
