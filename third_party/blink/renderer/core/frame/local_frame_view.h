@@ -986,6 +986,8 @@ class CORE_EXPORT LocalFrameView final
   void AppendDocumentTransitionRequests(
       WTF::Vector<std::unique_ptr<DocumentTransition::Request>>&);
 
+  bool AnyFrameIsPrintingOrPaintingPreview();
+
   LayoutSize size_;
 
   typedef HashSet<scoped_refptr<LayoutEmbeddedObject>> EmbeddedObjectSet;

@@ -2628,8 +2628,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 
   DCHECK_EQ(target_state, DocumentLifecycle::kPaintClean);
   RunPaintLifecyclePhase();
-  DCHECK(ShouldThrottleRendering() ||
-         frame_->GetDocument()->IsPrintingOrPaintingPreview() ||
+  DCHECK(ShouldThrottleRendering() || AnyFrameIsPrintingOrPaintingPreview() ||
          Lifecycle().GetState() == DocumentLifecycle::kPaintClean);
 
   ForAllRemoteFrameViews(
@@ -2846,12 +2845,22 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
   return target_state > DocumentLifecycle::kPrePaintClean;
 }
 
+bool LocalFrameView::AnyFrameIsPrintingOrPaintingPreview() {
+  bool any_frame_is_printing_or_painting_preview = false;
+  ForAllNonThrottledLocalFrameViews(
+      [&any_frame_is_printing_or_painting_preview](LocalFrameView& frame_view) {
+        if (frame_view.GetFrame().GetDocument()->IsPrintingOrPaintingPreview())
+          any_frame_is_printing_or_painting_preview = true;
+      });
+  return any_frame_is_printing_or_painting_preview;
+}
+
 void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunPaintLifecyclePhase");
   // While printing or capturing a paint preview of a document, the paint walk
   // is done into a special canvas. There is no point doing a normal paint step
   // (or animations update) when in this mode.
-  if (frame_->GetDocument()->IsPrintingOrPaintingPreview())
+  if (AnyFrameIsPrintingOrPaintingPreview())
     return;
 
   bool repainted = PaintTree(benchmark_mode);
