@@ -217,7 +217,7 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
 
   std::vector<JavaScriptFeature*> features;
   for (JavaScriptFeature* feature :
-       java_script_features::GetBuiltInJavaScriptFeatures()) {
+       java_script_features::GetBuiltInJavaScriptFeatures(browser_state_)) {
     features.push_back(feature);
   }
   for (JavaScriptFeature* feature :

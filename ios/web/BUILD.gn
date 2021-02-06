@@ -176,6 +176,7 @@ test("ios_web_unittests") {
     "//ios/web/download:download_unittests",
     "//ios/web/favicon:unittests",
     "//ios/web/find_in_page:find_in_page_unittests",
+    "//ios/web/js_features/context_menu:unittests",
     "//ios/web/js_messaging:unittests",
     "//ios/web/public/web_view_only:unittests",
     "//ios/web/security:unittests",
@@ -378,6 +379,7 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/find_in_page",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/navigation",
     "//ios/web/navigation:wk_navigation_util",
@@ -396,7 +398,6 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
     "//ios/web/web_state",
-    "//ios/web/web_state:context_menu",
     "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:policy_decision_state_tracker",
     "//ios/web/web_state:web_view_internal_creation_util",
@@ -409,7 +410,6 @@ source_set("ios_web_web_state_unittests") {
   ]
 
   sources = [
-    "web_state/context_menu_params_utils_unittest.mm",
     "web_state/page_display_state_unittest.mm",
     "web_state/page_viewport_state_unittest.mm",
     "web_state/policy_decision_state_tracker_unittest.mm",
@@ -437,6 +437,7 @@ source_set("ios_web_web_state_js_unittests") {
     "//ios/testing:ocmock_support",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/find_in_page",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -446,7 +447,6 @@ source_set("ios_web_web_state_js_unittests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
-    "//ios/web/web_state:context_menu",
     "//ios/web/web_state/js",
     "//net:test_support",
     "//testing/gmock",
@@ -457,7 +457,6 @@ source_set("ios_web_web_state_js_unittests") {
 
   sources = [
     "web_state/js/common_js_unittest.mm",
-    "web_state/js/context_menu_js_unittest.mm",
     "web_state/js/find_in_page_js_unittest.mm",
     "web_state/js/message_js_unittest.mm",
   ]
@@ -476,6 +475,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/testing:ocmock_support",
     "//ios/web/common",
     "//ios/web/common:uikit",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/navigation",
     "//ios/web/navigation:block_universal_links_buildflags",
@@ -491,7 +491,6 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes:fakes",
-    "//ios/web/web_state:context_menu",
     "//ios/web/web_state/js",
     "//ios/web/web_state/ui:crw_context_menu_controller",
     "//net:test_support",
@@ -558,6 +557,7 @@ test("ios_web_inttests") {
     "//ios/web/common:web_view_creation_util",
     "//ios/web/download:download_inttests",
     "//ios/web/favicon:inttests",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging:inttests",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
@@ -576,7 +576,6 @@ test("ios_web_inttests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/web_state",
-    "//ios/web/web_state:context_menu",
     "//ios/web/web_state/ui:crw_context_menu_controller",
     "//mojo/core/embedder",
     "//net:test_support",
@@ -622,7 +621,6 @@ js_compile_bundle("main_frame_web_bundle") {
   sources = [
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
     "web_state/js/resources/error.js",
-    "web_state/js/resources/main_frame_context_menu.js",
     "web_state/js/resources/main_frame_web_bundle.js",
     "web_state/js/resources/navigation.js",
     "web_state/js/resources/scroll_workaround.js",
@@ -635,7 +633,6 @@ js_compile_bundle("all_frames_web_bundle") {
   closure_entry_point = "__crWeb.allFramesWebBundle"
 
   sources = [
-    "web_state/js/resources/all_frames_context_menu.js",
     "web_state/js/resources/all_frames_web_bundle.js",
     "web_state/js/resources/cookie.js",
     "web_state/js/resources/find_in_page.js",

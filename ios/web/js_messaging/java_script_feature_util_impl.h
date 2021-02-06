@@ -11,12 +11,14 @@
 
 namespace web {
 
+class BrowserState;
 class JavaScriptFeature;
 
 namespace java_script_features {
 
 // Returns the JavaScriptFeatures built in to //ios/web.
-std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures();
+std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
+    BrowserState* browser_state);
 
 }  // namespace java_script_features
 }  // namespace web

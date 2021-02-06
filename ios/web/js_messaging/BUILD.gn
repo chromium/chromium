@@ -81,7 +81,10 @@ source_set("java_script_content_world_header") {
 source_set("java_script_feature_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
-  deps = [ "//ios/web/public/js_messaging" ]
+  deps = [
+    "//ios/web/js_features/context_menu",
+    "//ios/web/public/js_messaging",
+  ]
 
   sources = [
     "java_script_feature_util_impl.h",

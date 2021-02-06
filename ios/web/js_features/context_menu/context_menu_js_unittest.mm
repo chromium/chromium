@@ -12,13 +12,14 @@
 #include "base/macros.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/web_view_creation_util.h"
+#import "ios/web/js_features/context_menu/context_menu_constants.h"
 #import "ios/web/public/test/js_test_util.h"
-#include "ios/web/public/test/web_test.h"
 #import "ios/web/test/fakes/crw_fake_script_message_handler.h"
-#import "ios/web/web_state/context_menu_constants.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "testing/platform_test.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -172,22 +173,49 @@ namespace web {
 
 // Test fixture to test __gCrWeb.findElementAtPoint function defined in
 // context_menu.js.
-class ContextMenuJsFindElementAtPointTest : public web::WebTest {
+class ContextMenuJsFindElementAtPointTest : public PlatformTest {
  public:
   ContextMenuJsFindElementAtPointTest()
       : script_message_handler_([[CRWFakeScriptMessageHandler alloc] init]),
-        web_view_(web::BuildWKWebView(CGRectMake(0.0, 0.0, 100.0, 100.0),
-                                      GetBrowserState())) {
+        web_view_([[WKWebView alloc]
+            initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0)]) {
     [web_view_.configuration.userContentController
         addScriptMessageHandler:script_message_handler_
                            name:@"FindElementResultHandler"];
+
+    WKUserScript* shared_scripts = [[WKUserScript alloc]
+          initWithSource:web::test::GetSharedScripts()
+           injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+        forMainFrameOnly:NO];
+    [web_view_.configuration.userContentController
+        addUserScript:shared_scripts];
+
+    WKUserScript* all_frames_script = [[WKUserScript alloc]
+          initWithSource:test::GetPageScript(@"all_frames_context_menu_js")
+           injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+        forMainFrameOnly:NO];
+    [web_view_.configuration.userContentController
+        addUserScript:all_frames_script];
+
+    WKUserScript* main_frame_script = [[WKUserScript alloc]
+          initWithSource:test::GetPageScript(@"main_frame_context_menu_js")
+           injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+        forMainFrameOnly:YES];
+    [web_view_.configuration.userContentController
+        addUserScript:main_frame_script];
   }
 
  protected:
   // Returns details of the DOM element at the given |point| in the web view
   // viewport's coordinate space.
   id FindElementAtPoint(CGPoint point) {
-    EXPECT_TRUE(web::test::WaitForInjectedScripts(web_view_));
+    bool gCrWeb_injected = web::test::WaitForInjectedScripts(web_view_);
+    if (!gCrWeb_injected) {
+      // This EXPECT_TRUE call will always fail. However, add the conditional to
+      // also return null and prevent further execution of this method.
+      EXPECT_TRUE(gCrWeb_injected);
+      return nullptr;
+    }
 
     // Force layout
     web::test::ExecuteJavaScript(web_view_,
@@ -546,11 +574,10 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPointOutsideElement) {
 TEST_F(ContextMenuJsFindElementAtPointTest, TextAreaStopsProximity) {
   NSString* body = GetHtmlForImage();
   // Cover the image with a text input.
-  NSString* text_area =
-      [NSString stringWithFormat:
-                    @"<input type='text' name='name' "
-                    @"style='position:absolute;left:0px;width:0px;%@'/>",
-                    kImageSizeStyle];
+  NSString* text_area = [NSString
+      stringWithFormat:@"<input type='text' name='name' "
+                       @"style='position:absolute;left:0px;width:0px;%@'/>",
+                       kImageSizeStyle];
   body = [body stringByAppendingString:text_area];
 
   ASSERT_TRUE(web::test::LoadHtml(web_view_, GetHtmlForPage(/*head=*/nil, body),

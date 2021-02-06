@@ -18,6 +18,7 @@ source_set("ui") {
     "//ios/web/common:uikit",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation",
@@ -33,7 +34,6 @@ source_set("ui") {
     "//ios/web/public/webui",
     "//ios/web/security",
     "//ios/web/session",
-    "//ios/web/web_state:context_menu",
     "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
@@ -96,10 +96,10 @@ source_set("crw_web_view_navigation_proxy") {
 source_set("crw_context_menu_controller") {
   deps = [
     "//base",
+    "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
-    "//ios/web/web_state:context_menu",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
   ]

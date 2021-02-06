@@ -16,20 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-void AddSharedScriptsToWebView(WKWebView* web_view) {
-  // Scripts must be all injected at once because as soon as __gCrWeb exists,
-  // injection is assumed to be done and __gCrWeb.message is used.
-  NSString* scripts = [NSString
-      stringWithFormat:@"%@; %@; %@", web::test::GetPageScript(@"base_js"),
-                       web::test::GetPageScript(@"common_js"),
-                       web::test::GetPageScript(@"message_js")];
-  web::test::ExecuteJavaScript(web_view, scripts);
-}
-
-}  // namespace
-
 namespace web {
 
 // Test fixture for testing CRWJSWindowIDManager class.
@@ -39,7 +25,7 @@ class JSWindowIDManagerTest : public PlatformTest {
   // shared scripts.
   WKWebView* CreateWebView() {
     WKWebView* web_view = [[WKWebView alloc] init];
-    AddSharedScriptsToWebView(web_view);
+    web::test::ExecuteJavaScript(web_view, web::test::GetSharedScripts());
     return web_view;
   }
 
@@ -102,7 +88,7 @@ TEST_F(JSWindowIDManagerTest, InjectionRetry) {
   EXPECT_FALSE(test::ExecuteJavaScript(web_view, @"window.__gCrWeb"));
 
   // Now inject window.__gCrWeb and check if window ID injection retried.
-  AddSharedScriptsToWebView(web_view);
+  web::test::ExecuteJavaScript(web_view, web::test::GetSharedScripts());
   EXPECT_NSEQ([manager windowID],
               test::ExecuteJavaScript(web_view, @"window.__gCrWeb.windowId"));
 }

@@ -6,30 +6,16 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/unguessable_token.h"
-#include "base/values.h"
-#import "ios/web/js_messaging/crw_wk_script_message_router.h"
-#import "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "ios/web/web_state/context_menu_constants.h"
-#import "ios/web/web_state/context_menu_params_utils.h"
 #import "ios/web/web_state/ui/crw_html_element_fetch_request.h"
-#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Javascript function name to obtain element details at a point.
-const char kFindElementAtPointFunctionName[] = "findElementAtPoint";
-
-// JavaScript message handler name installed in WKWebView for found element
-// response.
-NSString* const kFindElementResultHandlerName = @"FindElementResultHandler";
-}  // namespace
 
 @interface CRWContextMenuElementFetcher () <CRWWebStateObserver> {
   std::unique_ptr<web::WebStateObserverBridge> _observer;
@@ -60,19 +46,6 @@ NSString* const kFindElementResultHandlerName = @"FindElementResultHandler";
     _observer = std::make_unique<web::WebStateObserverBridge>(self);
     webState->AddObserver(_observer.get());
 
-    // Listen for fetched element response.
-    web::WKWebViewConfigurationProvider& configurationProvider =
-        web::WKWebViewConfigurationProvider::FromBrowserState(
-            webState->GetBrowserState());
-    CRWWKScriptMessageRouter* messageRouter =
-        configurationProvider.GetScriptMessageRouter();
-    __weak __typeof(self) weakSelf = self;
-    [messageRouter
-        setScriptMessageHandler:^(WKScriptMessage* message) {
-          [weakSelf didReceiveScriptMessage:message];
-        }
-                           name:kFindElementResultHandlerName
-                        webView:webView];
   }
   return self;
 }
@@ -88,8 +61,7 @@ NSString* const kFindElementResultHandlerName = @"FindElementResultHandler";
   if (!self.webState) {
     return;
   }
-  web::WebFrame* frame = GetMainFrame(self.webState);
-  if (!frame) {
+  if (!GetMainFrame(self.webState)) {
     // A WebFrame may not exist for certain types of content, like PDFs.
     return;
   }
@@ -101,16 +73,18 @@ NSString* const kFindElementResultHandlerName = @"FindElementResultHandler";
   _pendingElementFetchRequests[base::SysUTF8ToNSString(requestID)] =
       fetchRequest;
 
-  CGSize webViewContentSize = self.webView.scrollView.contentSize;
-
-  std::vector<base::Value> args;
-  args.push_back(base::Value(requestID));
-  args.push_back(base::Value(point.x));
-  args.push_back(base::Value(point.y));
-  args.push_back(base::Value(webViewContentSize.width));
-  args.push_back(base::Value(webViewContentSize.height));
-  frame->CallJavaScriptFunction(std::string(kFindElementAtPointFunctionName),
-                                args);
+  __weak __typeof(self) weakSelf = self;
+  web::ContextMenuJavaScriptFeature* context_menu_feature =
+      web::ContextMenuJavaScriptFeature::FromBrowserState(
+          self.webState->GetBrowserState());
+  context_menu_feature->GetElementAtPoint(
+      self.webState, requestID, point, self.webView.scrollView.contentSize,
+      base::BindOnce(^(const std::string& requestID,
+                       const web::ContextMenuParams& params) {
+        web::ContextMenuParams context_menu_params(params);
+        [weakSelf elementDetailsReceived:context_menu_params
+                            forRequestID:base::SysUTF8ToNSString(requestID)];
+      }));
 }
 
 - (void)cancelFetches {
@@ -122,12 +96,8 @@ NSString* const kFindElementResultHandlerName = @"FindElementResultHandler";
 
 #pragma mark - Private
 
-// Called when web controller receives a new message from the web page.
-- (void)didReceiveScriptMessage:(WKScriptMessage*)message {
-  NSMutableDictionary* response =
-      [[NSMutableDictionary alloc] initWithDictionary:message.body];
-
-  NSString* requestID = response[web::kContextMenuElementRequestId];
+- (void)elementDetailsReceived:(web::ContextMenuParams&)params
+                  forRequestID:(NSString*)requestID {
   CRWHTMLElementFetchRequest* fetchRequest =
       _pendingElementFetchRequests[requestID];
   if (!fetchRequest) {
@@ -137,12 +107,9 @@ NSString* const kFindElementResultHandlerName = @"FindElementResultHandler";
     return;
   }
 
-  web::ContextMenuParams params =
-      web::ContextMenuParamsFromElementDictionary(response);
-  params.is_main_frame = message.frameInfo.mainFrame;
-  params.view = self.webView;
-
   [_pendingElementFetchRequests removeObjectForKey:requestID];
+
+  params.view = self.webView;
   [fetchRequest runHandlerWithResponse:params];
 }
 

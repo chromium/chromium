@@ -6,7 +6,6 @@ import("//ios/build/config.gni")
 
 source_set("web_state") {
   deps = [
-    ":context_menu",
     ":policy_decision_state_tracker",
     ":web_state_impl_header",
     "//base",
@@ -92,25 +91,6 @@ source_set("web_view_internal_creation_util") {
     "crw_web_view.mm",
     "web_view_internal_creation_util.h",
     "web_view_internal_creation_util.mm",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("context_menu") {
-  deps = [
-    "//base",
-    "//components/url_formatter",
-    "//ios/web/common",
-    "//ios/web/public",
-  ]
-
-  sources = [
-    "context_menu_constants.h",
-    "context_menu_constants.mm",
-    "context_menu_params.mm",
-    "context_menu_params_utils.h",
-    "context_menu_params_utils.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

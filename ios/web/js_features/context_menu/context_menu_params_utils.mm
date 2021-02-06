@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_state/context_menu_params_utils.h"
+#import "ios/web/js_features/context_menu/context_menu_params_utils.h"
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ios/web/common/referrer_util.h"
-#import "ios/web/web_state/context_menu_constants.h"
+#import "ios/web/js_features/context_menu/context_menu_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

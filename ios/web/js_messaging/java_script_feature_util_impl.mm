@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,8 +22,9 @@ const char kMessageScriptName[] = "message_js";
 namespace web {
 namespace java_script_features {
 
-std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures() {
-  return {};
+std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
+    BrowserState* browser_state) {
+  return {ContextMenuJavaScriptFeature::FromBrowserState(browser_state)};
 }
 
 JavaScriptFeature* GetBaseJavaScriptFeature() {

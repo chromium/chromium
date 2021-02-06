@@ -58,6 +58,10 @@ bool WaitForInjectedScripts(WKWebView* web_view) WARN_UNUSED_RESULT;
 // bundled resource file with the given name (excluding extension).
 NSString* GetPageScript(NSString* script_file_name);
 
+// Returns the JavaScript which defines __gCrWeb, __gCrWeb.common, and
+// __gCrWeb.message.
+NSString* GetSharedScripts();
+
 }  // namespace test
 }  // namespace web
 

@@ -70,3 +70,14 @@ TEST_F(JavaScriptFeatureUtilImplTest, MessageFeature) {
   EXPECT_EQ(web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
             script->GetTargetFrames());
 }
+
+// Tests that the built in features are returned as expected.
+TEST_F(JavaScriptFeatureUtilImplTest, BuiltInFeatures) {
+  std::vector features =
+      web::java_script_features::GetBuiltInJavaScriptFeatures();
+  ASSERT_EQ(1ul, features.size());
+
+  web::JavaScriptFeature* feature = features.front();
+  EXPECT_EQ(web::java_script_features::GetContextMenuJavaScriptFeature(),
+            feature);
+}
