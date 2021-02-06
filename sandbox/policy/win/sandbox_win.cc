@@ -151,11 +151,6 @@ const wchar_t* const kTroublesomeDlls[] = {
 const base::Feature kEnableCsrssLockdownFeature{
     "EnableCsrssLockdown", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// This allows IFEO to be used to enable for chrome.exe. We normally
-// disable for renderers but do not do so if this feature is set.
-const base::Feature kCetForRenderer{"CetForRenderer",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Helps emit trace events for sandbox policy. This mediates memory between
 // chrome.exe and chrome.dll.
 class PolicyTraceHelper : public base::trace_event::ConvertableToTraceFormat {
@@ -978,10 +973,10 @@ ResultCode SandboxWin::StartSandboxedProcess(
   if (base::FeatureList::IsEnabled(features::kWinSboxDisableKtmComponent))
     mitigations |= MITIGATION_KTM_COMPONENT;
 
-  if (sandbox_type == SandboxType::kRenderer &&
-      !base::FeatureList::IsEnabled(sandbox::policy::kCetForRenderer)) {
+  // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
+  // disabled for processes we know are not compatible.
+  if (!delegate->CetCompatible())
     mitigations |= sandbox::MITIGATION_CET_DISABLED;
-  }
 
   ResultCode result = policy->SetProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)

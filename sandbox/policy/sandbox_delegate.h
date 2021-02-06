@@ -41,6 +41,10 @@ class SandboxDelegate {
 
   // Whether this process should run inside a Job if running unsandboxed.
   virtual bool ShouldUnsandboxedRunInJob() = 0;
+
+  // Whether this process will be compatible with Control-flow Enforcement
+  // Technology (CET) / Hardware-enforced Stack Protection.
+  virtual bool CetCompatible() = 0;
 #endif  // defined(OS_WIN)
 };
 

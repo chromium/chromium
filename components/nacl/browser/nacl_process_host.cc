@@ -183,6 +183,13 @@ class NaClSandboxedProcessLauncherDelegate
       DLOG(WARNING) << "Failed to reserve address space for Native Client";
     }
   }
+
+  bool CetCompatible() override {
+    // Disable CET for NaCl loader processes as x86 NaCl sandboxes are not CET
+    // compatible. NaCl untrusted code is allowed to switch stacks within the
+    // sandbox.
+    return false;
+  }
 #endif  // OS_WIN
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)

@@ -423,6 +423,12 @@ class RendererSandboxedProcessLauncherDelegate
     return GetContentClient()->browser()->PreSpawnChild(
         policy, sandbox::policy::SandboxType::kRenderer, flags);
   }
+
+  bool CetCompatible() override {
+    // Disable CET for renderer because v8 deoptimization swaps stacks in a
+    // non-compliant way.
+    return false;
+  }
 #endif  // OS_WIN
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)

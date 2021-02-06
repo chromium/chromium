@@ -34,6 +34,10 @@ bool SandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
 bool SandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
   return false;
 }
+
+bool SandboxedProcessLauncherDelegate::CetCompatible() {
+  return true;
+}
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
