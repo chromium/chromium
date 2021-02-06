@@ -60,15 +60,6 @@
       'android-code-coverage-native', # crbug/1018434
     ],
   },
-  'android_wpr_record_replay_tests': {
-    # crbug/1060399: only enable wpr tests on marshmallow CI bot
-    # due to the restriction that render test only works on marshamllow.
-    'modifications': {
-      'android-marshmallow-x86-rel-non-cq': {
-        'experiment_percentage': 100, # https://crbug.com/1060399
-      },
-    },
-  },
   'angle_end2end_tests': {
     'remove_from': [
       # TODO(ynovikov) Investigate why the test breaks on older devices.
@@ -704,14 +695,6 @@
             },
           ],
         },
-      },
-    },
-  },
-  'chrome_java_test_wpr_tests': {
-    # TODO(crbug.com/1127110): Remove experimental once it works fine.
-    'modifications': {
-      'android-marshmallow-x86-rel': {
-        'experiment_percentage': 100,
       },
     },
   },
@@ -2588,14 +2571,12 @@
   },
   'vr_common_unittests': {
     'remove_from': [
-      'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'android-code-coverage-native', # crbug/1018431
     ],
   },
   'vr_pixeltests': {
     'remove_from': [
-      'android-marshmallow-x86-rel-non-cq',
       'android-pie-x86-rel',
       'VR Linux',
       'android-code-coverage-native', # crbug/1018431
@@ -2690,6 +2671,9 @@
       'Win 7 Tests x64 (1)',
       'android-code-coverage-native', # crbug/1018431
       'android-lollipop-arm-rel', # crbug.com/1133002#c6
+      # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
+      'android-marshmallow-arm64-rel',
+      'android-marshmallow-x86-rel-non-cq',
     ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
@@ -2709,10 +2693,6 @@
         'swarming': {
           'hard_timeout': 1200,
         },
-      },
-      # TODO(crbug.com/1127110): Remove experimental once it works fine.
-      'android-marshmallow-x86-rel': {
-        'experiment_percentage': 100,
       },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'swarming': {
