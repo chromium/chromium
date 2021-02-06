@@ -826,7 +826,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kArticlesForYouEnabled) {
+  if (preferenceName == prefs::kArticlesForYouEnabled && !IsRefactoredNTP()) {
     [self reloadAllData];
   }
 }
