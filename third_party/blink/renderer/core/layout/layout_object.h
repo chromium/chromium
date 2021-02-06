@@ -845,10 +845,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableCol);
   }
-  bool IsLayoutNGTableCol() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGTableCol);
-  }
   bool IsListItem() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectListItem);
@@ -3411,7 +3407,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     kLayoutObjectNGMixin,
     kLayoutObjectNGOutsideListMarker,
     kLayoutObjectNGProgress,
-    kLayoutObjectNGTableCol,
     kLayoutObjectNGText,
     kLayoutObjectNGTextControlMultiLine,
     kLayoutObjectNGTextControlSingleLine,
