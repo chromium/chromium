@@ -57,7 +57,10 @@ source_set("sandbox_linux_test_utils") {
     "tests/unit_tests.h",
   ]
 
-  deps = [ "//testing/gtest" ]
+  deps = [
+    "//base",
+    "//testing/gtest",
+  ]
 
   if (!is_nacl_nonsfi) {
     sources += [
@@ -109,6 +112,7 @@ source_set("sandbox_linux_unittests_sources") {
     ":sandbox",
     ":sandbox_linux_test_utils",
     "//base",
+    "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//testing/gtest",
@@ -384,6 +388,8 @@ component("sandbox_services") {
     ]
 
     public_deps += [ ":sandbox_services_headers" ]
+  } else {
+    deps += [ ":sandbox_services_headers" ]
   }
 
   if (is_nacl_nonsfi) {

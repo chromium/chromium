@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/pickle.h"
 #include "base/process/process.h"
-#include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_permission_list.h"
 #include "sandbox/sandbox_export.h"

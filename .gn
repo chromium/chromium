@@ -146,7 +146,6 @@ no_check_targets = [
   "//remoting/signaling:*",  # 30 errors
   "//remoting/test:*",  # 20 errors
   "//remoting:*",  # 27 errors
-  "//sandbox/linux:*",  # 13 errors
   "//sandbox/win:*",  # 7 errors
 
   "//third_party/crashpad/crashpad/snapshot:*",  # 1 error
