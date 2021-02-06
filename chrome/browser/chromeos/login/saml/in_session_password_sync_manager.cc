@@ -185,8 +185,8 @@ void InSessionPasswordSyncManager::CheckCredentials(
   extended_authenticator_ = ExtendedAuthenticator::Create(this);
   extended_authenticator_.get()->AuthenticateToCheck(
       user_context,
-      base::Bind(&InSessionPasswordSyncManager::OnPasswordAuthSuccess,
-                 weak_factory_.GetWeakPtr(), user_context));
+      base::BindOnce(&InSessionPasswordSyncManager::OnPasswordAuthSuccess,
+                     weak_factory_.GetWeakPtr(), user_context));
 }
 
 void InSessionPasswordSyncManager::OnPasswordAuthSuccess(
