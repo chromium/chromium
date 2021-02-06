@@ -291,3 +291,22 @@ grit("eche_app_resources") {
   ]
   output_dir = "$root_gen_dir/chromeos"
 }
+
+# Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
+grit("eche_bundle_resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+
+  # Obtained via an internal CIPD package in src/DEPS.
+  source = "../components/eche_app_ui/resources/prod/eche_bundle_resources.grd"
+
+  use_brotli = true
+
+  outputs = [
+    "grit/chromeos_eche_bundle_resources.h",
+    "grit/chromeos_eche_bundle_resources_map.cc",
+    "grit/chromeos_eche_bundle_resources_map.h",
+    "chromeos_eche_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}

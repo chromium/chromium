@@ -207,7 +207,7 @@ source_set("chromeos") {
     "//chromeos/network",
     "//chromeos/resources:connectivity_diagnostics_resources_grit",
     "//chromeos/resources:diagnostics_app_resources_grit",
-    "//chromeos/resources:eche_app_resources_grit",
+    "//chromeos/resources:eche_bundle_resources_grit",
     "//chromeos/resources:help_app_resources_grit",
     "//chromeos/resources:media_app_resources_grit",
     "//chromeos/resources:print_management_resources_grit",

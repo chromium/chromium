@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chromeos/components/eche_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_eche_app_resources.h"
+#include "chromeos/grit/chromeos_eche_bundle_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -19,9 +19,15 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   auto html_source =
       base::WrapUnique(content::WebUIDataSource::Create(kChromeUIEcheAppHost));
 
-  html_source->AddResourcePath("", IDR_CHROMEOS_ECHE_APP_INDEX_HTML);
-  html_source->AddResourcePath("app.js", IDR_CHROMEOS_ECHE_APP_APP_JS);
-  html_source->AddResourcePath("app.css", IDR_CHROMEOS_ECHE_APP_APP_CSS);
+  html_source->AddResourcePath("", IDR_CHROMEOS_ECHE_INDEX_HTML);
+  html_source->AddResourcePath("system_assets/app_icon_32.png",
+                               IDR_CHROMEOS_ECHE_APP_ICON_32_PNG);
+  html_source->AddResourcePath("system_assets/app_icon_256.png",
+                               IDR_CHROMEOS_ECHE_APP_ICON_256_PNG);
+  html_source->AddResourcePath("js/app_bundle.js",
+                               IDR_CHROMEOS_ECHE_APP_BUNDLE_JS);
+  html_source->AddResourcePath("assets/app_bundle.css",
+                               IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());

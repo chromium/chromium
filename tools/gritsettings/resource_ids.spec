@@ -406,6 +406,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2670],
   },
+  "chromeos/components/eche_app_ui/resources/prod/eche_bundle_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [2680],
+  },
   # END chromeos/ section.
 
   # START components/ section.

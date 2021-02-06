@@ -21,6 +21,7 @@ static_library("eche_app_ui") {
   deps = [
     "//ash/constants",
     "//chromeos/resources:eche_app_resources",
+    "//chromeos/resources:eche_bundle_resources",
     "//content/public/browser",
     "//ui/webui",
   ]
@@ -31,7 +32,7 @@ js_type_check("closure_compile") {
 }
 
 js_library("app") {
-  sources = [ "resources/app.js" ]
+  sources = [ "resources/prod/js/app_bundle.js" ]
 }
 
 js2gtest("browser_tests_js") {
@@ -42,14 +43,11 @@ js2gtest("browser_tests_js") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
+# TODO(b/176936453): add js files for mojo API and remove
+# the dummy icon once adding in the real resources.
 generate_grd("build_grd") {
   input_files_base_dir = rebase_path("resources", "//")
-  input_files = [
-    "index.html",
-    "app.js",
-    "app.css",
-    "eche_icon_256.png",
-  ]
+  input_files = [ "eche_icon_256.png" ]
   manifest_files = []
   grd_prefix = "chromeos_eche_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
