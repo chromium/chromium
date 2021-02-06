@@ -2494,6 +2494,10 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
     BypassMode mode =
         CalculateBypassParams(bypass->second, &rpdq_params, params);
     if (mode == BypassMode::kDrawTransparentQuad) {
+      // The RPDQ is masquerading as a solid color quad, which do not support
+      // batching.
+      if (!batched_quads_.empty())
+        FlushBatchedQuads();
       DrawColoredQuad(SK_ColorTRANSPARENT, &rpdq_params, params);
     } else if (mode == BypassMode::kDrawBypassQuad) {
       DrawQuadInternal(bypass->second, &rpdq_params, params);
