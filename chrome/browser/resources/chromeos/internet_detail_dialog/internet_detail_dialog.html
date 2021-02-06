@@ -1,11 +1,3 @@
-<!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
-
-<head>
-
-<meta charset="utf-8">
-<title>$i18n{title}</title>
-
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html">
@@ -27,28 +19,6 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-
-<script src="strings.js"></script>
-
-</head>
-
-<style>
-  body,
-  html {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-    width: 100%;
-  }
-
-  #content {
-    height: 100%;
-    overflow: auto;
-  }
-</style>
-
-<body>
 
 <dom-module id="internet-detail-dialog">
   <template>
@@ -183,11 +153,3 @@
   </template>
   <script src="internet_detail_dialog.js"></script>
 </dom-module>
-
-<div id="content">
-  <internet-detail-dialog></internet-detail-dialog>
-</div>
-
-</body>
-
-</html>

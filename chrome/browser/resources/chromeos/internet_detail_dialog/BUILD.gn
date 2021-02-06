@@ -7,7 +7,7 @@ import("../../tools/optimize_webui.gni")
 
 optimize_webui("build") {
   host = "internet_detail_dialog"
-  html_in_files = [ "internet_detail_dialog.html" ]
+  html_in_files = [ "internet_detail_dialog_container.html" ]
   html_out_files = [ "vulcanized.html" ]
 
   input = rebase_path(".", root_build_dir)

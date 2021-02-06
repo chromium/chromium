@@ -144,7 +144,9 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
   source->SetDefaultResource(IDR_INTERNET_DETAIL_DIALOG_VULCANIZED_HTML);
   source->AddResourcePath("crisper.js", IDR_INTERNET_DETAIL_DIALOG_CRISPER_JS);
 #else
-  source->SetDefaultResource(IDR_INTERNET_DETAIL_DIALOG_HTML);
+  source->SetDefaultResource(IDR_INTERNET_DETAIL_DIALOG_CONTAINER_HTML);
+  source->AddResourcePath("internet_detail_dialog.html",
+                          IDR_INTERNET_DETAIL_DIALOG_HTML);
   source->AddResourcePath("internet_detail_dialog.js",
                           IDR_INTERNET_DETAIL_DIALOG_JS);
 #endif
