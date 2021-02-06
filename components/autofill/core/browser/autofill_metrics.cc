@@ -69,6 +69,15 @@ enum FieldTypeGroupForMetrics {
   GROUP_STREET_ADDRESS,
   GROUP_CREDIT_CARD_VERIFICATION,
   GROUP_UNFILLABLE,
+  GROUP_ADDRESS_HOME_APT_NUM,
+  GROUP_ADDRESS_HOME_SORTING_CODE,
+  GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY,
+  GROUP_ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
+  GROUP_ADDRESS_HOME_OTHER_SUBUNIT,
+  GROUP_ADDRESS_HOME_ADDRESS,
+  GROUP_ADDRESS_HOME_ADDRESS_WITH_NAME,
+  GROUP_ADDRESS_HOME_FLOOR,
+  GROUP_UNKNOWN_TYPE,
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
 
@@ -150,6 +159,9 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case ADDRESS_HOME_LINE3:
           group = GROUP_ADDRESS_LINE_3;
           break;
+        case ADDRESS_HOME_APT_NUM:
+          group = GROUP_ADDRESS_HOME_APT_NUM;
+          break;
         case ADDRESS_HOME_STREET_ADDRESS:
           group = GROUP_STREET_ADDRESS;
           break;
@@ -168,6 +180,12 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case ADDRESS_HOME_STREET_NAME:
           group = GROUP_ADDRESS_HOME_STREET_NAME;
           break;
+        case ADDRESS_HOME_SORTING_CODE:
+          group = GROUP_ADDRESS_HOME_SORTING_CODE;
+          break;
+        case ADDRESS_HOME_DEPENDENT_LOCALITY:
+          group = GROUP_ADDRESS_HOME_DEPENDENT_LOCALITY;
+          break;
         case ADDRESS_HOME_DEPENDENT_STREET_NAME:
           group = GROUP_ADDRESS_HOME_DEPENDENT_STREET_NAME;
           break;
@@ -177,8 +195,26 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case ADDRESS_HOME_PREMISE_NAME:
           group = GROUP_ADDRESS_HOME_PREMISE_NAME;
           break;
+        case ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME:
+          group = GROUP_ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME;
+          break;
         case ADDRESS_HOME_SUBPREMISE:
           group = GROUP_ADDRESS_HOME_SUBPREMISE;
+          break;
+        case ADDRESS_HOME_OTHER_SUBUNIT:
+          group = GROUP_ADDRESS_HOME_OTHER_SUBUNIT;
+          break;
+        case ADDRESS_HOME_ADDRESS:
+          group = GROUP_ADDRESS_HOME_ADDRESS;
+          break;
+        case ADDRESS_HOME_ADDRESS_WITH_NAME:
+          group = GROUP_ADDRESS_HOME_ADDRESS_WITH_NAME;
+          break;
+        case ADDRESS_HOME_FLOOR:
+          group = GROUP_ADDRESS_HOME_FLOOR;
+          break;
+        case UNKNOWN_TYPE:
+          group = GROUP_UNKNOWN_TYPE;
           break;
         default:
           NOTREACHED() << field_type << " has no group assigned (ambiguous)";
