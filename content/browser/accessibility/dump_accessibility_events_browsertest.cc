@@ -245,7 +245,7 @@ struct DumpAccessibilityEventsTestPassToString {
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityEventsTest,
-    ::testing::ValuesIn(DumpAccessibilityTestHelper::TestPasses()),
+    ::testing::ValuesIn(DumpAccessibilityTestHelper::EventTestPasses()),
     DumpAccessibilityEventsTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,

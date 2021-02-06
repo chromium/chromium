@@ -34,7 +34,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case kLinux:
       return std::make_unique<AccessibilityTreeFormatterAuraLinux>();
     default:
-      NOTREACHED() << "Unsupported formatter type " << type;
+      NOTREACHED() << "Unsupported inspect type " << type;
   }
   return nullptr;
 }
@@ -46,13 +46,11 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
   switch (type) {
-    case kBlink:
-      return std::make_unique<AccessibilityEventRecorder>(manager);
     case kLinux:
       return std::make_unique<AccessibilityEventRecorderAuraLinux>(manager, pid,
                                                                    selector);
     default:
-      NOTREACHED() << "Unsupported formatter type " << type;
+      NOTREACHED() << "Unsupported inspect type " << type;
   }
   return nullptr;
 }

@@ -272,7 +272,8 @@ DumpAccessibilityTestHelper::ParseDirective(const std::string& line) const {
 }
 
 // static
-std::vector<AXInspectFactory::Type> DumpAccessibilityTestHelper::TestPasses() {
+std::vector<AXInspectFactory::Type>
+DumpAccessibilityTestHelper::TreeTestPasses() {
   return
 #if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
       {AXInspectFactory::kBlink};
@@ -285,6 +286,21 @@ std::vector<AXInspectFactory::Type> DumpAccessibilityTestHelper::TestPasses() {
       {AXInspectFactory::kAndroid};
 #else  // linux
       {AXInspectFactory::kBlink, AXInspectFactory::kLinux};
+#endif
+}
+
+// static
+std::vector<AXInspectFactory::Type>
+DumpAccessibilityTestHelper::EventTestPasses() {
+  return
+#if defined(OS_WIN)
+      {AXInspectFactory::kWinIA2, AXInspectFactory::kWinUIA};
+#elif defined(OS_MAC)
+      {AXInspectFactory::kMac};
+#elif BUILDFLAG(USE_ATK)
+      {AXInspectFactory::kLinux};
+#else
+      {};
 #endif
 }
 

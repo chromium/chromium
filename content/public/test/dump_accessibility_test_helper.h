@@ -81,8 +81,13 @@ class DumpAccessibilityTestHelper {
   // Parses directives from the given line.
   Directive ParseDirective(const std::string& line) const;
 
-  // Returns a platform-dependent list of inspect types used in dump testing.
-  static std::vector<AXInspectFactory::Type> TestPasses();
+  // Returns a platform-dependent list of inspect types used in dump tree
+  // testing.
+  static std::vector<AXInspectFactory::Type> TreeTestPasses();
+
+  // Returns a platform-dependent list of inspect types used in dump events
+  // testing.
+  static std::vector<AXInspectFactory::Type> EventTestPasses();
 
   // Loads the given expectation file and returns the contents. An expectation
   // file may be empty, in which case an empty vector is returned.

@@ -34,7 +34,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
     default:
-      NOTREACHED() << "Unsupported formatter type " << type;
+      NOTREACHED() << "Unsupported inspect type " << type;
   }
   return nullptr;
 }
@@ -45,13 +45,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
-  switch (type) {
-    case kAndroid:
-    case kBlink:
-      return std::make_unique<AccessibilityEventRecorder>(manager);
-    default:
-      NOTREACHED() << "Unsupported formatter type " << type;
-  }
+  NOTREACHED() << "Unsupported inspect type " << type;
   return nullptr;
 }
 

@@ -3263,7 +3263,7 @@ struct DumpAccessibilityTreeTestPassToString {
 // formatter testpasses.
 const std::vector<AXInspectFactory::Type> GetAXTestValues() {
   std::vector<AXInspectFactory::Type> passes =
-      content::DumpAccessibilityTestHelper::TestPasses();
+      content::DumpAccessibilityTestHelper::TreeTestPasses();
   return passes;
 }
 

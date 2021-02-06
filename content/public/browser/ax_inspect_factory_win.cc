@@ -42,7 +42,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
       base::win::AssertComInitialized();
       return std::make_unique<AccessibilityTreeFormatterUia>();
     default:
-      NOTREACHED() << "Unsupported formatter type " << type;
+      NOTREACHED() << "Unsupported inspect type " << type;
   }
   return nullptr;
 }
@@ -59,8 +59,6 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
   }
 
   switch (type) {
-    case kBlink:
-      return std::make_unique<AccessibilityEventRecorder>(manager);
     case kWinIA2:
       return std::make_unique<AccessibilityEventRecorderWin>(manager, pid,
                                                              selector.pattern);
@@ -68,7 +66,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
       return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
                                                              selector.pattern);
     default:
-      NOTREACHED() << "Unsupported formatter type " << type;
+      NOTREACHED() << "Unsupported inspect type " << type;
   }
   return nullptr;
 }
