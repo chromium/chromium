@@ -698,8 +698,9 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
         AllocationCapacityFromPtr(ptr)) {
 #if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
       void* slot_start = AdjustPointerForExtrasSubtract(ptr);
-      internal::PartitionRefCount* old_ref_count =
-          internal::PartitionRefCountPointer(slot_start);
+      internal::PartitionRefCount* old_ref_count;
+      if (allow_ref_count)
+        old_ref_count = internal::PartitionRefCountPointer(slot_start);
 #endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
       // Trying to allocate |new_size| would use the same amount of
       // underlying memory as we're already using, so re-use the allocation
@@ -708,26 +709,28 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
         size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
         slot_span->SetRawSize(new_raw_size);
 #if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
-        // SetRawSize() makes PartitionRefCountPointer change its result,
-        // because SetRawSize() changes the result of GetUtilizedSlotSize, and
-        // PartitionRefCountPointer depends on GetUtilizedSlotSize.
-        internal::PartitionRefCount* new_ref_count =
-            internal::PartitionRefCountPointer(slot_start);
-        if (allow_ref_count && new_ref_count != old_ref_count) {
+        if (allow_ref_count) {
+          // SetRawSize() makes PartitionRefCountPointer change its result,
+          // because SetRawSize() changes the result of GetUtilizedSlotSize, and
+          // PartitionRefCountPointer depends on GetUtilizedSlotSize.
+          internal::PartitionRefCount* new_ref_count =
+              internal::PartitionRefCountPointer(slot_start);
+          if (new_ref_count != old_ref_count) {
 #if DCHECK_IS_ON()
-          // new_ref_count must not overlap old_ref_count.
-          const char* new_ref_count_ptr =
-              reinterpret_cast<const char*>(new_ref_count);
-          const char* old_ref_count_ptr =
-              reinterpret_cast<const char*>(old_ref_count);
-          PA_DCHECK(new_ref_count_ptr + sizeof(internal::PartitionRefCount) <=
-                        old_ref_count_ptr ||
-                    new_ref_count_ptr >=
-                        old_ref_count_ptr +
-                            sizeof(internal::PartitionRefCount));
+            // new_ref_count must not overlap old_ref_count.
+            const char* new_ref_count_ptr =
+                reinterpret_cast<const char*>(new_ref_count);
+            const char* old_ref_count_ptr =
+                reinterpret_cast<const char*>(old_ref_count);
+            PA_DCHECK(new_ref_count_ptr + sizeof(internal::PartitionRefCount) <=
+                          old_ref_count_ptr ||
+                      new_ref_count_ptr >=
+                          old_ref_count_ptr +
+                              sizeof(internal::PartitionRefCount));
 #endif
-          new (new_ref_count)
-              internal::PartitionRefCount(std::move(*old_ref_count));
+            new (new_ref_count)
+                internal::PartitionRefCount(std::move(*old_ref_count));
+          }
         }
 #endif  // BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
 #if DCHECK_IS_ON()
