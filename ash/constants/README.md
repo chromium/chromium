@@ -8,7 +8,7 @@ pref registration requires a dependency on //components.
 
 It lives in //ash because these constants are used by Chrome OS system UI as
 well as the current/legacy built-in chrome browser. This is "ash-chrome" in the
-terminology of the [Lacros project](docs/lacros.md).
+terminology of the [Lacros project](/docs/lacros.md).
 
 Code in this directory used to live in //chromeos/constants. That directory is
 being re-purposed for constants shared between the lacros-chrome browser and
