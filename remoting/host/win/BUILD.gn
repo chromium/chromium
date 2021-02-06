@@ -137,11 +137,13 @@ source_set("win") {
   defines = [ "WEBRTC_CHROMIUM_BUILD" ]
 
   deps = [
+    ":worker_process_ipc_delegate_header",
     "//base:i18n",
     "//components/policy/core/common",
     "//crypto",
     "//ipc",
     "//remoting/base",
+    "//remoting/host:base",
     "//remoting/host/security_key",
     "//remoting/host/win:messages",
     "//remoting/host/win:remoting_lib_idl",
@@ -176,13 +178,19 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":win",
+    "//base/test:test_support",
+    "//extensions/browser/api/messaging",
     "//ipc",
+    "//remoting/host:base",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
     "//remoting/host/security_key:unit_tests",
     "//remoting/host/setup:common",
+    "//remoting/host/win:remoting_core",
+    "//remoting/host/win:worker_process_ipc_delegate_header",
     "//remoting/proto",
     "//remoting/resources",
     "//skia",
@@ -306,6 +314,7 @@ executable("remoting_me2me_host") {
     ":dpi_aware_exe_manifest",
     ":remoting_core",
     ":remoting_windows_resources",
+    "//base:clang_profiling_buildflags",
   ]
 
   sources = [
@@ -322,6 +331,12 @@ executable("remoting_me2me_host") {
       # "/NODEFAULTLIB",
     ]
   }
+}
+
+# Needed to avoid circular dependency.
+source_set("worker_process_ipc_delegate_header") {
+  sources = [ "//remoting/host/worker_process_ipc_delegate.h" ]
+  deps = [ "//base" ]
 }
 
 shared_library("remoting_core") {
@@ -369,12 +384,10 @@ shared_library("remoting_core") {
     "//remoting/host/setup/me2me_native_messaging_host_main.h",
     "//remoting/host/setup/start_host_main.cc",
     "//remoting/host/setup/start_host_main.h",
-    "//remoting/host/worker_process_ipc_delegate.h",
     "chromoting_lib.rc",
     "chromoting_module.cc",
     "chromoting_module.h",
     "core.cc",
-    "core.h",
     "core_resource.h",
     "elevated_native_messaging_host.cc",
     "elevated_native_messaging_host.h",
@@ -407,18 +420,25 @@ shared_library("remoting_core") {
     ":remoting_lib_ps",
     ":remoting_windows_resources",
     ":win",
+    ":worker_process_ipc_delegate_header",
     "//base",
     "//base:base_static",
     "//base/allocator",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//build/win:default_exe_manifest",
+    "//extensions/browser/api/messaging",
+    "//google_apis",
     "//ipc",
+    "//mojo/core/embedder",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//net",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/base:breakpad",
-    "//remoting/host:host",
+    "//remoting/host",
+    "//remoting/host:base",
     "//remoting/host:remoting_me2me_host_static",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
@@ -462,6 +482,7 @@ executable("remoting_desktop") {
   deps = [
     ":remoting_core",
     ":remoting_windows_resources",
+    "//base:clang_profiling_buildflags",
   ]
 
   if (is_official_build) {
