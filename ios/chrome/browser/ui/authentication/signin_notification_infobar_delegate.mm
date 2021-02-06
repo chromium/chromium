@@ -130,3 +130,11 @@ bool SigninNotificationInfoBarDelegate::Accept() {
       "Settings.GoogleServices.FromSigninNotificationInfobar"));
   return true;
 }
+
+bool SigninNotificationInfoBarDelegate::ShouldExpire(
+    const NavigationDetails& details) const {
+  // Due to the redirects that occur when navigating to a Google subdomain from
+  // the Omnibox, Chrome ensures that the sign-in infobar is displayed after
+  // restoring Gaia cookies regardless of the navigation type.
+  return false;
+}
