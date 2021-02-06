@@ -220,8 +220,6 @@ struct PaintPropertyTreeBuilderContext {
   // If not, subtree invalidations occur on every property tree change.
   unsigned supports_composited_raster_invalidation : 1;
 
-  unsigned is_affected_by_outer_viewport_bounds_delta : 1;
-
   // Whether this object was a layout shift root during the previous render
   // (not this one).
   unsigned was_layout_shift_root : 1;

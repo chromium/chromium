@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -150,6 +151,9 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   if (RequiresCompositingForScrollDependentPosition(*layer))
     reasons |= CompositingReason::kScrollDependentPosition;
 
+  if (RequiresCompositingForAffectedByOuterViewportBoundsDelta(object))
+    reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
+
   if (style.HasBackdropFilter())
     reasons |= CompositingReason::kBackdropFilter;
 
@@ -267,6 +271,9 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
 
   if (RequiresCompositingForScrollDependentPosition(layer))
     direct_reasons |= CompositingReason::kScrollDependentPosition;
+
+  if (RequiresCompositingForAffectedByOuterViewportBoundsDelta(layout_object))
+    direct_reasons |= CompositingReason::kAffectedByOuterViewportBoundsDelta;
 
   // Video is special. It's the only PaintLayer type that can both have
   // PaintLayer children and whose children can't use its backing to render
@@ -386,6 +393,29 @@ bool CompositingReasonFinder::RequiresCompositingForScrollDependentPosition(
   }
 
   return false;
+}
+
+bool CompositingReasonFinder::
+    RequiresCompositingForAffectedByOuterViewportBoundsDelta(
+        const LayoutObject& layout_object) {
+  if (!layout_object.IsBox())
+    return false;
+
+  if (layout_object.StyleRef().GetPosition() != EPosition::kFixed ||
+      !layout_object.StyleRef().IsFixedToBottom())
+    return false;
+
+  // Objects inside an iframe that's the root scroller should get the same
+  // "pushed by top controls" behavior as for the main frame.
+  auto& controller =
+      layout_object.GetFrame()->GetPage()->GlobalRootScrollerController();
+  if (!layout_object.GetFrame()->IsMainFrame() &&
+      layout_object.GetFrame()->GetDocument() !=
+          controller.GlobalRootScroller())
+    return false;
+
+  // It's affected by viewport only if the container is the LayoutView.
+  return IsA<LayoutView>(layout_object.Container());
 }
 
 }  // namespace blink

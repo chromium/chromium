@@ -366,8 +366,7 @@ static bool NeedsStickyTranslation(const LayoutObject& object) {
 
 static bool NeedsPaintOffsetTranslation(
     const LayoutObject& object,
-    CompositingReasons direct_compositing_reasons,
-    bool is_affected_by_outer_viewport_bounds_delta) {
+    CompositingReasons direct_compositing_reasons) {
   if (!object.IsBoxModelObject())
     return false;
 
@@ -439,9 +438,6 @@ static bool NeedsPaintOffsetTranslation(
       } else {
         if (layer->NeedsPaintOffsetTranslationForCompositing())
           return true;
-
-        if (is_affected_by_outer_viewport_bounds_delta)
-          return true;
       }
     }
   }
@@ -474,8 +470,7 @@ bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
 void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     base::Optional<IntPoint>& paint_offset_translation) {
   if (!NeedsPaintOffsetTranslation(
-          object_, full_context_.direct_compositing_reasons,
-          full_context_.is_affected_by_outer_viewport_bounds_delta))
+          object_, full_context_.direct_compositing_reasons))
     return;
 
   // We should use the same subpixel paint offset values for snapping regardless
@@ -546,8 +541,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
     TransformPaintPropertyNode::State state{new_translation};
     state.flags.flattens_inherited_transform =
         context_.current.should_flatten_inherited_transform;
-    state.flags.affected_by_outer_viewport_bounds_delta =
-        full_context_.is_affected_by_outer_viewport_bounds_delta;
     state.direct_compositing_reasons =
         full_context_.direct_compositing_reasons &
         CompositingReason::kDirectReasonsForPaintOffsetTranslationProperty;
@@ -3492,8 +3485,7 @@ bool PaintPropertyTreeBuilder::UpdateFragments() {
       !object_.IsText() &&
 #endif
       (NeedsPaintOffsetTranslation(
-           object_, context_.direct_compositing_reasons,
-           context_.is_affected_by_outer_viewport_bounds_delta) ||
+           object_, context_.direct_compositing_reasons) ||
        NeedsStickyTranslation(object_) ||
        NeedsTransform(object_, context_.direct_compositing_reasons) ||
        // Note: It is important to use MayNeedClipPathClip() instead of
@@ -3593,33 +3585,10 @@ void PaintPropertyTreeBuilder::UpdatePaintingLayer() {
   DCHECK(context_.painting_layer == object_.PaintingLayer());
 }
 
-bool PaintPropertyTreeBuilder::IsAffectedByOuterViewportBoundsDelta() const {
-  if (!object_.IsBox())
-    return false;
-
-  if (object_.StyleRef().GetPosition() != EPosition::kFixed ||
-      !object_.StyleRef().IsFixedToBottom())
-    return false;
-
-  // Objects inside an iframe that's the root scroller should get the same
-  // "pushed by top controls" behavior as for the main frame.
-  auto& controller =
-      object_.GetFrame()->GetPage()->GlobalRootScrollerController();
-  if (!object_.GetFrame()->IsMainFrame() &&
-      object_.GetFrame()->GetDocument() != controller.GlobalRootScroller())
-    return false;
-
-  // It's affected by viewport only if the container is the LayoutView.
-  DCHECK_EQ(context_.container_for_fixed_position, object_.Container());
-  return IsA<LayoutView>(context_.container_for_fixed_position);
-}
-
 PaintPropertyChangeType PaintPropertyTreeBuilder::UpdateForSelf() {
   // This is not inherited from the parent context and we always recalculate it.
   context_.direct_compositing_reasons =
       CompositingReasonFinder::DirectReasonsForPaintProperties(object_);
-  context_.is_affected_by_outer_viewport_bounds_delta =
-      IsAffectedByOuterViewportBoundsDelta();
   context_.was_layout_shift_root =
       IsLayoutShiftRoot(object_, object_.FirstFragment());
 

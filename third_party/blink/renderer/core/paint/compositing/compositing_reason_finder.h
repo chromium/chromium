@@ -49,6 +49,9 @@ class CORE_EXPORT CompositingReasonFinder {
   static bool RequiresCompositingForRootScroller(const PaintLayer&);
 
   static bool RequiresCompositingForScrollDependentPosition(const PaintLayer&);
+
+  static bool RequiresCompositingForAffectedByOuterViewportBoundsDelta(
+      const LayoutObject&);
 };
 
 }  // namespace blink
