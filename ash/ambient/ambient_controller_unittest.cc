@@ -43,7 +43,10 @@ class AmbientControllerTest : public AmbientAshTestBase {
   }
 
   bool IsPrefObserved(const std::string& pref_name) {
-    return ambient_controller()->pref_change_registrar_->IsObserved(pref_name);
+    auto* pref_change_registrar =
+        ambient_controller()->pref_change_registrar_.get();
+    DCHECK(pref_change_registrar);
+    return pref_change_registrar->IsObserved(pref_name);
   }
 
   bool WidgetsVisible() {
@@ -52,6 +55,24 @@ class AmbientControllerTest : public AmbientAshTestBase {
            std::all_of(views.cbegin(), views.cend(), [](const auto* view) {
              return view->GetWidget()->IsVisible();
            });
+  }
+
+  bool AreSessionSpecificObserversBound() {
+    auto* ctrl = ambient_controller();
+
+    bool ui_model_bound = ctrl->ambient_ui_model_observer_.IsObserving();
+    bool backend_model_bound =
+        ctrl->ambient_backend_model_observer_.IsObserving();
+    bool power_manager_bound =
+        ctrl->power_manager_client_observer_.IsObserving();
+    bool fingerprint_bound = ctrl->fingerprint_observer_receiver_.is_bound();
+    EXPECT_EQ(ui_model_bound, backend_model_bound)
+        << "observers should all have the same state";
+    EXPECT_EQ(ui_model_bound, power_manager_bound)
+        << "observers should all have the same state";
+    EXPECT_EQ(ui_model_bound, fingerprint_bound)
+        << "observers should all have the same state";
+    return ui_model_bound;
   }
 };
 
@@ -797,18 +818,39 @@ TEST_F(AmbientControllerTest, BindsObserversWhenAmbientEnabled) {
   // is started.
   EXPECT_TRUE(ctrl->session_observer_.IsObserving());
 
-  EXPECT_FALSE(ctrl->ambient_ui_model_observer_.IsObserving());
-  EXPECT_FALSE(ctrl->ambient_backend_model_observer_.IsObserving());
-  EXPECT_FALSE(ctrl->power_manager_client_observer_.IsObserving());
+  EXPECT_FALSE(AreSessionSpecificObserversBound());
 
   SetAmbientModeEnabled(true);
 
   // Session observer should still be observing.
   EXPECT_TRUE(ctrl->session_observer_.IsObserving());
 
-  EXPECT_TRUE(ctrl->ambient_ui_model_observer_.IsObserving());
-  EXPECT_TRUE(ctrl->ambient_backend_model_observer_.IsObserving());
-  EXPECT_TRUE(ctrl->power_manager_client_observer_.IsObserving());
+  EXPECT_TRUE(AreSessionSpecificObserversBound());
+}
+
+TEST_F(AmbientControllerTest, SwitchActiveUsersDoesNotDoubleBindObservers) {
+  ClearLogin();
+  SimulateUserLogin(kUser1);
+  SetAmbientModeEnabled(true);
+
+  TestSessionControllerClient* session = GetSessionControllerClient();
+
+  // Observers are bound for primary user with Ambient mode enabled.
+  EXPECT_TRUE(AreSessionSpecificObserversBound());
+  EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
+
+  // Observers are still bound when secondary user logs in.
+  SimulateUserLogin(kUser2);
+  EXPECT_TRUE(AreSessionSpecificObserversBound());
+  EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
+
+  // Observers are not re-bound for primary user when session is active.
+  session->SwitchActiveUser(AccountId::FromUserEmail(kUser1));
+  EXPECT_TRUE(AreSessionSpecificObserversBound());
+  EXPECT_TRUE(IsPrefObserved(ambient::prefs::kAmbientModeEnabled));
+
+  //  Switch back to secondary user.
+  session->SwitchActiveUser(AccountId::FromUserEmail(kUser2));
 }
 
 TEST_F(AmbientControllerTest, BindsObserversWhenAmbientOn) {

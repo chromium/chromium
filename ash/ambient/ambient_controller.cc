@@ -325,6 +325,11 @@ void AmbientController::OnActiveUserPrefServiceChanged(
     return;
   }
 
+  // Do not continue if pref_change_registrar has already been set up. This
+  // prevents re-binding observers when secondary profiles are activated.
+  if (pref_change_registrar_)
+    return;
+
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
 
