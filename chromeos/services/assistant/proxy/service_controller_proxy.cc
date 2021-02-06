@@ -5,13 +5,11 @@
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
@@ -30,13 +28,6 @@ namespace {
 
 using libassistant::mojom::ServiceState;
 
-constexpr base::Feature kChromeOSAssistantDogfood{
-    "ChromeOSAssistantDogfood", base::FEATURE_DISABLED_BY_DEFAULT};
-
-constexpr char kServersideDogfoodExperimentId[] = "20347368";
-constexpr char kServersideOpenAppExperimentId[] = "39651593";
-constexpr char kServersideResponseProcessingV2ExperimentId[] = "1793869";
-
 struct StartArguments {
   StartArguments() = default;
   StartArguments(StartArguments&&) = default;
@@ -47,28 +38,6 @@ struct StartArguments {
   assistant_client::AssistantManagerDelegate* assistant_manager_delegate;
   assistant_client::ConversationStateListener* conversation_state_listener;
 };
-
-void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids) {
-  if (base::FeatureList::IsEnabled(kChromeOSAssistantDogfood)) {
-    server_experiment_ids->emplace_back(kServersideDogfoodExperimentId);
-  }
-
-  if (base::FeatureList::IsEnabled(features::kAssistantAppSupport))
-    server_experiment_ids->emplace_back(kServersideOpenAppExperimentId);
-
-  server_experiment_ids->emplace_back(
-      kServersideResponseProcessingV2ExperimentId);
-}
-
-void SetServerExperiments(
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  std::vector<std::string> server_experiment_ids;
-  FillServerExperimentIds(&server_experiment_ids);
-
-  if (server_experiment_ids.size() > 0) {
-    assistant_manager_internal->AddExtraExperimentIds(server_experiment_ids);
-  }
-}
 
 // TODO(b/171748795): This should all be migrated to the mojom service, which
 // should be responsible for the complete creation of the Libassistant
@@ -83,7 +52,6 @@ void InitializeAssistantManager(
       arguments.assistant_manager_delegate);
   assistant_manager->AddConversationStateListener(
       arguments.conversation_state_listener);
-  SetServerExperiments(assistant_manager_internal);
 }
 
 std::vector<libassistant::mojom::AuthenticationTokenPtr>

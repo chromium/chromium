@@ -33,6 +33,14 @@ using mojom::ServiceState;
         base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
     return;                                                                 \
   }
+
+constexpr base::Feature kChromeOSAssistantDogfood{
+    "ChromeOSAssistantDogfood", base::FEATURE_DISABLED_BY_DEFAULT};
+
+constexpr char kServersideDogfoodExperimentId[] = "20347368";
+constexpr char kServersideOpenAppExperimentId[] = "39651593";
+constexpr char kServersideResponseProcessingV2ExperimentId[] = "1793869";
+
 std::vector<std::pair<std::string, std::string>> ToAuthTokens(
     const std::vector<mojom::AuthenticationTokenPtr>& mojo_tokens) {
   std::vector<std::pair<std::string, std::string>> result;
@@ -64,6 +72,28 @@ CreatePendingURLLoaderFactory(
   // used from internal Libassistant threads.
   return std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
       std::move(wrapped_factory));
+}
+
+void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids) {
+  if (base::FeatureList::IsEnabled(kChromeOSAssistantDogfood)) {
+    server_experiment_ids->emplace_back(kServersideDogfoodExperimentId);
+  }
+
+  if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
+    server_experiment_ids->emplace_back(kServersideOpenAppExperimentId);
+
+  server_experiment_ids->emplace_back(
+      kServersideResponseProcessingV2ExperimentId);
+}
+
+void SetServerExperiments(
+    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
+  std::vector<std::string> server_experiment_ids;
+  FillServerExperimentIds(&server_experiment_ids);
+
+  if (server_experiment_ids.size() > 0) {
+    assistant_manager_internal->AddExtraExperimentIds(server_experiment_ids);
+  }
 }
 
 }  // namespace
@@ -127,6 +157,8 @@ void ServiceController::Initialize(
 
   CreateAndRegisterDeviceStateListener();
   CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
+
+  SetServerExperiments(assistant_manager_internal());
 
   for (auto& observer : assistant_manager_observers_) {
     observer.OnAssistantManagerCreated(assistant_manager(),
