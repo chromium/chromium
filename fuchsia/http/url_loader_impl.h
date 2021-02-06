@@ -92,6 +92,9 @@ class URLLoaderImpl : public ::fuchsia::net::oldhttp::URLLoader,
   // manually handle redirects.
   bool auto_follow_redirects_;
 
+  // Set to true when the URLRequest is loading.
+  bool is_loading_ = false;
+
   // Populated from the FIDL URLRequest. Indicates how the response body should
   // be populated.
   ::fuchsia::net::oldhttp::ResponseBodyMode response_body_mode_;
