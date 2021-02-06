@@ -113,6 +113,13 @@ ccTLD namespace.
   * [a8e1dfd9cd8e470aa2f443914f931cfd61c323e94d75827affee985241c35ce5.pem](a8e1dfd9cd8e470aa2f443914f931cfd61c323e94d75827affee985241c35ce5.pem)
   * [e4f9a3235df7330255f36412bc849fb630f8519961ec3538301deb896c953da5.pem](e4f9a3235df7330255f36412bc849fb630f8519961ec3538301deb896c953da5.pem)
 
+### Sri Lanka
+
+google.lk certificate from Sectigo. https://crt.sh/?id=4037732415
+
+  * [91018fcd3e0dc73f48d011a123f604d846d66821c58304474f949d7449dd600a.pem]
+  (91018fcd3e0dc73f48d011a123f604d846d66821c58304474f949d7449dd600a.pem)
+
 ### Thawte
 
 A precert that appeared in the CT logs for (www.)google.com, issued by
