@@ -109,16 +109,12 @@ bool AV1Decoder::Flush() {
 void AV1Decoder::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearCurrentFrame();
-  // Resetting current sequence header might not be necessary. But this violates
-  // AcceleratedVideoDecoder interface spec, "Reset any current state that may
-  // be cached in the accelerator."
-  // TODO(hiroh): We may want to change this interface spec so that a caller
-  // doesn't have to allocate video frames buffers every seek operation.
+
+  // We must reset the |current_sequence_header_| to ensure we don't try to
+  // decode frames using an incorrect sequence header. If the first
+  // DecoderBuffer after the reset doesn't contain a sequence header, we'll just
+  // skip it and will keep skipping until we get a sequence header.
   current_sequence_header_.reset();
-  visible_rect_ = gfx::Rect();
-  frame_size_ = gfx::Size();
-  profile_ = VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
-  bit_depth_ = 0;
   stream_id_ = 0;
   stream_ = nullptr;
   stream_size_ = 0;
