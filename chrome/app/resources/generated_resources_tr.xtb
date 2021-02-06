@@ -1407,7 +1407,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2542050502251273923">Ağ bağlantı yöneticisi ve diğer hizmetlerin hata ayıklama seviyesini ff_debug kullanarak ayarlar.</translation>
 <translation id="2544853746127077729">Kimlik doğrulama sertifikası ağ tarafından reddedildi</translation>
 <translation id="2546283357679194313">Çerezler ve site verileri</translation>
-<translation id="2548347166720081527"><ph name="PERMISSION" /> izni verildi</translation>
+<translation id="2548347166720081527">İzin veriliyor: <ph name="PERMISSION" /></translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
 <translation id="2550212893339833758">Değiştirilmiş bellek</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> uzantısının <ph name="FILE_NAME" /> dosyasını açmasına izin verilsin mi?</translation>
@@ -6455,7 +6455,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="835951711479681002">Google Hesabınızda kaydedin</translation>
 <translation id="8363095875018065315">kararlı</translation>
 <translation id="8363142353806532503">Mikrofon engellendi</translation>
-<translation id="8363763184161554204"><ph name="PERMISSION" /> izni verildi</translation>
+<translation id="8363763184161554204"><ph name="PERMISSION" /> izni veriliyor</translation>
 <translation id="8366396658833131068">Ağ bağlantınız geri yüklendi. Lütfen farklı bir ağ seçin veya kiosk uygulamanızı başlatmak için "Devam Et" düğmesine basın.</translation>
 <translation id="8368027906805972958">Bilinmeyen veya desteklenmeyen cihaz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">&amp;Tüm yer işaretlerini aç</translation>

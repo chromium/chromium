@@ -263,7 +263,7 @@
 <translation id="1292849930724124745">Daxil olmuş vəziyyətdə qalmaq üçün smart kart taxın</translation>
 <translation id="1293264513303784526">USB-C cihazı (sol port)</translation>
 <translation id="1293556467332435079">Fayllar</translation>
-<translation id="1294807885394205587">Bu, bir neçə dəqiqə çəkə bilər. Konteyner meneceri başladılır.</translation>
+<translation id="1294807885394205587">Bir az səbr edin; konteyner meneceri başladılır.</translation>
 <translation id="1296911687402551044">Seçilmiş tabı sancın</translation>
 <translation id="1297175357211070620">Təyinat yeri</translation>
 <translation id="1300806585489372370">Bu ayarı dəyişmək üçün əvvəclə <ph name="BEGIN_LINK" />identifikatorları aktiv edin<ph name="END_LINK" /></translation>
@@ -2026,7 +2026,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3277691515294482687">Linux'u güncəlləmədən öncə tətbiq və fayllarımı Fayllarım qovluğuna yedəkləyin.</translation>
 <translation id="3278001907972365362">Google Hesablarına baxın</translation>
 <translation id="3279092821516760512">Seçilmiş kontaktlar yalnız yaxında olduqda sizinlə paylaşa bilər. Siz qəbul etmədən köçürmələr başlamayacaq.</translation>
-<translation id="3279230909244266691">Bu, bir neçə dəqiqə çəkə bilər. Virtual maşın başladılır.</translation>
+<translation id="3279230909244266691">Bir az səbr edin; virtual maşın başladılır.</translation>
 <translation id="3280237271814976245">Saxlama formatı:</translation>
 <translation id="3280243678470289153">Chrome'da qalın</translation>
 <translation id="3281892622610078515">Təcrid ediləcək fayl və proqramlar:</translation>
@@ -2276,7 +2276,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3559262020195162408">Cihazda qayda quraşdırıla bilmədi.</translation>
 <translation id="3559533181353831840">Təxminən <ph name="TIME_LEFT" /> qalıb</translation>
 <translation id="3560034655160545939">&amp;Yazı yoxlanışı</translation>
-<translation id="3562423906127931518">Bu proses bir neçə dəqiqə çəkə bilər. Linux konteyneri quraşdırılır.</translation>
+<translation id="3562423906127931518">Bir az səbr edin; Linux konteyneri quraşdırılır.</translation>
 <translation id="3562655211539199254">Telefonunuzdan son Chrome tablarına baxın</translation>
 <translation id="3563432852173030730">Kiosk tətbiqi ündirilə bilmir.</translation>
 <translation id="3564334271939054422">İstifadə etdiyiniz (<ph name="NETWORK_ID" />) Wi-Fi login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
@@ -4047,7 +4047,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5614553682702429503">Parol yadda saxlanılsın?</translation>
 <translation id="5616726534702877126">Rezerv ölçüsü</translation>
 <translation id="561698261642843490">Firefox'u bağlayın</translation>
-<translation id="5618333180342767515">(Bu bir neçə dəqiqə çəkə bilər)</translation>
+<translation id="5618333180342767515">(Bir az gözləyin)</translation>
 <translation id="56197088284879152">Bağlantı uzaqdan idarə olunan bu cihazda tıxanmaya səbəb oldu: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">Administrator siyasəti ekran çəkimini deaktiv edir</translation>
 <translation id="5620568081365989559">DevTools <ph name="FOLDER_PATH" /> qovluğuna giriş istəyir. Heç bir həssas məlumat yaymadığınıza əmin olun.</translation>
@@ -5613,7 +5613,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7441830548568730290">Digər istifadəçilər</translation>
 <translation id="7442465037756169001">Hangouts Meet hardware quraşdırmağa hazırdır.</translation>
 <translation id="744341768939279100">Yeni profil yaradın</translation>
-<translation id="744366959743242014">Data yüklənir. Bu, bir neçə saniyəyədək çəkə bilər.</translation>
+<translation id="744366959743242014">Bir az səbr edin; data yüklənilir.</translation>
 <translation id="7443806024147773267">Google Hesabına hər dəfə daxil olduğunuz zaman parollarınızı əldə edin</translation>
 <translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> deaktiv edin</translation>
 <translation id="7448430327655618736">Tətbiqləri avtomatik quraşdırın</translation>
@@ -7036,7 +7036,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="9024127637873500333">Yeni paneldə açın</translation>
 <translation id="9024158959543687197">Paylaşım xətası. Fayl paylaşım linkini yoxlayaraq yenidən cəhd edin.</translation>
 <translation id="9026731007018893674">endirmə</translation>
-<translation id="9026852570893462412">Bu, bir neçə dəqiqə çəkə bilər. Virtual maşın endirilir.</translation>
+<translation id="9026852570893462412">Bir az səbr edin; virtual maşın endirilir.</translation>
 <translation id="9027459031423301635">Linki yeni paneldə açın</translation>
 <translation id="9030515284705930323">Təşkilatınız Google Play Mağazanı hesabınız üçün aktiv etməyib. Əlavə məlumat üçün administratorla əlaqə saxlayın.</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -7175,7 +7175,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
 <translation id="9176476835295860688">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərir. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" /> sahibi tərəfindən tətbiq edilir. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google hesabında yadda saxlana bilər. <ph name="BEGIN_LINK2" />Ətraflı Məlumat<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth cihazı qoşuldu</translation>
 <translation id="9179524979050048593">Giriş ekranı istifadəçi adı</translation>
-<translation id="9180281769944411366">Bu, bir neçə dəqiqə çəkə bilər. Linux konteyneri başladılır.</translation>
+<translation id="9180281769944411366">Bir az səbr edin; Linux konteyneri başladılır.</translation>
 <translation id="9180380851667544951">Sayt ekranınızı paylaşa bilər</translation>
 <translation id="9186963452600581158">Uşağın Google Hesabı ilə daxil olun</translation>
 <translation id="9188732951356337132">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərir. Bu, övladınızı müəyyən etmək üçün istifadə edilməyəcək, eyni zamanda, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Övladınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabında yadda saxlana bilər. <ph name="BEGIN_LINK2" />Ətraflı Məlumat<ph name="END_LINK2" /></translation>
