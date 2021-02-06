@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/components/phonehub/fake_user_action_recorder.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
-#include "chromeos/components/phonehub/phone_model_test_util.h"
 #include "chromeos/components/phonehub/phone_status_model.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
@@ -56,16 +55,16 @@ class FakeObserver : public TetherController::Observer {
   size_t num_scan_failed_ = 0;
 };
 
-PhoneStatusModel CreateTestPhoneStatusModel(
+PhoneStatusModel::MobileConnectionMetadata
+CreateFakeMobileConnectionMetadata() {
+  return {PhoneStatusModel::SignalStrength::kFourBars,
+          base::UTF8ToUTF16(kTetherNetworkCarrier)};
+}
+
+PhoneStatusModel CreateFakePhoneStatusModel(
     PhoneStatusModel::MobileStatus mobile_status =
         PhoneStatusModel::MobileStatus::kSimWithReception) {
-  PhoneStatusModel::MobileConnectionMetadata metadata;
-  metadata.signal_strength = PhoneStatusModel::SignalStrength::kFourBars;
-  metadata.mobile_provider =
-      mobile_status == PhoneStatusModel::MobileStatus::kSimWithReception
-          ? base::UTF8ToUTF16(kFakeMobileProviderName)
-          : base::string16();
-  return PhoneStatusModel(mobile_status, metadata,
+  return PhoneStatusModel(mobile_status, CreateFakeMobileConnectionMetadata(),
                           PhoneStatusModel::ChargingState::kNotCharging,
                           PhoneStatusModel::BatterySaverState::kOff,
                           /*battery_percentage=*/100u);
@@ -171,7 +170,7 @@ class TetherControllerImplTest : public testing::Test {
             "Connectable": true})",
                 kWifiGuid));
 
-    fake_phone_model_.SetPhoneStatusModel(CreateTestPhoneStatusModel());
+    fake_phone_model_.SetPhoneStatusModel(CreateFakePhoneStatusModel());
 
     controller_ =
         base::WrapUnique<TetherControllerImpl>(new TetherControllerImpl(
@@ -364,14 +363,14 @@ TEST_F(TetherControllerImplTest, ExternalTetherChangesReflectToStatus) {
   EXPECT_EQ(GetNumObserverStatusChanged(), 6U);
 
   // Phone status changed to no reception.
-  phone_model()->SetPhoneStatusModel(CreateTestPhoneStatusModel(
+  phone_model()->SetPhoneStatusModel(CreateFakePhoneStatusModel(
       PhoneStatusModel::MobileStatus::kSimButNoReception));
   EXPECT_EQ(GetStatus(), TetherController::Status::kNoReception);
   EXPECT_EQ(GetNumObserverStatusChanged(), 7U);
 
   // Phone status changed to no SIM.
   phone_model()->SetPhoneStatusModel(
-      CreateTestPhoneStatusModel(PhoneStatusModel::MobileStatus::kNoSim));
+      CreateFakePhoneStatusModel(PhoneStatusModel::MobileStatus::kNoSim));
   EXPECT_EQ(GetStatus(), TetherController::Status::kNoReception);
   EXPECT_EQ(GetNumObserverStatusChanged(), 7U);
 
@@ -386,7 +385,7 @@ TEST_F(TetherControllerImplTest, ExternalTetherChangesReflectToStatus) {
   EXPECT_EQ(GetNumObserverStatusChanged(), 9U);
 
   // Phone status changed to having reception. Connection is still unavailable.
-  phone_model()->SetPhoneStatusModel(CreateTestPhoneStatusModel(
+  phone_model()->SetPhoneStatusModel(CreateFakePhoneStatusModel(
       PhoneStatusModel::MobileStatus::kSimWithReception));
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
   EXPECT_EQ(GetNumObserverStatusChanged(), 10U);
