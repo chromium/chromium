@@ -100,7 +100,7 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
   for (size_t i = 0; i < spatial_layers.size(); ++i) {
     const auto& sl = spatial_layers[i];
     str += base::StringPrintf(
-        ", {SatialLayer#%zu: width=%" PRId32 ", height=%" PRId32
+        ", {SpatialLayer#%zu: width=%" PRId32 ", height=%" PRId32
         ", bitrate_bps=%" PRIu32 ", framerate=%" PRId32
         ", max_qp=%u, num_of_temporal_layers=%u}",
         i, sl.width, sl.height, sl.bitrate_bps, sl.framerate, sl.max_qp,
