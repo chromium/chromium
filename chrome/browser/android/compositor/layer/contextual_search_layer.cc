@@ -55,6 +55,13 @@ void ContextualSearchLayer::SetProperties(
     float search_promo_height,
     float search_promo_opacity,
     int search_promo_background_color,
+    // Panel Help
+    int panel_help_resource_id,
+    bool panel_help_visible,
+    float panel_help_height,
+    float panel_help_opacity,
+    int panel_help_container_background_color,
+    // Banner etc
     bool search_bar_banner_visible,
     float search_bar_banner_height,
     float search_bar_banner_padding,
@@ -106,7 +113,8 @@ void ContextualSearchLayer::SetProperties(
       search_provider_icon_resource_id, drag_handlebar_resource_id,
       open_tab_icon_resource_id, close_icon_resource_id);
 
-  float content_view_top = search_bar_bottom + search_promo_height;
+  float content_view_top =
+      search_bar_bottom + panel_help_height + search_promo_height;
   float should_render_bar_border = search_bar_border_visible
       && !should_render_progress_bar;
 
@@ -227,6 +235,44 @@ void ContextualSearchLayer::SetProperties(
                      search_term_caption_spacing);
 
   // ---------------------------------------------------------------------------
+  // Panel Help
+  // ---------------------------------------------------------------------------
+  // Tracks the top of the next section to draw.
+  int next_section_top = search_bar_bottom;
+  if (panel_help_visible) {
+    ui::Resource* panel_help_resource = resource_manager_->GetResource(
+        ui::ANDROID_RESOURCE_TYPE_DYNAMIC, panel_help_resource_id);
+    if (panel_help_container_->parent() != layer_) {
+      // NOTE(donnd): This layer can appear just below the Bar so it should be
+      // always placed before the Search Bar Shadow to make sure it won't
+      // occlude the shadow.
+      layer_->InsertChild(panel_help_container_, 0);
+    }
+    if (panel_help_resource) {
+      int panel_help_content_height = panel_help_resource->size().height();
+      gfx::Size panel_help_size(search_panel_width, panel_help_height);
+      panel_help_container_->SetBounds(panel_help_size);
+      panel_help_container_->SetPosition(gfx::PointF(0.f, next_section_top));
+      panel_help_container_->SetMasksToBounds(true);
+      panel_help_container_->SetBackgroundColor(
+          panel_help_container_background_color);
+
+      if (panel_help_->parent() != panel_help_container_)
+        panel_help_container_->AddChild(panel_help_);
+
+      panel_help_->SetUIResourceId(panel_help_resource->ui_resource()->id());
+      panel_help_->SetBounds(panel_help_resource->size());
+      panel_help_->SetPosition(
+          gfx::PointF(0.f, panel_help_height - panel_help_content_height));
+      panel_help_->SetOpacity(panel_help_opacity);
+      // Next section goes beyond this section.
+      next_section_top += panel_help_height;
+    }
+  } else if (panel_help_container_.get() && panel_help_container_->parent()) {
+    panel_help_container_->RemoveFromParent();
+  }
+
+  // ---------------------------------------------------------------------------
   // Search Promo
   // ---------------------------------------------------------------------------
   if (search_promo_visible) {
@@ -235,8 +281,9 @@ void ContextualSearchLayer::SetProperties(
         ui::ANDROID_RESOURCE_TYPE_DYNAMIC, search_promo_resource_id);
     // Search Promo Container
     if (search_promo_container_->parent() != layer_) {
-      // NOTE(pedrosimonetti): The Promo layer should be always placed before
-      // Search Bar Shadow to make sure it won't occlude the shadow.
+      // NOTE(donnd): This layer can appear just below the Bar so it should be
+      // always placed before the Search Bar Shadow to make sure it won't
+      // occlude the shadow.
       layer_->InsertChild(search_promo_container_, 0);
     }
 
@@ -244,7 +291,7 @@ void ContextualSearchLayer::SetProperties(
       int search_promo_content_height = search_promo_resource->size().height();
       gfx::Size search_promo_size(search_panel_width, search_promo_height);
       search_promo_container_->SetBounds(search_promo_size);
-      search_promo_container_->SetPosition(gfx::PointF(0.f, search_bar_bottom));
+      search_promo_container_->SetPosition(gfx::PointF(0.f, next_section_top));
       search_promo_container_->SetMasksToBounds(true);
       search_promo_container_->SetBackgroundColor(
           search_promo_background_color);
@@ -257,7 +304,7 @@ void ContextualSearchLayer::SetProperties(
           search_promo_resource->ui_resource()->id());
       search_promo_->SetBounds(search_promo_resource->size());
       // Align promo at the bottom of the container so the confirmation button
-      // is is not clipped when resizing the promo.
+      // is not clipped when resizing the promo.
       search_promo_->SetPosition(
           gfx::PointF(0.f, search_promo_height - search_promo_content_height));
       search_promo_->SetOpacity(search_promo_opacity);
@@ -619,6 +666,8 @@ ContextualSearchLayer::ContextualSearchLayer(
       search_provider_icon_layer_(cc::UIResourceLayer::Create()),
       thumbnail_layer_(cc::UIResourceLayer::Create()),
       quick_action_icon_layer_(cc::UIResourceLayer::Create()),
+      panel_help_(cc::UIResourceLayer::Create()),
+      panel_help_container_(cc::SolidColorLayer::Create()),
       search_promo_(cc::UIResourceLayer::Create()),
       search_promo_container_(cc::SolidColorLayer::Create()),
       bar_banner_container_(cc::SolidColorLayer::Create()),
@@ -641,6 +690,11 @@ ContextualSearchLayer::ContextualSearchLayer(
 
   // Search Bar Caption
   search_caption_->SetIsDrawable(true);
+
+  // In-Panel Help section
+  panel_help_container_->SetIsDrawable(true);
+  panel_help_container_->SetBackgroundColor(kSearchBackgroundColor);
+  panel_help_->SetIsDrawable(true);
 
   // Search Opt Out Promo
   search_promo_container_->SetIsDrawable(true);

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -18,7 +17,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContent;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.PanelPriority;
-import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPromoControl.ContextualSearchPromoHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.scene_layer.ContextualSearchSceneLayer;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
@@ -37,6 +35,35 @@ import org.chromium.ui.resources.ResourceManager;
  * {@link ContextualSearchBarControl} - and the content area that shows the Search Result.
  */
 public class ContextualSearchPanel extends OverlayPanel implements ContextualSearchPanelInterface {
+    /** Allows controls that appear in this panel to call back with requests or notifications. */
+    interface ContextualSearchPanelSectionHost {
+        /** Returns the current Y position of the panel section. */
+        float getYPositionPx();
+
+        /** Notifies the panel that the caller's section is changing its size. */
+        void onPanelSectionSizeChange(boolean hasStarted);
+    }
+
+    /** The interface that the Opt-in promo uses to communicate with this Panel. */
+    interface ContextualSearchPromoHost extends ContextualSearchPanelSectionHost {
+        /**
+         * Notifies that the user has opted in.
+         * @param wasMandatory Whether the Promo was mandatory.
+         */
+        void onPromoOptIn(boolean wasMandatory);
+
+        /**
+         * Notifies that the user has opted out.
+         */
+        void onPromoOptOut();
+    }
+
+    /** The interface that the help section uses to communicate with this Panel. */
+    interface ContextualSearchHelpSectionHost extends ContextualSearchPanelSectionHost {
+        /** Notifies that the user has clicked the OK button in the help section of the panel. */
+        void onPanelHelpOkClicked();
+    }
+
     /** Restricts the maximized panel height to the given fraction of a tab. */
     private static final float MAXIMIZED_HEIGHT_FRACTION = 0.95f;
 
@@ -45,10 +72,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /** The distance of the divider from the end of the bar, in dp. */
     private final float mEndButtonWidthDp;
-
-    /** The Help section of the Panel. */
-    @NonNull
-    private final ContextualSearchPanelHelp mPanelHelp;
 
     /** Whether the Panel should be promoted to a new tab after being maximized. */
     private boolean mShouldPromoteToTabAfterMaximizing;
@@ -92,7 +115,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         mEndButtonWidthDp = mContext.getResources().getDimensionPixelSize(
                                     R.dimen.contextual_search_padded_button_width)
                 * mPxToDp;
-        mPanelHelp = new ContextualSearchPanelHelp(context);
     }
 
     @Override
@@ -120,7 +142,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         super.getUpdatedSceneOverlayTree(viewport, visibleViewport, resourceManager, yOffset);
         mSceneLayer.update(resourceManager, this, getSearchBarControl(), getBarBannerControl(),
-                getPromoControl(), getImageControl());
+                getPromoControl(), getPanelHelp(), getImageControl());
 
         return mSceneLayer;
     }
@@ -195,8 +217,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         // Prevent the fling gesture from moving the Panel from PEEKED to MAXIMIZED. This is to
         // make sure the Promo will be visible, considering that the EXPANDED state is the only
         // one that will show the Promo.
-        if (getPromoControl().isVisible()
-                && projectedState == PanelState.MAXIMIZED
+        if (getPromoControl().isVisible() && projectedState == PanelState.MAXIMIZED
                 && getPanelState() == PanelState.PEEKED) {
             projectedState = PanelState.EXPANDED;
         }
@@ -310,6 +331,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     protected void destroyComponents() {
         super.destroyComponents();
         destroyPromoControl();
+        destroyPanelHelp();
         destroyBarBannerControl();
         destroySearchBarControl();
     }
@@ -363,7 +385,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     public float getContentY() {
-        return getOffsetY() + getBarContainerHeight() + getPromoHeightPx() * mPxToDp;
+        return getOffsetY() + getBarContainerHeight() + getPanelHelpHeight()
+                + getPromoHeightPx() * mPxToDp;
     }
 
     @Override
@@ -499,12 +522,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @Override
     public void expandPanel(@StateChangeReason int reason) {
         super.expandPanel(reason);
-    }
-
-    @Override
-    public @PanelState int getPanelState() {
-        // NOTE(pedrosimonetti): exposing superclass method to the interface.
-        return super.getPanelState();
     }
 
     @Override
@@ -652,6 +669,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         super.updatePanelForCloseOrPeek(percentage);
 
         getPromoControl().onUpdateFromCloseToPeek(percentage);
+        getPanelHelp().onUpdateFromCloseToPeek(percentage);
         getBarBannerControl().onUpdateFromCloseToPeek(percentage);
         getSearchBarControl().onUpdateFromCloseToPeek(percentage);
     }
@@ -661,6 +679,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         super.updatePanelForExpansion(percentage);
 
         getPromoControl().onUpdateFromPeekToExpand(percentage);
+        getPanelHelp().onUpdateFromPeekToExpand(percentage);
         getBarBannerControl().onUpdateFromPeekToExpand(percentage);
         getSearchBarControl().onUpdateFromPeekToExpand(percentage);
     }
@@ -670,6 +689,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         super.updatePanelForMaximization(percentage);
 
         getPromoControl().onUpdateFromExpandToMaximize(percentage);
+        getPanelHelp().onUpdateFromExpandToMaximize(percentage);
         getBarBannerControl().onUpdateFromExpandToMaximize(percentage);
     }
 
@@ -677,6 +697,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     protected void updatePanelForSizeChange() {
         if (getPromoControl().isVisible()) {
             getPromoControl().invalidate(true);
+        }
+        if (getPanelHelp().isVisible()) {
+            getPanelHelp().invalidate(true);
         }
         if (getBarBannerControl().isVisible()) {
             getBarBannerControl().onResized(this);
@@ -873,12 +896,27 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     /**
-     * TODO(donnd): get rid of this promo stuff, no longer used.
      * @return An implementation of {@link ContextualSearchPromoHost}.
      */
     private ContextualSearchPromoHost getContextualSearchPromoHost() {
         if (mPromoHost == null) {
+            // Create a handler for callbacks from the Opt-in promo.
             mPromoHost = new ContextualSearchPromoHost() {
+                @Override
+                public float getYPositionPx() {
+                    // Needs to enumerate anything that can appear above it in the panel.
+                    // Currently it includes the Help section, so we add its height.
+                    return Math.round(
+                            (getOffsetY() + getPanelHelpHeight() + getBarContainerHeight())
+                            / mPxToDp);
+                }
+
+                @Override
+                public void onPanelSectionSizeChange(boolean hasStarted) {
+                    // The promo section is causing movement, but since there's nothing
+                    // below it we don't need to do anything.
+                }
+
                 @Override
                 public void onPromoOptIn(boolean wasMandatory) {
                     if (wasMandatory) {
@@ -892,13 +930,84 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 public void onPromoOptOut() {
                     closePanel(OverlayPanel.StateChangeReason.OPTOUT, true);
                 }
-
-                @Override
-                public void onUpdatePromoAppearance() {}
             };
         }
 
         return mPromoHost;
+    }
+
+    // ============================================================================================
+    // In-Panel Help
+    // ============================================================================================
+
+    /** The Help section of the Panel. */
+    private ContextualSearchPanelHelp mPanelHelp;
+    private ContextualSearchHelpSectionHost mHelpSectionHost;
+
+    /**
+     * @param isActive Shows or hides the in-panel-help section based on this param.
+     */
+    @Override
+    public void setIsPanelHelpActive(boolean isActive) {
+        if (isActive) {
+            getPanelHelp().show();
+        } else {
+            getPanelHelp().hide();
+        }
+    }
+
+    /**
+     * Returns the {@link ContextualSearchPanelHelp} that controls the help section of this
+     * panel.
+     */
+    private ContextualSearchPanelHelp getPanelHelp() {
+        if (mPanelHelp == null) {
+            mPanelHelp = new ContextualSearchPanelHelp(this, getContextualSearchHelpSectionHost(),
+                    mContext, mContainerView, mResourceLoader);
+        }
+        return mPanelHelp;
+    }
+
+    /**
+     * @return Height of the help section of the panel in DPs.
+     */
+    private float getPanelHelpHeight() {
+        return getPanelHelp().getHeightPx() * mPxToDp;
+    }
+
+    /** Destroys the Help section of this panel. */
+    private void destroyPanelHelp() {
+        mPanelHelp.destroy();
+        mPanelHelp = null;
+    }
+
+    /**
+     * @return An implementation of {@link ContextualSearchHelpSectionHost}.
+     */
+    private ContextualSearchHelpSectionHost getContextualSearchHelpSectionHost() {
+        if (mHelpSectionHost == null) {
+            mHelpSectionHost = new ContextualSearchHelpSectionHost() {
+                @Override
+                public float getYPositionPx() {
+                    // Needs to enumerate anything that can appear above it in the panel.
+                    return Math.round((getOffsetY() + getBarContainerHeight()) / mPxToDp);
+                }
+
+                @Override
+                public void onPanelSectionSizeChange(boolean hasStarted) {
+                    // The help section is causing movement which means the promo below
+                    // it will move.
+                    getPromoControl().onUpdateForMovement(hasStarted);
+                }
+
+                @Override
+                public void onPanelHelpOkClicked() {
+                    // Tell the manager the user said OK.
+                    mManagementDelegate.onPanelHelpOkClicked();
+                }
+            };
+        }
+        return mHelpSectionHost;
     }
 
     // ============================================================================================
@@ -909,7 +1018,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @return Whether the content can be displayed in the panel.
      */
     public boolean canDisplayContentInPanel() {
-        // TODO(pedrosimonetti): add svelte support.
         return !getPromoControl().isMandatory();
     }
 

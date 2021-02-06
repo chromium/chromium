@@ -360,21 +360,21 @@ void OverlayPanelLayer::SetProperties(
   // ---------------------------------------------------------------------------
   // Bar Shadow
   // ---------------------------------------------------------------------------
-    ui::Resource* bar_shadow_resource = resource_manager_->GetResource(
-        ui::ANDROID_RESOURCE_TYPE_STATIC, bar_shadow_resource_id_);
+  ui::Resource* bar_shadow_resource = resource_manager_->GetResource(
+      ui::ANDROID_RESOURCE_TYPE_STATIC, bar_shadow_resource_id_);
 
-    if (bar_shadow_resource) {
-      if (bar_shadow_->parent() != layer_)
-        layer_->AddChild(bar_shadow_);
+  if (bar_shadow_resource) {
+    if (bar_shadow_->parent() != layer_)
+      layer_->AddChild(bar_shadow_);
 
-      int shadow_height = bar_shadow_resource->size().height();
-      gfx::Size shadow_size(panel_width, shadow_height);
+    int shadow_height = bar_shadow_resource->size().height();
+    gfx::Size shadow_size(panel_width, shadow_height);
 
-      bar_shadow_->SetUIResourceId(bar_shadow_resource->ui_resource()->id());
-      bar_shadow_->SetBounds(shadow_size);
-      bar_shadow_->SetPosition(gfx::PointF(0.f, bar_bottom));
-      bar_shadow_->SetOpacity(1.0f);
-    }
+    bar_shadow_->SetUIResourceId(bar_shadow_resource->ui_resource()->id());
+    bar_shadow_->SetBounds(shadow_size);
+    bar_shadow_->SetPosition(gfx::PointF(0.f, bar_bottom));
+    bar_shadow_->SetOpacity(1.0f);
+  }
 
   // ---------------------------------------------------------------------------
   // Panel

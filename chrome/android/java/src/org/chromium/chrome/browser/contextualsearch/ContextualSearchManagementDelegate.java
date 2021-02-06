@@ -91,6 +91,11 @@ public interface ContextualSearchManagementDelegate {
     void onPromoOptIn();
 
     /**
+     * Called when the Help section of the panel has its OK button clicked.
+     */
+    void onPanelHelpOkClicked();
+
+    /**
      * @return A {@link ScrimCoordinator} to fade the status bar in and out.
      */
     ScrimCoordinator getScrimCoordinator();

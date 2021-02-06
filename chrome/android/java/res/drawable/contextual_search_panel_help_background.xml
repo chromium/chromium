@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- This background insets another background by a fixed amount.
+     The inset amount comes from the UX design and is crafted to match
+     the inset of the rounded frame of individual search results displayed
+     in the search results page. -->
+
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/hairline_border_card_background"
+    android:inset="6dp"/>

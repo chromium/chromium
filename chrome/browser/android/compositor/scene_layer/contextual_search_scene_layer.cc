@@ -94,6 +94,13 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jfloat search_promo_height,
     jfloat search_promo_opacity,
     jint search_promo_background_color,
+    // Panel Help
+    jint panel_help_resource_id,
+    jboolean panel_help_visible,
+    jfloat panel_help_height,
+    jfloat panel_help_opacity,
+    jint panel_help_container_background_color,
+    // Banner etc
     jboolean search_bar_banner_visible,
     jfloat search_bar_banner_height,
     jfloat search_bar_banner_padding,
@@ -169,6 +176,10 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       bar_banner_ripple_resource_id, bar_banner_text_resource_id, dp_to_px,
       content_layer, search_promo_visible, search_promo_height,
       search_promo_opacity, search_promo_background_color,
+      // Panel Help
+      panel_help_resource_id, panel_help_visible, panel_help_height,
+      panel_help_opacity, panel_help_container_background_color,
+      // Banner etc
       search_bar_banner_visible, search_bar_banner_height,
       search_bar_banner_padding, search_bar_banner_ripple_width,
       search_bar_banner_ripple_opacity, search_bar_banner_text_opacity,

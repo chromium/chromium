@@ -67,6 +67,12 @@ class ContextualSearchPolicy {
     private Integer mTapTriggeredPromoLimitForTesting;
 
     /**
+     * Tracks whether the In-Panel-Help has been shown.
+     * TODO(donnd): replace with Feature Engagement.
+     */
+    private boolean mWasInPanelHelpAccepted;
+
+    /**
      * ContextualSearchPolicy constructor.
      */
     public ContextualSearchPolicy(ContextualSearchSelectionController selectionController,
@@ -208,6 +214,18 @@ class ContextualSearchPolicy {
      */
     boolean isPromoAvailable() {
         return isUserUndecided();
+    }
+
+    boolean isPanelHelpEnabled() {
+        return !mWasInPanelHelpAccepted
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_PANEL_HELP);
+    }
+
+    /** Handles notification that the OK button was pressed on the In-Panel-Help promo. */
+    void onPanelHelpOkClicked() {
+        // TODO(donnd): use Feature Engagement to manage this help feature.
+        mWasInPanelHelpAccepted = true;
     }
 
     /**

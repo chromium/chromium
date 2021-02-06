@@ -454,6 +454,7 @@ public class ContextualSearchManager
 
         mIsShowingPromo = false;
         mSearchPanel.setIsPromoActive(false, false);
+        mSearchPanel.setIsPanelHelpActive(false);
         notifyHideContextualSearch();
     }
 
@@ -519,6 +520,7 @@ public class ContextualSearchManager
             mSearchPanel.setIsPromoActive(true, mIsMandatoryPromo);
             mSearchPanel.setDidSearchInvolvePromo();
         }
+        mSearchPanel.setIsPanelHelpActive(mPolicy.isPanelHelpEnabled());
 
         mSearchPanel.requestPanelShow(stateChangeReason);
 
@@ -1294,6 +1296,11 @@ public class ContextualSearchManager
     @Override
     public void onPromoOptIn() {
         mInProductHelp.doUserOptedInNotifications(Profile.getLastUsedRegularProfile());
+    }
+
+    @Override
+    public void onPanelHelpOkClicked() {
+        mPolicy.onPanelHelpOkClicked();
     }
 
     /** @return The {@link SelectionClient} used by Contextual Search. */
