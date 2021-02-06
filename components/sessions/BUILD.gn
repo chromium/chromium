@@ -82,6 +82,22 @@ if (!is_ios) {
   }
 }
 
+source_set("session_id") {
+  sources = [
+    "core/session_id.cc",
+    "core/session_id.h",
+    "core/session_id_generator.cc",
+    "core/session_id_generator.h",
+  ]
+
+  configs += [ ":implementation" ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
 # Sources shared between the content and iOS implementations.
 source_set("shared") {
   visibility = [ ":*" ]
@@ -106,10 +122,6 @@ source_set("shared") {
     "core/session_command.h",
     "core/session_constants.cc",
     "core/session_constants.h",
-    "core/session_id.cc",
-    "core/session_id.h",
-    "core/session_id_generator.cc",
-    "core/session_id_generator.h",
     "core/session_service_commands.cc",
     "core/session_service_commands.h",
     "core/session_types.cc",
@@ -128,6 +140,7 @@ source_set("shared") {
   configs += [ ":implementation" ]
 
   public_deps = [
+    ":session_id",
     "//components/keyed_service/core",
     "//skia",
   ]
