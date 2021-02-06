@@ -62,6 +62,10 @@ const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
     kEmptyExpected = {};
 }  // namespace
 
+// TODO(crbug.com/1175279): CartHandlerTest.* tests are flaky on TSan.
+#if defined(THREAD_SANITIZER)
+#define CartHandlerTest DISABLED_CartHandlerTest
+#endif
 class CartHandlerTest : public testing::Test {
  public:
   CartHandlerTest()
