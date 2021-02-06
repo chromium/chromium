@@ -231,7 +231,7 @@ bool AddressField::ParseAddressFieldSequence(
   const std::vector<MatchingPattern>& house_number_patterns =
       PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_HOUSE_NUMBER,
                                                       page_language);
-  const std::vector<MatchingPattern>& apartement_number_patterns =
+  const std::vector<MatchingPattern>& apartment_number_patterns =
       PatternProvider::GetInstance().GetMatchPatterns(ADDRESS_HOME_APT_NUM,
                                                       page_language);
 
@@ -256,7 +256,7 @@ bool AddressField::ParseAddressFieldSequence(
         !apartment_number_ &&
         ParseFieldSpecifics(scanner, UTF8ToUTF16(kApartmentNumberRe),
                             MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE,
-                            apartement_number_patterns, &apartment_number_,
+                            apartment_number_patterns, &apartment_number_,
                             {log_manager_, "kApartmentNumberRe"})) {
       continue;
     }
