@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 namespace blink {
 
@@ -170,6 +171,8 @@ class HeapMojoReceiverDisconnectWithReasonHandlerWithoutContextObserverTest
 
 // Make HeapMojoReceiver with context observer garbage collected and check that
 // the connection is disconnected right after the marking phase.
+// TODO(1056170): Re-enable test.
+#if !BUILDFLAG(USE_V8_OILPAN)
 TEST_F(HeapMojoReceiverGCWithContextObserverTest, ResetsOnGC) {
   ClearOwner();
   EXPECT_FALSE(disconnected());
@@ -178,6 +181,7 @@ TEST_F(HeapMojoReceiverGCWithContextObserverTest, ResetsOnGC) {
   EXPECT_TRUE(disconnected());
   CompleteSweepingIfNeeded();
 }
+#endif  // !USE_V8_OILPAN
 
 // Check that the owner
 TEST_F(HeapMojoReceiverGCWithContextObserverTest, NoResetOnConservativeGC) {
@@ -193,6 +197,8 @@ TEST_F(HeapMojoReceiverGCWithContextObserverTest, NoResetOnConservativeGC) {
 
 // Make HeapMojoReceiver without context observer garbage collected and check
 // that the connection is disconnected right after the marking phase.
+// TODO(1056170): Re-enable test.
+#if !BUILDFLAG(USE_V8_OILPAN)
 TEST_F(HeapMojoReceiverGCWithoutContextObserverTest, ResetsOnGC) {
   ClearOwner();
   EXPECT_FALSE(disconnected());
@@ -201,6 +207,7 @@ TEST_F(HeapMojoReceiverGCWithoutContextObserverTest, ResetsOnGC) {
   EXPECT_TRUE(disconnected());
   CompleteSweepingIfNeeded();
 }
+#endif  // !USE_V8_OILPAN
 
 // Destroy the context with context observer and check that the connection is
 // disconnected.

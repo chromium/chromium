@@ -121,6 +121,11 @@ class PLATFORM_EXPORT ThreadState final {
            cppgc::subtle::HeapState::IsSweeping(heap_handle);
   }
 
+  bool IsAllocationAllowed() const {
+    return cppgc::subtle::DisallowGarbageCollectionScope::
+        IsGarbageCollectionAllowed(cpp_heap().GetHeapHandle());
+  }
+
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.
