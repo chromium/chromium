@@ -39,12 +39,24 @@ PhoneStatusModel::PhoneStatusModel(
 
   if (mobile_status_ != MobileStatus::kSimWithReception &&
       mobile_connection_metadata_.has_value()) {
-    PA_LOG(WARNING) << "Provided MobileStatus " << mobile_status_ << " "
-                    << "indicates no reception, but MobileConnectionMetadata "
-                    << *mobile_connection_metadata_
-                    << " was provided. Clearing "
-                    << "metadata.";
-    mobile_connection_metadata_.reset();
+    if (!mobile_connection_metadata_->mobile_provider.empty()) {
+      // If the phone reports 0/4 bars but still reports a mobile provider, it
+      // may be temporarily under-reporting the real signal strength shown on
+      // the phone. See https://crbug.com/1163266 for details.
+
+      PA_LOG(VERBOSE) << "Provided MobileStatus " << mobile_status_ << " "
+                      << "indicates no reception, but it is connected to a "
+                      << "mobile provider. Updating to one-bar reception.";
+      mobile_status_ = MobileStatus::kSimWithReception;
+      mobile_connection_metadata_->signal_strength = SignalStrength::kOneBar;
+    } else {
+      PA_LOG(WARNING) << "Provided MobileStatus " << mobile_status_ << " "
+                      << "indicates no reception, but MobileConnectionMetadata "
+                      << *mobile_connection_metadata_
+                      << " was provided. Clearing "
+                      << "metadata.";
+      mobile_connection_metadata_.reset();
+    }
   } else if (mobile_status_ == MobileStatus::kSimWithReception &&
              !mobile_connection_metadata_.has_value()) {
     PA_LOG(WARNING) << "MobileStatus is " << mobile_status_ << ", but no "
