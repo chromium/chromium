@@ -4352,14 +4352,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  // TODO(https://crbug.com/585649): The correct test expectation below is
-  // EXPECT_EQ (the 2 origins should be the same).  To fix this we need to avoid
-  // blindly using the local parent frame as an `owner_document_` and make sure
-  // to inherit the origin from the initiator of the navigation.  One way to fix
-  // this is to change DocumentLoader::CommitNavigation to leave
-  // `owner_document` set to nullptr if it is cross-origin from
-  // `requestor_origin_`.
-  EXPECT_NE(main_frame->GetLastCommittedOrigin(),
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
             grandchild_frame->GetLastCommittedOrigin());
   EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
   EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
@@ -4412,20 +4405,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
-              grandchild_frame->GetLastCommittedOrigin());
-  } else {
-    // TODO(https://crbug.com/585649): The correct test expectation below is
-    // EXPECT_EQ (the 2 origins should be the same).  To fix this we need to
-    // avoid blindly using the local parent frame as an `owner_document_` and
-    // make sure to inherit the origin from the initiator of the navigation.
-    // One way to fix this is to change DocumentLoader::CommitNavigation to
-    // leave `owner_document` set to nullptr if it is cross-origin from
-    // `requestor_origin_`.
-    EXPECT_EQ(child_frame->GetLastCommittedOrigin(),
-              grandchild_frame->GetLastCommittedOrigin());
-  }
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+            grandchild_frame->GetLastCommittedOrigin());
   EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
   EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
 }
@@ -4478,20 +4459,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
-              grandchild_frame->GetLastCommittedOrigin());
-  } else {
-    // TODO(https://crbug.com/585649): The correct test expectation below is
-    // EXPECT_EQ (the 2 origins should be the same).  To fix this we need to
-    // avoid blindly using the local parent frame as an `owner_document_` and
-    // make sure to inherit the origin from the initiator of the navigation.
-    // One way to fix this is to change DocumentLoader::CommitNavigation to
-    // leave `owner_document` set to nullptr if it is cross-origin from
-    // `requestor_origin_`.
-    EXPECT_EQ(child_frame->GetLastCommittedOrigin(),
-              grandchild_frame->GetLastCommittedOrigin());
-  }
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+            grandchild_frame->GetLastCommittedOrigin());
   EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
   EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
 }
@@ -4582,20 +4551,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   child_frame1 = main_frame->child_at(0)->current_frame_host();
   child_frame2 = main_frame->child_at(1)->current_frame_host();
   EXPECT_EQ(GURL(url::kAboutBlankURL), child_frame2->GetLastCommittedURL());
-  if (AreAllSitesIsolatedForTesting()) {
-    EXPECT_EQ(child_frame1->GetLastCommittedOrigin(),
-              child_frame2->GetLastCommittedOrigin());
-  } else {
-    // TODO(https://crbug.com/585649): The correct test expectation below is
-    // EXPECT_EQ (the 2 origins should be the same).  To fix this we need to
-    // avoid blindly using the local parent frame as an `owner_document_` and
-    // make sure to inherit the origin from the initiator of the navigation.
-    // One way to fix this is to change DocumentLoader::CommitNavigation to
-    // leave `owner_document` set to nullptr if it is cross-origin from
-    // `requestor_origin_`.
-    EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
-              child_frame2->GetLastCommittedOrigin());
-  }
+  EXPECT_EQ(child_frame1->GetLastCommittedOrigin(),
+            child_frame2->GetLastCommittedOrigin());
   EXPECT_EQ(child_frame1->GetSiteInstance(), child_frame2->GetSiteInstance());
 }
 

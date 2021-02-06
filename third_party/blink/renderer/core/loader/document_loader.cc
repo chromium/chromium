@@ -1681,6 +1681,13 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     auto* owner_context = frame_->PagePopupOwner()->GetExecutionContext();
     origin = owner_context->GetSecurityOrigin()->IsolatedCopy();
   } else if (owner_document && owner_document->domWindow()) {
+    // Prefer taking `origin` from `owner_document` if one is available - this
+    // will correctly inherit/alias `SecurityOrigin::domain_` from the
+    // `owner_document` (note that the
+    // `SecurityOrigin::CreateWithReferenceOrigin` fallback below A) doesn't
+    // preserve `domain_` via `url::Origin` and B) doesn't alias the origin /
+    // `domain_` - changes in the "about:blank" document do not affect the
+    // initiator document).
     origin = owner_document->domWindow()->GetMutableSecurityOrigin();
   } else {
     // Otherwise, create an origin that propagates precursor information
@@ -1876,14 +1883,32 @@ void DocumentLoader::CommitNavigation() {
   // inherit an aliased security context.
   Document* owner_document = nullptr;
 
-  // TODO(dcheng): This differs from the behavior of both IE and Firefox: the
-  // origin is inherited from the document that loaded the URL.
+  // Calculate `owner_document` from which the committing navigation should
+  // inherit the cookie URL and inherit/alias the SecurityOrigin.
   if (Document::ShouldInheritSecurityOriginFromOwner(Url())) {
+    // Base `owner_frame` on parent-or-opener heuristic.
     Frame* owner_frame = frame_->Tree().Parent();
-    if (!owner_frame)
+    if (!owner_frame && !url_.IsAboutSrcdocURL())
       owner_frame = frame_->Loader().Opener();
-    if (auto* owner_local_frame = DynamicTo<LocalFrame>(owner_frame))
+
+    // `owner_document` has to come from a local frame and
+    // 1) for "about:srcdoc" has to be the parent
+    // 2) for other cases ("about:blank" and initial empty document) has to be
+    //    the initiator/requestor of the navigation - see:
+    //    https://html.spec.whatwg.org/multipage/browsers.html#determining-the-origin
+    // The parent-or-owner heuristic above might not find the actual initiator
+    // of the navigation in the 2nd case (e.g. see the
+    // SameSiteSiblingToAboutBlank_CrossSiteTop testcase).  To limit (but not
+    // eliminate :-/) incorrect cases we require that `owner_document`'s origin
+    // is same origin with `requestor_origin`.
+    auto* owner_local_frame = DynamicTo<LocalFrame>(owner_frame);
+    if (owner_local_frame &&
+        (url_.IsAboutSrcdocURL() || !requestor_origin_ ||
+         owner_local_frame->GetSecurityContext()
+             ->GetSecurityOrigin()
+             ->IsSameOriginWith(requestor_origin_.get()))) {
       owner_document = owner_local_frame->GetDocument();
+    }
   }
 
   LocalDOMWindow* previous_window = frame_->DomWindow();
