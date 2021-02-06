@@ -1669,28 +1669,23 @@ TEST_F(AccessibilityTest, PositionInInvalidMapLayout) {
   Node* map = GetElementById("map");
   ASSERT_NE(nullptr, map);
 
-  const AXObject* ax_map = GetAXObjectByElementId("map");
-  ASSERT_EQ(nullptr, ax_map);  // No AXObject is created for a <map>.
-
   // Create an invalid layout by appending a child to the <br>
   br->appendChild(map);
   GetDocument().UpdateStyleAndLayoutTree();
 
-  ax_map = GetAXObjectByElementId("map");
-  ASSERT_EQ(nullptr, ax_map);
-
-  const AXObject* ax_br = GetAXObjectByElementId("br");
-  ASSERT_NE(nullptr, ax_br);
+  const AXObject* ax_map = GetAXObjectByElementId("map");
+  ASSERT_NE(nullptr, ax_map);
+  ASSERT_EQ(ax::mojom::Role::kGenericContainer, ax_map->RoleValue());
 
   const auto ax_position_before =
-      AXPosition::CreateFirstPositionInObject(*ax_br);
+      AXPosition::CreatePositionBeforeObject(*ax_map);
   const auto position_before = ax_position_before.ToPositionWithAffinity();
-  EXPECT_EQ(br, position_before.AnchorNode());
+  EXPECT_EQ(nullptr, position_before.AnchorNode());
   EXPECT_EQ(0, position_before.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_after = AXPosition::CreateLastPositionInObject(*ax_br);
+  const auto ax_position_after = AXPosition::CreatePositionAfterObject(*ax_map);
   const auto position_after = ax_position_after.ToPositionWithAffinity();
-  EXPECT_EQ(br, position_after.AnchorNode());
+  EXPECT_EQ(nullptr, position_after.AnchorNode());
   EXPECT_EQ(0, position_after.GetPosition().OffsetInContainerNode());
 }
 

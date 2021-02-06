@@ -343,9 +343,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(AXID);
   void Remove(AXObject*);  // Calls more specific Remove methods as necessary.
 
-  // Given a <map> element, get the image currently associated with it, if any.
-  AXObject* GetAXImageForMap(HTMLMapElement& map);
-
  private:
   struct AXEventParams final : public GarbageCollected<AXEventParams> {
     AXEventParams(AXObject* target,
@@ -500,8 +497,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChangedWithCleanLayout(Node* node);
   void HandleAttributeChangedWithCleanLayout(const QualifiedName& attr_name,
                                              Element* element);
-  void HandleUseMapAttributeChangedWithCleanLayout(Element*);
-  void HandleNameAttributeChangedWithCleanLayout(Element*);
 
   bool DoesEventListenerImpactIgnoredState(
       const AtomicString& event_type) const;

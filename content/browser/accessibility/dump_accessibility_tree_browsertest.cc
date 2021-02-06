@@ -2840,26 +2840,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, HiddenTable) {
   RunRegressionTest(FILE_PATH_LITERAL("hidden-table.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMap) {
-  RunRegressionTest(FILE_PATH_LITERAL("reused-map.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapMoveImage) {
-  RunRegressionTest(FILE_PATH_LITERAL("reused-map-move-image.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapMoveImageToTop) {
-  RunRegressionTest(FILE_PATH_LITERAL("reused-map-move-image-to-top.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapChangeUsemap) {
-  RunRegressionTest(FILE_PATH_LITERAL("reused-map-change-usemap.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapChangeMapName) {
-  RunRegressionTest(FILE_PATH_LITERAL("reused-map-change-map-name.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        LanguageDetectionLangAttribute) {
   RunLanguageDetectionTest(FILE_PATH_LITERAL("lang-attribute.html"));

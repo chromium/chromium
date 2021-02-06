@@ -118,15 +118,6 @@
 
 namespace {
 
-blink::HTMLMapElement* GetMapForImage(blink::LayoutObject* layout_object) {
-  blink::LayoutImage* layout_image =
-      blink::DynamicTo<blink::LayoutImage>(layout_object);
-  if (!layout_image)
-    return nullptr;
-
-  return layout_image->ImageMap();
-}
-
 bool IsNeutralWithinTable(blink::AXObject* obj) {
   if (!obj)
     return false;
@@ -773,25 +764,12 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (!GetNode())
     return RoleFromLayoutObject(ax::mojom::blink::Role::kUnknown);
 
+  // |HTMLAnchorElement| sets isLink only when it has kHrefAttr.
   if (GetNode()->IsLink()) {
-    if (IsA<HTMLImageElement>(GetNode())) {
-      // If the image will have area children, it is a map, otherwise an image.
-      // Unlike most roles, this may be recomputed again in the lifetime of
-      // |this| object, as children are gained or removed.
-      HTMLMapElement* map_element = GetMapForImage(GetLayoutObject());
-      // Make sure this is the primary image for this <map>. For more details on
-      // multiple images referring to the same map, see AddImageMapChildren().
-      if (map_element && map_element->ImageElement() == GetElement())
-        return ax::mojom::blink::Role::kImageMap;
-      return ax::mojom::blink::Role::kImage;
-    }
-    if (IsA<HTMLImageElement>(GetNode())) {
-      return children_.size() ? ax::mojom::blink::Role::kImageMap
-                              : ax::mojom::blink::Role::kImage;
-    } else {  // <a href> or <svg:a xlink:href>
-      // |HTMLAnchorElement| sets isLink only when it has kHrefAttr.
+    if (IsA<HTMLImageElement>(GetNode()))
+      return ax::mojom::blink::Role::kImageMap;
+    else
       return ax::mojom::blink::Role::kLink;
-    }
   }
 
   if (IsA<HTMLPortalElement>(*GetNode())) {
@@ -3335,96 +3313,18 @@ void AXNodeObject::AddValidationMessageChild() {
 }
 
 void AXNodeObject::AddImageMapChildren() {
-  HTMLMapElement* map = GetMapForImage(GetLayoutObject());
+  LayoutBoxModelObject* css_box = GetLayoutBoxModelObject();
+  if (!css_box || !css_box->IsLayoutImage())
+    return;
+
+  HTMLMapElement* map = To<LayoutImage>(css_box)->ImageMap();
   if (!map)
     return;
 
-  HTMLImageElement* curr_image_element = DynamicTo<HTMLImageElement>(GetNode());
-  DCHECK(curr_image_element);
-  DCHECK(curr_image_element->IsLink());
-  String usemap = curr_image_element->FastGetAttribute(html_names::kUsemapAttr);
-  DCHECK(!usemap.IsEmpty());
-
-  // Even though several images can point to the same map via usemap, only
-  // use one reported via HTMLImageMapElement::ImageElement(), which is always
-  // the first image in the DOM that matches the #usemap, even if there are
-  // changes to the DOM. Only allow map children for the primary image.
-  // This avoids two problems:
-  // 1. Focusing the same area but in a different image scrolls the page to
-  //    the first image that uses that map. Safari does the same thing, and
-  //    Firefox does something similar (but seems to prefer the last image).
-  // 2. When an object has multiple parents, serialization errors occur.
-  // While allowed in the spec, using multiple images with the same map is not
-  // handled well in browsers (problem #1), and serializer support for multiple
-  // parents of the same area children is messy.
-
-  // Get the primary image, which is the first image using this map.
-  HTMLImageElement* primary_image_element = map->ImageElement();
-  DCHECK(primary_image_element);
-#if DCHECK_IS_ON()
-  // Prove that this is the same as getting the first image using this map.
-  String usemap_selector = "img[usemap=\"";
-  usemap_selector = usemap_selector + usemap + "\"]";
-  Element* first_image_with_this_usemap =
-      GetDocument()->QuerySelector(AtomicString(usemap_selector));
-  DCHECK(primary_image_element) << "No match for " << usemap_selector;
-  DCHECK_EQ(primary_image_element, first_image_with_this_usemap);
-#endif
-
-  // Is this the primary image for this map?
-  if (primary_image_element != curr_image_element) {
-    // No, the current image (for |this|) is not the primary image.
-    // Therefore, do not add area children to it.
-    AXObject* ax_primary_image =
-        AXObjectCache().GetOrCreate(primary_image_element);
-    if (ax_primary_image &&
-        ax_primary_image->ChildCountIncludingIgnored() == 0 &&
-        Traversal<HTMLAreaElement>::FirstWithin(*map)) {
-      // The primary image still needs to add the area children, and there's at
-      // least one to add. Its role also needs to change to kImageMap.
-      // The children change will force the role change as well.
-      AXObjectCache().ChildrenChanged(primary_image_element);
-      // The current image may change role from an image map to an image.
-      // Unlike many role changes, this can be done on the same object.
-      // There's no need to fire a role changed event or MarkDirty because the
-      // only time the role changes is when we're updating children anyway.
-      if (role_ == ax::mojom::blink::Role::kImageMap)
-        role_ = ax::mojom::blink::Role::kImage;
-    }
-    return;
-  }
-
-  HTMLAreaElement* first_area = Traversal<HTMLAreaElement>::FirstWithin(*map);
-  if (first_area) {
-    // If the <area> children were part of a different parent, notify that
-    // parent that its children have changed.
-    if (AXObject* ax_preexisting = AXObjectCache().Get(first_area)) {
-      if (AXObject* ax_previous_parent = ax_preexisting->CachedParentObject()) {
-        DCHECK_NE(ax_previous_parent, this);
-        DCHECK(ax_previous_parent->GetNode());
-        // Need to do this immediately so that DCHECKs for illegal reparenting
-        // don't fail down the line. It's safe from reentrancy on |this|,
-        // because the only children an HTML image can have are area children.
-        AXObjectCache().ChildrenChangedWithCleanLayout(
-            ax_previous_parent->GetNode(), ax_previous_parent);
-        ax_previous_parent->UpdateChildrenIfNecessary();
-      }
-    }
-
-    // Add the area children to |this|.
-    for (HTMLAreaElement& area :
-         Traversal<HTMLAreaElement>::DescendantsOf(*map)) {
-      // Add an <area> element for this child if it has a link and is visible.
-      AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(&area, this));
-    }
-
-    // The current image may change role from an image to an image map.
-    // Unlike many role changes, this can be done on the same object.
-    if (role_ == ax::mojom::blink::Role::kImage) {
-      // There's no need to fire a role changed event or MarkDirty because the
-      // only time the role changes is when we're updating children anyway.
-      role_ = ax::mojom::blink::Role::kImageMap;
-    }
+  for (HTMLAreaElement& area :
+       Traversal<HTMLAreaElement>::DescendantsOf(*map)) {
+    // Add an <area> element for this child if it has a link and is visible.
+    AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(&area, this));
   }
 }
 
@@ -3485,7 +3385,21 @@ void AXNodeObject::AddOwnedChildren() {
     AddChildAndCheckIncluded(owned_child, true);
 }
 
-void AXNodeObject::AddChildrenImpl() {
+void AXNodeObject::AddChildren() {
+#if DCHECK_IS_ON()
+  DCHECK(!IsDetached());
+  DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
+  base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
+  // If the need to add more children in addition to existing children arises,
+  // childrenChanged should have been called, which leads to children_dirty_
+  // being true, then UpdateChildrenIfNecessary() clears the children before
+  // calling AddChildren().
+  DCHECK_EQ(children_.size(), 0U)
+      << "\nParent still has " << children_.size() << " children before adding:"
+      << "\nParent is " << ToString(true, true) << "\nFirst child is "
+      << children_[0]->ToString(true, true);
+#endif
+// TODO(aleventhal) Nothing should become detached in the while adding children.
 #define CHECK_ATTACHED()                                                  \
   if (IsDetached()) {                                                     \
     NOTREACHED() << "Detached adding children: " << ToString(true, true); \
@@ -3509,12 +3423,6 @@ void AXNodeObject::AddChildrenImpl() {
     return;
   }
 
-  if (IsA<HTMLImageElement>(GetNode())) {
-    AddImageMapChildren();
-    CHECK_ATTACHED();
-    return;
-  }
-
   // If validation message exists, always make it the first child of the root,
   // to enable easy checking of whether it's a known child of the root.
   if (IsWebArea())
@@ -3532,29 +3440,14 @@ void AXNodeObject::AddChildrenImpl() {
   AddPopupChildren();
   CHECK_ATTACHED();
 
+  AddImageMapChildren();
+  CHECK_ATTACHED();
+
   AddAccessibleNodeChildren();
   CHECK_ATTACHED();
 
   AddOwnedChildren();
   CHECK_ATTACHED();
-}
-
-void AXNodeObject::AddChildren() {
-#if DCHECK_IS_ON()
-  DCHECK(!IsDetached());
-  DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
-  base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
-  // If the need to add more children in addition to existing children arises,
-  // childrenChanged should have been called, which leads to children_dirty_
-  // being true, then UpdateChildrenIfNecessary() clears the children before
-  // calling AddChildren().
-  DCHECK_EQ(children_.size(), 0U)
-      << "\nParent still has " << children_.size() << " children before adding:"
-      << "\nParent is " << ToString(true, true) << "\nFirst child is "
-      << children_[0]->ToString(true, true);
-#endif
-
-  AddChildrenImpl();
 
 #if DCHECK_IS_ON()
   // All added children must be attached.
@@ -3576,7 +3469,8 @@ void AXNodeObject::AddNodeChild(Node* node) {
 
   // <area> children should only be added via AddImageMapChildren(), as the
   // children of an <image usemap>, and never alone or as children of a <map>.
-  DCHECK(!IsA<HTMLAreaElement>(node));
+  if (child_obj->IsImageMapLink())
+    return;
 
   AddChild(child_obj);
 }
@@ -3588,14 +3482,6 @@ void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
   // These must only be added via an overridden AddChildren() on the parent.
   if (child->IsMenuListOption() || child->IsMenuListPopup())
     return;
-
-#if DCHECK_IS_ON()
-  if (IsA<HTMLImageElement>(GetNode())) {
-    DCHECK(IsA<HTMLAreaElement>(child->GetNode()))
-        << "Image elements can only have area children, had "
-        << child->ToString(true, true);
-  }
-#endif
 
   unsigned int index = children_.size();
   InsertChild(child, index, is_from_aria_owns);
@@ -3694,7 +3580,8 @@ bool AXNodeObject::CanHaveChildren() const {
   if (!GetNode() && !IsAXLayoutObject())
     return false;
 
-  DCHECK(!IsA<HTMLMapElement>(GetNode()));
+  if (GetNode() && IsA<HTMLMapElement>(GetNode()))
+    return false;  // Does not have a role, so check here
 
   // Placeholder gets exposed as an attribute on the input accessibility node,
   // so there's no need to add its text children. Placeholder text is a separate
@@ -3707,6 +3594,7 @@ bool AXNodeObject::CanHaveChildren() const {
 
   switch (native_role_) {
     case ax::mojom::blink::Role::kCheckBox:
+    case ax::mojom::blink::Role::kImage:
     case ax::mojom::blink::Role::kListBoxOption:
     case ax::mojom::blink::Role::kMenuListOption:
     case ax::mojom::blink::Role::kMenuItem:
@@ -3727,9 +3615,6 @@ bool AXNodeObject::CanHaveChildren() const {
       return true;
     case ax::mojom::blink::Role::kStaticText:
       return AXObjectCache().InlineTextBoxAccessibilityEnabled();
-    case ax::mojom::blink::Role::kImage:
-      // Can turn into an image map if gains children later.
-      return GetNode() && GetNode()->IsLink();
     default:
       break;
   }

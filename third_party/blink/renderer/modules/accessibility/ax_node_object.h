@@ -294,7 +294,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool SelectionShouldFollowFocus() const;
   virtual bool IsTabItemSelected() const;
 
-  void AddChildrenImpl();
   void AddNodeChildren();
   void AddLayoutChildren();
   void AddInlineTextBoxChildren(bool force = false);
