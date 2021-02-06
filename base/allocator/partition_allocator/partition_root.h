@@ -95,7 +95,7 @@ enum PartitionPurgeFlags {
 
 // Options struct used to configure PartitionRoot and PartitionAllocator.
 struct PartitionOptions {
-  enum class Alignment {
+  enum class Alignment : uint8_t {
     // By default all allocations will be aligned to `base::kAlignment`,
     // likely to be 8B or 16B depending on platforms and toolchains.
     kRegular,
@@ -109,17 +109,17 @@ struct PartitionOptions {
     kAlignedAlloc,
   };
 
-  enum class ThreadCache {
+  enum class ThreadCache : uint8_t {
     kDisabled,
     kEnabled,
   };
 
-  enum class RefCount {
+  enum class RefCount : uint8_t {
     kDisabled,
     kEnabled,
   };
 
-  enum class Quarantine {
+  enum class Quarantine : uint8_t {
     kDisallowed,
     kAllowed,
   };
