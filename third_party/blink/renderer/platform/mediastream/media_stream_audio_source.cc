@@ -28,11 +28,6 @@ void SendLogMessage(const std::string& message) {
 
 }  // namespace
 
-const int kMaxAudioLatencyMs = 5000;
-static_assert(std::numeric_limits<int>::max() / media::limits::kMaxSampleRate >
-                  kMaxAudioLatencyMs,
-              "The maxium audio latency can cause overflow.");
-
 // TODO(https://crbug.com/638081):
 // Like in ProcessedLocalAudioSource::GetBufferSize(), we should re-evaluate
 // whether Android needs special treatment here.
@@ -45,7 +40,7 @@ const int kFallbackAudioLatencyMs =
 
 static_assert(kFallbackAudioLatencyMs >= 0,
               "Audio latency has to be non-negative.");
-static_assert(kFallbackAudioLatencyMs <= kMaxAudioLatencyMs,
+static_assert(kFallbackAudioLatencyMs <= 5000,
               "Fallback audio latency exceeds maximum.");
 
 MediaStreamAudioSource::MediaStreamAudioSource(

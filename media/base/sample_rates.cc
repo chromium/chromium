@@ -50,6 +50,9 @@ bool ToAudioSampleRate(int sample_rate, AudioSampleRate* asr) {
     case 384000:
       *asr = k384000Hz;
       return true;
+    case 768000:
+      *asr = k768000Hz;
+      return true;
   }
   return false;
 }

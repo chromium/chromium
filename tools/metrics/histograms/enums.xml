@@ -4383,6 +4383,7 @@ others/histograms.xml -->
   <int value="10" label="192 kHz"/>
   <int value="11" label="24 kHz"/>
   <int value="12" label="384 kHz"/>
+  <int value="13" label="768 kHz"/>
 </enum>
 
 <enum name="AudioServiceProcessTerminationStatus">
