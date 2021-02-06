@@ -83,6 +83,7 @@ constexpr int kExpandViewPaddingBottom = 8;
 constexpr int kShortSpacing = 20;
 
 constexpr SkColor kShareTargetTitleColor = gfx::kGoogleGrey700;
+constexpr SkColor kShareTitleColor = gfx::kGoogleGrey900;
 
 constexpr auto kAnimateDelay = base::TimeDelta::FromMilliseconds(100);
 constexpr auto kQuickAnimateTime = base::TimeDelta::FromMilliseconds(100);
@@ -156,10 +157,31 @@ void SharesheetBubbleView::ShowBubble(
       /* inside_border_insets */ gfx::Insets(),
       /* between_child_spacing */ 0, /* collapse_margins_spacing */ true));
 
-  // Adds view for content previews including the title, text descriptor
-  // and image preview.
-  main_view_->AddChildView(std::make_unique<SharesheetContentPreviews>(
-      intent_->Clone(), delegate_->GetProfile()));
+  std::unique_ptr<views::Label> share_title_view =
+      std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL),
+          ash::CONTEXT_SHARESHEET_BUBBLE_TITLE, ash::STYLE_SHARESHEET);
+
+  share_title_view->SetLineHeight(SharesheetBubbleView::kTitleLineHeight);
+  share_title_view->SetEnabledColor(kShareTitleColor);
+  share_title_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  if (targets.empty() ||
+      !(base::FeatureList::IsEnabled(features::kSharesheetContentPreviews))) {
+    // Only the share title is displayed if there are no targets or if the
+    // content previews flag is off.
+    share_title_view->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets(SharesheetBubbleView::kSpacing, kSpacing, 0,
+                    SharesheetBubbleView::kSpacing));
+    main_view_->AddChildView(std::move(share_title_view));
+  } else {
+    // Adds view for content previews including the title, text descriptor
+    // and image preview.
+    main_view_->AddChildView(std::make_unique<SharesheetContentPreviews>(
+        intent_->Clone(), delegate_->GetProfile(),
+        std::move(share_title_view)));
+  }
 
   if (targets.empty()) {
     auto* image =

@@ -11,23 +11,29 @@
 
 class Profile;
 
+namespace views {
+class ImageView;
+class Label;
+}  // namespace views
+
 // The SharesheetContentPreviews class is the view for the image
 // previews feature.
 class SharesheetContentPreviews : public views::View {
  public:
   explicit SharesheetContentPreviews(apps::mojom::IntentPtr intent,
-                                     Profile* profile);
+                                     Profile* profile,
+                                     std::unique_ptr<views::Label> share_title);
   ~SharesheetContentPreviews() override;
   SharesheetContentPreviews(const SharesheetContentPreviews&) = delete;
   SharesheetContentPreviews& operator=(const SharesheetContentPreviews&) =
       delete;
 
  private:
-  // Adds the share title to the view.
-  void ShowShareTitle();
+  // Adds the view for image previews and sets the required properties.
+  void InitaliseImageView();
 
-  // Adds the title preview to the view.
-  void ShowFileTitlePreview();
+  // Adds the view for text preview.
+  void ShowTextPreview();
 
   // Invokes the image decoder to run tasks
   // which will decode the image preview.
@@ -36,10 +42,13 @@ class SharesheetContentPreviews : public views::View {
   // Adds the image preview to the view.
   void OnImageDecoded(gfx::ImageSkia image);
 
-  // Reference to the sharesheet profile.
+  // Contains the share title and text preview views.
+  views::View* content_view_ = nullptr;
+  views::ImageView* image_preview_ = nullptr;
+
   Profile* profile_;
   apps::mojom::IntentPtr intent_;
-  SharesheetImageDecode decoder_;
+  SharesheetImageDecoder image_decoder_;
 
   base::WeakPtrFactory<SharesheetContentPreviews> weak_ptr_factory_{this};
 };

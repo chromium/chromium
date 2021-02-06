@@ -31,12 +31,12 @@ constexpr base::TaskTraits kBlockingTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
-SharesheetImageDecode::SharesheetImageDecode() {}
-SharesheetImageDecode::~SharesheetImageDecode() = default;
+SharesheetImageDecoder::SharesheetImageDecoder() {}
+SharesheetImageDecoder::~SharesheetImageDecoder() = default;
 
-void SharesheetImageDecode::DecodeImage(apps::mojom::IntentPtr intent,
-                                        Profile* profile,
-                                        DecodeCallback callback) {
+void SharesheetImageDecoder::DecodeImage(apps::mojom::IntentPtr intent,
+                                         Profile* profile,
+                                         DecodeCallback callback) {
   callback_ = std::move(callback);
 
   base::FilePath file_paths;
@@ -50,32 +50,32 @@ void SharesheetImageDecode::DecodeImage(apps::mojom::IntentPtr intent,
   file_paths = fs_url.path();
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SharesheetImageDecode::URLToEncodedBytes,
+      FROM_HERE, base::BindOnce(&SharesheetImageDecoder::URLToEncodedBytes,
                                 weak_ptr_factory_.GetWeakPtr(), file_paths));
 }
 
-void SharesheetImageDecode::URLToEncodedBytes(
+void SharesheetImageDecoder::URLToEncodedBytes(
     const base::FilePath& image_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kBlockingTaskTraits,
       base::BindOnce(&ReadFileToString, image_path),
-      base::BindOnce(&SharesheetImageDecode::DecodeURLForPreview,
+      base::BindOnce(&SharesheetImageDecoder::DecodeURLForPreview,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SharesheetImageDecode::DecodeURLForPreview(std::string image_data) {
+void SharesheetImageDecoder::DecodeURLForPreview(std::string image_data) {
   // Decode the image in sandboxed process because decode image_data comes from
   // external storage.
   data_decoder::DecodeImageIsolated(
       std::vector<uint8_t>(image_data.begin(), image_data.end()),
       data_decoder::mojom::ImageCodec::DEFAULT, false,
       data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
-      base::BindOnce(&SharesheetImageDecode::BitMapToImage,
+      base::BindOnce(&SharesheetImageDecoder::BitMapToImage,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SharesheetImageDecode::BitMapToImage(const SkBitmap& decoded_image) {
+void SharesheetImageDecoder::BitMapToImage(const SkBitmap& decoded_image) {
   // Once decoding image process has completed, invoke the specified
   // callback.
   std::move(callback_).Run(

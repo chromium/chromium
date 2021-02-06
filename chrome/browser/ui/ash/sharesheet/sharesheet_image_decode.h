@@ -10,14 +10,14 @@
 
 class Profile;
 
-class SharesheetImageDecode {
+class SharesheetImageDecoder {
  public:
   using DecodeCallback = base::OnceCallback<void(gfx::ImageSkia)>;
 
-  SharesheetImageDecode();
-  ~SharesheetImageDecode();
-  SharesheetImageDecode(const SharesheetImageDecode&) = delete;
-  SharesheetImageDecode& operator=(const SharesheetImageDecode&) = delete;
+  SharesheetImageDecoder();
+  ~SharesheetImageDecoder();
+  SharesheetImageDecoder(const SharesheetImageDecoder&) = delete;
+  SharesheetImageDecoder& operator=(const SharesheetImageDecoder&) = delete;
 
   void DecodeImage(apps::mojom::IntentPtr intent,
                    Profile* profile,
@@ -35,7 +35,7 @@ class SharesheetImageDecode {
   void BitMapToImage(const SkBitmap& decoded_image);
 
   DecodeCallback callback_;
-  base::WeakPtrFactory<SharesheetImageDecode> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SharesheetImageDecoder> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_IMAGE_DECODE_H_
