@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +26,7 @@ intptr_t TestTrapFuncTwo(const arch_seccomp_data& data, void* aux) {
 TEST(TestTrapRegistry, TrapIDs) {
   struct {
     TrapRegistry::TrapFnc fnc;
-    const void* aux;
+    CheckedPtr<const void> aux;
   } funcs[] = {
       {TestTrapFuncOne, nullptr},
       {TestTrapFuncTwo, nullptr},

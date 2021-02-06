@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -171,8 +172,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
         int32_t player_id) override;
 
    private:
-    RenderFrameHost* render_frame_host_;
-    MediaWebContentsObserver* media_web_contents_observer_;
+    CheckedPtr<RenderFrameHost> render_frame_host_;
+    CheckedPtr<MediaWebContentsObserver> media_web_contents_observer_;
     mojo::ReceiverSet<media::mojom::MediaPlayerHost> receivers_;
   };
 
@@ -201,7 +202,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
 
    private:
     MediaPlayerId media_player_id_;
-    MediaWebContentsObserver* media_web_contents_observer_;
+    CheckedPtr<MediaWebContentsObserver> media_web_contents_observer_;
     mojo::Receiver<media::mojom::MediaPlayerObserver>
         media_player_observer_receiver_{this};
   };

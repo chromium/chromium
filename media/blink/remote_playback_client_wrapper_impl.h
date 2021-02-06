@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "media/blink/media_blink_export.h"
 #include "media/renderers/remote_playback_client_wrapper.h"
 
@@ -28,7 +29,7 @@ class MEDIA_BLINK_EXPORT RemotePlaybackClientWrapperImpl
   std::string GetActivePresentationId() override;
 
  private:
-  blink::WebRemotePlaybackClient* remote_playback_client_;
+  CheckedPtr<blink::WebRemotePlaybackClient> remote_playback_client_;
 };
 
 }  // namespace media

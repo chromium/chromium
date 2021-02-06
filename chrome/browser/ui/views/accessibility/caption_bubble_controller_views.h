@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/caption_bubble_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -76,12 +77,12 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
   bool IsWidgetVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
 
-  CaptionBubble* caption_bubble_;
-  views::Widget* caption_widget_;
-  Browser* browser_;
+  CheckedPtr<CaptionBubble> caption_bubble_;
+  CheckedPtr<views::Widget> caption_widget_;
+  CheckedPtr<Browser> browser_;
 
   // The web contents corresponding to the active tab.
-  content::WebContents* active_contents_;
+  CheckedPtr<content::WebContents> active_contents_;
 
   // A map of web contents and their corresponding CaptionBubbleModel. New
   // entries are added to this map when a previously un-activated web contents

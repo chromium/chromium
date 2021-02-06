@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -50,7 +51,7 @@ class ObservableWebView : public WebView {
   void ResetDelegate();
 
  private:
-  ui::WebDialogDelegate* delegate_;
+  CheckedPtr<ui::WebDialogDelegate> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ObservableWebView);
 };
@@ -179,9 +180,9 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   // and plumb all the calls through to |delegate_|, is a lot of code overhead
   // to support having this view know about dialog closure. There is probably a
   // lighter-weight way to achieve that.
-  ui::WebDialogDelegate* delegate_;
+  CheckedPtr<ui::WebDialogDelegate> delegate_;
 
-  ObservableWebView* web_view_;
+  CheckedPtr<ObservableWebView> web_view_;
 
   // Whether user is attempting to close the dialog and we are processing
   // beforeunload event.

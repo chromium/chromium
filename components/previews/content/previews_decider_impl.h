@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -180,7 +181,7 @@ class PreviewsDeciderImpl : public PreviewsDecider,
       std::vector<PreviewsEligibilityReason>* passed_reasons) const;
 
   // The UI service object owns |this| and exists as long as |this| does.
-  PreviewsUIService* previews_ui_service_;
+  CheckedPtr<PreviewsUIService> previews_ui_service_;
 
   std::unique_ptr<PreviewsBlockList> previews_block_list_;
 
@@ -199,7 +200,7 @@ class PreviewsDeciderImpl : public PreviewsDecider,
   net::EffectiveConnectionType effective_connection_type_ =
       net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   base::Optional<base::Time> recent_preview_reload_time_;
 

@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "net/filter/mock_source_stream.h"
@@ -113,7 +114,7 @@ class SourceStreamToDataPipeTest
   void FinishedReading(int result) { callback_result_ = result; }
 
   base::test::TaskEnvironment task_environment_;
-  net::MockSourceStream* source_;
+  CheckedPtr<net::MockSourceStream> source_;
   std::unique_ptr<SourceStreamToDataPipe> adapter_;
   mojo::ScopedDataPipeConsumerHandle consumer_end_;
   base::Optional<int> callback_result_;

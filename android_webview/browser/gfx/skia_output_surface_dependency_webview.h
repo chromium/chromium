@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_SKIA_OUTPUT_SURFACE_DEPENDENCY_WEBVIEW_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_SKIA_OUTPUT_SURFACE_DEPENDENCY_WEBVIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -57,12 +58,12 @@ class SkiaOutputSurfaceDependencyWebView
   bool NeedsSupportForExternalStencil() override;
 
  private:
-  gl::GLSurface* const gl_surface_;
-  AwVulkanContextProvider* vulkan_context_provider_;
-  TaskQueueWebView* task_queue_;
-  GpuServiceWebView* gpu_service_;
+  const CheckedPtr<gl::GLSurface> gl_surface_;
+  CheckedPtr<AwVulkanContextProvider> vulkan_context_provider_;
+  CheckedPtr<TaskQueueWebView> task_queue_;
+  CheckedPtr<GpuServiceWebView> gpu_service_;
   gpu::GpuDriverBugWorkarounds workarounds_;
-  gpu::SharedContextState* const shared_context_state_;
+  const CheckedPtr<gpu::SharedContextState> shared_context_state_;
 
   DISALLOW_COPY_AND_ASSIGN(SkiaOutputSurfaceDependencyWebView);
 };

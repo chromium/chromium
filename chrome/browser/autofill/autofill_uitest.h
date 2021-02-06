@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -104,7 +105,7 @@ class AutofillUiTest : public InProcessBrowserTest,
   // WebContentsObserver override:
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  content::RenderFrameHost* current_main_rfh_ = nullptr;
+  CheckedPtr<content::RenderFrameHost> current_main_rfh_ = nullptr;
   AutofillManagerTestDelegateImpl test_delegate_;
 
   // KeyPressEventCallback that serves as a sink to ensure that every key press

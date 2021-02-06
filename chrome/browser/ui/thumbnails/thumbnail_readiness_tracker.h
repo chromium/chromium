@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_READINESS_TRACKER_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -51,7 +52,7 @@ class ThumbnailReadinessTracker : public content::WebContentsObserver {
 
   // The last navigation that reset the thumbnail. When this navigation
   // finishes, the page is considered ready for capture.
-  content::NavigationHandle* pending_navigation_ = nullptr;
+  CheckedPtr<content::NavigationHandle> pending_navigation_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_READINESS_TRACKER_H_

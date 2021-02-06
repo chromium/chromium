@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
 
@@ -80,11 +81,11 @@ class FeedNetworkingHost {
 
   base::flat_set<std::unique_ptr<NetworkFetch>, base::UniquePtrComparator>
       pending_requests_;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
   const std::string api_key_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
-  const base::TickClock* tick_clock_;
-  PrefService* pref_service_;
+  CheckedPtr<const base::TickClock> tick_clock_;
+  CheckedPtr<PrefService> pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(FeedNetworkingHost);
 };

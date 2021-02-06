@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_WEBRTC_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -52,7 +53,7 @@ class CameraPanTiltZoomPermissionContext
   // Otherwise returns false.
   bool HasAvailableCameraPtzDevices() const;
 
-  HostContentSettingsMap* host_content_settings_map_;
+  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
 
   bool updating_camera_ptz_permission_ = false;
   bool updating_mediastream_camera_permission_ = false;

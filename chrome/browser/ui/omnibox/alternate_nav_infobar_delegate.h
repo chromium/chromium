@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -55,7 +56,7 @@ class AlternateNavInfoBarDelegate : public infobars::InfoBarDelegate {
   static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<AlternateNavInfoBarDelegate> delegate);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   const base::string16 text_;
 
   // The autocomplete match to be used when deleting the corresponding shortcut.

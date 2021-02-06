@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
@@ -45,7 +46,7 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
   void OnPrefChange();
   void OnConfigurationSet(bool result, size_t num_cores_disabled);
 
-  DebugDaemonClient* debug_daemon_client_ = nullptr;
+  CheckedPtr<DebugDaemonClient> debug_daemon_client_ = nullptr;
   PrefChangeRegistrar observer_;
   bool debug_daemon_ready_ = false;
   base::Optional<std::pair<bool, size_t>> last_reply_;

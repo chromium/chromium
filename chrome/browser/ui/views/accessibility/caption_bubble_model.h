@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace captions {
@@ -83,7 +84,7 @@ class CaptionBubbleModel : public content::WebContentsObserver {
   bool has_error_ = false;
 
   // The CaptionBubble observing changes to this model.
-  CaptionBubble* observer_ = nullptr;
+  CheckedPtr<CaptionBubble> observer_ = nullptr;
 };
 }  // namespace captions
 

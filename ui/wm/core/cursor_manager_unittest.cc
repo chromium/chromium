@@ -5,6 +5,7 @@
 #include "ui/wm/core/cursor_manager.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -49,9 +50,9 @@ class CursorManagerTest : public aura::test::AuraTestBase {
  protected:
   CursorManagerTest()
       : delegate_(new TestingCursorManager),
-        cursor_manager_(base::WrapUnique(delegate_)) {}
+        cursor_manager_(base::WrapUnique(delegate_.get())) {}
 
-  TestingCursorManager* delegate_;
+  CheckedPtr<TestingCursorManager> delegate_;
   wm::CursorManager cursor_manager_;
 };
 

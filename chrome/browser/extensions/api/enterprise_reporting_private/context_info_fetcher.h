@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 
@@ -50,7 +51,7 @@ class ContextInfoFetcher {
   std::string GetBrowserVersion();
 
   // |connectors_service| is used to obtain the value of each Connector policy.
-  enterprise_connectors::ConnectorsService* connectors_service_;
+  CheckedPtr<enterprise_connectors::ConnectorsService> connectors_service_;
 };
 
 }  // namespace enterprise_reporting

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 
 namespace gpu {
@@ -88,8 +89,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandBuffer {
   const bool use_protected_memory_;
   bool recording_ = false;
   RecordType record_type_ = RECORD_TYPE_EMPTY;
-  VulkanDeviceQueue* device_queue_;
-  VulkanCommandPool* command_pool_;
+  CheckedPtr<VulkanDeviceQueue> device_queue_;
+  CheckedPtr<VulkanCommandPool> command_pool_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
   VulkanFenceHelper::FenceHandle submission_fence_;
 

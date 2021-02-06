@@ -8,6 +8,8 @@
 // We only want to use ViewEventTestBase in test targets which properly
 // isolate each test case by running each test in a separate process.
 // This way if a test hangs the test launcher can reliably terminate it.
+#include "base/memory/checked_ptr.h"
+
 #if !defined(HAS_OUT_OF_PROC_TEST_RUNNER)
 #error Can't reliably terminate hanging event tests without OOP test runner.
 #endif
@@ -131,7 +133,7 @@ class ViewEventTestBase : public ChromeViewsTestBase {
   std::unique_ptr<base::Thread> drag_event_thread_;
 
   base::RunLoop run_loop_;
-  views::Widget* window_ = nullptr;
+  CheckedPtr<views::Widget> window_ = nullptr;
 };
 
 // Convenience macro for defining a ViewEventTestBase. See class description

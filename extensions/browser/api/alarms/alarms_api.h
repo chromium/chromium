@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/extension_function.h"
 
 namespace base {
@@ -33,7 +34,7 @@ class AlarmsCreateFunction : public ExtensionFunction {
  private:
   void Callback();
 
-  base::Clock* const clock_;
+  const CheckedPtr<base::Clock> clock_;
 };
 
 class AlarmsGetFunction : public ExtensionFunction {

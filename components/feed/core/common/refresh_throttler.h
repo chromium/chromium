@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/feed/core/common/user_classifier.h"
 
 class PrefService;
@@ -48,10 +49,10 @@ class RefreshThrottler {
   bool HasDay() const;
 
   // Provides durable storage.
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   // Used to access current time, injected for testing.
-  const base::Clock* clock_;
+  CheckedPtr<const base::Clock> clock_;
 
   // The name used by this throttler, based off UserClass, which will be used as
   // a suffix when constructing histogram or finch param names.
@@ -63,8 +64,8 @@ class RefreshThrottler {
   int max_requests_per_day_;
 
   // The histograms for reporting the requests of the given |type_|.
-  base::HistogramBase* histogram_request_status_;
-  base::HistogramBase* histogram_per_day_;
+  CheckedPtr<base::HistogramBase> histogram_request_status_;
+  CheckedPtr<base::HistogramBase> histogram_per_day_;
 
   DISALLOW_COPY_AND_ASSIGN(RefreshThrottler);
 };

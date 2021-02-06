@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -310,7 +311,7 @@ class AddToHomescreenDataFetcherTest
     }
   };
 
-  TestInstallableManager* installable_manager_;
+  CheckedPtr<TestInstallableManager> installable_manager_;
   NullLargeFaviconProvider null_large_favicon_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(AddToHomescreenDataFetcherTest);

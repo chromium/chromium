@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PROFILES_PROFILE_IO_DATA_HANDLE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace content {
 class ResourceContext;
@@ -27,9 +28,9 @@ class ProfileIODataHandle {
 
   // The getters will be invalidated on the IO thread before
   // ProfileIOData instance is deleted.
-  ProfileIOData* const io_data_;
+  const CheckedPtr<ProfileIOData> io_data_;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   mutable bool initialized_;
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/logging/raw_event_subscriber.h"
@@ -69,7 +70,7 @@ class LogEventDispatcher {
     DISALLOW_COPY_AND_ASSIGN(Impl);
   };
 
-  CastEnvironment* const env_;  // Owner of this instance.
+  const CheckedPtr<CastEnvironment> env_;  // Owner of this instance.
   const scoped_refptr<Impl> impl_;
 
   DISALLOW_COPY_AND_ASSIGN(LogEventDispatcher);

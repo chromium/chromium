@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -92,7 +93,7 @@ class SocketWatcherFactory : public SocketPerformanceWatcherFactory {
   // notification should be notified using |updated_rtt_observation_callback_|.
   ShouldNotifyRTTCallback should_notify_rtt_callback_;
 
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   DISALLOW_COPY_AND_ASSIGN(SocketWatcherFactory);
 };

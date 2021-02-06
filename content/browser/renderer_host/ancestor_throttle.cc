@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/ancestor_throttle.h"
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -147,8 +148,8 @@ class FrameAncestorCSPContext : public network::CSPContext {
         is_redirect, directive, blocked_url, source_location);
   }
 
-  network::CSPContext* const csp_context_;
-  RenderFrameHostImpl* ancestor_of_navigated_frame_;
+  const CheckedPtr<network::CSPContext> csp_context_;
+  CheckedPtr<RenderFrameHostImpl> ancestor_of_navigated_frame_;
 };
 
 // Returns the parent, including outer delegates in the case of portals.

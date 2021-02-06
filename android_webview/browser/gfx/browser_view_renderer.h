@@ -18,6 +18,7 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/trace_event/trace_event.h"
@@ -212,13 +213,13 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // view renderer's state.
   std::string ToString() const;
 
-  BrowserViewRendererClient* const client_;
+  const CheckedPtr<BrowserViewRendererClient> client_;
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  CompositorFrameConsumer* current_compositor_frame_consumer_;
+  CheckedPtr<CompositorFrameConsumer> current_compositor_frame_consumer_;
   std::unique_ptr<RootFrameSinkProxy> root_frame_sink_proxy_;
 
   // The current compositor that's owned by the current RVH.
-  content::SynchronousCompositor* compositor_;
+  CheckedPtr<content::SynchronousCompositor> compositor_;
   // The id of the most recent RVH according to RVHChanged.
   viz::FrameSinkId frame_sink_id_;
   // A map from compositor's per-WebView unique ID to the compositor's raw

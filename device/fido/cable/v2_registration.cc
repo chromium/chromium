@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/v2_registration.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/cbor/reader.h"
@@ -188,8 +189,8 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
 
   base::RepeatingCallback<void(std::unique_ptr<Registration::Event>)>
       event_callback_;
-  instance_id::InstanceIDDriver* const instance_id_driver_;
-  instance_id::InstanceID* const instance_id_;
+  const CheckedPtr<instance_id::InstanceIDDriver> instance_id_driver_;
+  const CheckedPtr<instance_id::InstanceID> instance_id_;
   base::Optional<std::string> registration_token_;
 
   SEQUENCE_CHECKER(sequence_checker_);

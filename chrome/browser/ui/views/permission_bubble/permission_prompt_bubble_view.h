@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_BUBBLE_VIEW_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "components/permissions/permission_prompt.h"
@@ -74,8 +75,8 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   // option.
   bool GetShowAllowThisTimeButton() const;
 
-  Browser* const browser_;
-  permissions::PermissionPrompt::Delegate* const delegate_;
+  const CheckedPtr<Browser> browser_;
+  const CheckedPtr<permissions::PermissionPrompt::Delegate> delegate_;
 
   base::TimeTicks permission_requested_time_;
 };

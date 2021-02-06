@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -897,8 +898,8 @@ class RequestSocketCallback : public TestCompletionCallbackBase {
 
   const ClientSocketPool::GroupId group_id_;
   scoped_refptr<ClientSocketPool::SocketParams> socket_params_;
-  ClientSocketHandle* const handle_;
-  TransportClientSocketPool* const pool_;
+  const CheckedPtr<ClientSocketHandle> handle_;
+  const CheckedPtr<TransportClientSocketPool> pool_;
   bool within_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(RequestSocketCallback);

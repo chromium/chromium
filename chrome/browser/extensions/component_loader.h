@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -218,9 +219,9 @@ class ComponentLoader {
   void FinishLoadSpeechSynthesisExtension(const char* extension_id);
 #endif
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
-  ExtensionSystem* extension_system_;
+  CheckedPtr<ExtensionSystem> extension_system_;
 
   // List of registered component extensions (see Manifest::Location).
   typedef std::vector<ComponentExtensionInfo> RegisteredComponentExtensions;

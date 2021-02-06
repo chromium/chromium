@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_INTERVENTIONS_INTERVENTION_INFOBAR_DELEGATE_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
 
 class InterventionDelegate;
@@ -32,7 +33,7 @@ class InterventionInfoBarDelegate : public infobars::InfoBarDelegate {
   const infobars::InfoBarDelegate::InfoBarIdentifier identifier_;
 
   // Weak pointer, the delegate is guaranteed to outlive this object.
-  InterventionDelegate* intervention_delegate_;
+  CheckedPtr<InterventionDelegate> intervention_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(InterventionInfoBarDelegate);
 };

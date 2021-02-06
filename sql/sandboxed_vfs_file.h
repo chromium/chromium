@@ -7,6 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql {
@@ -75,7 +76,7 @@ class SandboxedVfsFile {
   // One of the SQLite locking mode constants.
   int sqlite_lock_mode_;
   // The SandboxedVfs that created this instance.
-  SandboxedVfs* const vfs_;
+  const CheckedPtr<SandboxedVfs> vfs_;
   // Used to identify the file in IPCs to the browser process.
   const base::FilePath file_path_;
 };

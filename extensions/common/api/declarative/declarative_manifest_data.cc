@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,7 +35,7 @@ class ErrorBuilder {
   }
 
  private:
-  base::string16* const error_;
+  const CheckedPtr<base::string16> error_;
   DISALLOW_COPY_AND_ASSIGN(ErrorBuilder);
 };
 

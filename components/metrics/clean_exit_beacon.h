@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_CLEAN_EXIT_BEACON_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 
@@ -46,7 +47,7 @@ class CleanExitBeacon {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  PrefService* const local_state_;
+  const CheckedPtr<PrefService> local_state_;
   const bool initial_value_;
 
   // This is the value of the last live timestamp from local state at the

@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -66,7 +67,7 @@ class ManifestManagerHost
   // blink::mojom::ManifestUrlChangeObserver:
   void ManifestUrlChanged(const base::Optional<GURL>& manifest_url) override;
 
-  RenderFrameHostImpl* manifest_manager_frame_;
+  CheckedPtr<RenderFrameHostImpl> manifest_manager_frame_;
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
   CallbackMap callbacks_;
 

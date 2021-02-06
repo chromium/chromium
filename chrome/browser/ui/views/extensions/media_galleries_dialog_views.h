@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -83,17 +84,17 @@ class MediaGalleriesDialogViews : public MediaGalleriesDialog,
   // Callback for MenuRunner.
   void OnMenuClosed();
 
-  MediaGalleriesDialogController* controller_;
+  CheckedPtr<MediaGalleriesDialogController> controller_;
 
   // The contents of the dialog. Owned by the view hierarchy, except in tests.
-  views::View* contents_;
+  CheckedPtr<views::View> contents_;
 
   // A map from gallery ID to views::Checkbox view.
   CheckboxMap checkbox_map_;
 
   // Pointer to the controller specific auxiliary button, NULL otherwise.
   // Owned by parent in the dialog views tree.
-  views::LabelButton* auxiliary_button_;
+  CheckedPtr<views::LabelButton> auxiliary_button_;
 
   // This tracks whether the confirm button can be clicked. It starts as false
   // if no checkboxes are ticked. After there is any interaction, or some

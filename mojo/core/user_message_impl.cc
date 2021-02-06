@@ -560,7 +560,7 @@ MojoResult UserMessageImpl::SerializeIfNecessary() {
 
   uintptr_t context = context_;
   context_ = 0;
-  context_serializer_(reinterpret_cast<MojoMessageHandle>(message_event_),
+  context_serializer_(reinterpret_cast<MojoMessageHandle>(message_event_.get()),
                       context);
 
   if (context_destructor_)

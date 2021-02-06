@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -87,7 +88,8 @@ class ChromeConfigurator : public update_client::Configurator {
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
 
   ConfiguratorImpl configurator_impl_;
-  PrefService* pref_service_;  // This member is not owned by this class.
+  CheckedPtr<PrefService>
+      pref_service_;  // This member is not owned by this class.
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
