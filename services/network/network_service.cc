@@ -325,14 +325,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-#if defined(OS_MAC)
-  if (!base::FeatureList::IsEnabled(network::features::kCertVerifierService) &&
-      base::FeatureList::IsEnabled(
-          net::features::kCertVerifierBuiltinFeature)) {
-    net::InitializeTrustStoreMacCache();
-  }
-#endif
-
   // Set-up the global port overrides.
   if (command_line->HasSwitch(switches::kExplicitlyAllowedPorts)) {
     std::string allowed_ports =

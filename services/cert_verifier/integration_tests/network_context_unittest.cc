@@ -37,9 +37,9 @@ mojo::PendingRemote<mojom::CertVerifierService> GetNewCertVerifierServiceRemote(
 
 }  // namespace
 
-class NetworkContextTest : public testing::Test {
+class NetworkContextWithRealCertVerifierTest : public testing::Test {
  public:
-  explicit NetworkContextTest(
+  explicit NetworkContextWithRealCertVerifierTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
@@ -47,7 +47,7 @@ class NetworkContextTest : public testing::Test {
         network_change_notifier_(
             net::NetworkChangeNotifier::CreateMockIfNeeded()),
         network_service_(network::NetworkService::CreateForTesting()) {}
-  ~NetworkContextTest() override = default;
+  ~NetworkContextWithRealCertVerifierTest() override = default;
 
   std::unique_ptr<network::NetworkContext> CreateContextWithParams(
       network::mojom::NetworkContextParamsPtr context_params) {
@@ -58,16 +58,10 @@ class NetworkContextTest : public testing::Test {
         std::move(context_params));
   }
 
-  network::mojom::CertVerifierParamsPtr GetCertVerifierParams(
+  network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
       network::mojom::CertVerifierCreationParamsPtr
           cert_verifier_creation_params =
               network::mojom::CertVerifierCreationParams::New()) {
-    if (!base::FeatureList::IsEnabled(
-            network::features::kCertVerifierService)) {
-      return network::mojom::CertVerifierParams::NewCreationParams(
-          std::move(cert_verifier_creation_params));
-    }
-
     if (!cert_verifier_service_factory_) {
       cert_verifier_service_factory_ =
           std::make_unique<CertVerifierServiceFactoryImpl>(
@@ -75,17 +69,13 @@ class NetworkContextTest : public testing::Test {
                   .BindNewPipeAndPassReceiver());
     }
 
-    auto cv_service_remote_params =
-        network::mojom::CertVerifierServiceRemoteParams::New();
-
     // Create a cert verifier service.
-    cv_service_remote_params->cert_verifier_service =
-        GetNewCertVerifierServiceRemote(
-            cert_verifier_service_factory_.get(),
-            std::move(cert_verifier_creation_params));
+    auto cert_verifier_service_remote = GetNewCertVerifierServiceRemote(
+        cert_verifier_service_factory_.get(),
+        std::move(cert_verifier_creation_params));
 
-    return network::mojom::CertVerifierParams::NewRemoteParams(
-        std::move(cv_service_remote_params));
+    return network::mojom::CertVerifierServiceRemoteParams::New(
+        std::move(cert_verifier_service_remote));
   }
 
   network::mojom::NetworkService* network_service() const {
@@ -160,28 +150,7 @@ std::unique_ptr<network::TestURLLoaderClient> FetchRequest(
 
 }  // namespace
 
-class UseCertVerifierBuiltinTest : public NetworkContextTest,
-                                   public testing::WithParamInterface<bool> {
- public:
-  UseCertVerifierBuiltinTest() = default;
-  ~UseCertVerifierBuiltinTest() override = default;
-
-  void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          network::features::kCertVerifierService);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          network::features::kCertVerifierService);
-    }
-    NetworkContextTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(UseCertVerifierBuiltinTest, UseCertVerifierBuiltin) {
+TEST_F(NetworkContextWithRealCertVerifierTest, UseCertVerifierBuiltin) {
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   net::test_server::RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
@@ -217,27 +186,15 @@ TEST_P(UseCertVerifierBuiltinTest, UseCertVerifierBuiltin) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All, UseCertVerifierBuiltinTest, ::testing::Bool());
-
 class NetworkContextCertVerifierBuiltinFeatureFlagTest
-    : public NetworkContextTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+    : public NetworkContextWithRealCertVerifierTest,
+      public testing::WithParamInterface<bool> {
  public:
   NetworkContextCertVerifierBuiltinFeatureFlagTest()
-      : use_builtin_cert_verifier_feature_(std::get<0>(GetParam())),
-        use_cert_verifier_service_feature_(std::get<1>(GetParam())) {
-    std::vector<base::Feature> enabled_features, disabled_features;
-    if (use_builtin_cert_verifier_feature_) {
-      enabled_features.push_back(net::features::kCertVerifierBuiltinFeature);
-    } else {
-      disabled_features.push_back(net::features::kCertVerifierBuiltinFeature);
-    }
-    if (use_cert_verifier_service_feature_) {
-      enabled_features.push_back(network::features::kCertVerifierService);
-    } else {
-      disabled_features.push_back(network::features::kCertVerifierService);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+      : use_builtin_cert_verifier_feature_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        net::features::kCertVerifierBuiltinFeature,
+        use_builtin_cert_verifier_feature_);
   }
 
   bool use_builtin_cert_verifier_feature() const {
@@ -246,7 +203,6 @@ class NetworkContextCertVerifierBuiltinFeatureFlagTest
 
  private:
   const bool use_builtin_cert_verifier_feature_;
-  const bool use_cert_verifier_service_feature_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -281,7 +237,6 @@ TEST_P(NetworkContextCertVerifierBuiltinFeatureFlagTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          NetworkContextCertVerifierBuiltinFeatureFlagTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 }  // namespace cert_verifier

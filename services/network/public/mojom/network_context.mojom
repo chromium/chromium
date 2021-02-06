@@ -146,13 +146,6 @@ struct CertVerifierServiceRemoteParams {
       cert_verifier_service;
 };
 
-// Contains the parameters necessary to either connect to a CertVerifierService
-// or create a net::CertVerifier in the network service itself.
-union CertVerifierParams {
-  CertVerifierServiceRemoteParams remote_params;
-  CertVerifierCreationParams creation_params;
-};
-
 // Client to update the custom proxy config.
 interface CustomProxyConfigClient {
   OnCustomProxyConfigUpdated(CustomProxyConfig proxy_config);
@@ -417,9 +410,8 @@ struct NetworkContextParams {
   [EnableIf=is_ct_supported]
   mojo_base.mojom.Time ct_log_update_time;
 
-  // Contains either a pipe to a CertVerifierService, or parameters used to
-  // instantiate a net::CertVerifier in-process.
-  CertVerifierParams? cert_verifier_params;
+  // Contains a pipe to a CertVerifierService.
+  CertVerifierServiceRemoteParams cert_verifier_params;
 
   // Initial additional certificates that will be used for certificate
   // validation.

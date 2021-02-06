@@ -624,24 +624,13 @@ GetCertVerifierServiceFactory() {
 
 }  // namespace
 
-network::mojom::CertVerifierParamsPtr GetCertVerifierParams(
+network::mojom::CertVerifierServiceRemoteParamsPtr GetCertVerifierParams(
     network::mojom::CertVerifierCreationParamsPtr
         cert_verifier_creation_params) {
-  if (!base::FeatureList::IsEnabled(network::features::kCertVerifierService)) {
-    return network::mojom::CertVerifierParams::NewCreationParams(
-        std::move(cert_verifier_creation_params));
-  }
-
-  auto cv_service_remote_params =
-      network::mojom::CertVerifierServiceRemoteParams::New();
-
-  // Create a cert verifier service.
-  cv_service_remote_params->cert_verifier_service =
-      GetNewCertVerifierServiceRemote(GetCertVerifierServiceFactory(),
-                                      std::move(cert_verifier_creation_params));
-
-  return network::mojom::CertVerifierParams::NewRemoteParams(
-      std::move(cv_service_remote_params));
+  return network::mojom::CertVerifierServiceRemoteParams::New(
+      GetNewCertVerifierServiceRemote(
+          GetCertVerifierServiceFactory(),
+          std::move(cert_verifier_creation_params)));
 }
 
 void SetCertVerifierServiceFactoryForTesting(

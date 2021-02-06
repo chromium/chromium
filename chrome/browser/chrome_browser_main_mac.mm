@@ -139,8 +139,7 @@ void ChromeBrowserMainPartsMac::PostMainMessageLoopStart() {
       MacStartupProfiler::POST_MAIN_MESSAGE_LOOP_START);
   ChromeBrowserMainPartsPosix::PostMainMessageLoopStart();
 
-  if (base::FeatureList::IsEnabled(network::features::kCertVerifierService) &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           net::features::kCertVerifierBuiltinFeature)) {
     net::InitializeTrustStoreMacCache();
   }

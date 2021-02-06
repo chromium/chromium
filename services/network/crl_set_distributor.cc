@@ -23,13 +23,8 @@ namespace {
 // CRLSet.
 scoped_refptr<net::CRLSet> ParseCRLSet(std::string crl_set) {
   scoped_refptr<net::CRLSet> result;
-  if (base::FeatureList::IsEnabled(network::features::kCertVerifierService)) {
-    if (!net::CRLSet::ParseAndStoreUnparsedData(std::move(crl_set), &result))
-      return nullptr;
-  } else {
-    if (!net::CRLSet::Parse(std::move(crl_set), &result))
-      return nullptr;
-  }
+  if (!net::CRLSet::ParseAndStoreUnparsedData(std::move(crl_set), &result))
+    return nullptr;
   return result;
 }
 

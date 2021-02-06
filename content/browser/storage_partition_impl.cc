@@ -2472,10 +2472,9 @@ void StoragePartitionImpl::InitNetworkContext() {
   devtools_instrumentation::ApplyNetworkContextParamsOverrides(
       browser_context_, context_params.get());
   DCHECK(!context_params->cert_verifier_params)
-      << "|cert_verifier_params| should not be set in the NetworkContextParams,"
-         "as they will be replaced with either the newly configured "
-         "|cert_verifier_creation_params| or with a new pipe to the "
-         "CertVerifierService.";
+      << "|cert_verifier_params| should not be set in the "
+         "NetworkContextParams, as they will be replaced with a new pipe to "
+         "the CertVerifierService.";
 
   context_params->cert_verifier_params =
       GetCertVerifierParams(std::move(cert_verifier_creation_params));
