@@ -97,7 +97,7 @@ void CacheStorageContextImpl::Shutdown() {
 
   // Break reference cycle with |this|.
   if (dispatcher_host_)
-    dispatcher_host_.Post(FROM_HERE, &CacheStorageDispatcherHost::Shutdown);
+    dispatcher_host_.AsyncCall(&CacheStorageDispatcherHost::Shutdown);
 
   receivers_.Clear();
   task_runner_->PostTask(

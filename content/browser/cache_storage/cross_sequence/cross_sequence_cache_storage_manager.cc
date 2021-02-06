@@ -151,7 +151,7 @@ void CrossSequenceCacheStorageManager::DeleteOriginData(
 void CrossSequenceCacheStorageManager::AddObserver(
     mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  inner_.Post(FROM_HERE, &Inner::AddObserver, std::move(observer));
+  inner_.AsyncCall(&Inner::AddObserver).WithArgs(std::move(observer));
 }
 
 CrossSequenceCacheStorageManager::~CrossSequenceCacheStorageManager() {
