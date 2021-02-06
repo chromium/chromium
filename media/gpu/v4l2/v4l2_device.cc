@@ -1491,6 +1491,8 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
   switch (codec) {
     case kCodecH264:
       switch (v4l2_profile) {
+        // H264 Stereo amd Multiview High are not tested and the use is
+        // minuscule, skip.
         case V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE:
         case V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE:
           return H264PROFILE_BASELINE;
@@ -1500,10 +1502,6 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return H264PROFILE_EXTENDED;
         case V4L2_MPEG_VIDEO_H264_PROFILE_HIGH:
           return H264PROFILE_HIGH;
-        case V4L2_MPEG_VIDEO_H264_PROFILE_STEREO_HIGH:
-          return H264PROFILE_STEREOHIGH;
-        case V4L2_MPEG_VIDEO_H264_PROFILE_MULTIVIEW_HIGH:
-          return H264PROFILE_MULTIVIEWHIGH;
       }
       break;
     case kCodecVP8:
