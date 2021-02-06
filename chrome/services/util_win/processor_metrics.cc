@@ -15,6 +15,7 @@
 #include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/windows_version.h"
 #include "base/win/wmi.h"
 
 using base::win::ScopedBstr;
@@ -102,11 +103,25 @@ void RecordCetAvailability() {
       reinterpret_cast<decltype(&IsUserCetAvailableInEnvironment)>(
           ::GetProcAddress(::GetModuleHandleW(L"kernel32.dll"),
                            "IsUserCetAvailableInEnvironment"));
+  auto get_process_mitigation_policy =
+      reinterpret_cast<decltype(&GetProcessMitigationPolicy)>(::GetProcAddress(
+          ::GetModuleHandleW(L"kernel32.dll"), "GetProcessMitigationPolicy"));
+
   if (is_user_cet_available_in_environment) {
     available = is_user_cet_available_in_environment(
         USER_CET_ENVIRONMENT_WIN32_PROCESS);
   }
   base::UmaHistogramBoolean("Windows.CetAvailable", available);
+
+  if (available && get_process_mitigation_policy) {
+    PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {0};
+    if (get_process_mitigation_policy(GetCurrentProcess(),
+                                      ProcessUserShadowStackPolicy, &policy,
+                                      sizeof(policy))) {
+      base::UmaHistogramBoolean("Windows.CetEnabled",
+                                policy.EnableUserShadowStack);
+    }
+  }
 }
 
 }  // namespace
