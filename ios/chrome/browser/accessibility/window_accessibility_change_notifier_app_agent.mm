@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -100,6 +101,12 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
     // the last update time.
     NSTimeInterval newDelta = kWindowNotifcationDelay - delta;
     [self scheduleWindowCountWithDelay:newDelta];
+    return;
+  }
+
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+    // The resources have not yet been initialized. Delay the notification.
+    [self scheduleWindowCountWithDelay:kWindowNotifcationDelay];
     return;
   }
 
