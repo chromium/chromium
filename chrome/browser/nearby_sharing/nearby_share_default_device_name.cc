@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/devicetype.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"

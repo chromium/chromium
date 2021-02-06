@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/devicetype.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/chromeos/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/extensions/api/wallpaper_private.h"
-#include "chromeos/constants/devicetype.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "url/gurl.h"

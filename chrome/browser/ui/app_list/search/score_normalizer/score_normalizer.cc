@@ -6,12 +6,12 @@
 
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/score_normalizer/balanced_reservoir.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 

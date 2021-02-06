@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_CONSTANTS_CHROMEOS_PATHS_H_
-#define CHROMEOS_CONSTANTS_CHROMEOS_PATHS_H_
+#ifndef ASH_CONSTANTS_ASH_PATHS_H_
+#define ASH_CONSTANTS_ASH_PATHS_H_
 
 #include "base/component_export.h"
 
@@ -72,4 +72,4 @@ void RegisterStubPathOverrides(const base::FilePath& stubs_dir);
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_CONSTANTS_CHROMEOS_PATHS_H_
+#endif  // ASH_CONSTANTS_ASH_PATHS_H_

@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/app_list/search/omnibox_result.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_ranking_event.pb.h"
 #include "chrome/grit/browser_resources.h"
-#include "chromeos/constants/devicetype.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/assist_ranker/example_preprocessing.h"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"

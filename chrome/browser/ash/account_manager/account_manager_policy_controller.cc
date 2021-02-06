@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/components/account_manager/account_manager.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/sequence_checker.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {

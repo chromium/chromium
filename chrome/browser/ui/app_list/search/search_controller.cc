@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_service.h"
 

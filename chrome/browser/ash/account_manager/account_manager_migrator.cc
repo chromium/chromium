@@ -12,6 +12,7 @@
 
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

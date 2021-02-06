@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/language/core/browser/pref_names.h"

@@ -7,8 +7,8 @@
 #include <string>
 
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/constants/devicetype.h"
 #include "base/strings/string_util.h"
-#include "chromeos/constants/devicetype.h"
 
 namespace {
 

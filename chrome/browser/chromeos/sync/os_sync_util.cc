@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 

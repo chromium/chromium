@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/account_manager/tokens.pb.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
@@ -24,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"

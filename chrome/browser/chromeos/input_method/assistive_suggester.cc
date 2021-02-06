@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/input_method/assistive_suggester.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"

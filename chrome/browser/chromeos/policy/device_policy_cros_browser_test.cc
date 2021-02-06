@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

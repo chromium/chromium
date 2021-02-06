@@ -33,8 +33,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_paths.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
-#include "chromeos/constants/chromeos_paths.h"
 #endif
 
 namespace extensions {

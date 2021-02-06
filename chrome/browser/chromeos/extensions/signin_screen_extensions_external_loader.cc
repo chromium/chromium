@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

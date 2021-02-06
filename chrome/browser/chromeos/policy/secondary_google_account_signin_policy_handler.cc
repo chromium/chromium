@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/policy/secondary_google_account_signin_policy_handler.h"
-#include "chromeos/constants/chromeos_pref_names.h"
+
+#include "ash/constants/ash_pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"

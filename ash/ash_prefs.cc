@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
@@ -41,7 +42,6 @@
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 

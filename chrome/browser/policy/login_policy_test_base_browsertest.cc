@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/string16.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"

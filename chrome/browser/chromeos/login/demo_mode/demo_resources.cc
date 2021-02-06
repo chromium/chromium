@@ -4,13 +4,13 @@
 
 #include "chrome/browser/chromeos/login/demo_mode/demo_resources.h"
 
+#include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/image_loader_client.h"
 

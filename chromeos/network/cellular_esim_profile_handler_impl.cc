@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/network_event_log.h"
 #include "components/prefs/pref_registry_simple.h"

@@ -77,7 +77,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/audio/chromeos_sounds.h"
-#include "chromeos/constants/chromeos_constants.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/settings/cros_settings_names.h"

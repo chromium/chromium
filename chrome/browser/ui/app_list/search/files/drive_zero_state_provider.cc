@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"

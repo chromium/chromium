@@ -33,7 +33,7 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_paths.h"
+#include "ash/constants/ash_paths.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #endif
 

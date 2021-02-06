@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -13,7 +14,6 @@
 #include "base/task/post_task.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "components/quirks/quirks_manager.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"

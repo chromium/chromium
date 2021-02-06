@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/app_list/search/file_chip_result.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
 #include "chrome/browser/ui/app_list/search/zero_state_file_result.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 using file_manager::file_tasks::FileTasksObserver;

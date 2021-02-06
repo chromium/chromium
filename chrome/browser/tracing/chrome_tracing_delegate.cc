@@ -42,7 +42,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #endif
 
 namespace {

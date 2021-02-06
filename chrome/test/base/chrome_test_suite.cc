@@ -28,8 +28,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_paths.h"
 #include "base/process/process_metrics.h"
-#include "chromeos/constants/chromeos_paths.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

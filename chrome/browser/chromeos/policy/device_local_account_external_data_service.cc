@@ -7,6 +7,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -15,7 +16,6 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
-#include "chromeos/constants/chromeos_paths.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_constants.h"
 

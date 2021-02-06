@@ -2,6 +2,7 @@ include_rules = [
   "-ash",
   "+ash/assistant/model",
   "+ash/assistant/util",
+  "+ash/constants",
   "+ash/public/cpp",
   "+net",
   "+ui/base",

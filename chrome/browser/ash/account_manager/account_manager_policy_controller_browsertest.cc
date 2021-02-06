@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_CONSTANTS_DEVICETYPE_H_
-#define CHROMEOS_CONSTANTS_DEVICETYPE_H_
+#ifndef ASH_CONSTANTS_DEVICETYPE_H_
+#define ASH_CONSTANTS_DEVICETYPE_H_
 
 #include "base/component_export.h"
 
@@ -25,4 +25,4 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsGoogleBrandedDevice();
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_CONSTANTS_DEVICETYPE_H_
+#endif  // ASH_CONSTANTS_DEVICETYPE_H_

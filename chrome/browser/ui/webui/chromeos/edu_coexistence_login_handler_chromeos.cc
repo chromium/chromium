@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/common/channel_info.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"

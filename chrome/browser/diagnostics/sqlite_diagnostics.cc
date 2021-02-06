@@ -32,7 +32,7 @@
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/constants/chromeos_constants.h"
+#include "ash/constants/ash_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace diagnostics {

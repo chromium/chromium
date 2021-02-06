@@ -6,12 +6,12 @@
 
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/consent_level.h"

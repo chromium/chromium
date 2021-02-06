@@ -9,6 +9,7 @@
 
 #include "ash/components/account_manager/account_manager_ash.h"
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
