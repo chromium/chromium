@@ -2853,8 +2853,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ReusedMapChangeUsemap) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map-change-usemap.html"));
 }
 
+// TODO(https://crbug.com/1175562): Flaky
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISALBED_ReusedMapChangeMapName) {
+                       DISABLED_ReusedMapChangeMapName) {
   RunRegressionTest(FILE_PATH_LITERAL("reused-map-change-map-name.html"));
 }
 
