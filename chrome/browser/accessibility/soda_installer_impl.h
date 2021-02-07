@@ -42,6 +42,7 @@ class SodaInstallerImpl : public SodaInstaller,
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
   bool IsSodaInstalled() const override;
+  void UninstallSoda(PrefService* global_prefs) override;
 
  private:
   // component_updater::ServiceObserver:

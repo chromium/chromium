@@ -91,6 +91,21 @@ bool SodaInstallerImplChromeOS::IsSodaInstalled() const {
   return soda_binary_installed_ && language_installed_;
 }
 
+void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
+  soda_binary_installed_ = false;
+  SetSodaBinaryPath(base::FilePath());
+  chromeos::DlcserviceClient::Get()->Uninstall(
+      kSodaDlcName, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
+                                   base::Unretained(this), kSodaDlcName));
+  language_installed_ = false;
+  SetLanguagePath(base::FilePath());
+  chromeos::DlcserviceClient::Get()->Uninstall(
+      kSodaEnglishUsDlcName,
+      base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
+                     base::Unretained(this), kSodaEnglishUsDlcName));
+  global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
+}
+
 void SodaInstallerImplChromeOS::SetSodaBinaryPath(base::FilePath new_path) {
   soda_lib_path_ = new_path;
 }
@@ -145,6 +160,13 @@ void SodaInstallerImplChromeOS::OnSodaCombinedProgress() {
   // only (2) weighting download progress proportionally to DLC binary size.
   const double progress = (soda_progress_ + language_progress_) / 2;
   NotifyOnSodaProgress(int{100 * progress});
+}
+
+void SodaInstallerImplChromeOS::OnDlcUninstalled(const std::string& dlc_id,
+                                                 const std::string& err) {
+  if (err != dlcservice::kErrorNone) {
+    LOG(ERROR) << "Failed to uninstall DLC " << dlc_id << ". Error: " << err;
+  }
 }
 
 }  // namespace speech

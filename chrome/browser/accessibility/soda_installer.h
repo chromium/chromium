@@ -67,6 +67,10 @@ class SodaInstaller {
   // asynchronously returned an answer.
   virtual bool IsSodaInstalled() const = 0;
 
+  // Uninstalls SODA and associated language model(s). On some platforms, disc
+  // space may not be freed immediately.
+  virtual void UninstallSoda(PrefService* global_prefs) = 0;
+
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
 

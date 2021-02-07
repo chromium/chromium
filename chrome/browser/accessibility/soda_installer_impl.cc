@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
@@ -106,6 +107,12 @@ void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
 bool SodaInstallerImpl::IsSodaInstalled() const {
   DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   return soda_binary_installed_ && language_installed_;
+}
+
+void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
+  // TODO(crbug.com/1055150): Refactor uninstallation code from elsewhere to
+  // here.
+  NOTREACHED();
 }
 
 void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {

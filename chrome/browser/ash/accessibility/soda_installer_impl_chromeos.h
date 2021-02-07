@@ -35,6 +35,7 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
   bool IsSodaInstalled() const override;
+  void UninstallSoda(PrefService* global_prefs) override;
 
  private:
   void SetSodaBinaryPath(base::FilePath new_path);
@@ -51,6 +52,9 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   void OnLanguageProgress(double progress);
 
   void OnSodaCombinedProgress();
+
+  // This is the UninstallCallback for DlcserviceClient::Uninstall().
+  void OnDlcUninstalled(const std::string& dlc_id, const std::string& err);
 
   bool is_soda_downloading_ = false;
   bool is_language_downloading_ = false;
