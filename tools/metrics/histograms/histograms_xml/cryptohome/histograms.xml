@@ -52,9 +52,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.DeletedUserProfiles" units="profiles"
-    expires_after="M90">
-  <owner>slangley@chromium.org</owner>
-  <owner>wiefangsun@chromium.org</owner>
+    expires_after="2022-02-05">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     In low disk space scenarios, Cryptohome erases whole user profiles. This is
     a number of user profiles deleted during cleanup. Only reported when
