@@ -51,7 +51,7 @@
 <translation id="1268366246392928616">Өмнөх математик илэрхийлэл алга байна</translation>
 <translation id="1273314450961659276">Текстийг яриа болгох тохиргоо</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
-<translation id="1291286136605998134">Унтраах/асаах товч</translation>
+<translation id="1291286136605998134">Асаах/унтраах товч</translation>
 <translation id="1299774449519412690">Тод цэнхэр</translation>
 <translation id="1303806948938513162">ChromeVox-н цэсэд орохын тулд 4 хуруугаараа товшино уу</translation>
 <translation id="1313373992684326101">Өмнөх хэсэгт шилжих. Жишээнд Статусын мэдээллийн хэсэг болон Эхлүүлэгч багтана.</translation>
@@ -185,7 +185,7 @@
 <translation id="2329324941084714723">Цонхын самбар</translation>
 <translation id="2347456970887948350">Холбоос</translation>
 <translation id="2365384324219615024">Та мөн зүйлсийг идэвхжүүлэхийн тулд Enter-г дарах боломжтой. Жишээ нь маягтаар текст илгээхдээ Enter-г ашиглах боломжтой. Үргэлжлүүлэхийн тулд Enter-г дарна уу.</translation>
-<translation id="2381733276052567791">Яриаг унтраах/асаах</translation>
+<translation id="2381733276052567791">Яриаг асаах/унтраах</translation>
 <translation id="2390264819538553347">Дараагийн хуудсанд очих бол Enter товчлуурыг; буцахын тулд арилгах товчлуурыг дарна уу.</translation>
 <translation id="2398579267367951220">Хуудаснаас хайхын тулд бичнэ үү. Илэрц рүү үсэрч очихын тулд Enter, илэрцүүдийг үзэхийн тулд дээш эсвэл доош сумыг дарж, хайлтаа өөрчлөхийн тулд үргэлжлүүлэн бичнэ үү эсвэл болихын тулд escape товчийг дарна уу.</translation>
 <translation id="240709722712693803">Нил хөх ягаан (Яргуйн өнгө)</translation>
@@ -298,7 +298,7 @@
 <translation id="3104705064753753826">alrt dlg</translation>
 <translation id="3109724472072898302">Задарсан</translation>
 <translation id="311015743332597320">Дөрвөн хуруугаараа баруун тийш шудрах</translation>
-<translation id="3112457281078985179">ChromeVox-г унтраах/асаахын тулд Control+Alt+Z-г ашиглана уу.</translation>
+<translation id="3112457281078985179">ChromeVox-г асаах/унтраахын тулд Control+Alt+Z-г ашиглана уу.</translation>
 <translation id="3131002934070407451">Дугаарыг дараах маягаар унших:</translation>
 <translation id="3134461040845705080">Зөвхөн унших</translation>
 <translation id="3137663468179739624">Хар ногоон (Чидун жимсний өнгө)</translation>
@@ -455,7 +455,7 @@
 <translation id="4225355998815256469">Маягтын хяналт</translation>
 <translation id="4230834257931120629">Цайвар хөх саарал</translation>
 <translation id="4231102694147661229">Хөгжүүлэгчийн тохиргоог идэвхжүүлэх</translation>
-<translation id="423428485095722850">Унтраах/асаахын тулд Search+Space-г дарна уу</translation>
+<translation id="423428485095722850">Асаах/унтраахын тулд Search+Space-г дарна уу</translation>
 <translation id="4243624244759495699"><ph name="LOCALE" />, Зэрэглэл <ph name="GRADE" /></translation>
 <translation id="4246217262268234757">Хөх саарал</translation>
 <translation id="4253168017788158739">Тайлбар</translation>
@@ -500,7 +500,7 @@
 <translation id="4615592953348396470">Дараагийн түлхүүрийг дарахыг орхигдуулж байна</translation>
 <translation id="4623097797855662355">Колофон</translation>
 <translation id="463135993322337640">Шинээр гарсан зүйлсийг олохын тулд ChromeVox o, n-г дарна уу</translation>
-<translation id="4660783501463101648">Классикийг устгасан. ChromeVox Классикт буцааж сольдог гарын унтраах/асаах товчлуурыг устгасан.</translation>
+<translation id="4660783501463101648">Классикийг устгасан. ChromeVox Классикт буцааж сольдог гарын асаах/унтраах товчлуурыг устгасан.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Дараагийн багана руу очих</translation>
@@ -819,7 +819,7 @@
 <translation id="712735679809149106">үгний давтамж</translation>
 <translation id="7137397390322864165">Улбар шар туяатай ягаан</translation>
 <translation id="7140168702531682811">Дээд индекс байна</translation>
-<translation id="7143034430156387447">6-с 8 цэгт брайлийн хооронд унтраах/асаах</translation>
+<translation id="7143034430156387447">6-с 8 цэгт брайлийн хооронд асаах/унтраах</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7153618581592392745">Цайвар ягаан</translation>
 <translation id="7157306005867877619">Хураангуй</translation>
@@ -964,7 +964,7 @@
 <translation id="817440585505441544">{COUNT,plural, =1{доогуур зураас}other{# доогуур зураасууд}}</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8184828902145951186">мөр</translation>
-<translation id="8186185314313222077">бүтэн дэлгэцийг унтраах/асаах</translation>
+<translation id="8186185314313222077">бүтэн дэлгэцийг асаах/унтраах</translation>
 <translation id="8199231515320852133">Энэ нүдний гарчигийг зарла</translation>
 <translation id="8202174735952881587">Тэнгэрийн хөх</translation>
 <translation id="820469951249669083">Дараагийн мөр рүү очих</translation>
@@ -983,7 +983,7 @@
 <translation id="8316881042119029234">Цайвар ягаан</translation>
 <translation id="8324974933005349667">Текстийг яриа болгох тохиргоог хувийн болгох</translation>
 <translation id="8326783648485765113">Тод ногоон</translation>
-<translation id="8328063869313048659">Бараан дэлгэцийг унтраах/асаах</translation>
+<translation id="8328063869313048659">Бараан дэлгэцийг асаах/унтраах</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ фунт}other{ # фунтын тэмдэгтүүд}}</translation>
 <translation id="8378855320830505539">Хамрах бүс</translation>
 <translation id="8382679411218029383">Autocompletion-ны мөр ба жагсаалт</translation>
