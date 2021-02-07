@@ -3105,7 +3105,7 @@
 <translation id="4510614391273086606">Linux-н файлууд болон аппуудыг тэдний хуулбарласан төлөвт сэргээж байна.</translation>
 <translation id="4513946894732546136">Санал дүгнэлт</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" />-р хүргэсэн</translation>
-<translation id="4514610446763173167">Видеог тоглуулах эсвэл түр зогсоохын тулд унтраах/асаах</translation>
+<translation id="4514610446763173167">Видеог тоглуулах эсвэл түр зогсоохын тулд асаах/унтраах</translation>
 <translation id="451515744433878153">Устгах</translation>
 <translation id="4515872537870654449">Үйлчилгээ авахын тулд Dell-тэй холбоо барина уу. Сэнс ажиллахгүй байвал холбогч унтрах болно.</translation>
 <translation id="4519935350946509010">Холболтын алдаа.</translation>
@@ -3948,7 +3948,7 @@
 <translation id="5503982651688210506"><ph name="HOST" />-д таны камерыг ашиглах, хөдөлгөх болон микрофоныг ашиглахыг үргэлжлүүлэн зөвшөөрөх</translation>
 <translation id="5505264765875738116">Сайтууд нь танд мэдэгдэл илгээх зөвшөөрөл асуух боломжгүй</translation>
 <translation id="5505307013568720083">Бэх дууссан</translation>
-<translation id="5505794066310932198">Тушаагчийг унтраах/асаах</translation>
+<translation id="5505794066310932198">Тушаагчийг асаах/унтраах</translation>
 <translation id="5507756662695126555">Үл цуцлах</translation>
 <translation id="5509693895992845810">... байдлаар хадгалах</translation>
 <translation id="5509914365760201064">Гаргагч: <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -5632,7 +5632,7 @@
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Дараагийн удаа таны утас таны <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно.</translation>
 <translation id="7463006580194749499">Хүн нэм</translation>
-<translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{нээлттэй # таб, tab мессежийг унтраах/асаахын тулд дарна уу}other{нээлттэй # таб, tab мессежийг унтраах/асаахын тулд дарна уу}}</translation>
+<translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{нээлттэй # таб, tab мессежийг асаах/унтраахын тулд дарна уу}other{нээлттэй # таб, tab мессежийг асаах/унтраахын тулд дарна уу}}</translation>
 <translation id="7465635034594602553">Алдаа гарлаа. Хэдэн минут хүлээгээд <ph name="APP_NAME" />-г дахин ажиллуулна уу.</translation>
 <translation id="7465778193084373987">Нэтскейп-ийн Гэрчилгээг Хүчингүй болгох холбоос</translation>
 <translation id="7469894403370665791">Автоматаар энэ сүлжээ рүү холбогдох</translation>
