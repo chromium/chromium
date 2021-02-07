@@ -460,7 +460,8 @@ TEST_F(ExternalWebAppManagerTest, UnmanagedUser) {
 }
 
 TEST_F(ExternalWebAppManagerTest, NonPrimaryProfile) {
-  EXPECT_TRUE(LoadApps(kUserTypesTestDir, CreateProfile().get()).empty());
+  VerifySetOfApps(CreateProfile().get(),
+                  {GURL(kAppAllUrl), GURL(kAppUnmanagedUrl)});
 }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
 // No app is expected for non-ChromeOS builds.

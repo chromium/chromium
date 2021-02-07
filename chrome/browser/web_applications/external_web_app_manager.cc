@@ -466,7 +466,7 @@ base::FilePath ExternalWebAppManager::GetConfigDir() {
   // As of mid 2018, only Chrome OS has default/external web apps, and
   // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
   // which includes OS_CHROMEOS.
-  if (chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
+  if (chromeos::ProfileHelper::IsRegularProfile(profile_)) {
     if (g_config_dir_for_testing) {
       dir = *g_config_dir_for_testing;
     } else {

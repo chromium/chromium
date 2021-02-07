@@ -22,6 +22,8 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest {
  public:
   PreinstalledWebAppsBrowserTest() {
     ExternalWebAppManager::SkipStartupForTesting();
+    // Ignore any default app configs on disk.
+    ExternalWebAppManager::SetConfigDirForTesting(&empty_path_);
     ForceUsePreinstalledWebAppsForTesting();
     WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
         [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
@@ -29,6 +31,8 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest {
                                                             nullptr, nullptr);
         });
   }
+
+  base::FilePath empty_path_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {

@@ -113,6 +113,8 @@ class ExternalWebAppManager {
       std::map<GURL, PendingAppManager::InstallResult> install_results,
       std::map<GURL, bool> uninstall_results);
 
+  // The directory where default web app configs are stored.
+  // Empty if not applicable.
   base::FilePath GetConfigDir();
 
   // Returns whether this is the first time we've deployed default apps on this
