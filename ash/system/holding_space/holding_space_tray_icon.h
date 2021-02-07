@@ -66,6 +66,7 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   gfx::Size CalculatePreferredSize() const override;
 
   // ShellObserver:
+  void OnShellDestroying() override;
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
 

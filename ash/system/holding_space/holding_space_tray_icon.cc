@@ -235,6 +235,10 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
   }
 }
 
+void HoldingSpaceTrayIcon::OnShellDestroying() {
+  shell_observer_.Reset();
+}
+
 void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     aura::Window* root_window,
     ShelfAlignment old_alignment) {
