@@ -526,14 +526,14 @@
   'CROS_OCTOPUS_TOT': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R90-13754.0.0',
+      'cros_img': 'octopus-release/R90-13772.0.0',
     },
     'identifier': 'OCTOPUS_TOT',
   },
   'CROS_OCTOPUS_TOT-1': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_img': 'octopus-release/R88-13597.30.0',
+      'cros_img': 'octopus-release/R89-13729.18.0',
     },
     'identifier': 'OCTOPUS_TOT-1',
   },

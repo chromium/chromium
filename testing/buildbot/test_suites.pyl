@@ -3848,11 +3848,8 @@
     },
 
     'lacros_skylab_poc': {
-      'lacros.Basic': {
-        # TODO(linxinan@): remove 'suite' field once the recipe
-        # change(crrev.com/c/2645627) is propagated.
-        'suite': 'tast.lacros',
-        'tast_expr': 'lacros.Basic',
+      'mainline_lacros_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:lacros")',
         'timeout_sec': 10800,
       },
     },

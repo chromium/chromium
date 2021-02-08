@@ -35,23 +35,21 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R90-13754.0.0",
-        "name": "lacros.Basic_OCTOPUS_TOT",
-        "suite": "tast.lacros",
+        "cros_img": "octopus-release/R90-13772.0.0",
+        "name": "mainline_lacros_tast_tests_OCTOPUS_TOT",
         "swarming": {},
-        "tast_expr": "lacros.Basic",
-        "test": "lacros.Basic",
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "test": "mainline_lacros_tast_tests",
         "timeout_sec": 10800
       },
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R88-13597.30.0",
-        "name": "lacros.Basic_OCTOPUS_TOT-1",
-        "suite": "tast.lacros",
+        "cros_img": "octopus-release/R89-13729.18.0",
+        "name": "mainline_lacros_tast_tests_OCTOPUS_TOT-1",
         "swarming": {},
-        "tast_expr": "lacros.Basic",
-        "test": "lacros.Basic",
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\")",
+        "test": "mainline_lacros_tast_tests",
         "timeout_sec": 10800
       }
     ]
