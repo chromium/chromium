@@ -88,9 +88,11 @@ namespace blink {
 WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     bool is_screencast,
     absl::optional<bool> needs_denoising,
-    media::VideoCaptureFeedbackCB callback)
+    media::VideoCaptureFeedbackCB callback,
+    media::GpuVideoAcceleratorFactories* gpu_factories)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
-      scaled_frame_pool_(new WebRtcVideoFrameAdapter::BufferPoolOwner()),
+      adapter_resources_(
+          new WebRtcVideoFrameAdapter::SharedResources(gpu_factories)),
       is_screencast_(is_screencast),
       needs_denoising_(needs_denoising),
       callback_(callback) {
@@ -315,7 +317,7 @@ void WebRtcVideoTrackSource::DeliverFrame(
       webrtc::VideoFrame::Builder()
           .set_video_frame_buffer(
               new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-                  frame, scaled_frame_pool_))
+                  frame, adapter_resources_))
           .set_rotation(GetFrameRotation(frame.get()))
           .set_timestamp_us(timestamp_us);
   if (update_rect) {

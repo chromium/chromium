@@ -316,6 +316,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   socket_factory_.reset(new IpcPacketSocketFactory(p2p_socket_dispatcher_.get(),
                                                    traffic_annotation));
 
+  gpu_factories_ = gpu_factories;
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
       blink::CreateWebrtcVideoEncoderFactory(gpu_factories);
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
@@ -685,4 +686,8 @@ PeerConnectionDependencyFactory::GetReceiverCapabilities(const String& kind) {
   return nullptr;
 }
 
+media::GpuVideoAcceleratorFactories*
+PeerConnectionDependencyFactory::GetGpuFactories() {
+  return gpu_factories_;
+}
 }  // namespace blink

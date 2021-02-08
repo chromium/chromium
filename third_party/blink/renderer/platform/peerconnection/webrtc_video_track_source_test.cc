@@ -44,7 +44,8 @@ class WebRtcVideoTrackSourceTest
             /*is_screencast=*/false,
             /*needs_denoising=*/absl::nullopt,
             base::BindRepeating(&WebRtcVideoTrackSourceTest::ProcessFeedback,
-                                base::Unretained(this)))) {
+                                base::Unretained(this)),
+            /*gpu_factories=*/nullptr)) {
     track_source_->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
   }
 

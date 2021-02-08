@@ -116,6 +116,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   GetWebRtcSignalingTaskRunner();
 
+  media::GpuVideoAcceleratorFactories* GetGpuFactories();
+
  protected:
   PeerConnectionDependencyFactory(bool create_p2p_socket_dispatcher);
 
@@ -168,6 +170,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device_;
 
   std::unique_ptr<blink::StunProberTrial> stun_trial_;
+
+  media::GpuVideoAcceleratorFactories* gpu_factories_;
 
   // PeerConnection threads. signaling_thread_ is created from the
   // "current" chrome thread.

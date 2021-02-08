@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/video_frame.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
@@ -14,17 +15,56 @@
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+using ::testing::_;
+using ::testing::Return;
+
 namespace blink {
+
+class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
+ public:
+  MockSharedResources() : WebRtcVideoFrameAdapter::SharedResources(nullptr) {}
+
+  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
+              CreateFrame,
+              (media::VideoPixelFormat format,
+               const gfx::Size& coded_size,
+               const gfx::Rect& visible_rect,
+               const gfx::Size& natural_size,
+               base::TimeDelta timestamp));
+
+  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
+              CreateTemporaryFrame,
+              (media::VideoPixelFormat format,
+               const gfx::Size& coded_size,
+               const gfx::Rect& visible_rect,
+               const gfx::Size& natural_size,
+               base::TimeDelta timestamp));
+
+  MOCK_METHOD(scoped_refptr<viz::RasterContextProvider>,
+              GetRasterContextProvider,
+              ());
+
+  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
+              ConstructVideoFrameFromTexture,
+              (scoped_refptr<media::VideoFrame> source_frame));
+
+  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
+              ConstructVideoFrameFromGpu,
+              (scoped_refptr<media::VideoFrame> source_frame));
+
+ private:
+  friend class base::RefCountedThreadSafe<MockSharedResources>;
+};
 
 class WebRtcVideoFrameAdapterParamTest
     : public ::testing::TestWithParam<
           std::tuple<media::VideoFrame::StorageType, media::VideoPixelFormat>> {
  public:
   WebRtcVideoFrameAdapterParamTest()
-      : pool_(new WebRtcVideoFrameAdapter::BufferPoolOwner()) {}
+      : resources_(new WebRtcVideoFrameAdapter::SharedResources(nullptr)) {}
 
  protected:
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool_;
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources_;
 };
 
 namespace {
@@ -54,7 +94,7 @@ TEST_P(WebRtcVideoFrameAdapterParamTest, WidthAndHeight) {
       kCodedSize, kVisibleRect, kNaturalSize, storage_type, pixel_format);
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter =
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(std::move(frame),
-                                                         pool_);
+                                                         resources_);
   EXPECT_EQ(frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(frame_adapter->height(), kNaturalSize.height());
 }
@@ -70,7 +110,7 @@ TEST_P(WebRtcVideoFrameAdapterParamTest, ToI420) {
       kCodedSize, kVisibleRect, kNaturalSize, storage_type, pixel_format);
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter =
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(std::move(frame),
-                                                         pool_);
+                                                         resources_);
 
   // The I420 frame should have the same size as the natural size.
   auto i420_frame = frame_adapter->ToI420();
@@ -95,8 +135,8 @@ TEST(WebRtcVideoFrameAdapterTest, ToI420DownScaleGmb) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
-      new WebRtcVideoFrameAdapter::BufferPoolOwner();
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
+      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
   auto gmb_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
                       media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
@@ -105,7 +145,7 @@ TEST(WebRtcVideoFrameAdapterTest, ToI420DownScaleGmb) {
   // VideoFrame backed by GpuMemoryBuffer.
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(std::move(gmb_frame),
-                                                         pool));
+                                                         resources));
   EXPECT_EQ(gmb_frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(gmb_frame_adapter->height(), kNaturalSize.height());
 
@@ -124,8 +164,8 @@ TEST(WebRtcVideoFrameAdapterTest, ToI420ADownScale) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
-      new WebRtcVideoFrameAdapter::BufferPoolOwner();
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
+      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
@@ -135,7 +175,7 @@ TEST(WebRtcVideoFrameAdapterTest, ToI420ADownScale) {
                       media::VideoPixelFormat::PIXEL_FORMAT_I420A);
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> owned_memory_frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          std::move(owned_memory_frame), pool));
+          std::move(owned_memory_frame), resources));
   EXPECT_EQ(owned_memory_frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(owned_memory_frame_adapter->height(), kNaturalSize.height());
 
@@ -155,8 +195,8 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12WrapsGmbWhenNoScalingNeeededWithFeature) {
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   // Same size as visible rect so no scaling.
   const gfx::Size kNaturalSize = kVisibleRect.size();
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
-      new WebRtcVideoFrameAdapter::BufferPoolOwner();
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
+      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
 
   auto gmb_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
@@ -165,7 +205,7 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12WrapsGmbWhenNoScalingNeeededWithFeature) {
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by GpuMemoryBuffer.
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(gmb_frame, pool));
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(gmb_frame, resources));
   EXPECT_EQ(gmb_frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(gmb_frame_adapter->height(), kNaturalSize.height());
 
@@ -196,8 +236,8 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12ScalesGmbWithFeature) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
-      new WebRtcVideoFrameAdapter::BufferPoolOwner();
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
+      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
 
   auto gmb_frame =
       CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
@@ -206,7 +246,7 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12ScalesGmbWithFeature) {
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by GpuMemoryBuffer.
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_adapter(
-      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(gmb_frame, pool));
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(gmb_frame, resources));
   EXPECT_EQ(gmb_frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(gmb_frame_adapter->height(), kNaturalSize.height());
 
@@ -234,8 +274,8 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12OwnedMemoryFrame) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize = kVisibleRect.size();
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
-      new WebRtcVideoFrameAdapter::BufferPoolOwner();
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
+      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
@@ -245,7 +285,7 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12OwnedMemoryFrame) {
                       media::VideoPixelFormat::PIXEL_FORMAT_NV12);
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> owned_memory_frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          std::move(owned_memory_frame), pool));
+          std::move(owned_memory_frame), resources));
   EXPECT_EQ(owned_memory_frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(owned_memory_frame_adapter->height(), kNaturalSize.height());
 
@@ -263,8 +303,8 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12ScaleOwnedMemoryFrame) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
-      new WebRtcVideoFrameAdapter::BufferPoolOwner();
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
+      new WebRtcVideoFrameAdapter::SharedResources(nullptr);
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
@@ -274,7 +314,7 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12ScaleOwnedMemoryFrame) {
                       media::VideoPixelFormat::PIXEL_FORMAT_NV12);
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> owned_memory_frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          std::move(owned_memory_frame), pool));
+          std::move(owned_memory_frame), resources));
   EXPECT_EQ(owned_memory_frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(owned_memory_frame_adapter->height(), kNaturalSize.height());
 
@@ -288,12 +328,10 @@ TEST(WebRtcVideoFrameAdapterTest, Nv12ScaleOwnedMemoryFrame) {
   EXPECT_EQ(nv12_frame->height(), kNaturalSize.height());
 }
 
-TEST(WebRtcVideoFrameAdapterTest, TextureFrameIsBlack) {
+TEST(WebRtcVideoFrameAdapterTest, TextureFrameIsBlackWithNoSharedResources) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> pool =
-      new WebRtcVideoFrameAdapter::BufferPoolOwner();
 
   // The adapter should report width and height from the natural size for
   // VideoFrame backed by owned memory.
@@ -302,12 +340,12 @@ TEST(WebRtcVideoFrameAdapterTest, TextureFrameIsBlack) {
       media::VideoPixelFormat::PIXEL_FORMAT_NV12);
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-          std::move(owned_memory_frame), pool));
+          std::move(owned_memory_frame), nullptr));
   EXPECT_EQ(frame_adapter->width(), kNaturalSize.width());
   EXPECT_EQ(frame_adapter->height(), kNaturalSize.height());
 
   // The NV12 frame should have the same size as the natural size, but be black
-  // since we can't handle the texture.
+  // since we can't handle the texture with no shared resources.
   auto i420_frame = frame_adapter->ToI420();
   ASSERT_TRUE(i420_frame);
   EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
@@ -315,5 +353,46 @@ TEST(WebRtcVideoFrameAdapterTest, TextureFrameIsBlack) {
   EXPECT_EQ(0x0, i420_frame->DataY()[0]);
   EXPECT_EQ(0x80, i420_frame->DataU()[0]);
   EXPECT_EQ(0x80, i420_frame->DataV()[0]);
+}
+
+TEST(WebRtcVideoFrameAdapterTest, ConvertsTextureFrameWithSharedResources) {
+  const gfx::Size kCodedSize(1280, 960);
+  const gfx::Rect kVisibleRect(0, 120, 1280, 720);
+  const gfx::Size kNaturalSize(640, 360);
+
+  scoped_refptr<MockSharedResources> resources =
+      base::MakeRefCounted<MockSharedResources>();
+
+  // The adapter should report width and height from the natural size for
+  // VideoFrame backed by owned memory.
+  auto owned_memory_frame = CreateTestFrame(
+      kCodedSize, kVisibleRect, kNaturalSize, media::VideoFrame::STORAGE_OPAQUE,
+      media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
+      new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          std::move(owned_memory_frame), resources));
+  EXPECT_EQ(frame_adapter->width(), kNaturalSize.width());
+  EXPECT_EQ(frame_adapter->height(), kNaturalSize.height());
+
+  scoped_refptr<media::VideoFrame> memory_frame =
+      CreateTestFrame(kCodedSize, kVisibleRect, kNaturalSize,
+                      media::VideoFrame::STORAGE_OWNED_MEMORY,
+                      media::VideoPixelFormat::PIXEL_FORMAT_ARGB);
+  // fill mock image with whilte color.
+  memset(memory_frame->data(media::VideoFrame::kARGBPlane), 0xFF,
+         kCodedSize.GetArea() * 4);
+
+  // Should call texture conversion.
+  EXPECT_CALL(*resources, ConstructVideoFrameFromTexture(_))
+      .WillOnce(Return(memory_frame));
+
+  // The NV12 frame should have the same size as the natural size, but be black
+  // since we can't handle the texture with no shared resources.
+  auto i420_frame = frame_adapter->ToI420();
+  ASSERT_TRUE(i420_frame);
+  EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
+  EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
+  // Returned memory frame should not be replaced by a black frame.
+  EXPECT_NE(0x0, i420_frame->DataY()[0]);
 }
 }  // namespace blink

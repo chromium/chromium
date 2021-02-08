@@ -15,6 +15,10 @@
 #include "third_party/webrtc/media/base/adapted_video_track_source.h"
 #include "third_party/webrtc/rtc_base/timestamp_aligner.h"
 
+namespace media {
+class GpuVideoAcceleratorFactories;
+}
+
 namespace blink {
 
 // This class implements webrtc's VideoTrackSourceInterface. To pass frames down
@@ -36,7 +40,8 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   WebRtcVideoTrackSource(bool is_screencast,
                          absl::optional<bool> needs_denoising,
-                         media::VideoCaptureFeedbackCB callback);
+                         media::VideoCaptureFeedbackCB callback,
+                         media::GpuVideoAcceleratorFactories* gpu_factories);
   ~WebRtcVideoTrackSource() override;
 
   void SetCustomFrameAdaptationParamsForTesting(
@@ -71,7 +76,7 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   // |thread_checker_| is bound to the libjingle worker thread.
   THREAD_CHECKER(thread_checker_);
-  scoped_refptr<WebRtcVideoFrameAdapter::BufferPoolOwner> scaled_frame_pool_;
+  scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> adapter_resources_;
   // State for the timestamp translation.
   rtc::TimestampAligner timestamp_aligner_;
 

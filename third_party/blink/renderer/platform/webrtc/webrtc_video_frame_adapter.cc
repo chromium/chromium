@@ -8,12 +8,18 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/video_util.h"
+#include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
+#include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 #include "third_party/libyuv/include/libyuv/scale.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
 #include "third_party/webrtc/common_video/include/video_frame_buffer.h"
@@ -171,54 +177,142 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
 
 scoped_refptr<media::VideoFrame> MakeScaledI420VideoFrame(
     scoped_refptr<media::VideoFrame> source_frame,
-    scoped_refptr<blink::WebRtcVideoFrameAdapter::BufferPoolOwner>
-        scaled_frame_pool) {
-  auto mapped_frame = media::ConvertToMemoryMappedFrame(source_frame);
+    scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
+        shared_resources) {
+  // ARGB pixel format may be produced by readback of texture backed frames.
+  DCHECK(source_frame->format() == media::PIXEL_FORMAT_NV12 ||
+         source_frame->format() == media::PIXEL_FORMAT_I420 ||
+         source_frame->format() == media::PIXEL_FORMAT_I420A ||
+         source_frame->format() == media::PIXEL_FORMAT_ARGB);
+  const bool has_alpha = source_frame->format() == media::PIXEL_FORMAT_I420A;
   // Convert to I420 and scale to the natural size specified in
   // |source_frame|.
-  auto dst_frame = scaled_frame_pool->CreateFrame(
-      media::PIXEL_FORMAT_I420, source_frame->natural_size(),
-      gfx::Rect(source_frame->natural_size()), source_frame->natural_size(),
-      source_frame->timestamp());
+  auto dst_frame = shared_resources->CreateFrame(
+      has_alpha ? media::PIXEL_FORMAT_I420A : media::PIXEL_FORMAT_I420,
+      source_frame->natural_size(), gfx::Rect(source_frame->natural_size()),
+      source_frame->natural_size(), source_frame->timestamp());
   if (!dst_frame) {
     LOG(ERROR) << "Failed to create I420 frame from pool.";
     return nullptr;
   }
   dst_frame->metadata().MergeMetadataFrom(source_frame->metadata());
-  const auto& i420_planes = dst_frame->layout().planes();
-  webrtc::NV12ToI420Scaler scaler;
-  scaler.NV12ToI420Scale(
-      mapped_frame->visible_data(media::VideoFrame::kYPlane),
-      mapped_frame->stride(media::VideoFrame::kYPlane),
-      mapped_frame->visible_data(media::VideoFrame::kUVPlane),
-      mapped_frame->stride(media::VideoFrame::kUVPlane),
-      source_frame->visible_rect().width(),
-      source_frame->visible_rect().height(),
-      dst_frame->data(media::VideoFrame::kYPlane),
-      i420_planes[media::VideoFrame::kYPlane].stride,
-      dst_frame->data(media::VideoFrame::kUPlane),
-      i420_planes[media::VideoFrame::kUPlane].stride,
-      dst_frame->data(media::VideoFrame::kVPlane),
-      i420_planes[media::VideoFrame::kVPlane].stride,
-      dst_frame->coded_size().width(), dst_frame->coded_size().height());
+
+  switch (source_frame->format()) {
+    case media::PIXEL_FORMAT_I420A:
+      libyuv::ScalePlane(source_frame->visible_data(media::VideoFrame::kAPlane),
+                         source_frame->stride(media::VideoFrame::kAPlane),
+                         source_frame->visible_rect().width(),
+                         source_frame->visible_rect().height(),
+                         dst_frame->data(media::VideoFrame::kAPlane),
+                         dst_frame->stride(media::VideoFrame::kAPlane),
+                         dst_frame->coded_size().width(),
+                         dst_frame->coded_size().height(),
+                         libyuv::kFilterBilinear);
+      // Fallthrough to I420 in order to scale the YUV planes as well.
+      ABSL_FALLTHROUGH_INTENDED;
+    case media::PIXEL_FORMAT_I420:
+      libyuv::I420Scale(source_frame->visible_data(media::VideoFrame::kYPlane),
+                        source_frame->stride(media::VideoFrame::kYPlane),
+                        source_frame->visible_data(media::VideoFrame::kUPlane),
+                        source_frame->stride(media::VideoFrame::kUPlane),
+                        source_frame->visible_data(media::VideoFrame::kVPlane),
+                        source_frame->stride(media::VideoFrame::kVPlane),
+                        source_frame->visible_rect().width(),
+                        source_frame->visible_rect().height(),
+                        dst_frame->data(media::VideoFrame::kYPlane),
+                        dst_frame->stride(media::VideoFrame::kYPlane),
+                        dst_frame->data(media::VideoFrame::kUPlane),
+                        dst_frame->stride(media::VideoFrame::kUPlane),
+                        dst_frame->data(media::VideoFrame::kVPlane),
+                        dst_frame->stride(media::VideoFrame::kVPlane),
+                        dst_frame->coded_size().width(),
+                        dst_frame->coded_size().height(),
+                        libyuv::kFilterBilinear);
+      break;
+    case media::PIXEL_FORMAT_NV12: {
+      webrtc::NV12ToI420Scaler scaler;
+      scaler.NV12ToI420Scale(
+          source_frame->visible_data(media::VideoFrame::kYPlane),
+          source_frame->stride(media::VideoFrame::kYPlane),
+          source_frame->visible_data(media::VideoFrame::kUVPlane),
+          source_frame->stride(media::VideoFrame::kUVPlane),
+          source_frame->visible_rect().width(),
+          source_frame->visible_rect().height(),
+          dst_frame->data(media::VideoFrame::kYPlane),
+          dst_frame->stride(media::VideoFrame::kYPlane),
+          dst_frame->data(media::VideoFrame::kUPlane),
+          dst_frame->stride(media::VideoFrame::kUPlane),
+          dst_frame->data(media::VideoFrame::kVPlane),
+          dst_frame->stride(media::VideoFrame::kVPlane),
+          dst_frame->coded_size().width(), dst_frame->coded_size().height());
+    } break;
+    case media::PIXEL_FORMAT_ARGB: {
+      auto visible_size = source_frame->visible_rect().size();
+      if (visible_size == dst_frame->coded_size()) {
+        // Direct conversion to dst_frame with no scaling.
+        libyuv::ARGBToI420(
+            source_frame->visible_data(media::VideoFrame::kARGBPlane),
+            source_frame->stride(media::VideoFrame::kARGBPlane),
+            dst_frame->data(media::VideoFrame::kYPlane),
+            dst_frame->stride(media::VideoFrame::kYPlane),
+            dst_frame->data(media::VideoFrame::kUPlane),
+            dst_frame->stride(media::VideoFrame::kUPlane),
+            dst_frame->data(media::VideoFrame::kVPlane),
+            dst_frame->stride(media::VideoFrame::kVPlane), visible_size.width(),
+            visible_size.height());
+      } else {
+        // Convert to I420 tmp image and then scale to the dst_frame.
+        auto tmp_frame = shared_resources->CreateTemporaryFrame(
+            media::PIXEL_FORMAT_I420, visible_size, gfx::Rect(visible_size),
+            visible_size, source_frame->timestamp());
+        libyuv::ARGBToI420(
+            source_frame->visible_data(media::VideoFrame::kARGBPlane),
+            source_frame->stride(media::VideoFrame::kARGBPlane),
+            tmp_frame->data(media::VideoFrame::kYPlane),
+            tmp_frame->stride(media::VideoFrame::kYPlane),
+            tmp_frame->data(media::VideoFrame::kUPlane),
+            tmp_frame->stride(media::VideoFrame::kUPlane),
+            tmp_frame->data(media::VideoFrame::kVPlane),
+            tmp_frame->stride(media::VideoFrame::kVPlane), visible_size.width(),
+            visible_size.height());
+        libyuv::I420Scale(
+            tmp_frame->data(media::VideoFrame::kYPlane),
+            tmp_frame->stride(media::VideoFrame::kYPlane),
+            tmp_frame->data(media::VideoFrame::kUPlane),
+            tmp_frame->stride(media::VideoFrame::kUPlane),
+            tmp_frame->data(media::VideoFrame::kVPlane),
+            tmp_frame->stride(media::VideoFrame::kVPlane), visible_size.width(),
+            visible_size.height(), dst_frame->data(media::VideoFrame::kYPlane),
+            dst_frame->stride(media::VideoFrame::kYPlane),
+            dst_frame->data(media::VideoFrame::kUPlane),
+            dst_frame->stride(media::VideoFrame::kUPlane),
+            dst_frame->data(media::VideoFrame::kVPlane),
+            dst_frame->stride(media::VideoFrame::kVPlane),
+            dst_frame->coded_size().width(), dst_frame->coded_size().height(),
+            libyuv::kFilterBilinear);
+      }
+    } break;
+    default:
+      NOTREACHED();
+  }
   return dst_frame;
 }
 
 scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
     scoped_refptr<media::VideoFrame> source_frame,
-    scoped_refptr<blink::WebRtcVideoFrameAdapter::BufferPoolOwner>
-        scaled_frame_pool) {
-  auto mapped_frame = media::ConvertToMemoryMappedFrame(source_frame);
-  auto dst_frame = scaled_frame_pool->CreateFrame(
+    scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
+        shared_resources) {
+  DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
+  auto dst_frame = shared_resources->CreateFrame(
       media::PIXEL_FORMAT_NV12, source_frame->natural_size(),
       gfx::Rect(source_frame->natural_size()), source_frame->natural_size(),
       source_frame->timestamp());
   dst_frame->metadata().MergeMetadataFrom(source_frame->metadata());
   const auto& nv12_planes = dst_frame->layout().planes();
-  libyuv::NV12Scale(mapped_frame->visible_data(media::VideoFrame::kYPlane),
-                    mapped_frame->stride(media::VideoFrame::kYPlane),
-                    mapped_frame->visible_data(media::VideoFrame::kUVPlane),
-                    mapped_frame->stride(media::VideoFrame::kUVPlane),
+  libyuv::NV12Scale(source_frame->visible_data(media::VideoFrame::kYPlane),
+                    source_frame->stride(media::VideoFrame::kYPlane),
+                    source_frame->visible_data(media::VideoFrame::kUVPlane),
+                    source_frame->stride(media::VideoFrame::kUVPlane),
                     source_frame->visible_rect().width(),
                     source_frame->visible_rect().height(),
                     dst_frame->data(media::VideoFrame::kYPlane),
@@ -230,30 +324,48 @@ scoped_refptr<media::VideoFrame> MakeScaledNV12VideoFrame(
   return dst_frame;
 }
 
-scoped_refptr<media::VideoFrame> ConstructVideoFrameFromGpu(
+scoped_refptr<media::VideoFrame> MaybeConvertAndScaleFrame(
     scoped_refptr<media::VideoFrame> source_frame,
-    scoped_refptr<blink::WebRtcVideoFrameAdapter::BufferPoolOwner>
-        scaled_frame_pool) {
-  CHECK(source_frame);
-  CHECK(scaled_frame_pool);
-  // NV12 is the only supported format.
-  DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
-  DCHECK_EQ(source_frame->storage_type(),
-            media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+    scoped_refptr<blink::WebRtcVideoFrameAdapter::SharedResources>
+        shared_resources) {
+  if (!source_frame)
+    return nullptr;
+  // Texture frames may be readback in ARGB format.
+  RTC_DCHECK(source_frame->format() == media::PIXEL_FORMAT_I420 ||
+             source_frame->format() == media::PIXEL_FORMAT_I420A ||
+             source_frame->format() == media::PIXEL_FORMAT_NV12 ||
+             source_frame->format() == media::PIXEL_FORMAT_ARGB);
+  RTC_DCHECK(shared_resources);
 
-  // Convert to I420 and scale to the natural size specified in |source_frame|.
-  const bool dont_convert_nv12_image =
+  const bool allow_nv12_output =
       base::FeatureList::IsEnabled(blink::features::kWebRtcLibvpxEncodeNV12);
-  if (!dont_convert_nv12_image) {
-    return MakeScaledI420VideoFrame(std::move(source_frame),
-                                    std::move(scaled_frame_pool));
-  } else if (source_frame->natural_size() ==
-             source_frame->visible_rect().size()) {
-    return media::ConvertToMemoryMappedFrame(std::move(source_frame));
-  } else {
+  const bool source_is_i420 =
+      source_frame->format() == media::PIXEL_FORMAT_I420 ||
+      source_frame->format() == media::PIXEL_FORMAT_I420A;
+  const bool source_is_nv12 =
+      source_frame->format() == media::PIXEL_FORMAT_NV12;
+  const bool no_scaling_needed =
+      source_frame->natural_size() == source_frame->visible_rect().size();
+
+  if (((source_is_nv12 && allow_nv12_output) || source_is_i420) &&
+      no_scaling_needed) {
+    // |source_frame| already has correct pixel format and resolution.
+    return source_frame;
+  } else if (source_is_nv12 && allow_nv12_output) {
+    // Output NV12 only if it is allowed and no conversion is needed.
     return MakeScaledNV12VideoFrame(std::move(source_frame),
-                                    std::move(scaled_frame_pool));
+                                    std::move(shared_resources));
+  } else {
+    return MakeScaledI420VideoFrame(std::move(source_frame),
+                                    std::move(shared_resources));
   }
+}
+
+static void CreateContextProviderOnMainThread(
+    scoped_refptr<viz::RasterContextProvider>* result,
+    base::WaitableEvent* waitable_event) {
+  *result = blink::Platform::Current()->SharedCompositorWorkerContextProvider();
+  waitable_event->Signal();
 }
 
 }  // anonymous namespace
@@ -261,7 +373,7 @@ scoped_refptr<media::VideoFrame> ConstructVideoFrameFromGpu(
 namespace blink {
 
 scoped_refptr<media::VideoFrame>
-WebRtcVideoFrameAdapter::BufferPoolOwner::CreateFrame(
+WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
     media::VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -271,9 +383,85 @@ WebRtcVideoFrameAdapter::BufferPoolOwner::CreateFrame(
                            timestamp);
 }
 
-WebRtcVideoFrameAdapter::BufferPoolOwner::BufferPoolOwner() = default;
+scoped_refptr<media::VideoFrame>
+WebRtcVideoFrameAdapter::SharedResources::CreateTemporaryFrame(
+    media::VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::TimeDelta timestamp) {
+  return pool_for_tmp_frames_.CreateFrame(format, coded_size, visible_rect,
+                                          natural_size, timestamp);
+}
 
-WebRtcVideoFrameAdapter::BufferPoolOwner::~BufferPoolOwner() = default;
+scoped_refptr<viz::RasterContextProvider>
+WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
+  base::AutoLock auto_lock(context_provider_lock_);
+  if (raster_context_provider_) {
+    // Reuse created context provider if it's alive.
+    viz::RasterContextProvider::ScopedRasterContextLock lock(
+        raster_context_provider_.get());
+    if (lock.RasterInterface()->GetGraphicsResetStatusKHR() == GL_NO_ERROR)
+      return raster_context_provider_;
+  }
+
+  // Recreate the context provider.
+  base::WaitableEvent waitable_event;
+  PostCrossThreadTask(
+      *Thread::MainThread()->GetTaskRunner(), FROM_HERE,
+      CrossThreadBindOnce(&CreateContextProviderOnMainThread,
+                          CrossThreadUnretained(&raster_context_provider_),
+                          CrossThreadUnretained(&waitable_event)));
+
+  // This wait is necessary because this task is completed via main thread
+  // asynchronously but WebRTC API is synchronous.
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+  waitable_event.Wait();
+
+  return raster_context_provider_;
+}
+
+scoped_refptr<media::VideoFrame>
+WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
+    scoped_refptr<media::VideoFrame> source_frame) {
+  RTC_DCHECK(source_frame->HasTextures());
+
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider =
+      GetRasterContextProvider();
+  if (!raster_context_provider) {
+    return nullptr;
+  }
+  viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
+      raster_context_provider.get());
+
+  auto* ri = scoped_context.RasterInterface();
+  auto* gr_context = raster_context_provider->GrContext();
+
+  if (!ri || !gr_context) {
+    return nullptr;
+  }
+
+  return media::ReadbackTextureBackedFrameToMemorySync(
+      *source_frame, ri, gr_context, &pool_for_mapped_frames_);
+}
+
+scoped_refptr<media::VideoFrame>
+WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromGpu(
+    scoped_refptr<media::VideoFrame> source_frame) {
+  CHECK(source_frame);
+  // NV12 is the only supported format.
+  DCHECK_EQ(source_frame->format(), media::PIXEL_FORMAT_NV12);
+  DCHECK_EQ(source_frame->storage_type(),
+            media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+
+  return media::ConvertToMemoryMappedFrame(std::move(source_frame));
+}
+
+WebRtcVideoFrameAdapter::SharedResources::SharedResources(
+    media::GpuVideoAcceleratorFactories* gpu_factories)
+    : gpu_factories_(gpu_factories) {}
+
+WebRtcVideoFrameAdapter::SharedResources::~SharedResources() = default;
 
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
     scoped_refptr<media::VideoFrame> frame)
@@ -281,8 +469,8 @@ WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
 
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
     scoped_refptr<media::VideoFrame> frame,
-    scoped_refptr<BufferPoolOwner> scaled_frame_pool)
-    : frame_(std::move(frame)), scaled_frame_pool_(scaled_frame_pool) {}
+    scoped_refptr<SharedResources> shared_resources)
+    : frame_(std::move(frame)), shared_resources_(shared_resources) {}
 
 WebRtcVideoFrameAdapter::~WebRtcVideoFrameAdapter() {}
 
@@ -327,81 +515,34 @@ WebRtcVideoFrameAdapter::CreateFrameAdapter() const {
 
   if (frame_->storage_type() ==
       media::VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
-    auto video_frame = ConstructVideoFrameFromGpu(frame_, scaled_frame_pool_);
+    auto video_frame =
+        shared_resources_
+            ? shared_resources_->ConstructVideoFrameFromGpu(frame_)
+            : nullptr;
+    video_frame = MaybeConvertAndScaleFrame(video_frame, shared_resources_);
     if (!video_frame) {
       return MakeFrameAdapter(media::VideoFrame::CreateColorFrame(
           frame_->natural_size(), 0u, 0x80, 0x80, frame_->timestamp()));
     }
-    // Keep |frame_| alive until |video_frame| is destroyed.
-    video_frame->AddDestructionObserver(
-        ConvertToBaseOnceCallback(CrossThreadBindOnce(
-            base::DoNothing::Once<scoped_refptr<media::VideoFrame>>(),
-            frame_)));
     return MakeFrameAdapter(std::move(video_frame));
   } else if (frame_->HasTextures()) {
-    // We cant convert texture synchronously due to threading issues, see
-    // https://crbug.com/663452. Instead, return a black frame (yuv = {0, 0x80,
-    // 0x80}).
-    DLOG(ERROR) << "Texture backed frame cannot be accessed.";
-    return MakeFrameAdapter(media::VideoFrame::CreateColorFrame(
-        frame_->natural_size(), 0u, 0x80, 0x80, frame_->timestamp()));
+    auto video_frame =
+        shared_resources_
+            ? shared_resources_->ConstructVideoFrameFromTexture(frame_)
+            : nullptr;
+    video_frame = MaybeConvertAndScaleFrame(video_frame, shared_resources_);
+    if (!video_frame) {
+      DLOG(ERROR) << "Texture backed frame cannot be accessed.";
+      return MakeFrameAdapter(media::VideoFrame::CreateColorFrame(
+          frame_->natural_size(), 0u, 0x80, 0x80, frame_->timestamp()));
+    }
+    return MakeFrameAdapter(std::move(video_frame));
   }
 
   // Since scaling is required, hard-apply both the cropping and scaling
   // before we hand the frame over to WebRTC.
-  gfx::Size scaled_size = frame_->natural_size();
-  scoped_refptr<media::VideoFrame> scaled_frame = frame_;
-  if (scaled_size != frame_->visible_rect().size()) {
-    CHECK(scaled_frame_pool_);
-    scaled_frame = scaled_frame_pool_->CreateFrame(
-        frame_->format(), scaled_size, gfx::Rect(scaled_size), scaled_size,
-        frame_->timestamp());
-
-    switch (frame_->format()) {
-      case media::PIXEL_FORMAT_I420A:
-        libyuv::ScalePlane(
-            frame_->visible_data(media::VideoFrame::kAPlane),
-            frame_->stride(media::VideoFrame::kAPlane),
-            frame_->visible_rect().width(), frame_->visible_rect().height(),
-            scaled_frame->data(media::VideoFrame::kAPlane),
-            scaled_frame->stride(media::VideoFrame::kAPlane),
-            scaled_size.width(), scaled_size.height(), libyuv::kFilterBilinear);
-        // Fallthrough to I420 in order to scale the YUV planes as well.
-        ABSL_FALLTHROUGH_INTENDED;
-      case media::PIXEL_FORMAT_I420:
-        libyuv::I420Scale(
-            frame_->visible_data(media::VideoFrame::kYPlane),
-            frame_->stride(media::VideoFrame::kYPlane),
-            frame_->visible_data(media::VideoFrame::kUPlane),
-            frame_->stride(media::VideoFrame::kUPlane),
-            frame_->visible_data(media::VideoFrame::kVPlane),
-            frame_->stride(media::VideoFrame::kVPlane),
-            frame_->visible_rect().width(), frame_->visible_rect().height(),
-            scaled_frame->data(media::VideoFrame::kYPlane),
-            scaled_frame->stride(media::VideoFrame::kYPlane),
-            scaled_frame->data(media::VideoFrame::kUPlane),
-            scaled_frame->stride(media::VideoFrame::kUPlane),
-            scaled_frame->data(media::VideoFrame::kVPlane),
-            scaled_frame->stride(media::VideoFrame::kVPlane),
-            scaled_size.width(), scaled_size.height(), libyuv::kFilterBilinear);
-        break;
-      case media::PIXEL_FORMAT_NV12:
-        libyuv::NV12Scale(
-            frame_->visible_data(media::VideoFrame::kYPlane),
-            frame_->stride(media::VideoFrame::kYPlane),
-            frame_->visible_data(media::VideoFrame::kUVPlane),
-            frame_->stride(media::VideoFrame::kUVPlane),
-            frame_->visible_rect().width(), frame_->visible_rect().height(),
-            scaled_frame->data(media::VideoFrame::kYPlane),
-            scaled_frame->stride(media::VideoFrame::kYPlane),
-            scaled_frame->data(media::VideoFrame::kUVPlane),
-            scaled_frame->stride(media::VideoFrame::kUVPlane),
-            scaled_size.width(), scaled_size.height(), libyuv::kFilterBilinear);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
+  scoped_refptr<media::VideoFrame> scaled_frame =
+      MaybeConvertAndScaleFrame(frame_, shared_resources_);
   return MakeFrameAdapter(std::move(scaled_frame));
 }
 
