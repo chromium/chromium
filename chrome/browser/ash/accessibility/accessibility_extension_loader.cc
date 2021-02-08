@@ -11,6 +11,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_system.h"
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+using ::ash::ProfileHelper;
+
 AccessibilityExtensionLoader::AccessibilityExtensionLoader(
     const std::string& extension_id,
     const base::FilePath& extension_path,

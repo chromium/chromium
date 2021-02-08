@@ -23,7 +23,7 @@ namespace base {
 class FilePath;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This helper class is used on Chrome OS to keep track of currently
 // active user profile.
@@ -184,8 +184,8 @@ class ProfileHelper
  protected:
   // TODO(nkostylev): Create a test API class that will be the only one allowed
   // to access private test methods.
-  friend class FakeChromeUserManager;
-  friend class MockUserManager;
+  friend class ::chromeos::FakeChromeUserManager;
+  friend class ::chromeos::MockUserManager;
   friend class ProfileHelperTest;
   friend class ::IndependentOTRProfileManagerTest;
 
@@ -206,10 +206,12 @@ class ProfileHelper
   DISALLOW_COPY_AND_ASSIGN(ProfileHelper);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-using chromeos::ProfileHelper;
+namespace chromeos {
+using ::ash::ProfileHelper;
+}
 
 #endif  // CHROME_BROWSER_ASH_PROFILES_PROFILE_HELPER_H_

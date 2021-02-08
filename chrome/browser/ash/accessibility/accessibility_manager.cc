@@ -99,6 +99,9 @@ using extensions::api::braille_display_private::BrailleController;
 using extensions::api::braille_display_private::DisplayState;
 using extensions::api::braille_display_private::KeyEvent;
 using extensions::api::braille_display_private::StubBrailleController;
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+using ::ash::ProfileHelper;
 
 namespace {
 

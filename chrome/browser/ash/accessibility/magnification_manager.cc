@@ -30,6 +30,10 @@
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+using ::ash::ProfileHelper;
+
 // The duration of time to ignore focus changes after the last mouse event.
 // Keep under one frame length (~16ms at 60hz).
 constexpr base::TimeDelta kTimeIgnoreFocusChangeAfterMouseEvent =

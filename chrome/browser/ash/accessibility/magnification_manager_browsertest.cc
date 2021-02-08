@@ -32,6 +32,10 @@
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+using ::ash::ProfileHelper;
+
 constexpr char kTestUserName[] = "owner@invalid.domain";
 constexpr char kTestUserGaiaId[] = "9876543210";
 

@@ -59,6 +59,10 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+using ::ash::ProfileHelper;
+
 const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
 }  // namespace
 

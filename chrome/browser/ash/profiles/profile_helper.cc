@@ -42,9 +42,16 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "extensions/browser/extension_system.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace login = ::chromeos::login;
+using ::chromeos::ChromeUserManager;
+using ::chromeos::FileFlusher;
+using ::chromeos::OAuth2LoginManager;
 
 // This array contains a subset of explicitly whitelist extensions that, which
 // are defined in extensions/common/api/_behavior_features.json. The extension
@@ -388,9 +395,9 @@ bool ProfileHelper::IsEphemeralUserProfile(const Profile* profile) {
 
 // static
 bool ProfileHelper::IsRegularProfile(const Profile* profile) {
-  return !chromeos::ProfileHelper::IsSigninProfile(profile) &&
-         !chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&
-         !chromeos::ProfileHelper::IsLockScreenProfile(profile);
+  return !ProfileHelper::IsSigninProfile(profile) &&
+         !ProfileHelper::IsLockScreenAppProfile(profile) &&
+         !ProfileHelper::IsLockScreenProfile(profile);
 }
 
 // static
@@ -721,4 +728,4 @@ void ProfileHelperImpl::FlushProfile(Profile* profile) {
                                  base::OnceClosure());
 }
 
-}  // namespace chromeos
+}  // namespace ash

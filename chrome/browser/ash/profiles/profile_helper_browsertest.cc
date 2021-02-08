@@ -14,7 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 static const char kActiveUserHash[] = "01234567890";
@@ -56,4 +56,4 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, GetProfilePathByUserIdHash) {
   EXPECT_EQ(expected_path, profile_path);
 }
 
-}  // namespace chromeos
+}  // namespace ash

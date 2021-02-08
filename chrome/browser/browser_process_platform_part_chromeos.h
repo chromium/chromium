@@ -20,13 +20,13 @@ class Profile;
 
 namespace ash {
 class AccountManagerFactory;
+class ProfileHelper;
 }
 
 namespace chromeos {
 class ChromeSessionManager;
 class ChromeUserManager;
 class InSessionPasswordChangeManager;
-class ProfileHelper;
 class SchedulerConfigurationManager;
 class TimeZoneResolver;
 
@@ -85,7 +85,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   // Returns the ProfileHelper instance that is used to identify
   // users and their profiles in Chrome OS multi user session.
-  chromeos::ProfileHelper* profile_helper();
+  ash::ProfileHelper* profile_helper();
 
   chromeos::system::AutomaticRebootManager* automatic_reboot_manager() {
     return automatic_reboot_manager_.get();
@@ -141,7 +141,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   std::unique_ptr<chromeos::ChromeSessionManager> session_manager_;
 
   bool created_profile_helper_;
-  std::unique_ptr<chromeos::ProfileHelper> profile_helper_;
+  std::unique_ptr<ash::ProfileHelper> profile_helper_;
 
   std::unique_ptr<chromeos::system::AutomaticRebootManager>
       automatic_reboot_manager_;

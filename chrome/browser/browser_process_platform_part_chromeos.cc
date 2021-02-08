@@ -209,7 +209,7 @@ void BrowserProcessPlatformPart::UnregisterKeepAlive() {
   keep_alive_.reset();
 }
 
-chromeos::ProfileHelper* BrowserProcessPlatformPart::profile_helper() {
+ash::ProfileHelper* BrowserProcessPlatformPart::profile_helper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!created_profile_helper_)
     CreateProfileHelper();
@@ -266,7 +266,7 @@ void BrowserProcessPlatformPart::DestroySystemClock() {
 void BrowserProcessPlatformPart::CreateProfileHelper() {
   DCHECK(!created_profile_helper_ && !profile_helper_);
   created_profile_helper_ = true;
-  profile_helper_ = chromeos::ProfileHelper::CreateInstance();
+  profile_helper_ = ash::ProfileHelper::CreateInstance();
 }
 
 ash::AccountManagerFactory*
