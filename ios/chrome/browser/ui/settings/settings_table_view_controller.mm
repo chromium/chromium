@@ -1479,11 +1479,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     case kSyncEnabledWithError: {
       SyncSetupService* syncSetupService =
           SyncSetupServiceFactory::GetForBrowserState(_browserState);
-      googleSyncItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
       googleSyncItem.detailText =
           GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncErrorImageName;
-      break;
+
+      // Return a vertical layout of title / subtitle in the case of a sync
+      // error.
+      googleSyncItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+      return;
     }
     case kSyncEnabled: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
@@ -1491,6 +1494,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       break;
     }
   }
+  // Needed to update the item text layout in the case that it was previously
+  // set to UILayoutConstraintAxisVertical due to a sync error.
+  googleSyncItem.textLayoutConstraintAxis = UILayoutConstraintAxisHorizontal;
 }
 
 // Updates and reloads the Google service cell.
