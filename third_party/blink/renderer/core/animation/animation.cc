@@ -385,9 +385,6 @@ void Animation::SetCurrentTimeInternal(AnimationTimeDelta new_current_time) {
 void Animation::SetHoldTimeAndPhase(
     base::Optional<AnimationTimeDelta> new_hold_time,
     TimelinePhase new_hold_phase) {
-  // new_hold_time must be valid, unless new_hold_phase is inactive.
-  DCHECK(new_hold_time ||
-         (!new_hold_time && new_hold_phase == TimelinePhase::kInactive));
   hold_time_ = new_hold_time;
   hold_phase_ = new_hold_phase;
 }
@@ -433,7 +430,7 @@ base::Optional<double> Animation::currentTime() const {
 }
 
 bool Animation::ValidateHoldTimeAndPhase() const {
-  return (hold_phase_ && hold_time_) ||
+  return hold_phase_ ||
          ((!hold_phase_ || hold_phase_ == TimelinePhase::kInactive) &&
           !hold_time_);
 }
@@ -1536,8 +1533,10 @@ void Animation::UpdateFinishedState(UpdateType update_type,
       hold_phase = did_seek ? TimelinePhase::kActive : CalculateCurrentPhase();
 
       // Hack for resolving precision issue at zero.
-      if (IsWithinAnimationTimeEpsilon(hold_time.value().InSecondsF(), -0))
+      if (hold_time.has_value() &&
+          IsWithinAnimationTimeEpsilon(hold_time.value().InSecondsF(), -0)) {
         hold_time = AnimationTimeDelta();
+      }
 
       SetHoldTimeAndPhase(hold_time, hold_phase);
     } else if (playback_rate != 0) {

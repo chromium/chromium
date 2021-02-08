@@ -1,0 +1,16 @@
+<!doctype HTML>
+<body>
+PASS if no crash.
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+const elem = document.createElement('elem');
+document.body.appendChild(elem);
+const anim = elem.animate([]);
+anim.reverse();
+anim.finish();
+anim.timeline = null;
+anim.timeline = document.timeline;
+</script>
+</body>
