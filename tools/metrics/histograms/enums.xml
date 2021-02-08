@@ -51168,6 +51168,8 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="New user, potential host exists"/>
   <int value="1" label="Existing user, host switched"/>
   <int value="2" label="Existing user, new Chromebook added"/>
+  <int value="3" label="Unknown (error case)"/>
+  <int value="4" label="Wi-Fi Sync Announcement"/>
 </enum>
 
 <enum name="MultiDeviceSetupOOBEUserChoice">

@@ -95,11 +95,14 @@ class ASH_EXPORT MultiDeviceNotificationPresenter
 
   // Reflects MultiDeviceSetupNotification enum in enums.xml. Do not
   // rearrange.
-  enum NotificationType {
-    kNotificationTypeNewUserPotentialHostExists = 0,
-    kNotificationTypeExistingUserHostSwitched = 1,
-    kNotificationTypeExistingUserNewChromebookAdded = 2,
-    kNotificationTypeMax
+  enum class NotificationType {
+    kNewUserPotentialHostExists = 0,
+    kExistingUserHostSwitched = 1,
+    kExistingUserNewChromebookAdded = 2,
+    // This is a legacy error case that is not expected to occur.
+    kErrorUnknown = 3,
+    kWifiSyncAnnouncement = 4,
+    kMaxValue = kWifiSyncAnnouncement
   };
 
   static NotificationType GetMetricValueForNotification(
