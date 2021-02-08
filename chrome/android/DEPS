@@ -5,34 +5,12 @@ include_rules = [
   # should add an allow rule to a DEPS file in the relevant directory.
   "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
 
-  "+chrome/browser/browser_controls/android",
-  "+chrome/browser/device",
-  "+chrome/browser/enterprise",
-  "+chrome/browser/feedback/android",
-  "+chrome/browser/flags/android",
-  "+chrome/browser/fullscreen/android",
-  "+chrome/browser/image_descriptions",
-  "+chrome/browser/ui/android/layouts",
-  "+chrome/browser/notifications",
-  "+chrome/browser/password_manager/android",
-  "+chrome/browser/page_annotations/android",
-  "+chrome/browser/policy/android",
-  "+chrome/browser/preferences/android/java",
-  "+chrome/browser/safe_browsing/android",
-  "+chrome/browser/safety_check/android",
-  "+chrome/browser/signin/services/android/java",
-  "+chrome/browser/signin/ui/android/java",
-  "+chrome/browser/settings/android",
-  "+chrome/browser/ui/android/favicon/java",
-  "+chrome/browser/ui/android/native_page",
-  "+chrome/browser/ui/messages/android",
-  "+chrome/browser/uid/android",
-  "+chrome/browser/user_education",
-  "+chrome/browser/util/android/java",
-  "+chrome/browser/version",
-  "+chrome/browser/video_tutorials",
-  "+chrome/browser/webapps/android",
-  "+chrome/browser/webauthn/android",
+  # Allow dependencies on chrome/browser modules
+  "+chrome/browser",
+
+  # Restrict dependencies to xsurface by default (crbug.com/1115137)
+  "-chrome/browser/xsurface",
+
   "+components/browser_ui/banners/android",
   "+components/browser_ui/bottomsheet/android",
   "+components/browser_ui/contacts_picker/android",
@@ -84,6 +62,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Allow dependencies to xsurface from AppHooks only (crbug.com/1115137)
   "chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java": [
     "+chrome/browser/xsurface/android",
   ],
