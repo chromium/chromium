@@ -24,7 +24,7 @@ static_library("profiling_host") {
     "//components/version_info",
     "//content/public/browser",
     "//content/public/common",
-    "//third_party/zlib:zlib_common_headers",
+    "//third_party/zlib:zlib",
 
     # Added to support the dependency on //chrome/browser/metrics
     # TODO(darin): We should instead have a way to express that dependency here.
