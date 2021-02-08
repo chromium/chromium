@@ -223,6 +223,18 @@ TEST_F(KeyboardShortcutViewTest, CloseWindowByAccelerator) {
   EXPECT_TRUE(widget->IsClosed());
 }
 
+// Test that the window can be closed by accelerator (CTRL + SHIFT + W).
+TEST_F(KeyboardShortcutViewTest, CloseWindowByAcceleratorCtrlShiftW) {
+  // Show the widget.
+  views::Widget* widget = Toggle();
+  EXPECT_FALSE(widget->IsClosed());
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_W,
+                            ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(widget->IsClosed());
+}
+
 // Test that the window can be activated or closed by toggling.
 TEST_F(KeyboardShortcutViewTest, ToggleWindow) {
   // Show the widget.

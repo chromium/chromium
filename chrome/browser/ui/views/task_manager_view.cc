@@ -155,8 +155,12 @@ gfx::Size TaskManagerView::CalculatePreferredSize() const {
 }
 
 bool TaskManagerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  const bool is_valid_modifier =
+      accelerator.modifiers() == ui::EF_CONTROL_DOWN ||
+      accelerator.modifiers() == (ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  DCHECK(is_valid_modifier);
   DCHECK_EQ(ui::VKEY_W, accelerator.key_code());
-  DCHECK_EQ(ui::EF_CONTROL_DOWN, accelerator.modifiers());
+
   GetWidget()->Close();
   return true;
 }
@@ -346,6 +350,8 @@ void TaskManagerView::Init() {
   table_model_->RetrieveSavedColumnsSettingsAndUpdateTable();
 
   AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
+  AddAccelerator(
+      ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
 }
 
 void TaskManagerView::InitAlwaysOnTopState() {
