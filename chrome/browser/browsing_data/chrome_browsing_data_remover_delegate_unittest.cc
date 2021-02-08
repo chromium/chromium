@@ -51,7 +51,7 @@
 #include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
+#include "chrome/browser/permissions/permission_actions_history.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
@@ -101,7 +101,9 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -1176,11 +1178,16 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         mask, url::Origin::Create(origin), policy);
   }
 
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
  private:
   // Cached pointer to BrowsingDataRemover for access to testing methods.
   content::BrowsingDataRemover* remover_;
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<network::NetworkContext> network_context_;
   std::unique_ptr<TestingProfile> profile_;
 
@@ -1590,10 +1597,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AutofillRemovalOlderThan30Days) {
   // gets initialized:
   ProfileSyncServiceFactory::GetForProfile(GetProfile());
 
-  const base::Time kNow = base::Time::Now();
-  const base::Time k30DaysOld = kNow - base::TimeDelta::FromDays(30);
-  const base::Time k31DaysOld = kNow - base::TimeDelta::FromDays(31);
-  const base::Time k32DaysOld = kNow - base::TimeDelta::FromDays(32);
+  const base::Time k32DaysOld = base::Time::Now();
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  const base::Time k31DaysOld = base::Time::Now();
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  const base::Time k30DaysOld = base::Time::Now();
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(30));
 
   // Add profiles and cards with modification date as 31 days old from now.
   autofill::TestAutofillClock test_clock;
@@ -2355,7 +2364,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTranslateBlocklist) {
   auto translate_prefs =
       ChromeTranslateClient::CreateTranslatePrefs(GetProfile()->GetPrefs());
   translate_prefs->AddSiteToNeverPromptList("google.com");
-  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
   base::Time t = base::Time::Now();
   translate_prefs->AddSiteToNeverPromptList("maps.google.com");
 
@@ -2956,47 +2965,46 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeCustomDictionaryData) {
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        WipeNotificationPermissionPromptOutcomesData) {
   PrefService* prefs = GetProfile()->GetPrefs();
-  auto* permission_ui_enabler =
-      AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(GetProfile());
-  base::SimpleTestClock clock_;
-  clock_.SetNow(base::Time::Now());
-  base::Time first_recorded_time = clock_.Now();
+  base::Time first_recorded_time = base::Time::Now();
 
-  permission_ui_enabler->set_clock_for_testing(&clock_);
-  permission_ui_enabler->RecordPermissionPromptOutcome(
-      permissions::PermissionAction::DENIED);
-  clock_.Advance(base::TimeDelta::FromDays(1));
-  permission_ui_enabler->set_clock_for_testing(&clock_);
-  permission_ui_enabler->RecordPermissionPromptOutcome(
-      permissions::PermissionAction::DENIED);
-  clock_.Advance(base::TimeDelta::FromDays(1));
-  base::Time third_recorded_time = clock_.Now();
-  permission_ui_enabler->set_clock_for_testing(&clock_);
-  permission_ui_enabler->RecordPermissionPromptOutcome(
-      permissions::PermissionAction::DENIED);
+  auto* action_history = PermissionActionsHistory::GetForProfile(GetProfile());
+  action_history->RecordAction(permissions::PermissionAction::DENIED,
+                               permissions::RequestType::kNotifications);
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  action_history->RecordAction(permissions::PermissionAction::DENIED,
+                               permissions::RequestType::kNotifications);
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  base::Time third_recorded_time = base::Time::Now();
+  action_history->RecordAction(permissions::PermissionAction::DENIED,
+                               permissions::RequestType::kNotifications);
 
-  constexpr char kNotificationPermissionActionsPrefPath[] =
-      "profile.content_settings.permission_actions.notifications";
+  constexpr char kPermissionActionsPrefPath[] =
+      "profile.content_settings.permission_actions";
 
-  EXPECT_EQ(3u,
-            prefs->GetList(kNotificationPermissionActionsPrefPath)->GetSize());
+  EXPECT_EQ(3u, prefs->GetDictionary(kPermissionActionsPrefPath)
+                    ->FindKey("notifications")
+                    ->GetList()
+                    .size());
   // Remove the first and the second element.
   BlockUntilBrowsingDataRemoved(first_recorded_time, third_recorded_time,
                                 constants::DATA_TYPE_SITE_USAGE_DATA, false);
   // There is only one element left.
-  EXPECT_EQ(1u,
-            prefs->GetList(kNotificationPermissionActionsPrefPath)->GetSize());
-  EXPECT_EQ(
-      (util::ValueToTime(prefs->GetList(kNotificationPermissionActionsPrefPath)
-                             ->begin()
-                             ->FindKey("time")))
-          .value_or(base::Time()),
-      third_recorded_time);
+  EXPECT_EQ(1u, prefs->GetDictionary(kPermissionActionsPrefPath)
+                    ->FindKey("notifications")
+                    ->GetList()
+                    .size());
+  EXPECT_EQ((util::ValueToTime(prefs->GetDictionary(kPermissionActionsPrefPath)
+                                   ->FindKey("notifications")
+                                   ->GetList()
+                                   .begin()
+                                   ->FindKey("time")))
+                .value_or(base::Time()),
+            third_recorded_time);
 
   // Test we wiped all the elements left.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_SITE_USAGE_DATA, false);
-  EXPECT_TRUE(prefs->GetList(kNotificationPermissionActionsPrefPath)->empty());
+  EXPECT_TRUE(prefs->GetDictionary(kPermissionActionsPrefPath)->empty());
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,

@@ -60,7 +60,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
+#include "chrome/browser/permissions/permission_actions_history.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
@@ -786,9 +786,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                                                                   delete_end_);
     }
 
-    auto* permission_ui_enabler =
-        AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile_);
-    permission_ui_enabler->ClearInteractionHistory(delete_begin_, delete_end_);
+    PermissionActionsHistory::GetForProfile(profile_)->ClearHistory(
+        delete_begin_, delete_end_);
   }
 
   if ((remove_mask & constants::DATA_TYPE_SITE_USAGE_DATA) ||

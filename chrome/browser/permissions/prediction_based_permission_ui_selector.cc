@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/time/default_clock.h"
 #include "base/util/values/values_util.h"
+#include "chrome/browser/permissions/permission_actions_history.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,9 +33,6 @@ constexpr auto VeryUnlikely = permissions::
 // the ML model is built on.
 constexpr base::TimeDelta kPermissionActionCutoffAge =
     base::TimeDelta::FromDays(28);
-
-constexpr char kPermissionActionEntryActionKey[] = "action";
-constexpr char kPermissionActionEntryTimestampKey[] = "time";
 
 base::Optional<
     permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood>
@@ -131,48 +129,17 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   permissions::PredictionRequestFeatures features;
   features.gesture = request->GetGestureType();
   features.type = request->GetRequestType();
-  auto* permission_actions =
-      profile_->GetPrefs()->GetList(prefs::kNotificationPermissionActions);
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
-  for (const auto& action : *permission_actions) {
-    const base::Optional<base::Time> timestamp =
-        util::ValueToTime(action.FindKey(kPermissionActionEntryTimestampKey));
 
-    if (!timestamp || *timestamp < cutoff)
-      continue;
+  auto* action_history = PermissionActionsHistory::GetForProfile(profile_);
 
-    const base::Optional<int> past_action_as_int =
-        action.FindIntKey(kPermissionActionEntryActionKey);
-    DCHECK(past_action_as_int);
+  auto actions = action_history->GetHistory(
+      cutoff, permissions::RequestType::kNotifications);
+  FillInActionCounts(&features.requested_permission_counts, actions);
 
-    const permissions::PermissionAction past_action =
-        static_cast<permissions::PermissionAction>(*past_action_as_int);
-
-    // TODO(andypaicu): implement recording all prompts outcomes regardless of
-    // type. We currently only count notification prompts.
-    switch (past_action) {
-      case permissions::PermissionAction::DENIED:
-        features.requested_permission_counts.denies++;
-        features.all_permission_counts.denies++;
-        break;
-      case permissions::PermissionAction::GRANTED:
-        features.requested_permission_counts.grants++;
-        features.all_permission_counts.grants++;
-        break;
-      case permissions::PermissionAction::DISMISSED:
-        features.requested_permission_counts.dismissals++;
-        features.all_permission_counts.dismissals++;
-        break;
-      case permissions::PermissionAction::IGNORED:
-        features.requested_permission_counts.ignores++;
-        features.all_permission_counts.ignores++;
-        break;
-      default:
-        // Anything else is ignored.
-        break;
-    }
-  }
+  actions = action_history->GetHistory(cutoff);
+  FillInActionCounts(&features.all_permission_counts, actions);
 
   return features;
 }
@@ -205,4 +172,29 @@ bool PredictionBasedPermissionUiSelector::IsAllowedToUseAssistedPrompts() {
   return base::FeatureList::IsEnabled(features::kQuietNotificationPrompts) &&
          base::FeatureList::IsEnabled(features::kPermissionPredictions) &&
          safe_browsing::IsEnhancedProtectionEnabled(*(profile_->GetPrefs()));
+}
+
+// static
+void PredictionBasedPermissionUiSelector::FillInActionCounts(
+    permissions::PredictionRequestFeatures::ActionCounts* counts,
+    const std::vector<PermissionActionsHistory::Entry>& actions) {
+  for (const auto& entry : actions) {
+    switch (entry.action) {
+      case permissions::PermissionAction::DENIED:
+        counts->denies++;
+        break;
+      case permissions::PermissionAction::GRANTED:
+        counts->grants++;
+        break;
+      case permissions::PermissionAction::DISMISSED:
+        counts->dismissals++;
+        break;
+      case permissions::PermissionAction::IGNORED:
+        counts->ignores++;
+        break;
+      default:
+        // Anything else is ignored.
+        break;
+    }
+  }
 }

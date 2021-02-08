@@ -1626,9 +1626,9 @@ const char kQuietNotificationPermissionPromoWasShown[] =
     "profile.content_settings.quiet_permission_ui_promo.was_shown."
     "notifications";
 
-// List containing a history of past permission actions.
-const char kNotificationPermissionActions[] =
-    "profile.content_settings.permission_actions.notifications";
+// List containing a history of past permission actions, for all permission
+// types.
+const char kPermissionActions[] = "profile.content_settings.permission_actions";
 
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation

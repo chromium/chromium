@@ -68,6 +68,10 @@ RequestType ContentSettingsTypeToRequestType(
 // Returns the icon to display.
 IconId GetIconId(RequestType type);
 
+// Returns a unique human-readable string that can be used in dictionaries that
+// are keyed by the RequestType.
+const char* PermissionKeyForRequestType(permissions::RequestType request_type);
+
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_REQUEST_TYPE_H_

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
+#include "chrome/browser/permissions/permission_actions_history.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/common/chrome_features.h"
@@ -53,7 +54,8 @@ class ChromePermissionRequestManagerTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ChromePermissionRequestManagerTest()
-      : ChromeRenderViewHostTestHarness(),
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         request1_("test1",
                   permissions::RequestType::kDiskQuota,
                   permissions::PermissionRequestGestureType::GESTURE),
@@ -412,13 +414,6 @@ TEST_F(ChromePermissionRequestManagerTest,
       base::TimeDelta::FromDays(7),
       QuietNotificationPermissionUiConfig::GetAdaptiveActivationWindowSize());
 
-  auto* permission_ui_enabler =
-      AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile());
-
-  base::SimpleTestClock clock_;
-  clock_.SetNow(base::Time::Now());
-  permission_ui_enabler->set_clock_for_testing(&clock_);
-
   const char* origin_spec[]{"https://a.com", "https://b.com", "https://c.com",
                             "https://d.com"};
   for (int i = 0; i < 4; ++i) {
@@ -434,7 +429,7 @@ TEST_F(ChromePermissionRequestManagerTest,
     if (i == 0) {
       // The history window size is 7 days. That will ignore previous denied
       // permission request as obsolete.
-      clock_.Advance(base::TimeDelta::FromDays(10));
+      task_environment()->AdvanceClock(base::TimeDelta::FromDays(10));
     }
   }
 
@@ -458,9 +453,6 @@ TEST_F(ChromePermissionRequestManagerTest,
         {{QuietNotificationPermissionUiConfig::kEnableAdaptiveActivation,
           "true"}}}},
       {permissions::features::kBlockRepeatedNotificationPermissionPrompts});
-
-  auto* permission_ui_enabler =
-      AdaptiveQuietNotificationPermissionUiEnabler::GetForProfile(profile());
 
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
       prefs::kEnableQuietNotificationPermissionUi));
@@ -550,10 +542,6 @@ TEST_F(ChromePermissionRequestManagerTest,
       prefs::kEnableQuietNotificationPermissionUi));
   Accept();
 
-  base::SimpleTestClock clock_;
-  clock_.SetNow(base::Time::Now());
-  permission_ui_enabler->set_clock_for_testing(&clock_);
-
   // One accept through the quiet UI, doesn't switch the user back to the
   // disabled state once the permission is set.
   GURL notification8("http://www.notification8.com/");
@@ -568,16 +556,15 @@ TEST_F(ChromePermissionRequestManagerTest,
 
   // Clearing interaction history, or turning off quiet mode in preferences does
   // not change the state of the currently showing quiet UI.
-  permission_ui_enabler->ClearInteractionHistory(base::Time(),
-                                                 base::Time::Max());
+  PermissionActionsHistory::GetForProfile(profile())->ClearHistory(
+      base::Time(), base::Time::Max());
   profile()->GetPrefs()->ClearPref(prefs::kEnableQuietNotificationPermissionUi);
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
-  base::Time recorded_time = clock_.Now();
-  clock_.Advance(base::TimeDelta::FromDays(1));
-  base::Time from_time = clock_.Now();
-  permission_ui_enabler->set_clock_for_testing(&clock_);
+  base::Time recorded_time = base::Time::Now();
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  base::Time from_time = base::Time::Now();
   GURL notification9("http://www.notification9.com/");
   NavigateAndCommit(notification9);
   permissions::MockPermissionRequest notification9_request(
@@ -587,9 +574,8 @@ TEST_F(ChromePermissionRequestManagerTest,
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
-  clock_.Advance(base::TimeDelta::FromDays(1));
-  base::Time to_time = clock_.Now();
-  permission_ui_enabler->set_clock_for_testing(&clock_);
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
+  base::Time to_time = base::Time::Now();
   GURL notification10("http://www.notification10.com/");
   NavigateAndCommit(notification10);
   permissions::MockPermissionRequest notification10_request(
@@ -599,8 +585,7 @@ TEST_F(ChromePermissionRequestManagerTest,
   EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
   Deny();
 
-  clock_.Advance(base::TimeDelta::FromDays(1));
-  permission_ui_enabler->set_clock_for_testing(&clock_);
+  task_environment()->AdvanceClock(base::TimeDelta::FromDays(1));
   GURL notification11("http://www.notification11.com/");
   NavigateAndCommit(notification11);
   permissions::MockPermissionRequest notification11_request(
@@ -609,10 +594,11 @@ TEST_F(ChromePermissionRequestManagerTest,
   WaitForBubbleToBeShown();
   Deny();
 
-  ListPrefUpdate update(profile()->GetPrefs(),
-                        prefs::kNotificationPermissionActions);
-  base::Value::ConstListView permissions_actions = update->GetList();
-  permission_ui_enabler->ClearInteractionHistory(from_time, to_time);
+  DictionaryPrefUpdate update(profile()->GetPrefs(), prefs::kPermissionActions);
+  const auto permissions_actions =
+      update->FindListPath("notifications")->GetList();
+  PermissionActionsHistory::GetForProfile(profile())->ClearHistory(from_time,
+                                                                   to_time);
 
   // Check that we have cleared all entries >= |from_time| and <|end_time|.
   EXPECT_EQ(permissions_actions.size(), 3u);

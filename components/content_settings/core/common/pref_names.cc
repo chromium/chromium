@@ -123,6 +123,12 @@ const char kQuietNotificationPermissionUiEnablingMethod[] =
     "profile.content_settings.enable_quiet_permission_ui_enabling_method."
     "notifications";
 
+// Time value indicating when the quiet notification UI was last disabled by the
+// user. Only permission action history after this point is taken into account
+// for adaptive quiet UI activation.
+const char kQuietNotificationPermissionUiDisabledTime[] =
+    "profile.content_settings.disable_quiet_permission_ui_time.notifications";
+
 #if defined(OS_ANDROID)
 // Enable vibration for web notifications.
 const char kNotificationsVibrateEnabled[] = "notifications.vibrate_enabled";
