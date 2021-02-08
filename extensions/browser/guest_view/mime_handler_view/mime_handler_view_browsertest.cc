@@ -104,8 +104,7 @@ class MimeHandlerViewTest : public extensions::ExtensionApiTest {
 
   MimeHandlerViewGuest* GetLastGuestView() const {
     return MimeHandlerViewGuest::FromWebContents(
-               GetGuestViewManager()->GetLastGuestCreated())
-        ->As<MimeHandlerViewGuest>();
+        GetGuestViewManager()->GetLastGuestCreated());
   }
 
   const extensions::Extension* LoadTestExtension() {

@@ -187,8 +187,7 @@ void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
 
 void PluginObserver::OpenPDF(const GURL& url) {
   // WebViews should never trigger PDF downloads.
-  auto* guest_view = guest_view::GuestViewBase::FromWebContents(web_contents());
-  if (guest_view && guest_view->IsViewType(extensions::WebViewGuest::Type))
+  if (extensions::WebViewGuest::FromWebContents(web_contents()))
     return;
 
   content::RenderFrameHost* render_frame_host =

@@ -464,16 +464,16 @@ void GuestViewBase::SetAttachParams(const base::DictionaryValue& params) {
 }
 
 void GuestViewBase::SetOpener(GuestViewBase* guest) {
-  if (guest && guest->IsViewType(GetViewType())) {
+  if (guest) {
     opener_ = guest->weak_ptr_factory_.GetWeakPtr();
     if (!attached()) {
       opener_lifetime_observer_ =
           std::make_unique<OpenerLifetimeObserver>(this);
     }
-    return;
+  } else {
+    opener_ = base::WeakPtr<GuestViewBase>();
+    opener_lifetime_observer_.reset();
   }
-  opener_ = base::WeakPtr<GuestViewBase>();
-  opener_lifetime_observer_.reset();
 }
 
 void GuestViewBase::SetGuestHost(content::GuestHost* guest_host) {
