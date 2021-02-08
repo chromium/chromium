@@ -19,6 +19,14 @@ using QRCode = QRCodeGenerator;
 
 namespace {
 
+// kMinimumQRVersion is the minimum QR version (i.e. size) that we support.
+// The amount of input already precludes smaller versions with the current
+// encoder but it's possible that a low-ECC configuration could be added that
+// would otherwise cause a smaller version to be used. This minimum ensures
+// that the UI sizing remains constant and that the dino image doesn't
+// obscure too much of the QR code
+constexpr int kMinimumQRVersion = 5;
+
 // QRView displays a QR code.
 class QRView : public views::View {
  public:
@@ -43,8 +51,8 @@ class QRView : public views::View {
   explicit QRView(const std::string& qr_string) {
     CHECK_LE(qr_string.size(), QRCodeGenerator::V5::kInputBytes);
 
-    base::Optional<QRCode::GeneratedCode> code =
-        qr_.Generate(base::as_bytes(base::make_span(qr_string)));
+    base::Optional<QRCode::GeneratedCode> code = qr_.Generate(
+        base::as_bytes(base::make_span(qr_string)), kMinimumQRVersion);
     DCHECK(code);
     // The QR Encoder supports dynamic sizing but we expect our data to fit in
     // a version five code.
@@ -60,8 +68,9 @@ class QRView : public views::View {
     CHECK_LE(qr_string.size(), QRCodeGenerator::V5::kInputBytes);
 
     state_ = (state_ + 1) % 6;
-    base::Optional<QRCode::GeneratedCode> code = qr_.Generate(
-        base::as_bytes(base::make_span(qr_string)), /*mask=*/state_);
+    base::Optional<QRCode::GeneratedCode> code =
+        qr_.Generate(base::as_bytes(base::make_span(qr_string)),
+                     kMinimumQRVersion, /*mask=*/state_);
     DCHECK(code);
     qr_tiles_ = code->data;
     SchedulePaint();

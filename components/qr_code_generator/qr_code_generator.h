@@ -55,13 +55,14 @@ class QRCodeGenerator {
   ~QRCodeGenerator();
 
   // Generates a QR code containing the given data.
-  // The generator will attempt to choose a version that fits the data. The
-  // returned span's length is input-dependent and not known at compile-time in
-  // this case. The optional |mask| argument specifies the QR mask value to use
-  // (from 0 to 7). If not specified, the optimal mask is calculated per the
-  // algorithm specified in the QR standard.
+  // The generator will attempt to choose a version that fits the data and which
+  // is >= |min_version|, if given. The returned span's length is
+  // input-dependent and not known at compile-time. The optional |mask| argument
+  // specifies the QR mask value to use (from 0 to 7). If not specified, the
+  // optimal mask is calculated per the algorithm specified in the QR standard.
   base::Optional<GeneratedCode> Generate(
       base::span<const uint8_t> in,
+      base::Optional<int> min_version = base::nullopt,
       base::Optional<uint8_t> mask = base::nullopt);
 
  private:
