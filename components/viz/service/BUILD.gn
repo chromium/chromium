@@ -142,8 +142,6 @@ viz_component("service") {
     "frame_sinks/gpu_vsync_begin_frame_source.h",
     "frame_sinks/root_compositor_frame_sink_impl.cc",
     "frame_sinks/root_compositor_frame_sink_impl.h",
-    "frame_sinks/surface_animation_manager.cc",
-    "frame_sinks/surface_animation_manager.h",
     "frame_sinks/surface_resource_holder.cc",
     "frame_sinks/surface_resource_holder.h",
     "frame_sinks/surface_resource_holder_client.h",
@@ -187,6 +185,8 @@ viz_component("service") {
     "surfaces/surface_saved_frame.h",
     "surfaces/surface_saved_frame_storage.cc",
     "surfaces/surface_saved_frame_storage.h",
+    "transitions/surface_animation_manager.cc",
+    "transitions/surface_animation_manager.h",
     "transitions/transferable_resource_tracker.cc",
     "transitions/transferable_resource_tracker.h",
     "viz_service_export.h",
@@ -538,7 +538,6 @@ viz_source_set("unit_tests") {
     "frame_sinks/begin_frame_tracker_unittest.cc",
     "frame_sinks/compositor_frame_sink_support_unittest.cc",
     "frame_sinks/frame_sink_manager_unittest.cc",
-    "frame_sinks/surface_animation_manager_unittest.cc",
     "frame_sinks/surface_references_unittest.cc",
     "frame_sinks/surface_synchronization_unittest.cc",
     "frame_sinks/video_capture/frame_sink_video_capturer_impl_unittest.cc",
@@ -550,6 +549,7 @@ viz_source_set("unit_tests") {
     "main/viz_main_impl_unittest.cc",
     "surfaces/referenced_surface_tracker_unittest.cc",
     "surfaces/surface_unittest.cc",
+    "transitions/surface_animation_manager_unittest.cc",
     "transitions/transferable_resource_tracker_unittest.cc",
   ]
 

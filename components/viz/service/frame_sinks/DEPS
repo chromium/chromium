@@ -7,6 +7,7 @@ include_rules = [
   "+components/viz/service/display_embedder",
   "+components/viz/service/hit_test",
   "+components/viz/service/surfaces",
+  "+components/viz/service/transitions",
   "+gpu/ipc/common",
   "+mojo/public",
 ]

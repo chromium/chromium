@@ -20,9 +20,9 @@
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/service/frame_sinks/surface_animation_manager.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_reference.h"
+#include "components/viz/service/transitions/surface_animation_manager.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace viz {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/service/frame_sinks/surface_animation_manager.h"
+#include "components/viz/service/transitions/surface_animation_manager.h"
 
 #include <vector>
 

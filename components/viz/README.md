@@ -158,6 +158,7 @@ be composited.
 | viz/service/display_embedder/ |
 | viz/service/hit_test/         |
 | viz/service/surfaces/         |
+| viz/service/transitions/      |
 
 #### service/gl
 **GL**: This component implements the Mojo interfaces for allocating (and
@@ -208,9 +209,10 @@ display compositor.
 **Transitions**: This directory is in support of the shared element transitions
 project. See //third\_party/blink/rendering/core/document\_transition/README.md
 
-| Can depend on: |
-|:---------------|
-| viz/common/*   |
+| Can depend on:        |
+|:----------------------|
+| viz/common/           |
+| viz/service/surfaces/ |
 
 ## Naming guidelines with Mojo <a name="naming-guidelines"></a>
 
