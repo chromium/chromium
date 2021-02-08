@@ -105,15 +105,21 @@ bool BorealisContextManagerImpl::IsRunning() {
   return context_.get();
 }
 
-void BorealisContextManagerImpl::ShutDownBorealis() {
+void BorealisContextManagerImpl::ShutDownBorealis(
+    base::OnceCallback<void(BorealisShutdownResult)> on_shutdown_callback) {
   // Get the context we are shutting down, either from an in-progress startup or
   // from the running one.
   std::unique_ptr<BorealisContext> shutdown_context;
   std::swap(shutdown_context, context_);
   if (in_progress_startup_)
     shutdown_context = in_progress_startup_->Abort();
-  if (!shutdown_context)
+  if (!shutdown_context) {
+    // TODO(b/172178036): There could be an operation in progress but we can't
+    // tell because we don't record that state. Fix this by adding proper state
+    // tracking for the context_manager.
+    std::move(on_shutdown_callback).Run(BorealisShutdownResult::kSuccess);
     return;
+  }
   RecordBorealisShutdownNumAttemptsHistogram();
 
   // TODO(b/172178036): This could have been a task-sequence but that
@@ -125,17 +131,27 @@ void BorealisContextManagerImpl::ShutDownBorealis() {
   chromeos::DBusThreadManager::Get()->GetConciergeClient()->StopVm(
       std::move(request),
       base::BindOnce(
-          [](base::Optional<vm_tools::concierge::StopVmResponse> response) {
+          [](base::OnceCallback<void(BorealisShutdownResult)>
+                 on_shutdown_callback,
+             base::Optional<vm_tools::concierge::StopVmResponse> response) {
             // We don't have a good way to deal with a vm failing to stop (and
             // this would be a very rare occurrence anyway). We log an error if
             // it actually wasn't successful.
             if (!response.has_value()) {
               LOG(ERROR) << "Failed to stop Borealis VM: No response";
+              std::move(on_shutdown_callback)
+                  .Run(BorealisShutdownResult::kFailed);
             } else if (!response.value().success()) {
               LOG(ERROR) << "Failed to stop Borealis VM: "
                          << response.value().failure_reason();
+              std::move(on_shutdown_callback)
+                  .Run(BorealisShutdownResult::kFailed);
+            } else {
+              std::move(on_shutdown_callback)
+                  .Run(BorealisShutdownResult::kSuccess);
             }
-          }));
+          },
+          std::move(on_shutdown_callback)));
 }
 
 base::queue<std::unique_ptr<BorealisTask>>

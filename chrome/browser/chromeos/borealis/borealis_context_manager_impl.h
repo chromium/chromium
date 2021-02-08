@@ -32,7 +32,8 @@ class BorealisContextManagerImpl : public BorealisContextManager {
   // BorealisContextManager:
   void StartBorealis(ResultCallback callback) override;
   bool IsRunning() override;
-  void ShutDownBorealis() override;
+  void ShutDownBorealis(base::OnceCallback<void(BorealisShutdownResult)>
+                            on_shutdown_callback) override;
 
   // Public due to testing.
   virtual base::queue<std::unique_ptr<BorealisTask>> GetTasks();

@@ -251,6 +251,15 @@ class NeverCompletingContextManager : public BorealisContextManagerImpl {
   }
 };
 
+class ShutdownCallbackHandler {
+ public:
+  base::OnceCallback<void(BorealisShutdownResult)> GetCallback() {
+    return base::BindOnce(&ShutdownCallbackHandler::Callback,
+                          base::Unretained(this));
+  }
+  MOCK_METHOD(void, Callback, (BorealisShutdownResult), ());
+};
+
 TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
   testing::StrictMock<ResultCallbackHandler> callback_expectation;
   EXPECT_CALL(callback_expectation, Callback(testing::_))
@@ -261,9 +270,13 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
                       BorealisStartupResult::kCancelled);
           }));
 
+  ShutdownCallbackHandler shutdown_callback_handler;
+  EXPECT_CALL(shutdown_callback_handler,
+              Callback(BorealisShutdownResult::kSuccess));
+
   NeverCompletingContextManager context_manager(profile_.get());
   context_manager.StartBorealis(callback_expectation.GetCallback());
-  context_manager.ShutDownBorealis();
+  context_manager.ShutDownBorealis(shutdown_callback_handler.GetCallback());
   task_environment_.RunUntilIdle();
 
   chromeos::FakeConciergeClient* fake_concierge_client =
@@ -271,6 +284,15 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
           chromeos::DBusThreadManager::Get()->GetConciergeClient());
   EXPECT_TRUE(fake_concierge_client->stop_vm_called());
   histogram_tester_->ExpectTotalCount(kBorealisShutdownNumAttemptsHistogram, 1);
+}
+
+TEST_F(BorealisContextManagerTest, ShutdownWhenNotRunningCompletesImmediately) {
+  ShutdownCallbackHandler shutdown_callback_handler;
+  EXPECT_CALL(shutdown_callback_handler,
+              Callback(BorealisShutdownResult::kSuccess));
+
+  NeverCompletingContextManager context_manager(profile_.get());
+  context_manager.ShutDownBorealis(shutdown_callback_handler.GetCallback());
 }
 
 class MockContextManager : public BorealisContextManagerImpl {

@@ -46,6 +46,15 @@ enum class BorealisStartupResult {
   kMaxValue = kAwaitBorealisStartupFailed,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BorealisShutdownResult {
+  kSuccess = 0,
+  kInProgress = 1,
+  kFailed = 2,
+  kMaxValue = kFailed,
+};
+
 void RecordBorealisInstallNumAttemptsHistogram();
 void RecordBorealisInstallResultHistogram(BorealisInstallResult install_result);
 void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time);

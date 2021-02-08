@@ -38,7 +38,7 @@ class BorealisShutdownMonitorTest : public testing::Test {
 TEST_F(BorealisShutdownMonitorTest, CanShutdownImmediately) {
   BorealisShutdownMonitor monitor(profile());
 
-  EXPECT_CALL(context_manager_mock_, ShutDownBorealis());
+  EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_));
   monitor.ShutdownNow();
 }
 
@@ -48,14 +48,14 @@ TEST_F(BorealisShutdownMonitorTest, CanShutdownWithDelay) {
   monitor.SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(0));
   monitor.ShutdownWithDelay();
 
-  EXPECT_CALL(context_manager_mock_, ShutDownBorealis());
+  EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_));
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(BorealisShutdownMonitorTest, CancelDelayedShutdownPreventsIt) {
   BorealisShutdownMonitor monitor(profile());
 
-  EXPECT_CALL(context_manager_mock_, ShutDownBorealis()).Times(0);
+  EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_)).Times(0);
 
   monitor.SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(0));
   monitor.ShutdownWithDelay();
@@ -67,7 +67,7 @@ TEST_F(BorealisShutdownMonitorTest, CancelDelayedShutdownPreventsIt) {
 TEST_F(BorealisShutdownMonitorTest, LaterShutdownOverridesEarlier) {
   BorealisShutdownMonitor monitor(profile());
 
-  EXPECT_CALL(context_manager_mock_, ShutDownBorealis()).Times(0);
+  EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_)).Times(0);
 
   monitor.SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(0));
   monitor.ShutdownWithDelay();
@@ -82,7 +82,7 @@ TEST_F(BorealisShutdownMonitorTest, LaterShutdownOverridesEarlier) {
 TEST_F(BorealisShutdownMonitorTest, DeletingMonitorCancelsShutdowns) {
   auto monitor = std::make_unique<BorealisShutdownMonitor>(profile());
 
-  EXPECT_CALL(context_manager_mock_, ShutDownBorealis()).Times(0);
+  EXPECT_CALL(context_manager_mock_, ShutDownBorealis(testing::_)).Times(0);
 
   monitor->SetShutdownDelayForTesting(base::TimeDelta::FromSeconds(0));
   monitor->ShutdownWithDelay();

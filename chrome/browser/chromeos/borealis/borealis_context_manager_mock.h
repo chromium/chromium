@@ -24,7 +24,10 @@ class BorealisContextManagerMock : public BorealisContextManager {
 
   MOCK_METHOD(bool, IsRunning, (), ());
 
-  MOCK_METHOD(void, ShutDownBorealis, (), ());
+  MOCK_METHOD(void,
+              ShutDownBorealis,
+              (base::OnceCallback<void(BorealisShutdownResult)>),
+              ());
 };
 
 }  // namespace borealis

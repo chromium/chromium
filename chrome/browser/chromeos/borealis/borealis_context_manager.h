@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/infra/described.h"
 #include "chrome/browser/chromeos/borealis/infra/expected.h"
@@ -41,8 +42,11 @@ class BorealisContextManager : public KeyedService {
 
   // Stop the current running state, re-initializing the context manager
   // to the state it was in prior to being started. All pending callbacks are
-  // invoked with kCancelled result.
-  virtual void ShutDownBorealis() = 0;
+  // invoked with kCancelled result. Invokes |on_shutdown_callback| with the
+  // result of the operation when it completes.
+  virtual void ShutDownBorealis(
+      base::OnceCallback<void(BorealisShutdownResult)> on_shutdown_callback =
+          base::DoNothing()) = 0;
 };
 
 }  // namespace borealis
