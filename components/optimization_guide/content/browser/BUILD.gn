@@ -6,13 +6,16 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-# TODO(crbug/1154790): Make this into a static_library when the rest of
-# optimization guide is migrated and this has at least one cc file.
-source_set("browser") {
-  sources = [ "optimization_guide_decider.h" ]
+static_library("browser") {
+  sources = [
+    "optimization_guide_decider.h",
+    "page_text_observer.cc",
+    "page_text_observer.h",
+  ]
 
-  deps = [
+  public_deps = [
     "//base",
+    "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
@@ -28,6 +31,17 @@ static_library("test_support") {
   deps = [
     ":browser",
     "//content/public/browser",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "page_text_observer_unittest.cc" ]
+  deps = [
+    ":browser",
+    "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
