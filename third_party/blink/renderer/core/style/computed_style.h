@@ -2690,6 +2690,12 @@ class ComputedStyle : public ComputedStyleBase,
     return LogicalSize(LayoutUnit(ratio.Width()), LayoutUnit(ratio.Height()));
   }
 
+  EBoxSizing BoxSizingForAspectRatio() const {
+    if (AspectRatio().GetType() == EAspectRatioType::kAutoAndRatio)
+      return EBoxSizing::kContentBox;
+    return BoxSizing();
+  }
+
  private:
   EClear Clear() const { return ClearInternal(); }
   EFloat Floating() const { return FloatingInternal(); }

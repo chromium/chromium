@@ -467,7 +467,7 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
   }
   // Check if we can get an inline size using the aspect ratio.
   return InlineSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
-                                   style.BoxSizing(), block_size);
+                                   style.BoxSizingForAspectRatio(), block_size);
 }
 
 namespace {
@@ -606,8 +606,8 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
   MinMaxSizes block_min_max =
       ComputeMinMaxBlockSizes(constraint_space, style, border_padding,
                               /* intrinsic_size */ kIndefiniteSize);
-  return ComputeTransferredMinMaxInlineSizes(ratio, block_min_max,
-                                             border_padding, style.BoxSizing());
+  return ComputeTransferredMinMaxInlineSizes(
+      ratio, block_min_max, border_padding, style.BoxSizingForAspectRatio());
 }
 
 namespace {
@@ -661,7 +661,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
                    opt_percentage_resolution_block_size_for_min_max))) {
     extent =
         BlockSizeFromAspectRatio(border_padding, style.LogicalAspectRatio(),
-                                 style.BoxSizing(), *inline_size);
+                                 style.BoxSizingForAspectRatio(), *inline_size);
     // Apply the automatic minimum size for aspect ratio:
     // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
     // We also check for LayoutUnit::Max() because flexbox uses that as a

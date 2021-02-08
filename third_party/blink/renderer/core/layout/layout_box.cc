@@ -1514,11 +1514,13 @@ MinMaxSizes LayoutBox::ComputeMinMaxLogicalWidthFromAspectRatio() const {
   MinMaxSizes transferred_min_max = {LayoutUnit(), LayoutUnit::Max()};
   if (block_min_max.min_size > LayoutUnit()) {
     transferred_min_max.min_size = InlineSizeFromAspectRatio(
-        border_padding, ratio, StyleRef().BoxSizing(), block_min_max.min_size);
+        border_padding, ratio, StyleRef().BoxSizingForAspectRatio(),
+        block_min_max.min_size);
   }
   if (block_min_max.max_size != LayoutUnit::Max()) {
     transferred_min_max.max_size = InlineSizeFromAspectRatio(
-        border_padding, ratio, StyleRef().BoxSizing(), block_min_max.max_size);
+        border_padding, ratio, StyleRef().BoxSizingForAspectRatio(),
+        block_min_max.max_size);
   }
   // Minimum size wins over maximum size.
   transferred_min_max.max_size =
@@ -4079,9 +4081,9 @@ bool LayoutBox::ComputeLogicalWidthFromAspectRatio(
                             BorderEnd() + ComputedCSSPaddingEnd(),
                             BorderBefore() + ComputedCSSPaddingBefore(),
                             BorderAfter() + ComputedCSSPaddingAfter());
-  LayoutUnit logical_width =
-      InlineSizeFromAspectRatio(border_padding, StyleRef().LogicalAspectRatio(),
-                                StyleRef().BoxSizing(), logical_height_for_ar);
+  LayoutUnit logical_width = InlineSizeFromAspectRatio(
+      border_padding, StyleRef().LogicalAspectRatio(),
+      StyleRef().BoxSizingForAspectRatio(), logical_height_for_ar);
   *out_logical_width = ConstrainLogicalWidthByMinMax(
       logical_width, container_width_in_inline_direction, ContainingBlock(),
       /* allow_intrinsic */ false);
@@ -4716,7 +4718,7 @@ void LayoutBox::ComputeLogicalHeight(
                                   BorderAfter() + ComputedCSSPaddingAfter());
         height_result = BlockSizeFromAspectRatio(
             border_padding, StyleRef().LogicalAspectRatio(),
-            StyleRef().BoxSizing(), LogicalWidth());
+            StyleRef().BoxSizingForAspectRatio(), LogicalWidth());
       } else {
         height_result = ComputeLogicalHeightUsing(
             kMainOrPreferredSize, h,
@@ -5405,9 +5407,9 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
                               BorderEnd() + ComputedCSSPaddingEnd(),
                               BorderBefore() + ComputedCSSPaddingBefore(),
                               BorderAfter() + ComputedCSSPaddingAfter());
-    return BlockSizeFromAspectRatio(border_padding,
-                                    StyleRef().LogicalAspectRatio(),
-                                    StyleRef().BoxSizing(), LogicalWidth());
+    return BlockSizeFromAspectRatio(
+        border_padding, StyleRef().LogicalAspectRatio(),
+        StyleRef().BoxSizingForAspectRatio(), LogicalWidth());
   }
 
   if (h.IsPercentOrCalc() && IsOutOfFlowPositioned()) {
@@ -6398,7 +6400,7 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
                                 BorderAfter() + ComputedCSSPaddingAfter());
       resolved_logical_height = BlockSizeFromAspectRatio(
           border_padding, StyleRef().LogicalAspectRatio(),
-          StyleRef().BoxSizing(), LogicalWidth());
+          StyleRef().BoxSizingForAspectRatio(), LogicalWidth());
       resolved_logical_height = std::max(
           LayoutUnit(), resolved_logical_height - borders_plus_padding);
     } else {
