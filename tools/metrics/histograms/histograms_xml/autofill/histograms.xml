@@ -1690,9 +1690,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.SubmittedValuePatterns" enum="AutofillValuePatterns"
-    expires_after="M88">
-  <owner>kolos@chromium.org</owner>
+    expires_after="M93">
+  <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
+  <owner>koerber@google.com</owner>
   <summary>
     Metric to measure if a submitted form contains any recognizable value
     patterns (e.g., Unified Payment Interface Virtual Payment address (UPI
