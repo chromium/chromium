@@ -604,6 +604,9 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
       }
     }
   }
+
+  mbi_override_task_runner_handle =
+      base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle);
 }
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
@@ -2497,7 +2500,7 @@ void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
       base::ThreadTaskRunnerHandle::Get();
   std::unique_ptr<base::ThreadTaskRunnerHandleOverride>
       thread_task_runner_handle_override;
-  if (base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle) &&
+  if (scheduling_settings().mbi_override_task_runner_handle &&
       next_task_runner != previous_task_runner) {
     // per-thread and per-AgentSchedulingGroup task runner allows nested
     // runloop. |MainThreadSchedulerImpl| guarantees that
@@ -2525,7 +2528,7 @@ void MainThreadSchedulerImpl::EndAgentGroupSchedulerScope() {
   AgentGroupSchedulerScope& agent_group_scheduler_scope =
       main_thread_only().agent_group_scheduler_scope_stack.back();
 
-  if (base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle)) {
+  if (scheduling_settings().mbi_override_task_runner_handle) {
     DCHECK_EQ(base::ThreadTaskRunnerHandle::Get(),
               agent_group_scheduler_scope.current_task_runner);
     DCHECK_EQ(base::SequencedTaskRunnerHandle::Get(),
@@ -2662,8 +2665,10 @@ void MainThreadSchedulerImpl::OnTaskStarted(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
-  BeginAgentGroupSchedulerScope(queue ? queue->GetAgentGroupScheduler()
-                                      : nullptr);
+  if (scheduling_settings().mbi_override_task_runner_handle) {
+    BeginAgentGroupSchedulerScope(queue ? queue->GetAgentGroupScheduler()
+                                        : nullptr);
+  }
 
   main_thread_only().running_queues.push(queue);
   if (main_thread_only().nested_runloop)
@@ -2701,7 +2706,8 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   main_thread_only().running_queues.pop();
 
   // The overriding TaskRunnerHandle scope ends here.
-  EndAgentGroupSchedulerScope();
+  if (scheduling_settings().mbi_override_task_runner_handle)
+    EndAgentGroupSchedulerScope();
 
   if (main_thread_only().nested_runloop)
     return;
