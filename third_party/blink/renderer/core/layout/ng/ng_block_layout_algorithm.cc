@@ -2120,6 +2120,26 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
   margin_strut.Append(child_data.margins.block_end, is_quirky);
   SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginAfter());
 
+  if (UNLIKELY(ConstraintSpace().HasBlockFragmentation())) {
+    // If the child broke inside, don't apply any trailing margin, since it's
+    // only to be applied to the last fragment that's not in a parallel flow
+    // (due to overflow). While trailing margins are normally truncated at
+    // fragmentainer boundaries, so that whether or not we add such margins
+    // doesn't really make much of a difference, this isn't the case in the
+    // initial column balancing pass.
+    if (const auto* physical_fragment = DynamicTo<NGPhysicalBoxFragment>(
+            &layout_result.PhysicalFragment())) {
+      if (const auto* token =
+              To<NGBlockBreakToken>(physical_fragment->BreakToken())) {
+        // TODO(mstensho): Don't apply the margin to all overflowing fragments
+        // (if any). It should only be applied after the fragment where we
+        // reached the block-end of the node.
+        if (!token->IsAtBlockEnd())
+          margin_strut = NGMarginStrut();
+      }
+    }
+  }
+
   // This flag is subtle, but in order to determine our size correctly we need
   // to check if our last child is self-collapsing, and it was affected by
   // clearance *or* an adjoining self-collapsing sibling was affected by
@@ -2276,20 +2296,29 @@ bool NGBlockLayoutAlgorithm::FinalizeForFragmentation() {
   }
 
   if (container_builder_.IsFragmentainerBoxType()) {
-    // We're building fragmentainers. Unless we're in the initial column
-    // balancing pass (when fragmentainer block-size is unknown), just copy the
-    // block-size from the constraint space. Calculating the size the regular
-    // way would cause some problems with overflow. For one, we don't want to
-    // produce a break token if there's no child content that requires it. If we
-    // *are* in the initial column balancing pass, on the other hand, just skip
-    // this part, and keep the fragment size calculated by the block layout
-    // algorithm (rather than setting it to indefinite).
+    // We're building fragmentainers. Finish fragmentation on our own, since
+    // special-rules apply.
+    LayoutUnit consumed_block_size =
+        BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
     if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
-      LayoutUnit consumed_block_size =
-          BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
+      // Just copy the block-size from the constraint space. Calculating the
+      // size the regular way would cause some problems with overflow. For one,
+      // we don't want to produce a break token if there's no child content that
+      // requires it.
       LayoutUnit block_size = ConstraintSpace().FragmentainerBlockSize();
       container_builder_.SetFragmentBlockSize(block_size);
       container_builder_.SetConsumedBlockSize(consumed_block_size + block_size);
+    } else {
+      // When we are in the initial column balancing pass, use the block-size
+      // calculated by the algorithm. Since any previously consumed block-size
+      // is already baked in (in order to correctly honor specified block-size
+      // (which makes sense to everyone but fragmentainers)), we need to extract
+      // it again now.
+      LayoutUnit fragments_total_block_size =
+          container_builder_.FragmentsTotalBlockSize();
+      container_builder_.SetFragmentBlockSize(fragments_total_block_size -
+                                              consumed_block_size);
+      container_builder_.SetConsumedBlockSize(fragments_total_block_size);
     }
     return true;
   }

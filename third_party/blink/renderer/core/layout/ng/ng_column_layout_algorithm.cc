@@ -940,6 +940,26 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
     LayoutUnit column_block_size =
         CalculateColumnContentBlockSize(fragment, space.GetWritingDirection());
+
+    // Encompass the block-size of the (single-strip column) fragment, to
+    // account for any trailing margins. We let them affect the column
+    // block-size, for compatibility reasons, if nothing else. The initial
+    // column balancing pass (i.e. here) is our opportunity to do that fairly
+    // easily. But note that this doesn't guarantee that no margins will ever
+    // get truncated. To avoid that we'd need to add some sort of mechanism that
+    // is invoked in *every* column balancing layout pass, where we'd
+    // essentially have to treat every margin as unbreakable (which kind of
+    // sounds both bad and difficult).
+    //
+    // We might want to revisit this approach, if it's worth it: Maybe it's
+    // better to not make any room at all for margins that might end up getting
+    // truncated. After all, they don't really require any space, so what we're
+    // doing currently might be seen as unnecessary (and slightly unpredictable)
+    // column over-stretching.
+    NGFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
+                                fragment);
+    column_block_size =
+        std::max(column_block_size, logical_fragment.BlockSize());
     content_runs.emplace_back(column_block_size);
 
     tallest_unbreakable_block_size_ = std::max(
