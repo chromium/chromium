@@ -299,6 +299,8 @@ class FakeIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
     EXPECT_EQ(ip_change_count_, 0u);
   }
 
+  size_t ip_change_count() const { return ip_change_count_; }
+
   bool RunAndExpectCallCount(size_t expected_count) {
     if (ip_change_count_ < expected_count) {
       base::RunLoop loop;
@@ -380,6 +382,29 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, InitialState) {
   CreateNotifier();
   EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_NONE,
             notifier_->GetCurrentConnectionType());
+}
+
+TEST_F(NetworkChangeNotifierFuchsiaTest, InterfacesChangeDuringConstruction) {
+  // Set a live interface with an IP address.
+  watcher_.SetInitial(DefaultInterfaceProperties(
+      fuchsia::hardware::network::DeviceClass::WLAN));
+
+  // Inject an interfaces change event so that the notifier will receive it
+  // immediately after the initial state.
+  watcher_.PushEvent(MakeChangeEvent(
+      kDefaultInterfaceId, [](fuchsia::net::interfaces::Properties* props) {
+        props->set_addresses(MakeSingleItemVec(
+            InterfaceAddressFrom(kSecondaryIPv4Address, kSecondaryIPv4Prefix)));
+      }));
+
+  // Create the Notifier, which should process the initial network state before
+  // returning, but not the change event, yet.
+  CreateNotifier();
+  EXPECT_EQ(ip_observer_->ip_change_count(), 0u);
+
+  // Now spin the loop to allow the change event to be processed, triggering a
+  // call to the |ip_observer_|.
+  EXPECT_TRUE(ip_observer_->RunAndExpectCallCount(1));
 }
 
 TEST_F(NetworkChangeNotifierFuchsiaTest, NotifyNetworkChangeOnInitialIPChange) {
