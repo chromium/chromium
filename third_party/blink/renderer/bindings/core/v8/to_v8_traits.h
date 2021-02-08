@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_dictionary_base.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
@@ -27,6 +28,44 @@ namespace blink {
 // Primary template for ToV8Traits.
 template <typename T, typename SFINAEHelper = void>
 struct ToV8Traits;
+
+// String
+template <typename T>
+struct ToV8Traits<
+    T,
+    typename std::enable_if_t<
+        std::is_same<IDLByteStringV2, T>::value ||
+        std::is_same<IDLStringV2, T>::value ||
+        std::is_same<IDLStringTreatNullAsEmptyStringV2, T>::value ||
+        std::is_same<IDLUSVStringV2, T>::value ||
+        std::is_same<IDLStringStringContextTrustedHTMLV2, T>::value ||
+        std::is_same<IDLStringStringContextTrustedHTMLTreatNullAsEmptyStringV2,
+                     T>::value ||
+        std::is_same<IDLStringStringContextTrustedScriptV2, T>::value ||
+        std::is_same<
+            IDLStringStringContextTrustedScriptTreatNullAsEmptyStringV2,
+            T>::value ||
+        std::is_same<IDLUSVStringStringContextTrustedScriptURLV2, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const String& value)
+      WARN_UNUSED_RESULT {
+    // if |value| is a null string, V8String() returns an empty string.
+    return V8String(script_state->GetIsolate(), value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const AtomicString& value)
+      WARN_UNUSED_RESULT {
+    // if |value| is a null string, V8String() returns an empty string.
+    return V8String(script_state->GetIsolate(), value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const char* value) WARN_UNUSED_RESULT {
+    // if |value| is a nullptr, V8String() returns an empty string.
+    return V8String(script_state->GetIsolate(), value);
+  }
+};
 
 // ScriptWrappable
 template <typename T>
