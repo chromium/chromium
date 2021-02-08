@@ -11,6 +11,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
@@ -106,6 +107,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   bool WasEverUsed() const override;
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
+  base::Optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetConnectionAttempts(ConnectionAttempts* out) const override;
   void ClearConnectionAttempts() override {}
@@ -347,6 +349,7 @@ void SSLServerContextImpl::SocketImpl::OnPrivateKeyComplete(
   DoHandshakeLoop(ERR_IO_PENDING);
 }
 
+// static
 int SSLServerContextImpl::SocketImpl::ALPNSelectCallback(SSL* ssl,
                                                          const uint8_t** out,
                                                          uint8_t* out_len,
@@ -375,6 +378,16 @@ int SSLServerContextImpl::SocketImpl::ALPNSelectCallback(SSL* ssl,
               CBS_len(&client_proto)) == server_proto_str) {
         *out = CBS_data(&client_proto);
         *out_len = CBS_len(&client_proto);
+
+        const auto& application_settings =
+            socket->context_->ssl_server_config_.application_settings;
+        auto it = application_settings.find(server_proto);
+        if (it != application_settings.end()) {
+          const std::vector<uint8_t>& data = it->second;
+          SSL_add_application_settings(ssl, CBS_data(&client_proto),
+                                       CBS_len(&client_proto), data.data(),
+                                       data.size());
+        }
         return SSL_TLSEXT_ERR_OK;
       }
     }
@@ -543,6 +556,18 @@ bool SSLServerContextImpl::SocketImpl::WasAlpnNegotiated() const {
 
 NextProto SSLServerContextImpl::SocketImpl::GetNegotiatedProtocol() const {
   return negotiated_protocol_;
+}
+
+base::Optional<base::StringPiece>
+SSLServerContextImpl::SocketImpl::GetPeerApplicationSettings() const {
+  if (!SSL_has_application_settings(ssl_.get())) {
+    return base::nullopt;
+  }
+
+  const uint8_t* out_data;
+  size_t out_len;
+  SSL_get0_peer_application_settings(ssl_.get(), &out_data, &out_len);
+  return base::StringPiece{reinterpret_cast<const char*>(out_data), out_len};
 }
 
 bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {

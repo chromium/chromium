@@ -127,6 +127,10 @@ struct NET_EXPORT SSLConfig {
   // The list of application-level protocols to enable renegotiation for.
   NextProtoVector renego_allowed_for_protos;
 
+  // ALPS TLS extension is enabled and corresponding data is sent to server
+  // for each NextProto in |application_settings|.  Data might be empty.
+  base::flat_map<NextProto, std::vector<uint8_t>> application_settings;
+
   // If the PartitionSSLSessionsByNetworkIsolationKey feature is enabled, the
   // session cache is partitioned by this value.
   NetworkIsolationKey network_isolation_key;

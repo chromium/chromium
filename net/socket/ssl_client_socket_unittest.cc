@@ -101,9 +101,11 @@ using net::test::IsError;
 using net::test::IsOk;
 
 using testing::_;
-using testing::AnyOf;
+using testing::Bool;
+using testing::Combine;
 using testing::Return;
-using testing::Truly;
+using testing::Values;
+using testing::ValuesIn;
 
 namespace net {
 
@@ -1105,13 +1107,12 @@ class SSLClientSocketReadTest
   std::unique_ptr<ClientSocketFactory> wrapped_socket_factory_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SSLClientSocketReadTest,
-    ::testing::Combine(::testing::Values(READ_IF_READY_SUPPORTED,
-                                         READ_IF_READY_NOT_SUPPORTED),
-                       ::testing::Values(TEST_SSL_READ_IF_READY, TEST_SSL_READ),
-                       ::testing::ValuesIn(GetTLSVersions())));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SSLClientSocketReadTest,
+                         Combine(Values(READ_IF_READY_SUPPORTED,
+                                        READ_IF_READY_NOT_SUPPORTED),
+                                 Values(TEST_SSL_READ_IF_READY, TEST_SSL_READ),
+                                 ValuesIn(GetTLSVersions())));
 
 // Verifies the correctness of GetSSLCertRequestInfo.
 class SSLClientSocketCertRequestInfoTest : public SSLClientSocketVersionTest {
@@ -1476,7 +1477,7 @@ class HangingCertVerifier : public CertVerifier {
 
 INSTANTIATE_TEST_SUITE_P(TLSVersion,
                          SSLClientSocketVersionTest,
-                         ::testing::ValuesIn(GetTLSVersions()));
+                         ValuesIn(GetTLSVersions()));
 
 TEST_P(SSLClientSocketVersionTest, Connect) {
   ASSERT_TRUE(
@@ -2717,7 +2718,7 @@ TEST_P(SSLClientSocketVersionTest, VerifyReturnChainProperlyOrdered) {
 
 INSTANTIATE_TEST_SUITE_P(TLSVersion,
                          SSLClientSocketCertRequestInfoTest,
-                         ::testing::ValuesIn(GetTLSVersions()));
+                         ValuesIn(GetTLSVersions()));
 
 TEST_P(SSLClientSocketCertRequestInfoTest,
        DontRequestClientCertsIfServerCertInvalid) {
@@ -4046,7 +4047,7 @@ TEST_P(SSLClientSocketKeyUsageTest, RSAKeyUsageEnforcedForKnownRoot) {
 
 INSTANTIATE_TEST_SUITE_P(RSAKeyUsageInstantiation,
                          SSLClientSocketKeyUsageTest,
-                         ::testing::ValuesIn(kKeyUsageTests));
+                         ValuesIn(kKeyUsageTests));
 
 // Test that when CT is required (in this case, by the delegate), the
 // absence of CT information is a socket error.
@@ -5483,13 +5484,11 @@ class TLS13DowngradeTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     TLS13DowngradeTest,
-    ::testing::Combine(
-        ::testing::Values(
-            SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_0,
-            SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_1,
-            SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2),
-        ::testing::Values(false, true),
-        ::testing::Values(false, true)));
+    Combine(Values(SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_0,
+                   SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_1,
+                   SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2),
+            Bool(),
+            Bool()));
 
 TEST_P(TLS13DowngradeTest, DowngradeEnforced) {
   SpawnedTestServer::SSLOptions ssl_options;
@@ -5565,7 +5564,7 @@ class SSLHandshakeDetailsTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SSLHandshakeDetailsTest,
-                         ::testing::ValuesIn(kSSLHandshakeDetailsParams));
+                         ValuesIn(kSSLHandshakeDetailsParams));
 
 TEST_P(SSLHandshakeDetailsTest, Metrics) {
   // Enable all test features in the server.
@@ -5943,6 +5942,64 @@ TEST_F(SSLClientSocketTest, VersionMinOverride) {
   config.version_max_override = SSL_PROTOCOL_VERSION_TLS1_3;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
   EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+}
+
+class SSLClientSocketAlpsTest
+    : public SSLClientSocketTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SSLClientSocketAlpsTest()
+      : client_alps_enabled_(std::get<0>(GetParam())),
+        server_alps_enabled_(std::get<1>(GetParam())) {}
+  ~SSLClientSocketAlpsTest() override = default;
+  const bool client_alps_enabled_;
+  const bool server_alps_enabled_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, SSLClientSocketAlpsTest, Combine(Bool(), Bool()));
+
+TEST_P(SSLClientSocketAlpsTest, Alps) {
+  const std::string server_data = "server sends some test data";
+  const std::string client_data = "client also sends some data";
+
+  SSLServerConfig server_config;
+  server_config.alpn_protos = {kProtoHTTP2};
+  if (server_alps_enabled_) {
+    server_config.application_settings[kProtoHTTP2] =
+        std::vector<uint8_t>(server_data.begin(), server_data.end());
+  }
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  SSLConfig client_config;
+  client_config.alpn_protos = {kProtoHTTP2};
+  if (client_alps_enabled_) {
+    client_config.application_settings[kProtoHTTP2] =
+        std::vector<uint8_t>(client_data.begin(), client_data.end());
+  }
+
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+
+  SSLInfo info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&info));
+  EXPECT_EQ(SSL_CONNECTION_VERSION_TLS1_3,
+            SSLConnectionStatusToVersion(info.connection_status));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, info.handshake_type);
+
+  EXPECT_EQ(true, sock_->WasAlpnNegotiated());
+  EXPECT_EQ(kProtoHTTP2, sock_->GetNegotiatedProtocol());
+
+  // ALPS is negotiated only if ALPS is enabled both on client and server.
+  const auto alps_data_received_by_client = sock_->GetPeerApplicationSettings();
+
+  if (client_alps_enabled_ && server_alps_enabled_) {
+    ASSERT_TRUE(alps_data_received_by_client.has_value());
+    EXPECT_EQ(server_data, alps_data_received_by_client.value());
+  } else {
+    EXPECT_FALSE(alps_data_received_by_client.has_value());
+  }
 }
 
 }  // namespace net

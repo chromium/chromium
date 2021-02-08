@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <cstring>
 #include <map>
 #include <utility>
 
@@ -551,6 +552,18 @@ NextProto SSLClientSocketImpl::GetNegotiatedProtocol() const {
   return negotiated_protocol_;
 }
 
+base::Optional<base::StringPiece>
+SSLClientSocketImpl::GetPeerApplicationSettings() const {
+  if (!SSL_has_application_settings(ssl_.get())) {
+    return base::nullopt;
+  }
+
+  const uint8_t* out_data;
+  size_t out_len;
+  SSL_get0_peer_application_settings(ssl_.get(), &out_data, &out_len);
+  return base::StringPiece{reinterpret_cast<const char*>(out_data), out_len};
+}
+
 bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
   ssl_info->Reset();
   if (!server_cert_)
@@ -844,6 +857,16 @@ int SSLClientSocketImpl::Init() {
     std::vector<uint8_t> wire_protos =
         SerializeNextProtos(ssl_config_.alpn_protos);
     SSL_set_alpn_protos(ssl_.get(), wire_protos.data(), wire_protos.size());
+  }
+
+  for (const auto& alps : ssl_config_.application_settings) {
+    const char* proto_string = NextProtoToString(alps.first);
+    const auto& data = alps.second;
+    if (!SSL_add_application_settings(
+            ssl_.get(), reinterpret_cast<const uint8_t*>(proto_string),
+            strlen(proto_string), data.data(), data.size())) {
+      return ERR_UNEXPECTED;
+    }
   }
 
   SSL_enable_signed_cert_timestamps(ssl_.get());
