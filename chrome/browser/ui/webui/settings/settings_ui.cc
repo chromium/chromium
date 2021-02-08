@@ -18,8 +18,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -320,6 +318,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "safetyCheckWeakPasswordsEnabled",
       base::FeatureList::IsEnabled(features::kSafetyCheckWeakPasswords));
 
+  html_source->AddBoolean(
+      "privacySandboxSettingsEnabled",
+      base::FeatureList::IsEnabled(features::kPrivacySandboxSettings));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 
@@ -362,14 +364,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
   // Privacy Sandbox
-  bool sandbox_enabled = PrivacySandboxSettingsFactory::GetForProfile(profile)
-                             ->PrivacySandboxSettingsFunctional();
-  html_source->AddBoolean("privacySandboxSettingsEnabled", sandbox_enabled);
-  if (sandbox_enabled) {
+  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
     html_source->AddResourcePath(
         "privacySandbox", IDR_SETTINGS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_HTML);
   }
-
   TryShowHatsSurveyWithTimeout();
 }
 

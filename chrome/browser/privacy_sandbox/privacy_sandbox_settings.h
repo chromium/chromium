@@ -52,13 +52,6 @@ class PrivacySandboxSettings : public KeyedService,
                          signin::IdentityManager* identity_manager);
   ~PrivacySandboxSettings() override;
 
-  // Returns true when the privacy sandbox settings feature is enabled, and at
-  // least one of the privacy sandbox APIs is also enabled. This function,
-  // rather than direct inspection of the feature itself, should be used to
-  // determine if the privacy sandbox is available to users.
-  // TODO(crbug.com/1174572) Remove this when one API is fully launched.
-  bool PrivacySandboxSettingsFunctional();
-
   // Determines whether FLoC is allowable in a particular context.
   // |top_frame_origin| is used to check for content settings which could both
   // affect 1P and 3P contexts.
