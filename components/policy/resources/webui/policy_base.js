@@ -172,6 +172,11 @@ cr.define('policy', function() {
                   status.isAffiliated ? 'isAffiliatedYes' : 'isAffiliatedNo'));
         }
       }
+
+      if (status.enterpriseDomainManager) {
+        this.setLabelAndShow_('.managed-by', status.enterpriseDomainManager);
+      }
+
       if (status.timeSinceLastRefresh) {
         this.setLabelAndShow_(
             '.time-since-last-refresh', status.timeSinceLastRefresh);

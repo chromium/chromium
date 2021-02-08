@@ -341,6 +341,9 @@ Additional details:
   <message name="IDS_POLICY_LABEL_DIRECTORY_API_ID" desc="Label for the directory API ID in the device policy status box.">
     Directory API ID:
   </message>
+  <message name="IDS_POLICY_LABEL_MANAGED_BY" desc="Label for the manager in the policy status boxes. Manager can be a domain or an email address.">
+    Managed by:
+  </message>
   <message name="IDS_POLICY_LABEL_TIME_SINCE_LAST_REFRESH" desc="Label for the time since the last refresh in the policy status boxes.">
     Last fetched:
   </message>
