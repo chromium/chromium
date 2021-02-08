@@ -126,9 +126,6 @@ const bookmarks::BookmarkNode* GetSyncedBookmarksNode(int index)
 // Used to access the "Managed Bookmarks" node for the given profile.
 const bookmarks::BookmarkNode* GetManagedNode(int index) WARN_UNUSED_RESULT;
 
-// Used to access the bookmarks within the verifier sync profile.
-bookmarks::BookmarkModel* GetVerifierBookmarkModel() WARN_UNUSED_RESULT;
-
 // Adds a URL with address |url| and title |title| to the bookmark bar of
 // profile |profile|. Returns a pointer to the node that was added.
 const bookmarks::BookmarkNode* AddURL(int profile,
@@ -231,14 +228,6 @@ void SortChildren(int profile, const bookmarks::BookmarkNode* parent);
 // Reverses the order of the children of the node |parent| in the bookmark
 // model of profile |profile|.
 void ReverseChildOrder(int profile, const bookmarks::BookmarkNode* parent);
-
-// Checks if the bookmark model of profile |profile| matches the verifier
-// bookmark model. Returns true if they match.
-bool ModelMatchesVerifier(int profile) WARN_UNUSED_RESULT;
-
-// Checks if the bookmark models of all sync profiles match the verifier
-// bookmark model. Returns true if they match.
-bool AllModelsMatchVerifier() WARN_UNUSED_RESULT;
 
 // Checks if the bookmark models of |profile_a| and |profile_b| match each
 // other. Returns true if they match.
@@ -438,16 +427,6 @@ class SingleBookmarkModelStatusChangeChecker
  private:
   const int profile_index_;
   bookmarks::BookmarkModel* bookmark_model_;
-};
-
-// Checker used to block until bookmarks match the verifier bookmark model.
-class BookmarksMatchVerifierChecker : public BookmarkModelStatusChangeChecker {
- public:
-  BookmarksMatchVerifierChecker();
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-  bool Wait() override;
 };
 
 // Generic status change checker that waits until a predicate as defined by
