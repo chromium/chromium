@@ -395,12 +395,14 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
     if (resource_provider) {
       SkSamplingOptions sampling(parsed_options.resize_quality,
                                  SkSamplingOptions::kMedium_asMipmapLinear);
+      cc::PaintFlags paint;
+      paint.setBlendMode(SkBlendMode::kSrc);
       resource_provider->Canvas()->drawImageRect(
           image->PaintImageForCurrentFrame(),
           SkRect::MakeWH(src_image_info.width(), src_image_info.height()),
           SkRect::MakeWH(parsed_options.resize_width,
                          parsed_options.resize_height),
-          sampling, nullptr, SkCanvas::kStrict_SrcRectConstraint);
+          sampling, &paint, SkCanvas::kStrict_SrcRectConstraint);
       return resource_provider->Snapshot(image->CurrentFrameOrientation());
     }
   }
@@ -491,10 +493,13 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
     if (!resource_provider)
       return nullptr;
     cc::PaintCanvas* canvas = resource_provider->Canvas();
+    cc::PaintFlags paint;
+    paint.setBlendMode(SkBlendMode::kSrc);
     canvas->drawImageRect(paint_image,
                           SkRect::MakeXYWH(src_rect.X(), src_rect.Y(),
                                            src_rect.Width(), src_rect.Height()),
                           SkRect::MakeWH(src_rect.Width(), src_rect.Height()),
+                          SkSamplingOptions(), &paint,
                           SkCanvas::kStrict_SrcRectConstraint);
     result = resource_provider->Snapshot(image->CurrentFrameOrientation());
   }

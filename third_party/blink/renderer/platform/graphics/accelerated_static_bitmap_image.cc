@@ -369,7 +369,10 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
     return nullptr;
   }
 
-  provider->Canvas()->drawImage(PaintImageForCurrentFrame(), 0, 0);
+  cc::PaintFlags paint;
+  paint.setBlendMode(SkBlendMode::kSrc);
+  provider->Canvas()->drawImage(PaintImageForCurrentFrame(), 0, 0,
+                                SkSamplingOptions(), &paint);
   return provider->Snapshot(orientation_);
 }
 
