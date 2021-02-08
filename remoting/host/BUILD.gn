@@ -467,8 +467,6 @@ static_library("common") {
     ]
 
     public_deps += [ "//remoting/host/win" ]
-
-    allow_circular_includes_from = [ "//remoting/host/win" ]
   }
 }
 
@@ -666,7 +664,6 @@ if (enable_remoting_host) {
         "//mojo/core/embedder",
         "//net",
         "//remoting/host/setup",
-        "//services/network/public/cpp",
       ]
     }
   }
