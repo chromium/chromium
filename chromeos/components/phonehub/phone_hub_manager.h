@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
+#include <stdint.h>
+
 namespace chromeos {
 namespace phonehub {
 
@@ -14,6 +16,7 @@ class FeatureStatusProvider;
 class FindMyDeviceController;
 class NotificationAccessManager;
 class NotificationManager;
+class NotificationInteractionHandler;
 class OnboardingUiTracker;
 class PhoneModel;
 class TetherController;
@@ -36,6 +39,8 @@ class PhoneHubManager {
   virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;
   virtual FindMyDeviceController* GetFindMyDeviceController() = 0;
   virtual NotificationAccessManager* GetNotificationAccessManager() = 0;
+  virtual NotificationInteractionHandler*
+  GetNotificationInteractionHandler() = 0;
   virtual NotificationManager* GetNotificationManager() = 0;
   virtual OnboardingUiTracker* GetOnboardingUiTracker() = 0;
   virtual PhoneModel* GetPhoneModel() = 0;

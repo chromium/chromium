@@ -59,6 +59,11 @@ static_library("phonehub") {
     "notification_access_manager_impl.h",
     "notification_access_setup_operation.cc",
     "notification_access_setup_operation.h",
+    "notification_click_handler.h",
+    "notification_interaction_handler.cc",
+    "notification_interaction_handler.h",
+    "notification_interaction_handler_impl.cc",
+    "notification_interaction_handler_impl.h",
     "notification_manager.cc",
     "notification_manager.h",
     "notification_manager_impl.cc",
@@ -94,6 +99,7 @@ static_library("phonehub") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
@@ -131,6 +137,8 @@ static_library("debug") {
     "fake_find_my_device_controller.h",
     "fake_notification_access_manager.cc",
     "fake_notification_access_manager.h",
+    "fake_notification_interaction_handler.cc",
+    "fake_notification_interaction_handler.h",
     "fake_notification_manager.cc",
     "fake_notification_manager.h",
     "fake_onboarding_ui_tracker.cc",
@@ -145,7 +153,10 @@ static_library("debug") {
 
   public_deps = [ ":phonehub" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+  ]
 }
 
 static_library("test_support") {
@@ -194,6 +205,7 @@ source_set("unit_tests") {
     "multidevice_setup_state_updater_unittest.cc",
     "mutable_phone_model_unittest.cc",
     "notification_access_manager_impl_unittest.cc",
+    "notification_interaction_handler_impl_unittest.cc",
     "notification_manager_impl_unittest.cc",
     "notification_processor_unittest.cc",
     "onboarding_ui_tracker_impl_unittest.cc",

@@ -4,6 +4,7 @@
 
 #include "chromeos/components/phonehub/phone_hub_manager_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/components/phonehub/browser_tabs_model_controller.h"
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"
@@ -19,6 +20,7 @@
 #include "chromeos/components/phonehub/multidevice_setup_state_updater.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
+#include "chromeos/components/phonehub/notification_interaction_handler_impl.h"
 #include "chromeos/components/phonehub/notification_manager_impl.h"
 #include "chromeos/components/phonehub/notification_processor.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
@@ -75,6 +77,10 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               feature_status_provider_.get(),
               message_sender_.get(),
               connection_scheduler_.get())),
+      notification_interaction_handler_(
+          features::IsEcheSWAEnabled()
+              ? std::make_unique<NotificationInteractionHandlerImpl>()
+              : nullptr),
       notification_manager_(
           std::make_unique<NotificationManagerImpl>(message_sender_.get(),
                                                     user_action_recorder_.get(),
@@ -141,6 +147,11 @@ NotificationAccessManager* PhoneHubManagerImpl::GetNotificationAccessManager() {
   return notification_access_manager_.get();
 }
 
+NotificationInteractionHandler*
+PhoneHubManagerImpl::GetNotificationInteractionHandler() {
+  return notification_interaction_handler_.get();
+}
+
 NotificationManager* PhoneHubManagerImpl::GetNotificationManager() {
   return notification_manager_.get();
 }
@@ -173,6 +184,7 @@ void PhoneHubManagerImpl::Shutdown() {
   notification_processor_.reset();
   onboarding_ui_tracker_.reset();
   notification_manager_.reset();
+  notification_interaction_handler_.reset();
   notification_access_manager_.reset();
   find_my_device_controller_.reset();
   connection_scheduler_.reset();
