@@ -723,7 +723,7 @@
               "device_os_flavor": "google",
               "device_type": "flame",
               "os": "Android",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf-weblayer"
             }
           ],
           "expiration": 7200,
@@ -769,7 +769,7 @@
               "device_os_flavor": "google",
               "device_type": "flame",
               "os": "Android",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf-webview"
             }
           ],
           "expiration": 7200,

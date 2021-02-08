@@ -566,7 +566,7 @@ BUILDERS = {
         }],
         'platform': 'android-webview-google',
         'dimension': {
-            'pool': 'chrome.tests.perf',
+            'pool': 'chrome.tests.perf-webview',
             'os': 'Android',
             'device_type': 'flame',
             'device_os': 'R',
@@ -579,7 +579,7 @@ BUILDERS = {
         }],
         'platform': 'android-weblayer',
         'dimension': {
-            'pool': 'chrome.tests.perf',
+            'pool': 'chrome.tests.perf-weblayer',
             'os': 'Android',
             'device_type': 'flame',
             'device_os': 'R',
