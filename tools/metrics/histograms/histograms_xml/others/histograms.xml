@@ -18013,7 +18013,8 @@ regressions. -->
   <owner>martinkr@google.com</owner>
   <summary>
     Record at startup whether the current system has a platform authenticator
-    available; i.e. whether IsUVPAA JS call would return true or false.
+    available; i.e. whether IsUVPAA JS call would return true or false. This
+    metric is downsampled by factor 10,000 on macOS.
   </summary>
 </histogram>
 
