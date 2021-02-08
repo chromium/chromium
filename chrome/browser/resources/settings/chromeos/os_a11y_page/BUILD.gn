@@ -8,6 +8,7 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":externs",
     ":manage_a11y_page",

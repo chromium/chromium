@@ -23,6 +23,7 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_module") {
+  uses_legacy_modules = true
   deps = [
     ":async_util",
     ":file_operation_common",
@@ -67,6 +68,7 @@ js_type_check("closure_compile_jsmodules") {
 }
 
 js_type_check("test_support_type_check") {
+  uses_legacy_modules = true
   testonly = true
   deps = [
     ":test_importer_common",

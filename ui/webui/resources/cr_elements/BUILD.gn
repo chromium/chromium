@@ -299,6 +299,7 @@ group("closure_compile") {
 }
 
 js_type_check("cr_elements_resources") {
+  uses_legacy_modules = true
   deps = [
     ":cr_container_shadow_behavior",
     ":cr_scrollable_behavior",

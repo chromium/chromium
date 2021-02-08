@@ -8,6 +8,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":album_item",
     ":album_list",
@@ -90,9 +91,9 @@ js_library("album_item") {
 
 js_library("album_list") {
   deps = [
-   "..:os_route",
-    "../..:global_scroll_target_behavior",
     ":constants",
+    "..:os_route",
+    "../..:global_scroll_target_behavior",
     "//ui/webui/resources/js:cr",
   ]
 }
@@ -203,9 +204,9 @@ js_library("album_item.m") {
 js_library("album_list.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/ambient_mode_page/album_list.m.js" ]
   deps = [
+    ":constants.m",
     "..:os_route.m",
     "../..:global_scroll_target_behavior.m",
-    ":constants.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":album_list_module" ]

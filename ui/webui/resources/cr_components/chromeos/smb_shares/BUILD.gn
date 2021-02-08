@@ -12,6 +12,7 @@ assert(is_chromeos, "SMB Shares is Chrome OS only.")
 # chrome://os-settings has been migrated.
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":add_smb_share_dialog",
     ":smb_browser_proxy",

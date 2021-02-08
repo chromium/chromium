@@ -9,6 +9,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 assert(is_chromeos, "Bluetooth dialog is Chrome OS only.")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [ ":bluetooth_dialog" ]
 }
 

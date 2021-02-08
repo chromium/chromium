@@ -172,6 +172,7 @@ template("js_binary") {
                              "outputs",
                              "sources",
                              "testonly",
+                             "uses_legacy_modules",
                              "uses_js_modules",
                            ])
     args = [
@@ -230,6 +231,8 @@ template("js_binary") {
       closure_flags += polymer3_args
     } else if (defined(uses_js_modules) && uses_js_modules) {
       closure_flags += js_modules_args
+    } else if (defined(uses_legacy_modules) && uses_legacy_modules) {
+      closure_flags += legacy_modules_args
     }
 
     args += [ "--flags" ] + closure_flags
@@ -277,6 +280,7 @@ template("js_type_check") {
                                "is_polymer3",
                                "testonly",
                                "uses_js_modules",
+                               "uses_legacy_modules",
                              ])
     }
   } else {

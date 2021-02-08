@@ -39,6 +39,7 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_internal") {
+  uses_legacy_modules = true
   deps = [
     ":files_format_dialog",
     ":files_icon_button",

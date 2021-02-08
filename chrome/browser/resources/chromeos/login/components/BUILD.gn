@@ -22,6 +22,7 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_local") {
+  uses_legacy_modules = true
   deps = [
     ":fake_oobe",
     ":html-echo",

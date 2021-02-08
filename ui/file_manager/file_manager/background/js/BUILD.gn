@@ -37,6 +37,7 @@ group("closure_compile") {
 visibility = [ ":*" ]
 
 js_type_check("closure_compile_module") {
+  uses_legacy_modules = true
   deps = [
     ":app_window_wrapper",
     ":app_windows",
@@ -135,6 +136,7 @@ js_type_check("test_support_modules_type_check") {
 }
 
 js_type_check("test_support_type_check") {
+  uses_legacy_modules = true
   testonly = true
   deps = [
     ":mock_crostini",

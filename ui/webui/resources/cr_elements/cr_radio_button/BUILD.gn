@@ -7,6 +7,7 @@ import("//tools/polymer/polymer.gni")
 import("../../tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":cr_card_radio_button",
     ":cr_radio_button",

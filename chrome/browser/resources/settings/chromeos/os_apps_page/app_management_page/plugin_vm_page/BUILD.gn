@@ -6,6 +6,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("../../../os_settings.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":plugin_vm_browser_proxy",
     ":plugin_vm_detail_view",

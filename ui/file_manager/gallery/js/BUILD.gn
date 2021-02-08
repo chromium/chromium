@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 js_type_check("closure_compile_module") {
+  uses_legacy_modules = true
   deps = [
     ":background",
     ":dimmable_ui_controller",

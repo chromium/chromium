@@ -86,6 +86,7 @@ preprocess_if_expr("preprocess_v3") {
 }
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":nearby_contact_manager",
     ":nearby_contact_visibility",

@@ -10,6 +10,7 @@ import("../os_cr_components.gni")
 assert(is_chromeos, "MultiDevice UI is Chrome OS only.")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":button_bar",
     ":fake_mojo_service",

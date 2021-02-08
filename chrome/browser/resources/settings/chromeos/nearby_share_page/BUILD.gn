@@ -9,6 +9,7 @@ import("../../../nearby_share/shared/nearby_shared.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":nearby_account_manager_browser_proxy",
     ":nearby_share_confirm_page",

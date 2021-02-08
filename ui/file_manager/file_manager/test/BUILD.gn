@@ -32,6 +32,7 @@ action("create_test_main") {
 }
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":check_select",
     ":closure_compile_externs",

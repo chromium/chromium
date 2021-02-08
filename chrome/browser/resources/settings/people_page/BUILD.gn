@@ -10,6 +10,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":profile_info_browser_proxy",
     ":signout_dialog",

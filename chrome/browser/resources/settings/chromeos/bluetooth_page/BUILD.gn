@@ -7,6 +7,7 @@ import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":bluetooth_device_list_item",
     ":bluetooth_page",

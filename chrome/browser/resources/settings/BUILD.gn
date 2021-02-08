@@ -386,6 +386,7 @@ group("closure_compile") {
 }
 
 js_type_check("local_resources") {
+  uses_legacy_modules = true
   deps = [
     ":extension_control_browser_proxy",
     ":global_scroll_target_behavior",

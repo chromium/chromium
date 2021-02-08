@@ -8,6 +8,7 @@ import("../os_cr_components.gni")
 assert(is_chromeos, "Only ChromeOS components belong here.")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":cellular_utils",
     ":cr_policy_network_behavior_mojo",

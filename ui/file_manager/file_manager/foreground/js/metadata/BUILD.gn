@@ -50,6 +50,7 @@ js_type_check("closure_compile_jsmodules") {
 }
 
 js_type_check("closure_compile_module") {
+  uses_legacy_modules = true
   deps = [
     ":byte_reader",
     ":content_metadata_provider",

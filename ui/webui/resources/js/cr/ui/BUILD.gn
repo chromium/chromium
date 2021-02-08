@@ -129,6 +129,7 @@ group("closure_compile") {
 }
 
 js_type_check("ui_resources") {
+  uses_legacy_modules = true
   deps = [
     ":array_data_model",
     ":command",

@@ -6,6 +6,7 @@ import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":google_assistant_browser_proxy",
     ":google_assistant_page",
@@ -32,11 +33,11 @@ js_library("google_assistant_page") {
 }
 
 js_type_check("closure_compile_module") {
- is_polymer3 = true
- deps = [
-   ":google_assistant_browser_proxy.m",
-   ":google_assistant_page.m"
- ]
+  is_polymer3 = true
+  deps = [
+    ":google_assistant_browser_proxy.m",
+    ":google_assistant_page.m",
+  ]
 }
 
 js_library("google_assistant_browser_proxy.m") {
@@ -57,9 +58,9 @@ js_library("google_assistant_page.m") {
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/controls:controlled_button.m",
     "//chrome/browser/resources/settings/controls:settings_toggle_button.m",
+    "//chrome/browser/resources/settings/prefs:pref_util.m",
     "//chrome/browser/resources/settings/prefs:prefs.m",
     "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
-    "//chrome/browser/resources/settings/prefs:pref_util.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_indicator.m",

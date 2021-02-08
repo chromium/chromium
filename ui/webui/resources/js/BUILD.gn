@@ -115,6 +115,7 @@ group("closure_compile") {
 }
 
 js_type_check("js_resources") {
+  uses_legacy_modules = true
   deps = [
     ":action_link",
     ":assert",

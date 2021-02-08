@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":cellular_networks_list",
     ":cellular_setup_dialog",

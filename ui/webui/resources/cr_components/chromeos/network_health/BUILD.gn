@@ -11,6 +11,7 @@ assert(is_chromeos, "Only ChromeOS components belong here.")
 # JS type check for Polymer 2 and 3
 
 js_type_check("closure_compile") {
+  uses_legacy_modules = true
   deps = [
     ":network_diagnostics",
     ":network_diagnostics_mojo",
