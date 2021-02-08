@@ -62,8 +62,7 @@ class EmbeddedWorkerInstanceTest : public testing::Test,
                                    public EmbeddedWorkerInstance::Listener {
  protected:
   EmbeddedWorkerInstanceTest()
-      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   enum EventType {
     PROCESS_ALLOCATED,
@@ -333,15 +332,6 @@ TEST_F(EmbeddedWorkerInstanceTest, StopWhenDevToolsAttached) {
   // Calling Stop() actually stops the worker regardless of whether devtools
   // is attached or not.
   worker->Stop();
-  base::RunLoop().RunUntilIdle();
-
-  // It first enters the STOPPING state because we hit our stop throttling.
-  EXPECT_EQ(EmbeddedWorkerStatus::STOPPING, worker->status());
-
-  // Wait for the throttling time to pass.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-
-  // The stop should complete.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, worker->status());
 }

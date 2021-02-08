@@ -190,10 +190,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
     virtual ~Observer() {}
   };
 
-  // Timeout for the worker to stop.
-  static constexpr base::TimeDelta kStopWorkerTimeout =
-      base::TimeDelta::FromSeconds(5);
-
   // The constructor should be called only from ServiceWorkerRegistry other than
   // tests.
   ServiceWorkerVersion(
@@ -728,6 +724,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Timeout for a new worker to start.
   static constexpr base::TimeDelta kStartNewWorkerTimeout =
       base::TimeDelta::FromMinutes(5);
+  // Timeout for the worker to stop.
+  static constexpr base::TimeDelta kStopWorkerTimeout =
+      base::TimeDelta::FromSeconds(5);
 
   ~ServiceWorkerVersion() override;
 

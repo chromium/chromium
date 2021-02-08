@@ -228,8 +228,6 @@ class EmbeddedWorkerInstance::WorkerProcessHandle {
   DISALLOW_COPY_AND_ASSIGN(WorkerProcessHandle);
 };
 
-constexpr base::TimeDelta EmbeddedWorkerInstance::kThrottledStopWorkerThreshold;
-
 // Info that is recorded as UMA on OnStarted().
 struct EmbeddedWorkerInstance::StartInfo {
   StartInfo(bool is_installed,
@@ -495,7 +493,7 @@ void EmbeddedWorkerInstance::Stop() {
     return;
   }
 
-  ThrottledStopWorker();
+  client_->StopWorker();
   status_ = EmbeddedWorkerStatus::STOPPING;
   for (auto& observer : listener_list_)
     observer.OnStopping();
@@ -1139,36 +1137,6 @@ void EmbeddedWorkerInstance::BindCacheStorageInternal() {
                        std::move(coep_reporter_remote), std::move(receiver)));
   }
   pending_cache_storage_receivers_.clear();
-}
-
-void EmbeddedWorkerInstance::ThrottledStopWorker() {
-  static_assert(
-      kThrottledStopWorkerThreshold < ServiceWorkerVersion::kStopWorkerTimeout,
-      "StopWorker throttle threshold should be less than expected "
-      "stop timeout.");
-
-  base::TimeDelta elapsed = base::Time::Now() - last_stop_time_;
-  bool needs_delay = elapsed < kThrottledStopWorkerThreshold;
-
-  UMA_HISTOGRAM_BOOLEAN("ServiceWorker.ThrottledStopWorker.NeedsDelay",
-                        needs_delay);
-
-  if (!needs_delay) {
-    StopWorkerInternal();
-    return;
-  }
-
-  if (stop_timer_.IsRunning())
-    return;
-
-  stop_timer_.Start(FROM_HERE, (kThrottledStopWorkerThreshold - elapsed),
-                    base::BindOnce(&EmbeddedWorkerInstance::StopWorkerInternal,
-                                   base::Unretained(this)));
-}
-
-void EmbeddedWorkerInstance::StopWorkerInternal() {
-  last_stop_time_ = base::Time::Now();
-  client_->StopWorker();
 }
 
 }  // namespace content
