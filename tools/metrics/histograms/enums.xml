@@ -31301,6 +31301,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3798" label="AVIFImage"/>
   <int value="3799" label="SVGTextEdited"/>
   <int value="3800" label="V8WasmExceptionHandling"/>
+  <int value="3801" label="WasmModuleSharing"/>
+  <int value="3802" label="CrossOriginWasmModuleSharing"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

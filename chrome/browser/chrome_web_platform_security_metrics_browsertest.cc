@@ -684,9 +684,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
 
-  // TODO(ahaas): Check the histogram for:
-  // - kWasmModuleSharing
-  // - kCrossOriginWasmModuleSharing
+  CheckCounter(WebFeature::kWasmModuleSharing, 0);
+  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -723,9 +722,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
 
-  // TODO(ahaas): Check the histogram for:
-  // - kWasmModuleSharing
-  // - kCrossOriginWasmModuleSharing
+  CheckCounter(WebFeature::kWasmModuleSharing, 1);
+  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -763,9 +761,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
 
-  // TODO(ahaas): Check the histogram for:
-  // - kWasmModuleSharing
-  // - kCrossOriginWasmModuleSharing
+  CheckCounter(WebFeature::kWasmModuleSharing, 1);
+  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -805,9 +802,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
 
-  // TODO(ahaas): Check the histogram for:
-  // - kWasmModuleSharing
-  // - kCrossOriginWasmModuleSharing
+  CheckCounter(WebFeature::kWasmModuleSharing, 1);
+  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -847,9 +843,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
   CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
 
-  // TODO(ahaas): Check the histogram for:
-  // - kWasmModuleSharing
-  // - kCrossOriginWasmModuleSharing
+  CheckCounter(WebFeature::kWasmModuleSharing, 1);
+  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:

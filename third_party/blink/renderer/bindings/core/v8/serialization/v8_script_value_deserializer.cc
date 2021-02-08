@@ -751,6 +751,14 @@ v8::MaybeLocal<v8::WasmModuleObject>
 V8ScriptValueDeserializer::GetWasmModuleFromId(v8::Isolate* isolate,
                                                uint32_t id) {
   if (id < serialized_script_value_->WasmModules().size()) {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state_);
+    DCHECK(serialized_script_value_->origin());
+    UseCounter::Count(execution_context, WebFeature::kWasmModuleSharing);
+    if (!serialized_script_value_->origin()->IsSameOriginWith(
+            execution_context->GetSecurityOrigin())) {
+      UseCounter::Count(execution_context,
+                        WebFeature::kCrossOriginWasmModuleSharing);
+    }
     return v8::WasmModuleObject::FromCompiledModule(
         isolate, serialized_script_value_->WasmModules()[id]);
   }
