@@ -41,9 +41,8 @@ LayoutSVGResourceMasker::~LayoutSVGResourceMasker() = default;
 void LayoutSVGResourceMasker::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
   cached_paint_record_.reset();
-  MarkAllClientsForInvalidation(
-      SVGResourceClient::kPaintPropertiesInvalidation |
-      SVGResourceClient::kPaintInvalidation);
+  MarkAllClientsForInvalidation(kPaintPropertiesInvalidation |
+                                kPaintInvalidation);
 }
 
 sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(

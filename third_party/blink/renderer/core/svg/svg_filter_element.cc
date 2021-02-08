@@ -121,10 +121,8 @@ void SVGFilterElement::PrimitiveAttributeChanged(
 }
 
 void SVGFilterElement::InvalidateFilterChain() {
-  if (LocalSVGResource* resource = AssociatedResource()) {
-    resource->NotifyContentChanged(SVGResourceClient::kPaintInvalidation |
-                                   SVGResourceClient::kFilterCacheInvalidation);
-  }
+  if (LocalSVGResource* resource = AssociatedResource())
+    resource->NotifyContentChanged();
 }
 
 void SVGFilterElement::ChildrenChanged(const ChildrenChange& change) {

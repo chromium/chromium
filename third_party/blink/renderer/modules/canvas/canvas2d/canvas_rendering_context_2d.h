@@ -173,8 +173,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   String GetIdFromControl(const Element*) override;
 
   // SVGResourceClient implementation
-  void ResourceContentChanged(InvalidationModeMask) override;
-  void ResourceElementChanged() override;
+  void ResourceContentChanged(SVGResource*) override;
 
   void UpdateFilterReferences(const FilterOperations&);
   void ClearFilterReferences();

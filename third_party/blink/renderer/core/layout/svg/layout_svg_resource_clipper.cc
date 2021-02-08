@@ -117,8 +117,7 @@ void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
   clip_content_path_.Clear();
   cached_paint_record_.reset();
   local_clip_bounds_ = FloatRect();
-  MarkAllClientsForInvalidation(SVGResourceClient::kClipCacheInvalidation |
-                                SVGResourceClient::kPaintInvalidation);
+  MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
 }
 
 base::Optional<Path> LayoutSVGResourceClipper::AsPath() {
@@ -298,10 +297,8 @@ void LayoutSVGResourceClipper::StyleDidChange(StyleDifference diff,
                                               const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutSVGResourceContainer::StyleDidChange(diff, old_style);
-  if (diff.TransformChanged()) {
-    MarkAllClientsForInvalidation(SVGResourceClient::kClipCacheInvalidation |
-                                  SVGResourceClient::kPaintInvalidation);
-  }
+  if (diff.TransformChanged())
+    MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
 }
 
 }  // namespace blink

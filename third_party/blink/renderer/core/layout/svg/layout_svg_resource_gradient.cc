@@ -47,7 +47,7 @@ void LayoutSVGResourceGradient::RemoveAllClientsFromCache() {
   gradient_map_->clear();
   should_collect_gradient_attributes_ = true;
   To<SVGGradientElement>(*GetElement()).InvalidateDependentGradients();
-  MarkAllClientsForInvalidation(SVGResourceClient::kPaintInvalidation);
+  MarkAllClientsForInvalidation(kPaintInvalidation);
 }
 
 bool LayoutSVGResourceGradient::RemoveClientFromCache(

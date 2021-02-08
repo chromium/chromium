@@ -841,15 +841,14 @@ TEST_P(PaintAndRasterInvalidationTest, SVGHiddenContainer) {
   UpdateAllLifecyclePhasesForTest();
 
   // Should invalidate raster for real_rect only.
-  EXPECT_THAT(
-      GetRasterInvalidationTracking()->Invalidations(),
-      UnorderedElementsAre(
-          RasterInvalidationInfo{real_rect, real_rect->DebugName(),
-                                 IntRect(155, 166, 7, 8),
-                                 PaintInvalidationReason::kSVGResource},
-          RasterInvalidationInfo{real_rect, real_rect->DebugName(),
-                                 IntRect(154, 165, 9, 10),
-                                 PaintInvalidationReason::kSVGResource}));
+  EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),
+              UnorderedElementsAre(
+                  RasterInvalidationInfo{real_rect, real_rect->DebugName(),
+                                         IntRect(155, 166, 7, 8),
+                                         PaintInvalidationReason::kSubtree},
+                  RasterInvalidationInfo{real_rect, real_rect->DebugName(),
+                                         IntRect(154, 165, 9, 10),
+                                         PaintInvalidationReason::kSubtree}));
 
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }

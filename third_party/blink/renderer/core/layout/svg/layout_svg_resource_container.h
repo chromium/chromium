@@ -84,6 +84,22 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
   }
 
  protected:
+  typedef unsigned InvalidationModeMask;
+
+  // When adding modes, make sure we don't overflow
+  // |completed_invalidation_mask_|.
+  enum InvalidationMode {
+    kLayoutInvalidation = 1 << 0,
+    kBoundariesInvalidation = 1 << 1,
+    kPaintInvalidation = 1 << 2,
+    kPaintPropertiesInvalidation = 1 << 3,
+    kClipCacheInvalidation = 1 << 4,
+    kFilterCacheInvalidation = 1 << 5,
+    kInvalidateAll = kLayoutInvalidation | kBoundariesInvalidation |
+                     kPaintInvalidation | kPaintPropertiesInvalidation |
+                     kClipCacheInvalidation | kFilterCacheInvalidation,
+  };
+
   // Used from RemoveAllClientsFromCache methods.
   void MarkAllClientsForInvalidation(InvalidationModeMask);
 
@@ -98,7 +114,7 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
  private:
   void InvalidateClientsIfActiveResource();
 
-  // Track global (markAllClientsForInvalidation) invalidations to avoid
+  // Track global (MarkAllClientsForInvalidation) invalidations to avoid
   // redundant crawls.
   unsigned completed_invalidations_mask_ : 8;
 

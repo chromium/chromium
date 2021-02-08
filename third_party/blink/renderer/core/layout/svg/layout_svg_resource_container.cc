@@ -64,7 +64,7 @@ void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
     return;
   // Pass all available flags. This may be performing unnecessary invalidations
   // in some cases.
-  MarkAllClientsForInvalidation(SVGResourceClient::kInvalidateAll);
+  MarkAllClientsForInvalidation(kInvalidateAll);
 }
 
 void LayoutSVGResourceContainer::WillBeDestroyed() {
@@ -190,7 +190,7 @@ void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
   is_invalidating_ = true;
 
   // Invalidate clients registered via an SVGResource.
-  resource->NotifyContentChanged(invalidation_mask);
+  resource->NotifyContentChanged();
 
   is_invalidating_ = false;
 }

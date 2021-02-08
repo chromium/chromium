@@ -44,8 +44,7 @@ bool LayoutSVGResourceFilter::IsChildAllowed(LayoutObject* child,
 
 void LayoutSVGResourceFilter::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
-  MarkAllClientsForInvalidation(SVGResourceClient::kPaintInvalidation |
-                                SVGResourceClient::kFilterCacheInvalidation);
+  MarkAllClientsForInvalidation(kPaintInvalidation | kFilterCacheInvalidation);
 }
 
 FloatRect LayoutSVGResourceFilter::ResourceBoundingBox(

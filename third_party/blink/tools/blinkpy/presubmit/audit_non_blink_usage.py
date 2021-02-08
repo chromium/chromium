@@ -82,6 +82,7 @@ _CONFIG = [
             'base::make_optional',
             'base::make_span',
             'base::nullopt',
+            'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
             'base::size',
             'base::span',

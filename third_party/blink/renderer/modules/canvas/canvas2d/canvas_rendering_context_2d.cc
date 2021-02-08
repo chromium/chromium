@@ -657,11 +657,7 @@ void CanvasRenderingContext2D::UpdateFilterReferences(
   filter_operations_ = filters;
 }
 
-void CanvasRenderingContext2D::ResourceContentChanged(InvalidationModeMask) {
-  ResourceElementChanged();
-}
-
-void CanvasRenderingContext2D::ResourceElementChanged() {
+void CanvasRenderingContext2D::ResourceContentChanged(SVGResource*) {
   ClearFilterReferences();
   GetState().ClearResolvedFilter();
 }

@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
@@ -206,21 +207,43 @@ class SVGElementResourceClient::FilterData final
 SVGElementResourceClient::SVGElementResourceClient(SVGElement* element)
     : element_(element), filter_data_dirty_(false) {}
 
-void SVGElementResourceClient::ResourceContentChanged(
-    InvalidationModeMask invalidation_mask) {
+namespace {
+
+template <typename ContainerType>
+bool ContainsResource(const ContainerType* container, SVGResource* resource) {
+  return container && container->Resource() == resource;
+}
+
+bool ContainsResource(const FilterOperations& operations,
+                      SVGResource* resource) {
+  return base::ranges::any_of(
+      operations.Operations(), [resource](const FilterOperation* operation) {
+        return ContainsResource(DynamicTo<ReferenceFilterOperation>(operation),
+                                resource);
+      });
+}
+
+}  // namespace
+
+void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
   LayoutObject* layout_object = element_->GetLayoutObject();
   if (!layout_object)
     return;
 
-  if (invalidation_mask & SVGResourceClient::kFilterCacheInvalidation)
+  const ComputedStyle& style = layout_object->StyleRef();
+  if (style.HasFilter() && ContainsResource(style.Filter(), resource)) {
     InvalidateFilterData();
+    layout_object->SetShouldDoFullPaintInvalidation();
+  }
 
-  if (layout_object->IsSVGResourceContainer()) {
-    To<LayoutSVGResourceContainer>(layout_object)->RemoveAllClientsFromCache();
+  if (auto* container = DynamicTo<LayoutSVGResourceContainer>(layout_object)) {
+    container->RemoveAllClientsFromCache();
     return;
   }
 
-  if (invalidation_mask & SVGResourceClient::kPaintInvalidation) {
+  const SVGComputedStyle& svg_style = style.SvgStyle();
+  if (ContainsResource(svg_style.FillPaint().Resource(), resource) ||
+      ContainsResource(svg_style.StrokePaint().Resource(), resource)) {
     // Since LayoutSVGInlineTexts don't have SVGResources (they use their
     // parent's), they will not be notified of changes to paint servers. So
     // if the client is one that could have a LayoutSVGInlineText use a
@@ -230,36 +253,34 @@ void SVGElementResourceClient::ResourceContentChanged(
         PaintInvalidationReason::kSVGResource);
   }
 
-  if (invalidation_mask & SVGResourceClient::kClipCacheInvalidation)
-    layout_object->InvalidateClipPathCache();
-
-  // Invalidate paint properties to update effects if any.
-  if (invalidation_mask & SVGResourceClient::kPaintPropertiesInvalidation)
-    layout_object->SetNeedsPaintPropertyUpdate();
-
-  if (invalidation_mask & SVGResourceClient::kBoundariesInvalidation)
+  bool needs_layout = false;
+  if (ContainsResource(svg_style.MarkerStartResource(), resource) ||
+      ContainsResource(svg_style.MarkerMidResource(), resource) ||
+      ContainsResource(svg_style.MarkerEndResource(), resource)) {
+    needs_layout = true;
     layout_object->SetNeedsBoundariesUpdate();
+  }
 
-  bool needs_layout =
-      invalidation_mask & SVGResourceClient::kLayoutInvalidation;
+  const auto* clip_reference =
+      DynamicTo<ReferenceClipPathOperation>(style.ClipPath());
+  if (ContainsResource(clip_reference, resource)) {
+    // TODO(fs): "Downgrade" to non-subtree?
+    layout_object->SetSubtreeShouldDoFullPaintInvalidation();
+    layout_object->InvalidateClipPathCache();
+  }
+
+  if (ContainsResource(svg_style.MaskerResource(), resource)) {
+    // TODO(fs): "Downgrade" to non-subtree?
+    layout_object->SetSubtreeShouldDoFullPaintInvalidation();
+    layout_object->SetNeedsPaintPropertyUpdate();
+  }
+
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
       *layout_object, needs_layout);
 }
 
-void SVGElementResourceClient::ResourceElementChanged() {
-  LayoutObject* layout_object = element_->GetLayoutObject();
-  if (!layout_object)
-    return;
-  // TODO(fs): If the resource element (for a filter) doesn't actually change
-  // we don't need to perform the associated invalidations.
-  InvalidateFilterData();
-  if (layout_object->Parent()) {
-    LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
-        *layout_object, true);
-  }
-}
-
 void SVGElementResourceClient::FilterPrimitiveChanged(
+    SVGResource* resource,
     SVGFilterPrimitiveStandardAttributes& primitive,
     const QualifiedName& attribute) {
   if (filter_data_ && !filter_data_->Invalidate(primitive, attribute))

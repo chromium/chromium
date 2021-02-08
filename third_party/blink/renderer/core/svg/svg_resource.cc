@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -53,14 +54,14 @@ void SVGResource::InvalidateCycleCache() {
     client_entry.cached_cycle_check = kNeedCheck;
 }
 
-void SVGResource::NotifyElementChanged() {
+void SVGResource::NotifyContentChanged() {
   InvalidateCycleCache();
 
   HeapVector<Member<SVGResourceClient>> clients;
   CopyKeysToVector(clients_, clients);
 
   for (SVGResourceClient* client : clients)
-    client->ResourceElementChanged();
+    client->ResourceContentChanged(this);
 }
 
 LayoutSVGResourceContainer* SVGResource::ResourceContainerNoCycleCheck() const {
@@ -134,17 +135,6 @@ void LocalSVGResource::Unregister() {
   SVGURIReference::UnobserveTarget(id_observer_);
 }
 
-void LocalSVGResource::NotifyContentChanged(
-    InvalidationModeMask invalidation_mask) {
-  InvalidateCycleCache();
-
-  HeapVector<Member<SVGResourceClient>> clients;
-  CopyKeysToVector(clients_, clients);
-
-  for (SVGResourceClient* client : clients)
-    client->ResourceContentChanged(invalidation_mask);
-}
-
 void LocalSVGResource::NotifyFilterPrimitiveChanged(
     SVGFilterPrimitiveStandardAttributes& primitive,
     const QualifiedName& attribute) {
@@ -152,7 +142,7 @@ void LocalSVGResource::NotifyFilterPrimitiveChanged(
   CopyKeysToVector(clients_, clients);
 
   for (SVGResourceClient* client : clients)
-    client->FilterPrimitiveChanged(primitive, attribute);
+    client->FilterPrimitiveChanged(this, primitive, attribute);
 }
 
 void LocalSVGResource::TargetChanged(const AtomicString& id) {
@@ -165,7 +155,7 @@ void LocalSVGResource::TargetChanged(const AtomicString& id) {
   if (old_resource)
     old_resource->RemoveAllClientsFromCache();
   target_ = new_target;
-  NotifyElementChanged();
+  NotifyContentChanged();
 }
 
 void LocalSVGResource::Trace(Visitor* visitor) const {
@@ -205,7 +195,7 @@ void ExternalSVGResource::NotifyFinished(Resource*) {
   if (new_target == target_)
     return;
   target_ = new_target;
-  NotifyElementChanged();
+  NotifyContentChanged();
 }
 
 String ExternalSVGResource::DebugName() const {
