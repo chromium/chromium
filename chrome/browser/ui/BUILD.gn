@@ -340,6 +340,7 @@ static_library("ui") {
   public_deps = [
     "//components/dom_distiller/core",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//components/paint_preview/buildflags",
     "//components/safe_browsing:buildflags",
     "//components/sync",
     "//components/sync_user_events",
@@ -463,7 +464,6 @@ static_library("ui") {
     "//components/omnibox/browser:vector_icons",
     "//components/onc",
     "//components/optimization_guide/core",
-    "//components/paint_preview/buildflags",
     "//components/password_manager/content/browser",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:affiliation",
