@@ -18,7 +18,7 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.w3c.chromium_commit_mock import MockChromiumCommit
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
-from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, TBR_FALLBACK
+from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, TBR_FALLBACK, RUBBER_STAMPER_BOT
 from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.web_tests.port.android import PRODUCTS_TO_EXPECTATION_FILE_PATHS
@@ -140,7 +140,10 @@ class TestImporterTest(LoggingTestCase):
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
-            ['git', 'cl', 'upload', '-f', '--send-mail'],
+            [
+                'git', 'cl', 'upload', '-f', '--send-mail', '--reviewers',
+                RUBBER_STAMPER_BOT
+            ],
             ['git', 'cl', 'set-commit'],
         ])
 
@@ -199,7 +202,10 @@ class TestImporterTest(LoggingTestCase):
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
-            ['git', 'cl', 'upload', '-f', '--send-mail'],
+            [
+                'git', 'cl', 'upload', '-f', '--send-mail', '--reviewers',
+                RUBBER_STAMPER_BOT
+            ],
             ['git', 'cl', 'set-commit'],
             ['git', 'cl', 'set-close'],
         ])
@@ -281,7 +287,10 @@ class TestImporterTest(LoggingTestCase):
         ])
         self.assertEqual(importer.git_cl.calls, [
             ['git', 'cl', 'try'],
-            ['git', 'cl', 'upload', '-f', '--send-mail'],
+            [
+                'git', 'cl', 'upload', '-f', '--send-mail', '--reviewers',
+                RUBBER_STAMPER_BOT
+            ],
             ['git', 'cl', 'set-commit'],
             ['git', 'cl', 'set-close'],
         ])

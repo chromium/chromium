@@ -40,6 +40,7 @@ TIMEOUT_SECONDS = 210 * 60
 # Sheriff calendar URL, used for getting the ecosystem infra sheriff to TBR.
 ROTATIONS_URL = 'https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-ecosystem-infra'
 TBR_FALLBACK = 'robertma@google.com'
+RUBBER_STAMPER_BOT = 'rubber-stamper@appspot.gserviceaccount.com'
 
 _log = logging.getLogger(__file__)
 
@@ -268,7 +269,15 @@ class TestImporter(object):
             return False
 
         _log.info('CQ appears to have passed; trying to commit.')
-        self.git_cl.run(['upload', '-f', '--send-mail'])  # Turn off WIP mode.
+
+        # As an intermediary step in the migration from TBR to the rubber
+        # stamper bot, we add it as a reviewer here but still land the CL
+        # ourselves. The goal is to validate that the rubber-stamper would have
+        # CR+1'd our import had we been using it for real.
+        #
+        # `--send-mail` is required to take the CL out of WIP mode.
+        self.git_cl.run(
+            ['upload', '-f', '--send-mail', '--reviewers', RUBBER_STAMPER_BOT])
         self.git_cl.run(['set-commit'])
 
         if self.git_cl.wait_for_closed_status():
