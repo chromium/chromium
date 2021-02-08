@@ -6,6 +6,7 @@ module content.mojom;
 
 import "content/common/native_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/events/mojom/scroll_granularity.mojom";
 
 // Describes which type of input events synthetic gesture objects should
 // generate. When specifying DEFAULT_INPUT the platform will be queried for
@@ -17,6 +18,29 @@ enum GestureSourceType {
   kTouchpadInput = kMouseInput,
   kPenInput,
   kGestureSourceTypeMax = kPenInput,
+};
+
+// The smooth drag gesture parameters sent by the renderer to the browser, that
+// are needed to queue the synthetic smooth drag gesture.
+struct SyntheticSmoothDrag {
+  GestureSourceType gesture_source_type;
+  gfx.mojom.PointF start_point;
+  array<gfx.mojom.Vector2dF> distances;
+  float speed_in_pixels_s;
+};
+
+// The smooth drag gesture parameters sent by the renderer to the browser, that
+// are needed to queue the synthetic smooth drag gesture.
+struct SyntheticSmoothScroll {
+  GestureSourceType gesture_source_type;
+  gfx.mojom.PointF anchor;
+  array<gfx.mojom.Vector2dF> distances;
+  bool prevent_fling;
+  float speed_in_pixels_s;
+  float fling_velocity_x;
+  float fling_velocity_y;
+  ui.mojom.ScrollGranularity granularity;
+  int32 modifiers;
 };
 
 // The pinth parameters sent by the renderer to the browser, that are needed to

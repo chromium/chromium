@@ -52,6 +52,38 @@ bool EnumTraits<content::mojom::GestureSourceType,
 }
 
 // static
+bool StructTraits<content::mojom::SyntheticSmoothDragDataView,
+                  content::SyntheticSmoothDragGestureParams>::
+    Read(content::mojom::SyntheticSmoothDragDataView data,
+         content::SyntheticSmoothDragGestureParams* out) {
+  if (!data.ReadGestureSourceType(&out->gesture_source_type) ||
+      !data.ReadStartPoint(&out->start_point) ||
+      !data.ReadDistances(&out->distances))
+    return false;
+
+  out->speed_in_pixels_s = data.speed_in_pixels_s();
+  return true;
+}
+
+// static
+bool StructTraits<content::mojom::SyntheticSmoothScrollDataView,
+                  content::SyntheticSmoothScrollGestureParams>::
+    Read(content::mojom::SyntheticSmoothScrollDataView data,
+         content::SyntheticSmoothScrollGestureParams* out) {
+  if (!data.ReadGestureSourceType(&out->gesture_source_type) ||
+      !data.ReadAnchor(&out->anchor) || !data.ReadDistances(&out->distances) ||
+      !data.ReadGranularity(&out->granularity))
+    return false;
+
+  out->prevent_fling = data.prevent_fling();
+  out->speed_in_pixels_s = data.speed_in_pixels_s();
+  out->fling_velocity_x = data.fling_velocity_x();
+  out->fling_velocity_y = data.fling_velocity_y();
+  out->modifiers = data.modifiers();
+  return true;
+}
+
+// static
 bool StructTraits<content::mojom::SyntheticPinchDataView,
                   content::SyntheticPinchGestureParams>::
     Read(content::mojom::SyntheticPinchDataView data,

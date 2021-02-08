@@ -7,7 +7,10 @@
 
 #include "content/common/input/input_injector.mojom.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
+#include "content/common/input/synthetic_smooth_drag_gesture_params.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
+#include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace mojo {
@@ -21,6 +24,33 @@ struct CONTENT_EXPORT
   static bool FromMojom(
       content::mojom::GestureSourceType input,
       content::SyntheticGestureParams::GestureSourceType* output);
+};
+
+template <>
+struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticSmoothDragDataView,
+                                   content::SyntheticSmoothDragGestureParams> {
+  static content::SyntheticGestureParams::GestureSourceType gesture_source_type(
+      const content::SyntheticSmoothDragGestureParams& r) {
+    return r.gesture_source_type;
+  }
+
+  static const gfx::PointF& start_point(
+      const content::SyntheticSmoothDragGestureParams& r) {
+    return r.start_point;
+  }
+
+  static const std::vector<gfx::Vector2dF>& distances(
+      const content::SyntheticSmoothDragGestureParams& r) {
+    return r.distances;
+  }
+
+  static float speed_in_pixels_s(
+      const content::SyntheticSmoothDragGestureParams& r) {
+    return r.speed_in_pixels_s;
+  }
+
+  static bool Read(content::mojom::SyntheticSmoothDragDataView r,
+                   content::SyntheticSmoothDragGestureParams* out);
 };
 
 template <>
@@ -42,6 +72,59 @@ struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticPinchDataView,
 
   static bool Read(content::mojom::SyntheticPinchDataView r,
                    content::SyntheticPinchGestureParams* out);
+};
+
+template <>
+struct CONTENT_EXPORT
+    StructTraits<content::mojom::SyntheticSmoothScrollDataView,
+                 content::SyntheticSmoothScrollGestureParams> {
+  static content::SyntheticGestureParams::GestureSourceType gesture_source_type(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.gesture_source_type;
+  }
+
+  static const gfx::PointF& anchor(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.anchor;
+  }
+
+  static const std::vector<gfx::Vector2dF>& distances(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.distances;
+  }
+
+  static bool prevent_fling(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.prevent_fling;
+  }
+
+  static float speed_in_pixels_s(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.speed_in_pixels_s;
+  }
+
+  static float fling_velocity_x(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.fling_velocity_x;
+  }
+
+  static float fling_velocity_y(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.fling_velocity_y;
+  }
+
+  static ui::ScrollGranularity granularity(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.granularity;
+  }
+
+  static int32_t modifiers(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.modifiers;
+  }
+
+  static bool Read(content::mojom::SyntheticSmoothScrollDataView r,
+                   content::SyntheticSmoothScrollGestureParams* out);
 };
 
 template <>

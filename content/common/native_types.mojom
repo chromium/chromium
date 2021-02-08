@@ -22,12 +22,6 @@ enum ScrollerStyle;
 enum NetworkConnectionType;
 
 [Native]
-struct SyntheticSmoothDrag;
-
-[Native]
-struct SyntheticSmoothScroll;
-
-[Native]
 struct SyntheticPointerAction;
 
 [Native]
