@@ -1,6 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+/**
+ * @license
+ * Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
 
 /**
  * @fileoverview Utilities for rendering most visited thumbnails and titles.
