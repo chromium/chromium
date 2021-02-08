@@ -673,7 +673,7 @@ std::vector<base::FilePath> GetShortcutLocations(
     const ShortcutLocations& locations,
     const base::FilePath& profile_path,
     const std::string& app_id) {
-#if !defined(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return GetShortcutLocations(env.get(), locations, profile_path, app_id);
 #endif
