@@ -3079,35 +3079,35 @@ def CheckSecurityChanges(input_api, output_api):
   by the security team.
   """
   files_to_functions = _GetFilesUsingSecurityCriticalFunctions(input_api)
-  if len(files_to_functions):
-    owners_db = input_api.owners_db
-    owner_email, reviewers = (
-        input_api.canned_checks.GetCodereviewOwnerAndReviewers(
-            input_api,
-            owners_db.email_regexp,
-            approval_needed=input_api.is_committing))
+  if not len(files_to_functions):
+    return []
 
-    # Load the OWNERS file for security changes.
-    owners_file = 'ipc/SECURITY_OWNERS'
-    security_owners = owners_db.owners_rooted_at_file(owners_file)
+  owner_email, reviewers = (
+      input_api.canned_checks.GetCodereviewOwnerAndReviewers(
+          input_api,
+          None,
+          approval_needed=input_api.is_committing))
 
-    has_security_owner = any([owner in reviewers for owner in security_owners])
-    if not has_security_owner:
-      msg = 'The following files change calls to security-sensive functions\n' \
-          'that need to be reviewed by {}.\n'.format(owners_file)
-      for path, names in files_to_functions.items():
-        msg += '  {}\n'.format(path)
-        for name in names:
-          msg += '    {}\n'.format(name)
-        msg += '\n'
+  # Load the OWNERS file for security changes.
+  owners_file = 'ipc/SECURITY_OWNERS'
+  security_owners = input_api.owners_client.ListOwners(owners_file)
+  has_security_owner = any([owner in reviewers for owner in security_owners])
+  if has_security_owner:
+    return []
 
-      if input_api.is_committing:
-        output = output_api.PresubmitError
-      else:
-        output = output_api.PresubmitNotifyResult
-      return [output(msg)]
+  msg = 'The following files change calls to security-sensive functions\n' \
+      'that need to be reviewed by {}.\n'.format(owners_file)
+  for path, names in files_to_functions.items():
+    msg += '  {}\n'.format(path)
+    for name in names:
+      msg += '    {}\n'.format(name)
+    msg += '\n'
 
-  return []
+  if input_api.is_committing:
+    output = output_api.PresubmitError
+  else:
+    output = output_api.PresubmitNotifyResult
+  return [output(msg)]
 
 
 def CheckSetNoParent(input_api, output_api):

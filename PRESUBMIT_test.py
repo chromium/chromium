@@ -2183,11 +2183,8 @@ class FuchsiaSecurityOwnerTest(unittest.TestCase):
 
 
 class SecurityChangeTest(unittest.TestCase):
-  class _MockOwnersDB(object):
-    def __init__(self):
-      self.email_regexp = '.*'
-
-    def owners_rooted_at_file(self, f):
+  class _MockOwnersClient(object):
+    def ListOwners(self, f):
       return ['apple@chromium.org', 'orange@chromium.org']
 
   def _mockChangeOwnerAndReviewers(self, input_api, owner, reviewers):
@@ -2245,7 +2242,7 @@ class SecurityChangeTest(unittest.TestCase):
 
   def testChangeOwnersMissing(self):
     mock_input_api = MockInputApi()
-    mock_input_api.owners_db = self._MockOwnersDB()
+    mock_input_api.owners_client = self._MockOwnersClient()
     mock_input_api.is_committing = False
     mock_input_api.files = [
         MockAffectedFile('file.cc', ['GetServiceSandboxType<Goat>(Sandbox)'])
@@ -2264,7 +2261,7 @@ class SecurityChangeTest(unittest.TestCase):
 
   def testChangeOwnersMissingAtCommit(self):
     mock_input_api = MockInputApi()
-    mock_input_api.owners_db = self._MockOwnersDB()
+    mock_input_api.owners_client = self._MockOwnersClient()
     mock_input_api.is_committing = True
     mock_input_api.files = [
         MockAffectedFile('file.cc', ['GetServiceSandboxType<mojom::Goat>()'])
@@ -2283,7 +2280,7 @@ class SecurityChangeTest(unittest.TestCase):
 
   def testChangeOwnersPresent(self):
     mock_input_api = MockInputApi()
-    mock_input_api.owners_db = self._MockOwnersDB()
+    mock_input_api.owners_client = self._MockOwnersClient()
     mock_input_api.files = [
         MockAffectedFile('file.cc', ['WithSandboxType(Sandbox)'])
     ]
@@ -2296,7 +2293,7 @@ class SecurityChangeTest(unittest.TestCase):
 
   def testChangeOwnerIsSecurityOwner(self):
     mock_input_api = MockInputApi()
-    mock_input_api.owners_db = self._MockOwnersDB()
+    mock_input_api.owners_client = self._MockOwnersClient()
     mock_input_api.files = [
         MockAffectedFile('file.cc', ['GetServiceSandboxType<T>(Sandbox)'])
     ]
