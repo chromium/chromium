@@ -28,7 +28,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   // Fake audio output nodes.
   AudioNode output_1;
   output_1.is_input = false;
-  output_1.id = 10001;
+  output_1.id = 0x100000001;
   output_1.stable_device_id_v1 = 10001;
   output_1.max_supported_channels = kOutputMaxSupportedChannels;
   output_1.device_name = "Fake Speaker";
@@ -38,7 +38,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
 
   AudioNode output_2;
   output_2.is_input = false;
-  output_2.id = 10002;
+  output_2.id = 0x200000001;
   output_2.stable_device_id_v1 = 10002;
   output_2.max_supported_channels = kOutputMaxSupportedChannels;
   output_2.device_name = "Fake Headphone";
@@ -48,7 +48,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
 
   AudioNode output_3;
   output_3.is_input = false;
-  output_3.id = 10003;
+  output_3.id = 0x300000001;
   output_3.stable_device_id_v1 = 10003;
   output_3.max_supported_channels = kOutputMaxSupportedChannels;
   output_3.device_name = "Fake Bluetooth Headphone";
@@ -58,7 +58,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
 
   AudioNode output_4;
   output_4.is_input = false;
-  output_4.id = 10004;
+  output_4.id = 0x400000001;
   output_4.stable_device_id_v1 = 10004;
   output_4.max_supported_channels = kOutputMaxSupportedChannels;
   output_4.device_name = "Fake HDMI Speaker";
@@ -69,7 +69,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   // Fake audio input nodes
   AudioNode input_1;
   input_1.is_input = true;
-  input_1.id = 20001;
+  input_1.id = 0x100000002;
   input_1.stable_device_id_v1 = 20001;
   input_1.max_supported_channels = kInputMaxSupportedChannels;
   input_1.device_name = "Fake Internal Mic";
@@ -79,7 +79,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
 
   AudioNode input_2;
   input_2.is_input = true;
-  input_2.id = 20002;
+  input_2.id = 0x200000002;
   input_2.stable_device_id_v1 = 20002;
   input_2.max_supported_channels = kInputMaxSupportedChannels;
   input_2.device_name = "Fake USB Mic";
@@ -89,7 +89,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
 
   AudioNode input_3;
   input_3.is_input = true;
-  input_3.id = 20003;
+  input_3.id = 0x300000002;
   input_3.stable_device_id_v1 = 20003;
   input_3.max_supported_channels = kInputMaxSupportedChannels;
   input_3.device_name = "Fake Mic Jack";
