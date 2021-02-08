@@ -54,20 +54,6 @@ namespace {
 
 using ResourcesMap = std::unordered_map<std::string, int>;
 
-const std::map<std::string, std::string> CreatePathPrefixAliasesMap() {
-  // TODO(rkc): Once we have a separate source for apps, remove '*/apps/'
-  // aliases.
-  std::map<std::string, std::string> aliases = {
-    {"../../views/resources/default_100_percent/common/", "images/apps/"},
-    {"../../views/resources/default_200_percent/common/", "images/2x/apps/"},
-  };
-
-#if !defined(OS_ANDROID)
-  aliases["../../../third_party/lottie/"] = "lottie/";
-#endif  // !defined(OS_ANDROID)
-  return aliases;
-}
-
 const std::map<int, std::string> CreateContentResourceIdToAliasMap() {
   return std::map<int, std::string>{
       {IDR_ORIGIN_MOJO_HTML, "mojo/url/mojom/origin.mojom.html"},
@@ -173,21 +159,9 @@ void AddResource(const std::string& path,
 }
 
 void AddResourcesToMap(ResourcesMap* resources_map) {
-  const std::map<std::string, std::string> aliases =
-      CreatePathPrefixAliasesMap();
-
   for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
     const auto& resource = kWebuiResources[i];
     AddResource(resource.name, resource.value, resources_map);
-
-    for (auto it = aliases.begin(); it != aliases.end(); ++it) {
-      if (base::StartsWith(resource.name, it->first,
-                           base::CompareCase::SENSITIVE)) {
-        std::string resource_name(resource.name);
-        AddResource(it->second + resource_name.substr(it->first.length()),
-                    resource.value, resources_map);
-      }
-    }
   }
 }
 
