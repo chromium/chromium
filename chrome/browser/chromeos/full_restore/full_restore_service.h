@@ -49,7 +49,9 @@ class FullRestoreService : public KeyedService {
 
   // Launches the browser, When the restore data is loaded, and the user chooses
   // to restore.
-  void LauncherBrowserWhenReady();
+  void LaunchBrowserWhenReady();
+
+  void RestoreForTesting();
 
  private:
   void Init();

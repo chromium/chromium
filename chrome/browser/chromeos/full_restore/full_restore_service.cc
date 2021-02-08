@@ -57,8 +57,12 @@ FullRestoreService::FullRestoreService(Profile* profile)
 
 FullRestoreService::~FullRestoreService() = default;
 
-void FullRestoreService::LauncherBrowserWhenReady() {
-  app_launch_handler_->LauncherBrowserWhenReady();
+void FullRestoreService::LaunchBrowserWhenReady() {
+  app_launch_handler_->LaunchBrowserWhenReady();
+}
+
+void FullRestoreService::RestoreForTesting() {
+  Restore();
 }
 
 void FullRestoreService::Init() {

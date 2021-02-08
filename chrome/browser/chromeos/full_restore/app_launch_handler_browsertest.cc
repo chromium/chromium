@@ -9,6 +9,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -166,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, NotRestore) {
 
   // Create AppLaunchHandler.
   auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
-  app_launch_handler->LauncherBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady();
 
   CreateWebApp();
 
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndLaunchBrowser) {
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
-  app_launch_handler->LauncherBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady();
   content::RunAllTasksUntilIdle();
 
   // Verify there is new browser launched.
@@ -214,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, LaunchBrowserAndRestore) {
   // Create AppLaunchHandler.
   auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
 
-  app_launch_handler->LauncherBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady();
   content::RunAllTasksUntilIdle();
 
   // Verify there is no new browser launched.
@@ -250,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
-  app_launch_handler->LauncherBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady();
   content::RunAllTasksUntilIdle();
 
   CreateWebApp();
@@ -281,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   // Create AppLaunchHandler.
   auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
 
-  app_launch_handler->LauncherBrowserWhenReady();
+  app_launch_handler->LaunchBrowserWhenReady();
   content::RunAllTasksUntilIdle();
 
   CreateWebApp();
@@ -294,6 +295,25 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   // Verify there is new browser launched.
   EXPECT_EQ(count + 2, BrowserList::GetInstance()->size());
   EXPECT_TRUE(FindWebAppWindow());
+}
+
+class AppLaunchHandlerNoBrowserBrowserTest
+    : public AppLaunchHandlerBrowserTest {
+ public:
+  AppLaunchHandlerNoBrowserBrowserTest() = default;
+  ~AppLaunchHandlerNoBrowserBrowserTest() override = default;
+
+  // BrowserTestBase:
+  void PreRunTestOnMainThread() override {
+    set_skip_initial_restore(true);
+
+    AppLaunchHandlerBrowserTest::PreRunTestOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerNoBrowserBrowserTest,
+                       NoBrowserOnLaunch) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
 }
 
 }  // namespace full_restore

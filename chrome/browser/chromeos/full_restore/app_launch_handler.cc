@@ -65,7 +65,7 @@ void AppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
   apps::AppRegistryCache::Observer::Observe(nullptr);
 }
 
-void AppLaunchHandler::LauncherBrowserWhenReady() {
+void AppLaunchHandler::LaunchBrowserWhenReady() {
   // If the restore data has been loaded, and the user has chosen to restore,
   // launch the browser.
   if (should_restore_ && restore_data_) {

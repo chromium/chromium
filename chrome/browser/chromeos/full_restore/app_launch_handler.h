@@ -44,7 +44,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   // Launches the browser, When the restore data is loaded, and the user chooses
   // to restore.
-  void LauncherBrowserWhenReady();
+  void LaunchBrowserWhenReady();
 
   // If the user preference sets always restore or the user selects 'Restore'
   // from the notification dialog, sets the restore flag |should_restore_| as

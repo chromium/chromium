@@ -2198,7 +2198,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   if (should_launch_browser_) {
     if (IsFullRestoreEnabled(profile)) {
       full_restore::FullRestoreService::GetForProfile(profile)
-          ->LauncherBrowserWhenReady();
+          ->LaunchBrowserWhenReady();
     } else {
       MaybeLaunchSettings(profile);
     }

@@ -127,7 +127,9 @@ class FullRestoreReadAndSaveTest : public testing::Test {
 
 TEST_F(FullRestoreReadAndSaveTest, ReadEmptyRestoreData) {
   ReadFromFile(GetPath());
-  EXPECT_FALSE(GetRestoreData(GetPath()));
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+  ASSERT_TRUE(restore_data->app_id_to_launch_list().empty());
 }
 
 TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {

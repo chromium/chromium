@@ -99,6 +99,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/chromeos/input_method/input_method_configuration.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
@@ -578,6 +579,17 @@ base::FilePath InProcessBrowserTest::GetChromeTestDataDir() const {
 
 void InProcessBrowserTest::PreRunTestOnMainThread() {
   AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS does not create a browser by default when the full restore feature
+  // is enabled. Nearly all existing tests assume a browser is created. This
+  // call triggers creating a browser.
+  auto* full_restore_service =
+      chromeos::full_restore::FullRestoreService::GetForProfile(
+          ProfileManager::GetPrimaryUserProfile());
+  if (!skip_initial_restore_ && full_restore_service)
+    full_restore_service->RestoreForTesting();
+#endif
 
   // Take the ChromeBrowserMainParts' RunLoop to run ourself, when we
   // want to wait for the browser to exit.
