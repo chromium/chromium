@@ -211,6 +211,10 @@ class SimpleBackButton : public ToolbarButton {
                              ui::EF_MIDDLE_MOUSE_BUTTON);
     SetTooltipText(
         l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_BACK_BUTTON_LABEL));
+    // Unlike toolbar buttons, this one should be focusable to make it
+    // consistent with other screens of the flow where the back button is part
+    // of the page.
+    SetFocusBehavior(FocusBehavior::ALWAYS);
   }
   SimpleBackButton(const SimpleBackButton&) = delete;
   SimpleBackButton& operator=(const SimpleBackButton&) = delete;
