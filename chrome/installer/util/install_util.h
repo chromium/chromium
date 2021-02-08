@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "base/version.h"
@@ -66,10 +65,10 @@ class InstallUtil {
   // app's ClientState key.  See InstallerState::WriteInstallerResult for more
   // details.
   static void AddInstallerResultItems(bool system_install,
-                                      const base::string16& state_key,
+                                      const std::wstring& state_key,
                                       installer::InstallStatus status,
                                       int string_resource_id,
-                                      const base::string16* const launch_cmd,
+                                      const std::wstring* const launch_cmd,
                                       WorkItemList* install_list);
 
   // Returns true if this installation path is per user, otherwise returns false
@@ -87,29 +86,29 @@ class InstallUtil {
   static bool IsStartMenuShortcutWithActivatorGuidInstalled();
 
   // Returns the toast activator registry path.
-  static base::string16 GetToastActivatorRegistryPath();
+  static std::wstring GetToastActivatorRegistryPath();
 
   // Populates |path| with EULA sentinel file path. Returns false on error.
   static bool GetEulaSentinelFilePath(base::FilePath* path);
 
   // Deletes the registry key at path key_path under the key given by root_key.
   static bool DeleteRegistryKey(HKEY root_key,
-                                const base::string16& key_path,
+                                const std::wstring& key_path,
                                 REGSAM wow64_access);
 
   // Deletes the registry value named value_name at path key_path under the key
   // given by reg_root.
   static bool DeleteRegistryValue(HKEY reg_root,
-                                  const base::string16& key_path,
+                                  const std::wstring& key_path,
                                   REGSAM wow64_access,
-                                  const base::string16& value_name);
+                                  const std::wstring& value_name);
 
   // An interface to a predicate function for use by DeleteRegistryKeyIf and
   // DeleteRegistryValueIf.
   class RegistryValuePredicate {
    public:
     virtual ~RegistryValuePredicate() {}
-    virtual bool Evaluate(const base::string16& value) const = 0;
+    virtual bool Evaluate(const std::wstring& value) const = 0;
   };
 
   // The result of a conditional delete operation (i.e., DeleteFOOIf).
@@ -125,8 +124,8 @@ class InstallUtil {
   // the key's default value.
   static ConditionalDeleteResult DeleteRegistryKeyIf(
       HKEY root_key,
-      const base::string16& key_to_delete_path,
-      const base::string16& key_to_test_path,
+      const std::wstring& key_to_delete_path,
+      const std::wstring& key_to_test_path,
       REGSAM wow64_access,
       const wchar_t* value_name,
       const RegistryValuePredicate& predicate);
@@ -144,12 +143,12 @@ class InstallUtil {
   // A predicate that performs a case-sensitive string comparison.
   class ValueEquals : public RegistryValuePredicate {
    public:
-    explicit ValueEquals(const base::string16& value_to_match)
+    explicit ValueEquals(const std::wstring& value_to_match)
         : value_to_match_(value_to_match) {}
-    bool Evaluate(const base::string16& value) const override;
+    bool Evaluate(const std::wstring& value) const override;
 
    protected:
-    base::string16 value_to_match_;
+    std::wstring value_to_match_;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(ValueEquals);
@@ -159,8 +158,8 @@ class InstallUtil {
   static int GetInstallReturnCode(installer::InstallStatus install_status);
 
   // Composes |program| and |arguments| into |command_line|.
-  static void ComposeCommandLine(const base::string16& program,
-                                 const base::string16& arguments,
+  static void ComposeCommandLine(const std::wstring& program,
+                                 const std::wstring& arguments,
                                  base::CommandLine* command_line);
 
   // Appends the installer switch that selects the current install mode and
@@ -168,7 +167,7 @@ class InstallUtil {
   static void AppendModeAndChannelSwitches(base::CommandLine* command_line);
 
   // Returns a string in the form YYYYMMDD of the current date.
-  static base::string16 GetCurrentDate();
+  static std::wstring GetCurrentDate();
 
   // Returns the highest Chrome version that was installed prior to a downgrade,
   // or no value if Chrome was not previously downgraded from a newer version.
@@ -204,36 +203,36 @@ class InstallUtil {
   // Returns the token used to enroll this chrome instance for machine level
   // user cloud policies.  Returns an empty string if this machine should not
   // be enrolled.
-  static base::string16 GetCloudManagementEnrollmentToken();
+  static std::wstring GetCloudManagementEnrollmentToken();
 
   // Returns true if cloud management enrollment is mandatory.
   static bool ShouldCloudManagementBlockOnFailure();
 
   // Returns the localized name of the browser.
-  static base::string16 GetDisplayName();
+  static std::wstring GetDisplayName();
 
   // Returns the app description for shortcuts.
-  static base::string16 GetAppDescription();
+  static std::wstring GetAppDescription();
 
   // Returns the name of the browser's publisher.
-  static base::string16 GetPublisherName();
+  static std::wstring GetPublisherName();
 
   // Returns the name of Chrome's shortcut in the Start Menu (among other
   // places).
-  static base::string16 GetShortcutName();
+  static std::wstring GetShortcutName();
 
   // Returns the name of the subdirectory in which Chrome's Start Menu shortcut
   // was once placed. This remains purely to migrate old installs to the new
   // style.
-  static base::string16 GetChromeShortcutDirNameDeprecated();
+  static std::wstring GetChromeShortcutDirNameDeprecated();
 
   // Returns the name of the subdirectory in the Start Menu in which Chrome
   // apps' shortcuts are placed.
-  static base::string16 GetChromeAppsShortcutDirName();
+  static std::wstring GetChromeAppsShortcutDirName();
 
   // Returns the long description of Chrome used when registering as a browser
   // with Windows.
-  static base::string16 GetLongAppDescription();
+  static std::wstring GetLongAppDescription();
 
   // A predicate that compares the program portion of a command line with a
   // given file path.  First, the file paths are compared directly.  If they do
@@ -243,7 +242,7 @@ class InstallUtil {
    public:
     explicit ProgramCompare(const base::FilePath& path_to_match);
     ~ProgramCompare() override;
-    bool Evaluate(const base::string16& value) const override;
+    bool Evaluate(const std::wstring& value) const override;
     bool EvaluatePath(const base::FilePath& path) const;
 
    protected:
@@ -261,7 +260,7 @@ class InstallUtil {
 
   // Converts a product GUID into a SQuished gUID that is used for MSI installer
   // registry entries.
-  static base::string16 GuidToSquid(base::StringPiece16 guid);
+  static std::wstring GuidToSquid(base::WStringPiece guid);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(InstallUtil);

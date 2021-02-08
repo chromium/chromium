@@ -58,10 +58,10 @@ bool ProductState::Initialize(bool system_install) {
 
   // Read from the Clients key.
   if (key.Open(root_key, clients_key.c_str(), kAccess) == ERROR_SUCCESS) {
-    base::string16 version_str;
+    std::wstring version_str;
     if (key.ReadValue(google_update::kRegVersionField, &version_str) ==
         ERROR_SUCCESS) {
-      version_.reset(new base::Version(base::UTF16ToASCII(version_str)));
+      version_.reset(new base::Version(base::WideToASCII(version_str)));
       if (!version_->IsValid())
         version_.reset();
     }
@@ -71,7 +71,7 @@ bool ProductState::Initialize(bool system_install) {
     // only be accessible via InstallationState::GetNonVersionedProductState.
     if (key.ReadValue(google_update::kRegOldVersionField, &version_str) ==
         ERROR_SUCCESS) {
-      old_version_.reset(new base::Version(base::UTF16ToASCII(version_str)));
+      old_version_.reset(new base::Version(base::WideToASCII(version_str)));
       if (!old_version_->IsValid())
         old_version_.reset();
     }

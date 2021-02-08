@@ -5,8 +5,9 @@
 #ifndef CHROME_INSTALLER_UTIL_HTML_DIALOG_H_
 #define CHROME_INSTALLER_UTIL_HTML_DIALOG_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 // This is the interface for creating HTML-based Dialogs *before* Chrome has
 // been installed or when there is a suspicion chrome is not working. In
@@ -53,14 +54,14 @@ class HTMLDialog {
 
   // If the result of ShowModal() was EXTRA, the information is available
   // as a string using this method.
-  virtual base::string16 GetExtraResult() = 0;
+  virtual std::wstring GetExtraResult() = 0;
 };
 
 // Factory method for the native HTML Dialog. When done with the object use
 // regular 'delete' operator to destroy the object. It might choose a
 // different underlying implementation according to the url protocol.
-HTMLDialog* CreateNativeHTMLDialog(const base::string16& url,
-                                   const base::string16& param);
+HTMLDialog* CreateNativeHTMLDialog(const std::wstring& url,
+                                   const std::wstring& param);
 
 // This class leverages HTMLDialog to create a dialog that is suitable
 // for a end-user-agreement modal dialog. The html shows a fairly standard
@@ -71,7 +72,7 @@ class EulaHTMLDialog {
   // |file| points to an html file on disk or to a resource via res:// spec.
   // |param| is a string that will be passed to the dialog as a parameter via
   //         the window.dialogArguments property.
-  EulaHTMLDialog(const base::string16& file, const base::string16& param);
+  EulaHTMLDialog(const std::wstring& file, const std::wstring& param);
   ~EulaHTMLDialog();
 
   enum Outcome {

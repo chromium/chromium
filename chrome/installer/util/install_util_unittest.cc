@@ -545,7 +545,7 @@ TEST(DeleteRegistryKeyTest, DeleteAccessRightIsEnoughToDelete) {
 }
 
 TEST_F(InstallUtilTest, GetToastActivatorRegistryPath) {
-  base::string16 toast_activator_reg_path =
+  std::wstring toast_activator_reg_path =
       InstallUtil::GetToastActivatorRegistryPath();
   EXPECT_FALSE(toast_activator_reg_path.empty());
 

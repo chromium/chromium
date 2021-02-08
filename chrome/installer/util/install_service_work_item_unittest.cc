@@ -23,12 +23,12 @@ namespace installer {
 
 namespace {
 
-constexpr base::char16 kServiceName[] = L"InstallServiceWorkItemService";
-constexpr base::char16 kServiceDisplayName[] = L"InstallServiceWorkItemService";
+constexpr wchar_t kServiceName[] = L"InstallServiceWorkItemService";
+constexpr wchar_t kServiceDisplayName[] = L"InstallServiceWorkItemService";
 constexpr base::FilePath::CharType kServiceProgramPath[] =
     FILE_PATH_LITERAL("c:\\windows\\SysWow64\\cmd.exe");
 
-constexpr base::char16 kProductRegPath[] =
+constexpr wchar_t kProductRegPath[] =
     L"Software\\ChromiumTestInstallServiceWorkItem";
 
 // {76EDE292-9C33-4A09-9B3A-3B880DF64440}
@@ -38,9 +38,9 @@ constexpr GUID kClsid = {0x76ede292,
                          {0x9b, 0x3a, 0x3b, 0x88, 0xd, 0xf6, 0x44, 0x40}};
 const std::vector<GUID> kClsids = {kClsid};
 
-constexpr base::char16 kClsidRegPath[] =
+constexpr wchar_t kClsidRegPath[] =
     L"Software\\Classes\\CLSID\\{76EDE292-9C33-4A09-9B3A-3B880DF64440}";
-constexpr base::char16 kAppidRegPath[] =
+constexpr wchar_t kAppidRegPath[] =
     L"Software\\Classes\\AppId\\{76EDE292-9C33-4A09-9B3A-3B880DF64440}";
 
 // {0F9A0C1C-A94A-4C0A-93C7-81330526AC7B}
@@ -52,14 +52,13 @@ const std::vector<GUID> kIids = {kIid};
 
 #define IID_REGISTRY_PATH \
   L"Software\\Classes\\Interface\\{0F9A0C1C-A94A-4C0A-93C7-81330526AC7B}"
-constexpr base::char16 kIidPSRegPath[] =
-    IID_REGISTRY_PATH L"\\ProxyStubClsid32";
-constexpr base::char16 kIidTLBRegPath[] = IID_REGISTRY_PATH L"\\TypeLib";
+constexpr wchar_t kIidPSRegPath[] = IID_REGISTRY_PATH L"\\ProxyStubClsid32";
+constexpr wchar_t kIidTLBRegPath[] = IID_REGISTRY_PATH L"\\TypeLib";
 #define TYPELIB_REGISTRY_PATH \
   L"Software\\Classes\\TypeLib\\{0F9A0C1C-A94A-4C0A-93C7-81330526AC7B}"
-constexpr base::char16 kTypeLibWin32RegPath[] =
+constexpr wchar_t kTypeLibWin32RegPath[] =
     TYPELIB_REGISTRY_PATH L"\\1.0\\0\\win32";
-constexpr base::char16 kTypeLibWin64RegPath[] =
+constexpr wchar_t kTypeLibWin64RegPath[] =
     TYPELIB_REGISTRY_PATH L"\\1.0\\0\\win64";
 
 }  // namespace
@@ -96,8 +95,8 @@ class InstallServiceWorkItemTest : public ::testing::Test {
 };
 
 TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
-  constexpr base::char16 kZeroMultiSz[] = L"";
-  std::vector<base::char16> vec =
+  constexpr wchar_t kZeroMultiSz[] = L"";
+  std::vector<wchar_t> vec =
       InstallServiceWorkItemImpl::MultiSzToVector(kZeroMultiSz);
   EXPECT_TRUE(!memcmp(vec.data(), &kZeroMultiSz, sizeof(kZeroMultiSz)));
   EXPECT_EQ(vec.size(), base::size(kZeroMultiSz));
@@ -105,12 +104,12 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
   vec = InstallServiceWorkItemImpl::MultiSzToVector(nullptr);
   EXPECT_TRUE(vec.empty());
 
-  constexpr base::char16 kRpcMultiSz[] = L"RPCSS\0";
+  constexpr wchar_t kRpcMultiSz[] = L"RPCSS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kRpcMultiSz);
   EXPECT_TRUE(!memcmp(vec.data(), &kRpcMultiSz, sizeof(kRpcMultiSz)));
   EXPECT_EQ(vec.size(), base::size(kRpcMultiSz));
 
-  constexpr base::char16 kMultiSz[] = L"RPCSS\0LSASS\0";
+  constexpr wchar_t kMultiSz[] = L"RPCSS\0LSASS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kMultiSz);
   EXPECT_TRUE(!memcmp(vec.data(), &kMultiSz, sizeof(kMultiSz)));
   EXPECT_EQ(vec.size(), base::size(kMultiSz));

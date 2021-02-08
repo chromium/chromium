@@ -157,7 +157,7 @@ void InitialPreferences::InitializeFromCommandLine(
   if (!str_value.empty()) {
     name.assign(installer::initial_preferences::kDistroDict);
     name.append(".").append(installer::initial_preferences::kLogFile);
-    initial_dictionary_->SetString(name, str_value);
+    initial_dictionary_->SetString(name, base::WideToUTF8(str_value));
   }
 
   // Handle the special case of --system-level being implied by the presence of

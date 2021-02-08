@@ -24,12 +24,12 @@ TEST(GetLocalizedStringTest, DistinctStrings) {
   };
   for (int string_id : kStringIds) {
     SCOPED_TRACE(testing::Message() << "message id: " << string_id);
-    std::set<base::string16> the_strings;
+    std::set<std::wstring> the_strings;
     for (int mode_index = 0; mode_index < install_static::NUM_INSTALL_MODES;
          ++mode_index) {
       SCOPED_TRACE(testing::Message() << "install mode index: " << mode_index);
       install_static::ScopedInstallDetails install_details(false, mode_index);
-      base::string16 the_string = GetLocalizedString(string_id);
+      std::wstring the_string = GetLocalizedString(string_id);
       ASSERT_FALSE(the_string.empty());
       EXPECT_TRUE(the_strings.insert(the_string).second)
           << the_string << " is found in more than one install mode.";

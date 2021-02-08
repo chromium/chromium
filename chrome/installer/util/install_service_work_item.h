@@ -13,10 +13,10 @@
 #define CHROME_INSTALLER_UTIL_INSTALL_SERVICE_WORK_ITEM_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/installer/util/work_item.h"
 
 namespace base {
@@ -51,17 +51,17 @@ class InstallServiceWorkItem : public WorkItem {
   // If COM CLSID/AppId registration is required, |clsids| should contain the
   // CLSIDs and AppIds to register. If COM Interface/Typelib registration is
   // required, |iids| should contain the Interfaces and Typelibs to register.
-  InstallServiceWorkItem(const base::string16& service_name,
-                         const base::string16& display_name,
+  InstallServiceWorkItem(const std::wstring& service_name,
+                         const std::wstring& display_name,
                          const base::CommandLine& service_cmd_line,
-                         const base::string16& registry_path,
+                         const std::wstring& registry_path,
                          const std::vector<GUID>& clsids,
                          const std::vector<GUID>& iids);
 
   ~InstallServiceWorkItem() override;
 
-  static bool DeleteService(const base::string16& service_name,
-                            const base::string16& registry_path,
+  static bool DeleteService(const std::wstring& service_name,
+                            const std::wstring& registry_path,
                             const std::vector<GUID>& clsids,
                             const std::vector<GUID>& iids);
 
