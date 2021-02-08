@@ -17,6 +17,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "chrome/installer/util/work_item_list.h"
 
 class RegistryEntry;
@@ -123,7 +123,7 @@ class ShellUtil {
     // Sets the arguments to be passed to |target| when launching from this
     // shortcut.
     // The length of this string must be less than MAX_PATH.
-    void set_arguments(const base::string16& arguments_in) {
+    void set_arguments(const std::wstring& arguments_in) {
       // Size restriction as per MSDN at
       // http://msdn.microsoft.com/library/windows/desktop/bb774954.aspx.
       DCHECK(arguments_in.length() < MAX_PATH);
@@ -133,7 +133,7 @@ class ShellUtil {
 
     // Sets the localized description of the shortcut.
     // The length of this string must be less than MAX_PATH.
-    void set_description(const base::string16& description_in) {
+    void set_description(const std::wstring& description_in) {
       // Size restriction as per MSDN at
       // http://msdn.microsoft.com/library/windows/desktop/bb774955.aspx.
       DCHECK(description_in.length() < MAX_PATH);
@@ -150,7 +150,7 @@ class ShellUtil {
     }
 
     // Sets the app model id for the shortcut.
-    void set_app_id(const base::string16& app_id_in) {
+    void set_app_id(const std::wstring& app_id_in) {
       app_id = app_id_in;
       options |= PROPERTIES_APP_ID;
     }
@@ -158,7 +158,7 @@ class ShellUtil {
     // Forces the shortcut's name to |shortcut_name_in|.
     // Default: InstallUtil::GetShortcutName().
     // The ".lnk" extension will automatically be added to this name.
-    void set_shortcut_name(const base::string16& shortcut_name_in) {
+    void set_shortcut_name(const std::wstring& shortcut_name_in) {
       shortcut_name = shortcut_name_in;
       options |= PROPERTIES_SHORTCUT_NAME;
     }
@@ -201,12 +201,12 @@ class ShellUtil {
     ShellChange level;
 
     base::FilePath target;
-    base::string16 arguments;
-    base::string16 description;
+    std::wstring arguments;
+    std::wstring description;
     base::FilePath icon;
     int icon_index;
-    base::string16 app_id;
-    base::string16 shortcut_name;
+    std::wstring app_id;
+    std::wstring shortcut_name;
     CLSID toast_activator_clsid;
     bool pin_to_taskbar;
     // Bitfield made of IndividualProperties. Properties set in |options| will
@@ -221,8 +221,8 @@ class ShellUtil {
     FileAssociationsAndAppName(FileAssociationsAndAppName&& other);
     ~FileAssociationsAndAppName();
 
-    std::set<base::string16> file_associations;
-    base::string16 app_name;
+    std::set<std::wstring> file_associations;
+    std::wstring app_name;
   };
 
   // Relative path of the URL Protocol registry entry (prefixed with '\').
@@ -320,7 +320,7 @@ class ShellUtil {
   // Note: This only checks one deterministic key in HKLM for |chrome_exe| and
   // doesn't otherwise validate a full Chrome install in HKLM.
   static bool QuickIsChromeRegisteredInHKLM(const base::FilePath& chrome_exe,
-                                            const base::string16& suffix);
+                                            const std::wstring& suffix);
 
   // Returns true if the current Windows version supports the presence of
   // shortcuts at |location|.
@@ -359,19 +359,19 @@ class ShellUtil {
 
   // Returns the string "|icon_path|,|icon_index|" (see, for example,
   // http://msdn.microsoft.com/library/windows/desktop/dd391573.aspx).
-  static base::string16 FormatIconLocation(const base::FilePath& icon_path,
-                                           int icon_index);
+  static std::wstring FormatIconLocation(const base::FilePath& icon_path,
+                                         int icon_index);
 
   // This method returns the command to open URLs/files using chrome. Typically
   // this command is written to the registry under shell\open\command key.
   // |chrome_exe|: the full path to chrome.exe
-  static base::string16 GetChromeShellOpenCmd(const base::FilePath& chrome_exe);
+  static std::wstring GetChromeShellOpenCmd(const base::FilePath& chrome_exe);
 
   // This method returns the command to be called by the DelegateExecute verb
   // handler to launch chrome on Windows 8. Typically this command is written to
   // the registry under the HKCR\Chrome\.exe\shell\(open|run)\command key.
   // |chrome_exe|: the full path to chrome.exe
-  static base::string16 GetChromeDelegateCommand(
+  static std::wstring GetChromeDelegateCommand(
       const base::FilePath& chrome_exe);
 
   // Gets a mapping of all registered browser names (excluding the current
@@ -381,7 +381,7 @@ class ShellUtil {
   // method looks in both and gives precedence to values in HKCU as per the msdn
   // standard: http://goo.gl/xjczJ.
   static void GetRegisteredBrowsers(
-      std::map<base::string16, base::string16>* browsers);
+      std::map<std::wstring, std::wstring>* browsers);
 
   // Returns the suffix this user's Chrome install is registered with.
   // Always returns the empty string on system-level installs.
@@ -399,22 +399,22 @@ class ShellUtil {
   // rules).
   //
   // |chrome_exe| The path to the currently installed (or running) chrome.exe.
-  static base::string16 GetCurrentInstallationSuffix(
+  static std::wstring GetCurrentInstallationSuffix(
       const base::FilePath& chrome_exe);
 
   // Returns the AppUserModelId. This identifier is unconditionally suffixed
   // with a unique id for this user on user-level installs (in contrast to other
   // registration entries which are suffixed as described in
   // GetCurrentInstallationSuffix() above).
-  static base::string16 GetBrowserModelId(bool is_per_user_install);
+  static std::wstring GetBrowserModelId(bool is_per_user_install);
 
   // Returns an AppUserModelId composed of each member of |components| separated
   // by dots.
   // The returned appid is guaranteed to be no longer than
   // chrome::kMaxAppModelIdLength (some of the components might have been
   // shortened to enforce this).
-  static base::string16 BuildAppUserModelId(
-      const std::vector<base::string16>& components);
+  static std::wstring BuildAppUserModelId(
+      const std::vector<std::wstring>& components);
 
   // Returns true if Chrome can make itself the default browser without relying
   // on the Windows shell to prompt the user. This is the case for versions of
@@ -445,7 +445,7 @@ class ShellUtil {
 
   // Returns the DefaultState of Chrome for |protocol|.
   static DefaultState GetChromeDefaultProtocolClientState(
-      const base::string16& protocol);
+      const std::wstring& protocol);
 
   // Make Chrome the default browser. This function works by going through
   // the url protocols and file associations that are related to general
@@ -490,7 +490,7 @@ class ShellUtil {
   // chrome_exe: The chrome.exe path to register as default browser.
   // protocol: The protocol to register as the default handler for.
   static bool MakeChromeDefaultProtocolClient(const base::FilePath& chrome_exe,
-                                              const base::string16& protocol);
+                                              const std::wstring& protocol);
 
   // Shows and waits for the Windows 8 "How do you want to open links of this
   // type?" dialog if Chrome is not already the default |protocol|
@@ -501,7 +501,7 @@ class ShellUtil {
   // |protocol| is the protocol being registered.
   static bool ShowMakeChromeDefaultProtocolClientSystemUI(
       const base::FilePath& chrome_exe,
-      const base::string16& protocol);
+      const std::wstring& protocol);
 
   // Registers Chrome as a potential default browser and handler for filetypes
   // and protocols.
@@ -529,7 +529,7 @@ class ShellUtil {
   //
   // Returns true if Chrome is successfully registered (or already registered).
   static bool RegisterChromeBrowser(const base::FilePath& chrome_exe,
-                                    const base::string16& unique_suffix,
+                                    const std::wstring& unique_suffix,
                                     bool elevate_if_not_admin);
 
   // Same as RegisterChromeBrowser above, except that we don't stop early if
@@ -555,8 +555,8 @@ class ShellUtil {
   // |elevate_if_not_admin| if true will make this method try alternate methods
   // as described above.
   static bool RegisterChromeForProtocol(const base::FilePath& chrome_exe,
-                                        const base::string16& unique_suffix,
-                                        const base::string16& protocol,
+                                        const std::wstring& unique_suffix,
+                                        const std::wstring& protocol,
                                         bool elevate_if_not_admin);
 
   // Removes installed shortcut(s) at |location|.
@@ -596,7 +596,7 @@ class ShellUtil {
       const base::FilePath& chrome_exe,
       bool do_removal,
       const scoped_refptr<SharedCancellationFlag>& cancel,
-      std::vector<std::pair<base::FilePath, base::string16>>* shortcuts);
+      std::vector<std::pair<base::FilePath, std::wstring>>* shortcuts);
 
   // Resets file attributes on shortcuts to a known good default value.
   // Ensures that Chrome shortcuts are not hidden from the user.
@@ -619,7 +619,7 @@ class ShellUtil {
   // Returns true unless the OS call to retrieve the username fails.
   // NOTE: Only the installer should use this suffix directly. Other callers
   // should call GetCurrentInstallationSuffix().
-  static bool GetUserSpecificRegistrySuffix(base::string16* suffix);
+  static bool GetUserSpecificRegistrySuffix(std::wstring* suffix);
 
   // Sets |suffix| to this user's username preceded by a dot. This suffix should
   // only be used to support legacy installs that used this suffixing
@@ -627,7 +627,7 @@ class ShellUtil {
   // Returns true unless the OS call to retrieve the username fails.
   // NOTE: Only the installer should use this suffix directly. Other callers
   // should call GetCurrentInstallationSuffix().
-  static bool GetOldUserSpecificRegistrySuffix(base::string16* suffix);
+  static bool GetOldUserSpecificRegistrySuffix(std::wstring* suffix);
 
   // Associates a set of file extensions with a particular application in the
   // Windows registry, for the current user only. If an extension has no
@@ -651,19 +651,19 @@ class ShellUtil {
   // empty or start with a '.'.
   // Returns true on success, false on failure.
   static bool AddFileAssociations(
-      const base::string16& prog_id,
+      const std::wstring& prog_id,
       const base::CommandLine& command_line,
-      const base::string16& application_name,
-      const base::string16& file_type_name,
+      const std::wstring& application_name,
+      const std::wstring& file_type_name,
       const base::FilePath& icon_path,
-      const std::set<base::string16>& file_extensions);
+      const std::set<std::wstring>& file_extensions);
 
   // Deletes all associations with a particular application in the Windows
   // registry, for the current user only.
   // |prog_id| is the ProgId used by Windows for file associations with this
   // application, as given to AddFileAssociations. All information associated
   // with this name will be deleted.
-  static bool DeleteFileAssociations(const base::string16& prog_id);
+  static bool DeleteFileAssociations(const std::wstring& prog_id);
 
   // Adds an application entry and metadata sub-entries to
   // HKCU\SOFTWARE\classes\<prog_id> capable of handling file type /
@@ -681,20 +681,20 @@ class ShellUtil {
   // Open With menu, and used for default files / protocols associated with this
   // application.
   static bool AddApplicationClass(
-      const base::string16& prog_id,
+      const std::wstring& prog_id,
       const base::CommandLine& shell_open_command_line,
-      const base::string16& application_name,
-      const base::string16& application_description,
+      const std::wstring& application_name,
+      const std::wstring& application_description,
       const base::FilePath& icon_path);
 
   // Removes all entries of an application at HKCU\SOFTWARE\classes\<prog_id>.
-  static bool DeleteApplicationClass(const base::string16& prog_id);
+  static bool DeleteApplicationClass(const std::wstring& prog_id);
 
   // Returns the app name and file associations registered for a particular
   // application in the Windows registry. If there is no entry in the registry
   // for |prog_id|, nothing will be returned.
   static FileAssociationsAndAppName GetFileAssociationsAndAppName(
-      const base::string16& prog_id);
+      const std::wstring& prog_id);
 
   // Retrieves the file path of the application registered as the
   // shell->open->command for |prog_id|. This only queries the user's
@@ -702,7 +702,7 @@ class ShellUtil {
   // unrelated to the user's browser, it will still return the application
   // registered for |prog_id|.
   static base::FilePath GetApplicationPathForProgId(
-      const base::string16& prog_id);
+      const std::wstring& prog_id);
 
   // This method converts all the RegistryEntries from the given list to
   // Set/CreateRegWorkItems and runs them using WorkItemList.

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -18,7 +19,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/test/scoped_path_override.h"
@@ -142,9 +142,9 @@ class ShellUtilShortcutTest : public testing::Test {
         return base::FilePath();
     }
 
-    base::string16 shortcut_name = properties.has_shortcut_name()
-                                       ? properties.shortcut_name
-                                       : InstallUtil::GetShortcutName();
+    std::wstring shortcut_name = properties.has_shortcut_name()
+                                     ? properties.shortcut_name
+                                     : InstallUtil::GetShortcutName();
     shortcut_name.append(installer::kLnkExt);
     return expected_path.Append(shortcut_name);
   }
@@ -169,7 +169,7 @@ class ShellUtilShortcutTest : public testing::Test {
     if (properties.has_arguments())
       expected_properties.set_arguments(properties.arguments);
     else
-      expected_properties.set_arguments(base::string16());
+      expected_properties.set_arguments(std::wstring());
 
     if (properties.has_description())
       expected_properties.set_description(properties.description);
@@ -243,7 +243,7 @@ TEST_F(ShellUtilShortcutTest, GetShortcutPath) {
                              ShellUtil::CURRENT_USER, &path);
   EXPECT_EQ(fake_user_quick_launch_.GetPath(), path);
 
-  base::string16 start_menu_subfolder =
+  std::wstring start_menu_subfolder =
       InstallUtil::GetChromeShortcutDirNameDeprecated();
   ShellUtil::GetShortcutPath(
       ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,
@@ -364,8 +364,8 @@ TEST_F(ShellUtilShortcutTest, CreateIfNoSystemLevel) {
 }
 
 TEST_F(ShellUtilShortcutTest, CreateIfNoSystemLevelWithSystemLevelPresent) {
-  base::string16 shortcut_name(InstallUtil::GetShortcutName() +
-                               installer::kLnkExt);
+  std::wstring shortcut_name(InstallUtil::GetShortcutName() +
+                             installer::kLnkExt);
 
   test_properties_.level = ShellUtil::SYSTEM_LEVEL;
   ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
@@ -392,8 +392,8 @@ TEST_F(ShellUtilShortcutTest, CreateIfNoSystemLevelStartMenu) {
 }
 
 TEST_F(ShellUtilShortcutTest, CreateAlwaysUserWithSystemLevelPresent) {
-  base::string16 shortcut_name(InstallUtil::GetShortcutName() +
-                               installer::kLnkExt);
+  std::wstring shortcut_name(InstallUtil::GetShortcutName() +
+                             installer::kLnkExt);
 
   test_properties_.level = ShellUtil::SYSTEM_LEVEL;
   ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
@@ -652,8 +652,8 @@ TEST_F(ShellUtilShortcutTest, ClearShortcutArguments) {
   ShellUtil::ShortcutProperties expected_properties3(test_properties_);
 
   // Shortcut 4: targets "chrome.exe"; has both unknown and known arguments.
-  const base::string16 kKnownArg = L"--app-id";
-  const base::string16 kExpectedArgs = L"foo.com " + kKnownArg;
+  const std::wstring kKnownArg = L"--app-id";
+  const std::wstring kExpectedArgs = L"foo.com " + kKnownArg;
   test_properties_.set_shortcut_name(L"Chrome 4");
   test_properties_.set_arguments(kExpectedArgs);
   ASSERT_TRUE(ShellUtil::CreateOrUpdateShortcut(
@@ -665,14 +665,14 @@ TEST_F(ShellUtilShortcutTest, ClearShortcutArguments) {
   ShellUtil::ShortcutProperties expected_properties4(test_properties_);
 
   // List the shortcuts.
-  std::vector<std::pair<base::FilePath, base::string16>> shortcuts;
+  std::vector<std::pair<base::FilePath, std::wstring>> shortcuts;
   EXPECT_TRUE(ShellUtil::ShortcutListMaybeRemoveUnknownArgs(
       ShellUtil::SHORTCUT_LOCATION_DESKTOP, ShellUtil::CURRENT_USER,
       chrome_exe_, false, nullptr, &shortcuts));
   ASSERT_EQ(2u, shortcuts.size());
-  std::pair<base::FilePath, base::string16> shortcut3 =
+  std::pair<base::FilePath, std::wstring> shortcut3 =
       shortcuts[0].first == shortcut3_path ? shortcuts[0] : shortcuts[1];
-  std::pair<base::FilePath, base::string16> shortcut4 =
+  std::pair<base::FilePath, std::wstring> shortcut4 =
       shortcuts[0].first == shortcut4_path ? shortcuts[0] : shortcuts[1];
   EXPECT_EQ(shortcut3_path, shortcut3.first);
   EXPECT_EQ(L"foo.com", shortcut3.second);
@@ -698,7 +698,7 @@ TEST_F(ShellUtilShortcutTest, ClearShortcutArguments) {
                          expected_properties1);
   ValidateChromeShortcut(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
                          expected_properties2);
-  expected_properties3.set_arguments(base::string16());
+  expected_properties3.set_arguments(std::wstring());
   ValidateChromeShortcut(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
                          expected_properties3);
   expected_properties4.set_arguments(kKnownArg);
@@ -793,8 +793,8 @@ TEST_F(ShellUtilShortcutTest,
       ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT, test_properties_,
       ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
 
-  base::string16 shortcut_name(InstallUtil::GetShortcutName() +
-                               installer::kLnkExt);
+  std::wstring shortcut_name(InstallUtil::GetShortcutName() +
+                             installer::kLnkExt);
   base::FilePath shortcut_path(
       fake_start_menu_.GetPath().Append(shortcut_name));
 
@@ -821,8 +821,8 @@ TEST_F(ShellUtilShortcutTest, DontRemoveChromeShortcutIfPointsToAnotherChrome) {
       ShellUtil::SHORTCUT_LOCATION_DESKTOP, test_properties_,
       ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS));
 
-  base::string16 shortcut_name(InstallUtil::GetShortcutName() +
-                               installer::kLnkExt);
+  std::wstring shortcut_name(InstallUtil::GetShortcutName() +
+                             installer::kLnkExt);
   base::FilePath shortcut_path(
       fake_user_desktop_.GetPath().Append(shortcut_name));
   ASSERT_TRUE(base::PathExists(shortcut_path));
@@ -859,8 +859,8 @@ class ShellUtilRegistryTest : public testing::Test {
     return open_command;
   }
 
-  static std::set<base::string16> FileExtensions() {
-    std::set<base::string16> file_extensions;
+  static std::set<std::wstring> FileExtensions() {
+    std::set<std::wstring> file_extensions;
     for (size_t i = 0; i < base::size(kTestFileExtensions); ++i)
       file_extensions.insert(kTestFileExtensions[i]);
     return file_extensions;
@@ -976,7 +976,7 @@ TEST_F(ShellUtilRegistryTest, DeleteFileAssociations) {
 TEST_F(ShellUtilRegistryTest, AddApplicationClass) {
   // Add TestApp application class and verify registry entries.
   EXPECT_TRUE(ShellUtil::AddApplicationClass(
-      base::string16(kTestProgid), OpenCommand(), kTestApplicationName,
+      std::wstring(kTestProgid), OpenCommand(), kTestApplicationName,
       kTestFileTypeName, base::FilePath(kTestIconPath)));
 
   base::win::RegKey key;
@@ -1052,16 +1052,16 @@ TEST_F(ShellUtilRegistryTest, GetApplicationForProgId) {
 }
 
 TEST(ShellUtilTest, BuildAppModelIdBasic) {
-  std::vector<base::string16> components;
-  const base::string16 base_app_id(install_static::GetBaseAppId());
+  std::vector<std::wstring> components;
+  const std::wstring base_app_id(install_static::GetBaseAppId());
   components.push_back(base_app_id);
   ASSERT_EQ(base_app_id, ShellUtil::BuildAppUserModelId(components));
 }
 
 TEST(ShellUtilTest, BuildAppModelIdManySmall) {
-  std::vector<base::string16> components;
-  const base::string16 suffixed_app_id(install_static::GetBaseAppId() +
-                                       base::string16(L".gab"));
+  std::vector<std::wstring> components;
+  const std::wstring suffixed_app_id(install_static::GetBaseAppId() +
+                                     std::wstring(L".gab"));
   components.push_back(suffixed_app_id);
   components.push_back(L"Default");
   components.push_back(L"Test");
@@ -1070,21 +1070,20 @@ TEST(ShellUtilTest, BuildAppModelIdManySmall) {
 }
 
 TEST(ShellUtilTest, BuildAppModelIdNullTerminatorInTheMiddle) {
-  std::vector<base::string16> components;
-  base::string16 appname_with_nullTerminator(
-      L"I_have_null_terminator_in_middle");
+  std::vector<std::wstring> components;
+  std::wstring appname_with_nullTerminator(L"I_have_null_terminator_in_middle");
   appname_with_nullTerminator[5] = '\0';
   components.push_back(appname_with_nullTerminator);
   components.push_back(L"Default");
   components.push_back(L"Test");
-  base::string16 expected_string(L"I_have_nul_in_middle.Default.Test");
+  std::wstring expected_string(L"I_have_nul_in_middle.Default.Test");
   expected_string[5] = '\0';
   ASSERT_EQ(expected_string, ShellUtil::BuildAppUserModelId(components));
 }
 
 TEST(ShellUtilTest, BuildAppModelIdLongUsernameNormalProfile) {
-  std::vector<base::string16> components;
-  const base::string16 long_appname(
+  std::vector<std::wstring> components;
+  const std::wstring long_appname(
       L"Chrome.a_user_who_has_a_crazy_long_name_with_some_weird@symbols_in_it_"
       L"that_goes_over_64_characters");
   components.push_back(long_appname);
@@ -1094,14 +1093,14 @@ TEST(ShellUtilTest, BuildAppModelIdLongUsernameNormalProfile) {
 }
 
 TEST(ShellUtilTest, BuildAppModelIdLongEverything) {
-  std::vector<base::string16> components;
-  const base::string16 long_appname(
+  std::vector<std::wstring> components;
+  const std::wstring long_appname(
       L"Chrome.a_user_who_has_a_crazy_long_name_with_some_weird@symbols_in_it_"
       L"that_goes_over_64_characters");
   components.push_back(long_appname);
   components.push_back(
       L"A_crazy_profile_name_not_even_sure_whether_that_is_possible");
-  const base::string16 constructed_app_id(
+  const std::wstring constructed_app_id(
       ShellUtil::BuildAppUserModelId(components));
   ASSERT_LE(constructed_app_id.length(), installer::kMaxAppModelIdLength);
   ASSERT_EQ(L"Chrome.a_user_wer_64_characters.A_crazy_profilethat_is_possible",
@@ -1109,7 +1108,7 @@ TEST(ShellUtilTest, BuildAppModelIdLongEverything) {
 }
 
 TEST(ShellUtilTest, GetUserSpecificRegistrySuffix) {
-  base::string16 suffix;
+  std::wstring suffix;
   ASSERT_TRUE(ShellUtil::GetUserSpecificRegistrySuffix(&suffix));
   ASSERT_TRUE(base::StartsWith(suffix, L".", base::CompareCase::SENSITIVE));
   ASSERT_EQ(27u, suffix.length());
@@ -1118,7 +1117,7 @@ TEST(ShellUtilTest, GetUserSpecificRegistrySuffix) {
 }
 
 TEST(ShellUtilTest, GetOldUserSpecificRegistrySuffix) {
-  base::string16 suffix;
+  std::wstring suffix;
   ASSERT_TRUE(ShellUtil::GetOldUserSpecificRegistrySuffix(&suffix));
   ASSERT_TRUE(base::StartsWith(suffix, L".", base::CompareCase::SENSITIVE));
 
