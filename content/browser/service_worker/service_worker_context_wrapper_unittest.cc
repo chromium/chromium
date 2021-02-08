@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -47,6 +48,14 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
     wrapper_ = base::MakeRefCounted<ServiceWorkerContextWrapper>(
         browser_context_.get());
     url_loader_factory_getter_ = base::MakeRefCounted<URLLoaderFactoryGetter>();
+    // Set up a mojo connection binder which binds a connection to a
+    // ServiceWorkerStorageControlImpl instance owned by `this`. This is needed
+    // to work around strange situations (e.g. nested
+    // ServiceWorkerContextWrapper::Init() calls) caused by overwriting
+    // StoragePartitionImpl the below.
+    wrapper_->SetStorageControlBinderForTest(base::BindRepeating(
+        &ServiceWorkerContextWrapperTest::BindStorageControl,
+        base::Unretained(this)));
     StoragePartitionImpl* storage_partition =
         static_cast<StoragePartitionImpl*>(
             BrowserContext::GetStoragePartitionForSite(
@@ -90,11 +99,22 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
   }
 
  protected:
+  void BindStorageControl(
+      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
+          receiver) {
+    storage_control_ =
+        std::make_unique<storage::ServiceWorkerStorageControlImpl>(
+            user_data_directory_.GetPath(),
+            /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get(),
+            std::move(receiver));
+  }
+
   BrowserTaskEnvironment task_environment_{BrowserTaskEnvironment::IO_MAINLOOP};
   base::ScopedTempDir user_data_directory_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
+  std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextWrapperTest);
