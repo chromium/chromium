@@ -77,6 +77,7 @@ NetworkChangeNotifierFuchsia::GetCurrentConnectionType() const {
 
 void NetworkChangeNotifierFuchsia::ProcessInterfaceList(
     std::vector<fuchsia::netstack::NetInterface> interfaces) {
+  ++pending_route_table_requests_;
   netstack_->GetRouteTable(
       [this, interfaces = std::move(interfaces)](
           std::vector<fuchsia::netstack::RouteTableEntry> route_table) mutable {
@@ -87,6 +88,9 @@ void NetworkChangeNotifierFuchsia::ProcessInterfaceList(
 void NetworkChangeNotifierFuchsia::OnRouteTableReceived(
     std::vector<fuchsia::netstack::NetInterface> interfaces,
     std::vector<fuchsia::netstack::RouteTableEntry> route_table) {
+  --pending_route_table_requests_;
+  DCHECK_GE(pending_route_table_requests_, 0);
+
   // Create a set of NICs that have default routes (ie 0.0.0.0).
   base::flat_set<uint32_t> default_route_ids;
   for (const auto& route : route_table) {
@@ -146,7 +150,10 @@ void NetworkChangeNotifierFuchsia::OnRouteTableReceived(
     NotifyObserversOfConnectionTypeChange();
   }
 
-  if (on_initial_interfaces_received_) {
+  // If this request was made during construction, and no further requests are
+  // in-flight, then we have an initial stable interface state and can safely
+  // allow the constructor to re-Bind() the Netstack channel, and return.
+  if (on_initial_interfaces_received_ && (pending_route_table_requests_ <= 0)) {
     std::move(on_initial_interfaces_received_).Run();
   }
 }

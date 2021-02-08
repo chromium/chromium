@@ -111,15 +111,26 @@ class FakeNetstack : public fuchsia::netstack::testing::Netstack_TestBase {
   void Bind(
       fidl::InterfaceRequest<fuchsia::netstack::Netstack> netstack_request) {
     CHECK_EQ(ZX_OK, binding_.Bind(std::move(netstack_request)));
-    binding_.events().OnInterfacesChanged(CloneNetInterfaces(interfaces_));
+    SetInterfaces(std::move(interfaces_), std::move(second_interfaces_));
   }
 
   // Sets the interfaces reported by the fake Netstack and sends an
   // OnInterfacesChanged() event to the client.
-  void SetInterfaces(std::vector<fuchsia::netstack::NetInterface> interfaces) {
+  // If specified, |second_interfaces_| will be notified immediately after
+  // |interfaces|, ensuring that no requests could be processed in-between the
+  // two notifications.
+  void SetInterfaces(
+      std::vector<fuchsia::netstack::NetInterface> interfaces,
+      base::Optional<std::vector<fuchsia::netstack::NetInterface>>
+          second_interfaces = base::nullopt) {
     interfaces_ = std::move(interfaces);
+    second_interfaces_ = std::move(second_interfaces);
     if (binding_.is_bound()) {
       binding_.events().OnInterfacesChanged(CloneNetInterfaces(interfaces_));
+      if (second_interfaces_) {
+        auto interfaces = std::move(second_interfaces_);
+        SetInterfaces(std::move(interfaces.value()));
+      }
     }
   }
 
@@ -146,6 +157,9 @@ class FakeNetstack : public fuchsia::netstack::testing::Netstack_TestBase {
   }
 
   std::vector<fuchsia::netstack::NetInterface> interfaces_;
+  base::Optional<std::vector<fuchsia::netstack::NetInterface>>
+      second_interfaces_;
+
   fidl::Binding<fuchsia::netstack::Netstack> binding_{this};
 };
 
@@ -169,7 +183,17 @@ class FakeNetstackAsync {
   void SetInterfaces(
       const std::vector<fuchsia::netstack::NetInterface>& interfaces) {
     netstack_.Post(FROM_HERE, &FakeNetstack::SetInterfaces,
-                   CloneNetInterfaces(interfaces));
+                   CloneNetInterfaces(interfaces), base::nullopt);
+  }
+
+  // Asynchronously set both an initial state, and a second set of interfaces
+  // to report an update for immediately after the first.
+  void SetInterfacesAndImmediatelyReSet(
+      const std::vector<fuchsia::netstack::NetInterface>& interfaces,
+      const std::vector<fuchsia::netstack::NetInterface>& second_interfaces) {
+    netstack_.Post(FROM_HERE, &FakeNetstack::SetInterfaces,
+                   CloneNetInterfaces(interfaces),
+                   CloneNetInterfaces(second_interfaces));
   }
 
   // Ensures that any SetInterfaces() or SendOnInterfacesChanged() calls have
@@ -352,6 +376,19 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, InitialState) {
   CreateNotifier();
   EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_NONE,
             notifier_->GetCurrentConnectionType());
+}
+
+TEST_F(NetworkChangeNotifierFuchsiaTest, InterfacesChangeDuringConstruction) {
+  // Set a live interface with an IP address and create the notifier.
+  std::vector<fuchsia::netstack::NetInterface> interfaces(1);
+  interfaces[0] = DefaultNetInterface();
+  interfaces[0].features = fuchsia::hardware::ethernet::Features::WLAN;
+
+  // Trigger two notifications, to verify that the notifier copes with receiving
+  // notifications while waiting on the initial GetRouteTable() returning.
+  netstack_.SetInterfacesAndImmediatelyReSet(interfaces, interfaces);
+
+  CreateNotifier();
 }
 
 TEST_F(NetworkChangeNotifierFuchsiaTest, NotifyNetworkChangeOnInitialIPChange) {

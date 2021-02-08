@@ -65,6 +65,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierFuchsia
 
   // Used to allow the constructor to block until the initial state is received
   // from |netstack_|.
+  int pending_route_table_requests_ = 0;
   base::OnceClosure on_initial_interfaces_received_;
 
   // The ConnectionType of the default network interface, stored as an atomic
