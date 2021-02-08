@@ -392,11 +392,9 @@ wtf_size_t NGGridBlockTrackCollection::RangeCount() const {
   return ranges_.size();
 }
 
-// Default track size for a set with no specified track definition should be
-// 'auto', but we will normalize it directly as 'minmax(auto, max-content)'.
 NGGridSet::NGGridSet(wtf_size_t track_count, bool is_collapsed)
     : track_count_(track_count),
-      track_size_(Length::Auto(), Length::MaxContent()),
+      track_size_(Length::Auto(), Length::Auto()),
       growth_limit_(kIndefiniteSize),
       fit_content_limit_(kIndefiniteSize),
       is_infinitely_growable_(false) {
@@ -444,7 +442,7 @@ NGGridSet::NGGridSet(wtf_size_t track_count,
     GridLength normalized_max_track_sizing_function =
         (is_unresolvable_percentage_max_function ||
          track_size_.HasAutoMaxTrackBreadth())
-            ? Length::MaxContent()
+            ? Length::Auto()
             : track_size_.MaxTrackBreadth();
 
     track_size_ = GridTrackSize(normalized_min_track_sizing_function,

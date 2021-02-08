@@ -1034,6 +1034,11 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
   // of all tracks, freezing tracks as they reach their growth limits (and
   // continuing to grow the unfrozen tracks as needed).
   MaximizeTracks(sizing_constraint, track_collection);
+
+  // TODO(janewman): 4. Expand Flexible Tracks
+
+  // 5. Stretch 'auto' Tracks
+  StretchAutoTracks(sizing_constraint, track_collection);
 }
 
 // Helpers for the track sizing algorithm.
@@ -1531,31 +1536,8 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
 void NGGridLayoutAlgorithm::MaximizeTracks(
     SizingConstraint sizing_constraint,
     NGGridLayoutAlgorithmTrackCollection* track_collection) const {
-  const GridTrackSizingDirection track_direction =
-      track_collection->Direction();
-
-  LayoutUnit free_space;
-  switch (sizing_constraint) {
-    case SizingConstraint::kLayout:
-      free_space = (track_direction == kForColumns)
-                       ? ChildAvailableSize().inline_size
-                       : ChildAvailableSize().block_size;
-      if (free_space != kIndefiniteSize) {
-        free_space -= ComputeTotalTrackSize(
-            *track_collection, GridGap(track_direction, free_space));
-        // If tracks consume more space than the grid container has available,
-        // clamp the free space to zero as there's no more room left to grow.
-        free_space = free_space.ClampNegativeToZero();
-      }
-      break;
-    case SizingConstraint::kMaxContent:
-      // If sizing under a max-content constraint, the free space is infinite.
-      free_space = kIndefiniteSize;
-      break;
-    case SizingConstraint::kMinContent:
-      // If sizing under a min-content constraint, the free space is zero.
-      break;
-  }
+  const LayoutUnit free_space =
+      DetermineFreeSpace(sizing_constraint, *track_collection);
   if (!free_space)
     return;
 
@@ -1579,6 +1561,78 @@ void NGGridLayoutAlgorithm::MaximizeTracks(
   // container’s inner size as limited by its 'max-width/height', then redo this
   // step, treating the available grid space as equal to the grid container’s
   // inner size when it’s sized to its 'max-width/height'.
+}
+
+void NGGridLayoutAlgorithm::StretchAutoTracks(
+    SizingConstraint sizing_constraint,
+    NGGridLayoutAlgorithmTrackCollection* track_collection) const {
+  LayoutUnit free_space =
+      DetermineFreeSpace(sizing_constraint, *track_collection);
+
+  const GridTrackSizingDirection track_direction =
+      track_collection->Direction();
+  // If the free space is indefinite, but the grid container has a definite
+  // min-width/height, use that size to calculate the free space for this step
+  // instead.
+  // TODO(janewman): This logic is very similar to getting the min size in
+  // ComputeAutomaticRepetitions, this should use grid_available_size_ once
+  // available.
+  if (free_space == kIndefiniteSize) {
+    if (track_direction == kForColumns) {
+      const Length& min_length = Style().LogicalMinWidth();
+
+      // A style of "min-width: min-content" isn't resolvable in the intrinsic
+      // phase as it'd be a circular definition.
+      if (min_length.IsAuto() ||
+          InlineLengthUnresolvable(ConstraintSpace(), min_length) ||
+          min_length.IsContentOrIntrinsic()) {
+        return;
+      }
+      free_space =
+          ComputeMinMaxInlineSizes(ConstraintSpace(), Style(),
+                                   container_builder_.BorderPadding(),
+                                   base::Optional<MinMaxSizes>(), &min_length)
+              .min_size;
+    } else {
+      const Length& min_length = Style().LogicalMinHeight();
+
+      if (BlockLengthUnresolvable(ConstraintSpace(), min_length))
+        return;
+
+      free_space = ComputeMinMaxBlockSizes(ConstraintSpace(), Style(),
+                                           container_builder_.BorderPadding(),
+                                           kIndefiniteSize)
+                       .min_size;
+    }
+    free_space -= ComputeTotalTrackSize(*track_collection,
+                                        GridGap(track_direction, free_space));
+  }
+
+  if (free_space <= 0)
+    return;
+
+  GridSetVector sets_to_grow;
+  for (auto set_iterator = track_collection->GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    auto& set = set_iterator.CurrentSet();
+    if (set.TrackSize().HasAutoMaxTrackBreadth()) {
+      sets_to_grow.push_back(&set);
+    }
+  }
+
+  if (sets_to_grow.IsEmpty())
+    return;
+
+  // Distribute free space equally among auto tracks.
+  DistributeExtraSpaceToSets(free_space,
+                             GridItemContributionType::kForFreeSpace,
+                             &sets_to_grow, &sets_to_grow);
+
+  for (auto set_iterator = track_collection->GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    auto& set = set_iterator.CurrentSet();
+    set.SetBaseSize(set.BaseSize() + set.ItemIncurredIncrease());
+  }
 }
 
 namespace {
@@ -1818,6 +1872,34 @@ LayoutUnit NGGridLayoutAlgorithm::GridGap(
     available_size = LayoutUnit();
 
   return MinimumValueForLength(*gap, available_size);
+}
+
+LayoutUnit NGGridLayoutAlgorithm::DetermineFreeSpace(
+    SizingConstraint sizing_constraint,
+    const NGGridLayoutAlgorithmTrackCollection& track_collection) const {
+  switch (sizing_constraint) {
+    case SizingConstraint::kLayout: {
+      const GridTrackSizingDirection track_direction =
+          track_collection.Direction();
+      LayoutUnit free_space = (track_direction == kForColumns)
+                                  ? ChildAvailableSize().inline_size
+                                  : ChildAvailableSize().block_size;
+      if (free_space != kIndefiniteSize) {
+        free_space -= ComputeTotalTrackSize(
+            track_collection, GridGap(track_direction, free_space));
+        // If tracks consume more space than the grid container has available,
+        // clamp the free space to zero as there's no more room left to grow.
+        free_space = free_space.ClampNegativeToZero();
+      }
+      return free_space;
+    }
+    case SizingConstraint::kMaxContent:
+      // If sizing under a max-content constraint, the free space is infinite.
+      return kIndefiniteSize;
+    case SizingConstraint::kMinContent:
+      // If sizing under a min-content constraint, the free space is zero.
+      return LayoutUnit();
+  }
 }
 
 namespace {

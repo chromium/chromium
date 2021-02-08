@@ -285,20 +285,19 @@ TEST_F(NGGridTrackCollectionTest, TestNGGridSetTrackSizeNormalization) {
       };
 
   // auto
-  TestTrackSizeNormalization(
-      GridTrackSize(Length::Auto()),
-      GridTrackSize(Length::Auto(), Length::MaxContent()),
-      GridTrackSize(Length::Auto(), Length::MaxContent()));
+  TestTrackSizeNormalization(GridTrackSize(Length::Auto()),
+                             GridTrackSize(Length::Auto(), Length::Auto()),
+                             GridTrackSize(Length::Auto(), Length::Auto()));
   // 10%
   TestTrackSizeNormalization(
       GridTrackSize(Length::Percent(10)),
       GridTrackSize(Length::Percent(10), Length::Percent(10)),
-      GridTrackSize(Length::Auto(), Length::MaxContent()));
+      GridTrackSize(Length::Auto(), Length::Auto()));
   // minmax(50px, 20%)
   TestTrackSizeNormalization(
       GridTrackSize(Length::Fixed(50), Length::Percent(20)),
       GridTrackSize(Length::Fixed(50), Length::Percent(20)),
-      GridTrackSize(Length::Fixed(50), Length::MaxContent()));
+      GridTrackSize(Length::Fixed(50), Length::Auto()));
   // min-content
   TestTrackSizeNormalization(
       GridTrackSize(Length::MinContent()),

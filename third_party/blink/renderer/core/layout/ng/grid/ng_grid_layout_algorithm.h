@@ -201,6 +201,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       SizingConstraint sizing_constraint,
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
+  void StretchAutoTracks(
+      SizingConstraint sizing_constraint,
+      NGGridLayoutAlgorithmTrackCollection* track_collection) const;
+
   // Lays out and computes inline and block offsets for grid items.
   void PlaceItems(
       const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
@@ -214,6 +218,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Gets the row or column gap of the grid.
   LayoutUnit GridGap(GridTrackSizingDirection track_direction,
                      LayoutUnit available_size = kIndefiniteSize) const;
+
+  LayoutUnit DetermineFreeSpace(
+      SizingConstraint sizing_constraint,
+      const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
 
   // Layout the |grid_items| based on the offsets provided.
   void PlaceGridItems(const Vector<GridItemData>& grid_items,
