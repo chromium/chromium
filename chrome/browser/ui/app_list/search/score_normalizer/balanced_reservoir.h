@@ -24,6 +24,9 @@ class BalancedReservoir {
 
   ~BalancedReservoir();
 
+  BalancedReservoir(const BalancedReservoir&) = delete;
+  BalancedReservoir& operator=(const BalancedReservoir&) = delete;
+
   // Gets the index of the bin that the score belongs to.
   int GetBin(const double score) const;
 

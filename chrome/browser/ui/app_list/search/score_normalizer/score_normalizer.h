@@ -30,6 +30,9 @@ class ScoreNormalizer {
 
   ~ScoreNormalizer();
 
+  ScoreNormalizer(const ScoreNormalizer&) = delete;
+  ScoreNormalizer& operator=(const ScoreNormalizer&) = delete;
+
   // Records a score and updates the distribution by splitting and merging bins
   // if there is an improvement in the error.
   void RecordScore(const double score);
