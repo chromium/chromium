@@ -9,7 +9,7 @@
 <link rel="import" href="/components/hd_iron_icon.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_content_dialog.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
 <dom-module id="assistant-loading">
@@ -17,9 +17,8 @@
     <style include="oobe-dialog-host"></style>
     <link rel="stylesheet" href="assistant_loading.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
-    <oobe-dialog id="loading-dialog" role="dialog" no-header hide-shadow
-        for-step="loading">
-      <div slot="footer" class="flex layout vertical center-justified">
+    <oobe-content-dialog id="loading-dialog" role="dialog" for-step="loading">
+      <div slot="content" class="flex layout vertical center-justified">
         <div id="loading-content" class="content">
           <div>
             [[i18nDynamic(locale, 'assistantOptinLoading')]]
@@ -27,7 +26,7 @@
           <paper-progress class="slow" indeterminate></paper-progress>
         </div>
       </div>
-    </oobe-dialog>
+    </oobe-content-dialog>
     <oobe-adaptive-dialog id="error-dialog" role="dialog" hide-shadow
         for-step="error">
       <hd-iron-icon slot="icon"
