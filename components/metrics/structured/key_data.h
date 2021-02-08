@@ -7,27 +7,20 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "components/metrics/structured/persistent_proto.h"
-#include "components/metrics/structured/storage.pb.h"
+
+class JsonPrefStore;
 
 namespace metrics {
 namespace structured {
-
-class KeyDataTest;
+namespace internal {
 
 // KeyData is the central class for managing keys and generating hashes for
 // structured metrics.
 //
 // The class maintains one key and its rotation data for every project defined
 // in /tools/metrics/structured.xml. This can be used to generate:
-//  - a user ID for the project with KeyData::Id.
+//  - a user ID for the project with KeyData::UserProjectId.
 //  - a hash of a given value for an event with KeyData::HmacMetric.
 //
 // KeyData performs key rotation. Every project is associated with a rotation
@@ -41,12 +34,22 @@ class KeyDataTest;
 // that, for most users, the first rotation period will be shorter than the
 // standard full rotation period for that project.
 //
-// Key storage is backed by a PersistentProto, stored at the path given to the
-// constructor.
+// Key storage is backed by a JsonPrefStore which is passed to the ctor and must
+// outlive the KeyData instance. Within the pref store, each project has three
+// pieces of associated data:
+//  - the rotation period for this project in days.
+//  - the day of the last key rotation, as a day since the unix epoch.
+//  - the key itself.
+//
+// This is stored in the structure:
+//   keys.{project_name_hash}.rotation_period
+//                         .last_rotation
+//                         .key
+//
+// TODO(crbug.com/1016655): add ability to override default rotation period
 class KeyData {
  public:
-  KeyData(const base::FilePath& path,
-          base::OnceCallback<void()> on_initialized);
+  explicit KeyData(JsonPrefStore* key_store);
   ~KeyData();
 
   KeyData(const KeyData&) = delete;
@@ -84,43 +87,28 @@ class KeyData {
   // the server. This means events are associated with the client ID when
   // uploaded from the device. See the class comment of
   // StructuredMetricsProvider for more details.
-  uint64_t Id(uint64_t project_name_hash);
-
-  // Returns whether this KeyData instance has finished reading from disk and is
-  // ready to be used. If false, both Id and HmacMetric will return 0u.
-  bool is_initialized() { return is_initialized_; }
+  uint64_t UserProjectId(uint64_t project_name_hash);
 
  private:
-  friend class KeyDataTest;
+  int GetRotationPeriod(uint64_t project);
+  void SetRotationPeriod(uint64_t project, int rotation_period);
 
-  void WriteNowForTest();
-
-  void OnRead(ReadStatus status);
-
-  void OnWrite(WriteStatus status);
+  int GetLastRotation(uint64_t project);
+  void SetLastRotation(uint64_t project, int last_rotation);
 
   // Ensure that a valid key exists for |project|, and return it. Either returns
   // a string of size |kKeySize| or base::nullopt, which indicates an error.
   base::Optional<std::string> ValidateAndGetKey(uint64_t project_name_hash);
+  void SetKey(uint64_t project, const std::string& key);
 
-  // Regenerate |key|, also updating the |last_rotation| and |rotation_period|.
-  // This triggers a save.
-  void UpdateKey(KeyProto* key, int last_rotation, int rotation_period);
+  // Ensure that valid keys exist for all projects.
+  void ValidateKeys();
 
-  // Storage for keys.
-  std::unique_ptr<PersistentProto<KeyDataProto>> proto_;
-
-  // Whether this instance has finished reading from disk.
-  bool is_initialized_ = false;
-
-  base::OnceCallback<void()> on_initialized_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<KeyData> weak_factory_{this};
+  // Storage for keys and rotation data. Must outlive the KeyData instance.
+  JsonPrefStore* key_store_;
 };
 
+}  // namespace internal
 }  // namespace structured
 }  // namespace metrics
 
