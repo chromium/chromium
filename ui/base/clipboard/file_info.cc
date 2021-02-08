@@ -66,8 +66,7 @@ base::FilePath URLToPath(base::StringPiece url) {
 
   std::string result = base::UnescapeBinaryURLComponent(url.substr(path_start));
 #if defined(OS_WIN)
-  // FilePath will convert slash to backslash.
-  return base::FilePath(base::UTF8ToWide(result));
+  return base::FilePath(base::UTF8ToWide(result)).NormalizePathSeparators();
 #else
   return base::FilePath(result);
 #endif

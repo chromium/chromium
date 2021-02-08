@@ -60,12 +60,17 @@ TEST(FileInfoTest, Roundtrip) {
       {"file:///path%2525:%3B%23&=%0A%20", {FPL("/path%25:;#&=\n ")}},
   };
   for (const TestCase& test : tests) {
-    std::vector<FileInfo> file_infos = URIListToFileInfos(test.uri_list);
-    std::vector<base::FilePath::StringType> paths;
-    for (const FileInfo& file_info : file_infos) {
-      paths.push_back(file_info.path.value());
+    std::vector<base::FilePath::StringType> expected;
+    for (const auto& path : test.paths) {
+      expected.push_back(
+          base::FilePath(path).NormalizePathSeparators().value());
     }
-    EXPECT_EQ(test.paths, paths);
+    std::vector<FileInfo> file_infos = URIListToFileInfos(test.uri_list);
+    std::vector<base::FilePath::StringType> actual;
+    for (const FileInfo& file_info : file_infos) {
+      actual.push_back(file_info.path.value());
+    }
+    EXPECT_EQ(expected, actual);
     if (!file_infos.empty()) {
       std::string uri_list = FileInfosToURIList(file_infos);
       EXPECT_EQ(test.uri_list_roundtrip.value_or(test.uri_list), uri_list);
@@ -77,15 +82,14 @@ TEST(FileInfoTest, Backslashes) {
   struct TestCase {
     base::FilePath::StringType path;
     std::string uri_list;
-    base::FilePath::StringType path_roundtrip;
+    base::Optional<base::FilePath::StringType> path_roundtrip;
   };
   const TestCase tests[] = {
 #if defined(OS_WIN)
-    // File paths with backslash should be converted to forward slash on
-    // windows.
-    {FPL("C:\\path"), "file:///C:/path", FPL("C:/path")},
-    {FPL("\\path"), "file:///path", FPL("/path")},
-    {FPL("\\\\host\\path"), "file://host/path", FPL("//host/path")},
+    // File paths with backslash should roundtrip on windows.
+    {FPL("C:\\path"), "file:///C:/path"},
+    {FPL("\\path"), "file:///path"},
+    {FPL("\\\\host\\path"), "file://host/path"},
 #else
     // File paths with backslash should be escaped on posix, and relative path
     // becomes absolute path.
@@ -102,7 +106,8 @@ TEST(FileInfoTest, Backslashes) {
 
     std::vector<FileInfo> filenames = URIListToFileInfos(uri_list);
     EXPECT_EQ(1u, filenames.size());
-    EXPECT_EQ(test.path_roundtrip, filenames[0].path.value());
+    EXPECT_EQ(test.path_roundtrip.value_or(test.path),
+              filenames[0].path.value());
   }
 }
 
