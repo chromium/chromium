@@ -1946,6 +1946,9 @@ const char kWebAppCreateInQuickLaunchBar[] =
 // will be launched.
 const char kWebAppInstallForceList[] = "profile.web_app.install.forcelist";
 
+// A list of dictionaries for managing Web Apps.
+const char kWebAppSettings[] = "profile.web_app.policy_settings";
+
 // A list of dictionaries for managed configurations. Each dictionary contains
 // 3 strings -- origin to be configured, link to the configuration, and the
 // hashed value to that configuration.

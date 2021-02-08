@@ -12,4 +12,11 @@ const char kDefaultLaunchContainerWindowValue[] = "window";
 const char kDefaultLaunchContainerTabValue[] = "tab";
 const char kCreateDesktopShorcutKey[] = "create_desktop_shortcut";
 
+const char kWildcard[] = "*";
+
+const char kRunOnOsLogin[] = "run_on_os_login";
+const char kAllowed[] = "allowed";
+const char kBlocked[] = "blocked";
+const char kRunWindowed[] = "run_windowed";
+
 }  // namespace web_app

@@ -212,6 +212,7 @@ AppContextMenu.prototype = {
         app.appData.isLocallyInstalled;
 
     this.runOnOsLogin_.hidden = !app.appData.mayShowRunOnOsLoginMode;
+    this.runOnOsLogin_.disabled = !app.appData.mayToggleRunOnOsLoginMode;
     this.runOnOsLogin_.checked =
         app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NOT_RUN;
   },

@@ -19,6 +19,8 @@
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -57,6 +59,7 @@ class AppLauncherHandler
       public ExtensionEnableFlowDelegate,
       public content::NotificationObserver,
       public web_app::AppRegistrarObserver,
+      public web_app::WebAppPolicyManagerObserver,
       public extensions::ExtensionRegistryObserver {
  public:
   AppLauncherHandler(extensions::ExtensionService* extension_service,
@@ -99,6 +102,9 @@ class AppLauncherHandler
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
+
+  // web_app::WebAppPolicyManagerObserver
+  void OnPolicyChanged() override;
 
   // Populate the given dictionary with all installed app info.
   void FillAppDictionary(base::DictionaryValue* value);
@@ -229,6 +235,10 @@ class AppLauncherHandler
   base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
       web_apps_observation_{this};
 
+  base::ScopedObservation<web_app::WebAppPolicyManager,
+                          web_app::WebAppPolicyManagerObserver>
+      web_apps_policy_manager_observation_{this};
+
   // We monitor changes to the extension system so that we can reload the apps
   // when necessary.
   content::NotificationRegistrar registrar_;
@@ -248,6 +258,9 @@ class AppLauncherHandler
 
   // The ids of apps to show on the NTP.
   std::set<std::string> visible_apps_;
+
+  // The ids of apps installed externally.
+  std::map<web_app::AppId, GURL> policy_installed_apps_;
 
   // The id of the extension we are prompting the user about (either enable or
   // uninstall).

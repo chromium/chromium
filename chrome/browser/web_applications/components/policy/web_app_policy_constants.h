@@ -14,6 +14,13 @@ extern const char kDefaultLaunchContainerWindowValue[];
 extern const char kDefaultLaunchContainerTabValue[];
 extern const char kCreateDesktopShorcutKey[];
 
+extern const char kWildcard[];
+
+extern const char kRunOnOsLogin[];
+extern const char kAllowed[];
+extern const char kBlocked[];
+extern const char kRunWindowed[];
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_POLICY_WEB_APP_POLICY_CONSTANTS_H_

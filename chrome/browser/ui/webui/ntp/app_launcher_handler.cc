@@ -279,11 +279,18 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
   }
   value->SetString("app_launch_ordinal", app_launch_ordinal.ToInternalValue());
 
-  // Run on OS Login can be changed only for locally installed web apps
+  // Only show the Run on OS Login menu item for locally installed web apps
   value->SetBoolean(
       "mayShowRunOnOsLoginMode",
       base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
           is_locally_installed);
+
+  value->SetBoolean(
+      "mayToggleRunOnOsLoginMode",
+      web_app_provider_->policy_manager().GetUrlRunOnOsLoginPolicy(
+          policy_installed_apps_[app_id]) ==
+          web_app::RunOnOsLoginPolicy::kAllowed);
+
   std::string runOnOsLoginModeString =
       (registrar.GetAppRunOnOsLoginMode(app_id) ==
        web_app::RunOnOsLoginMode::kNotRun)
@@ -401,6 +408,7 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
 
   // Run on OS Login is not implemented for extension/bookmark apps.
   value->SetBoolean("mayShowRunOnOsLoginMode", false);
+  value->SetBoolean("mayToggleRunOnOsLoginMode", false);
 }
 
 // static
@@ -598,8 +606,13 @@ void AppLauncherHandler::OnWebAppUninstalled(const web_app::AppId& app_id) {
       base::Value(!extension_id_prompting_.empty()));
 }
 
+void AppLauncherHandler::OnPolicyChanged() {
+  HandleGetApps(nullptr);
+}
+
 void AppLauncherHandler::OnAppRegistrarDestroyed() {
   web_apps_observation_.Reset();
+  web_apps_policy_manager_observation_.Reset();
 }
 
 void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
@@ -708,6 +721,10 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
     }
   }
 
+  policy_installed_apps_ =
+      web_app_provider_->registrar().GetExternallyInstalledApps(
+          web_app::ExternalInstallSource::kExternalPolicy);
+
   SetAppToBeHighlighted();
   FillAppDictionary(&dictionary);
   web_ui()->CallJavascriptFunctionUnsafe("ntp.getAppsCallback", dictionary);
@@ -729,6 +746,8 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
                    content::Source<AppSorting>(
                        ExtensionSystem::Get(profile)->app_sorting()));
     web_apps_observation_.Observe(&web_app_provider_->registrar());
+    web_apps_policy_manager_observation_.Observe(
+        &web_app_provider_->policy_manager());
   }
 
   has_loaded_apps_ = true;

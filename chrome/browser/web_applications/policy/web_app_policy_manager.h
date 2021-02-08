@@ -8,7 +8,10 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "url/gurl.h"
 
@@ -23,6 +26,7 @@ namespace web_app {
 
 class AppRegistryController;
 class SystemWebAppManager;
+class OsIntegrationManager;
 
 // Policy installation allows enterprise admins to control and manage
 // Web Apps on behalf of their managed users. This class tracks the policy that
@@ -45,7 +49,8 @@ class WebAppPolicyManager {
   void SetSubsystems(PendingAppManager* pending_app_manager,
                      AppRegistrar* app_registrar,
                      AppRegistryController* app_registry_controller,
-                     SystemWebAppManager* web_app_manager);
+                     SystemWebAppManager* web_app_manager,
+                     OsIntegrationManager* os_integration_manager);
 
   void Start();
 
@@ -59,14 +64,39 @@ class WebAppPolicyManager {
 
   // Gets system web apps disabled by SystemFeaturesDisableList policy.
   std::set<SystemAppType> GetDisabledSystemWebApps() const;
+  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicy(base::Optional<GURL> url) const;
+
+  void AddObserver(WebAppPolicyManagerObserver* observer);
+  void RemoveObserver(WebAppPolicyManagerObserver* observer);
+
+  void SetOnAppsSynchronizedCompletedCallbackForTesting(
+      base::OnceClosure callback);
+  void SetRefreshPolicySettingsCompletedCallbackForTesting(
+      base::OnceClosure callback);
 
  private:
-  void InitChangeRegistrarAndRefreshPolicyInstalledApps();
+  friend class WebAppPolicyManagerTest;
+
+  struct WebAppSetting {
+    WebAppSetting();
+    WebAppSetting(const WebAppSetting&) = default;
+    WebAppSetting& operator=(const WebAppSetting&) = default;
+    ~WebAppSetting() = default;
+
+    bool Parse(const base::DictionaryValue* dict, bool for_default_settings);
+    void ResetSettings();
+
+    RunOnOsLoginPolicy run_on_os_login_policy;
+  };
+
+  void InitChangeRegistrarAndRefreshPolicy();
 
   void RefreshPolicyInstalledApps();
+  void RefreshPolicySettings();
   void OnAppsSynchronized(
       std::map<GURL, PendingAppManager::InstallResult> install_results,
       std::map<GURL, bool> uninstall_results);
+  void ApplyPolicySettings();
 
   void ObserveSystemDisableListPolicy();
 
@@ -82,12 +112,22 @@ class WebAppPolicyManager {
   AppRegistrar* app_registrar_ = nullptr;
   AppRegistryController* app_registry_controller_ = nullptr;
   SystemWebAppManager* web_app_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
+  // Testing callbacks
+  base::OnceClosure refresh_policy_settings_completed_;
+  base::OnceClosure on_apps_synchronized_;
+
   bool is_refreshing_ = false;
   bool needs_refresh_ = false;
+
+  base::flat_map<GURL, WebAppSetting> settings_by_url_;
+  std::unique_ptr<WebAppSetting> default_settings_;
+  base::ObserverList<WebAppPolicyManagerObserver, /*check_empty=*/true>
+      observers_;
 
   base::WeakPtrFactory<WebAppPolicyManager> weak_ptr_factory_{this};
 };

@@ -26,6 +26,7 @@
  *            launch_type: number,
  *            mayChangeLaunchType: boolean,
  *            mayShowRunOnOsLoginMode: boolean,
+ *            mayToggleRunOnOsLoginMode: boolean,
  *            mayCreateShortcuts: boolean,
  *            mayDisable: boolean,
  *            name: string,

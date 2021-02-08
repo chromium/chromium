@@ -215,6 +215,17 @@ enum class RunOnOsLoginMode {
   kMinimized = 2,
 };
 
+enum class RunOnOsLoginPolicy {
+  // kAllowed: User can configure an app to run on OS Login.
+  kAllowed = 0,
+  // kDisallow: Policy prevents users from configuring an app to run on OS
+  // Login.
+  kBlocked = 1,
+  // kRunWindowed: Policy requires an app to to run on OS Login as a normal
+  // window.
+  kRunWindowed = 2,
+};
+
 std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode);
 
 // These values are persisted to logs. Entries should not be renumbered and

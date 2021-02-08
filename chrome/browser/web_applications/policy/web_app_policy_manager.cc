@@ -11,10 +11,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/syslog_logging.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
@@ -78,7 +80,10 @@ ExternalInstallOptions ParseInstallOptionsFromPolicyEntry(
 const char WebAppPolicyManager::kInstallResultHistogramName[];
 
 WebAppPolicyManager::WebAppPolicyManager(Profile* profile)
-    : profile_(profile), pref_service_(profile_->GetPrefs()) {}
+    : profile_(profile),
+      pref_service_(profile_->GetPrefs()),
+      default_settings_(
+          std::make_unique<WebAppPolicyManager::WebAppSetting>()) {}
 
 WebAppPolicyManager::~WebAppPolicyManager() = default;
 
@@ -86,20 +91,26 @@ void WebAppPolicyManager::SetSubsystems(
     PendingAppManager* pending_app_manager,
     AppRegistrar* app_registrar,
     AppRegistryController* app_registry_controller,
-    SystemWebAppManager* web_app_manager) {
+    SystemWebAppManager* web_app_manager,
+    OsIntegrationManager* os_integration_manager) {
+  DCHECK(pending_app_manager);
+  DCHECK(app_registrar);
+  DCHECK(app_registry_controller);
+  DCHECK(os_integration_manager);
+
   pending_app_manager_ = pending_app_manager;
   app_registrar_ = app_registrar;
   app_registry_controller_ = app_registry_controller;
   web_app_manager_ = web_app_manager;
+  os_integration_manager_ = os_integration_manager;
 }
 
 void WebAppPolicyManager::Start() {
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&WebAppPolicyManager::
-                             InitChangeRegistrarAndRefreshPolicyInstalledApps,
-                         weak_ptr_factory_.GetWeakPtr()));
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
@@ -122,6 +133,9 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   // No need to install a placeholder because there should be one already.
   install_options.wait_for_windows_closed = true;
   install_options.reinstall_placeholder = true;
+  install_options.run_on_os_login =
+      (GetUrlRunOnOsLoginPolicy(install_options.install_url) ==
+       RunOnOsLoginPolicy::kRunWindowed);
 
   // If the app is not a placeholder app, PendingAppManager will ignore the
   // request.
@@ -132,15 +146,21 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
 void WebAppPolicyManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kWebAppInstallForceList);
+  registry->RegisterDictionaryPref(prefs::kWebAppSettings);
 }
 
-void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicyInstalledApps() {
+void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy() {
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
       prefs::kWebAppInstallForceList,
       base::BindRepeating(&WebAppPolicyManager::RefreshPolicyInstalledApps,
                           weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      prefs::kWebAppSettings,
+      base::BindRepeating(&WebAppPolicyManager::RefreshPolicySettings,
+                          weak_ptr_factory_.GetWeakPtr()));
 
+  RefreshPolicySettings();
   RefreshPolicyInstalledApps();
   ObserveSystemDisableListPolicy();
 }
@@ -213,6 +233,9 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     // apps but only if they are not being used.
     install_options.wait_for_windows_closed = true;
     install_options.reinstall_placeholder = true;
+    install_options.run_on_os_login =
+        (GetUrlRunOnOsLoginPolicy(install_options.install_url) ==
+         RunOnOsLoginPolicy::kRunWindowed);
 
     install_options_list.push_back(std::move(install_options));
   }
@@ -223,10 +246,123 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void WebAppPolicyManager::RefreshPolicySettings() {
+  // No need to validate the types or values of the policy members because we
+  // are using a SimpleSchemaValidatingPolicyHandler which should validate them
+  // for us.
+  const base::DictionaryValue* web_app_dict =
+      pref_service_->GetDictionary(prefs::kWebAppSettings);
+
+  settings_by_url_.clear();
+  default_settings_ = std::make_unique<WebAppPolicyManager::WebAppSetting>();
+
+  if (!web_app_dict)
+    return;
+
+  // Read default policy, if provided.
+  const base::DictionaryValue* default_settings_dict = nullptr;
+  if (web_app_dict->GetDictionary(kWildcard, &default_settings_dict)) {
+    if (!default_settings_->Parse(default_settings_dict, true)) {
+      SYSLOG(WARNING) << "Malformed default web app management setting.";
+      default_settings_->ResetSettings();
+    }
+  }
+
+  // Read policy for individual web apps
+  for (base::DictionaryValue::Iterator iter(*web_app_dict); !iter.IsAtEnd();
+       iter.Advance()) {
+    if (iter.key() == kWildcard)
+      continue;
+
+    const base::DictionaryValue* web_app_settings_dict;
+    if (!iter.value().GetAsDictionary(&web_app_settings_dict))
+      continue;
+
+    GURL url = GURL(iter.key());
+    if (!url.is_valid()) {
+      LOG(WARNING) << "Invalid URL: " << iter.key();
+      continue;
+    }
+
+    WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
+    if (by_url.Parse(web_app_settings_dict, false)) {
+      settings_by_url_[url] = by_url;
+    } else {
+      LOG(WARNING) << "Malformed web app settings for " << url;
+    }
+  }
+
+  ApplyPolicySettings();
+
+  if (refresh_policy_settings_completed_)
+    std::move(refresh_policy_settings_completed_).Run();
+}
+
+void WebAppPolicyManager::ApplyPolicySettings() {
+  std::map<AppId, GURL> policy_installed_apps_ =
+      app_registrar_->GetExternallyInstalledApps(
+          ExternalInstallSource::kExternalPolicy);
+  for (const AppId& app_id : app_registrar_->GetAppIds()) {
+    RunOnOsLoginPolicy policy =
+        GetUrlRunOnOsLoginPolicy(policy_installed_apps_[app_id]);
+    if (policy == RunOnOsLoginPolicy::kBlocked) {
+      app_registry_controller_->SetAppRunOnOsLoginMode(
+          app_id, web_app::RunOnOsLoginMode::kNotRun);
+      web_app::OsHooksResults os_hooks;
+      os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+      os_integration_manager_->UninstallOsHooks(app_id, os_hooks,
+                                                base::DoNothing());
+    } else if (policy == RunOnOsLoginPolicy::kRunWindowed) {
+      app_registry_controller_->SetAppRunOnOsLoginMode(
+          app_id, web_app::RunOnOsLoginMode::kWindowed);
+      web_app::InstallOsHooksOptions options;
+      options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
+      os_integration_manager_->InstallOsHooks(app_id, base::DoNothing(),
+                                              nullptr, options);
+    }
+  }
+
+  for (WebAppPolicyManagerObserver& observer : observers_)
+    observer.OnPolicyChanged();
+}
+
+void WebAppPolicyManager::AddObserver(WebAppPolicyManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebAppPolicyManager::RemoveObserver(
+    WebAppPolicyManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicy(
+    base::Optional<GURL> url) const {
+  if (url) {
+    auto it = settings_by_url_.find(url.value());
+    if (it != settings_by_url_.end())
+      return it->second.run_on_os_login_policy;
+  }
+  return default_settings_->run_on_os_login_policy;
+}
+
+void WebAppPolicyManager::SetOnAppsSynchronizedCompletedCallbackForTesting(
+    base::OnceClosure callback) {
+  on_apps_synchronized_ = std::move(callback);
+}
+
+void WebAppPolicyManager::SetRefreshPolicySettingsCompletedCallbackForTesting(
+    base::OnceClosure callback) {
+  refresh_policy_settings_completed_ = std::move(callback);
+}
+
 void WebAppPolicyManager::OnAppsSynchronized(
     std::map<GURL, PendingAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   is_refreshing_ = false;
+
+  if (!install_results.empty())
+    ApplyPolicySettings();
+
   if (needs_refresh_)
     RefreshPolicyInstalledApps();
 
@@ -234,6 +370,38 @@ void WebAppPolicyManager::OnAppsSynchronized(
     base::UmaHistogramEnumeration(kInstallResultHistogramName,
                                   url_and_result.second.code);
   }
+
+  if (on_apps_synchronized_)
+    std::move(on_apps_synchronized_).Run();
+}
+
+WebAppPolicyManager::WebAppSetting::WebAppSetting() {
+  ResetSettings();
+}
+
+bool WebAppPolicyManager::WebAppSetting::Parse(
+    const base::DictionaryValue* dict,
+    bool for_default_settings) {
+  std::string run_on_os_login_str;
+  if (dict->GetStringWithoutPathExpansion(kRunOnOsLogin,
+                                          &run_on_os_login_str)) {
+    if (run_on_os_login_str == kAllowed) {
+      run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
+    } else if (run_on_os_login_str == kBlocked) {
+      run_on_os_login_policy = RunOnOsLoginPolicy::kBlocked;
+    } else if (!for_default_settings && run_on_os_login_str == kRunWindowed) {
+      run_on_os_login_policy = RunOnOsLoginPolicy::kRunWindowed;
+    } else {
+      SYSLOG(WARNING) << "Malformed web app run on os login preference.";
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void WebAppPolicyManager::WebAppSetting::ResetSettings() {
+  run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;
 }
 
 void WebAppPolicyManager::ObserveSystemDisableListPolicy() {

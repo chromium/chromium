@@ -657,6 +657,7 @@ extern const char kWebAppCreateOnDesktop[];
 extern const char kWebAppCreateInAppsMenu[];
 extern const char kWebAppCreateInQuickLaunchBar[];
 extern const char kWebAppInstallForceList[];
+extern const char kWebAppSettings[];
 extern const char kWebAppInstallMetrics[];
 extern const char kWebAppsDailyMetrics[];
 extern const char kWebAppsDailyMetricsDate[];
@@ -671,6 +672,7 @@ extern const char kWebAppsUrlHandlerInfo[];
 #endif
 
 extern const char kWebAppsUserDisplayModeCleanedUp[];
+
 extern const char kSystemWebAppLastUpdateVersion[];
 extern const char kSystemWebAppLastInstalledLocale[];
 extern const char kSystemWebAppInstallFailureCount[];

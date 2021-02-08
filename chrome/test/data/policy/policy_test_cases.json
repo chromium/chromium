@@ -8451,7 +8451,6 @@
       }
     ]
   },
-
   "WebXRImmersiveArEnabled": {
     "os": ["android"],
     "policy_pref_mapping_tests": [
@@ -8482,6 +8481,30 @@
           "DeviceSystemWideTracingEnabled": false
         },
         "prefs": { "device_system_wide_tracing_enabled": { "value": false, "location": "local_state" } }
+      }
+    ]
+  },
+  "WebAppSettings": {
+    "os": ["win", "linux", "mac"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebAppSettings": {
+            "https://foo.example": {
+              "run_on_os_login": "allowed"
+            },
+            "https://bar.example": {
+              "run_on_os_login": "blocked"
+            },
+            "https://foobar.example" : {
+              "run_on_os_login": "run_windowed"
+            },
+            "*": {
+              "run_on_os_login": "blocked"
+            }
+          }
+        },
+        "prefs": { "profile.web_app.policy_settings": {} }
       }
     ]
   }
