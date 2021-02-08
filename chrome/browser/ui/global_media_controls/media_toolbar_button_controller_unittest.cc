@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller_delegate.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "chrome/test/base/testing_profile.h"
@@ -124,13 +125,15 @@ class MediaToolbarButtonControllerTest : public testing::Test {
 
   void SimulateFocusGained(const base::UnguessableToken& id,
                            bool controllable) {
-    service_.OnFocusGained(CreateFocusRequest(id, controllable));
+    service_.media_session_notification_producer_->OnFocusGained(
+        CreateFocusRequest(id, controllable));
   }
 
   void SimulateFocusLost(const base::UnguessableToken& id) {
     AudioFocusRequestStatePtr focus(AudioFocusRequestState::New());
     focus->request_id = id;
-    service_.OnFocusLost(std::move(focus));
+    service_.media_session_notification_producer_->OnFocusLost(
+        std::move(focus));
   }
 
   void SimulateNecessaryMetadata(const base::UnguessableToken& id) {
@@ -140,8 +143,11 @@ class MediaToolbarButtonControllerTest : public testing::Test {
     // service, but since the service doesn't run for this test, we'll manually
     // grab the MediaNotificationItem from the MediaNotificationService and
     // set the metadata.
-    auto item_itr = service_.sessions_.find(id.ToString());
-    ASSERT_NE(service_.sessions_.end(), item_itr);
+    auto item_itr =
+        service_.media_session_notification_producer_->sessions_.find(
+            id.ToString());
+    ASSERT_NE(service_.media_session_notification_producer_->sessions_.end(),
+              item_itr);
 
     media_session::MediaMetadata metadata;
     metadata.title = base::ASCIIToUTF16("title");

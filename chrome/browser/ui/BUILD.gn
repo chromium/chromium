@@ -1012,6 +1012,8 @@ static_library("ui") {
       "global_media_controls/media_notification_service_factory.cc",
       "global_media_controls/media_notification_service_factory.h",
       "global_media_controls/media_notification_service_observer.h",
+      "global_media_controls/media_session_notification_producer.cc",
+      "global_media_controls/media_session_notification_producer.h",
       "global_media_controls/media_toolbar_button_controller.cc",
       "global_media_controls/media_toolbar_button_controller.h",
       "global_media_controls/media_toolbar_button_controller_delegate.cc",

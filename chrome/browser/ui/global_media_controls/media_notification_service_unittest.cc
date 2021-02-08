@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -211,13 +212,15 @@ class MediaNotificationServiceTest : public testing::Test {
 
   void SimulateFocusGained(const base::UnguessableToken& id,
                            bool controllable) {
-    service_->OnFocusGained(CreateFocusRequest(id, controllable));
+    service_->media_session_notification_producer_->OnFocusGained(
+        CreateFocusRequest(id, controllable));
   }
 
   void SimulateFocusLost(const base::UnguessableToken& id) {
     AudioFocusRequestStatePtr focus(AudioFocusRequestState::New());
     focus->request_id = id;
-    service_->OnFocusLost(std::move(focus));
+    service_->media_session_notification_producer_->OnFocusLost(
+        std::move(focus));
   }
 
   void SimulateNecessaryMetadata(const base::UnguessableToken& id) {
@@ -227,8 +230,8 @@ class MediaNotificationServiceTest : public testing::Test {
     // service, but since the service doesn't run for this test, we'll manually
     // grab the MediaNotificationItem from the MediaNotificationService and
     // set the metadata.
-    auto item_itr = service_->sessions_.find(id.ToString());
-    ASSERT_NE(service_->sessions_.end(), item_itr);
+    auto item_itr = sessions().find(id.ToString());
+    ASSERT_NE(sessions().end(), item_itr);
 
     media_session::MediaMetadata metadata;
     metadata.title = base::ASCIIToUTF16("title");
@@ -237,8 +240,8 @@ class MediaNotificationServiceTest : public testing::Test {
   }
 
   void SimulateHasArtwork(const base::UnguessableToken& id) {
-    auto item_itr = service_->sessions_.find(id.ToString());
-    ASSERT_NE(service_->sessions_.end(), item_itr);
+    auto item_itr = sessions().find(id.ToString());
+    ASSERT_NE(sessions().end(), item_itr);
 
     SkBitmap image;
     image.allocN32Pixels(10, 10);
@@ -249,8 +252,8 @@ class MediaNotificationServiceTest : public testing::Test {
   }
 
   void SimulateHasNoArtwork(const base::UnguessableToken& id) {
-    auto item_itr = service_->sessions_.find(id.ToString());
-    ASSERT_NE(service_->sessions_.end(), item_itr);
+    auto item_itr = sessions().find(id.ToString());
+    ASSERT_NE(sessions().end(), item_itr);
 
     item_itr->second.item()->MediaControllerImageChanged(
         media_session::mojom::MediaSessionImageType::kArtwork, SkBitmap());
@@ -258,17 +261,20 @@ class MediaNotificationServiceTest : public testing::Test {
 
   void SimulateReceivedAudioFocusRequests(
       std::vector<AudioFocusRequestStatePtr> requests) {
-    service_->OnReceivedAudioFocusRequests(std::move(requests));
+    service_->media_session_notification_producer_
+        ->OnReceivedAudioFocusRequests(std::move(requests));
   }
 
   bool IsSessionFrozen(const base::UnguessableToken& id) const {
-    auto item_itr = service_->sessions_.find(id.ToString());
-    EXPECT_NE(service_->sessions_.end(), item_itr);
+    auto item_itr = sessions().find(id.ToString());
+    EXPECT_NE(sessions().end(), item_itr);
     return item_itr->second.item()->frozen();
   }
 
   bool IsSessionInactive(const base::UnguessableToken& id) const {
-    return base::Contains(service_->inactive_session_ids_, id.ToString());
+    return base::Contains(
+        service_->media_session_notification_producer_->inactive_session_ids_,
+        id.ToString());
   }
 
   bool HasActiveNotifications() const {
@@ -293,8 +299,8 @@ class MediaNotificationServiceTest : public testing::Test {
 
     // Now, close the tab. The session may have been destroyed with
     // |SimulateFocusLost()| above.
-    auto item_itr = service_->sessions_.find(id.ToString());
-    if (item_itr != service_->sessions_.end())
+    auto item_itr = sessions().find(id.ToString());
+    if (item_itr != sessions().end())
       item_itr->second.WebContentsDestroyed();
   }
 
@@ -306,23 +312,25 @@ class MediaNotificationServiceTest : public testing::Test {
         playing ? media_session::mojom::MediaPlaybackState::kPlaying
                 : media_session::mojom::MediaPlaybackState::kPaused;
 
-    auto item_itr = service_->sessions_.find(id.ToString());
-    EXPECT_NE(service_->sessions_.end(), item_itr);
+    auto item_itr = sessions().find(id.ToString());
+    EXPECT_NE(sessions().end(), item_itr);
     item_itr->second.MediaSessionInfoChanged(std::move(session_info));
   }
 
   void SimulateMediaSeeked(const base::UnguessableToken& id) {
-    auto item_itr = service_->sessions_.find(id.ToString());
-    EXPECT_NE(service_->sessions_.end(), item_itr);
+    auto item_itr = sessions().find(id.ToString());
+    EXPECT_NE(sessions().end(), item_itr);
     item_itr->second.MediaSessionPositionChanged(base::nullopt);
   }
 
   void SimulateNotificationClicked(const base::UnguessableToken& id) {
-    service_->OnContainerClicked(id.ToString());
+    service_->media_session_notification_producer_->OnContainerClicked(
+        id.ToString());
   }
 
   void SimulateDismissButtonClicked(const base::UnguessableToken& id) {
-    service_->OnContainerDismissed(id.ToString());
+    service_->media_session_notification_producer_->OnContainerDismissed(
+        id.ToString());
   }
 
   // Simulates the media notification of the given |id| being dragged out of the
@@ -348,7 +356,8 @@ class MediaNotificationServiceTest : public testing::Test {
     EXPECT_CALL(*overlay_notification, ShowNotification()).After(set_manager);
 
     // Fire the drag out.
-    service_->OnContainerDraggedOut(id.ToString(), dragged_out_bounds);
+    service_->media_session_notification_producer_->OnContainerDraggedOut(
+        id.ToString(), dragged_out_bounds);
     testing::Mock::VerifyAndClearExpectations(dialog_delegate);
     testing::Mock::VerifyAndClearExpectations(overlay_notification);
 
@@ -385,14 +394,18 @@ class MediaNotificationServiceTest : public testing::Test {
 
   MediaNotificationService::Session* GetSession(
       const base::UnguessableToken& id) {
-    return service_->GetSession(id.ToString());
+    return service_->media_session_notification_producer_->GetSession(
+        id.ToString());
   }
 
   MockMediaNotificationServiceObserver& observer() { return observer_; }
 
   MediaNotificationService* service() { return service_.get(); }
 
- protected:
+  std::map<std::string, MediaNotificationService::Session>& sessions() const {
+    return service_->media_session_notification_producer_->sessions_;
+  }
+
   content::BrowserTaskEnvironment task_environment_;
 
  private:

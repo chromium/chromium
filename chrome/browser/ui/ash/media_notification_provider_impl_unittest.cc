@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
+#include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_list_view.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -93,7 +94,8 @@ class MediaNotificationProviderImplTest : public testing::Test {
     focus->request_id = id;
     focus->session_info = std::move(session_info);
 
-    provider_->service_for_testing()->OnFocusGained(std::move(focus));
+    provider_->service_for_testing()
+        ->media_session_notification_producer_->OnFocusGained(std::move(focus));
     provider_->service_for_testing()->ShowNotification(id.ToString());
   }
 
