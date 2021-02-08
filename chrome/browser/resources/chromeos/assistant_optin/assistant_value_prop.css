@@ -2,14 +2,28 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+#animation-container-horizontal-mode {
+  display: none;
+}
+
+#animation-container-vertical-mode {
+  display: none;
+}
+
 @media screen and (orientation: portrait) {
   oobe-adaptive-dialog {
     --oobe-adaptive-dialog-content-top-padding: 0;
   }
+
+  :host-context(html[new-layout]) #animation-container-vertical-mode {
+    display: block;
+  }
 }
 
-:host-context(html:not([new-layout])) #animation-container {
-  display: none;
+@media screen and (orientation: landscape) {
+  :host-context(html[new-layout]) #animation-container-horizontal-mode {
+    display: block;
+  }
 }
 
 #intro-text {

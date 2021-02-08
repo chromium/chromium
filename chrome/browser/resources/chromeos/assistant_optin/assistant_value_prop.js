@@ -69,11 +69,18 @@ Polymer({
   loadingError_: false,
 
   /**
-   * The value prop webview object.
+   * The value prop webview object in vertical mode.
    * @type {Object}
    * @private
    */
-  valuePropView_: null,
+  valuePropViewVerticalMode_: null,
+
+  /**
+   * The value prop webview object in horizontal mode.
+   * @type {Object}
+   * @private
+   */
+  valuePropViewHorizontalMode_: null,
 
   /**
    * Whether the screen has been initialized.
@@ -199,7 +206,10 @@ Polymer({
     this.loadingError_ = false;
     this.headerReceived_ = false;
     let locale = this.locale.replace('-', '_').toLowerCase();
-    this.valuePropView_.src = this.urlTemplate_.replace('$', locale);
+    this.valuePropViewVerticalMode_.src =
+        this.urlTemplate_.replace('$', locale);
+    this.valuePropViewHorizontalMode_.src =
+        this.urlTemplate_.replace('$', locale);
 
     this.buttonsDisabled = true;
   },
@@ -223,7 +233,8 @@ Polymer({
       return;
     }
     if (this.reloadWithDefaultUrl_) {
-      this.valuePropView_.src = this.defaultUrl;
+      this.valuePropViewVerticalMode_.src = this.defaultUrl;
+      this.valuePropViewHorizontalMode_.src = this.defaultUrl;
       this.headerReceived_ = false;
       this.reloadWithDefaultUrl_ = false;
       return;
@@ -346,35 +357,44 @@ Polymer({
    * Signal from host to show the screen.
    */
   onShow() {
-    var requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
-
     this.$['overlay-close-button'].addEventListener(
         'click', this.hideOverlay.bind(this));
-    this.valuePropView_ = this.$['value-prop-view'];
 
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$['next-button'].focus());
 
     if (!this.initialized_) {
-      this.valuePropView_.request.onErrorOccurred.addListener(
-          this.onWebViewErrorOccurred.bind(this), requestFilter);
-      this.valuePropView_.request.onHeadersReceived.addListener(
-          this.onWebViewHeadersReceived.bind(this), requestFilter);
-      this.valuePropView_.addEventListener(
-          'contentload', this.onWebViewContentLoad.bind(this));
-
-      this.valuePropView_.addContentScripts([{
-        name: 'stripLinks',
-        matches: ['<all_urls>'],
-        js: {
-          code: 'document.querySelectorAll(\'a\').forEach(' +
-              'function(anchor){anchor.href=\'javascript:void(0)\';})'
-        },
-        run_at: 'document_end'
-      }]);
-
+      // We show value prop webview element based on orientation of the device.
+      // Horizontal mode element is in subtitle slot and it is shown in bottom
+      // left of the screen in horizontal mode. Vertical mode element is in
+      // content slot and allows scrolling with the rest of the content in
+      // vertical mode.
+      this.valuePropViewVerticalMode_ = this.$['value-prop-view-vertical-mode'];
+      this.valuePropViewHorizontalMode_ =
+          this.$['value-prop-view-horizontal-mode'];
+      this.initializeWebview_(this.valuePropViewVerticalMode_);
+      this.initializeWebview_(this.valuePropViewHorizontalMode_);
       this.reloadPage();
       this.initialized_ = true;
     }
+  },
+
+  initializeWebview_(webview) {
+    const requestFilter = {urls: ['<all_urls>'], types: ['main_frame']};
+    webview.request.onErrorOccurred.addListener(
+        this.onWebViewErrorOccurred.bind(this), requestFilter);
+    webview.request.onHeadersReceived.addListener(
+        this.onWebViewHeadersReceived.bind(this), requestFilter);
+    webview.addEventListener(
+        'contentload', this.onWebViewContentLoad.bind(this));
+    webview.addContentScripts([{
+      name: 'stripLinks',
+      matches: ['<all_urls>'],
+      js: {
+        code: 'document.querySelectorAll(\'a\').forEach(' +
+            'function(anchor){anchor.href=\'javascript:void(0)\';})'
+      },
+      run_at: 'document_end'
+    }]);
   },
 });
