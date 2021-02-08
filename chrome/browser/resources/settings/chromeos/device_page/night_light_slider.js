@@ -296,7 +296,7 @@ Polymer({
   /**
    * Gets the given knob's offset ratio with respect to its parent element
    * (which is the slider bar).
-   * @param {HTMLDivElement} knob Either one of the two knobs.
+   * @param {HTMLDivElement|Element} knob Either one of the two knobs.
    * @return {number}
    * @private
    */
@@ -363,7 +363,7 @@ Polymer({
   /**
    * Updates the absolute left coordinate of the given |knob| based on the time
    * it represents given as an |offsetMinutes| value.
-   * @param {HTMLDivElement} knob
+   * @param {HTMLDivElement|Element} knob
    * @param {number} offsetMinutes
    * @private
    */

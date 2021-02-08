@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * @fileoverview Behavior for handling dragging elements in a container.
  *     Draggable elements must have the 'draggable' attribute set.
@@ -13,7 +17,7 @@
  *   y: number
  * }}
  */
-let DragPosition;
+/* #export */ let DragPosition;
 
 /**
  * Type of an ongoing drag.
@@ -27,7 +31,7 @@ const DragType = {
 };
 
 /** @polymerBehavior */
-const DragBehavior = {
+/* #export */ const DragBehavior = {
   properties: {
     /** Whether or not drag is enabled (e.g. not mirrored). */
     dragEnabled: Boolean,
@@ -67,7 +71,7 @@ const DragBehavior = {
    */
   dragId: '',
 
-  /** @private {!HTMLDivElement|undefined} */
+  /** @private {HTMLDivElement|Element|undefined} */
   container_: undefined,
 
   /** @private {?function(string, ?DragPosition):void} */
@@ -102,7 +106,7 @@ const DragBehavior = {
 
   /**
    * @param {boolean} enabled
-   * @param {!HTMLDivElement=} opt_container
+   * @param {(HTMLDivElement|Element)=} opt_container
    * @param {!function(string, ?DragPosition):void=} opt_callback
    */
   initializeDrag(enabled, opt_container, opt_callback) {

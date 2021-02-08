@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// #import {WebUIListener, addWebUIListener} from 'chrome://resources/js/cr.m.js';
+// #import {WebUIListener, addWebUIListener, addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 cr.define('settings', function() {
