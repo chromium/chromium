@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.ContextUtils;
@@ -46,12 +47,20 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
     private final ProfileSyncService mProfileSyncService;
     private boolean mTrustedVaultNotificationShownOrCreating;
 
-    private static SyncErrorNotifier sInstance;
+    private @Nullable static SyncErrorNotifier sInstance;
+    private static boolean sInitialized;
 
+    /**
+     * Returns null if there's no instance of ProfileSyncService (Sync disabled via command-line).
+     */
+    @Nullable
     public static SyncErrorNotifier get() {
         ThreadUtils.assertOnUiThread();
-        if (sInstance == null) {
-            sInstance = new SyncErrorNotifier();
+        if (!sInitialized) {
+            if (ProfileSyncService.get() != null) {
+                sInstance = new SyncErrorNotifier();
+            }
+            sInitialized = true;
         }
         return sInstance;
     }
