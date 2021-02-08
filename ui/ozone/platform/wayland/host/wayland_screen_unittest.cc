@@ -232,9 +232,13 @@ TEST_P(WaylandScreenTest, OutputPropertyChanges) {
 
   Sync();
 
-  changed_values = display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR;
+  changed_values =
+      display::DisplayObserver::DISPLAY_METRIC_DEVICE_SCALE_FACTOR |
+      display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+      display::DisplayObserver::DISPLAY_METRIC_BOUNDS;
   EXPECT_EQ(observer.GetAndClearChangedMetrics(), changed_values);
   EXPECT_EQ(observer.GetDisplay().device_scale_factor(), new_scale_value);
+  EXPECT_EQ(observer.GetDisplay().bounds(), gfx::Rect(50, 50));
 
   platform_screen_->RemoveObserver(&observer);
 }

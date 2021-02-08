@@ -99,10 +99,12 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
                                        const gfx::Rect& new_bounds,
                                        int32_t scale_factor) {
   display::Display changed_display(output_id);
-  if (!display::Display::HasForceDeviceScaleFactor())
-    changed_display.set_device_scale_factor(scale_factor);
-  changed_display.set_bounds(new_bounds);
-  changed_display.set_work_area(new_bounds);
+  if (!display::Display::HasForceDeviceScaleFactor()) {
+    changed_display.SetScaleAndBounds(scale_factor, new_bounds);
+  } else {
+    changed_display.set_bounds(new_bounds);
+    changed_display.set_work_area(new_bounds);
+  }
 
   gfx::DisplayColorSpaces color_spaces;
   color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
