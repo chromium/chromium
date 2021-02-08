@@ -211,9 +211,10 @@ std::array<uint8_t, device::cablev2::kNonceSize> RandomNonce() {
   return ret;
 }
 
-using GeneratePairingDataCallback = base::OnceCallback<std::vector<uint8_t>(
-    base::span<const uint8_t, device::kP256X962Length> peer_public_key_x962,
-    device::cablev2::HandshakeHash)>;
+using GeneratePairingDataCallback =
+    base::OnceCallback<base::Optional<cbor::Value>(
+        base::span<const uint8_t, device::kP256X962Length> peer_public_key_x962,
+        device::cablev2::HandshakeHash)>;
 
 // TunnelTransport is a transport that uses WebSockets to talk to a cloud
 // service and uses BLE adverts to show proximity.
@@ -229,7 +230,7 @@ class TunnelTransport : public Transport {
         nonce_(RandomNonce()),
         tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
             secret,
-            nonce_,
+            base::span<uint8_t>(),
             DerivedValueType::kTunnelID)),
         eid_key_(device::cablev2::Derive<EXTENT(eid_key_)>(
             secret,
@@ -354,15 +355,8 @@ class TunnelTransport : public Transport {
     const device::CableEidArray plaintext_eid =
         StartAdvertising(routing_id.value_or(kZeroRoutingID));
 
-    std::array<uint8_t, device::cablev2::kPSKSize> psk;
-    psk = device::cablev2::Derive<EXTENT(psk)>(
+    psk_ = device::cablev2::Derive<EXTENT(psk_)>(
         secret_, plaintext_eid, device::cablev2::DerivedValueType::kPSK);
-    handshaker_ = std::make_unique<device::cablev2::HandshakeInitiator>(
-        psk, peer_identity_, std::move(local_identity_));
-
-    std::vector<uint8_t> msg =
-        handshaker_->BuildInitialMessage(BuildGetInfoResponse());
-    websocket_client_->Write(msg);
 
     update_callback_.Run(Platform::Status::TUNNEL_SERVER_CONNECT);
   }
@@ -379,10 +373,9 @@ class TunnelTransport : public Transport {
     switch (state_) {
       case State::kConnectedPaired:
       case State::kConnected: {
-        base::Optional<std::pair<std::unique_ptr<device::cablev2::Crypter>,
-                                 device::cablev2::HandshakeHash>>
-            result = handshaker_->ProcessResponse(*msg);
-        handshaker_.reset();
+        std::vector<uint8_t> response;
+        HandshakeResult result = RespondToHandshake(
+            psk_, std::move(local_identity_), peer_identity_, *msg, &response);
         if (!result) {
           FIDO_LOG(ERROR) << "caBLE handshake failure";
           update_callback_.Run(Platform::Error::HANDSHAKE_FAILED);
@@ -390,19 +383,30 @@ class TunnelTransport : public Transport {
         }
         FIDO_LOG(DEBUG) << "caBLE handshake complete";
         update_callback_.Run(Platform::Status::HANDSHAKE_COMPLETE);
+        websocket_client_->Write(response);
         crypter_ = std::move(result->first);
 
-        if (state_ == State::kConnected) {
-          std::vector<uint8_t> pairing_data =
-              std::move(generate_pairing_data_)
-                  .Run(*peer_identity_, result->second);
-          if (!crypter_->Encrypt(&pairing_data)) {
-            FIDO_LOG(ERROR) << "failed to encode pairing data";
-            return;
-          }
+        cbor::Value::MapValue post_handshake_msg;
+        post_handshake_msg.emplace(1, BuildGetInfoResponse());
 
-          websocket_client_->Write(pairing_data);
+        if (state_ == State::kConnected) {
+          base::Optional<cbor::Value> pairing_data(
+              std::move(generate_pairing_data_)
+                  .Run(*peer_identity_, result->second));
+          if (pairing_data) {
+            post_handshake_msg.emplace(2, std::move(*pairing_data));
+          }
         }
+
+        base::Optional<std::vector<uint8_t>> post_handshake_msg_bytes(
+            EncodePaddedCBORMap(std::move(post_handshake_msg)));
+
+        if (!post_handshake_msg_bytes ||
+            !crypter_->Encrypt(&post_handshake_msg_bytes.value())) {
+          FIDO_LOG(ERROR) << "failed to encode post-handshake message";
+          return;
+        }
+        websocket_client_->Write(*post_handshake_msg_bytes);
 
         state_ = State::kReady;
         break;
@@ -448,10 +452,10 @@ class TunnelTransport : public Transport {
   const std::array<uint8_t, kTunnelIdSize> tunnel_id_;
   const std::array<uint8_t, kEIDKeySize> eid_key_;
   std::unique_ptr<WebSocketAdapter> websocket_client_;
-  std::unique_ptr<HandshakeInitiator> handshaker_;
   std::unique_ptr<Crypter> crypter_;
   network::mojom::NetworkContext* const network_context_;
   const base::Optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
+  std::array<uint8_t, kPSKSize> psk_;
   GeneratePairingDataCallback generate_pairing_data_;
   const std::vector<uint8_t> secret_;
   bssl::UniquePtr<EC_KEY> local_identity_;
@@ -533,6 +537,11 @@ class CTAP2Processor : public Transaction {
     switch (command) {
       case static_cast<uint8_t>(
           device::CtapRequestCommand::kAuthenticatorGetInfo): {
+        // getInfo requests should be handled by the preemptive getInfo data
+        // sent after the handshake. This might not be true when other
+        // implementations arise, however.
+        NOTREACHED();
+
         if (payload) {
           FIDO_LOG(ERROR) << "getInfo command incorrectly contained payload";
           return base::nullopt;
@@ -772,12 +781,10 @@ static bssl::UniquePtr<EC_KEY> IdentityKey(
 
 class PairingDataGenerator {
  public:
-  static base::OnceCallback<
-      std::vector<uint8_t>(base::span<const uint8_t, device::kP256X962Length>,
-                           device::cablev2::HandshakeHash)>
-  GetClosure(base::span<const uint8_t, kRootSecretSize> root_secret,
-             const std::string& name,
-             base::Optional<std::vector<uint8_t>> contact_id) {
+  static GeneratePairingDataCallback GetClosure(
+      base::span<const uint8_t, kRootSecretSize> root_secret,
+      const std::string& name,
+      base::Optional<std::vector<uint8_t>> contact_id) {
     auto* generator =
         new PairingDataGenerator(root_secret, name, std::move(contact_id));
     return base::BindOnce(&PairingDataGenerator::Generate,
@@ -792,46 +799,45 @@ class PairingDataGenerator {
         name_(name),
         contact_id_(std::move(contact_id)) {}
 
-  std::vector<uint8_t> Generate(
+  base::Optional<cbor::Value> Generate(
       base::span<const uint8_t, device::kP256X962Length> peer_public_key_x962,
       device::cablev2::HandshakeHash handshake_hash) {
-    cbor::Value::MapValue map;
-
-    if (contact_id_) {
-      map.emplace(1, std::move(*contact_id_));
-
-      std::array<uint8_t, device::cablev2::kNonceSize> pairing_id;
-      crypto::RandBytes(pairing_id);
-
-      map.emplace(2, pairing_id);
-
-      std::array<uint8_t, 32> paired_secret;
-      paired_secret = device::cablev2::Derive<EXTENT(paired_secret)>(
-          root_secret_, pairing_id,
-          device::cablev2::DerivedValueType::kPairedSecret);
-
-      map.emplace(3, paired_secret);
-
-      bssl::UniquePtr<EC_KEY> identity_key(IdentityKey(root_secret_));
-      device::CableAuthenticatorIdentityKey public_key;
-      CHECK_EQ(
-          public_key.size(),
-          EC_POINT_point2oct(EC_KEY_get0_group(identity_key.get()),
-                             EC_KEY_get0_public_key(identity_key.get()),
-                             POINT_CONVERSION_UNCOMPRESSED, public_key.data(),
-                             public_key.size(), /*ctx=*/nullptr));
-
-      map.emplace(4, public_key);
-      map.emplace(5, name_);
-
-      map.emplace(
-          6, device::cablev2::CalculatePairingSignature(
-                 identity_key.get(), peer_public_key_x962, handshake_hash));
+    if (!contact_id_) {
+      return base::nullopt;
     }
 
-    std::vector<uint8_t> empty_vector;
-    return device::cablev2::EncodePaddedCBORMap(std::move(map))
-        .value_or(empty_vector);
+    cbor::Value::MapValue map;
+    map.emplace(1, std::move(*contact_id_));
+
+    std::array<uint8_t, device::cablev2::kNonceSize> pairing_id;
+    crypto::RandBytes(pairing_id);
+
+    map.emplace(2, pairing_id);
+
+    std::array<uint8_t, 32> paired_secret;
+    paired_secret = device::cablev2::Derive<EXTENT(paired_secret)>(
+        root_secret_, pairing_id,
+        device::cablev2::DerivedValueType::kPairedSecret);
+
+    map.emplace(3, paired_secret);
+
+    bssl::UniquePtr<EC_KEY> identity_key(IdentityKey(root_secret_));
+    device::CableAuthenticatorIdentityKey public_key;
+    CHECK_EQ(
+        public_key.size(),
+        EC_POINT_point2oct(EC_KEY_get0_group(identity_key.get()),
+                           EC_KEY_get0_public_key(identity_key.get()),
+                           POINT_CONVERSION_UNCOMPRESSED, public_key.data(),
+                           public_key.size(), /*ctx=*/nullptr));
+
+    map.emplace(4, public_key);
+    map.emplace(5, name_);
+
+    map.emplace(6,
+                device::cablev2::CalculatePairingSignature(
+                    identity_key.get(), peer_public_key_x962, handshake_hash));
+
+    return cbor::Value(std::move(map));
   }
 
   const std::array<uint8_t, kRootSecretSize> root_secret_;

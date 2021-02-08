@@ -193,19 +193,19 @@ TEST_F(CableV2HandshakeTest, MessageEncrytion) {
   }
 }
 
-TEST_F(CableV2HandshakeTest, QRHandshake) {
+TEST_F(CableV2HandshakeTest, NKHandshake) {
   std::array<uint8_t, 32> wrong_psk = psk_;
   wrong_psk[0] ^= 1;
-  uint8_t kGetInfoBytes[] = {1, 2, 3, 4, 5};
 
   for (const bool use_correct_key : {false, true}) {
     HandshakeInitiator initiator(use_correct_key ? psk_ : wrong_psk,
                                  identity_public_,
-                                 /*local_identity=*/nullptr);
-    std::vector<uint8_t> message = initiator.BuildInitialMessage(kGetInfoBytes);
+                                 /*identity_seed=*/base::nullopt);
+    std::vector<uint8_t> message = initiator.BuildInitialMessage();
     std::vector<uint8_t> response;
-    base::Optional<ResponderResult> responder_result(RespondToHandshake(
-        psk_, identity_seed_,
+    EC_KEY_up_ref(identity_key_.get());
+    HandshakeResult responder_result(RespondToHandshake(
+        psk_, bssl::UniquePtr<EC_KEY>(identity_key_.get()),
         /*peer_identity=*/base::nullopt, message, &response));
     ASSERT_EQ(responder_result.has_value(), use_correct_key);
     if (!use_correct_key) {
@@ -215,34 +215,29 @@ TEST_F(CableV2HandshakeTest, QRHandshake) {
     base::Optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
         initiator_result(initiator.ProcessResponse(response));
     ASSERT_TRUE(initiator_result.has_value());
-    EXPECT_EQ(initiator_result->second, responder_result->handshake_hash);
-    EXPECT_TRUE(responder_result->crypter->IsCounterpartyOfForTesting(
+    EXPECT_EQ(initiator_result->second, responder_result->second);
+    EXPECT_TRUE(responder_result->first->IsCounterpartyOfForTesting(
         *initiator_result->first));
-    ASSERT_EQ(responder_result->getinfo_bytes.size(), sizeof(kGetInfoBytes));
-    EXPECT_EQ(0, memcmp(responder_result->getinfo_bytes.data(), kGetInfoBytes,
-                        sizeof(kGetInfoBytes)));
+    EXPECT_EQ(initiator_result->second, responder_result->second);
   }
 }
 
-TEST_F(CableV2HandshakeTest, PairedHandshake) {
-  bssl::UniquePtr<EC_KEY> wrong_key(
-      EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
-  CHECK(EC_KEY_generate_key(wrong_key.get()));
-  uint8_t kGetInfoBytes[] = {1, 2, 3, 4, 5};
+TEST_F(CableV2HandshakeTest, KNHandshake) {
+  std::array<uint8_t, kQRSeedSize> wrong_seed;
+  crypto::RandBytes(wrong_seed);
 
   for (const bool use_correct_key : {false, true}) {
     SCOPED_TRACE(use_correct_key);
 
-    EC_KEY* const key = use_correct_key ? identity_key_.get() : wrong_key.get();
-    EC_KEY_up_ref(key);
+    base::span<const uint8_t, kQRSeedSize> seed =
+        use_correct_key ? identity_seed_ : wrong_seed;
     HandshakeInitiator initiator(psk_,
-                                 /*peer_identity=*/base::nullopt,
-                                 bssl::UniquePtr<EC_KEY>(key));
-    std::vector<uint8_t> message = initiator.BuildInitialMessage(kGetInfoBytes);
+                                 /*peer_identity=*/base::nullopt, seed);
+    std::vector<uint8_t> message = initiator.BuildInitialMessage();
     std::vector<uint8_t> response;
-    base::Optional<ResponderResult> responder_result(RespondToHandshake(
+    HandshakeResult responder_result(RespondToHandshake(
         psk_,
-        /*identity_seed=*/base::nullopt, identity_public_, message, &response));
+        /*identity=*/nullptr, identity_public_, message, &response));
     ASSERT_EQ(responder_result.has_value(), use_correct_key);
 
     if (!use_correct_key) {
@@ -252,11 +247,9 @@ TEST_F(CableV2HandshakeTest, PairedHandshake) {
     base::Optional<std::pair<std::unique_ptr<Crypter>, HandshakeHash>>
         initiator_result(initiator.ProcessResponse(response));
     ASSERT_TRUE(initiator_result.has_value());
-    EXPECT_TRUE(responder_result->crypter->IsCounterpartyOfForTesting(
+    EXPECT_TRUE(responder_result->first->IsCounterpartyOfForTesting(
         *initiator_result->first));
-    ASSERT_EQ(responder_result->getinfo_bytes.size(), sizeof(kGetInfoBytes));
-    EXPECT_EQ(0, memcmp(responder_result->getinfo_bytes.data(), kGetInfoBytes,
-                        sizeof(kGetInfoBytes)));
+    EXPECT_EQ(initiator_result->second, responder_result->second);
   }
 }
 

@@ -163,7 +163,7 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     base::span<const uint8_t, kP256X962Length> peer_identity,
     base::Optional<std::vector<uint8_t>> contact_id);
 
-// TransactFromQRCode starts a network-based transaction based on the decoded
+// TransactFromFCM starts a network-based transaction based on the decoded
 // contents of a cloud message.
 std::unique_ptr<Transaction> TransactFromFCM(
     std::unique_ptr<Platform> platform,
