@@ -40,7 +40,7 @@ const base::Feature kExcludedMediaSuffixes{"PreviewsExcludedMediaSuffixes",
 // and a UserConsistent-specific experiment feature.
 const base::FeatureState kDeferAllScriptDefaultFeatureState =
 #if defined(OS_ANDROID)
-    base::FEATURE_ENABLED_BY_DEFAULT;
+    base::FEATURE_DISABLED_BY_DEFAULT;
 #else   // !defined(OS_ANDROID)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif  // defined(OS_ANDROID)

@@ -507,15 +507,8 @@ TEST_F(PreviewsDeciderImplTest, DeferAllScriptDefaultBehavior) {
   content::MockNavigationHandle navigation_handle;
   navigation_handle.set_url(GURL("https://www.google.com"));
 
-#if defined(OS_ANDROID)
-  bool expected = true;
-#else   // !defined(OS_ANDROID)
-  bool expected = false;
-#endif  // defined(OS_ANDROID)
-  EXPECT_EQ(expected,
-            previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
-                &user_data, &navigation_handle, false,
-                PreviewsType::DEFER_ALL_SCRIPT));
+  EXPECT_FALSE(previews_decider_impl()->ShouldAllowPreviewAtNavigationStart(
+      &user_data, &navigation_handle, false, PreviewsType::DEFER_ALL_SCRIPT));
 }
 
 TEST_F(PreviewsDeciderImplTest,

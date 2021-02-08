@@ -2601,21 +2601,6 @@
             ]
         }
     ],
-    "DisableForceDeferInChildFrames": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisableForceDeferInChildFrames"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
