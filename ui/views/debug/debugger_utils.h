@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_DEBUG_DEBUGGER_UTILS_H_
 #define UI_VIEWS_DEBUG_DEBUGGER_UTILS_H_
 
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -33,7 +34,7 @@ class ViewDebugWrapper {
   virtual std::vector<ViewDebugWrapper*> GetChildren() = 0;
 };
 
-void PrintViewHierarchy(std::ostringstream* out,
+void PrintViewHierarchy(std::ostream* out,
                         ViewDebugWrapper* view,
                         int depth = -1,
                         size_t column_limit = 240);

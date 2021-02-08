@@ -4,8 +4,6 @@
 
 #include "ui/views/debug/debugger_utils.h"
 
-#include <sstream>
-
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -59,7 +57,7 @@ std::string GetPaddedLine(int current_depth, bool attribute_line = false) {
   return std::string(padding, ' ');
 }
 
-void PrintViewHierarchyImpl(std::ostringstream* out,
+void PrintViewHierarchyImpl(std::ostream* out,
                             ViewDebugWrapper* view,
                             int current_depth,
                             int target_depth,
@@ -105,7 +103,7 @@ void PrintViewHierarchyImpl(std::ostringstream* out,
 
 }  // namespace
 
-void PrintViewHierarchy(std::ostringstream* out,
+void PrintViewHierarchy(std::ostream* out,
                         ViewDebugWrapper* view,
                         int depth,
                         size_t column_limit) {
