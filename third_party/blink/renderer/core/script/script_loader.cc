@@ -228,7 +228,7 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     return ScriptTypeAtPrepare::kModule;
   }
 
-  if (type == "importmap") {
+  if (EqualIgnoringASCIICase(type, "importmap")) {
     return ScriptTypeAtPrepare::kImportMap;
   }
 
