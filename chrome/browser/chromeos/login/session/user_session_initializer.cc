@@ -229,6 +229,10 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   }
 }
 
+void UserSessionInitializer::PreStartSession() {
+  NetworkCertLoader::Get()->MarkUserNSSDBWillBeInitialized();
+}
+
 void UserSessionInitializer::InitRlzImpl(Profile* profile,
                                          const RlzInitParams& params) {
 #if BUILDFLAG(ENABLE_RLZ)

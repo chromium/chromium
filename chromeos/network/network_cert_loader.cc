@@ -110,11 +110,32 @@ NetworkCertLoader::NetworkCertList CombineNetworkCertLists(
 // certificates from multiple sources.
 class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
  public:
+  enum class State {
+    // The CertCache is not initialized and not expected to be initialized soon.
+    kNotInitialized,
+    // The CertCache is expected to be initialized soon.
+    kMarkedWillBeInitialized,
+    // The CertCache initialization has started, the initial load of
+    // certificates is in progress.
+    kInitialLoadInProgress,
+    // The CertCache is initialized and currently not re-loading certificates.
+    kInitializedAndIdle,
+    // The CertCache is initialized and currently re-loading certificates.
+    kInitializedAndReloading
+  };
+
   explicit CertCache(base::RepeatingClosure certificates_updated_callback)
       : certificates_updated_callback_(certificates_updated_callback) {}
 
   ~CertCache() override {
     net::CertDatabase::GetInstance()->RemoveObserver(this);
+  }
+
+  void MarkWillBeInitialized(bool will_be_initialized) {
+    DCHECK(state_ == State::kNotInitialized ||
+           state_ == State::kMarkedWillBeInitialized);
+    state_ = will_be_initialized ? State::kMarkedWillBeInitialized
+                                 : State::kNotInitialized;
   }
 
   void SetNSSDBAndSlot(net::NSSCertDatabase* nss_database,
@@ -135,7 +156,7 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
     // NSSCertDatabase to send notification on all relevant changes.
     net::CertDatabase::GetInstance()->AddObserver(this);
 
-    LoadCertificates();
+    LoadCertificates(/*initial_load=*/true);
   }
 
   net::NSSCertDatabase* nss_database() { return nss_database_; }
@@ -143,41 +164,50 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   // net::CertDatabase::Observer
   void OnCertDBChanged() override {
     VLOG(1) << "OnCertDBChanged";
-    LoadCertificates();
+    LoadCertificates(/*initial_load=*/false);
   }
 
   const NetworkCertList& authority_certs() const { return authority_certs_; }
 
   const NetworkCertList& client_certs() const { return client_certs_; }
 
+  bool is_or_will_be_initialized() const {
+    return state_ != State::kNotInitialized;
+  }
+
   bool is_initialized() const { return nss_database_; }
 
   bool initial_load_running() const {
-    return nss_database_ && !initial_load_finished_;
+    return state_ == State::kInitialLoadInProgress;
   }
 
   bool certificates_update_running() const {
-    return certificates_update_running_;
+    return state_ == State::kInitialLoadInProgress ||
+           state_ == State::kInitializedAndReloading;
   }
 
-  bool initial_load_finished() const { return initial_load_finished_; }
+  bool initial_load_finished() const {
+    return state_ == State::kInitializedAndIdle ||
+           state_ == State::kInitializedAndReloading;
+  }
 
  private:
   // Trigger a certificate load. If a certificate loading task is already in
   // progress, will start a reload once the current task is finished.
-  void LoadCertificates() {
+  void LoadCertificates(bool initial_load) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    VLOG(1) << "LoadCertificates: " << certificates_update_running_;
+    VLOG(1) << "LoadCertificates: " << certificates_update_running();
 
     if (!nss_database_)
       return;
 
-    if (certificates_update_running_) {
+    if (certificates_update_running()) {
       certificates_update_required_ = true;
       return;
     }
 
-    certificates_update_running_ = true;
+    state_ = initial_load ? State::kInitialLoadInProgress
+                          : State::kInitializedAndReloading;
     certificates_update_required_ = false;
 
     nss_database_->ListCertsInSlot(
@@ -189,7 +219,7 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   // Called if a certificate load task is finished.
   void UpdateCertificates(net::ScopedCERTCertificateList cert_list) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    DCHECK(certificates_update_running_);
+    DCHECK(certificates_update_running());
     VLOG(1) << "UpdateCertificates: " << cert_list.size();
 
     authority_certs_.clear();
@@ -205,25 +235,23 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
       }
     }
 
-    initial_load_finished_ = true;
-    certificates_update_running_ = false;
+    state_ = State::kInitializedAndIdle;
     certificates_updated_callback_.Run();
 
     if (certificates_update_required_)
-      LoadCertificates();
+      LoadCertificates(/*initial_load=*/false);
   }
 
   // To be called when certificates have been updated.
   base::RepeatingClosure certificates_updated_callback_;
 
-  // This is true after certificates have been loaded initially.
-  bool initial_load_finished_ = false;
+  // The state of this CertCache.
+  State state_ = State::kNotInitialized;
+
   // This is true if a notification about certificate DB changes arrived while
   // loading certificates and means that we will have to trigger another
   // certificates load after that.
   bool certificates_update_required_ = false;
-  // This is true while certificates are being loaded.
-  bool certificates_update_running_ = false;
 
   // The NSS certificate database from which the certificates should be loaded.
   net::NSSCertDatabase* nss_database_ = nullptr;
@@ -307,11 +335,20 @@ NetworkCertLoader::~NetworkCertLoader() {
   DCHECK(!user_policy_certificate_provider_);
 }
 
+void NetworkCertLoader::MarkSystemNSSDBWillBeInitialized() {
+  system_slot_cert_cache_->MarkWillBeInitialized(true);
+}
+
 void NetworkCertLoader::SetSystemNSSDB(
     net::NSSCertDatabase* system_slot_database) {
   system_slot_cert_cache_->SetNSSDBAndSlot(
       system_slot_database, system_slot_database->GetSystemSlot(),
       true /* is_slot_device_wide */);
+}
+
+void NetworkCertLoader::MarkUserNSSDBWillBeInitialized() {
+  user_private_slot_cert_cache_->MarkWillBeInitialized(true);
+  user_public_slot_cert_cache_->MarkWillBeInitialized(true);
 }
 
 void NetworkCertLoader::SetUserNSSDB(net::NSSCertDatabase* user_database) {
@@ -321,6 +358,8 @@ void NetworkCertLoader::SetUserNSSDB(net::NSSCertDatabase* user_database) {
     user_private_slot_cert_cache_->SetNSSDBAndSlot(
         user_database, std::move(private_slot),
         false /* is_slot_device_wide */);
+  } else {
+    user_private_slot_cert_cache_->MarkWillBeInitialized(false);
   }
   user_public_slot_cert_cache_->SetNSSDBAndSlot(
       user_database, user_database->GetPublicSlot(),
@@ -388,6 +427,11 @@ bool NetworkCertLoader::user_cert_database_load_finished() const {
 
   return user_private_slot_cert_cache_->initial_load_finished() &&
          user_public_slot_cert_cache_->initial_load_finished();
+}
+
+bool NetworkCertLoader::can_have_client_certificates() const {
+  return system_slot_cert_cache_->is_or_will_be_initialized() ||
+         user_private_slot_cert_cache_->is_or_will_be_initialized();
 }
 
 // static

@@ -303,6 +303,13 @@ class NetworkCertLoaderTest : public testing::Test,
 }  // namespace
 
 TEST_F(NetworkCertLoaderTest, BasicOnlyUserDB) {
+  EXPECT_FALSE(cert_loader_->can_have_client_certificates());
+  EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
+  EXPECT_FALSE(cert_loader_->initial_load_finished());
+  EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
+
+  cert_loader_->MarkUserNSSDBWillBeInitialized();
+  EXPECT_TRUE(cert_loader_->can_have_client_certificates());
   EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
@@ -336,6 +343,13 @@ TEST_F(NetworkCertLoaderTest, BasicOnlyUserDB) {
 }
 
 TEST_F(NetworkCertLoaderTest, BasicOnlySystemDB) {
+  EXPECT_FALSE(cert_loader_->can_have_client_certificates());
+  EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
+  EXPECT_FALSE(cert_loader_->initial_load_finished());
+  EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());
+
+  cert_loader_->MarkSystemNSSDBWillBeInitialized();
+  EXPECT_TRUE(cert_loader_->can_have_client_certificates());
   EXPECT_FALSE(cert_loader_->initial_load_of_any_database_running());
   EXPECT_FALSE(cert_loader_->initial_load_finished());
   EXPECT_FALSE(cert_loader_->user_cert_database_load_finished());

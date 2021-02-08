@@ -98,11 +98,21 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
   // is found.
   void set_is_shutting_down() { is_shutting_down_ = true; }
 
+  // Marks that the initialization of the system slot NSSCertDatabase has
+  // started. The caller should call SetSystemNSSDB when the NSSCertDatabase is
+  // available.
+  void MarkSystemNSSDBWillBeInitialized();
+
   // Sets the NSS cert database which NetworkCertLoader should use to access
   // system slot certificates. The NetworkCertLoader will _not_ take ownership
   // of the database - see comment on SetUserNSSDB. NetworkCertLoader supports
   // working with only one database or with both (system and user) databases.
   void SetSystemNSSDB(net::NSSCertDatabase* system_slot_database);
+
+  // Marks that the initialization of the user slot NSSCertDatabase has started.
+  // The caller should call SetSystemNSSDB when the NSSCertDatabase is
+  // available.
+  void MarkUserNSSDBWillBeInitialized();
 
   // Sets the NSS cert database which NetworkCertLoader should use to access
   // user slot certificates. NetworkCertLoader understands the edge case that
@@ -153,6 +163,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkCertLoader
 
   // Returns true if certificates from a user NSS database have been loaded.
   bool user_cert_database_load_finished() const;
+
+  // Returns true if there can be any client certificates in the current device
+  // state. this means that either a system slot or a primary user's private
+  // slot are present, or have been marked as being initialized.
+  bool can_have_client_certificates() const;
 
   // Returns authority certificates usable for network configurations. This will
   // be empty until certificates_loaded() is true.
