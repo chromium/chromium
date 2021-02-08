@@ -176,15 +176,15 @@ PasswordForm MakeBlocklistedForm(const std::string& signon_realm) {
   return form;
 }
 
-std::vector<CompromisedCredentials> MakeCompromisedCredentials(
+std::vector<InsecureCredential> MakeInsecureCredentials(
     const PasswordForm& form,
     const std::vector<InsecureType>& types) {
-  std::vector<CompromisedCredentials> issues;
+  std::vector<InsecureCredential> issues;
 
   for (auto type : types) {
-    issues.emplace_back(
-        CompromisedCredentials(form.signon_realm, form.username_value,
-                               base::Time(), type, IsMuted(false)));
+    issues.emplace_back(InsecureCredential(form.signon_realm,
+                                           form.username_value, base::Time(),
+                                           type, IsMuted(false)));
   }
   return issues;
 }
@@ -206,7 +206,7 @@ class FakeDatabase {
     return FormRetrievalResult::kSuccess;
   }
 
-  std::vector<CompromisedCredentials> ReadSecurityIssues(
+  std::vector<InsecureCredential> ReadSecurityIssues(
       FormPrimaryKey parent_key) {
     return security_issues_[parent_key.value()];
   }
@@ -224,8 +224,7 @@ class FakeDatabase {
     return PasswordStoreChangeList();
   }
 
-  bool AddCompromisedCredentials(
-      base::span<const CompromisedCredentials> issues) {
+  bool AddInsecureCredentials(base::span<const InsecureCredential> issues) {
     if (issues.empty())
       return true;
     int primary_key = GetPrimaryKey(issues[0]);
@@ -254,9 +253,9 @@ class FakeDatabase {
     return {PasswordStoreChange(PasswordStoreChange::UPDATE, form, key)};
   }
 
-  bool UpdateCompromisedCredentialsSync(
+  bool UpdateInsecureCredentialsSync(
       const PasswordForm& form,
-      base::span<const CompromisedCredentials> credentials) {
+      base::span<const InsecureCredential> credentials) {
     int key = GetPrimaryKey(form);
     if (key == -1)
       return false;
@@ -283,7 +282,7 @@ class FakeDatabase {
     return -1;
   }
 
-  int GetPrimaryKey(const CompromisedCredentials& issue) const {
+  int GetPrimaryKey(const InsecureCredential& issue) const {
     for (const auto& pair : data_) {
       if (pair.second->username_value == issue.username &&
           pair.second->signon_realm == issue.signon_realm) {
@@ -295,7 +294,7 @@ class FakeDatabase {
 
   int primary_key_ = 1;
   PrimaryKeyToFormMap data_;
-  std::map<int, std::vector<CompromisedCredentials>> security_issues_;
+  std::map<int, std::vector<InsecureCredential>> security_issues_;
   AddLoginError error_ = AddLoginError::kNone;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDatabase);
@@ -336,7 +335,7 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               ReadAllLogins,
               (PrimaryKeyToFormMap*),
               (override));
-  MOCK_METHOD(std::vector<CompromisedCredentials>,
+  MOCK_METHOD(std::vector<InsecureCredential>,
               ReadSecurityIssues,
               (FormPrimaryKey),
               (override));
@@ -351,18 +350,16 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               (override));
   MOCK_METHOD(bool,
               AddInsecureCredentialsSync,
-              (base::span<const CompromisedCredentials>),
+              (base::span<const InsecureCredential>),
               (override));
   MOCK_METHOD(PasswordStoreChangeList,
               UpdateLoginSync,
               (const PasswordForm&, UpdateLoginError*),
               (override));
-  MOCK_METHOD(
-      bool,
-      UpdateInsecureCredentialsSync,
-      (const PasswordForm& form,
-       base::span<const CompromisedCredentials> comrpomised_credentials),
-      (override));
+  MOCK_METHOD(bool,
+              UpdateInsecureCredentialsSync,
+              (const PasswordForm&, base::span<const InsecureCredential>),
+              (override));
   MOCK_METHOD(PasswordStoreChangeList,
               RemoveLoginSync,
               (const PasswordForm&),
@@ -374,7 +371,7 @@ class MockPasswordStoreSync : public PasswordStoreSync {
   MOCK_METHOD(void, NotifyDeletionsHaveSynced, (bool), (override));
   MOCK_METHOD(void,
               NotifyUnsyncedCredentialsWillBeDeleted,
-              (std::vector<PasswordForm> unsynced_credentials),
+              (std::vector<PasswordForm>),
               (override));
   MOCK_METHOD(bool, BeginTransaction, (), (override));
   MOCK_METHOD(bool, CommitTransaction, (), (override));
@@ -411,12 +408,12 @@ class PasswordSyncBridgeTest : public testing::Test,
         .WillByDefault(Invoke(&fake_db_, &FakeDatabase::AddLogin));
     ON_CALL(mock_password_store_sync_, AddInsecureCredentialsSync)
         .WillByDefault(
-            Invoke(&fake_db_, &FakeDatabase::AddCompromisedCredentials));
+            Invoke(&fake_db_, &FakeDatabase::AddInsecureCredentials));
     ON_CALL(mock_password_store_sync_, UpdateLoginSync)
         .WillByDefault(Invoke(&fake_db_, &FakeDatabase::UpdateLogin));
     ON_CALL(mock_password_store_sync_, UpdateInsecureCredentialsSync)
         .WillByDefault(
-            Invoke(&fake_db_, &FakeDatabase::UpdateCompromisedCredentialsSync));
+            Invoke(&fake_db_, &FakeDatabase::UpdateInsecureCredentialsSync));
     ON_CALL(mock_password_store_sync_, RemoveLoginByPrimaryKeySync)
         .WillByDefault(Invoke(&fake_db_, &FakeDatabase::RemoveLogin));
 
@@ -1233,14 +1230,14 @@ TEST_P(PasswordSyncBridgeTest, ShouldReportDownloadedPasswordsIfAccountStore) {
 }
 
 TEST_P(PasswordSyncBridgeTest,
-       ShouldAddRemoteCompromisedCredentilasUponRemoteCreation) {
+       ShouldAddRemoteInsecureCredentilasUponRemoteCreation) {
   if (!GetParam())
     return;
   ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
   const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
                                                   InsecureType::kWeak};
-  const std::vector<CompromisedCredentials> kExpectedIssues =
-      MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
+  const std::vector<InsecureCredential> kExpectedIssues =
+      MakeInsecureCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
 
   sync_pb::PasswordSpecifics specifics =
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
@@ -1265,20 +1262,20 @@ TEST_P(PasswordSyncBridgeTest,
 }
 
 TEST_P(PasswordSyncBridgeTest,
-       ShouldAddRemoteCompromisedCredentilasDuringInitialMerge) {
+       ShouldAddRemoteInsecureCredentilasDuringInitialMerge) {
   if (!GetParam())
     return;
   ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
   const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
                                                   InsecureType::kReused};
-  const std::vector<CompromisedCredentials> kIssues =
-      MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
+  const std::vector<InsecureCredential> kIssues =
+      MakeInsecureCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
   sync_pb::PasswordSpecifics specifics =
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
 
   // Form will be added to the password store sync. We use sequence since the
   // order is important. The form itself should be added before we add the
-  // compromised credentials.
+  // insecure credentials.
 
   testing::Sequence in_sequence;
   EXPECT_CALL(*mock_password_store_sync(), BeginTransaction());
@@ -1313,8 +1310,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldPutSecurityIssuesOnLoginChange) {
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey1, kForm);
-  fake_db()->AddCompromisedCredentials(
-      MakeCompromisedCredentials(kForm, kIssuesTypes));
+  fake_db()->AddInsecureCredentials(
+      MakeInsecureCredentials(kForm, kIssuesTypes));
 
   PasswordStoreChangeList changes;
   changes.push_back(
@@ -1339,8 +1336,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldAddLocalSecurityIssuesDuringInitialMerge) {
       CreateSpecificsWithSignonRealm(kSignonRealm1);
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey1, kForm);
-  fake_db()->AddCompromisedCredentials(
-      MakeCompromisedCredentials(kForm, kIssuesTypes));
+  fake_db()->AddInsecureCredentials(
+      MakeInsecureCredentials(kForm, kIssuesTypes));
 
   EXPECT_CALL(
       mock_processor(),
@@ -1361,8 +1358,8 @@ TEST_P(PasswordSyncBridgeTest, GetDataWithIssuesForStorageKey) {
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey1, kForm);
-  fake_db()->AddCompromisedCredentials(
-      MakeCompromisedCredentials(kForm, kIssuesTypes));
+  fake_db()->AddInsecureCredentials(
+      MakeInsecureCredentials(kForm, kIssuesTypes));
 
   base::Optional<sync_pb::PasswordSpecifics> optional_specifics =
       GetDataFromBridge(/*storage_key=*/kPrimaryKeyStr1);
@@ -1373,7 +1370,7 @@ TEST_P(PasswordSyncBridgeTest, GetDataWithIssuesForStorageKey) {
 }
 
 TEST_P(PasswordSyncBridgeTest,
-       ShouldUpdateCompromisedCredentialsDuringRemoteUpdate) {
+       ShouldUpdateInsecureCredentialsDuringRemoteUpdate) {
   if (!GetParam())
     return;
   const int kPrimaryKey = 1000;
@@ -1384,8 +1381,8 @@ TEST_P(PasswordSyncBridgeTest,
 
   const std::vector<InsecureType> kIssuesTypes = {InsecureType::kLeaked,
                                                   InsecureType::kReused};
-  const std::vector<CompromisedCredentials> kIssues =
-      MakeCompromisedCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
+  const std::vector<InsecureCredential> kIssues =
+      MakeInsecureCredentials(MakePasswordForm(kSignonRealm1), kIssuesTypes);
 
   EXPECT_CALL(
       *mock_password_store_sync(),
@@ -1403,21 +1400,21 @@ TEST_P(PasswordSyncBridgeTest,
 }
 
 TEST_P(PasswordSyncBridgeTest,
-       EqualCompromisedCredentialsRequireNoUpdateDuringRemoteUpdate) {
+       EqualInsecureCredentialsRequireNoUpdateDuringRemoteUpdate) {
   if (!GetParam())
     return;
   const int kPrimaryKey = 1000;
-  // Add a password form with a corresponding list of compromised credentials of
+  // Add a password form with a corresponding list of insecure credentials of
   // types Leaked and Reused.
   const std::string kStorageKey = "1000";
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
   std::vector<InsecureType> kIssuesTypes = {
       InsecureType::kLeaked, InsecureType::kReused, InsecureType::kWeak};
-  const std::vector<CompromisedCredentials> kIssues =
-      MakeCompromisedCredentials(kForm, kIssuesTypes);
+  const std::vector<InsecureCredential> kIssues =
+      MakeInsecureCredentials(kForm, kIssuesTypes);
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey, kForm);
-  fake_db()->AddCompromisedCredentials(kIssues);
+  fake_db()->AddInsecureCredentials(kIssues);
 
   // Simulate a remote update to the password that contains the same set of
   // issues.
@@ -1430,8 +1427,8 @@ TEST_P(PasswordSyncBridgeTest,
   password_data->set_times_used(1);
 
   // Test that only UpdateLoginSync() is invoked,
-  // UpdateCompromisedCredentialsSync() isn't invoked because there are no
-  // change in the compromised credentials information.
+  // UpdateInsecureCredentialsSync() isn't invoked because there are no
+  // change in the insecure credentials information.
   EXPECT_CALL(*mock_password_store_sync(),
               UpdateLoginSync(FormHasSignonRealm(kSignonRealm1), _));
   EXPECT_CALL(*mock_password_store_sync(), UpdateInsecureCredentialsSync)
@@ -1445,36 +1442,36 @@ TEST_P(PasswordSyncBridgeTest,
   EXPECT_FALSE(error);
 }
 
-INSTANTIATE_TEST_SUITE_P(SyncingCompromisedCredentialsDisabledAndEnabled,
+INSTANTIATE_TEST_SUITE_P(SyncingInsecureCredentialsDisabledAndEnabled,
                          PasswordSyncBridgeTest,
                          ::testing::Bool());
 
 TEST_P(PasswordSyncBridgeTest,
-       EqualPasswordsDifferentCompromisedCredentialsDuringMerge) {
-  // This test is relevant only for syncing compromised credentials feature.
+       EqualPasswordsDifferentInsecureCredentialsDuringMerge) {
+  // This test is relevant only for syncing insecure credentials feature.
   if (!GetParam())
     return;
   const int kPrimaryKey = 1000;
   // Test that during merge when Passwords are equal but have different
-  // compromised credentials, local data get updated.
+  // insecure credentials, local data get updated.
   const std::string kStorageKey = "1000";
   const PasswordForm kForm = MakePasswordForm(kSignonRealm1);
   std::vector<InsecureType> kRemoteIssuesTypes = {InsecureType::kReused,
                                                   InsecureType::kWeak};
-  const std::vector<CompromisedCredentials> kRemoteIssues =
-      MakeCompromisedCredentials(kForm, kRemoteIssuesTypes);
-  const std::vector<CompromisedCredentials> kLocalIssues =
-      MakeCompromisedCredentials(kForm, {InsecureType::kLeaked});
+  const std::vector<InsecureCredential> kRemoteIssues =
+      MakeInsecureCredentials(kForm, kRemoteIssuesTypes);
+  const std::vector<InsecureCredential> kLocalIssues =
+      MakeInsecureCredentials(kForm, {InsecureType::kLeaked});
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey, kForm);
-  fake_db()->AddCompromisedCredentials(kLocalIssues);
+  fake_db()->AddInsecureCredentials(kLocalIssues);
 
   sync_pb::PasswordSpecifics specifics =
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1,
                                               kRemoteIssuesTypes);
 
-  // Test that UpdateLoginSync and UpdateCompromisedCredentialsSync() are
-  // invoked with remote compromised credentials.
+  // Test that UpdateLoginSync and UpdateInsecureCredentialsSync() are
+  // invoked with remote insecure credentials.
   EXPECT_CALL(*mock_password_store_sync(),
               UpdateLoginSync(FormHasSignonRealm(kSignonRealm1), _));
   EXPECT_CALL(
@@ -1491,24 +1488,24 @@ TEST_P(PasswordSyncBridgeTest,
 }
 
 TEST_P(PasswordSyncBridgeTest,
-       EqualPasswordsAndEqualCompromisedCredentialsDuringMerge) {
+       EqualPasswordsAndEqualInsecureCredentialsDuringMerge) {
   if (!GetParam())
     return;
-  // Test that during merge when Passwords and compromised credentials are equal
+  // Test that during merge when Passwords and insecure credentials are equal
   // there are no updates.
   const int kPrimaryKey = 1000;
   const std::string kStorageKey = "1000";
   PasswordForm kForm = MakePasswordForm(kSignonRealm1);
   std::vector<InsecureType> kIssuesTypes = {InsecureType::kReused,
                                             InsecureType::kWeak};
-  const std::vector<CompromisedCredentials> kIssues =
-      MakeCompromisedCredentials(kForm, kIssuesTypes);
+  const std::vector<InsecureCredential> kIssues =
+      MakeInsecureCredentials(kForm, kIssuesTypes);
 
   base::Time now = base::Time::Now();
   kForm.date_created = now;
 
   fake_db()->AddLoginForPrimaryKey(kPrimaryKey, kForm);
-  fake_db()->AddCompromisedCredentials(kIssues);
+  fake_db()->AddInsecureCredentials(kIssues);
 
   sync_pb::PasswordSpecifics specifics =
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
