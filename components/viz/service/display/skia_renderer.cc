@@ -2281,8 +2281,9 @@ half4 main() {
 
     std::string shader = hdr + transform->GetSkShaderSource() + ftr;
 
-    effect = std::get<0>(
-        SkRuntimeEffect::Make(SkString(shader.c_str(), shader.size())));
+    effect = SkRuntimeEffect::Make(SkString(shader.c_str(), shader.size()),
+                                   /*options=*/{})
+                 .effect;
     DCHECK(effect);
   }
 

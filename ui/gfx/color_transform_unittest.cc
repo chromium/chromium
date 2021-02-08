@@ -566,10 +566,10 @@ TEST(SimpleColorSpace, CanParseSkShaderSource) {
           "half4 main() {\n"
           "  half4 color = sample(child);\n" +
           transform->GetSkShaderSource() + " return color; }";
-      auto result =
-          SkRuntimeEffect::Make(SkString(source.c_str(), source.length()));
-      EXPECT_NE(std::get<0>(result), nullptr);
-      EXPECT_TRUE(std::get<1>(result).isEmpty()) << std::get<1>(result).c_str();
+      SkRuntimeEffect::Result result = SkRuntimeEffect::Make(
+          SkString(source.c_str(), source.length()), /*options=*/{});
+      EXPECT_NE(result.effect, nullptr);
+      EXPECT_STREQ(result.errorText.c_str(), "");
     }
   }
 }
