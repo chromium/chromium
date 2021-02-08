@@ -4403,6 +4403,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.SiteDomainIsSafe" enum="Boolean" expires_after="M95">
+  <owner>mmenke@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Whether the origin passed to SchemefulSite's constructor is safe or not.
+    &quot;Unsafe&quot; sites have an eTLD+1 that is not a canonical hostname.
+    e.g., &quot;http://foo.127.1/&quot; has an eTLD+1 of &quot;127.1&quot;, but
+    the canonical form of &quot;http://127.1&quot; is
+    &quot;http://127.0.0.1&quot;. Logged for all origins with network hosts
+    (http, https, ws, etc). See https://crbug.com/1157010.
+  </summary>
+</histogram>
+
 <histogram name="Net.SocketUnchangeableReceiveBuffer" units="Bytes"
     expires_after="2021-05-11">
   <owner>dschinazi@chromium.org</owner>
