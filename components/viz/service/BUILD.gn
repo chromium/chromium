@@ -187,6 +187,8 @@ viz_component("service") {
     "surfaces/surface_saved_frame.h",
     "surfaces/surface_saved_frame_storage.cc",
     "surfaces/surface_saved_frame_storage.h",
+    "transitions/transferable_resource_tracker.cc",
+    "transitions/transferable_resource_tracker.h",
     "viz_service_export.h",
   ]
 
@@ -548,6 +550,7 @@ viz_source_set("unit_tests") {
     "main/viz_main_impl_unittest.cc",
     "surfaces/referenced_surface_tracker_unittest.cc",
     "surfaces/surface_unittest.cc",
+    "transitions/transferable_resource_tracker_unittest.cc",
   ]
 
   if (enable_gl_backend_tests) {

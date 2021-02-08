@@ -204,6 +204,13 @@ display compositor.
 |:---------------|
 | viz/common/*   |
 
+#### service/transitions
+**Transitions**: This directory is in support of the shared element transitions
+project. See //third\_party/blink/rendering/core/document\_transition/README.md
+
+| Can depend on: |
+|:---------------|
+| viz/common/*   |
 
 ## Naming guidelines with Mojo <a name="naming-guidelines"></a>
 
