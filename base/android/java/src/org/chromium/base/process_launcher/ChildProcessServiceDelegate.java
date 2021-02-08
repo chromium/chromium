@@ -42,9 +42,10 @@ public interface ChildProcessServiceDelegate {
      * Called when the delegate should preload the native library.
      * Preloading is automatically done during library loading, but can also be called explicitly
      * to speed up the loading. See {@link LibraryLoader.preloadNow}.
-     * @param hostContext The host context the library should be preloaded with (i.e. Chrome).
+     * @param packageName The package name the library should be preloaded with (i.e.
+     * org.chromium.chrome).
      */
-    void preloadNativeLibrary(Context hostContext);
+    void preloadNativeLibrary(String packageName);
 
     /**
      * Should return a map that associatesfile descriptors' IDs to keys.

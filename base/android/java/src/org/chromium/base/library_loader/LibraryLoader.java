@@ -479,27 +479,28 @@ public class LibraryLoader {
      * that it won't be (implicitly) called during library loading.
      */
     public void preloadNow() {
-        preloadNowOverrideApplicationContext(ContextUtils.getApplicationContext());
+        preloadNowOverridePackageName(
+                ContextUtils.getApplicationContext().getApplicationInfo().packageName);
     }
 
     /**
      * Similar to {@link #preloadNow}, but allows specifying app context to use.
      */
-    public void preloadNowOverrideApplicationContext(Context appContext) {
+    public void preloadNowOverridePackageName(String packageName) {
         synchronized (mLock) {
             setLinkerImplementationIfNeededAlreadyLocked();
             if (mUseChromiumLinker) return;
-            preloadAlreadyLocked(appContext.getApplicationInfo(), false /* inZygote */);
+            preloadAlreadyLocked(packageName, false /* inZygote */);
         }
     }
 
     @GuardedBy("mLock")
-    private void preloadAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
+    private void preloadAlreadyLocked(String packageName, boolean inZygote) {
         try (TraceEvent te = TraceEvent.scoped("LibraryLoader.preloadAlreadyLocked")) {
             // Preloader uses system linker, we shouldn't preload if Chromium linker is used.
             assert !useChromiumLinker() || inZygote;
             if (mLibraryPreloader != null && !mLibraryPreloaderCalled) {
-                mLibraryPreloader.loadLibrary(appInfo);
+                mLibraryPreloader.loadLibrary(packageName);
                 mLibraryPreloaderCalled = true;
             }
         }
@@ -629,7 +630,7 @@ public class LibraryLoader {
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     private void loadWithSystemLinkerAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
         setEnvForNative();
-        preloadAlreadyLocked(appInfo, inZygote);
+        preloadAlreadyLocked(appInfo.packageName, inZygote);
 
         // If the libraries are located in the zip file, assert that the device API level is M or
         // higher. On devices <=M, the libraries should always be loaded by LegacyLinker.

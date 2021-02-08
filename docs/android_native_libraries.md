@@ -186,7 +186,7 @@ Builds on | Variant | Chrome | Library | Webview
  * For Android N-P:
    * The OS maintains a RELRO file on disk with the contents of the GNU_RELRO segment.
    * All Android apps that contain a WebView load `libmonochrome.so` at the same virtual address and apply RELRO sharing against the memory-mapped RELRO file.
-   * Chrome uses `MonochromeLibraryPreloader` to call into the same WebView library loading code.
+   * Chrome uses `WebViewLibraryPreloader` to call into the same WebView library loading code.
      * When Monochrome is the WebView provider, `libmonochrome.so` is loaded with the system's cached RELRO's applied.
    * `System.loadLibrary()` is called afterwards.
      * When Monochrome is the WebView provider, this only calls JNI_OnLoad, since the library is already loaded. Otherwise, this loads the library and no RELRO sharing occurs.

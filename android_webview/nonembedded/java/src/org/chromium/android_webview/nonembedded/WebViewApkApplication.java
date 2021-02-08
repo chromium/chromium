@@ -8,6 +8,9 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
+
+import com.android.webview.chromium.WebViewLibraryPreloader;
 
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.common.CommandLineUtil;
@@ -69,6 +72,12 @@ public class WebViewApkApplication extends Application {
             // disable using a native recorder in this process because native lib isn't loaded.
             UmaRecorderHolder.setAllowNativeUmaRecorder(false);
             UmaRecorderHolder.setNonNativeDelegate(new AwNonembeddedUmaRecorder());
+        }
+
+        // Limit to N+ since external services were added in N.
+        if (!LibraryLoader.getInstance().isLoadedByZygote()
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            LibraryLoader.getInstance().setNativeLibraryPreloader(new WebViewLibraryPreloader());
         }
     }
 
