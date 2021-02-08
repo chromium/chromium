@@ -2487,7 +2487,7 @@ void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), trace_event_scope_name,
       trace_event_scope_id, "agent_group_scheduler",
-      next_agent_group_scheduler);
+      static_cast<void*>(next_agent_group_scheduler));
 
   WebAgentGroupScheduler* previous_agent_group_scheduler =
       current_agent_group_scheduler_;
@@ -2544,7 +2544,8 @@ void MainThreadSchedulerImpl::EndAgentGroupSchedulerScope() {
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
       agent_group_scheduler_scope.trace_event_scope_name,
       agent_group_scheduler_scope.trace_event_scope_id, "agent_group_scheduler",
-      agent_group_scheduler_scope.current_agent_group_scheduler);
+      static_cast<void*>(
+          agent_group_scheduler_scope.current_agent_group_scheduler));
 
   main_thread_only().agent_group_scheduler_scope_stack.pop_back();
 }

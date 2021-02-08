@@ -55,8 +55,8 @@ PushPullFIFO::~PushPullFIFO() {
 // Push the data from |input_bus| to FIFO. The size of push is determined by
 // the length of |input_bus|.
 void PushPullFIFO::Push(const AudioBus* input_bus) {
-  TRACE_EVENT2("webaudio", "PushPullFIFO::Push", "this", this, "frames",
-               input_bus->length());
+  TRACE_EVENT2("webaudio", "PushPullFIFO::Push", "this",
+               static_cast<void*>(this), "frames", input_bus->length());
 
   MutexLocker locker(lock_);
   TRACE_EVENT0("webaudio", "PushPullFIFO::Push under lock");
@@ -110,8 +110,8 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
 // Pull the data out of FIFO to |output_bus|. If remaining frame in the FIFO
 // is less than the frames to pull, provides remaining frame plus the silence.
 size_t PushPullFIFO::Pull(AudioBus* output_bus, size_t frames_requested) {
-  TRACE_EVENT2("webaudio", "PushPullFIFO::Pull", "this", this, "frames",
-               frames_requested);
+  TRACE_EVENT2("webaudio", "PushPullFIFO::Pull", "this",
+               static_cast<void*>(this), "frames", frames_requested);
 
   MutexLocker locker(lock_);
   TRACE_EVENT0("webaudio", "PushPullFIFO::Pull under lock");

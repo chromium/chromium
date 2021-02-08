@@ -199,8 +199,8 @@ void CommandBufferService::SetContextLostReason(
 }
 
 void CommandBufferService::SetScheduled(bool scheduled) {
-  TRACE_EVENT2("gpu", "CommandBufferService:SetScheduled", "this", this,
-               "scheduled", scheduled);
+  TRACE_EVENT2("gpu", "CommandBufferService:SetScheduled", "this",
+               static_cast<void*>(this), "scheduled", scheduled);
   scheduled_ = scheduled;
 }
 

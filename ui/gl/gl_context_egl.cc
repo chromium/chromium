@@ -383,9 +383,9 @@ bool GLContextEGL::MakeCurrentImpl(GLSurface* surface) {
     return true;
 
   ScopedReleaseCurrent release_current;
-  TRACE_EVENT2("gpu", "GLContextEGL::MakeCurrent",
-               "context", context_,
-               "surface", surface);
+  TRACE_EVENT2("gpu", "GLContextEGL::MakeCurrent", "context",
+               static_cast<void*>(context_), "surface",
+               static_cast<void*>(surface));
 
   if (unbind_fbo_on_makecurrent_ && GetCurrent()) {
     glBindFramebufferEXT(GL_FRAMEBUFFER, 0);

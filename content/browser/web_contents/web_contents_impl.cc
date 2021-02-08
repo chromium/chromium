@@ -566,7 +566,7 @@ void WebContentsImpl::FriendWrapper::RemoveCreatedCallbackForTesting(
 WebContents* WebContents::FromRenderViewHost(RenderViewHost* rvh) {
   OPTIONAL_TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContents::FromRenderViewHost", "render_view_host",
-                        rvh);
+                        static_cast<void*>(rvh));
   if (!rvh)
     return nullptr;
   return rvh->GetDelegate()->GetAsWebContents();
@@ -1092,7 +1092,7 @@ WebContentsImpl* WebContentsImpl::FromFrameTreeNode(
     const FrameTreeNode* frame_tree_node) {
   OPTIONAL_TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::FromFrameTreeNode", "frame_tree_node",
-                        frame_tree_node);
+                        static_cast<const void*>(frame_tree_node));
   return static_cast<WebContentsImpl*>(
       WebContents::FromRenderFrameHost(frame_tree_node->current_frame_host()));
 }
@@ -1126,7 +1126,8 @@ WebContentsImpl* WebContentsImpl::FromOuterFrameTreeNode(
     const FrameTreeNode* frame_tree_node) {
   OPTIONAL_TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::FromOuterFrameTreeNode",
-                        "frame_tree_node", frame_tree_node);
+                        "frame_tree_node",
+                        static_cast<const void*>(frame_tree_node));
   return WebContentsImpl::FromFrameTreeNode(frame_tree_node)
       ->node_.GetInnerWebContentsInFrame(frame_tree_node);
 }
@@ -1138,7 +1139,8 @@ RenderFrameHostManager* WebContentsImpl::GetRenderManagerForTesting() {
 bool WebContentsImpl::OnMessageReceived(RenderViewHostImpl* render_view_host,
                                         const IPC::Message& message) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnMessageReceived",
-                        "render_view_host", render_view_host);
+                        "render_view_host",
+                        static_cast<void*>(render_view_host));
   for (auto& observer : observers_.observer_list()) {
     // TODO(nick, creis): https://crbug.com/758026: Replace all uses of this
     // variant of OnMessageReceived with the version that takes a
@@ -1198,7 +1200,7 @@ WebContentsDelegate* WebContentsImpl::GetDelegate() {
 
 void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SetDelegate", "delegate",
-                        delegate);
+                        static_cast<void*>(delegate));
   // TODO(cbentzel): remove this debugging code?
   if (delegate == delegate_)
     return;
@@ -2152,7 +2154,8 @@ void WebContentsImpl::AttachInnerWebContents(
     RenderFrameHost* render_frame_host,
     bool is_full_page) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::AttachInnerWebContents",
-                        "inner_web_contents", inner_web_contents.get(),
+                        "inner_web_contents",
+                        static_cast<void*>(inner_web_contents.get()),
                         "is_full_page", is_full_page);
   WebContentsImpl* inner_web_contents_impl =
       static_cast<WebContentsImpl*>(inner_web_contents.get());
@@ -2341,7 +2344,8 @@ void WebContentsImpl::DidActivatePortal(
     WebContentsImpl* predecessor_web_contents,
     base::TimeTicks activation_time) {
   TRACE_EVENT2("content", "WebContentsImpl::DidActivatePortal", "predecessor",
-               predecessor_web_contents, "activation_time", activation_time);
+               static_cast<void*>(predecessor_web_contents), "activation_time",
+               activation_time);
   DCHECK(predecessor_web_contents);
   NotifyInsidePortal(false);
   observers_.NotifyObservers(&WebContentsObserver::DidActivatePortal,
@@ -2637,7 +2641,7 @@ void WebContentsImpl::SyncRendererPrefs() {
 void WebContentsImpl::OnCookiesAccessed(NavigationHandle* navigation,
                                         const CookieAccessDetails& details) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnCookiesAccessed",
-                        "navigation_handle", navigation);
+                        "navigation_handle", static_cast<void*>(navigation));
   // Use a variable to select between overloads.
   void (WebContentsObserver::*func)(NavigationHandle*,
                                     const CookieAccessDetails&) =
@@ -2893,7 +2897,8 @@ void WebContentsImpl::Activate() {
 
 void WebContentsImpl::LostCapture(RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::LostCapture",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   if (!RenderViewHostImpl::From(render_widget_host))
     return;
 
@@ -2911,8 +2916,8 @@ void WebContentsImpl::SetTopControlsShownRatio(
     RenderWidgetHostImpl* render_widget_host,
     float ratio) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetTopControlsShownRatio",
-                        "render_widget_host", render_widget_host, "ratio",
-                        ratio);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host), "ratio", ratio);
   if (!delegate_)
     return;
 
@@ -2934,14 +2939,16 @@ void WebContentsImpl::SetTopControlsGestureScrollInProgress(bool in_progress) {
 void WebContentsImpl::RenderWidgetCreated(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderWidgetCreated",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   created_widgets_.insert(render_widget_host);
 }
 
 void WebContentsImpl::RenderWidgetDeleted(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderWidgetDeleted",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   // Note that |is_being_destroyed_| can be true at this point as
   // ~WebContentsImpl() calls RFHM::ClearRFHsPendingShutdown(), which might lead
   // us here.
@@ -2960,8 +2967,9 @@ void WebContentsImpl::RenderWidgetWasResized(
     RenderWidgetHostImpl* render_widget_host,
     bool width_changed) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RenderWidgetWasResized",
-                        "render_widget_host", render_widget_host,
-                        "width_changed", width_changed);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host), "width_changed",
+                        width_changed);
   RenderFrameHostImpl* rfh = GetMainFrame();
   if (!rfh || render_widget_host != rfh->GetRenderWidgetHost())
     return;
@@ -3181,8 +3189,8 @@ void WebContentsImpl::FullscreenStateChanged(
     bool is_fullscreen,
     blink::mojom::FullscreenOptionsPtr options) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::FullscreenStateChanged",
-                        "render_frame_host", rfh, "is_fullscreen",
-                        is_fullscreen);
+                        "render_frame_host", static_cast<void*>(rfh),
+                        "is_fullscreen", is_fullscreen);
   RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(rfh);
 
   if (is_fullscreen) {
@@ -3369,9 +3377,9 @@ void WebContentsImpl::RequestToLockMouse(
     bool user_gesture,
     bool last_unlocked_by_target,
     bool privileged) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RequestToLockMouse",
-                        "render_widget_host", render_widget_host, "privileged",
-                        privileged);
+  OPTIONAL_TRACE_EVENT2(
+      "content", "WebContentsImpl::RequestToLockMouse", "render_widget_host",
+      static_cast<void*>(render_widget_host), "privileged", privileged);
   for (WebContentsImpl* current = this; current;
        current = current->GetOuterWebContents()) {
     if (current->mouse_lock_widget_) {
@@ -3413,7 +3421,8 @@ void WebContentsImpl::RequestToLockMouse(
 
 void WebContentsImpl::LostMouseLock(RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::LostMouseLock",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   CHECK(mouse_lock_widget_);
 
   if (mouse_lock_widget_->delegate()->GetAsWebContents() != this)
@@ -3450,9 +3459,9 @@ RenderWidgetHostImpl* WebContentsImpl::GetMouseLockWidget() {
 bool WebContentsImpl::RequestKeyboardLock(
     RenderWidgetHostImpl* render_widget_host,
     bool esc_key_locked) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RequestKeyboardLock",
-                        "render_widget_host", render_widget_host,
-                        "esc_key_locked", esc_key_locked);
+  OPTIONAL_TRACE_EVENT2(
+      "content", "WebContentsImpl::RequestKeyboardLock", "render_widget_host",
+      static_cast<void*>(render_widget_host), "esc_key_locked", esc_key_locked);
   DCHECK(render_widget_host);
   if (render_widget_host->delegate()->GetAsWebContents() != this) {
     NOTREACHED();
@@ -3475,7 +3484,8 @@ bool WebContentsImpl::RequestKeyboardLock(
 void WebContentsImpl::CancelKeyboardLock(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::CancelKeyboardLockRequest",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   if (!keyboard_lock_widget_ || render_widget_host != keyboard_lock_widget_)
     return;
 
@@ -3928,10 +3938,10 @@ bool WebContentsImpl::CheckMediaAccessPermission(
     RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
-  OPTIONAL_TRACE_EVENT2("content",
-                        "WebContentsImpl::CheckMediaAccessPermission",
-                        "render_frame_host", render_frame_host,
-                        "security_origin", security_origin.Serialize());
+  OPTIONAL_TRACE_EVENT2(
+      "content", "WebContentsImpl::CheckMediaAccessPermission",
+      "render_frame_host", static_cast<void*>(render_frame_host),
+      "security_origin", security_origin.Serialize());
 
   DCHECK(type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
          type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
@@ -4222,7 +4232,8 @@ void WebContentsImpl::ResizeDueToAutoResize(
     RenderWidgetHostImpl* render_widget_host,
     const gfx::Size& new_size) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ResizeDueToAutoResize",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   if (render_widget_host != GetRenderViewHost()->GetWidget())
     return;
 
@@ -4728,23 +4739,24 @@ void WebContentsImpl::SetVisibilityAndNotifyObservers(Visibility visibility) {
 void WebContentsImpl::NotifyWebContentsFocused(
     RenderWidgetHost* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::NotifyWebContentsFocused",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   observers_.NotifyObservers(&WebContentsObserver::OnWebContentsFocused,
                              render_widget_host);
 }
 
 void WebContentsImpl::NotifyWebContentsLostFocus(
     RenderWidgetHost* render_widget_host) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::NotifyWebContentsLostFocus",
-                        "render_widget_host", render_widget_host);
+  OPTIONAL_TRACE_EVENT1(
+      "content", "WebContentsImpl::NotifyWebContentsLostFocus",
+      "render_widget_host", static_cast<void*>(render_widget_host));
   observers_.NotifyObservers(&WebContentsObserver::OnWebContentsLostFocus,
                              render_widget_host);
 }
 
 void WebContentsImpl::SystemDragEnded(RenderWidgetHost* source_rwh) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SystemDragEnded",
-                        "render_widget_host", source_rwh);
+                        "render_widget_host", static_cast<void*>(source_rwh));
   if (source_rwh)
     source_rwh->DragSourceSystemDragEnded();
 }
@@ -5070,7 +5082,7 @@ bool WebContentsImpl::FocusLocationBarByDefault() {
 
 void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidStartNavigation",
-               "navigation_handle", navigation_handle);
+               "navigation_handle", static_cast<void*>(navigation_handle));
   if (navigation_handle->IsInMainFrame())
     favicon_urls_.clear();
 
@@ -5098,7 +5110,7 @@ void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
 void WebContentsImpl::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidRedirectNavigation",
-               "navigation_handle", navigation_handle);
+               "navigation_handle", static_cast<void*>(navigation_handle));
   observers_.NotifyObservers(&WebContentsObserver::DidRedirectNavigation,
                              navigation_handle);
   // Notify accessibility if this is a reload. This has to called on the
@@ -5117,7 +5129,7 @@ void WebContentsImpl::DidRedirectNavigation(
 void WebContentsImpl::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::ReadyToCommitNavigation",
-               "navigation_handle", navigation_handle);
+               "navigation_handle", static_cast<void*>(navigation_handle));
   observers_.NotifyObservers(&WebContentsObserver::ReadyToCommitNavigation,
                              navigation_handle);
   // If any domains are blocked from accessing 3D APIs because they may
@@ -5173,7 +5185,7 @@ void WebContentsImpl::ReadyToCommitNavigation(
 
 void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidFinishNavigation",
-               "navigation_handle", navigation_handle);
+               "navigation_handle", static_cast<void*>(navigation_handle));
 
   observers_.NotifyObservers(&WebContentsObserver::DidFinishNavigation,
                              navigation_handle);
@@ -5379,7 +5391,7 @@ bool WebContentsImpl::CanOverscrollContent() const {
 
 void WebContentsImpl::OnThemeColorChanged(RenderViewHostImpl* source) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnThemeColorChanged",
-                        "render_view_host", source);
+                        "render_view_host", static_cast<void*>(source));
   if (source->did_first_visually_non_empty_paint() &&
       last_sent_theme_color_ != source->theme_color()) {
     observers_.NotifyObservers(&WebContentsObserver::DidChangeThemeColor);
@@ -5860,8 +5872,8 @@ void WebContentsImpl::OnServiceWorkerAccessed(
     const GURL& scope,
     AllowServiceWorkerResult allowed) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnServiceWorkerAccessed",
-                        "navigation_handle", navigation, "scope",
-                        base::trace_event::ValueToString(scope));
+                        "navigation_handle", static_cast<void*>(navigation),
+                        "scope", base::trace_event::ValueToString(scope));
   // Use a variable to select between overloads.
   void (WebContentsObserver::*func)(NavigationHandle*, const GURL&,
                                     AllowServiceWorkerResult) =
@@ -5991,7 +6003,7 @@ void WebContentsImpl::DidFirstVisuallyNonEmptyPaint(
     RenderViewHostImpl* source) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::DidFirstVisuallyNonEmptyPaint",
-                        "render_view_host", source);
+                        "render_view_host", static_cast<void*>(source));
   // TODO(nick): When this is ported to FrameHostMsg_, we should only listen if
   // |source| is the main frame.
   observers_.NotifyObservers(
@@ -6134,7 +6146,8 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
 void WebContentsImpl::NotifyViewSwapped(RenderViewHost* old_view,
                                         RenderViewHost* new_view) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::NotifyViewSwapped",
-                        "old_view", old_view, "new_view", new_view);
+                        "old_view", static_cast<void*>(old_view), "new_view",
+                        static_cast<void*>(new_view));
   DCHECK_NE(old_view, new_view);
   // After sending out a swap notification, we need to send a disconnect
   // notification so that clients that pick up a pointer to |this| can NULL the
@@ -6268,7 +6281,7 @@ const GURL& WebContentsImpl::GetMainFrameLastCommittedURL() {
 
 void WebContentsImpl::RenderFrameCreated(RenderFrameHost* render_frame_host) {
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameCreated",
-               "render_frame_host", render_frame_host);
+               "render_frame_host", static_cast<void*>(render_frame_host));
   observers_.NotifyObservers(&WebContentsObserver::RenderFrameCreated,
                              render_frame_host);
   UpdateAccessibilityModeOnFrame(render_frame_host);
@@ -6723,7 +6736,8 @@ void WebContentsImpl::InnerWebContentsDetached(
 
 void WebContentsImpl::RenderViewCreated(RenderViewHost* render_view_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderViewCreated",
-                        "render_view_host", render_view_host);
+                        "render_view_host",
+                        static_cast<void*>(render_view_host));
   if (delegate_)
     view_->SetOverscrollControllerEnabled(CanOverscrollContent());
 
@@ -6740,7 +6754,7 @@ void WebContentsImpl::RenderViewCreated(RenderViewHost* render_view_host) {
 
 void WebContentsImpl::RenderViewReady(RenderViewHost* rvh) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderViewReady",
-                        "render_view_host", rvh);
+                        "render_view_host", static_cast<void*>(rvh));
   if (rvh != GetRenderViewHost()) {
     // Don't notify the world, since this came from a renderer in the
     // background.
@@ -6772,7 +6786,7 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
                                            base::TerminationStatus status,
                                            int error_code) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RenderViewTerminated",
-                        "render_view_host", rvh, "status",
+                        "render_view_host", static_cast<void*>(rvh), "status",
                         static_cast<int>(status));
 
   // It is possible to get here while the WebContentsImpl is being destroyed,
@@ -6829,7 +6843,7 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
 
 void WebContentsImpl::RenderViewDeleted(RenderViewHost* rvh) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderViewDeleted",
-                        "render_view_host", rvh);
+                        "render_view_host", static_cast<void*>(rvh));
   observers_.NotifyObservers(&WebContentsObserver::RenderViewDeleted, rvh);
 }
 
@@ -6842,7 +6856,7 @@ void WebContentsImpl::ClearTargetURL() {
 
 void WebContentsImpl::Close(RenderViewHost* rvh) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::Close", "render_view_host",
-                        rvh);
+                        static_cast<void*>(rvh));
 #if defined(OS_MAC)
   // The UI may be in an event-tracking loop, such as between the
   // mouse-down and mouse-up in text selection or a button click.
@@ -6911,7 +6925,7 @@ WebContentsImpl::GetActiveTopLevelDocumentsInBrowsingContextGroup(
 void WebContentsImpl::DidStartLoading(FrameTreeNode* frame_tree_node,
                                       bool to_different_document) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidStartLoading",
-                        "frame_tree_node", frame_tree_node);
+                        "frame_tree_node", static_cast<void*>(frame_tree_node));
   LoadingStateChanged(frame_tree_node->IsMainFrame() && to_different_document,
                       nullptr);
 
@@ -6991,7 +7005,7 @@ WebContentsImpl::CreateThrottlesForNavigation(
     NavigationHandle* navigation_handle) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::CreateThrottlesForNavigation",
-                        "navigation", navigation_handle);
+                        "navigation", static_cast<void*>(navigation_handle));
   auto throttles = GetContentClient()->browser()->CreateThrottlesForNavigation(
       navigation_handle);
 
@@ -7023,7 +7037,8 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
       "content",
       "WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation",
       "origin", base::trace_event::ValueToString(origin),
-      "navigation_request_to_exclude", navigation_request_to_exclude);
+      "navigation_request_to_exclude",
+      static_cast<void*>(navigation_request_to_exclude));
   // Note: This function can be made static if we ever need call it without
   // a WebContentsImpl instance, in which case we can use a wrapper to
   // implement the override from NavigatorDelegate.
@@ -7149,10 +7164,10 @@ void WebContentsImpl::UpdateTargetURL(RenderFrameHost* render_frame_host,
 bool WebContentsImpl::ShouldRouteMessageEvent(
     RenderFrameHost* target_rfh,
     SiteInstance* source_site_instance) const {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShouldRouteMessageEvent",
-                        "render_frame_host",
-                        base::trace_event::ToTracedValue(target_rfh),
-                        "source_site_instance", source_site_instance);
+  OPTIONAL_TRACE_EVENT2(
+      "content", "WebContentsImpl::ShouldRouteMessageEvent",
+      "render_frame_host", base::trace_event::ToTracedValue(target_rfh),
+      "source_site_instance", static_cast<void*>(source_site_instance));
   // Allow the message if this WebContents is dedicated to a browser plugin
   // guest.
   // Note: This check means that an embedder could theoretically receive a
@@ -7220,8 +7235,8 @@ void WebContentsImpl::SetAsFocusedWebContentsIfNecessary() {
 void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
                                       SiteInstance* source) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetFocusedFrame",
-                        "frame_tree_node", node, "source_site_instance",
-                        source);
+                        "frame_tree_node", static_cast<void*>(node),
+                        "source_site_instance", static_cast<void*>(source));
   DCHECK(!portal());
   frame_tree_.SetFocusedFrame(node, source);
 
@@ -7358,7 +7373,8 @@ void WebContentsImpl::DidReceiveInputEvent(
     RenderWidgetHostImpl* render_widget_host,
     const blink::WebInputEvent& event) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DidReceiveInputEvent",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
 
   if (!IsUserInteractionInputType(event.GetType()))
     return;
@@ -7388,7 +7404,8 @@ bool WebContentsImpl::ShouldIgnoreInputEvents() {
 void WebContentsImpl::FocusOwningWebContents(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::FocusOwningWebContents",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   RenderWidgetHostImpl* main_frame_widget_host =
       GetMainFrame()->GetRenderWidgetHost();
   RenderWidgetHostImpl* focused_widget =
@@ -7411,7 +7428,8 @@ void WebContentsImpl::RendererUnresponsive(
     RenderWidgetHostImpl* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RendererUnresponsive",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   if (ShouldIgnoreUnresponsiveRenderer())
     return;
 
@@ -7435,7 +7453,8 @@ void WebContentsImpl::RendererUnresponsive(
 void WebContentsImpl::RendererResponsive(
     RenderWidgetHostImpl* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderResponsive",
-                        "render_widget_host", render_widget_host);
+                        "render_widget_host",
+                        static_cast<void*>(render_widget_host));
   observers_.NotifyObservers(&WebContentsObserver::OnRendererResponsive,
                              render_widget_host->GetProcess());
 
@@ -7567,7 +7586,7 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
     RenderViewHost* render_view_host) {
   OPTIONAL_TRACE_EVENT1(
       "content", "WebContentsImpl::CreateRenderWidgetHostViewForRenderManager",
-      "render_view_host", render_view_host);
+      "render_view_host", static_cast<void*>(render_view_host));
   RenderWidgetHostViewBase* rwh_view =
       view_->CreateViewForWidget(render_view_host->GetWidget());
   rwh_view->SetSize(GetSizeForMainFrame());
@@ -7584,7 +7603,7 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
     RenderFrameProxyHost* proxy_host) {
   TRACE_EVENT1("browser,navigation",
                "WebContentsImpl::CreateRenderViewForRenderManager",
-               "render_view_host", render_view_host);
+               "render_view_host", static_cast<void*>(render_view_host));
   auto* rvh_impl = static_cast<RenderViewHostImpl*>(render_view_host);
 
   if (!proxy_host)

@@ -64,7 +64,7 @@ void AudioFifo::Push(const AudioBus* source) {
   CHECK_LE(source_size + frames(), max_frames_);
 
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Push", "this",
-               this, "frames", source_size);
+               static_cast<void*>(this), "frames", source_size);
   // Figure out if wrapping is needed and if so what segment sizes we need
   // when adding the new audio bus content to the FIFO.
   int append_size = 0;
@@ -103,7 +103,7 @@ void AudioFifo::Consume(AudioBus* destination,
   CHECK_LE(frames_to_consume + start_frame, destination->frames());
 
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("audio"), "AudioFifo::Consume", "this",
-               this, "frames", frames_to_consume);
+               static_cast<void*>(this), "frames", frames_to_consume);
 
   // Figure out if wrapping is needed and if so what segment sizes we need
   // when removing audio bus content from the FIFO.

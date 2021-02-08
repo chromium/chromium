@@ -102,8 +102,8 @@ void WebRtcAudioSink::OnData(const media::AudioBus& audio_bus,
   // No thread check: OnData might be called on different threads (but not
   // concurrently).
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("mediastream"),
-               "WebRtcAudioSink::OnData", "this", this, "frames",
-               audio_bus.frames());
+               "WebRtcAudioSink::OnData", "this", static_cast<void*>(this),
+               "frames", audio_bus.frames());
 
   // TODO(crbug.com/1054769): Better to let |fifo_| handle the estimated capture
   // time and let it return a corrected interpolated capture time to

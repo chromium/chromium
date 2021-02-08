@@ -203,7 +203,7 @@ void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
   if (visible) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
         "cc,benchmark", "LayerTreeHostImpl::SetVisible", TRACE_ID_LOCAL(id),
-        "LayerTreeHostImpl", id);
+        "LayerTreeHostImpl", static_cast<void*>(id));
     return;
   }
 

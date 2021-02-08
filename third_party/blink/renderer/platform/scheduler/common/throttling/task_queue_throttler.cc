@@ -76,7 +76,7 @@ void TaskQueueThrottler::IncreaseThrottleRefCount(TaskQueue* task_queue) {
 
   // Task queue is newly throttled.
   TRACE_EVENT1("renderer.scheduler", "TaskQueueThrottler_TaskQueueThrottled",
-               "task_queue", task_queue);
+               "task_queue", static_cast<void*>(task_queue));
 
   if (!allow_throttling_)
     return;
@@ -105,7 +105,7 @@ void TaskQueueThrottler::DecreaseThrottleRefCount(TaskQueue* task_queue) {
     return;
 
   TRACE_EVENT1("renderer.scheduler", "TaskQueueThrottler_TaskQueueUnthrottled",
-               "task_queue", task_queue);
+               "task_queue", static_cast<void*>(task_queue));
 
   MaybeDeleteQueueMetadata(iter);
 

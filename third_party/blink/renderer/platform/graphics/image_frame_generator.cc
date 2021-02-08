@@ -115,7 +115,7 @@ bool ImageFrameGenerator::DecodeAndScale(
   }
 
   TRACE_EVENT1("blink", "ImageFrameGenerator::decodeAndScale", "generator",
-               this);
+               static_cast<void*>(this));
 
   // This implementation does not support arbitrary scaling so check the
   // requested size.

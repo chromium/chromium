@@ -356,10 +356,10 @@ void BrowserContext::FirePushSubscriptionChangeEvent(
 // static
 void BrowserContext::NotifyWillBeDestroyed(BrowserContext* browser_context) {
   TRACE_EVENT1("shutdown", "BrowserContext::NotifyWillBeDestroyed",
-               "browser_context", browser_context);
+               "browser_context", static_cast<void*>(browser_context));
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "shutdown", "BrowserContext::NotifyWillBeDestroyed() called.",
-      browser_context, "browser_context", browser_context);
+      browser_context, "browser_context", static_cast<void*>(browser_context));
   // Make sure NotifyWillBeDestroyed is idempotent.  This helps facilitate the
   // pattern where NotifyWillBeDestroyed is called from *both*
   // ShellBrowserContext and its derived classes (e.g. WebTestBrowserContext).
@@ -459,14 +459,15 @@ void BrowserContext::SetPermissionControllerForTesting(
 BrowserContext::BrowserContext()
     : unique_id_(base::UnguessableToken::Create().ToString()) {
   TRACE_EVENT1("shutdown", "BrowserContext::BrowserContext", "browser_context",
-               this);
+               static_cast<void*>(this));
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("shutdown", "Browser.BrowserContext", this,
-                                    "browser_context", this);
+                                    "browser_context",
+                                    static_cast<void*>(this));
 }
 
 BrowserContext::~BrowserContext() {
   TRACE_EVENT1("shutdown", "BrowserContext::~BrowserContext", "browser_context",
-               this);
+               static_cast<void*>(this));
   DCHECK(!GetUserData(kStoragePartitionMapKeyName))
       << "StoragePartitionMap is not shut down properly";
 
@@ -512,9 +513,9 @@ BrowserContext::~BrowserContext() {
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "shutdown", "BrowserContext::NotifyWillBeDestroyed() called.", this,
-      "browser_context", this);
+      "browser_context", static_cast<void*>(this));
   TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Browser.BrowserContext", this,
-                                  "browser_context", this);
+                                  "browser_context", static_cast<void*>(this));
 }
 
 void BrowserContext::ShutdownStoragePartitions() {

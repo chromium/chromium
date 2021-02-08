@@ -289,9 +289,10 @@ void Surface::Attach(Buffer* buffer) {
 }
 
 void Surface::Attach(Buffer* buffer, gfx::Vector2d offset) {
-  TRACE_EVENT2("exo", "Surface::Attach", "buffer_id",
-               buffer ? buffer->gfx_buffer() : nullptr, "app_id",
-               GetApplicationId(window_.get()));
+  TRACE_EVENT2(
+      "exo", "Surface::Attach", "buffer_id",
+      buffer ? static_cast<const void*>(buffer->gfx_buffer()) : nullptr,
+      "app_id", GetApplicationId(window_.get()));
   has_pending_contents_ = true;
   pending_state_.buffer.Reset(buffer ? buffer->AsWeakPtr()
                                      : base::WeakPtr<Buffer>());
@@ -620,9 +621,10 @@ bool Surface::HasPendingAcquireFence() const {
 
 void Surface::Commit() {
   TRACE_EVENT1("exo", "Surface::Commit", "buffer_id",
-               pending_state_.buffer.buffer()
-                   ? pending_state_.buffer.buffer()->gfx_buffer()
-                   : nullptr);
+               static_cast<const void*>(
+                   pending_state_.buffer.buffer()
+                       ? pending_state_.buffer.buffer()->gfx_buffer()
+                       : nullptr));
 
   for (auto& observer : observers_)
     observer.OnCommit(this);

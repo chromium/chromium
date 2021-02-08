@@ -1261,7 +1261,8 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
   // "Navigation.NavigationURLLoaderImplIOPostTime" histogram as well.
 
   TRACE_EVENT_ASYNC_END2("navigation", "Navigation timeToResponseStarted", this,
-                         "&NavigationURLLoaderImpl", this, "success", true);
+                         "&NavigationURLLoaderImpl", static_cast<void*>(this),
+                         "success", true);
 
   if (is_download)
     download_policy_.RecordHistogram();
@@ -1289,7 +1290,8 @@ void NavigationURLLoaderImpl::NotifyRequestRedirected(
 void NavigationURLLoaderImpl::NotifyRequestFailed(
     const network::URLLoaderCompletionStatus& status) {
   TRACE_EVENT_ASYNC_END2("navigation", "Navigation timeToResponseStarted", this,
-                         "&NavigationURLLoaderImpl", this, "success", false);
+                         "&NavigationURLLoaderImpl", static_cast<void*>(this),
+                         "success", false);
   delegate_->OnRequestFailed(status);
 }
 

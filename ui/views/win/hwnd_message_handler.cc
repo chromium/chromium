@@ -864,7 +864,8 @@ bool HWNDMessageHandler::SetTitle(const base::string16& title) {
 }
 
 void HWNDMessageHandler::SetCursor(HCURSOR cursor) {
-  TRACE_EVENT1("ui,input", "HWNDMessageHandler::SetCursor", "cursor", cursor);
+  TRACE_EVENT1("ui,input", "HWNDMessageHandler::SetCursor", "cursor",
+               static_cast<const void*>(cursor));
   ::SetCursor(cursor);
   current_cursor_ = cursor;
 }

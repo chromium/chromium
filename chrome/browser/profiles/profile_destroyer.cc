@@ -43,7 +43,7 @@ ProfileDestroyer::DestroyerSet* ProfileDestroyer::pending_destroyers_ = nullptr;
 // static
 void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* const profile) {
   TRACE_EVENT2("shutdown", "ProfileDestroyer::DestroyProfileWhenAppropriate",
-               "profile", profile, "is_off_the_record",
+               "profile", static_cast<void*>(profile), "is_off_the_record",
                profile->IsOffTheRecord());
 
   DCHECK(profile);
@@ -73,7 +73,7 @@ void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* const profile) {
   DCHECK(profile);
   DCHECK(profile->IsOffTheRecord());
   TRACE_EVENT2("shutdown", "ProfileDestroyer::DestroyOffTheRecordProfileNow",
-               "profile", profile, "OTRProfileID",
+               "profile", static_cast<void*>(profile), "OTRProfileID",
                profile->GetOTRProfileID().ToString());
   if (ResetPendingDestroyers(profile)) {
     // We want to signal this in debug builds so that we don't lose sight of
@@ -92,7 +92,7 @@ void ProfileDestroyer::DestroyRegularProfileNow(Profile* const profile) {
   DCHECK(profile);
   DCHECK(profile->IsRegularProfile());
   TRACE_EVENT1("shutdown", "ProfileDestroyer::DestroyRegularProfileNow",
-               "profile", profile);
+               "profile", static_cast<void*>(profile));
 
 #if DCHECK_IS_ON()
   // Save the raw pointers of profile and off-the-record profile for DCHECKing
@@ -147,7 +147,7 @@ bool ProfileDestroyer::ResetPendingDestroyers(Profile* const profile) {
 ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
     : num_hosts_(0), profile_(profile) {
   TRACE_EVENT2("shutdown", "ProfileDestroyer::ProfileDestroyer", "profile",
-               profile, "host_count", hosts->size());
+               static_cast<void*>(profile), "host_count", hosts->size());
   if (pending_destroyers_ == NULL)
     pending_destroyers_ = new DestroyerSet;
   pending_destroyers_->insert(this);
@@ -164,7 +164,7 @@ ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
 
 ProfileDestroyer::~ProfileDestroyer() {
   TRACE_EVENT2("shutdown", "ProfileDestroyer::~ProfileDestroyer", "profile",
-               profile_, "remaining_hosts", num_hosts_);
+               static_cast<void*>(profile_), "remaining_hosts", num_hosts_);
 
   // Check again, in case other render hosts were added while we were
   // waiting for the previous ones to go away...
@@ -193,7 +193,8 @@ ProfileDestroyer::~ProfileDestroyer() {
 void ProfileDestroyer::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
   TRACE_EVENT2("shutdown", "ProfileDestroyer::RenderProcessHostDestroyed",
-               "profile", profile_, "render_process_host", host);
+               "profile", static_cast<void*>(profile_), "render_process_host",
+               static_cast<void*>(host));
   observations_.RemoveObservation(host);
   if (!observations_.IsObservingAnySource()) {
     // Delay the destruction one step further in case other observers need to
@@ -248,7 +249,8 @@ ProfileDestroyer::HostSet ProfileDestroyer::GetHostsForProfile(
       continue;
 
     TRACE_EVENT2("shutdown", "ProfileDestroyer::GetHostsForProfile", "profile",
-                 profile_ptr, "render_process_host", render_process_host);
+                 profile_ptr, "render_process_host",
+                 static_cast<void*>(render_process_host));
     hosts.insert(render_process_host);
   }
   return hosts;
