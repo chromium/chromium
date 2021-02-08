@@ -207,6 +207,11 @@ crbug.com/1093466 virtual/portals/http/tests/inspector-protocol/portals/* [ Pass
 crbug.com/1093466 virtual/portals/http/tests/portals/* [ Pass ]
 crbug.com/1093466 virtual/portals/wpt_internal/portals/* [ Pass ]
 
+# These tests require the experimental prerender feature.
+# See https://crbug.com/1126305.
+crbug.com/1126305 wpt_internal/prerender/* [ Skip ]
+crbug.com/1126305 virtual/prerender/wpt_internal/prerender/* [ Pass ]
+
 crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 
 ########## Ref tests can't be rebaselined ##########

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<script>
+
+// TODO(https://crbug.com/1174978): Make sure this page is being prerendered.
+
+// Take a key used for storing a test result in the server.
+const params = new URLSearchParams(location.search);
+const key = params.get('key');
+
+// Attempt to open a window. This should fail in the prerendered page.
+let result = 'opened';
+if (window.open('empty.html', '_blank') === null)
+  result = 'failed to open';
+
+// Push the result to the server.
+writeValueToServer(key, result);
+
+</script>

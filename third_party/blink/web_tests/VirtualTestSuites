@@ -848,5 +848,10 @@
     "prefix": "first-party-sets",
     "bases": ["http/tests/inspector-protocol/network"],
     "args": ["--use-first-party-set=https://firstparty.test,https://cookie.test"]
+  },
+  {
+    "prefix": "prerender",
+    "bases": [ "wpt_internal/prerender" ],
+    "args": [ "--enable-features=Prerender2" ]
   }
 ]
