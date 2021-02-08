@@ -696,8 +696,7 @@ void WebStateImpl::ExecuteJavaScript(const base::string16& javascript,
       executeJavaScript:base::SysUTF16ToNSString(javascript)
       completionHandler:^(id value, NSError* error) {
         if (error) {
-          DLOG(WARNING) << "Script execution of:" << javascript
-                        << "\nfailed with error: "
+          DLOG(WARNING) << "Script execution failed with error: "
                         << base::SysNSStringToUTF16(
                                error.userInfo[NSLocalizedDescriptionKey]);
         }
