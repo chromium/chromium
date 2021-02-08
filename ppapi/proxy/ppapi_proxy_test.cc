@@ -94,10 +94,10 @@ void TearDownRemoteHarness(ProxyTestHarnessBase* harness,
   harness_torn_down->Signal();
 }
 
-void RunTaskOnRemoteHarness(const base::Closure& task,
+void RunTaskOnRemoteHarness(base::OnceClosure task,
                             base::WaitableEvent* task_complete) {
- task.Run();
- task_complete->Signal();
+  std::move(task).Run();
+  task_complete->Signal();
 }
 
 }  // namespace
@@ -587,15 +587,15 @@ void TwoWayTest::TearDown() {
   io_thread_.Stop();
 }
 
-void TwoWayTest::PostTaskOnRemoteHarness(const base::Closure& task) {
+void TwoWayTest::PostTaskOnRemoteHarness(base::OnceClosure task) {
   base::WaitableEvent task_complete(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   plugin_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&RunTaskOnRemoteHarness, task, &task_complete));
+      FROM_HERE,
+      base::BindOnce(&RunTaskOnRemoteHarness, std::move(task), &task_complete));
   task_complete.Wait();
 }
-
 
 }  // namespace proxy
 }  // namespace ppapi

@@ -136,11 +136,8 @@ TEST_F(PPP_Messaging_ProxyTest, SendMessages) {
   handle_message_called.Wait();
   EXPECT_EQ(expected_instance, received_instance);
   EXPECT_EQ(expected_var.type, received_var.type);
-  PostTaskOnRemoteHarness(
-      base::Bind(CompareAndReleaseStringVar,
-                 &plugin(),
-                 received_var,
-                 kTestString));
+  PostTaskOnRemoteHarness(base::BindOnce(CompareAndReleaseStringVar, &plugin(),
+                                         received_var, kTestString));
 }
 
 }  // namespace proxy
