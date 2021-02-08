@@ -37,7 +37,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -55,7 +54,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -76,7 +74,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -95,7 +92,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -113,7 +109,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -131,7 +126,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -149,7 +143,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -167,7 +160,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -185,7 +177,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -203,7 +194,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -222,7 +212,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -240,7 +229,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -258,7 +246,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -276,7 +263,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -298,7 +284,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -316,7 +301,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -334,7 +318,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -352,7 +335,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -370,7 +352,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -388,7 +369,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -406,7 +386,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -424,7 +403,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -443,7 +421,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -461,7 +438,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -479,7 +455,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -497,7 +472,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -515,7 +489,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -533,7 +506,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -551,7 +523,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -569,7 +540,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -587,7 +557,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -605,7 +574,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -623,7 +591,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -641,7 +608,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -659,7 +625,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -677,7 +642,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -695,7 +659,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -713,7 +676,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -731,7 +693,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -749,7 +710,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -767,7 +727,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -785,7 +744,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -803,7 +761,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -822,7 +779,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -840,7 +796,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -858,7 +813,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -876,7 +830,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -894,7 +847,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -912,7 +864,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -930,7 +881,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -948,7 +898,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -966,7 +915,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -984,7 +932,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1002,7 +949,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1020,7 +966,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1038,7 +983,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1056,7 +1000,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1074,7 +1017,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1092,7 +1034,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1110,7 +1051,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1128,7 +1068,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1146,7 +1085,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1164,7 +1102,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1182,7 +1119,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1200,7 +1136,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1218,7 +1153,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1236,7 +1170,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1254,7 +1187,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1272,7 +1204,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1290,7 +1221,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1308,7 +1238,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1326,7 +1255,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1344,7 +1272,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1362,7 +1289,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1380,7 +1306,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1398,7 +1323,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1416,7 +1340,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1434,7 +1357,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1453,7 +1375,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1471,7 +1392,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1496,7 +1416,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1518,7 +1437,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1537,7 +1455,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1561,7 +1478,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1584,7 +1500,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1606,7 +1521,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1625,7 +1539,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1647,7 +1560,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1669,7 +1581,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1691,7 +1602,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -1716,7 +1626,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.11"
             }
           ],
@@ -6939,7 +6848,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -6957,7 +6865,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -6978,7 +6885,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -6997,7 +6903,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7015,7 +6920,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7033,7 +6937,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7051,7 +6954,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7069,7 +6971,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7087,7 +6988,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7105,7 +7005,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7124,7 +7023,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7142,7 +7040,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7160,7 +7057,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7178,7 +7074,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7200,7 +7095,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7218,7 +7112,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7236,7 +7129,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7254,7 +7146,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7272,7 +7163,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7290,7 +7180,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7308,7 +7197,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7326,7 +7214,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7345,7 +7232,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7363,7 +7249,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7381,7 +7266,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7399,7 +7283,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7417,7 +7300,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7435,7 +7317,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7453,7 +7334,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7471,7 +7351,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7489,7 +7368,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7507,7 +7385,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7525,7 +7402,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7543,7 +7419,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7561,7 +7436,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7579,7 +7453,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7597,7 +7470,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7615,7 +7487,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7633,7 +7504,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7651,7 +7521,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7669,7 +7538,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7687,7 +7555,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7705,7 +7572,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7724,7 +7590,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7742,7 +7607,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7760,7 +7624,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7778,7 +7641,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7796,7 +7658,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7814,7 +7675,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7832,7 +7692,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7850,7 +7709,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7868,7 +7726,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7886,7 +7743,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7904,7 +7760,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7922,7 +7777,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7940,7 +7794,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7958,7 +7811,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7976,7 +7828,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -7994,7 +7845,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8012,7 +7862,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8030,7 +7879,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8048,7 +7896,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8066,7 +7913,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8084,7 +7930,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8102,7 +7947,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8120,7 +7964,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8138,7 +7981,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8156,7 +7998,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8174,7 +8015,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8192,7 +8032,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8210,7 +8049,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8228,7 +8066,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8246,7 +8083,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8264,7 +8100,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8282,7 +8117,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8300,7 +8134,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8318,7 +8151,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8336,7 +8168,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8355,7 +8186,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8373,7 +8203,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8398,7 +8227,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8426,7 +8254,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8449,7 +8276,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8468,7 +8294,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8492,7 +8317,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8515,7 +8339,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8538,7 +8361,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8560,7 +8382,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8579,7 +8400,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8601,7 +8421,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8623,7 +8442,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8645,7 +8463,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8671,7 +8488,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8699,7 +8515,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
@@ -8725,7 +8540,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "none",
               "os": "Mac-10.14.6"
             }
           ],
