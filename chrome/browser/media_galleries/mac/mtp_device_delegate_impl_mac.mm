@@ -215,7 +215,7 @@ void MTPDeviceDelegateImplMac::ReadBytes(
     const scoped_refptr<net::IOBuffer>& buf,
     int64_t offset,
     int buf_len,
-    ReadBytesSuccessCallback success_callback,
+    const ReadBytesSuccessCallback& success_callback,
     const ErrorCallback& error_callback) {
   NOTREACHED();
 }
