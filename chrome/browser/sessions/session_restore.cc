@@ -98,6 +98,22 @@ bool HasSingleNewTabPage(Browser* browser) {
 // Pointers to SessionRestoreImpls which are currently restoring the session.
 std::set<SessionRestoreImpl*>* active_session_restorers = nullptr;
 
+// Crash if the function is triggered with a Guest profile to provide the root
+// trigger point for creating the restorer for a Guest profile.
+// TODO(https://crbug.com/1172760): Remove this function when the root cause is
+// found.
+void CheckGuestProfileIssue(Profile* profile) {
+  bool is_guest = profile->IsGuestSession();
+  if (!is_guest)
+    return;
+
+  bool is_otr = profile->IsOffTheRecord();
+  base::debug::Alias(&is_otr);
+
+  CHECK(!is_otr);
+  CHECK(is_otr);
+}
+
 }  // namespace
 
 // SessionRestoreImpl ---------------------------------------------------------
@@ -808,6 +824,9 @@ Browser* SessionRestore::RestoreSession(
       "SessionRestore-Start", false);
 #endif
   DCHECK(profile);
+  // TODO(https://crbug.com/1172760): Update after the root cause is found.
+  CheckGuestProfileIssue(profile);
+
   // Always restore from the original profile (incognito profiles have no
   // session service).
   profile = profile->GetOriginalProfile();
