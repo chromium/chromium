@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedW
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -238,18 +237,19 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void maybeDisplayPrivacySandboxSnackbar() {
-        // Only show the snackbar when the Privacy Sandbox APIs are enabled.
-        if (mPrivacySandboxController != null && PrivacySandboxBridge.isPrivacySandboxFunctional()
-                && PrivacySandboxBridge.isPrivacySandboxEnabled()) {
-            mPrivacySandboxController.showSnackbar();
+        if (mPrivacySandboxController == null
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS)) {
+            return;
         }
+        mPrivacySandboxController.showSnackbar();
     }
 
     @Override
     public void dismissPrivacySandboxSnackbar() {
-        if (mPrivacySandboxController != null
-                && PrivacySandboxBridge.isPrivacySandboxFunctional()) {
-            mPrivacySandboxController.dismissSnackbar();
+        if (mPrivacySandboxController == null
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS)) {
+            return;
         }
+        mPrivacySandboxController.dismissSnackbar();
     }
 }

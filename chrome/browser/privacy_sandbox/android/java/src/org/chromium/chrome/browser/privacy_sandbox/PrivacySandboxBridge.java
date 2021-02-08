@@ -8,10 +8,6 @@ import org.chromium.base.annotations.NativeMethods;
 
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
 public class PrivacySandboxBridge {
-    public static boolean isPrivacySandboxFunctional() {
-        return PrivacySandboxBridgeJni.get().isPrivacySandboxFunctional();
-    }
-
     public static boolean isPrivacySandboxEnabled() {
         return PrivacySandboxBridgeJni.get().isPrivacySandboxEnabled();
     }
@@ -26,7 +22,6 @@ public class PrivacySandboxBridge {
 
     @NativeMethods
     interface Natives {
-        boolean isPrivacySandboxFunctional();
         boolean isPrivacySandboxEnabled();
         boolean isPrivacySandboxManaged();
         void setPrivacySandboxEnabled(boolean enabled);
