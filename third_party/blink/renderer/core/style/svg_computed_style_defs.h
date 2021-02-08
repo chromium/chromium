@@ -32,7 +32,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/style/style_path.h"
+#include "third_party/blink/renderer/core/style/svg_dash_array.h"
 #include "third_party/blink/renderer/core/style/svg_paint.h"
+#include "third_party/blink/renderer/core/style/unzoomed_length.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -41,8 +43,6 @@
 namespace blink {
 
 class StyleSVGResource;
-
-typedef base::RefCountedData<WTF::Vector<Length>> SVGDashArray;
 
 enum EBaselineShift { BS_LENGTH, BS_SUB, BS_SUPER };
 
@@ -135,27 +135,6 @@ class StyleFillData : public RefCounted<StyleFillData> {
  private:
   StyleFillData();
   StyleFillData(const StyleFillData&);
-};
-
-class UnzoomedLength {
-  DISALLOW_NEW();
-
- public:
-  explicit UnzoomedLength(const Length& length) : length_(length) {}
-
-  bool IsZero() const { return length_.IsZero(); }
-
-  bool operator==(const UnzoomedLength& other) const {
-    return length_ == other.length_;
-  }
-  bool operator!=(const UnzoomedLength& other) const {
-    return !operator==(other);
-  }
-
-  const Length& length() const { return length_; }
-
- private:
-  Length length_;
 };
 
 class CORE_EXPORT StyleStrokeData : public RefCounted<StyleStrokeData> {
