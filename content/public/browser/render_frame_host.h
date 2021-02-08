@@ -325,10 +325,15 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // an invariant of the document host.
   virtual CrossOriginIsolationStatus GetCrossOriginIsolationStatus() = 0;
 
-  // Returns the last committed URL of the frame.
+  // Returns the last committed URL of this RenderFrameHost. This will be empty
+  // until the first commit in this RenderFrameHost.
+  //
+  // Note that this does not reflect navigations in other RenderFrameHosts,
+  // frames, or pages within the same WebContents, so it may differ from
+  // NavigationController::GetLastCommittedEntry().
   virtual const GURL& GetLastCommittedURL() = 0;
 
-  // Returns the last committed origin of the frame.
+  // Returns the last committed origin of this RenderFrameHost.
   virtual const url::Origin& GetLastCommittedOrigin() = 0;
 
   // Returns the network isolation key used for subresources from the currently
