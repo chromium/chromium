@@ -27,7 +27,6 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -44,10 +43,6 @@ namespace arc {
 namespace {
 
 base::Optional<double> g_override_default_device_scale_factor;
-
-bool IsCharacterKeyEvent(const ui::KeyEvent* event) {
-  return !IsControlChar(event) && !ui::IsSystemKeyModifier(event->flags());
-}
 
 class ArcWindowDelegateImpl : public ArcImeService::ArcWindowDelegate {
  public:
@@ -491,7 +486,7 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
     }
   }
 
-  if (IsCharacterKeyEvent(&event)) {
+  if (!IsControlChar(&event) && !ui::IsSystemKeyModifier(event.flags())) {
     has_composition_text_ = false;
     ime_bridge_->SendInsertText(base::string16(1, event.GetText()));
   }
@@ -665,27 +660,10 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
 }
 
 void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
-  if (!ShouldEnableKeyEventForwarding())
-    return;
-
-  if (receiver_->HasCallback()) {
+  if (ShouldEnableKeyEventForwarding() && receiver_->HasCallback()) {
     receiver_->DispatchKeyEventPostIME(event);
     event->SetHandled();
-    return;
   }
-
-  // Do not forward the key event from virtual keyboard if the password text
-  // input is focused. By the special logic in
-  // ui::InputMethodChromeOS::DispatchKeyEvent, both of InsertChar() and
-  // DispatchKeyEventPostIME() are called for a key event from virtual keyboard
-  // on a password text field. The below logic stops a key event propagation
-  // through DispatchKeyEventPostIME() to prevent from inputting two characters.
-  const bool is_password = ime_type_ == ui::TEXT_INPUT_TYPE_PASSWORD;
-  const bool from_vk =
-      event->properties() && (event->properties()->find(ui::kPropertyFromVK) !=
-                              event->properties()->end());
-  if (is_password && from_vk && IsCharacterKeyEvent(event))
-    event->SetHandled();
 }
 
 // static
