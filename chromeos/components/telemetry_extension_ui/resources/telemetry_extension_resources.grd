@@ -22,7 +22,7 @@
         <include name="IDR_TELEMETRY_EXTENSION_SYSTEM_EVENTS_SERVICE_MOJO_LITE_JS" file="${root_gen_dir}/chromeos/components/telemetry_extension_ui/mojom/system_events_service.mojom-lite.js" resource_path= "system_events_service.mojom-lite.js" use_base_dir="false" type="BINDATA" />
 
         <!-- Untrusted app host contents. -->
-        <include name="IDR_TELEMETRY_EXTENSION_DPSL_JS" file="dpsl.js" flattenhtml="true" type="BINDATA" />
+        <include name="IDR_TELEMETRY_EXTENSION_DPSL_JS" file="dpsl/dpsl.js" flattenhtml="true" type="BINDATA" />
       </if>
     </includes>
   </release>
