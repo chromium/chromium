@@ -23985,7 +23985,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'type': 'string',
         'description': '''The valid version of Terms of Service derived from Google3 cl that introduced new Terms version.'''
       },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:89-'],
       'tags': [],
       'features': {
         'dynamic_refresh': True,
