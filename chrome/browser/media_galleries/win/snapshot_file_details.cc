@@ -17,24 +17,32 @@ SnapshotRequestInfo::SnapshotRequestInfo(
     const base::FilePath& snapshot_file_path,
     const MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback&
         success_callback,
-    MTPDeviceAsyncDelegate::ErrorCallback error_callback)
+    const MTPDeviceAsyncDelegate::ErrorCallback& error_callback)
     : device_file_path(device_file_path),
       snapshot_file_path(snapshot_file_path),
       success_callback(success_callback),
-      error_callback(std::move(error_callback)) {}
+      error_callback(error_callback) {
+}
 
-SnapshotRequestInfo::SnapshotRequestInfo(SnapshotRequestInfo&& other) = default;
+SnapshotRequestInfo::SnapshotRequestInfo(const SnapshotRequestInfo& other) =
+    default;
 
-SnapshotRequestInfo::~SnapshotRequestInfo() = default;
+SnapshotRequestInfo::~SnapshotRequestInfo() {
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //                       SnapshotFileDetails                                 //
 ///////////////////////////////////////////////////////////////////////////////
 
-SnapshotFileDetails::SnapshotFileDetails(SnapshotRequestInfo request_info)
-    : request_info_(std::move(request_info)),
+SnapshotFileDetails::SnapshotFileDetails(
+    const SnapshotRequestInfo& request_info)
+    : request_info_(request_info),
       optimal_transfer_size_(0),
-      bytes_written_(0) {}
+      bytes_written_(0) {
+}
+
+SnapshotFileDetails::SnapshotFileDetails(const SnapshotFileDetails& other) =
+    default;
 
 SnapshotFileDetails::~SnapshotFileDetails() {
   file_stream_.Reset();
