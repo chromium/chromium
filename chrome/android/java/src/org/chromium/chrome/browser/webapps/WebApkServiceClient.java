@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -18,7 +19,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.metrics.WebApkUma;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -143,11 +143,11 @@ public class WebApkServiceClient {
 
     /** Finishes and removes the WebAPK's task. */
     @TargetApi(Build.VERSION_CODES.M)
-    public void finishAndRemoveTaskSdk23(final ChromeActivity activity, WebApkExtras webApkExtras) {
+    public void finishAndRemoveTaskSdk23(final Activity activity, WebApkExtras webApkExtras) {
         final ApiUseCallback connectionCallback = new ApiUseCallback() {
             @Override
             public void useApi(IWebApkApi api) throws RemoteException {
-                if (activity.isActivityFinishingOrDestroyed()) return;
+                if (activity.isFinishing() || activity.isDestroyed()) return;
 
                 if (!api.finishAndRemoveTaskSdk23()) {
                     // If |activity| is not the root of the task, hopefully the activities below
