@@ -19,6 +19,7 @@
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
+#include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
@@ -95,6 +96,7 @@ class ActionDelegate {
   virtual void WaitForDom(
       base::TimeDelta max_wait_time,
       bool allow_interrupt,
+      WaitForDomObserver* observer,
       base::RepeatingCallback<
           void(BatchElementChecker*,
                base::OnceCallback<void(const ClientStatus&)>)> check_elements,

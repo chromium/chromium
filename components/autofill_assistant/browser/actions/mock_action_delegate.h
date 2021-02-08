@@ -50,6 +50,7 @@ class MockActionDelegate : public ActionDelegate {
   void WaitForDom(
       base::TimeDelta max_wait_time,
       bool allow_interrupt,
+      WaitForDomObserver* observer,
       base::RepeatingCallback<
           void(BatchElementChecker*,
                base::OnceCallback<void(const ClientStatus&)>)> check_elements,

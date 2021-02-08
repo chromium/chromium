@@ -54,6 +54,7 @@ void PromptAction::InternalProcessAction(ProcessActionCallback callback) {
       proto_.prompt().allow_interrupt()) {
     delegate_->WaitForDom(
         base::TimeDelta::Max(), proto_.prompt().allow_interrupt(),
+        /* observer= */ nullptr,
         base::BindRepeating(&PromptAction::RegisterChecks,
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&PromptAction::OnWaitForElementTimed,

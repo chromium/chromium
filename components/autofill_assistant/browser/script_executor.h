@@ -25,6 +25,7 @@
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/top_padding.h"
+#include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
@@ -118,6 +119,7 @@ class ScriptExecutor : public ActionDelegate,
   void WaitForDom(
       base::TimeDelta max_wait_time,
       bool allow_interrupt,
+      WaitForDomObserver* observer,
       base::RepeatingCallback<
           void(BatchElementChecker*,
                base::OnceCallback<void(const ClientStatus&)>)> check_elements,
@@ -302,6 +304,7 @@ class ScriptExecutor : public ActionDelegate,
         ScriptExecutorDelegate* delegate,
         base::TimeDelta max_wait_time,
         bool allow_interrupt,
+        WaitForDomObserver* observer,
         base::RepeatingCallback<
             void(BatchElementChecker*,
                  base::OnceCallback<void(const ClientStatus&)>)> check_elements,
@@ -356,6 +359,7 @@ class ScriptExecutor : public ActionDelegate,
     ScriptExecutorDelegate* delegate_;
     const base::TimeDelta max_wait_time_;
     const bool allow_interrupt_;
+    WaitForDomObserver* observer_;
     base::RepeatingCallback<void(BatchElementChecker*,
                                  base::OnceCallback<void(const ClientStatus&)>)>
         check_elements_;

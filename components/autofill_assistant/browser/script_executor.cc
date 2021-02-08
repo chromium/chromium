@@ -291,7 +291,7 @@ void ScriptExecutor::ShortWaitForElement(
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
       this, delegate_, delegate_->GetSettings().short_wait_for_element_deadline,
-      /* allow_interrupt= */ false,
+      /* allow_interrupt= */ false, /* observer= */ nullptr,
       base::BindRepeating(&ScriptExecutor::CheckElementMatches,
                           weak_ptr_factory_.GetWeakPtr(), selector),
       base::BindOnce(&ScriptExecutor::OnShortWaitForElement,
@@ -305,12 +305,13 @@ void ScriptExecutor::ShortWaitForElement(
 void ScriptExecutor::WaitForDom(
     base::TimeDelta max_wait_time,
     bool allow_interrupt,
+    WaitForDomObserver* observer,
     base::RepeatingCallback<void(BatchElementChecker*,
                                  base::OnceCallback<void(const ClientStatus&)>)>
         check_elements,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   current_action_data_.wait_for_dom = std::make_unique<WaitForDomOperation>(
-      this, delegate_, max_wait_time, allow_interrupt, check_elements,
+      this, delegate_, max_wait_time, allow_interrupt, observer, check_elements,
       base::BindOnce(&ScriptExecutor::OnWaitForElementVisibleWithInterrupts,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   current_action_data_.wait_for_dom->SetTimeoutWarningCallback(
@@ -1155,6 +1156,7 @@ ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
     ScriptExecutorDelegate* delegate,
     base::TimeDelta max_wait_time,
     bool allow_interrupt,
+    WaitForDomObserver* observer,
     base::RepeatingCallback<void(BatchElementChecker*,
                                  base::OnceCallback<void(const ClientStatus&)>)>
         check_elements,
@@ -1163,6 +1165,7 @@ ScriptExecutor::WaitForDomOperation::WaitForDomOperation(
       delegate_(delegate),
       max_wait_time_(max_wait_time),
       allow_interrupt_(allow_interrupt),
+      observer_(observer),
       check_elements_(std::move(check_elements)),
       callback_(std::move(callback)),
       timeout_warning_delay_(
@@ -1340,6 +1343,9 @@ void ScriptExecutor::WaitForDomOperation::OnAllChecksDone(
 void ScriptExecutor::WaitForDomOperation::RunInterrupt(
     const std::string& path) {
   batch_element_checker_.reset();
+  if (observer_)
+    observer_->OnInterruptStarted();
+
   SavePreInterruptState();
   ran_interrupts_.insert(path);
   interrupt_executor_ = std::make_unique<ScriptExecutor>(
@@ -1363,6 +1369,9 @@ void ScriptExecutor::WaitForDomOperation::OnInterruptDone(
     RunCallbackWithResult(ClientStatus(INTERRUPT_FAILED), &result);
     return;
   }
+  if (observer_)
+    observer_->OnInterruptFinished();
+
   RestoreStatusMessage();
   RestorePreInterruptScroll();
 

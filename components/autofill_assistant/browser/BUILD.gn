@@ -219,6 +219,7 @@ static_library("browser") {
     "viewport_mode.h",
     "wait_for_document_operation.cc",
     "wait_for_document_operation.h",
+    "wait_for_dom_observer.h",
     "web/check_on_top_worker.cc",
     "web/check_on_top_worker.h",
     "web/element.cc",

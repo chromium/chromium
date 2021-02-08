@@ -73,6 +73,7 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
       proto_.wait_for_dom().wait_condition());
   delegate_->WaitForDom(
       max_wait_time, proto_.wait_for_dom().allow_interrupt(),
+      /* observer= */ nullptr,
       base::BindRepeating(&WaitForDomAction::CheckElements,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(

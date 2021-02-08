@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/element_precondition.h"
+#include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 
@@ -20,6 +21,7 @@ namespace autofill_assistant {
 
 // Action to show generic UI in the sheet.
 class ShowGenericUiAction : public Action,
+                            public WaitForDomObserver,
                             public autofill::PersonalDataManagerObserver {
  public:
   explicit ShowGenericUiAction(ActionDelegate* delegate,
@@ -28,6 +30,10 @@ class ShowGenericUiAction : public Action,
 
   ShowGenericUiAction(const ShowGenericUiAction&) = delete;
   ShowGenericUiAction& operator=(const ShowGenericUiAction&) = delete;
+
+  // Overrides WaitForDomObserver:
+  void OnInterruptStarted() override;
+  void OnInterruptFinished() override;
 
  private:
   // Overrides Action:
@@ -49,7 +55,8 @@ class ShowGenericUiAction : public Action,
   void OnEndActionInteraction(const ClientStatus& status);
   void EndAction(const ClientStatus& status);
 
-  void OnViewInflationFinished(const ClientStatus& status);
+  void OnViewInflationFinished(bool first_inflation,
+                               const ClientStatus& status);
   void OnNavigationEnded();
 
   // From autofill::PersonalDataManagerObserver.
