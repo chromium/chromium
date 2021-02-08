@@ -45,11 +45,7 @@ class ProfileAttributesStorage
   ProfileAttributesStorage& operator=(const ProfileAttributesStorage&) = delete;
   virtual ~ProfileAttributesStorage();
 
-  // If the |supervised_user_id| is non-empty, the profile will be marked to be
-  // omitted from the avatar-menu list on desktop versions. This is used while a
-  // supervised user is in the process of being registered with the server. Use
-  // ProfileAttributesEntry::SetIsOmitted() to clear the flag when the profile
-  // is ready to be shown in the menu.
+  // Adds a new profile at |profile_path| to the attributes storage.
   virtual void AddProfile(const base::FilePath& profile_path,
                           const base::string16& name,
                           const std::string& gaia_id,

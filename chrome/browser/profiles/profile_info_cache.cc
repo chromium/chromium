@@ -143,14 +143,6 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
                                          size_t icon_index,
                                          const std::string& supervised_user_id,
                                          const AccountId& account_id) {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && !defined(OS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Silently ignore legacy supervised user profiles.
-  if (!supervised_user_id.empty() &&
-      supervised_user_id != supervised_users::kChildAccountSUID) {
-    return;
-  }
-#endif
   std::string key = CacheKeyFromProfilePath(profile_path);
   DictionaryPrefUpdate update(prefs_, prefs::kProfileInfoCache);
   base::DictionaryValue* cache = update.Get();
@@ -169,8 +161,6 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
   info->SetBoolean(ProfileAttributesEntry::kBackgroundAppsKey, false);
   info->SetString(ProfileAttributesEntry::kSupervisedUserId,
                   supervised_user_id);
-  info->SetBoolean(ProfileAttributesEntry::kIsOmittedFromProfileListKey,
-                   !supervised_user_id.empty());
   info->SetBoolean(ProfileAttributesEntry::kProfileIsEphemeral, false);
   info->SetBoolean(ProfileAttributesEntry::kProfileIsGuest, false);
   // Either the user has provided a name manually on purpose, and in this case

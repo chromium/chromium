@@ -198,7 +198,6 @@ TEST_F(ProfileInfoCacheTest, AddProfiles) {
 #endif
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     EXPECT_EQ(i == 3, entry->IsSupervised());
-    EXPECT_EQ(i == 3, entry->IsOmitted());
 #else
     EXPECT_FALSE(entry->IsSupervised());
     EXPECT_FALSE(entry->IsOmitted());

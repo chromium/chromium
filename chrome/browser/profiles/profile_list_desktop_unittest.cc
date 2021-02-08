@@ -76,9 +76,14 @@ class ProfileListDesktopTest : public testing::Test {
 
   void AddOmittedProfile(const std::string& name) {
     ProfileAttributesStorage* storage = manager()->profile_attributes_storage();
-    storage->AddProfile(manager()->profiles_dir().AppendASCII(name),
-                        ASCIIToUTF16(name), std::string(), base::string16(),
-                        false, 0, "TEST_ID", EmptyAccountId());
+    base::FilePath profile_path = manager()->profiles_dir().AppendASCII(name);
+    storage->AddProfile(profile_path, ASCIIToUTF16(name), std::string(),
+                        base::string16(), false, 0, std::string(),
+                        EmptyAccountId());
+    ProfileAttributesEntry* entry =
+        storage->GetProfileAttributesWithPath(profile_path);
+    ASSERT_NE(entry, nullptr);
+    entry->SetIsOmitted(true);
   }
 
   int change_count() const { return mock_observer_->change_count(); }

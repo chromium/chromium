@@ -212,8 +212,6 @@ class ProfileAttributesEntry {
   // TODO(crbug/1155729): Check it is not used anymore for deprecated supervised
   // users and remove it.
   static const char kSupervisedUserId[];
-  // DEPRECATED: IsOmitted pref was moved to in memory only, see `is_omitted_`.
-  static const char kIsOmittedFromProfileListKey[];
   static const char kAvatarIconKey[];
   static const char kBackgroundAppsKey[];
   static const char kProfileIsEphemeral[];
@@ -304,6 +302,12 @@ class ProfileAttributesEntry {
   // Clears value stored for |key|. Returns if the original data is different
   // from the new data, i.e. whether actual update is done.
   bool ClearValue(const char* key);
+
+  // Migrate/cleanup deprecated keys in profile attributes. Over time, long
+  // deprecated keys should be removed as new ones are added, but this call
+  // should never go away (even if it becomes an empty call for some time) as it
+  // should remain *the* place to drop deprecated profile attributes keys at.
+  void MigrateObsoleteProfileAttributes();
 
   // These members are an implementation detail meant to smooth the migration
   // of the ProfileInfoCache to the ProfileAttributesStorage interface. They can

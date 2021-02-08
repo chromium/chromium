@@ -70,6 +70,9 @@ const char kAccountCategories[] = "account_categories";
 // Local state pref to keep track of the next available profile bucket.
 const char kNextMetricsBucketIndex[] = "profile.metrics.next_bucket_index";
 
+// Deprecated 2/2021.
+const char kIsOmittedFromProfileListKey[] = "is_omitted_from_profile_list";
+
 constexpr int kIntegerNotSet = -1;
 
 // Persisted in prefs.
@@ -105,8 +108,6 @@ bool ShouldShowGenericColoredAvatar(size_t avatar_icon_index) {
 }  // namespace
 
 const char ProfileAttributesEntry::kSupervisedUserId[] = "managed_user_id";
-const char ProfileAttributesEntry::kIsOmittedFromProfileListKey[] =
-    "is_omitted_from_profile_list";
 const char ProfileAttributesEntry::kAvatarIconKey[] = "avatar_icon";
 const char ProfileAttributesEntry::kBackgroundAppsKey[] = "background_apps";
 const char ProfileAttributesEntry::kProfileIsEphemeral[] = "is_ephemeral";
@@ -146,6 +147,8 @@ void ProfileAttributesEntry::Initialize(ProfileInfoCache* cache,
 
   DCHECK(profile_info_cache_->GetUserDataDir() == profile_path_.DirName());
   storage_key_ = profile_path_.BaseName().MaybeAsASCII();
+
+  MigrateObsoleteProfileAttributes();
 
   const base::Value* entry_data = GetEntryData();
   if (entry_data) {
@@ -376,7 +379,7 @@ bool ProfileAttributesEntry::IsChild() const {
 }
 
 bool ProfileAttributesEntry::IsOmitted() const {
-  return is_omitted_ || GetBool(kIsOmittedFromProfileListKey);
+  return is_omitted_;
 }
 
 bool ProfileAttributesEntry::IsSigninRequired() const {
@@ -512,8 +515,6 @@ void ProfileAttributesEntry::SetActiveTimeToNow() {
 
 void ProfileAttributesEntry::SetIsOmitted(bool is_omitted) {
   bool old_value = IsOmitted();
-  // Set the in-memory bool as the only source of truth.
-  ClearValue(kIsOmittedFromProfileListKey);
   is_omitted_ = is_omitted;
 
   // Send a notification only if the value has really changed.
@@ -947,4 +948,10 @@ bool ProfileAttributesEntry::ClearValue(const char* key) {
   new_data.RemoveKey(key);
   SetEntryData(std::move(new_data));
   return true;
+}
+
+// This method should be periodically pruned of year+ old migrations.
+void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
+  // Added 2/2021.
+  ClearValue(kIsOmittedFromProfileListKey);
 }

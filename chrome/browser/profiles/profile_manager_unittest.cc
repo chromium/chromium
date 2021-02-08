@@ -505,7 +505,8 @@ TEST_F(ProfileManagerTest, CreateProfilesAsync) {
   content::RunAllTasksUntilIdle();
 }
 
-TEST_F(ProfileManagerTest, AddProfileToStorageCheckOmitted) {
+// Checks that the supervised profiles no longer marked as omitted on creation.
+TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
@@ -522,7 +523,7 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckOmitted) {
   // RegisterTestingProfile adds the profile to the cache and takes ownership.
   profile_manager->RegisterTestingProfile(std::move(supervised_profile), true);
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
-  EXPECT_TRUE(storage.GetAllProfilesAttributesSortedByName()[0]->IsOmitted());
+  EXPECT_FALSE(storage.GetAllProfilesAttributesSortedByName()[0]->IsOmitted());
 #endif
 
   const base::FilePath nonsupervised_path =
@@ -537,11 +538,11 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckOmitted) {
 #else
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 #endif
-  ProfileAttributesEntry* entry = nullptr;
+  ProfileAttributesEntry* entry;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   entry = storage.GetProfileAttributesWithPath(supervised_path);
   ASSERT_NE(entry, nullptr);
-  EXPECT_TRUE(entry->IsOmitted());
+  EXPECT_FALSE(entry->IsOmitted());
 #endif
 
   entry = storage.GetProfileAttributesWithPath(nonsupervised_path);
