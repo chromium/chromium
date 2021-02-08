@@ -5,8 +5,8 @@
 #include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer_bridge.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 
@@ -17,7 +17,8 @@
 @interface CrashReporterBreadcrumbObserver () {
   // Map associating the observed BreadcrumbManager with the corresponding
   // observer bridge instances.
-  std::map<BreadcrumbManager*, std::unique_ptr<BreadcrumbManagerObserverBridge>>
+  std::map<breadcrumbs::BreadcrumbManager*,
+           std::unique_ptr<BreadcrumbManagerObserverBridge>>
       _breadcrumbManagerObservers;
 
   // Map associating the observed BreadcrumbManagerKeyedServices with the
@@ -52,7 +53,8 @@
   return self;
 }
 
-- (void)observeBreadcrumbManager:(BreadcrumbManager*)breadcrumbManager {
+- (void)observeBreadcrumbManager:
+    (breadcrumbs::BreadcrumbManager*)breadcrumbManager {
   DCHECK(!_breadcrumbManagerObservers[breadcrumbManager]);
 
   _breadcrumbManagerObservers[breadcrumbManager] =
@@ -60,7 +62,8 @@
                                                         self);
 }
 
-- (void)stopObservingBreadcrumbManager:(BreadcrumbManager*)breadcrumbManager {
+- (void)stopObservingBreadcrumbManager:
+    (breadcrumbs::BreadcrumbManager*)breadcrumbManager {
   _breadcrumbManagerObservers.erase(breadcrumbManager);
 }
 
@@ -101,7 +104,7 @@
 
 #pragma mark - BreadcrumbManagerObserving protocol
 
-- (void)breadcrumbManager:(BreadcrumbManager*)manager
+- (void)breadcrumbManager:(breadcrumbs::BreadcrumbManager*)manager
               didAddEvent:(NSString*)event {
   NSString* eventWithSeperator = [NSString stringWithFormat:@"%@\n", event];
   [_breadcrumbs insertString:eventWithSeperator atIndex:0];

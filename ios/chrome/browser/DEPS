@@ -4,6 +4,7 @@ include_rules = [
   "+components/autofill/ios/browser",
   "+components/autofill/ios/form_util",
   "+components/bookmarks",
+  "+components/breadcrumbs/core",
   "+components/browser_sync",
   "+components/browsing_data/core",
   "+components/captive_portal",

@@ -4,6 +4,8 @@
 
 source_set("core") {
   sources = [
+    "breadcrumb_manager.cc",
+    "breadcrumb_manager.h",
     "breadcrumb_manager_observer.h",
     "crash_reporter_breadcrumb_constants.h",
   ]

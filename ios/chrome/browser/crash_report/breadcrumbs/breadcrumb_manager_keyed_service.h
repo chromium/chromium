@@ -11,10 +11,10 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 
-class BreadcrumbManager;
 class BreadcrumbPersistentStorageManager;
 
 namespace breadcrumbs {
+class BreadcrumbManager;
 class BreadcrumbManagerObserver;
 }
 
@@ -69,7 +69,7 @@ class BreadcrumbManagerKeyedService : public KeyedService {
   std::string browsing_mode_;
 
   // The associated BreadcrumbManager to store events added with |AddEvent|.
-  std::unique_ptr<BreadcrumbManager> breadcrumb_manager_;
+  std::unique_ptr<breadcrumbs::BreadcrumbManager> breadcrumb_manager_;
 
   // The current BreadcrumbPersistentStorageManager persisting events logged to
   // |breadcrumb_manager_|, set by StartPersisting. May be null.

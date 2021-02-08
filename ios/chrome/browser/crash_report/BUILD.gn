@@ -63,6 +63,7 @@ source_set("crash_report_internal") {
   deps = [
     ":crash_report",
     "//base",
+    "//components/breadcrumbs/core",
     "//components/crash/core/common:crash_key_lib",
     "//components/infobars/core",
     "//components/previous_session_info",

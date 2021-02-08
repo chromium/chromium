@@ -188,6 +188,7 @@ source_set("browser_impl") {
     ":browser",
     "//base",
     "//base/allocator:buildflags",
+    "//components/breadcrumbs/core",
     "//components/component_updater",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",

@@ -9,9 +9,9 @@
 
 #include "base/observer_list_types.h"
 
-class BreadcrumbManager;
-
 namespace breadcrumbs {
+
+class BreadcrumbManager;
 
 class BreadcrumbManagerObserver : public base::CheckedObserver {
  public:

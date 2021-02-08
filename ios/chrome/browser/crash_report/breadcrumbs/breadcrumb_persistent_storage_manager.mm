@@ -16,7 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_util.h"
 
@@ -177,7 +177,7 @@ void BreadcrumbPersistentStorageManager::GetStoredEvents(
 }
 
 void BreadcrumbPersistentStorageManager::MonitorBreadcrumbManager(
-    BreadcrumbManager* manager) {
+    breadcrumbs::BreadcrumbManager* manager) {
   manager->AddObserver(this);
 }
 
@@ -187,7 +187,7 @@ void BreadcrumbPersistentStorageManager::MonitorBreadcrumbManagerService(
 }
 
 void BreadcrumbPersistentStorageManager::StopMonitoringBreadcrumbManager(
-    BreadcrumbManager* manager) {
+    breadcrumbs::BreadcrumbManager* manager) {
   manager->RemoveObserver(this);
 }
 
@@ -269,8 +269,9 @@ void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
   pending_breadcrumbs_.clear();
 }
 
-void BreadcrumbPersistentStorageManager::EventAdded(BreadcrumbManager* manager,
-                                                    const std::string& event) {
+void BreadcrumbPersistentStorageManager::EventAdded(
+    breadcrumbs::BreadcrumbManager* manager,
+    const std::string& event) {
   WriteEvent(event);
 }
 
@@ -313,6 +314,6 @@ void BreadcrumbPersistentStorageManager::WriteEvents() {
 }
 
 void BreadcrumbPersistentStorageManager::OldEventsRemoved(
-    BreadcrumbManager* manager) {
+    breadcrumbs::BreadcrumbManager* manager) {
   RewriteAllExistingBreadcrumbs();
 }

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 
+namespace breadcrumbs {
 namespace {
 
 // The maximum number of breadcrumbs which are expected to be useful to store.
@@ -18,8 +19,7 @@ namespace {
 // stored breadcrumbs will exceed this value. This value should be close to the
 // upper limit of useful events. (Most events + timestamp breadcrumbs are
 // currently longer than 10 characters.)
-constexpr unsigned long kMaxUsefulBreadcrumbEvents =
-    breadcrumbs::kMaxDataLength / 10;
+constexpr unsigned long kMaxUsefulBreadcrumbEvents = kMaxDataLength / 10;
 
 // The minimum number of event buckets to keep, even if they are expired.
 const int kMinEventsBuckets = 2;
@@ -136,12 +136,12 @@ void BreadcrumbManager::DropOldEvents() {
   }
 }
 
-void BreadcrumbManager::AddObserver(
-    breadcrumbs::BreadcrumbManagerObserver* observer) {
+void BreadcrumbManager::AddObserver(BreadcrumbManagerObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void BreadcrumbManager::RemoveObserver(
-    breadcrumbs::BreadcrumbManagerObserver* observer) {
+void BreadcrumbManager::RemoveObserver(BreadcrumbManagerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
+
+}  // namespace breadcrumbs

@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer_bridge.h"
 
 #import "base/strings/sys_string_conversions.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -30,7 +30,7 @@ class BreadcrumbManagerObserverBridgeTest : public PlatformTest {
   web::WebTaskEnvironment task_env_{
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BreadcrumbManager breadcrumb_manager_;
+  breadcrumbs::BreadcrumbManager breadcrumb_manager_;
   id mock_observer_;
   std::unique_ptr<BreadcrumbManagerObserverBridge> observer_bridge_;
 };

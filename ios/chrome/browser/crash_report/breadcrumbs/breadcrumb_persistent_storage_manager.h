@@ -25,6 +25,10 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace breadcrumbs {
+class BreadcrumbManager;
+}  // namespace breadcrumbs
+
 class BreadcrumbManagerKeyedService;
 
 // Stores breadcrumb events to and retireves them from a file on disk.
@@ -42,13 +46,13 @@ class BreadcrumbPersistentStorageManager
 
   // Starts observing |manager| for events. Existing events will be persisted
   // immediately.
-  void MonitorBreadcrumbManager(BreadcrumbManager* manager);
+  void MonitorBreadcrumbManager(breadcrumbs::BreadcrumbManager* manager);
   // Starts observing |service| for events. Existing events will be persisted
   // immediately.
   void MonitorBreadcrumbManagerService(BreadcrumbManagerKeyedService* service);
 
   // Stops observing |manager|.
-  void StopMonitoringBreadcrumbManager(BreadcrumbManager* manager);
+  void StopMonitoringBreadcrumbManager(breadcrumbs::BreadcrumbManager* manager);
   // Stops observing |service|.
   void StopMonitoringBreadcrumbManagerService(
       BreadcrumbManagerKeyedService* service);
@@ -74,9 +78,9 @@ class BreadcrumbPersistentStorageManager
   void WriteEvent(const std::string& event);
 
   // BreadcrumbManagerObserver
-  void EventAdded(BreadcrumbManager* manager,
+  void EventAdded(breadcrumbs::BreadcrumbManager* manager,
                   const std::string& event) override;
-  void OldEventsRemoved(BreadcrumbManager* manager) override;
+  void OldEventsRemoved(breadcrumbs::BreadcrumbManager* manager) override;
 
   // Individual beadcrumbs which have not yet been written to disk.
   std::string pending_breadcrumbs_;

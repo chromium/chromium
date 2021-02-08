@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -14,7 +14,7 @@
 #endif
 
 BreadcrumbManagerObserverBridge::BreadcrumbManagerObserverBridge(
-    BreadcrumbManager* breadcrumb_manager,
+    breadcrumbs::BreadcrumbManager* breadcrumb_manager,
     id<BreadcrumbManagerObserving> observer)
     : breadcrumb_manager_(breadcrumb_manager), observer_(observer) {
   DCHECK(observer_);
@@ -39,8 +39,9 @@ BreadcrumbManagerObserverBridge::~BreadcrumbManagerObserverBridge() {
   }
 }
 
-void BreadcrumbManagerObserverBridge::EventAdded(BreadcrumbManager* manager,
-                                                 const std::string& event) {
+void BreadcrumbManagerObserverBridge::EventAdded(
+    breadcrumbs::BreadcrumbManager* manager,
+    const std::string& event) {
   if ([observer_ respondsToSelector:@selector(breadcrumbManager:
                                                     didAddEvent:)]) {
     [observer_ breadcrumbManager:manager
@@ -49,7 +50,7 @@ void BreadcrumbManagerObserverBridge::EventAdded(BreadcrumbManager* manager,
 }
 
 void BreadcrumbManagerObserverBridge::OldEventsRemoved(
-    BreadcrumbManager* manager) {
+    breadcrumbs::BreadcrumbManager* manager) {
   if ([observer_
           respondsToSelector:@selector(breadcrumbManagerDidRemoveOldEvents:)]) {
     [observer_ breadcrumbManagerDidRemoveOldEvents:manager];

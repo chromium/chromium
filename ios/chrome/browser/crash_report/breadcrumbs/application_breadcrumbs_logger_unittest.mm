@@ -10,7 +10,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,7 +36,7 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
             &breadcrumb_manager_)) {}
 
   base::test::TaskEnvironment task_environment_;
-  BreadcrumbManager breadcrumb_manager_;
+  breadcrumbs::BreadcrumbManager breadcrumb_manager_;
   std::unique_ptr<ApplicationBreadcrumbsLogger> logger_;
 };
 

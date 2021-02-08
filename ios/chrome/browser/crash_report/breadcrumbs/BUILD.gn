@@ -33,8 +33,6 @@ source_set("breadcrumbs") {
   ]
 
   sources = [
-    "breadcrumb_manager.cc",
-    "breadcrumb_manager.h",
     "breadcrumb_manager_browser_agent.h",
     "breadcrumb_manager_browser_agent.mm",
     "breadcrumb_manager_keyed_service.cc",
@@ -66,6 +64,7 @@ source_set("application_breadcrumbs_logger") {
     ":breadcrumbs",
     ":generate_not_user_triggered_actions",
     "//base",
+    "//components/breadcrumbs/core",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
   ]

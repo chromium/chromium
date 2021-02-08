@@ -5,7 +5,7 @@
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_keyed_service.h"
 
 #include "base/strings/stringprintf.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 #include "ios/web/public/browser_state.h"
 
@@ -65,6 +65,6 @@ BreadcrumbManagerKeyedService::BreadcrumbManagerKeyedService(
     // Set "I" for Incognito (Chrome branded OffTheRecord implementation) and
     // empty string for Normal browsing mode.
     : browsing_mode_(browser_state->IsOffTheRecord() ? "I " : ""),
-      breadcrumb_manager_(std::make_unique<BreadcrumbManager>()) {}
+      breadcrumb_manager_(std::make_unique<breadcrumbs::BreadcrumbManager>()) {}
 
 BreadcrumbManagerKeyedService::~BreadcrumbManagerKeyedService() = default;
