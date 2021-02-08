@@ -179,7 +179,7 @@ TEST_F(LocalFrameViewTest, UpdateLifecyclePhasesForPrintingDetachedFrame) {
   SetBodyInnerHTML("<iframe style='display: none'></iframe>");
   SetChildFrameHTML("A");
 
-  ChildDocument().SetPrinting(Document::kPrinting);
+  ChildFrame().StartPrinting(FloatSize(200, 200), FloatSize(200, 200), 1);
   ChildDocument().View()->UpdateLifecyclePhasesForPrinting();
 
   // The following checks that the detached frame has been walked for PrePaint.
@@ -189,6 +189,34 @@ TEST_F(LocalFrameViewTest, UpdateLifecyclePhasesForPrintingDetachedFrame) {
             ChildDocument().Lifecycle().GetState());
   auto* child_layout_view = ChildDocument().GetLayoutView();
   EXPECT_TRUE(child_layout_view->FirstFragment().PaintProperties());
+}
+
+TEST_F(LocalFrameViewTest, PrintFrameUpdateAllLifecyclePhases) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("A");
+
+  ChildFrame().StartPrinting(FloatSize(200, 200), FloatSize(200, 200), 1);
+  ChildDocument().View()->UpdateLifecyclePhasesForPrinting();
+
+  EXPECT_EQ(DocumentLifecycle::kCompositingAssignmentsClean,
+            GetDocument().Lifecycle().GetState());
+  EXPECT_EQ(DocumentLifecycle::kCompositingAssignmentsClean,
+            ChildDocument().Lifecycle().GetState());
+
+  // In case UpdateAllLifecyclePhases is called during child frame printing for
+  // any reason, we should not paint.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(DocumentLifecycle::kCompositingAssignmentsClean,
+            GetDocument().Lifecycle().GetState());
+  EXPECT_EQ(DocumentLifecycle::kCompositingAssignmentsClean,
+            ChildDocument().Lifecycle().GetState());
+
+  ChildFrame().EndPrinting();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(DocumentLifecycle::kPaintClean,
+            GetDocument().Lifecycle().GetState());
+  EXPECT_EQ(DocumentLifecycle::kPaintClean,
+            ChildDocument().Lifecycle().GetState());
 }
 
 TEST_F(LocalFrameViewTest, CanHaveScrollbarsIfScrollingAttrEqualsNoChanged) {
