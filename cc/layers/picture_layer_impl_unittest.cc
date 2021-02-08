@@ -2779,7 +2779,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTilingDuringAnimation) {
 
   // When animating with a maxmium animation scale factor that is so large
   // that the layer grows larger than the viewport at this scale, and where
-  // the intial source scale is < 1, a new high-res tiling should get created
+  // the initial source scale is < 1, a new high-res tiling should get created
   // at a source scale that the rasterized layer will not be larger than the
   // viewport.
   contents_scale = 0.1f;
@@ -2807,6 +2807,101 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTilingDuringAnimation) {
                                             page_scale, maximum_animation_scale,
                                             affected_by_invalid_scale);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 10.f);
+
+  // Once we stop animating, a new high-res tiling should be created.
+  contents_scale = 11.f;
+
+  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 11.f);
+}
+
+TEST_F(LegacySWPictureLayerImplTest, HighResTilingDuringAnimationWideLayer) {
+  gfx::Size viewport_size(2048, 2048);
+  host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(viewport_size));
+
+  gfx::Size layer_bounds(1000000, 32);
+  SetupDefaultTrees(layer_bounds);
+
+  float contents_scale = 1.f;
+  float device_scale = 1.f;
+  float page_scale = 1.f;
+  float maximum_animation_scale = 1.f;
+  bool affected_by_invalid_scale = false;
+
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.f);
+
+  // Starting an animation should cause tiling resolution to get set to the
+  // maximum animation scale factor.
+  maximum_animation_scale = 3.f;
+  contents_scale = 2.f;
+
+  SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
+                                            page_scale, maximum_animation_scale,
+                                            affected_by_invalid_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 3.f);
+
+  // Further changes to scale during the animation should not cause a new
+  // high-res tiling to get created.
+  contents_scale = 4.f;
+  maximum_animation_scale = 5.f;
+
+  SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
+                                            page_scale, maximum_animation_scale,
+                                            affected_by_invalid_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 3.f);
+
+  // Once we stop animating, a new high-res tiling should be created.
+  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 4.f);
+
+  // When animating with a maxmium animation scale factor that is so large
+  // that the layer grows larger than the viewport at this scale, a new high-res
+  // tiling should get created at a source scale that the rasterized visible
+  // rect will not be larger than the viewport, not at its maximum scale.
+  contents_scale = 2.f;
+  maximum_animation_scale = 11.f;
+
+  SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
+                                            page_scale, maximum_animation_scale,
+                                            affected_by_invalid_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 8.f);
+
+  // Once we stop animating, a new high-res tiling should be created.
+  contents_scale = 11.f;
+
+  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 11.f);
+
+  // When animating with a maxmium animation scale factor that is so large
+  // that the layer grows larger than the viewport at this scale, and where
+  // the initial source scale is < 1, a new high-res tiling should get created
+  // at a source scale that the rasterized visible rect will not be larger than
+  // the viewport.
+  contents_scale = 0.1f;
+  maximum_animation_scale = 11.f;
+
+  SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
+                                            page_scale, maximum_animation_scale,
+                                            affected_by_invalid_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 8.f);
+
+  // Once we stop animating, a new high-res tiling should be created.
+  contents_scale = 12.f;
+
+  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 12.f);
+
+  // When animating toward a smaller scale, but that is still so large that the
+  // layer grows larger than the viewport at this scale, a new high-res tiling
+  // should get created at a source scale that the rasterized visible rect is
+  // not larger than the viewport.
+  contents_scale = 11.f;
+  maximum_animation_scale = 11.f;
+
+  SetContentsAndAnimationScalesOnBothLayers(contents_scale, device_scale,
+                                            page_scale, maximum_animation_scale,
+                                            affected_by_invalid_scale);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 8.f);
 
   // Once we stop animating, a new high-res tiling should be created.
   contents_scale = 11.f;

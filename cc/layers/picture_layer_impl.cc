@@ -1535,10 +1535,18 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   DCHECK(max_viewport_dimension);
   // Use square to compensate for viewports with different aspect ratios.
   float squared_viewport_area = max_viewport_dimension * max_viewport_dimension;
-  gfx::Size bounds_at_maximum_scale =
-      gfx::ScaleToCeiledSize(raster_source_->GetSize(), raster_contents_scale_);
-  float maximum_area = static_cast<float>(bounds_at_maximum_scale.width()) *
-                       bounds_at_maximum_scale.height();
+
+  gfx::SizeF raster_source_size(raster_source_->GetSize());
+  // Clamp raster_source_size by max_viewport_dimension to avoid too small
+  // scale for huge layers for which the far from viewport area won't be
+  // rasterized and out of viewport area is rasterized in low priority.
+  gfx::SizeF max_visible_bounds(
+      std::min(raster_source_size.width(), max_viewport_dimension),
+      std::min(raster_source_size.height(), max_viewport_dimension));
+  gfx::SizeF max_visible_bounds_at_max_scale =
+      gfx::ScaleSize(max_visible_bounds, raster_contents_scale_);
+  float maximum_area = max_visible_bounds_at_max_scale.width() *
+                       max_visible_bounds_at_max_scale.height();
   // Clamp the scale to make the rastered content not larger than the viewport.
   if (UNLIKELY(maximum_area > squared_viewport_area))
     raster_contents_scale_ /= std::sqrt(maximum_area / squared_viewport_area);
