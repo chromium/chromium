@@ -119,7 +119,9 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
   if (install_result.error == dlcservice::kErrorNone) {
     soda_binary_installed_ = true;
     SetSodaBinaryPath(base::FilePath(install_result.root_path));
-    NotifyOnSodaInstalled();
+    if (language_installed_) {
+      NotifyOnSodaInstalled();
+    }
   } else {
     soda_binary_installed_ = false;
     soda_progress_ = 0.0;
