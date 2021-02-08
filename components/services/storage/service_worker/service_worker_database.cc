@@ -248,8 +248,7 @@ ServiceWorkerDatabase::Status LevelDBStatusToServiceWorkerDBStatus(
 }
 
 int64_t AccumulateResourceSizeInBytes(
-    const std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>&
-        resources) {
+    const std::vector<mojom::ServiceWorkerResourceRecordPtr>& resources) {
   int64_t total_size_bytes = 0;
   for (const auto& resource : resources)
     total_size_bytes += resource->size_bytes;
@@ -385,9 +384,8 @@ ServiceWorkerDatabase::GetOriginsWithRegistrations(
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetRegistrationsForOrigin(
     const url::Origin& origin,
-    std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr>*
-        registrations,
-    std::vector<std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>>*
+    std::vector<mojom::ServiceWorkerRegistrationDataPtr>* registrations,
+    std::vector<std::vector<mojom::ServiceWorkerResourceRecordPtr>>*
         opt_resources_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(registrations->empty());
@@ -416,7 +414,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetRegistrationsForOrigin(
       if (!RemovePrefix(itr->key().ToString(), prefix, nullptr))
         break;
 
-      storage::mojom::ServiceWorkerRegistrationDataPtr registration;
+      mojom::ServiceWorkerRegistrationDataPtr registration;
       status = ParseRegistrationData(itr->value().ToString(), &registration);
       if (status != Status::kOk) {
         registrations->clear();
@@ -440,7 +438,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetRegistrationsForOrigin(
   // database.
   if (opt_resources_list) {
     for (const auto& registration : *registrations) {
-      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+      std::vector<mojom::ServiceWorkerResourceRecordPtr> resources;
       // NOTE: ReadResourceRecords already calls HandleReadResult() on its own,
       // so to avoid double-counting the UMA, don't call it again after this.
       status = ReadResourceRecords(*registration, &resources);
@@ -483,7 +481,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetUsageForOrigin(
       if (!RemovePrefix(itr->key().ToString(), prefix, nullptr))
         break;
 
-      storage::mojom::ServiceWorkerRegistrationDataPtr registration;
+      mojom::ServiceWorkerRegistrationDataPtr registration;
       status = ParseRegistrationData(itr->value().ToString(), &registration);
       if (status != Status::kOk)
         break;
@@ -502,8 +500,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetUsageForOrigin(
 }
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
-    std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr>*
-        registrations) {
+    std::vector<mojom::ServiceWorkerRegistrationDataPtr>* registrations) {
   static base::debug::CrashKeyString* crash_key =
       base::debug::AllocateCrashKeyString("num_registrations",
                                           base::debug::CrashKeySize::Size32);
@@ -535,7 +532,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
                         service_worker_internals::kRegKeyPrefix, nullptr))
         break;
 
-      storage::mojom::ServiceWorkerRegistrationDataPtr registration;
+      mojom::ServiceWorkerRegistrationDataPtr registration;
       status = ParseRegistrationData(itr->value().ToString(), &registration);
       if (status != Status::kOk) {
         registrations->clear();
@@ -552,8 +549,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistration(
     int64_t registration_id,
     const GURL& origin,
-    storage::mojom::ServiceWorkerRegistrationDataPtr* registration,
-    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>* resources) {
+    mojom::ServiceWorkerRegistrationDataPtr* registration,
+    std::vector<mojom::ServiceWorkerResourceRecordPtr>* resources) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(registration);
   DCHECK(resources);
@@ -615,9 +612,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationOrigin(
 }
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
-    const storage::mojom::ServiceWorkerRegistrationData& registration,
-    const std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>&
-        resources,
+    const mojom::ServiceWorkerRegistrationData& registration,
+    const std::vector<mojom::ServiceWorkerResourceRecordPtr>& resources,
     DeletedVersion* deleted_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(deleted_version);
@@ -666,7 +662,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
   }
 
   // Retrieve a previous version to sweep purgeable resources.
-  storage::mojom::ServiceWorkerRegistrationDataPtr old_registration;
+  mojom::ServiceWorkerRegistrationDataPtr old_registration;
   status = ReadRegistrationData(registration.registration_id,
                                 url::Origin::Create(registration.scope),
                                 &old_registration);
@@ -710,7 +706,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateVersionToActive(
   if (!origin.is_valid())
     return Status::kErrorFailed;
 
-  storage::mojom::ServiceWorkerRegistrationDataPtr registration;
+  mojom::ServiceWorkerRegistrationDataPtr registration;
   status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
                                 &registration);
   if (status != Status::kOk)
@@ -736,7 +732,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateLastCheckTime(
   if (!origin.is_valid())
     return Status::kErrorFailed;
 
-  storage::mojom::ServiceWorkerRegistrationDataPtr registration;
+  mojom::ServiceWorkerRegistrationDataPtr registration;
   status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
                                 &registration);
   if (status != Status::kOk)
@@ -762,7 +758,7 @@ ServiceWorkerDatabase::UpdateNavigationPreloadEnabled(int64_t registration_id,
   if (!origin.is_valid())
     return Status::kErrorFailed;
 
-  storage::mojom::ServiceWorkerRegistrationDataPtr registration;
+  mojom::ServiceWorkerRegistrationDataPtr registration;
   status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
                                 &registration);
   if (status != Status::kOk)
@@ -788,7 +784,7 @@ ServiceWorkerDatabase::UpdateNavigationPreloadHeader(int64_t registration_id,
   if (!origin.is_valid())
     return Status::kErrorFailed;
 
-  storage::mojom::ServiceWorkerRegistrationDataPtr registration;
+  mojom::ServiceWorkerRegistrationDataPtr registration;
   status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
                                 &registration);
   if (status != Status::kOk)
@@ -821,7 +817,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteRegistration(
   // Remove |origin| from unique origins if a registration specified by
   // |registration_id| is the only one for |origin|.
   // TODO(nhiroki): Check the uniqueness by more efficient way.
-  std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;
+  std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   status = GetRegistrationsForOrigin(url::Origin::Create(origin),
                                      &registrations, nullptr);
   if (status != Status::kOk)
@@ -990,7 +986,7 @@ ServiceWorkerDatabase::ReadUserKeysAndDataByKeyPrefix(
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteUserData(
     int64_t registration_id,
     const url::Origin& origin,
-    const std::vector<storage::mojom::ServiceWorkerUserDataPtr>& user_data) {
+    const std::vector<mojom::ServiceWorkerUserDataPtr>& user_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
   DCHECK(!user_data.empty());
@@ -1002,7 +998,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteUserData(
     return status;
 
   // There should be the registration specified by |registration_id|.
-  storage::mojom::ServiceWorkerRegistrationDataPtr registration;
+  mojom::ServiceWorkerRegistrationDataPtr registration;
   status = ReadRegistrationData(registration_id, origin, &registration);
   if (status != Status::kOk)
     return status;
@@ -1116,7 +1112,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::RewriteDB() {
 ServiceWorkerDatabase::Status
 ServiceWorkerDatabase::ReadUserDataForAllRegistrations(
     const std::string& user_data_name,
-    std::vector<storage::mojom::ServiceWorkerUserDataPtr>* user_data) {
+    std::vector<mojom::ServiceWorkerUserDataPtr>* user_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(user_data->empty());
 
@@ -1158,7 +1154,7 @@ ServiceWorkerDatabase::ReadUserDataForAllRegistrations(
         user_data->clear();
         break;
       }
-      user_data->emplace_back(storage::mojom::ServiceWorkerUserData::New(
+      user_data->emplace_back(mojom::ServiceWorkerUserData::New(
           registration_id, user_data_name, value));
     }
   }
@@ -1170,7 +1166,7 @@ ServiceWorkerDatabase::ReadUserDataForAllRegistrations(
 ServiceWorkerDatabase::Status
 ServiceWorkerDatabase::ReadUserDataForAllRegistrationsByKeyPrefix(
     const std::string& user_data_name_prefix,
-    std::vector<storage::mojom::ServiceWorkerUserDataPtr>* user_data) {
+    std::vector<mojom::ServiceWorkerUserDataPtr>* user_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(user_data->empty());
 
@@ -1227,8 +1223,8 @@ ServiceWorkerDatabase::ReadUserDataForAllRegistrationsByKeyPrefix(
         user_data->clear();
         break;
       }
-      user_data->push_back(storage::mojom::ServiceWorkerUserData::New(
-          registration_id, parts[0], value));
+      user_data->push_back(
+          mojom::ServiceWorkerUserData::New(registration_id, parts[0], value));
     }
   }
 
@@ -1368,7 +1364,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteAllDataForOrigins(
     // Delete from the unique origin list.
     batch.Delete(CreateUniqueOriginKey(origin));
 
-    std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;
+    std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
     status = GetRegistrationsForOrigin(url::Origin::Create(origin),
                                        &registrations, nullptr);
     if (status != Status::kOk)
@@ -1512,7 +1508,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadNextAvailableId(
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationData(
     int64_t registration_id,
     const url::Origin& origin,
-    storage::mojom::ServiceWorkerRegistrationDataPtr* registration) {
+    mojom::ServiceWorkerRegistrationDataPtr* registration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(registration);
 
@@ -1533,7 +1529,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationData(
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     const std::string& serialized,
-    storage::mojom::ServiceWorkerRegistrationDataPtr* out) {
+    mojom::ServiceWorkerRegistrationDataPtr* out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
   ServiceWorkerRegistrationData data;
@@ -1561,7 +1557,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   }
 
   // Convert ServiceWorkerRegistrationData to RegistrationData.
-  *out = storage::mojom::ServiceWorkerRegistrationData::New();
+  *out = mojom::ServiceWorkerRegistrationData::New();
   (*out)->registration_id = data.registration_id();
   (*out)->scope = scope_url;
   (*out)->script = script_url;
@@ -1657,7 +1653,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
 }
 
 void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
-    const storage::mojom::ServiceWorkerRegistrationData& registration,
+    const mojom::ServiceWorkerRegistrationData& registration,
     leveldb::WriteBatch* batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(batch);
@@ -1739,8 +1735,8 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
 }
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadResourceRecords(
-    const storage::mojom::ServiceWorkerRegistrationData& registration,
-    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>* resources) {
+    const mojom::ServiceWorkerRegistrationData& registration,
+    std::vector<mojom::ServiceWorkerResourceRecordPtr>* resources) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(resources->empty());
 
@@ -1761,7 +1757,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadResourceRecords(
       if (!RemovePrefix(itr->key().ToString(), prefix, nullptr))
         break;
 
-      storage::mojom::ServiceWorkerResourceRecordPtr resource;
+      mojom::ServiceWorkerResourceRecordPtr resource;
       status = ParseResourceRecord(itr->value().ToString(), &resource);
       if (status != Status::kOk) {
         resources->clear();
@@ -1789,7 +1785,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadResourceRecords(
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseResourceRecord(
     const std::string& serialized,
-    storage::mojom::ServiceWorkerResourceRecordPtr* out) {
+    mojom::ServiceWorkerResourceRecordPtr* out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
   ServiceWorkerResourceRecord record;
@@ -1807,7 +1803,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseResourceRecord(
   }
 
   // Convert ServiceWorkerResourceRecord to ResourceRecord.
-  *out = storage::mojom::ServiceWorkerResourceRecord::New();
+  *out = mojom::ServiceWorkerResourceRecord::New();
   (*out)->resource_id = record.resource_id();
   (*out)->url = url;
   (*out)->size_bytes = record.size_bytes();
@@ -1815,7 +1811,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseResourceRecord(
 }
 
 void ServiceWorkerDatabase::WriteResourceRecordInBatch(
-    const storage::mojom::ServiceWorkerResourceRecord& resource,
+    const mojom::ServiceWorkerResourceRecord& resource,
     int64_t version_id,
     leveldb::WriteBatch* batch) {
   DCHECK(batch);

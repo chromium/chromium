@@ -18,24 +18,23 @@ namespace storage {
 
 // A test implementation of ServiceWorkerDataPipeStateNotifier.
 class FakeServiceWorkerDataPipeStateNotifier
-    : public storage::mojom::ServiceWorkerDataPipeStateNotifier {
+    : public mojom::ServiceWorkerDataPipeStateNotifier {
  public:
   FakeServiceWorkerDataPipeStateNotifier();
   ~FakeServiceWorkerDataPipeStateNotifier() override;
 
-  mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
+  mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier>
   BindNewPipeAndPassRemote();
 
   int32_t WaitUntilComplete();
 
  private:
-  // storage::mojom::ServiceWorkerDataPipeStateNotifier implementations:
+  // mojom::ServiceWorkerDataPipeStateNotifier implementations:
   void OnComplete(int32_t status) override;
 
   base::Optional<int32_t> complete_status_;
   base::OnceClosure on_complete_callback_;
-  mojo::Receiver<storage::mojom::ServiceWorkerDataPipeStateNotifier> receiver_{
-      this};
+  mojo::Receiver<mojom::ServiceWorkerDataPipeStateNotifier> receiver_{this};
 };
 
 namespace test {

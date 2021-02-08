@@ -54,17 +54,15 @@ FORWARD_DECLARE_TEST(ServiceWorkerStorageTest, DisabledStorage);
 // restarted.
 class ServiceWorkerStorage {
  public:
-  using OriginState = storage::mojom::ServiceWorkerStorageOriginState;
-  using RegistrationList =
-      std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr>;
-  using ResourceList =
-      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>;
+  using OriginState = mojom::ServiceWorkerStorageOriginState;
+  using RegistrationList = std::vector<mojom::ServiceWorkerRegistrationDataPtr>;
+  using ResourceList = std::vector<mojom::ServiceWorkerResourceRecordPtr>;
   using GetRegisteredOriginsCallback =
       base::OnceCallback<void(const std::vector<url::Origin>& origins)>;
-  using FindRegistrationDataCallback = base::OnceCallback<void(
-      storage::mojom::ServiceWorkerRegistrationDataPtr data,
-      std::unique_ptr<ResourceList> resources,
-      ServiceWorkerDatabase::Status status)>;
+  using FindRegistrationDataCallback =
+      base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
+                              std::unique_ptr<ResourceList> resources,
+                              ServiceWorkerDatabase::Status status)>;
   using GetRegistrationsDataCallback = base::OnceCallback<void(
       ServiceWorkerDatabase::Status status,
       std::unique_ptr<RegistrationList> registrations,
@@ -93,12 +91,12 @@ class ServiceWorkerStorage {
   using DatabaseStatusCallback =
       base::OnceCallback<void(ServiceWorkerDatabase::Status status)>;
   using GetUserDataInDBCallback =
-      storage::mojom::ServiceWorkerStorageControl::GetUserDataCallback;
-  using GetUserKeysAndDataInDBCallback = storage::mojom::
-      ServiceWorkerStorageControl::GetUserKeysAndDataByKeyPrefixCallback;
-  using GetUserDataForAllRegistrationsInDBCallback = base::OnceCallback<void(
-      ServiceWorkerDatabase::Status,
-      std::vector<storage::mojom::ServiceWorkerUserDataPtr>)>;
+      mojom::ServiceWorkerStorageControl::GetUserDataCallback;
+  using GetUserKeysAndDataInDBCallback =
+      mojom::ServiceWorkerStorageControl::GetUserKeysAndDataByKeyPrefixCallback;
+  using GetUserDataForAllRegistrationsInDBCallback =
+      base::OnceCallback<void(ServiceWorkerDatabase::Status,
+                              std::vector<mojom::ServiceWorkerUserDataPtr>)>;
 
   ~ServiceWorkerStorage();
 
@@ -137,7 +135,7 @@ class ServiceWorkerStorage {
 
   // Stores |registration_data| and |resources| on persistent storage.
   void StoreRegistrationData(
-      storage::mojom::ServiceWorkerRegistrationDataPtr registration_data,
+      mojom::ServiceWorkerRegistrationDataPtr registration_data,
       ResourceList resources,
       StoreRegistrationDataCallback callback);
 
@@ -177,15 +175,13 @@ class ServiceWorkerStorage {
   // associated with the disabled disk cache if the storage is disabled.
   void CreateResourceReader(
       int64_t resource_id,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader>
-          receiver);
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver);
   void CreateResourceWriter(
       int64_t resource_id,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter>
-          receiver);
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceWriter> receiver);
   void CreateResourceMetadataWriter(
       int64_t resource_id,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceMetadataWriter>
           receiver);
 
   // Adds |resource_id| to the set of resources that are in the disk cache
@@ -218,11 +214,10 @@ class ServiceWorkerStorage {
                                      GetUserKeysAndDataInDBCallback callback);
 
   // Stored data is deleted when the associated registraton is deleted.
-  void StoreUserData(
-      int64_t registration_id,
-      const url::Origin& origin,
-      std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
-      DatabaseStatusCallback callback);
+  void StoreUserData(int64_t registration_id,
+                     const url::Origin& origin,
+                     std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
+                     DatabaseStatusCallback callback);
   // Responds OK if all are successfully deleted or not found in the database.
   void ClearUserData(int64_t registration_id,
                      const std::vector<std::string>& keys,
@@ -278,7 +273,7 @@ class ServiceWorkerStorage {
 
   // Applies |policy_updates|.
   void ApplyPolicyUpdates(
-      const std::vector<storage::mojom::StoragePolicyUpdatePtr>& policy_updates,
+      const std::vector<mojom::StoragePolicyUpdatePtr>& policy_updates,
       DatabaseStatusCallback callback);
 
   void LazyInitializeForTest();
@@ -338,10 +333,10 @@ class ServiceWorkerStorage {
       OriginState origin_state,
       const ServiceWorkerDatabase::DeletedVersion& deleted_version_data,
       ServiceWorkerDatabase::Status status)>;
-  using FindInDBCallback = base::OnceCallback<void(
-      storage::mojom::ServiceWorkerRegistrationDataPtr data,
-      std::unique_ptr<ResourceList> resources,
-      ServiceWorkerDatabase::Status status)>;
+  using FindInDBCallback =
+      base::OnceCallback<void(mojom::ServiceWorkerRegistrationDataPtr data,
+                              std::unique_ptr<ResourceList> resources,
+                              ServiceWorkerDatabase::Status status)>;
   using GetResourcesCallback =
       base::OnceCallback<void(const std::vector<int64_t>& resource_ids,
                               ServiceWorkerDatabase::Status status)>;
@@ -427,7 +422,7 @@ class ServiceWorkerStorage {
   static void WriteRegistrationInDB(
       ServiceWorkerDatabase* database,
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      storage::mojom::ServiceWorkerRegistrationDataPtr registration,
+      mojom::ServiceWorkerRegistrationDataPtr registration,
       ResourceList resources,
       WriteRegistrationCallback callback);
   static void FindForClientUrlInDB(

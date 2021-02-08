@@ -346,7 +346,7 @@ void ServiceWorkerStorage::GetAllRegistrations(
 }
 
 void ServiceWorkerStorage::StoreRegistrationData(
-    storage::mojom::ServiceWorkerRegistrationDataPtr registration_data,
+    mojom::ServiceWorkerRegistrationDataPtr registration_data,
     ResourceList resources,
     StoreRegistrationDataCallback callback) {
   switch (state_) {
@@ -507,7 +507,7 @@ void ServiceWorkerStorage::DeleteRegistration(
     case STORAGE_STATE_DISABLED:
       std::move(callback).Run(
           ServiceWorkerDatabase::Status::kErrorDisabled,
-          storage::mojom::ServiceWorkerStorageOriginState::kKeep,
+          mojom::ServiceWorkerStorageOriginState::kKeep,
           /*deleted_version_id=*/blink::mojom::kInvalidServiceWorkerVersionId,
           /*deleted_resources_size=*/0,
           /*newly_purgeable_resources=*/std::vector<int64_t>());
@@ -564,8 +564,7 @@ void ServiceWorkerStorage::PerformStorageCleanup(base::OnceClosure callback) {
 
 void ServiceWorkerStorage::CreateResourceReader(
     int64_t resource_id,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader>
-        receiver) {
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver) {
   DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -591,8 +590,7 @@ void ServiceWorkerStorage::CreateResourceReader(
 
 void ServiceWorkerStorage::CreateResourceWriter(
     int64_t resource_id,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter>
-        receiver) {
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceWriter> receiver) {
   DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -618,7 +616,7 @@ void ServiceWorkerStorage::CreateResourceWriter(
 
 void ServiceWorkerStorage::CreateResourceMetadataWriter(
     int64_t resource_id,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceMetadataWriter>
         receiver) {
   DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
   switch (state_) {
@@ -704,7 +702,7 @@ void ServiceWorkerStorage::DoomUncommittedResources(
 void ServiceWorkerStorage::StoreUserData(
     int64_t registration_id,
     const url::Origin& origin,
-    std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
+    std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
     DatabaseStatusCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -970,10 +968,9 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrations(
   switch (state_) {
     case STORAGE_STATE_DISABLED:
       RunSoon(FROM_HERE,
-              base::BindOnce(
-                  std::move(callback),
-                  ServiceWorkerDatabase::Status::kErrorDisabled,
-                  std::vector<storage::mojom::ServiceWorkerUserDataPtr>()));
+              base::BindOnce(std::move(callback),
+                             ServiceWorkerDatabase::Status::kErrorDisabled,
+                             std::vector<mojom::ServiceWorkerUserDataPtr>()));
       return;
     case STORAGE_STATE_INITIALIZING:
       // Fall-through.
@@ -987,11 +984,10 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrations(
   }
 
   if (key.empty()) {
-    RunSoon(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback), ServiceWorkerDatabase::Status::kErrorFailed,
-            std::vector<storage::mojom::ServiceWorkerUserDataPtr>()));
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed,
+                           std::vector<mojom::ServiceWorkerUserDataPtr>()));
     return;
   }
 
@@ -1008,10 +1004,9 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefix(
   switch (state_) {
     case STORAGE_STATE_DISABLED:
       RunSoon(FROM_HERE,
-              base::BindOnce(
-                  std::move(callback),
-                  ServiceWorkerDatabase::Status::kErrorDisabled,
-                  std::vector<storage::mojom::ServiceWorkerUserDataPtr>()));
+              base::BindOnce(std::move(callback),
+                             ServiceWorkerDatabase::Status::kErrorDisabled,
+                             std::vector<mojom::ServiceWorkerUserDataPtr>()));
       return;
     case STORAGE_STATE_INITIALIZING:
       // Fall-through.
@@ -1025,11 +1020,10 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefix(
   }
 
   if (key_prefix.empty()) {
-    RunSoon(
-        FROM_HERE,
-        base::BindOnce(
-            std::move(callback), ServiceWorkerDatabase::Status::kErrorFailed,
-            std::vector<storage::mojom::ServiceWorkerUserDataPtr>()));
+    RunSoon(FROM_HERE,
+            base::BindOnce(std::move(callback),
+                           ServiceWorkerDatabase::Status::kErrorFailed,
+                           std::vector<mojom::ServiceWorkerUserDataPtr>()));
     return;
   }
 
@@ -1179,7 +1173,7 @@ void ServiceWorkerStorage::PurgeResources(
 }
 
 void ServiceWorkerStorage::ApplyPolicyUpdates(
-    const std::vector<storage::mojom::StoragePolicyUpdatePtr>& policy_updates,
+    const std::vector<mojom::StoragePolicyUpdatePtr>& policy_updates,
     DatabaseStatusCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -1188,7 +1182,7 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
     case STORAGE_STATE_INITIALIZING:
     case STORAGE_STATE_UNINITIALIZED: {
       // An explicit clone is needed to pass `policy_updates` to LazyInitialize.
-      std::vector<storage::mojom::StoragePolicyUpdatePtr> cloned_policy_updates;
+      std::vector<mojom::StoragePolicyUpdatePtr> cloned_policy_updates;
       for (const auto& entry : policy_updates)
         cloned_policy_updates.push_back(entry.Clone());
 
@@ -1651,7 +1645,7 @@ void ServiceWorkerStorage::DeleteRegistrationFromDB(
 void ServiceWorkerStorage::WriteRegistrationInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-    storage::mojom::ServiceWorkerRegistrationDataPtr registration,
+    mojom::ServiceWorkerRegistrationDataPtr registration,
     ResourceList resources,
     WriteRegistrationCallback callback) {
   DCHECK(database);
@@ -1682,7 +1676,7 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
     return;
   }
 
-  storage::mojom::ServiceWorkerRegistrationDataPtr data;
+  mojom::ServiceWorkerRegistrationDataPtr data;
   auto resources = std::make_unique<ResourceList>();
   status = ServiceWorkerDatabase::Status::kErrorNotFound;
 
@@ -1719,7 +1713,7 @@ void ServiceWorkerStorage::FindForScopeInDB(
   }
 
   // Find one with an exact matching scope.
-  storage::mojom::ServiceWorkerRegistrationDataPtr data;
+  mojom::ServiceWorkerRegistrationDataPtr data;
   auto resources = std::make_unique<ResourceList>();
   status = ServiceWorkerDatabase::Status::kErrorNotFound;
   for (const auto& registration_data : registration_data_list) {
@@ -1742,7 +1736,7 @@ void ServiceWorkerStorage::FindForIdInDB(
     int64_t registration_id,
     const url::Origin& origin,
     FindInDBCallback callback) {
-  storage::mojom::ServiceWorkerRegistrationDataPtr data;
+  mojom::ServiceWorkerRegistrationDataPtr data;
   auto resources = std::make_unique<ResourceList>();
   ServiceWorkerDatabase::Status status = database->ReadRegistration(
       registration_id, origin.GetURL(), &data, resources.get());
@@ -1829,7 +1823,7 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsInDB(
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const std::string& key,
     GetUserDataForAllRegistrationsInDBCallback callback) {
-  std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data;
+  std::vector<mojom::ServiceWorkerUserDataPtr> user_data;
   ServiceWorkerDatabase::Status status =
       database->ReadUserDataForAllRegistrations(key, &user_data);
   original_task_runner->PostTask(
@@ -1842,7 +1836,7 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefixInDB(
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const std::string& key_prefix,
     GetUserDataForAllRegistrationsInDBCallback callback) {
-  std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data;
+  std::vector<mojom::ServiceWorkerUserDataPtr> user_data;
   ServiceWorkerDatabase::Status status =
       database->ReadUserDataForAllRegistrationsByKeyPrefix(key_prefix,
                                                            &user_data);

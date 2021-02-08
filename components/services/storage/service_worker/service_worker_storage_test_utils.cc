@@ -57,7 +57,7 @@ FakeServiceWorkerDataPipeStateNotifier::
 FakeServiceWorkerDataPipeStateNotifier::
     ~FakeServiceWorkerDataPipeStateNotifier() = default;
 
-mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
+mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier>
 FakeServiceWorkerDataPipeStateNotifier::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }

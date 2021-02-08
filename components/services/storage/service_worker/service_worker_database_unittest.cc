@@ -29,9 +29,9 @@ namespace {
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 
-using RegistrationData = storage::mojom::ServiceWorkerRegistrationData;
-using RegistrationDataPtr = storage::mojom::ServiceWorkerRegistrationDataPtr;
-using ResourceRecordPtr = storage::mojom::ServiceWorkerResourceRecordPtr;
+using RegistrationData = mojom::ServiceWorkerRegistrationData;
+using RegistrationDataPtr = mojom::ServiceWorkerRegistrationDataPtr;
+using ResourceRecordPtr = mojom::ServiceWorkerResourceRecordPtr;
 
 struct AvailableIds {
   int64_t reg_id;
@@ -54,8 +54,7 @@ ResourceRecordPtr CreateResource(int64_t resource_id,
                                  const GURL& url,
                                  uint64_t size_bytes) {
   EXPECT_TRUE(url.is_valid());
-  return storage::mojom::ServiceWorkerResourceRecord::New(resource_id, url,
-                                                          size_bytes);
+  return mojom::ServiceWorkerResourceRecord::New(resource_id, url, size_bytes);
 }
 
 ServiceWorkerDatabase* CreateDatabase(const base::FilePath& path) {
@@ -105,13 +104,13 @@ network::CrossOriginEmbedderPolicy CrossOriginEmbedderPolicyRequireCorp() {
   return out;
 }
 
-std::vector<storage::mojom::ServiceWorkerUserDataPtr> CreateUserData(
+std::vector<mojom::ServiceWorkerUserDataPtr> CreateUserData(
     int64_t registration_id,
     const std::vector<std::pair<std::string, std::string>>& key_value_pairs) {
-  std::vector<storage::mojom::ServiceWorkerUserDataPtr> out;
+  std::vector<mojom::ServiceWorkerUserDataPtr> out;
   for (auto& kv : key_value_pairs) {
-    out.push_back(storage::mojom::ServiceWorkerUserData::New(
-        registration_id, kv.first, kv.second));
+    out.push_back(mojom::ServiceWorkerUserData::New(registration_id, kv.first,
+                                                    kv.second));
   }
   return out;
 }
@@ -451,7 +450,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
   GURL origin2("https://www.example.com");
   GURL origin3("https://example.org");
 
-  std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;
+  std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   std::vector<std::vector<ResourceRecordPtr>> resources_list;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetRegistrationsForOrigin(
@@ -559,7 +558,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForOrigin) {
 TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   std::unique_ptr<ServiceWorkerDatabase> database(CreateDatabaseInMemory());
 
-  std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;
+  std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->GetAllRegistrations(&registrations));
   EXPECT_TRUE(registrations.empty());
@@ -800,7 +799,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   VerifyResourceRecords(resources1, resources_out);
 
   // Update the registration.
-  storage::mojom::ServiceWorkerRegistrationDataPtr updated_data = data.Clone();
+  mojom::ServiceWorkerRegistrationDataPtr updated_data = data.Clone();
   updated_data->script = URL(origin, "/resource3");
   updated_data->version_id = data.version_id + 1;
   updated_data->resources_total_size_bytes = 12 + 13;
@@ -1254,7 +1253,7 @@ TEST(ServiceWorkerDatabaseTest,
                                {{"another_key_prefix:key2", "value2"}})));
 
   // Get all registrations with user data by key prefix.
-  std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data_list;
+  std::vector<mojom::ServiceWorkerUserDataPtr> user_data_list;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->ReadUserDataForAllRegistrationsByKeyPrefix(
                 "key_prefix:", &user_data_list));
@@ -1440,7 +1439,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
                 {"key_prefix:", "other_key_prefix:", "not_found_key_prefix:"}));
 
   // User data with deleted "key_prefix:" should only remain for registration 1.
-  std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data_list;
+  std::vector<mojom::ServiceWorkerUserDataPtr> user_data_list;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->ReadUserDataForAllRegistrationsByKeyPrefix(
                 "key_prefix:", &user_data_list));
@@ -1544,7 +1543,7 @@ TEST(ServiceWorkerDatabaseTest,
       database->DeleteUserDataForAllRegistrationsByKeyPrefix("key_prefix:"));
 
   // User data with deleted "key_prefix:" should be deleted.
-  std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data_list;
+  std::vector<mojom::ServiceWorkerUserDataPtr> user_data_list;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->ReadUserDataForAllRegistrationsByKeyPrefix(
                 "key_prefix:", &user_data_list));
@@ -1632,7 +1631,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   EXPECT_EQ("value2", user_data_out[0]);
 
   // Get all registrations with user data.
-  std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data_list;
+  std::vector<mojom::ServiceWorkerUserDataPtr> user_data_list;
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->ReadUserDataForAllRegistrations("key", &user_data_list));
   EXPECT_EQ(2u, user_data_list.size());
@@ -1822,7 +1821,7 @@ TEST(ServiceWorkerDatabaseTest, UpdateVersionToActive) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->ReadRegistration(data.registration_id, origin, &data_out,
                                        &resources_out));
-  storage::mojom::ServiceWorkerRegistrationDataPtr expected_data = data.Clone();
+  mojom::ServiceWorkerRegistrationDataPtr expected_data = data.Clone();
   expected_data->is_active = true;
   VerifyRegistrationData(*expected_data, *data_out);
   EXPECT_EQ(1u, resources_out.size());
@@ -1880,7 +1879,7 @@ TEST(ServiceWorkerDatabaseTest, UpdateLastCheckTime) {
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->ReadRegistration(data.registration_id, origin, &data_out,
                                        &resources_out));
-  storage::mojom::ServiceWorkerRegistrationDataPtr expected_data = data.Clone();
+  mojom::ServiceWorkerRegistrationDataPtr expected_data = data.Clone();
   expected_data->last_update_check = updated_time;
   VerifyRegistrationData(*expected_data, *data_out);
   EXPECT_EQ(1u, resources_out.size());
@@ -2035,7 +2034,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForOrigin) {
   EXPECT_TRUE(base::Contains(unique_origins, origin2));
 
   // The registrations for |origin1| should be removed.
-  std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;
+  std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   EXPECT_EQ(
       ServiceWorkerDatabase::Status::kOk,
       database->GetRegistrationsForOrigin(origin1, &registrations, nullptr));
@@ -2176,7 +2175,7 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForOrigin) {
   // Call GetRegistrationsForOrigin(). It should detect corruption, and not
   // crash.
   base::HistogramTester histogram_tester;
-  std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;
+  std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
   std::vector<std::vector<ResourceRecordPtr>> resources_list;
   EXPECT_EQ(ServiceWorkerDatabase::Status::kErrorCorrupted,
             database->GetRegistrationsForOrigin(
@@ -2265,7 +2264,7 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
               database->WriteRegistration(data, resources, &deleted_version));
 
     // Restore.
-    std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr> registrations;
+    std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
     std::vector<std::vector<ResourceRecordPtr>> resources_list;
     EXPECT_EQ(
         ServiceWorkerDatabase::Status::kOk,

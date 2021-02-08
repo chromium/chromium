@@ -275,8 +275,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
   DataReader(
       base::WeakPtr<ServiceWorkerResourceReaderImpl> owner,
       size_t total_bytes_to_read,
-      mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
-          notifier,
+      mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier> notifier,
       mojo::ScopedDataPipeProducerHandle producer_handle)
       : owner_(std::move(owner)),
         total_bytes_to_read_(total_bytes_to_read),
@@ -421,7 +420,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
   base::WeakPtr<ServiceWorkerResourceReaderImpl> owner_;
   const size_t total_bytes_to_read_;
   size_t current_bytes_read_ = 0;
-  mojo::Remote<storage::mojom::ServiceWorkerDataPipeStateNotifier> notifier_;
+  mojo::Remote<mojom::ServiceWorkerDataPipeStateNotifier> notifier_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::SimpleWatcher watcher_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
@@ -444,7 +443,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
 ServiceWorkerResourceReaderImpl::ServiceWorkerResourceReaderImpl(
     int64_t resource_id,
     base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader> receiver,
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver,
     base::OnceClosure disconnect_handler)
     : entry_opener_(resource_id, std::move(disk_cache)),
       receiver_(this, std::move(receiver)) {
@@ -472,8 +471,7 @@ void ServiceWorkerResourceReaderImpl::ReadResponseHead(
 
 void ServiceWorkerResourceReaderImpl::ReadData(
     int64_t size,
-    mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
-        notifier,
+    mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier> notifier,
     ReadDataCallback callback) {
 #if DCHECK_IS_ON()
   DCHECK_EQ(state_, State::kIdle);
@@ -640,7 +638,7 @@ void ServiceWorkerResourceReaderImpl::DidReadDataComplete() {
 ServiceWorkerResourceWriterImpl::ServiceWorkerResourceWriterImpl(
     int64_t resource_id,
     base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter> receiver,
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceWriter> receiver,
     base::OnceClosure disconnect_handler)
     : entry_creator_(resource_id, std::move(disk_cache)),
       receiver_(this, std::move(receiver)) {
@@ -761,8 +759,8 @@ ServiceWorkerResourceMetadataWriterImpl::
     ServiceWorkerResourceMetadataWriterImpl(
         int64_t resource_id,
         base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
-        mojo::PendingReceiver<
-            storage::mojom::ServiceWorkerResourceMetadataWriter> receiver,
+        mojo::PendingReceiver<mojom::ServiceWorkerResourceMetadataWriter>
+            receiver,
         base::OnceClosure disconnect_handler)
     : entry_opener_(resource_id, std::move(disk_cache)),
       receiver_(this, std::move(receiver)) {

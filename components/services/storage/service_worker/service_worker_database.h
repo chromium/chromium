@@ -55,7 +55,7 @@ class ServiceWorkerDatabase {
   explicit ServiceWorkerDatabase(const base::FilePath& path);
   ~ServiceWorkerDatabase();
 
-  using Status = storage::mojom::ServiceWorkerDatabaseStatus;
+  using Status = mojom::ServiceWorkerDatabaseStatus;
 
   static const char* StatusToString(Status status);
 
@@ -92,9 +92,8 @@ class ServiceWorkerDatabase {
   // successfully read or not found. Otherwise, returns an error.
   Status GetRegistrationsForOrigin(
       const url::Origin& origin,
-      std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr>*
-          registrations,
-      std::vector<std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>>*
+      std::vector<mojom::ServiceWorkerRegistrationDataPtr>* registrations,
+      std::vector<std::vector<mojom::ServiceWorkerResourceRecordPtr>>*
           opt_resources_list);
 
   // Reads the total resource size stored in the database for |origin|.
@@ -103,8 +102,7 @@ class ServiceWorkerDatabase {
   // Reads all registrations from the database. Returns OK if successfully read
   // or not found. Otherwise, returns an error.
   Status GetAllRegistrations(
-      std::vector<storage::mojom::ServiceWorkerRegistrationDataPtr>*
-          registrations);
+      std::vector<mojom::ServiceWorkerRegistrationDataPtr>* registrations);
 
   // Saving, retrieving, and updating registration data.
   // (will bump next_avail_xxxx_ids as needed)
@@ -117,8 +115,8 @@ class ServiceWorkerDatabase {
   Status ReadRegistration(
       int64_t registration_id,
       const GURL& origin,
-      storage::mojom::ServiceWorkerRegistrationDataPtr* registration,
-      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>* resources);
+      mojom::ServiceWorkerRegistrationDataPtr* registration,
+      std::vector<mojom::ServiceWorkerResourceRecordPtr>* resources);
 
   // Looks up the origin for the registration with |registration_id|. Returns OK
   // if a registration was found and read successfully. Otherwise, returns an
@@ -134,9 +132,8 @@ class ServiceWorkerDatabase {
   //   - Removes |resources| from the uncommitted list if exist.
   // Returns OK they are successfully written. Otherwise, returns an error.
   Status WriteRegistration(
-      const storage::mojom::ServiceWorkerRegistrationData& registration,
-      const std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>&
-          resources,
+      const mojom::ServiceWorkerRegistrationData& registration,
+      const std::vector<mojom::ServiceWorkerResourceRecordPtr>& resources,
       DeletedVersion* deleted_version);
 
   // Updates a registration for |registration_id| to an active state. Returns OK
@@ -196,7 +193,7 @@ class ServiceWorkerDatabase {
   Status WriteUserData(
       int64_t registration_id,
       const url::Origin& origin,
-      const std::vector<storage::mojom::ServiceWorkerUserDataPtr>& user_data);
+      const std::vector<mojom::ServiceWorkerUserDataPtr>& user_data);
 
   // Deletes user data for |registration_id| and |user_data_names| from the
   // database. Returns OK if all are successfully deleted or not found in the
@@ -218,14 +215,14 @@ class ServiceWorkerDatabase {
   // from the database. Returns OK if they are successfully read or not found.
   Status ReadUserDataForAllRegistrations(
       const std::string& user_data_name,
-      std::vector<storage::mojom::ServiceWorkerUserDataPtr>* user_data);
+      std::vector<mojom::ServiceWorkerUserDataPtr>* user_data);
 
   // Reads user data for all registrations that have data with
   // |user_data_name_prefix| from the database. Returns OK if they are
   // successfully read or not found.
   Status ReadUserDataForAllRegistrationsByKeyPrefix(
       const std::string& user_data_name_prefix,
-      std::vector<storage::mojom::ServiceWorkerUserDataPtr>* user_data);
+      std::vector<mojom::ServiceWorkerUserDataPtr>* user_data);
 
   // Deletes user data for all registrations that have data with
   // |user_data_name_prefix| from the database. Returns OK if all are
@@ -297,33 +294,33 @@ class ServiceWorkerDatabase {
   Status ReadRegistrationData(
       int64_t registration_id,
       const url::Origin& origin,
-      storage::mojom::ServiceWorkerRegistrationDataPtr* registration);
+      mojom::ServiceWorkerRegistrationDataPtr* registration);
 
   // Parses |serialized| as a RegistrationData object and pushes it into |out|.
   ServiceWorkerDatabase::Status ParseRegistrationData(
       const std::string& serialized,
-      storage::mojom::ServiceWorkerRegistrationDataPtr* out);
+      mojom::ServiceWorkerRegistrationDataPtr* out);
 
   // Populates |batch| with operations to write |registration|. It does not
   // actually write to db yet.
   void WriteRegistrationDataInBatch(
-      const storage::mojom::ServiceWorkerRegistrationData& registration,
+      const mojom::ServiceWorkerRegistrationData& registration,
       leveldb::WriteBatch* batch);
 
   // Reads resource records for |registration| from the database. Returns OK if
   // it's successfully read or not found in the database. Otherwise, returns an
   // error.
   Status ReadResourceRecords(
-      const storage::mojom::ServiceWorkerRegistrationData& registration,
-      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>* resources);
+      const mojom::ServiceWorkerRegistrationData& registration,
+      std::vector<mojom::ServiceWorkerResourceRecordPtr>* resources);
 
   // Parses |serialized| as a ResourceRecord object and pushes it into |out|.
   ServiceWorkerDatabase::Status ParseResourceRecord(
       const std::string& serialized,
-      storage::mojom::ServiceWorkerResourceRecordPtr* out);
+      mojom::ServiceWorkerResourceRecordPtr* out);
 
   void WriteResourceRecordInBatch(
-      const storage::mojom::ServiceWorkerResourceRecord& resource,
+      const mojom::ServiceWorkerResourceRecord& resource,
       int64_t version_id,
       leveldb::WriteBatch* batch);
 

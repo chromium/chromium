@@ -108,15 +108,14 @@ class DiskEntryOpener {
   base::WeakPtrFactory<DiskEntryOpener> weak_factory_{this};
 };
 
-// The implementation of storage::mojom::ServiceWorkerResourceReader.
+// The implementation of mojom::ServiceWorkerResourceReader.
 class ServiceWorkerResourceReaderImpl
-    : public storage::mojom::ServiceWorkerResourceReader {
+    : public mojom::ServiceWorkerResourceReader {
  public:
   ServiceWorkerResourceReaderImpl(
       int64_t resource_id,
       base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader>
-          receiver,
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver,
       base::OnceClosure disconnect_handler);
 
   ServiceWorkerResourceReaderImpl(const ServiceWorkerResourceReaderImpl&) =
@@ -126,12 +125,11 @@ class ServiceWorkerResourceReaderImpl
 
   ~ServiceWorkerResourceReaderImpl() override;
 
-  // storage::mojom::ServiceWorkerResourceReader implementations:
+  // mojom::ServiceWorkerResourceReader implementations:
   void ReadResponseHead(ReadResponseHeadCallback callback) override;
   void ReadData(
       int64_t size,
-      mojo::PendingRemote<storage::mojom::ServiceWorkerDataPipeStateNotifier>
-          notifier,
+      mojo::PendingRemote<mojom::ServiceWorkerDataPipeStateNotifier> notifier,
       ReadDataCallback callback) override;
 
  private:
@@ -175,20 +173,19 @@ class ServiceWorkerResourceReaderImpl
   State state_ = State::kIdle;
 #endif  // DCHECK_IS_ON()
 
-  mojo::Receiver<storage::mojom::ServiceWorkerResourceReader> receiver_;
+  mojo::Receiver<mojom::ServiceWorkerResourceReader> receiver_;
 
   base::WeakPtrFactory<ServiceWorkerResourceReaderImpl> weak_factory_{this};
 };
 
-// The implementation of storage::mojom::ServiceWorkerResourceWriter.
+// The implementation of mojom::ServiceWorkerResourceWriter.
 class ServiceWorkerResourceWriterImpl
-    : public storage::mojom::ServiceWorkerResourceWriter {
+    : public mojom::ServiceWorkerResourceWriter {
  public:
   ServiceWorkerResourceWriterImpl(
       int64_t resource_id,
       base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter>
-          receiver,
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceWriter> receiver,
       base::OnceClosure disconnect_handler);
 
   ServiceWorkerResourceWriterImpl(const ServiceWorkerResourceWriterImpl&) =
@@ -198,7 +195,7 @@ class ServiceWorkerResourceWriterImpl
 
   ~ServiceWorkerResourceWriterImpl() override;
 
-  // storage::mojom::ServiceWorkerResourceWriter implementations:
+  // mojom::ServiceWorkerResourceWriter implementations:
   void WriteResponseHead(network::mojom::URLResponseHeadPtr response_head,
                          WriteResponseHeadCallback callback) override;
   void WriteData(mojo_base::BigBuffer data,
@@ -239,19 +236,19 @@ class ServiceWorkerResourceWriterImpl
   State state_ = State::kIdle;
 #endif  // DCHECK_IS_ON()
 
-  mojo::Receiver<storage::mojom::ServiceWorkerResourceWriter> receiver_;
+  mojo::Receiver<mojom::ServiceWorkerResourceWriter> receiver_;
 
   base::WeakPtrFactory<ServiceWorkerResourceWriterImpl> weak_factory_{this};
 };
 
-// The implementation of storage::mojom::ServiceWorkerResourceMetadataWriter.
+// The implementation of mojom::ServiceWorkerResourceMetadataWriter.
 class ServiceWorkerResourceMetadataWriterImpl
-    : public storage::mojom::ServiceWorkerResourceMetadataWriter {
+    : public mojom::ServiceWorkerResourceMetadataWriter {
  public:
   ServiceWorkerResourceMetadataWriterImpl(
       int64_t resource_id,
       base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceMetadataWriter>
           receiver,
       base::OnceClosure disconnect_handler);
 
@@ -262,7 +259,7 @@ class ServiceWorkerResourceMetadataWriterImpl
 
   ~ServiceWorkerResourceMetadataWriterImpl() override;
 
-  // storage::mojom::ServiceWorkerResourceMetadataWriter implementations:
+  // mojom::ServiceWorkerResourceMetadataWriter implementations:
   void WriteMetadata(mojo_base::BigBuffer data,
                      WriteMetadataCallback callback) override;
 
@@ -288,7 +285,7 @@ class ServiceWorkerResourceMetadataWriterImpl
   State state_ = State::kIdle;
 #endif  // DCHECK_IS_ON()
 
-  mojo::Receiver<storage::mojom::ServiceWorkerResourceMetadataWriter> receiver_;
+  mojo::Receiver<mojom::ServiceWorkerResourceMetadataWriter> receiver_;
 
   base::WeakPtrFactory<ServiceWorkerResourceMetadataWriterImpl> weak_factory_{
       this};

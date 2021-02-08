@@ -33,26 +33,24 @@ struct ReadResponseHeadResult {
   base::Optional<mojo_base::BigBuffer> metadata;
 };
 
-using RegistrationData = storage::mojom::ServiceWorkerRegistrationData;
-using ResourceRecord = storage::mojom::ServiceWorkerResourceRecordPtr;
-using ResourceList =
-    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>;
+using RegistrationData = mojom::ServiceWorkerRegistrationData;
+using ResourceRecord = mojom::ServiceWorkerResourceRecordPtr;
+using ResourceList = std::vector<mojom::ServiceWorkerResourceRecordPtr>;
 
 ResourceRecord CreateResourceRecord(int64_t resource_id,
                                     const GURL& url,
                                     int64_t size_bytes) {
   EXPECT_TRUE(url.is_valid());
-  return storage::mojom::ServiceWorkerResourceRecord::New(resource_id, url,
-                                                          size_bytes);
+  return mojom::ServiceWorkerResourceRecord::New(resource_id, url, size_bytes);
 }
 
-storage::mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
+mojom::ServiceWorkerRegistrationDataPtr CreateRegistrationData(
     int64_t registration_id,
     int64_t version_id,
     const GURL& scope,
     const GURL& script_url,
     const std::vector<ResourceRecord>& resources) {
-  auto data = storage::mojom::ServiceWorkerRegistrationData::New();
+  auto data = mojom::ServiceWorkerRegistrationData::New();
   data->registration_id = registration_id;
   data->version_id = version_id;
   data->scope = scope;
@@ -211,9 +209,9 @@ class ServiceWorkerStorageTest : public testing::Test {
       int64_t registration_id,
       const url::Origin& origin,
       const std::vector<std::pair<std::string, std::string>>& key_value_pairs) {
-    std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data;
+    std::vector<mojom::ServiceWorkerUserDataPtr> user_data;
     for (const auto& kv : key_value_pairs) {
-      user_data.push_back(storage::mojom::ServiceWorkerUserData::New(
+      user_data.push_back(mojom::ServiceWorkerUserData::New(
           registration_id, kv.first, kv.second));
     }
 
@@ -265,16 +263,15 @@ class ServiceWorkerStorageTest : public testing::Test {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->GetUserDataForAllRegistrations(
-        key,
-        base::BindLambdaForTesting(
-            [&](ServiceWorkerDatabase::Status status,
-                std::vector<storage::mojom::ServiceWorkerUserDataPtr> entries) {
-              result = status;
-              for (auto& entry : entries) {
-                data.emplace_back(entry->registration_id, entry->value);
-              }
-              loop.Quit();
-            }));
+        key, base::BindLambdaForTesting(
+                 [&](ServiceWorkerDatabase::Status status,
+                     std::vector<mojom::ServiceWorkerUserDataPtr> entries) {
+                   result = status;
+                   for (auto& entry : entries) {
+                     data.emplace_back(entry->registration_id, entry->value);
+                   }
+                   loop.Quit();
+                 }));
     loop.Run();
     return result;
   }
@@ -312,13 +309,13 @@ class ServiceWorkerStorageTest : public testing::Test {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->FindRegistrationForClientUrl(
-        document_url, base::BindLambdaForTesting(
-                          [&](storage::mojom::ServiceWorkerRegistrationDataPtr,
-                              std::unique_ptr<ResourceList>,
-                              ServiceWorkerDatabase::Status status) {
-                            result = status;
-                            loop.Quit();
-                          }));
+        document_url,
+        base::BindLambdaForTesting([&](mojom::ServiceWorkerRegistrationDataPtr,
+                                       std::unique_ptr<ResourceList>,
+                                       ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
     return result;
   }
@@ -327,13 +324,13 @@ class ServiceWorkerStorageTest : public testing::Test {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->FindRegistrationForScope(
-        scope, base::BindLambdaForTesting(
-                   [&](storage::mojom::ServiceWorkerRegistrationDataPtr,
-                       std::unique_ptr<ResourceList>,
-                       ServiceWorkerDatabase::Status status) {
-                     result = status;
-                     loop.Quit();
-                   }));
+        scope,
+        base::BindLambdaForTesting([&](mojom::ServiceWorkerRegistrationDataPtr,
+                                       std::unique_ptr<ResourceList>,
+                                       ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
     return result;
   }
@@ -345,13 +342,12 @@ class ServiceWorkerStorageTest : public testing::Test {
     base::RunLoop loop;
     storage()->FindRegistrationForId(
         registration_id, origin,
-        base::BindLambdaForTesting(
-            [&](storage::mojom::ServiceWorkerRegistrationDataPtr,
-                std::unique_ptr<ResourceList>,
-                ServiceWorkerDatabase::Status status) {
-              result = status;
-              loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ServiceWorkerRegistrationDataPtr,
+                                       std::unique_ptr<ResourceList>,
+                                       ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
     return result;
   }
@@ -362,13 +358,12 @@ class ServiceWorkerStorageTest : public testing::Test {
     base::RunLoop loop;
     storage()->FindRegistrationForIdOnly(
         registration_id,
-        base::BindLambdaForTesting(
-            [&](storage::mojom::ServiceWorkerRegistrationDataPtr,
-                std::unique_ptr<ResourceList>,
-                ServiceWorkerDatabase::Status status) {
-              result = status;
-              loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ServiceWorkerRegistrationDataPtr,
+                                       std::unique_ptr<ResourceList>,
+                                       ServiceWorkerDatabase::Status status) {
+          result = status;
+          loop.Quit();
+        }));
     loop.Run();
     return result;
   }
@@ -410,7 +405,7 @@ class ServiceWorkerStorageTest : public testing::Test {
     ReadResponseHeadResult out;
     base::RunLoop loop;
 
-    mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
+    mojo::Remote<mojom::ServiceWorkerResourceReader> reader;
     storage()->CreateResourceReader(id, reader.BindNewPipeAndPassReceiver());
     reader.set_disconnect_handler(base::BindLambdaForTesting([&]() {
       out.result = net::ERR_CACHE_MISS;
@@ -438,7 +433,7 @@ class ServiceWorkerStorageTest : public testing::Test {
     mojo_base::BigBuffer body(
         base::as_bytes(base::make_span(kHttpBody.data(), kHttpBody.length())));
 
-    mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
+    mojo::Remote<mojom::ServiceWorkerResourceWriter> writer;
     storage()->CreateResourceWriter(id, writer.BindNewPipeAndPassReceiver());
 
     int rv = 0;
@@ -481,8 +476,7 @@ class ServiceWorkerStorageTest : public testing::Test {
     mojo_base::BigBuffer buffer(
         base::as_bytes(base::make_span(metadata.data(), metadata.length())));
 
-    mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter>
-        metadata_writer;
+    mojo::Remote<mojom::ServiceWorkerResourceMetadataWriter> metadata_writer;
     storage()->CreateResourceMetadataWriter(
         id, metadata_writer.BindNewPipeAndPassReceiver());
 
@@ -502,14 +496,14 @@ class ServiceWorkerStorageTest : public testing::Test {
   }
 
   ServiceWorkerDatabase::Status StoreRegistrationData(
-      storage::mojom::ServiceWorkerRegistrationDataPtr registration_data,
+      mojom::ServiceWorkerRegistrationDataPtr registration_data,
       std::vector<ResourceRecord> resources) {
     ServiceWorkerDatabase::Status result;
     base::RunLoop loop;
     storage()->StoreRegistrationData(
         std::move(registration_data), std::move(resources),
         base::BindLambdaForTesting(
-            [&](storage::mojom::ServiceWorkerDatabaseStatus status,
+            [&](mojom::ServiceWorkerDatabaseStatus status,
                 int64_t /*deleted_version_id*/,
                 uint64_t /*deleted_resources_size*/,
                 const std::vector<int64_t>& /*newly_purgeable_resources*/) {
@@ -556,7 +550,7 @@ TEST_F(ServiceWorkerStorageTest, DisabledStorage) {
 
   std::vector<ResourceRecord> resources;
   resources.push_back(CreateResourceRecord(kResourceId, kScript, 100));
-  storage::mojom::ServiceWorkerRegistrationDataPtr registration_data =
+  mojom::ServiceWorkerRegistrationDataPtr registration_data =
       CreateRegistrationData(kRegistrationId, kVersionId, kScope, kScript,
                              resources);
   EXPECT_EQ(
@@ -611,7 +605,7 @@ TEST_F(ServiceWorkerStorageTest, StoreUserData) {
   // Store a registration.
   std::vector<ResourceRecord> resources;
   resources.push_back(CreateResourceRecord(1, kScript, 100));
-  storage::mojom::ServiceWorkerRegistrationDataPtr registration_data =
+  mojom::ServiceWorkerRegistrationDataPtr registration_data =
       CreateRegistrationData(kRegistrationId,
                              /*version_id=*/1, kScope, kScript, resources);
   ASSERT_EQ(
@@ -826,7 +820,7 @@ class ServiceWorkerStorageDiskTest : public ServiceWorkerStorageTest {
     const GURL kScope("http://www.example.com/scope/");
     const GURL kScript("http://www.example.com/script.js");
     const int64_t kScriptSize = 5;
-    auto data = storage::mojom::ServiceWorkerRegistrationData::New();
+    auto data = mojom::ServiceWorkerRegistrationData::New();
     data->registration_id = 1;
     data->version_id = 1;
     data->scope = kScope;
@@ -931,12 +925,11 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
   // Preparation: Store two registrations.
   std::vector<ResourceRecord> resources1;
   resources1.push_back(CreateResourceRecord(1, kScript1, 123));
-  storage::mojom::ServiceWorkerRegistrationDataPtr data1 =
-      CreateRegistrationData(
-          /*registration_id=*/kRegistrationId1,
-          /*version_id=*/1,
-          /*scope=*/kScope1,
-          /*script_url=*/kScript1, resources1);
+  mojom::ServiceWorkerRegistrationDataPtr data1 = CreateRegistrationData(
+      /*registration_id=*/kRegistrationId1,
+      /*version_id=*/1,
+      /*scope=*/kScope1,
+      /*script_url=*/kScript1, resources1);
   int64_t resources_total_size_bytes1 = data1->resources_total_size_bytes;
   ASSERT_EQ(StoreRegistrationData(std::move(data1), std::move(resources1)),
             ServiceWorkerDatabase::Status::kOk);
@@ -944,12 +937,11 @@ TEST_F(ServiceWorkerStorageTest, GetStorageUsageForOrigin) {
   std::vector<ResourceRecord> resources2;
   resources2.push_back(CreateResourceRecord(2, kScript2, 456));
   resources2.push_back(CreateResourceRecord(3, kScript3, 789));
-  storage::mojom::ServiceWorkerRegistrationDataPtr data2 =
-      CreateRegistrationData(
-          /*registration_id=*/kRegistrationId2,
-          /*version_id=*/1,
-          /*scope=*/kScope1,
-          /*script_url=*/kScript2, resources2);
+  mojom::ServiceWorkerRegistrationDataPtr data2 = CreateRegistrationData(
+      /*registration_id=*/kRegistrationId2,
+      /*version_id=*/1,
+      /*scope=*/kScope1,
+      /*script_url=*/kScript2, resources2);
   int64_t resources_total_size_bytes2 = data2->resources_total_size_bytes;
   ASSERT_EQ(StoreRegistrationData(std::move(data2), std::move(resources2)),
             ServiceWorkerDatabase::Status::kOk);

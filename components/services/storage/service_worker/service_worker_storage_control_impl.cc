@@ -15,9 +15,9 @@ namespace {
 void DidGetAllRegistrations(
     ServiceWorkerStorageControlImpl::GetAllRegistrationsDeprecatedCallback
         callback,
-    storage::mojom::ServiceWorkerDatabaseStatus status,
+    mojom::ServiceWorkerDatabaseStatus status,
     std::unique_ptr<ServiceWorkerStorage::RegistrationList> registrations) {
-  if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk) {
+  if (status != mojom::ServiceWorkerDatabaseStatus::kOk) {
     std::move(callback).Run(status, ServiceWorkerStorage::RegistrationList());
     return;
   }
@@ -28,7 +28,7 @@ void DidGetAllRegistrations(
 }  // namespace
 
 class ServiceWorkerLiveVersionRefImpl
-    : public storage::mojom::ServiceWorkerLiveVersionRef {
+    : public mojom::ServiceWorkerLiveVersionRef {
  public:
   ServiceWorkerLiveVersionRefImpl(
       base::WeakPtr<ServiceWorkerStorageControlImpl> storage,
@@ -41,8 +41,7 @@ class ServiceWorkerLiveVersionRefImpl
   }
   ~ServiceWorkerLiveVersionRefImpl() override = default;
 
-  void Add(mojo::PendingReceiver<storage::mojom::ServiceWorkerLiveVersionRef>
-               receiver) {
+  void Add(mojo::PendingReceiver<mojom::ServiceWorkerLiveVersionRef> receiver) {
     receivers_.Add(this, std::move(receiver));
   }
 
@@ -73,13 +72,13 @@ class ServiceWorkerLiveVersionRefImpl
   base::WeakPtr<ServiceWorkerStorageControlImpl> storage_;
   const int64_t version_id_;
   std::vector<int64_t /*resource_id*/> purgeable_resources_;
-  mojo::ReceiverSet<storage::mojom::ServiceWorkerLiveVersionRef> receivers_;
+  mojo::ReceiverSet<mojom::ServiceWorkerLiveVersionRef> receivers_;
 };
 
 ServiceWorkerStorageControlImpl::ServiceWorkerStorageControlImpl(
     const base::FilePath& user_data_directory,
     scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl> receiver)
+    mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver)
     : storage_(ServiceWorkerStorage::Create(user_data_directory,
                                             std::move(database_task_runner))),
       receiver_(this, std::move(receiver)) {}
@@ -109,7 +108,7 @@ void ServiceWorkerStorageControlImpl::Delete(DeleteCallback callback) {
 }
 
 void ServiceWorkerStorageControlImpl::Recover(
-    std::vector<storage::mojom::ServiceWorkerLiveVersionInfoPtr> versions,
+    std::vector<mojom::ServiceWorkerLiveVersionInfoPtr> versions,
     RecoverCallback callback) {
   for (auto& version : versions) {
     DCHECK(!base::Contains(live_versions_, version->id));
@@ -186,8 +185,8 @@ void ServiceWorkerStorageControlImpl::GetAllRegistrationsDeprecated(
 }
 
 void ServiceWorkerStorageControlImpl::StoreRegistration(
-    storage::mojom::ServiceWorkerRegistrationDataPtr registration,
-    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources,
+    mojom::ServiceWorkerRegistrationDataPtr registration,
+    std::vector<mojom::ServiceWorkerResourceRecordPtr> resources,
     StoreRegistrationCallback callback) {
   storage_->StoreRegistrationData(
       std::move(registration), std::move(resources),
@@ -258,20 +257,19 @@ void ServiceWorkerStorageControlImpl::GetNewResourceId(
 
 void ServiceWorkerStorageControlImpl::CreateResourceReader(
     int64_t resource_id,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader> reader) {
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> reader) {
   storage_->CreateResourceReader(resource_id, std::move(reader));
 }
 
 void ServiceWorkerStorageControlImpl::CreateResourceWriter(
     int64_t resource_id,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter> writer) {
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceWriter> writer) {
   storage_->CreateResourceWriter(resource_id, std::move(writer));
 }
 
 void ServiceWorkerStorageControlImpl::CreateResourceMetadataWriter(
     int64_t resource_id,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
-        writer) {
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceMetadataWriter> writer) {
   storage_->CreateResourceMetadataWriter(resource_id, std::move(writer));
 }
 
@@ -297,7 +295,7 @@ void ServiceWorkerStorageControlImpl::GetUserData(
 void ServiceWorkerStorageControlImpl::StoreUserData(
     int64_t registration_id,
     const url::Origin& origin,
-    std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
+    std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
     StoreUserDataCallback callback) {
   storage_->StoreUserData(registration_id, origin, std::move(user_data),
                           std::move(callback));
@@ -361,7 +359,7 @@ void ServiceWorkerStorageControlImpl::PerformStorageCleanup(
 }
 
 void ServiceWorkerStorageControlImpl::ApplyPolicyUpdates(
-    const std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates,
+    const std::vector<mojom::StoragePolicyUpdatePtr> policy_updates,
     ApplyPolicyUpdatesCallback callback) {
   storage_->ApplyPolicyUpdates(std::move(policy_updates), std::move(callback));
 }
@@ -387,13 +385,13 @@ void ServiceWorkerStorageControlImpl::SetPurgingCompleteCallbackForTest(
 }
 
 void ServiceWorkerStorageControlImpl::DidFindRegistration(
-    base::OnceCallback<
-        void(storage::mojom::ServiceWorkerDatabaseStatus status,
-             storage::mojom::ServiceWorkerFindRegistrationResultPtr)> callback,
-    storage::mojom::ServiceWorkerRegistrationDataPtr data,
+    base::OnceCallback<void(mojom::ServiceWorkerDatabaseStatus status,
+                            mojom::ServiceWorkerFindRegistrationResultPtr)>
+        callback,
+    mojom::ServiceWorkerRegistrationDataPtr data,
     std::unique_ptr<ResourceList> resources,
-    storage::mojom::ServiceWorkerDatabaseStatus status) {
-  if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk) {
+    mojom::ServiceWorkerDatabaseStatus status) {
+  if (status != mojom::ServiceWorkerDatabaseStatus::kOk) {
     std::move(callback).Run(status, /*result=*/nullptr);
     return;
   }
@@ -402,39 +400,36 @@ void ServiceWorkerStorageControlImpl::DidFindRegistration(
   DCHECK(data);
 
   ResourceList resource_list = std::move(*resources);
-  mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
-      remote_reference = CreateLiveVersionReferenceRemote(data->version_id);
+  mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef> remote_reference =
+      CreateLiveVersionReferenceRemote(data->version_id);
 
-  std::move(callback).Run(
-      status, storage::mojom::ServiceWorkerFindRegistrationResult::New(
-                  std::move(remote_reference), std::move(data),
-                  std::move(resource_list)));
+  std::move(callback).Run(status,
+                          mojom::ServiceWorkerFindRegistrationResult::New(
+                              std::move(remote_reference), std::move(data),
+                              std::move(resource_list)));
 }
 
 void ServiceWorkerStorageControlImpl::DidGetRegistrationsForOrigin(
     GetRegistrationsForOriginCallback callback,
-    storage::mojom::ServiceWorkerDatabaseStatus status,
+    mojom::ServiceWorkerDatabaseStatus status,
     std::unique_ptr<ServiceWorkerStorage::RegistrationList>
         registration_data_list,
     std::unique_ptr<std::vector<ResourceList>> resources_list) {
-  if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk) {
+  if (status != mojom::ServiceWorkerDatabaseStatus::kOk) {
     std::move(callback).Run(
-        status,
-        std::vector<storage::mojom::ServiceWorkerFindRegistrationResultPtr>());
+        status, std::vector<mojom::ServiceWorkerFindRegistrationResultPtr>());
     return;
   }
 
   DCHECK_EQ(registration_data_list->size(), resources_list->size());
 
-  std::vector<storage::mojom::ServiceWorkerFindRegistrationResultPtr>
-      registrations;
+  std::vector<mojom::ServiceWorkerFindRegistrationResultPtr> registrations;
   for (size_t i = 0; i < registration_data_list->size(); ++i) {
     int64_t version_id = (*registration_data_list)[i]->version_id;
-    registrations.push_back(
-        storage::mojom::ServiceWorkerFindRegistrationResult::New(
-            CreateLiveVersionReferenceRemote(version_id),
-            std::move((*registration_data_list)[i]),
-            std::move((*resources_list)[i])));
+    registrations.push_back(mojom::ServiceWorkerFindRegistrationResult::New(
+        CreateLiveVersionReferenceRemote(version_id),
+        std::move((*registration_data_list)[i]),
+        std::move((*resources_list)[i])));
   }
 
   std::move(callback).Run(status, std::move(registrations));
@@ -442,7 +437,7 @@ void ServiceWorkerStorageControlImpl::DidGetRegistrationsForOrigin(
 
 void ServiceWorkerStorageControlImpl::DidStoreRegistration(
     StoreRegistrationCallback callback,
-    storage::mojom::ServiceWorkerDatabaseStatus status,
+    mojom::ServiceWorkerDatabaseStatus status,
     int64_t deleted_version_id,
     uint64_t deleted_resources_size,
     const std::vector<int64_t>& newly_purgeable_resources) {
@@ -452,7 +447,7 @@ void ServiceWorkerStorageControlImpl::DidStoreRegistration(
 
 void ServiceWorkerStorageControlImpl::DidDeleteRegistration(
     DeleteRegistrationCallback callback,
-    storage::mojom::ServiceWorkerDatabaseStatus status,
+    mojom::ServiceWorkerDatabaseStatus status,
     ServiceWorkerStorage::OriginState origin_state,
     int64_t deleted_version_id,
     uint64_t deleted_resources_size,
@@ -464,21 +459,19 @@ void ServiceWorkerStorageControlImpl::DidDeleteRegistration(
 void ServiceWorkerStorageControlImpl::DidGetNewVersionId(
     GetNewVersionIdCallback callback,
     int64_t version_id) {
-  mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
-      remote_reference;
+  mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef> remote_reference;
   if (version_id != blink::mojom::kInvalidServiceWorkerVersionId) {
     remote_reference = CreateLiveVersionReferenceRemote(version_id);
   }
   std::move(callback).Run(version_id, std::move(remote_reference));
 }
 
-mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
+mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef>
 ServiceWorkerStorageControlImpl::CreateLiveVersionReferenceRemote(
     int64_t version_id) {
   DCHECK_NE(version_id, blink::mojom::kInvalidServiceWorkerVersionId);
 
-  mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
-      remote_reference;
+  mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef> remote_reference;
   auto it = live_versions_.find(version_id);
   if (it == live_versions_.end()) {
     auto reference = std::make_unique<ServiceWorkerLiveVersionRefImpl>(

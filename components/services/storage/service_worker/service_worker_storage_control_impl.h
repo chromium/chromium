@@ -25,13 +25,12 @@ class ServiceWorkerLiveVersionRefImpl;
 // TODO(crbug.com/1055677): Merge this implementation into ServiceWorkerStorage
 // and move the merged class to components/services/storage.
 class ServiceWorkerStorageControlImpl
-    : public storage::mojom::ServiceWorkerStorageControl {
+    : public mojom::ServiceWorkerStorageControl {
  public:
   ServiceWorkerStorageControlImpl(
       const base::FilePath& user_data_directory,
       scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
-          receiver);
+      mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver);
 
   ServiceWorkerStorageControlImpl(const ServiceWorkerStorageControlImpl&) =
       delete;
@@ -45,12 +44,11 @@ class ServiceWorkerStorageControlImpl
   void LazyInitializeForTest();
 
  private:
-  // storage::mojom::ServiceWorkerStorageControl implementations:
+  // mojom::ServiceWorkerStorageControl implementations:
   void Disable(DisableCallback callback) override;
   void Delete(DeleteCallback callback) override;
-  void Recover(
-      std::vector<storage::mojom::ServiceWorkerLiveVersionInfoPtr> versions,
-      RecoverCallback callback) override;
+  void Recover(std::vector<mojom::ServiceWorkerLiveVersionInfoPtr> versions,
+               RecoverCallback callback) override;
   void GetRegisteredOrigins(GetRegisteredOriginsCallback callback) override;
   void FindRegistrationForClientUrl(
       const GURL& client_url,
@@ -69,8 +67,8 @@ class ServiceWorkerStorageControlImpl
   void GetAllRegistrationsDeprecated(
       GetAllRegistrationsDeprecatedCallback calback) override;
   void StoreRegistration(
-      storage::mojom::ServiceWorkerRegistrationDataPtr registration,
-      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources,
+      mojom::ServiceWorkerRegistrationDataPtr registration,
+      std::vector<mojom::ServiceWorkerResourceRecordPtr> resources,
       StoreRegistrationCallback callback) override;
   void DeleteRegistration(int64_t registration_id,
                           const GURL& origin,
@@ -98,16 +96,16 @@ class ServiceWorkerStorageControlImpl
   void GetNewResourceId(GetNewResourceIdCallback callback) override;
   void CreateResourceReader(
       int64_t resource_id,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader> reader)
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> reader)
       override;
   void CreateResourceWriter(
       int64_t resource_id,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceWriter> writer)
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceWriter> writer)
       override;
   void CreateResourceMetadataWriter(
       int64_t resource_id,
-      mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceMetadataWriter>
-          writer) override;
+      mojo::PendingReceiver<mojom::ServiceWorkerResourceMetadataWriter> writer)
+      override;
   void StoreUncommittedResourceId(
       int64_t resource_id,
       StoreUncommittedResourceIdCallback callback) override;
@@ -117,11 +115,10 @@ class ServiceWorkerStorageControlImpl
   void GetUserData(int64_t registration_id,
                    const std::vector<std::string>& keys,
                    GetUserDataCallback callback) override;
-  void StoreUserData(
-      int64_t registration_id,
-      const url::Origin& origin,
-      std::vector<storage::mojom::ServiceWorkerUserDataPtr> user_data,
-      StoreUserDataCallback callback) override;
+  void StoreUserData(int64_t registration_id,
+                     const url::Origin& origin,
+                     std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
+                     StoreUserDataCallback callback) override;
   void ClearUserData(int64_t registration_id,
                      const std::vector<std::string>& keys,
                      ClearUserDataCallback callback) override;
@@ -147,7 +144,7 @@ class ServiceWorkerStorageControlImpl
       ClearUserDataForAllRegistrationsByKeyPrefixCallback callback) override;
   void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
   void ApplyPolicyUpdates(
-      const std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates,
+      const std::vector<mojom::StoragePolicyUpdatePtr> policy_updates,
       ApplyPolicyUpdatesCallback callback) override;
   void GetPurgingResourceIdsForTest(
       GetPurgingResourceIdsForTestCallback callback) override;
@@ -158,39 +155,38 @@ class ServiceWorkerStorageControlImpl
   void SetPurgingCompleteCallbackForTest(
       SetPurgingCompleteCallbackForTestCallback callback) override;
 
-  using ResourceList =
-      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>;
+  using ResourceList = std::vector<mojom::ServiceWorkerResourceRecordPtr>;
 
   // Callbacks for ServiceWorkerStorage methods.
   void DidFindRegistration(
-      base::OnceCallback<void(
-          storage::mojom::ServiceWorkerDatabaseStatus status,
-          storage::mojom::ServiceWorkerFindRegistrationResultPtr)> callback,
-      storage::mojom::ServiceWorkerRegistrationDataPtr data,
+      base::OnceCallback<void(mojom::ServiceWorkerDatabaseStatus status,
+                              mojom::ServiceWorkerFindRegistrationResultPtr)>
+          callback,
+      mojom::ServiceWorkerRegistrationDataPtr data,
       std::unique_ptr<ResourceList> resources,
-      storage::mojom::ServiceWorkerDatabaseStatus status);
+      mojom::ServiceWorkerDatabaseStatus status);
   void DidGetRegistrationsForOrigin(
       GetRegistrationsForOriginCallback callback,
-      storage::mojom::ServiceWorkerDatabaseStatus status,
+      mojom::ServiceWorkerDatabaseStatus status,
       std::unique_ptr<ServiceWorkerStorage::RegistrationList>
           registration_data_list,
       std::unique_ptr<std::vector<ResourceList>> resources_list);
   void DidStoreRegistration(
       StoreRegistrationCallback callback,
-      storage::mojom::ServiceWorkerDatabaseStatus status,
+      mojom::ServiceWorkerDatabaseStatus status,
       int64_t deleted_version_id,
       uint64_t deleted_resources_size,
       const std::vector<int64_t>& newly_purgeable_resources);
   void DidDeleteRegistration(
       DeleteRegistrationCallback callback,
-      storage::mojom::ServiceWorkerDatabaseStatus status,
+      mojom::ServiceWorkerDatabaseStatus status,
       ServiceWorkerStorage::OriginState origin_state,
       int64_t deleted_version_id,
       uint64_t deleted_resources_size,
       const std::vector<int64_t>& newly_purgeable_resources);
   void DidGetNewVersionId(GetNewVersionIdCallback callback, int64_t version_id);
 
-  mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
+  mojo::PendingRemote<mojom::ServiceWorkerLiveVersionRef>
   CreateLiveVersionReferenceRemote(int64_t version_id);
 
   void MaybePurgeResources(int64_t version_id,
@@ -198,7 +194,7 @@ class ServiceWorkerStorageControlImpl
 
   const std::unique_ptr<ServiceWorkerStorage> storage_;
 
-  mojo::Receiver<storage::mojom::ServiceWorkerStorageControl> receiver_;
+  mojo::Receiver<mojom::ServiceWorkerStorageControl> receiver_;
 
   base::flat_map<int64_t /*version_id*/,
                  std::unique_ptr<ServiceWorkerLiveVersionRefImpl>>
