@@ -117,9 +117,6 @@ no_check_targets = [
   "//ppapi/shared_impl:*",  # 3 errors
   "//ppapi/thunk:*",  # 1071 errors
   "//ppapi:*",  # 3 errors
-  "//remoting/base/grpc_support:*",  # 14 errors
-  "//remoting/base/grpc_test_support:*",  # 1 error
-  "//remoting/base:*",  # 6 errors
   "//remoting/client/display:*",  # 55 errors
   "//remoting/client/jni:*",  # 8 errors
   "//remoting/codec:*",  # 32 errors
