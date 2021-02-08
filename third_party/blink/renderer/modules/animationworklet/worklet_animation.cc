@@ -166,6 +166,13 @@ base::Optional<base::TimeDelta> CalculateStartTime(
     base::TimeDelta current_time,
     double playback_rate,
     AnimationTimeline& timeline) {
+  // Handle some special cases, note |playback_rate| can never be 0 before
+  // SetPlaybackRateInternal has a DCHECK for that.
+  DCHECK_NE(playback_rate, 0);
+  if (current_time.is_max())
+    return base::TimeDelta::FromMilliseconds(0);
+  if (current_time.is_min())
+    return base::TimeDelta::Max();
   base::Optional<double> timeline_current_time_ms =
       timeline.CurrentTimeMilliseconds();
   return base::TimeDelta::FromMillisecondsD(timeline_current_time_ms.value()) -

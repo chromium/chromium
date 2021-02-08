@@ -133,6 +133,15 @@ TEST_F(WorkletAnimationTest, WorkletAnimationInElementAnimations) {
             element_->EnsureElementAnimations().GetWorkletAnimations().size());
 }
 
+// Regression test for crbug.com/1136120, pass if there is no crash.
+TEST_F(WorkletAnimationTest, SetCurrentTimeInfNotCrash) {
+  base::Optional<base::TimeDelta> seek_time =
+      base::TimeDelta::FromString("inf");
+  worklet_animation_->SetPlayState(Animation::kRunning);
+  GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks::Max());
+  worklet_animation_->SetCurrentTime(seek_time);
+}
+
 TEST_F(WorkletAnimationTest, StyleHasCurrentAnimation) {
   scoped_refptr<ComputedStyle> style =
       GetDocument()
