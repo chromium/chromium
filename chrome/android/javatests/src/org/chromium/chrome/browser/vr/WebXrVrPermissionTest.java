@@ -128,8 +128,6 @@ public class WebXrVrPermissionTest {
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @DisableIf.Build(message = "https://crbug.com/1091800, https://crbug.com/1166223",
-            sdk_is_less_than = Build.VERSION_CODES.P, sdk_is_greater_than = Build.VERSION_CODES.R)
     public void
     testPermissionPersistsAfterReload() {
         mWebXrVrPermissionTestFramework.loadFileAndAwaitInitialization(
