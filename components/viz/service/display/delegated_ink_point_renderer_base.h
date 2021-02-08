@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "components/viz/service/display/delegated_ink_trail_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/compositing/delegated_ink_point.mojom.h"
 
 namespace viz {
 class DelegatedInkMetadata;
-class DelegatedInkTrailData;
 
 // The number of points to predict into the future, when prediction is
 // available.
