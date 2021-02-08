@@ -760,14 +760,18 @@ void TableView::OnItemsRemoved(int start, int length) {
   for (int i = 0; i < length; ++i)
     selection_model_.DecrementFrom(start);
 
-  // Remove the virtual views that are no longer needed.
-  auto& virtual_children = GetViewAccessibility().virtual_children();
-  for (int i = start; i < start + length; i++)
-    virtual_children[virtual_children.size() - 1]->RemoveFromParentView();
-
+  // Update the `view_to_model_` and `model_to_view_` mappings prior to updating
+  // TableView's virtual children below. We do this because at this point the
+  // table model has changed but the model-view mappings have not yet been
+  // updated to reflect this. `RemoveFromParentView()` below may trigger calls
+  // back into TableView and this would happen before the model-view mappings
+  // have been updated. This can result in memory overflow errors.
+  // See (https://crbug.com/1173373).
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
-  PreferredSizeChanged();
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
+  if (GetIsSorted()) {
+    DCHECK_EQ(GetRowCount(), int{view_to_model_.size()});
+    DCHECK_EQ(GetRowCount(), int{model_to_view_.size()});
+  }
 
   // If the selection was empty and is no longer empty select the same visual
   // index.
@@ -781,6 +785,15 @@ void TableView::OnItemsRemoved(int start, int length) {
   if (!selection_model_.empty() && selection_model_.anchor() == -1)
     selection_model_.set_anchor(GetFirstSelectedRow());
   NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+
+  // Remove the virtual views that are no longer needed.
+  auto& virtual_children = GetViewAccessibility().virtual_children();
+  for (int i = start; i < start + length; i++)
+    virtual_children[virtual_children.size() - 1]->RemoveFromParentView();
+
+  UpdateVirtualAccessibilityChildrenBounds();
+  PreferredSizeChanged();
+  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, true);
   if (observer_)
     observer_->OnSelectionChanged();
 }

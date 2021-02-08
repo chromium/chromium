@@ -172,6 +172,9 @@ class TestTableModel2 : public ui::TableModel {
   // Reorders rows in the model.
   void MoveRows(int row_from, int length, int row_to);
 
+  // Allows overriding the tooltip for testing.
+  void SetTooltip(const base::string16& tooltip);
+
   // ui::TableModel:
   int RowCount() override;
   base::string16 GetText(int row, int column_id) override;
@@ -181,6 +184,8 @@ class TestTableModel2 : public ui::TableModel {
 
  private:
   ui::TableModelObserver* observer_ = nullptr;
+
+  base::Optional<base::string16> tooltip_;
 
   // The data.
   std::vector<std::vector<int>> rows_;
@@ -264,6 +269,10 @@ void TestTableModel2::MoveRows(int row_from, int length, int row_to) {
     observer_->OnItemsMoved(row_from, length, row_to);
 }
 
+void TestTableModel2::SetTooltip(const base::string16& tooltip) {
+  tooltip_ = tooltip;
+}
+
 int TestTableModel2::RowCount() {
   return static_cast<int>(rows_.size());
 }
@@ -273,7 +282,8 @@ base::string16 TestTableModel2::GetText(int row, int column_id) {
 }
 
 base::string16 TestTableModel2::GetTooltip(int row) {
-  return base::ASCIIToUTF16("Tooltip") + base::NumberToString16(row);
+  return tooltip_ ? *tooltip_
+                  : base::ASCIIToUTF16("Tooltip") + base::NumberToString16(row);
 }
 
 void TestTableModel2::SetObserver(ui::TableModelObserver* observer) {
@@ -1922,6 +1932,34 @@ TEST_P(TableViewTest, FocusAfterRemovingAnchor) {
   helper_->SetSelectionModel(new_selection);
   model_->RemoveRow(0);
   table_->RequestFocus();
+}
+
+// OnItemsRemoved() should ensure view-model mappings are updated in response to
+// the table model change before these view-model mappings are used.
+// Test for (https://crbug.com/1173373).
+TEST_P(TableViewTest, RemovingSortedRowsDoesNotCauseOverflow) {
+  // Ensure the table has a sort descriptor set so that `view_to_model_` and
+  // `model_to_view_` mappings are established and are in descending order. Do
+  // this so the first view row maps to the last model row.
+  table_->ToggleSortOrder(0);
+  table_->ToggleSortOrder(0);
+  ASSERT_TRUE(table_->GetIsSorted());
+  ASSERT_EQ(1u, table_->sort_descriptors().size());
+  EXPECT_EQ(0, table_->sort_descriptors()[0].column_id);
+  EXPECT_FALSE(table_->sort_descriptors()[0].ascending);
+  EXPECT_EQ("3 2 1 0", GetViewToModelAsString(table_));
+  EXPECT_EQ("3 2 1 0", GetModelToViewAsString(table_));
+
+  // Removing rows can result in callbacks to GetTooltipText(). Above mappings
+  // will cause TableView to try to access the text for the first view row and
+  // consequently attempt to access the last element in the model via the
+  // `view_to_model_` mapping. This will result in a crash if the view-model
+  // mappings have not been appropriately updated.
+  model_->SetTooltip(base::ASCIIToUTF16(""));
+  model_->RemoveRow(0);
+  model_->RemoveRow(0);
+  model_->RemoveRow(0);
+  model_->RemoveRow(0);
 }
 
 namespace {
