@@ -782,7 +782,7 @@ message ClientToServerMessage {
   // be derived from access token in case of auth error.
   required string share = 1;
 
-  optional int32 protocol_version = 2 [default = 52];
+  optional int32 protocol_version = 2 [default = 90];
   enum Contents {
     COMMIT = 1;
     GET_UPDATES = 2;
