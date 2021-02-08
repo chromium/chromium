@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.gesturenav.BackActionDelegate;
+import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
@@ -56,6 +58,7 @@ import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
@@ -242,15 +245,23 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mHistoryNavigationCoordinator = HistoryNavigationCoordinator.create(
                 mActivity.getWindowAndroid(), mActivity.getLifecycleDispatcher(),
                 mActivity.getCompositorViewHolder(), mActivity.getActivityTabProvider(),
-                mActivity.getInsetObserverView(), mActivity::backShouldCloseTab,
-                mActivity::onBackPressed, mLayoutManager,
-                (tab)
-                        -> HistoryManagerUtils.showHistoryManager(mActivity, tab,
-                                mActivity.getTabModelSelector().isIncognitoSelected()),
-                mActivity.getResources().getString(R.string.show_full_history),
-                ()
-                        -> mActivity.isActivityFinishingOrDestroyed() ? null
-                                                                      : getBottomSheetController());
+                mActivity.getInsetObserverView(), new BackActionDelegate() {
+                    @Override
+                    public @ActionType int getBackActionType(Tab tab) {
+                        if (tab.canGoBack()) return ActionType.NAVIGATE_BACK;
+                        if (TabAssociatedApp.isOpenedFromExternalApp(tab)) {
+                            return ActionType.EXIT_APP;
+                        }
+                        return mActivity.backShouldCloseTab(tab) ? ActionType.CLOSE_TAB
+                                                                 : ActionType.EXIT_APP;
+                    }
+
+                    @Override
+                    public void onBackGesture() {
+                        // Back navigation gesture performs what the back button would do.
+                        mActivity.onBackPressed();
+                    }
+                }, mLayoutManager);
 
         // TODO(twellington): Supply TabModelSelector as well and move initialization earlier.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {

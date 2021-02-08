@@ -35,9 +35,6 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     // {@link NavigationGlow} object for native pages. Lazily created.
     private NavigationGlow mJavaGlowEffect;
 
-    // Navigation sheet showing the navigation history.
-    private Supplier<NavigationSheet> mNavigationSheet;
-
     // Async runnable for ending the refresh animation after the page first
     // loads a frame. This is used to provide a reasonable minimum animation time.
     private Runnable mStopNavigatingRunnable;
@@ -47,12 +44,10 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     private Runnable mDetachLayoutRunnable;
 
     public HistoryNavigationLayout(Context context, Supplier<Boolean> isNativePage,
-            NavigationGlow compositorGlowEffect, Supplier<NavigationSheet> navigationSheet,
-            Callback<Boolean> navigateCallback) {
+            NavigationGlow compositorGlowEffect, Callback<Boolean> navigateCallback) {
         super(context);
         mIsNativePage = isNativePage;
         mCompositorGlowEffect = compositorGlowEffect;
-        mNavigationSheet = navigationSheet;
         mNavigateCallback = navigateCallback;
         setOnHierarchyChangeListener(this);
         setVisibility(View.INVISIBLE);
@@ -103,7 +98,6 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
         mSideSlideLayout.setCloseIndicator(closeIndicator);
         attachLayoutIfNecessary();
         mSideSlideLayout.start();
-        mNavigationSheet.get().start(forward, closeIndicator != CloseTarget.NONE);
     }
 
     /**
@@ -134,12 +128,6 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     void pullBubble(float offset) {
         if (mSideSlideLayout == null) return;
         mSideSlideLayout.pull(offset);
-        NavigationSheet navigationSheet = mNavigationSheet.get();
-        navigationSheet.onScroll(offset - mSideSlideLayout.getPullOffset(),
-                mSideSlideLayout.getOverscroll(), mSideSlideLayout.willNavigate());
-
-        mSideSlideLayout.fadeBubble(!navigationSheet.isHidden(), /* animate= */ true);
-        if (navigationSheet.isExpanded()) mSideSlideLayout.hideBubble();
     }
 
     /**
@@ -158,9 +146,7 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     void releaseBubble(boolean allowNav) {
         if (mSideSlideLayout == null) return;
         cancelStopNavigatingRunnable();
-        NavigationSheet navigationSheet = mNavigationSheet.get();
-        mSideSlideLayout.release(allowNav && navigationSheet.isHidden());
-        navigationSheet.release();
+        mSideSlideLayout.release(allowNav);
     }
 
     /**
