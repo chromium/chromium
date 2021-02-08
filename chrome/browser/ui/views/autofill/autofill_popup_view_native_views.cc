@@ -1322,8 +1322,9 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
       body_container_ && body_container_->children().size() > 0
           ? body_container_->children()[0]->GetPreferredSize().height()
           : 0;
-  if (!HasEnoughHeightForOneRow(item_height, GetContentAreaBounds(),
-                                element_bounds)) {
+
+  if (!CanShowDropdownHere(item_height, GetContentAreaBounds(),
+                           element_bounds)) {
     controller_->Hide(PopupHidingReason::kInsufficientSpace);
     return false;
   }

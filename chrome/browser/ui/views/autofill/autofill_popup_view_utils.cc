@@ -87,16 +87,26 @@ gfx::Rect CalculatePopupBounds(const gfx::Size& desired_size,
   return popup_bounds;
 }
 
-bool HasEnoughHeightForOneRow(int item_height,
-                              const gfx::Rect& content_area_bounds,
-                              const gfx::Rect& element_bounds) {
-  // Ensure that at least one row of the popup can be displayed within the
+bool CanShowDropdownHere(int item_height,
+                         const gfx::Rect& content_area_bounds,
+                         const gfx::Rect& element_bounds) {
+  // Ensure that at least one row of the popup will be displayed within the
   // bounds of the content area so that the user notices the presence of the
   // popup.
   bool enough_space_for_one_item_in_content_area_above_element =
       element_bounds.y() - content_area_bounds.y() >= item_height;
+  bool element_top_is_within_content_area_bounds =
+      element_bounds.y() > content_area_bounds.y() &&
+      element_bounds.y() < content_area_bounds.bottom();
+
   bool enough_space_for_one_item_in_content_area_below_element =
       content_area_bounds.bottom() - element_bounds.bottom() >= item_height;
-  return enough_space_for_one_item_in_content_area_above_element ||
-         enough_space_for_one_item_in_content_area_below_element;
+  bool element_bottom_is_within_content_area_bounds =
+      element_bounds.bottom() > content_area_bounds.y() &&
+      element_bounds.bottom() < content_area_bounds.bottom();
+
+  return (enough_space_for_one_item_in_content_area_above_element &&
+          element_top_is_within_content_area_bounds) ||
+         (enough_space_for_one_item_in_content_area_below_element &&
+          element_bottom_is_within_content_area_bounds);
 }

@@ -259,8 +259,8 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   // area so that the user notices the presence of the popup.
   int item_height =
       children().size() > 0 ? children()[0]->GetPreferredSize().height() : 0;
-  if (!HasEnoughHeightForOneRow(item_height, GetContentAreaBounds(),
-                                element_bounds)) {
+  if (!CanShowDropdownHere(item_height, GetContentAreaBounds(),
+                           element_bounds)) {
     HideController(PopupHidingReason::kInsufficientSpace);
     return false;
   }
