@@ -186,7 +186,7 @@ void BackgroundHTMLParser::MarkEndOfFile() {
 }
 
 void BackgroundHTMLParser::PumpTokenizer() {
-  TRACE_EVENT0("loading", "BackgroundHTMLParser::pumpTokenizer");
+  TRACE_EVENT0("loading", "BackgroundHTMLParser::PumpTokenizer");
   HTMLTreeBuilderSimulator::SimulatedToken simulated_token =
       HTMLTreeBuilderSimulator::kOtherToken;
 
@@ -245,9 +245,6 @@ void BackgroundHTMLParser::EnqueueTokenizedChunk() {
     return;
 
   auto chunk = std::make_unique<HTMLDocumentParser::TokenizedChunk>();
-  TRACE_EVENT_WITH_FLOW0("blink,loading",
-                         "BackgroundHTMLParser::sendTokensToMainThread",
-                         chunk.get(), TRACE_EVENT_FLAG_FLOW_OUT);
 
   chunk->preloads.swap(pending_preloads_);
   if (viewport_description_.has_value())
