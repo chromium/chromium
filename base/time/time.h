@@ -236,8 +236,8 @@ class BASE_EXPORT TimeDelta {
   int InDaysFloored() const;
   constexpr int InHours() const;
   constexpr int InMinutes() const;
-  double InSecondsF() const;
-  int64_t InSeconds() const;
+  constexpr double InSecondsF() const;
+  constexpr int64_t InSeconds() const;
   double InMillisecondsF() const;
   int64_t InMilliseconds() const;
   int64_t InMillisecondsRoundedUp() const;
@@ -911,6 +911,17 @@ constexpr int TimeDelta::InMinutes() const {
   // saturated_cast<> is necessary since very large (but still less than
   // min/max) deltas would result in overflow.
   return saturated_cast<int>(delta_ / Time::kMicrosecondsPerMinute);
+}
+
+constexpr double TimeDelta::InSecondsF() const {
+  if (!is_inf())
+    return static_cast<double>(delta_) / Time::kMicrosecondsPerSecond;
+  return (delta_ < 0) ? -std::numeric_limits<double>::infinity()
+                      : std::numeric_limits<double>::infinity();
+}
+
+constexpr int64_t TimeDelta::InSeconds() const {
+  return is_inf() ? delta_ : (delta_ / Time::kMicrosecondsPerSecond);
 }
 
 constexpr int64_t TimeDelta::InNanoseconds() const {
