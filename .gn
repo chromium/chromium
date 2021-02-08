@@ -84,7 +84,6 @@ no_check_targets = [
   "//extensions/browser/api/bluetooth_socket:*",  # 12 errors
   "//extensions/browser/api/cast_channel:*",  # 3 errors
   "//extensions/browser/api/declarative:*",  # 20 errors
-  "//extensions/browser/api/declarative_content:*",  # 2 errors
   "//extensions/browser/api/declarative_net_request:*",  # 18 errors
   "//extensions/browser/api/declarative_webrequest:*",  # 29 errors
   "//extensions/browser/api/dns:*",  # 3 errors

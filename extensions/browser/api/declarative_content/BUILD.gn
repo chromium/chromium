@@ -10,7 +10,11 @@ assert(enable_extensions,
 source_set("declarative_content") {
   sources = [ "content_rules_registry.h" ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//content/public/browser/",
+    "//extensions/browser/api/declarative/",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }
