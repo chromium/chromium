@@ -165,7 +165,7 @@ struct GetFirst {
 //   template <typename K> const_iterator           upper_bound(const K&) const;
 //
 // General functions:
-//   void swap(flat_map&&);
+//   void swap(flat_map&);
 //
 // Non-member operators:
 //   bool operator==(const flat_map&, const flat_map);

@@ -140,7 +140,7 @@ namespace base {
 //   template <typename K> const_iterator           upper_bound(const K&) const;
 //
 // General functions:
-//   void swap(flat_set&&);
+//   void swap(flat_set&);
 //
 // Non-member operators:
 //   bool operator==(const flat_set&, const flat_set);
