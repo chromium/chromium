@@ -817,6 +817,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/browser_controls/android:junit",
     "//chrome/browser/contextmenu:java",
+    "//chrome/browser/continuous_search:junit",
     "//chrome/browser/continuous_search/internal:junit",
     "//chrome/browser/device:java",
     "//chrome/browser/device:junit",
