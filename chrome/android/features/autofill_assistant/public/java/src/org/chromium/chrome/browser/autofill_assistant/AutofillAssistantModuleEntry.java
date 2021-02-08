@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @ModuleInterface(module = "autofill_assistant",
         impl = "org.chromium.chrome.browser.autofill_assistant.AutofillAssistantModuleEntryImpl")
-interface AutofillAssistantModuleEntry {
+public interface AutofillAssistantModuleEntry {
     /**
      * Starts Autofill Assistant on the current tab of the given chrome activity.
      *

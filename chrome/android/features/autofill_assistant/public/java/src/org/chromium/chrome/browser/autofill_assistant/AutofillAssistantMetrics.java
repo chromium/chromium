@@ -23,11 +23,11 @@ import org.chromium.content_public.browser.WebContents;
  * All enums are auto generated from
  * components/autofill_assistant/browser/metrics.h.
  */
-/* package */ class AutofillAssistantMetrics {
+public class AutofillAssistantMetrics {
     /**
      * Records the reason for a drop out.
      */
-    /* package */ static void recordDropOut(@DropOutReason int reason) {
+    public static void recordDropOut(@DropOutReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.AutofillAssistant.DropOutReason", reason, DropOutReason.MAX_VALUE + 1);
     }
@@ -35,7 +35,7 @@ import org.chromium.content_public.browser.WebContents;
     /**
      * Records the onboarding related action.
      */
-    /* package */ static void recordOnBoarding(@OnBoarding int metric) {
+    public static void recordOnBoarding(@OnBoarding int metric) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.AutofillAssistant.OnBoarding", metric, OnBoarding.MAX_VALUE + 1);
     }
@@ -43,8 +43,7 @@ import org.chromium.content_public.browser.WebContents;
     /**
      * Records the feature module installation action.
      */
-    /* package */ static void recordFeatureModuleInstallation(
-            @FeatureModuleInstallation int metric) {
+    public static void recordFeatureModuleInstallation(@FeatureModuleInstallation int metric) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.AutofillAssistant.FeatureModuleInstallation", metric,
                 FeatureModuleInstallation.MAX_VALUE + 1);
@@ -53,7 +52,7 @@ import org.chromium.content_public.browser.WebContents;
     /**
      * UKM metric. Records the start of a lite script.
      */
-    /* package */ static void recordLiteScriptStarted(
+    public static void recordLiteScriptStarted(
             WebContents webContents, @LiteScriptStarted int started) {
         if (!areWebContentsValid(webContents)) {
             return;
@@ -67,7 +66,7 @@ import org.chromium.content_public.browser.WebContents;
     /**
      * UKM metric. Records the finish of a lite script.
      */
-    /* package */ static void recordLiteScriptFinished(
+    public static void recordLiteScriptFinished(
             WebContents webContents, @LiteScriptFinishedState int finishedState) {
         if (!areWebContentsValid(webContents)) {
             return;
@@ -81,7 +80,7 @@ import org.chromium.content_public.browser.WebContents;
     /**
      * UKM metric. Records the onboarding after a successful lite script.
      */
-    /* package */ static void recordLiteScriptOnboarding(
+    public static void recordLiteScriptOnboarding(
             WebContents webContents, @LiteScriptOnboarding int onboarding) {
         if (!areWebContentsValid(webContents)) {
             return;
@@ -95,7 +94,7 @@ import org.chromium.content_public.browser.WebContents;
     /**
      * UKM metric. Records whether the lite script prompt was shown to the user or not.
      */
-    /* package */ static void recordLiteScriptShownToUser(
+    public static void recordLiteScriptShownToUser(
             WebContents webContents, @LiteScriptShownToUser int shownToUser) {
         if (!areWebContentsValid(webContents)) {
             return;
