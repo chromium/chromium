@@ -245,6 +245,7 @@ crbug.com/1151784 external/wpt/css/css-text/white-space/seg-break-transformation
 crbug.com/1162836 external/wpt/css/css-text/white-space/trailing-ideographic-space-017.html [ Failure ]
 crbug.com/1162836 external/wpt/css/css-text/white-space/trailing-ideographic-space-020.html [ Failure ]
 crbug.com/1162836 external/wpt/css/css-text/white-space/trailing-ideographic-space-023.html [ Failure ]
+crbug.com/1162836 external/wpt/css/css-text/hyphens/hyphens-auto-004.html [ Failure ]
 
 ### external/wpt/css/css-text/word-break/
 crbug.com/591099 external/wpt/css/css-text/word-break/word-break-break-all-004.html [ Failure ]
