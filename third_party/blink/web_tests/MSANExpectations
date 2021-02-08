@@ -153,3 +153,6 @@ crbug.com/1134580 [ Linux ] virtual/eye-dropper/http/tests/eye-dropper/color-pic
 
 # Sheriff 2020-11-25
 crbug.com/1152088 [ Linux ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
+
+# Flaky timeouts on MSan.
+crbug.com/1174822 [ Linux ] http/tests/mojo/bindings-lite-sw.https.html [ Pass Timeout ]
