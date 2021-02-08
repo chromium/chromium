@@ -58,6 +58,10 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
                    const mojom::FolderFeature& folder_feature,
                    const std::string& doc_id);
 
+  void DisplayConfirmDialog(
+      drivefs::mojom::DialogReasonPtr reason,
+      drivefs::mojom::DriveFsDelegate::DisplayConfirmDialogCallback callback);
+
   const base::FilePath& mount_path() { return mount_path_; }
 
  private:
