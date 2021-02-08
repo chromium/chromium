@@ -425,7 +425,7 @@ double FuzzyFinder::MatrixMatch(const base::string16& needle_string,
   const int raw_score =
       ScoreForMatrix(score_matrix_, n, m, codepoint_to_offset_, matched_ranges);
   const int max_possible_score =
-      kInitialBonus + (kBoundaryBonus + kMatchScore) * (m - 1);
+      kInitialBonus + kMatchScore + (kBoundaryBonus + kMatchScore) * (m - 1);
   // But that said, in most cases, good matches will score well below this, so
   // let's saturate a little.
   constexpr float kScoreBias = 0.25;
