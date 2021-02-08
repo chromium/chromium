@@ -38,6 +38,14 @@ Polymer({
     },
 
     /**
+     * Whether the short version of the unsubscribe disclaimer should be shown.
+     */
+    hasShortDisclaimer_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
      * Whether a verbose footer will be shown to the user containing some legal
      *  information such as the Google address. Currently shown for Canada only.
      */
@@ -77,6 +85,8 @@ Polymer({
         'optInDefaultState' in data && data.optInDefaultState;
     this.hasLegalFooter_ =
         'legalFooterVisibility' in data && data.legalFooterVisibility;
+    this.hasShortDisclaimer_ =
+        this.marketingOptInVisible_ && !this.hasLegalFooter_;
 
     this.isAccessibilitySettingsShown_ = false;
     this.setAnimationPlay_(true);

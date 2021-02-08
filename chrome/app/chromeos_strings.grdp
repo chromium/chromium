@@ -1136,9 +1136,12 @@
     All set!
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SUBTITLE" desc="The sub-title of the dialog that allows user to opt-in into several Google marketing options.">
-    Get <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> tips, offers, and updates, and share feedback. Unsubscribe anytime.
+    Get <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> tips, offers, and updates, and share feedback.
   </message>
-  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_FOOTER_NOTICE" desc="A notice to the user shown in the footer of the marketing opt-in screen.">
+  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_UNSUBSCRIBE_SHORT" desc="Disclaimer about being able to unsubscribe">
+    Unsubscribe anytime.
+  </message>
+  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_UNSUBSCRIBE_LONG" desc="Longer disclaimer explaining how to unsubscribe">
     Unsubscribe anytime by clicking the link in the emails you receive.
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SUBTITLE_WITH_DEVICE_NAME" desc="The sub-title of the marketing opt in screen which will also include the name of the user's device.">

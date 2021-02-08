@@ -45,11 +45,21 @@
           icon2x="oobe-32:checkmark">
       </hd-iron-icon>
       <div slot="subtitle" id="marketing-opt-in-subtitle">
-        <div hidden="[[!marketingOptInVisible_]]">
-          [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
-        </div>
+        <!-- No marketing opt in sign up option -->
         <div hidden="[[marketingOptInVisible_]]">
           [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
+        </div>
+        <!-- Marketing opt in, normal version -->
+        <div hidden="[[!hasShortDisclaimer_]]">
+          [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
+          [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeShort')]]
+        </div>
+        <!-- Marketing opt in, with legal footer -->
+        <div hidden="[[!hasLegalFooter_]]">
+          <div>[[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]</div>
+          <div>
+            [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
+          </div>
         </div>
       </div>
       <div slot="footer" class="layout vertical flex">
@@ -71,13 +81,8 @@
           </cr-lottie>
         </div>
         <div id="legalFooter" hidden="[[!hasLegalFooter_]]" class="legal-info">
-          <div>
-            [[i18nDynamic(locale, 'marketingOptInScreenFooterNotice')]]
-          </div>
-          <div class="legal-info-address">
-            Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
-            <div>www.google.com</div>
-          </div>
+          Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+          <div>www.google.com</div>
         </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">

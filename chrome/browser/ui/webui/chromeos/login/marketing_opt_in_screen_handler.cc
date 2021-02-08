@@ -57,8 +57,10 @@ void MarketingOptInScreenHandler::DeclareLocalizedValues(
       IDS_LOGIN_MARKETING_OPT_IN_SCREEN_GET_CHROMEBOOK_UPDATES_SIGN_ME_UP);
   builder->Add("marketingOptInScreenAllSet",
                IDS_LOGIN_MARKETING_OPT_IN_SCREEN_ALL_SET);
-  builder->Add("marketingOptInScreenFooterNotice",
-               IDS_LOGIN_MARKETING_OPT_IN_SCREEN_FOOTER_NOTICE);
+  builder->Add("marketingOptInScreenUnsubscribeShort",
+               IDS_LOGIN_MARKETING_OPT_IN_SCREEN_UNSUBSCRIBE_SHORT);
+  builder->Add("marketingOptInScreenUnsubscribeLong",
+               IDS_LOGIN_MARKETING_OPT_IN_SCREEN_UNSUBSCRIBE_LONG);
   builder->Add("marketingOptInA11yButtonLabel",
                IDS_MARKETING_OPT_IN_ACCESSIBILITY_BUTTON_LABEL);
   builder->Add("finalA11yPageTitle", IDS_MARKETING_OPT_IN_ACCESSIBILITY_TITLE);
