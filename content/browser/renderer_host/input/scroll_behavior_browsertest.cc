@@ -338,8 +338,10 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element
 // stops when interrupted by a mouse wheel scroll.
+// Flaky, mainly on Mac, but also on other slower builders/testers:
+// https://crbug.com/1175392
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       OverflowScrollInterruptedByWheelScroll) {
+                       DISABLED_OverflowScrollInterruptedByWheelScroll) {
   // TODO(crbug.com/1116647): compositing scroll should be able to cancel a
   // running programmatic scroll.
   if (!disable_threaded_scrolling_)
