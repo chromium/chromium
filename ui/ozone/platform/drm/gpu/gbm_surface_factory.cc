@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "third_party/khronos/EGL/egl.h"
 #include "ui/gfx/buffer_format_util.h"

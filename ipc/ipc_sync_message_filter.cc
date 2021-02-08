@@ -13,6 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sync_message.h"
+#include "mojo/public/cpp/bindings/associated_interface_ptr.h"
 #include "mojo/public/cpp/bindings/sync_handle_registry.h"
 
 namespace IPC {

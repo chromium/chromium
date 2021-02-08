@@ -13,6 +13,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #import "ui/base/cocoa/controls/textfield_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/strings/grit/ui_strings.h"

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"

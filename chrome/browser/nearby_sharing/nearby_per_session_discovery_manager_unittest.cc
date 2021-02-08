@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/share_target.h"

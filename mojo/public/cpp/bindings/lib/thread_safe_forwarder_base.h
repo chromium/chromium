@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_PUBLIC_CPP_BINDINGS_THREAD_SAFE_FORWARDER_BASE_H_
-#define MOJO_PUBLIC_CPP_BINDINGS_THREAD_SAFE_FORWARDER_BASE_H_
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_THREAD_SAFE_FORWARDER_BASE_H_
+#define MOJO_PUBLIC_CPP_BINDINGS_LIB_THREAD_SAFE_FORWARDER_BASE_H_
 
 #include <memory>
 #include <vector>
@@ -22,16 +22,17 @@
 
 namespace mojo {
 
+namespace internal {
+
 // This class defines out-of-line logic common to the behavior of
 // ThreadSafeForwarder<Interface>, which is in turn used to support the
-// implementation of SharedRemote<Interface> and
-// (deprecated) ThreadSafeInterfacePtr<Interface>.
+// implementation of SharedRemote<Interface>.
 //
 // This object is sequence-affine and it provides an opaque interface to an
 // underlying weakly-referenced interface proxy (e.g. a Remote) which may be
 // bound on a different sequence and referenced weakly by any number of other
 // ThreadSafeForwarders. The opaque interface is provide via a set of callbacks
-// bound internally by e.g. SharedRemote or ThreadSafeInterfacePtr.
+// bound internally by e.g. SharedRemote.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadSafeForwarderBase
     : public MessageReceiverWithResponder {
  public:
@@ -148,6 +149,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadSafeForwarderBase
   DISALLOW_COPY_AND_ASSIGN(ThreadSafeForwarderBase);
 };
 
+}  // namespace internal
+
 }  // namespace mojo
 
-#endif  // MOJO_PUBLIC_CPP_BINDINGS_THREAD_SAFE_FORWARDER_BASE_H_
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_LIB_THREAD_SAFE_FORWARDER_BASE_H_

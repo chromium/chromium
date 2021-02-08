@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 

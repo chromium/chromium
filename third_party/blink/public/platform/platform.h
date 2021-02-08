@@ -83,6 +83,7 @@ class ColorSpace;
 }
 
 namespace gpu {
+class GpuChannelHost;
 class GpuMemoryBufferManager;
 }
 

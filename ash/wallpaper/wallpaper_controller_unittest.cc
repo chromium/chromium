@@ -35,6 +35,7 @@
 #include "base/task/task_observer.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/fake_user_manager.h"

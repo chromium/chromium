@@ -21,15 +21,6 @@ class AssociatedInterfacePtrInfo;
 template <typename Interface>
 class AssociatedInterfaceRequest;
 
-template <typename InterfacePtrType>
-class ThreadSafeInterfacePtrBase;
-template <typename Interface>
-using ThreadSafeAssociatedInterfacePtr =
-    ThreadSafeInterfacePtrBase<AssociatedInterfacePtr<Interface>>;
-template <typename Interface>
-using ThreadSafeInterfacePtr =
-    ThreadSafeInterfacePtrBase<InterfacePtr<Interface>>;
-
 }  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_DEPRECATED_INTERFACE_TYPES_FORWARD_H_

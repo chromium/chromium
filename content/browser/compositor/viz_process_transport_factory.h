@@ -14,6 +14,7 @@
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "gpu/command_buffer/common/context_result.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"

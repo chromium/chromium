@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/bindings/thread_safe_forwarder_base.h"
+#include "mojo/public/cpp/bindings/lib/thread_safe_forwarder_base.h"
 
 #include <utility>
 
@@ -12,6 +12,8 @@
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 
 namespace mojo {
+
+namespace internal {
 
 ThreadSafeForwarderBase::ThreadSafeForwarderBase(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -186,5 +188,7 @@ void ThreadSafeForwarderBase::ForwardToCallingThread::
                                  Message message) {
   ignore_result(responder->Accept(&message));
 }
+
+}  // namespace internal
 
 }  // namespace mojo

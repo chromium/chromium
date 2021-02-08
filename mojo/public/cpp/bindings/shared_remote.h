@@ -16,13 +16,51 @@
 #include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
+#include "mojo/public/cpp/bindings/lib/thread_safe_forwarder_base.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
-#include "mojo/public/cpp/bindings/thread_safe_interface_ptr.h"
 
 namespace mojo {
+
+// Helper that may be used from any sequence to serialize |Interface| messages
+// and forward them elsewhere. In general, prefer `SharedRemote`, but this type
+// may be useful when it's necessary to manually manage the lifetime of the
+// underlying proxy object which will be used to ultimately send messages.
+template <typename Interface>
+class ThreadSafeForwarder : public internal::ThreadSafeForwarderBase {
+ public:
+  using ProxyType = typename Interface::Proxy_;
+
+  // Constructs a ThreadSafeForwarder through which Messages are forwarded to
+  // |forward| or |forward_with_responder| by posting to |task_runner|.
+  //
+  // Any message sent through this forwarding interface will dispatch its reply,
+  // if any, back to the sequence which called the corresponding interface
+  // method.
+  ThreadSafeForwarder(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      ForwardMessageCallback forward,
+      ForwardMessageWithResponderCallback forward_with_responder,
+      ForceAsyncSendCallback force_async_send,
+      const AssociatedGroup& associated_group)
+      : ThreadSafeForwarderBase(std::move(task_runner),
+                                std::move(forward),
+                                std::move(forward_with_responder),
+                                std::move(force_async_send),
+                                associated_group),
+        proxy_(this) {}
+
+  ~ThreadSafeForwarder() override = default;
+
+  ProxyType& proxy() { return proxy_; }
+
+ private:
+  ProxyType proxy_;
+
+  DISALLOW_COPY_AND_ASSIGN(ThreadSafeForwarder);
+};
 
 template <typename Interface>
 class SharedRemote;
@@ -125,7 +163,7 @@ class SharedRemoteBase
    private:
     friend struct RemoteWrapperDeleter;
 
-    ~RemoteWrapper() {}
+    ~RemoteWrapper() = default;
 
     void Bind(PendingType remote) {
       DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -202,7 +240,7 @@ class SharedRemoteBase
     return new SharedRemoteBase(wrapper);
   }
 
-  ~SharedRemoteBase() {}
+  ~SharedRemoteBase() = default;
 
   const scoped_refptr<RemoteWrapper> wrapper_;
   const std::unique_ptr<ThreadSafeForwarder<InterfaceType>> forwarder_;
