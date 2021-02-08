@@ -204,6 +204,41 @@ TEST(AXPlatformNodeBaseTest, InnerTextIgnoresInvisibleAndIgnored) {
   }
 }
 
+TEST(AXPlatformNodeBaseTest, TestMenuSelectedItems) {
+  AXPlatformNode::NotifyAddAXModeFlags(kAXModeComplete);
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kMenu;
+
+  AXNodeData item_1_data;
+  item_1_data.id = 2;
+  item_1_data.role = ax::mojom::Role::kMenuItem;
+  item_1_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+
+  AXNodeData item_2_data;
+  item_2_data.id = 3;
+  item_2_data.role = ax::mojom::Role::kMenuItem;
+
+  root_data.child_ids = {item_1_data.id, item_2_data.id};
+
+  AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes = {root_data, item_1_data, item_2_data};
+  AXTree tree(update);
+
+  auto* root = static_cast<AXPlatformNodeBase*>(
+      TestAXNodeWrapper::GetOrCreate(&tree, tree.root())->ax_platform_node());
+
+  int num = root->GetSelectionCount();
+  EXPECT_EQ(num, 1);
+
+  gfx::NativeViewAccessible first_child = root->ChildAtIndex(0);
+  AXPlatformNodeBase* first_selected_node = root->GetSelectedItem(0);
+  EXPECT_EQ(first_child, first_selected_node->GetNativeViewAccessible());
+  EXPECT_EQ(nullptr, root->GetSelectedItem(1));
+}
+
 TEST(AXPlatformNodeBaseTest, TestSelectedChildren) {
   AXPlatformNode::NotifyAddAXModeFlags(kAXModeComplete);
 

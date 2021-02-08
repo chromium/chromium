@@ -345,8 +345,8 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   ui::TextAttributeList ComputeTextAttributes() const;
 
-  // Get the number of items selected. It checks kMultiselectable and
-  // kFocusable. and uses GetSelectedItems to get the selected number.
+  // Get the number of items selected. It checks kMultiselectable and uses
+  // GetSelectedItems to get the selected number.
   int GetSelectionCount() const;
 
   // If this object is a container that supports selectable children, returns

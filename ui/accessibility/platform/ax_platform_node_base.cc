@@ -2224,9 +2224,6 @@ std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
 }
 
 int AXPlatformNodeBase::GetMaxSelectableItems() const {
-  if (!GetData().HasState(ax::mojom::State::kFocusable))
-    return 0;
-
   if (IsLeaf())
     return 0;
 
