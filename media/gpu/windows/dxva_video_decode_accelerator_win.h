@@ -65,6 +65,7 @@ class ConfigChangeDetector {
       const gfx::Rect& container_visible_rect) const = 0;
   virtual VideoColorSpace current_color_space(
       const VideoColorSpace& container_color_space) const = 0;
+  virtual bool IsYUV420() const;
   bool config_changed() const { return config_changed_; }
 
  protected:
