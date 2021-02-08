@@ -76,7 +76,6 @@ static PositionWithAffinity AdjustForSoftLineWrap(
   const Position adjusted_position = mapping->GetFirstPosition(*offset + 1);
   if (adjusted_position.IsNull())
     return position;
-  DCHECK(IsA<Text>(adjusted_position.AnchorNode())) << adjusted_position;
   if (!IsA<Text>(adjusted_position.AnchorNode()))
     return position;
   if (!adjusted_position.AnchorNode()
