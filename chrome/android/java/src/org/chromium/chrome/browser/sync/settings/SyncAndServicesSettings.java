@@ -74,7 +74,13 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
- * Settings fragment to enable Sync and other services that communicate with Google.
+ * WARNING: This class will be REMOVED after MobileIdentityConsistency launches.
+ * SyncAndServicesAndSettings is a view in settings containing three sections: "User" (information
+ * about the signed-in account), "Sync" (entry point to ManageSyncSettings and toggle to
+ * enable/disable sync) and "Other Google services" (toggles controlling a variety of features
+ * employing Google services, such as search autocomplete). With the MobileIdentityConsistency
+ * feature, this view disappears and the "Sync" and "Google services" sections are split into
+ * separate views, accessible directly from top-level settings. The "User" section disappears.
  */
 public class SyncAndServicesSettings extends PreferenceFragmentCompat
         implements PassphraseDialogFragment.Listener, Preference.OnPreferenceChangeListener,

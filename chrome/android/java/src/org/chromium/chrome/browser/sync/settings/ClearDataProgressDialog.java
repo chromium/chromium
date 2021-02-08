@@ -11,8 +11,8 @@ import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
 
 /**
- * This class is used by {@link AccountManagementFragment} to show the clear data progress dialog
- * during sign out.
+ * A dialog with a spinner shown when the user decides to clear data on sign-out. The dialog closes
+ * by itself once the data has been cleared.
  */
 public class ClearDataProgressDialog extends DialogFragment {
     @Override

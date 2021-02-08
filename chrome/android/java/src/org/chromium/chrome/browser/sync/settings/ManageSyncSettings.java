@@ -73,8 +73,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Settings fragment to customize Sync options (data types, encryption). Can be accessed from
- * {@link SyncAndServicesSettings}.
+ * Settings fragment to customize Sync options (data types, encryption). Corresponds to
+ * chrome://settings/syncSetup/advanced and parts of chrome://settings/syncSetup on desktop.
+ * With the MobileIdentityConsistency feature, this fragment is accessible from the main settings
+ * view. If the feature is disabled, the entry point is in {@link SyncAndServicesSettings}.
  */
 public class ManageSyncSettings extends PreferenceFragmentCompat
         implements PassphraseDialogFragment.Listener, PassphraseCreationDialogFragment.Listener,

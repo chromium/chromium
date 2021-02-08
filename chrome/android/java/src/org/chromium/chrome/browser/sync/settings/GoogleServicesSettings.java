@@ -47,7 +47,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
- * Settings fragment to enable Sync and other services that communicate with Google.
+ * Settings fragment controlling a number of features communicating with Google services, such as
+ * search autocomplete and the automatic upload of crash reports.
  */
 public class GoogleServicesSettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener,
