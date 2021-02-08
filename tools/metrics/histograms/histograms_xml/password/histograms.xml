@@ -570,6 +570,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AffiliationService.GetChangePasswordUsage"
+    enum="GetChangePasswordUrlMetric" expires_after="M93">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Usage and timing of the Affiliation Service GetChangePasswordUrl call.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AllPasswordsBottomSheet.UserAction"
     enum="AllPasswordsBottomSheetActions" expires_after="2021-06-20">
   <owner>redatawfik@google.com</owner>
