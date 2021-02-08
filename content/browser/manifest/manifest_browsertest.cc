@@ -361,15 +361,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, FileHandlerManifest) {
 // If a page's manifest lives in a different origin, it should follow the CORS
 // rules and requesting the manifest should return an empty manifest (unless the
 // response contains CORS headers).
-// Flaky on linux: crbug.com/1122546
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CorsManifest DISABLED_CorsManifest
-#else
-#define MAYBE_CorsManifest CorsManifest
-#endif
-IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, MAYBE_CorsManifest) {
+// Flaky: crbug.com/1122546
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DISABLED_CorsManifest) {
   ASSERT_TRUE(cors_embedded_test_server()->Start());
   ASSERT_NE(embedded_test_server()->port(),
             cors_embedded_test_server()->port());
