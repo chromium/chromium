@@ -72,7 +72,6 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::NavigateTo:
     case CSPDirectiveName::ObjectSrc:
-    case CSPDirectiveName::PluginTypes:
     case CSPDirectiveName::PrefetchSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
@@ -118,7 +117,6 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::ManifestSrc:
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::ObjectSrc:
-    case CSPDirectiveName::PluginTypes:
     case CSPDirectiveName::PrefetchSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
@@ -644,41 +642,6 @@ mojom::CSPSourceListPtr ParseSourceList(
   return directive;
 }
 
-// Checks whether |expression| is a plugin type matching the regex:
-// [^\s/]+\/[^\s/]+
-// We assume |expression| does not contain any whitespaces.
-bool IsPluginType(base::StringPiece expression) {
-  auto* it = expression.begin();
-  auto* end = expression.end();
-
-  int count_1 = EatChar(&it, end, [](char c) { return c != '/'; });
-  if (it == end || *it != '/')
-    return false;
-  ++it;
-  int count_2 = EatChar(&it, end, [](char c) { return c != '/'; });
-
-  return count_1 >= 1 && count_2 >= 1 && it == end;
-}
-
-std::vector<std::string> ParsePluginTypes(
-    base::StringPiece value,
-    std::vector<std::string>& parsing_errors) {
-  std::vector<std::string> out;
-  for (const auto expression : base::SplitStringPiece(
-           value, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
-    if (IsPluginType(expression))
-      out.emplace_back(expression.as_string());
-    else {
-      parsing_errors.emplace_back(base::StringPrintf(
-          "Invalid plugin type in 'plugin-types' Content Security Policy "
-          "directive: '%s'.",
-          expression.as_string().c_str()));
-    }
-  }
-  return out;
-}
-
 // Parse the 'required-trusted-types-for' directive.
 // https://w3c.github.io/webappsec-trusted-types/dist/spec/#require-trusted-types-for-csp-directive
 network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
@@ -822,6 +785,20 @@ mojom::CSPSourcePtr ComputeSelfOrigin(const GURL& url) {
                                "", false, false);
 }
 
+std::string UnrecognizedDirectiveErrorMessage(
+    const std::string& directive_name) {
+  if (base::EqualsCaseInsensitiveASCII(directive_name, "plugin-types")) {
+    return "The Content-Security-Policy directive 'plugin-types' has been "
+           "removed from the "
+           "specification. If you want to block plugins, consider specifying "
+           "\"object-src 'none'\" instead.";
+  }
+
+  return base::StringPrintf(
+      "Unrecognized Content-Security-Policy directive '%s'.",
+      directive_name.c_str());
+}
+
 void AddContentSecurityPolicyFromHeader(base::StringPiece header,
                                         mojom::ContentSecurityPolicyType type,
                                         const GURL& base_url,
@@ -845,9 +822,8 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
         ToCSPDirectiveName(directive.first.as_string());
 
     if (directive_name == CSPDirectiveName::Unknown) {
-      out->parsing_errors.emplace_back(base::StringPrintf(
-          "Unrecognized Content-Security-Policy directive '%s'.",
-          directive.first.as_string().c_str()));
+      out->parsing_errors.emplace_back(
+          UnrecognizedDirectiveErrorMessage(directive.first.as_string()));
       continue;
     }
 
@@ -930,14 +906,6 @@ void AddContentSecurityPolicyFromHeader(base::StringPiece header,
         out->treat_as_public_address = true;
         WarnIfDirectiveValueNotEmpty(directive, out->parsing_errors);
         break;
-      case CSPDirectiveName::PluginTypes:
-        // If the plugin-types directive is present, then always initialize
-        // `out->plugin_types` to be non-null, since only the plugin types
-        // explicitly listed will be allowed..
-        out->plugin_types =
-            ParsePluginTypes(directive.second, out->parsing_errors);
-        break;
-
       case CSPDirectiveName::RequireTrustedTypesFor:
         out->require_trusted_types_for =
             ParseRequireTrustedTypesFor(directive.second, out->parsing_errors);
@@ -983,56 +951,6 @@ std::pair<CSPDirectiveName, const mojom::CSPSourceList*> GetSourceList(
       return std::make_pair(effective_directive, value->second.get());
   }
   return std::make_pair(CSPDirectiveName::Unknown, nullptr);
-}
-
-// Check that all plugin-types allowed by the intersection of the policies in
-// |policies_b| are also allowed by |policy_a|.
-bool PluginTypesSubsumes(
-    const mojom::ContentSecurityPolicy& policy_a,
-    const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b) {
-  // Note that `policy->plugin_types == base::nullopt` means all plugin-types
-  // are allowed, while if `policy->plugin_types` is the empty vector than no
-  // plugin-types are allowed.
-
-  if (!policy_a.plugin_types.has_value())
-    // |types_a| allows everything.
-    return true;
-
-  if (policies_b.empty())
-    return false;
-
-  // Compute the intersection of the allowed plugin-types from |policies_b|.
-  // First, find the first non-null plugin-types entry in |policies_b|.
-  base::Optional<base::flat_set<std::string>> types_b;
-  auto it = policies_b.begin();
-  for (; it != policies_b.end(); ++it) {
-    if ((*it)->plugin_types.has_value()) {
-      types_b = base::flat_set<std::string>((*it)->plugin_types.value());
-      break;
-    }
-  }
-
-  // If |types_b| is base::nullopt, then no policy in |policies_b| specified
-  // any plugin-types, so |policies_b| allows everything.
-  if (!types_b.has_value())
-    return false;
-
-  // Now complete the intersection by considering the remaining policies of
-  // |policies_b|.
-  for (; it != policies_b.end(); ++it) {
-    if ((*it)->plugin_types.has_value()) {
-      base::flat_set<std::string> set((*it)->plugin_types.value());
-      base::EraseIf(types_b.value(),
-                    [&set](const auto& type) { return !set.contains(type); });
-    }
-  }
-
-  // Check that every plugin-type in |types_b| is allowed by |types_a|.
-  return base::ranges::all_of(types_b.value(), [&](const std::string& type_b) {
-    return base::ranges::any_of(
-        policy_a.plugin_types.value(),
-        [&](const std::string& type_a) { return type_a == type_b; });
-  });
 }
 
 }  // namespace
@@ -1087,7 +1005,6 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::FormAction:
     case CSPDirectiveName::FrameAncestors:
     case CSPDirectiveName::NavigateTo:
-    case CSPDirectiveName::PluginTypes:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:
@@ -1275,8 +1192,6 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
   if (policy_a.header->type == mojom::ContentSecurityPolicyType::kReport)
     return true;
 
-  if (!PluginTypesSubsumes(policy_a, policies_b))
-    return false;
   if (policy_a.directives.empty())
     return true;
 
@@ -1353,8 +1268,6 @@ CSPDirectiveName ToCSPDirectiveName(const std::string& name) {
     return CSPDirectiveName::MediaSrc;
   if (name == "object-src")
     return CSPDirectiveName::ObjectSrc;
-  if (name == "plugin-types")
-    return CSPDirectiveName::PluginTypes;
   if (name == "prefetch-src")
     return CSPDirectiveName::PrefetchSrc;
   if (name == "report-uri")
@@ -1419,8 +1332,6 @@ std::string ToString(CSPDirectiveName name) {
       return "media-src";
     case CSPDirectiveName::ObjectSrc:
       return "object-src";
-    case CSPDirectiveName::PluginTypes:
-      return "plugin-types";
     case CSPDirectiveName::PrefetchSrc:
       return "prefetch-src";
     case CSPDirectiveName::ReportURI:

@@ -132,8 +132,8 @@ TEST_F(ContentSecurityPolicyTest, ParseInsecureRequestPolicy) {
 }
 
 TEST_F(ContentSecurityPolicyTest, CopyStateFrom) {
-  csp->DidReceiveHeader("script-src 'none'; plugin-types application/x-type-1",
-                        *secure_origin, ContentSecurityPolicyType::kReport,
+  csp->DidReceiveHeader("script-src 'none'", *secure_origin,
+                        ContentSecurityPolicyType::kReport,
                         ContentSecurityPolicySource::kHTTP);
   csp->DidReceiveHeader("img-src http://example.com", *secure_origin,
                         ContentSecurityPolicyType::kReport,
@@ -149,9 +149,6 @@ TEST_F(ContentSecurityPolicyTest, CopyStateFrom) {
       example_url, ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kSuppressReporting,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
-  EXPECT_TRUE(csp2->AllowPluginType("application/x-type-1",
-                                    "application/x-type-1", example_url,
-                                    ReportingDisposition::kSuppressReporting));
   EXPECT_TRUE(csp2->AllowImageFromSource(
       example_url, example_url, ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kSuppressReporting,
@@ -161,41 +158,6 @@ TEST_F(ContentSecurityPolicyTest, CopyStateFrom) {
       ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kSuppressReporting,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
-  EXPECT_FALSE(csp2->AllowPluginType("application/x-type-2",
-                                     "application/x-type-2", example_url,
-                                     ReportingDisposition::kSuppressReporting));
-}
-
-TEST_F(ContentSecurityPolicyTest, CopyPluginTypesFrom) {
-  csp->DidReceiveHeader("script-src 'none'; plugin-types application/x-type-1",
-                        *secure_origin, ContentSecurityPolicyType::kEnforce,
-                        ContentSecurityPolicySource::kHTTP);
-  csp->DidReceiveHeader("img-src http://example.com", *secure_origin,
-                        ContentSecurityPolicyType::kEnforce,
-                        ContentSecurityPolicySource::kHTTP);
-
-  const KURL example_url("http://example.com");
-  const KURL not_example_url("http://not-example.com");
-
-  auto* csp2 = MakeGarbageCollected<ContentSecurityPolicy>();
-  csp2->CopyPluginTypesFrom(csp.Get());
-  EXPECT_TRUE(csp2->AllowScriptFromSource(
-      example_url, String(), IntegrityMetadataSet(), kParserInserted,
-      example_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      ReportingDisposition::kSuppressReporting));
-  EXPECT_TRUE(csp2->AllowPluginType("application/x-type-1",
-                                    "application/x-type-1", example_url,
-                                    ReportingDisposition::kSuppressReporting));
-  EXPECT_TRUE(csp2->AllowImageFromSource(
-      example_url, example_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      ReportingDisposition::kSuppressReporting));
-  EXPECT_TRUE(
-      csp2->AllowImageFromSource(not_example_url, not_example_url,
-                                 ResourceRequest::RedirectStatus::kNoRedirect,
-                                 ReportingDisposition::kSuppressReporting));
-  EXPECT_FALSE(csp2->AllowPluginType("application/x-type-2",
-                                     "application/x-type-2", example_url,
-                                     ReportingDisposition::kSuppressReporting));
 }
 
 TEST_F(ContentSecurityPolicyTest, IsActiveForConnectionsWithConnectSrc) {
@@ -605,7 +567,6 @@ TEST_F(ContentSecurityPolicyTest, DirectiveType) {
       {CSPDirectiveName::MediaSrc, "media-src"},
       {CSPDirectiveName::NavigateTo, "navigate-to"},
       {CSPDirectiveName::ObjectSrc, "object-src"},
-      {CSPDirectiveName::PluginTypes, "plugin-types"},
       {CSPDirectiveName::ReportURI, "report-uri"},
       {CSPDirectiveName::Sandbox, "sandbox"},
       {CSPDirectiveName::ScriptSrc, "script-src"},
@@ -1209,11 +1170,6 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   EXPECT_TRUE(csp->AllowWasmEval(ReportingDisposition::kReport,
                                  ContentSecurityPolicy::kWillNotThrowException,
                                  g_empty_string));
-  EXPECT_TRUE(csp->AllowPluginType("application/x-type-1",
-                                   "application/x-type-1", example_url));
-  EXPECT_TRUE(csp->AllowPluginType("application/x-type-1",
-                                   "application/x-type-1", example_url,
-                                   ReportingDisposition::kSuppressReporting));
 
   CSPDirectiveName types_to_test[] = {
       CSPDirectiveName::BaseURI,       CSPDirectiveName::ConnectSrc,

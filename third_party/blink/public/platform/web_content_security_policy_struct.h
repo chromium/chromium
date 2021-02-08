@@ -102,7 +102,6 @@ struct WebContentSecurityPolicy {
   WebContentSecurityPolicyHeader header;
   bool use_reporting_api;
   WebVector<WebString> report_endpoints;
-  base::Optional<WebVector<WebString>> plugin_types;
   network::mojom::CSPRequireTrustedTypesFor require_trusted_types_for;
   base::Optional<WebCSPTrustedTypes> trusted_types;
   WebVector<WebString> parsing_errors;

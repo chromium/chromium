@@ -155,10 +155,6 @@ blink::ContentSecurityPolicyPtr ConvertToBlink(
       ConvertToBlink(std::move(policy_in->header)),
       policy_in->use_reporting_api,
       ConvertToBlink(std::move(policy_in->report_endpoints)),
-      policy_in->plugin_types.has_value()
-          ? base::Optional<WTF::Vector<WTF::String>>(
-                ConvertToBlink(std::move(policy_in->plugin_types.value())))
-          : base::nullopt,
       policy_in->require_trusted_types_for,
       ConvertToBlink(std::move(policy_in->trusted_types)),
       ConvertToBlink(std::move(policy_in->parsing_errors)));

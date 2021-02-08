@@ -25,7 +25,7 @@ TEST(ContentSecurityPolicyConversionUtilTest, BackAndForthConversion) {
       ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::blink::ContentSecurityPolicyType::kEnforce,
           network::mojom::blink::ContentSecurityPolicySource::kHTTP),
-      false, Vector<String>(), base::nullopt,
+      false, Vector<String>(),
       network::mojom::blink::CSPRequireTrustedTypesFor::None, nullptr,
       Vector<String>());
 
@@ -59,11 +59,6 @@ TEST(ContentSecurityPolicyConversionUtilTest, BackAndForthConversion) {
       [](ContentSecurityPolicy& csp) { csp.use_reporting_api = true; },
       [](ContentSecurityPolicy& csp) {
         csp.report_endpoints = {"endpoint1", "endpoint2"};
-      },
-      [](ContentSecurityPolicy& csp) { csp.plugin_types = Vector<String>(); },
-      [](ContentSecurityPolicy& csp) {
-        csp.plugin_types = Vector<String>(
-            {"application/pdf", "application/x-shockwave-flash"});
       },
       [](ContentSecurityPolicy& csp) {
         csp.require_trusted_types_for =
@@ -111,7 +106,7 @@ TEST(ContentSecurityPolicyConversionUtilTest,
       network::mojom::blink::ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::blink::ContentSecurityPolicyType::kEnforce,
           network::mojom::blink::ContentSecurityPolicySource::kHTTP),
-      false, Vector<String>(), base::nullopt,
+      false, Vector<String>(),
       network::mojom::blink::CSPRequireTrustedTypesFor::None, nullptr,
       Vector<String>());
 

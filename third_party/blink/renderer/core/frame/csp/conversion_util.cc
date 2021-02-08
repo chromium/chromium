@@ -132,10 +132,6 @@ WebContentSecurityPolicy ConvertToPublic(
     raw_directives[i++] = {directive.key, std::move(directive.value)};
   }
 
-  base::Optional<WebVector<WebString>> plugin_types = base::nullopt;
-  if (policy->plugin_types.has_value())
-    plugin_types = policy->plugin_types.value();
-
   return {ConvertToPublic(std::move(policy->self_origin)),
           std::move(raw_directives),
           std::move(directives),
@@ -146,7 +142,6 @@ WebContentSecurityPolicy ConvertToPublic(
           ConvertToPublic(std::move(policy->header)),
           policy->use_reporting_api,
           std::move(policy->report_endpoints),
-          std::move(plugin_types),
           policy->require_trusted_types_for,
           ConvertToPublic(std::move(policy->trusted_types)),
           std::move(policy->parsing_errors)};
@@ -176,9 +171,6 @@ network::mojom::blink::ContentSecurityPolicyPtr ConvertToMojoBlink(
           policy_in.header.header_value, policy_in.header.type,
           policy_in.header.source),
       policy_in.use_reporting_api, ConvertToWTF(policy_in.report_endpoints),
-      policy_in.plugin_types.has_value()
-          ? base::make_optional(ConvertToWTF(policy_in.plugin_types.value()))
-          : base::nullopt,
       policy_in.require_trusted_types_for,
       policy_in.trusted_types ? network::mojom::blink::CSPTrustedTypes::New(
                                     ConvertToWTF(policy_in.trusted_types->list),

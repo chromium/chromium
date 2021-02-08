@@ -1823,24 +1823,6 @@ ContentSecurityPolicy* FrameLoader::CreateCSP(
   if (origin_policy)
     ApplyOriginPolicy(csp, url, origin_policy.value());
 
-  // Plugin inherits plugin's CSP from their navigation initiator.
-  DocumentInit::Type document_type =
-      DocumentInit::ComputeDocumentType(frame_, url, response.MimeType());
-  if (document_type == DocumentInit::Type::kPlugin) {
-    Frame* owner_frame = frame_->Parent() ? frame_->Parent() : frame_->Opener();
-    ContentSecurityPolicy* owner_csp =
-        owner_frame
-            ? owner_frame->GetSecurityContext()->GetContentSecurityPolicy()
-            : nullptr;
-    // TODO(andypaicu): This should always inherit the origin document's plugin
-    // types but because this could be a OOPIF document it might not have
-    // access. In this situation we fallback on using the parent/opener:
-    ContentSecurityPolicy* inherited_csp =
-        initiator_csp ? initiator_csp : owner_csp;
-    if (inherited_csp)
-      csp->CopyPluginTypesFrom(inherited_csp);
-  }
-
   return csp;
 }
 

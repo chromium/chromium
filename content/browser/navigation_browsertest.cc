@@ -4306,6 +4306,26 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   console_observer.Wait();
 }
 
+// The Content Security Policy directive 'plugin-types' has been removed. Here
+// we check that Blink reports a console message if 'plugin-type' is delivered
+// in a policy.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       ContentSecurityPolicyErrorPluginTypes) {
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "The Content-Security-Policy directive 'plugin-types' has been removed "
+      "from the specification. "
+      "If you want to block plugins, consider specifying \"object-src 'none'\" "
+      "instead.");
+
+  GURL url = embedded_test_server()->GetURL(
+      "/set-header?"
+      "Content-Security-Policy: plugin-types application/pdf");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  console_observer.Wait();
+}
+
 // The test below verifies that an "about:blank" navigation commits with the
 // right origin, even when the initiator of the navigation is not the parent or
 // opener of the frame targeted by the navigation.  In the

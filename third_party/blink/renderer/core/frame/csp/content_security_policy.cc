@@ -290,23 +290,6 @@ void ContentSecurityPolicy::CopyStateFrom(const ContentSecurityPolicy* other) {
     ReportAccumulatedHeaders();
 }
 
-void ContentSecurityPolicy::CopyPluginTypesFrom(
-    const ContentSecurityPolicy* other) {
-  for (const auto& policy : other->policies_) {
-    if (policy->plugin_types) {
-      KURL url;
-      url.SetProtocol(policy->self_origin->scheme);
-      url.SetHost(policy->self_origin->host);
-      url.SetPort(policy->self_origin->port == url::PORT_UNSPECIFIED
-                      ? 0
-                      : policy->self_origin->port);
-      scoped_refptr<SecurityOrigin> self_origin = SecurityOrigin::Create(url);
-      DidReceiveHeader(CSPDirectiveListPluginTypesText(*policy), *self_origin,
-                       policy->header->type, policy->header->source);
-    }
-  }
-}
-
 void ContentSecurityPolicy::DidReceiveHeaders(
     const ContentSecurityPolicyResponseHeaders& headers) {
   scoped_refptr<SecurityOrigin> self_origin =
@@ -618,19 +601,6 @@ String ContentSecurityPolicy::EvalDisabledErrorMessage() const {
       return message;
   }
   return String();
-}
-
-bool ContentSecurityPolicy::AllowPluginType(
-    const String& type,
-    const String& type_attribute,
-    const KURL& url,
-    ReportingDisposition reporting_disposition) {
-  for (const auto& policy : policies_) {
-    if (!CSPDirectiveListAllowPluginType(*policy, this, type, type_attribute,
-                                         url, reporting_disposition))
-      return false;
-  }
-  return true;
 }
 
 static base::Optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
@@ -1106,7 +1076,6 @@ void ContentSecurityPolicy::ReportViolation(
   if (!delegate_ && !context_frame) {
     DCHECK(effective_type == CSPDirectiveName::ChildSrc ||
            effective_type == CSPDirectiveName::FrameSrc ||
-           effective_type == CSPDirectiveName::PluginTypes ||
            effective_type == CSPDirectiveName::TrustedTypes ||
            effective_type == CSPDirectiveName::RequireTrustedTypesFor);
     return;
@@ -1278,6 +1247,7 @@ void ContentSecurityPolicy::ReportUnsupportedDirective(const String& name) {
   static const char kAllow[] = "allow";
   static const char kOptions[] = "options";
   static const char kPolicyURI[] = "policy-uri";
+  static const char kPluginTypes[] = "plugin-types";
   static const char kAllowMessage[] =
       "The 'allow' directive has been replaced with 'default-src'. Please use "
       "that directive instead, as 'allow' has no effect.";
@@ -1290,6 +1260,11 @@ void ContentSecurityPolicy::ReportUnsupportedDirective(const String& name) {
       "The 'policy-uri' directive has been removed from the "
       "specification. Please specify a complete policy via "
       "the Content-Security-Policy header.";
+  static const char kPluginTypesMessage[] =
+      "The Content-Security-Policy directive 'plugin-types' has been removed "
+      "from the specification. "
+      "If you want to block plugins, consider specifying \"object-src 'none'\" "
+      "instead.";
 
   String message =
       "Unrecognized Content-Security-Policy directive '" + name + "'.\n";
@@ -1300,6 +1275,8 @@ void ContentSecurityPolicy::ReportUnsupportedDirective(const String& name) {
     message = kOptionsMessage;
   } else if (EqualIgnoringASCIICase(name, kPolicyURI)) {
     message = kPolicyURIMessage;
+  } else if (EqualIgnoringASCIICase(name, kPluginTypes)) {
+    message = kPluginTypesMessage;
   } else if (GetDirectiveType(name) != CSPDirectiveName::Unknown) {
     message = "The Content-Security-Policy directive '" + name +
               "' is implemented behind a flag which is currently disabled.\n";
@@ -1322,29 +1299,6 @@ void ContentSecurityPolicy::ReportDirectiveAsSourceExpression(
 void ContentSecurityPolicy::ReportDuplicateDirective(const String& name) {
   String message =
       "Ignoring duplicate Content-Security-Policy directive '" + name + "'.\n";
-  LogToConsole(message);
-}
-
-void ContentSecurityPolicy::ReportInvalidPluginTypes(
-    const String& plugin_type) {
-  String message;
-  if (plugin_type.IsNull()) {
-    message =
-        "'plugin-types' Content Security Policy directive is empty; all "
-        "plugins will be blocked. To disallow all plugins, the \"object-src "
-        "'none'\" directive should be used instead.\n";
-  } else if (plugin_type == "'none'") {
-    message =
-        "Invalid plugin type in 'plugin-types' Content Security Policy "
-        "directive: '" +
-        plugin_type +
-        "'. Did you mean to set the object-src directive to 'none'?\n";
-  } else {
-    message =
-        "Invalid plugin type in 'plugin-types' Content Security Policy "
-        "directive: '" +
-        plugin_type + "'.\n";
-  }
   LogToConsole(message);
 }
 
@@ -1595,8 +1549,6 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "navigate-to";
     case CSPDirectiveName::ObjectSrc:
       return "object-src";
-    case CSPDirectiveName::PluginTypes:
-      return "plugin-types";
     case CSPDirectiveName::PrefetchSrc:
       return "prefetch-src";
     case CSPDirectiveName::ReportTo:
@@ -1666,8 +1618,6 @@ CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
     return CSPDirectiveName::NavigateTo;
   if (name == "object-src")
     return CSPDirectiveName::ObjectSrc;
-  if (name == "plugin-types")
-    return CSPDirectiveName::PluginTypes;
   if (name == "prefetch-src")
     return CSPDirectiveName::PrefetchSrc;
   if (name == "report-to")

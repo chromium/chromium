@@ -24,7 +24,7 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversion) {
       ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP),
-      false, std::vector<std::string>(), base::nullopt,
+      false, std::vector<std::string>(),
       network::mojom::CSPRequireTrustedTypesFor::None, nullptr,
       std::vector<std::string>());
 
@@ -56,13 +56,6 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversion) {
       [](ContentSecurityPolicy& csp) { csp.use_reporting_api = true; },
       [](ContentSecurityPolicy& csp) {
         csp.report_endpoints = {"endpoint1", "endpoint2"};
-      },
-      [](ContentSecurityPolicy& csp) {
-        csp.plugin_types = std::vector<std::string>();
-      },
-      [](ContentSecurityPolicy& csp) {
-        csp.plugin_types = std::vector<std::string>(
-            {"application/pdf", "application/x-shockwave-flash"});
       },
       [](ContentSecurityPolicy& csp) {
         csp.require_trusted_types_for =
@@ -111,7 +104,7 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversionForCSPSourceList) {
       network::mojom::ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP),
-      false, std::vector<std::string>(), base::nullopt,
+      false, std::vector<std::string>(),
       network::mojom::CSPRequireTrustedTypesFor::None, nullptr,
       std::vector<std::string>());
 

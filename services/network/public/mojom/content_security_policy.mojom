@@ -110,7 +110,6 @@ enum CSPDirectiveName {
   MediaSrc,
   NavigateTo,
   ObjectSrc,
-  PluginTypes,
   PrefetchSrc,
   ReportTo,
   ReportURI,
@@ -185,12 +184,6 @@ struct ContentSecurityPolicy {
 
   // Set of reporting endpoints to which violation reports are sent.
   array<string> report_endpoints;
-
-  // Plugin types specified by the CSP. If `null`, no plugin-types directive is
-  // specified and hence all types are allowed. If an empty array, then the
-  // plugin-types directive is specified with no types, hence no types are
-  // allowed.
-  array<string>? plugin_types;
 
   // The parsed value of the directive 'require-trusted-types-for'.
   // https://w3c.github.io/webappsec-trusted-types/dist/spec/#require-trusted-types-for-csp-directive

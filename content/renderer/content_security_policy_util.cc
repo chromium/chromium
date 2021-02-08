@@ -139,10 +139,6 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
           policy_in.header.source),
       policy_in.use_reporting_api,
       BuildVectorOfStrings(policy_in.report_endpoints),
-      policy_in.plugin_types.has_value()
-          ? base::make_optional(
-                BuildVectorOfStrings(policy_in.plugin_types.value()))
-          : base::nullopt,
       policy_in.require_trusted_types_for,
       policy_in.trusted_types
           ? network::mojom::CSPTrustedTypes::New(
@@ -171,11 +167,6 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
                                                 std::move(directive.second))};
   }
 
-  base::Optional<blink::WebVector<blink::WebString>> plugin_types =
-      base::nullopt;
-  if (policy_in->plugin_types.has_value())
-    plugin_types = ToWebVectorOfWebStrings(policy_in->plugin_types.value());
-
   return {ToWebCSPSource(std::move(policy_in->self_origin)),
           std::move(raw_directives),
           std::move(directives),
@@ -186,7 +177,6 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
           ToWebContentSecurityPolicyHeader(std::move(policy_in->header)),
           policy_in->use_reporting_api,
           ToWebVectorOfWebStrings(std::move(policy_in->report_endpoints)),
-          std::move(plugin_types),
           policy_in->require_trusted_types_for,
           ToOptionalWebCSPTrustedTypes(std::move(policy_in->trusted_types)),
           ToWebVectorOfWebStrings(std::move(policy_in->parsing_errors))};

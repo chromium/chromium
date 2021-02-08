@@ -1,3 +1,0 @@
-CONSOLE ERROR: Refused to load 'http://127.0.0.1:8000/plugins/resources/mock-plugin.pl' (MIME type 'application/x-blink-test-plugin') because it violates the following Content Security Policy Directive: 'plugin-types text/plain'.
-
-This tests that a plugin-types directive on a top-level page should be inherited by a PluginDocument embedded in the page. This test passes if a console error says that the plugin was blocked.

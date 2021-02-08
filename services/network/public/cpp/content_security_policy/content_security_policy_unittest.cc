@@ -648,54 +648,14 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
 }
 
 TEST(ContentSecurityPolicy, ParsePluginTypes) {
-  {
-    std::vector<mojom::ContentSecurityPolicyPtr> policies =
-        ParseCSP("plugin-types    application/pdf text/plain  invalid a/a/a");
-    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::PluginTypes],
-              "application/pdf text/plain  invalid a/a/a");
-    EXPECT_EQ(policies[0]->directives.size(), 0u);
-    EXPECT_TRUE(policies[0]->plugin_types.has_value());
-    EXPECT_EQ(policies[0]->plugin_types.value().size(), 2u);
-    EXPECT_EQ(policies[0]->plugin_types.value()[0], "application/pdf");
-    EXPECT_EQ(policies[0]->plugin_types.value()[1], "text/plain");
-    EXPECT_EQ(policies[0]->parsing_errors.size(), 2u);
-    EXPECT_EQ(policies[0]->parsing_errors[0],
-              "Invalid plugin type in 'plugin-types' Content Security Policy "
-              "directive: 'invalid'.");
-    EXPECT_EQ(policies[0]->parsing_errors[1],
-              "Invalid plugin type in 'plugin-types' Content Security Policy "
-              "directive: 'a/a/a'.");
-  }
-
-  {
-    std::vector<mojom::ContentSecurityPolicyPtr> policies =
-        ParseCSP("plugin-types ; default-src 'self'");
-    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::PluginTypes],
-              "");
-    EXPECT_TRUE(policies[0]->plugin_types.has_value());
-    EXPECT_EQ(policies[0]->plugin_types.value().size(), 0u);
-    EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
-  }
-
-  {
-    std::vector<mojom::ContentSecurityPolicyPtr> policies =
-        ParseCSP("plugin-types 'self' ; default-src 'self'");
-    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::PluginTypes],
-              "'self'");
-    EXPECT_TRUE(policies[0]->plugin_types.has_value());
-    EXPECT_EQ(policies[0]->plugin_types.value().size(), 0u);
-    EXPECT_EQ(policies[0]->parsing_errors.size(), 1u);
-    EXPECT_EQ(policies[0]->parsing_errors[0],
-              "Invalid plugin type in 'plugin-types' Content Security Policy "
-              "directive: ''self''.");
-  }
-
-  {
-    std::vector<mojom::ContentSecurityPolicyPtr> policies =
-        ParseCSP("default-src 'self'");
-    EXPECT_FALSE(policies[0]->plugin_types.has_value());
-    EXPECT_EQ(policies[0]->parsing_errors.size(), 0u);
-  }
+  std::vector<mojom::ContentSecurityPolicyPtr> policies =
+      ParseCSP("plugin-types    application/pdf text/plain");
+  EXPECT_EQ(policies[0]->directives.size(), 0u);
+  EXPECT_EQ(policies[0]->parsing_errors[0],
+            "The Content-Security-Policy directive 'plugin-types' has been "
+            "removed from the "
+            "specification. If you want to block plugins, consider specifying "
+            "\"object-src 'none'\" instead.");
 }
 
 TEST(ContentSecurityPolicy, ParseRequireTrustedTypesFor) {
@@ -1707,76 +1667,6 @@ TEST(ContentSecurityPolicy, SubsumesIfNoneIsPresent) {
        "script-src 'unsafe-eval', script 'unsafe-inline'", true},
       {"script-src 'unsafe-inline'", "script-src  , script http://example.com",
        true},
-  };
-
-  for (const auto& test : cases) {
-    std::vector<mojom::ContentSecurityPolicyPtr> policy_a =
-        ParseCSP(test.policy_a);
-    std::vector<mojom::ContentSecurityPolicyPtr> policies_b =
-        ParseCSP(test.policies_b);
-    EXPECT_EQ(Subsumes(*policy_a[0], policies_b), test.expected)
-        << test.policy_a << " should " << (test.expected ? "" : "not ")
-        << "subsume " << test.policies_b;
-  }
-}
-
-TEST(ContentSecurityPolicy, SubsumesPluginTypes) {
-  struct TestCase {
-    const char* policy_a;
-    const char* policies_b;
-    bool expected;
-  } cases[] = {
-      // `policyA` subsumes `policiesB`.
-      {"script-src 'unsafe-inline'",
-       "script-src  , script-src http://example.com, plugin-types text/plain",
-       true},
-      {"script-src http://example.com",
-       "script-src http://example.com; plugin-types ", true},
-      {"script-src http://example.com",
-       "script-src http://example.com; plugin-types text/plain", true},
-      {"script-src http://example.com; plugin-types text/plain",
-       "script-src http://example.com; plugin-types text/plain", true},
-      {"script-src http://example.com; plugin-types text/plain",
-       "script-src http://example.com; plugin-types ", true},
-      {"script-src http://example.com; plugin-types text/plain",
-       "script-src http://example.com; plugin-types , plugin-types ", true},
-      {"plugin-types application/pdf text/plain",
-       "plugin-types application/pdf text/plain, plugin-types "
-       "application/x-blink-test-plugin",
-       true},
-      {"plugin-types application/pdf text/plain",
-       "plugin-types application/pdf text/plain,"
-       "plugin-types application/pdf text/plain "
-       "application/x-blink-test-plugin",
-       true},
-      {"plugin-types application/x-shockwave-flash application/pdf text/plain",
-       "plugin-types application/x-shockwave-flash application/pdf text/plain, "
-       "plugin-types application/x-shockwave-flash",
-       true},
-      {"plugin-types application/x-shockwave-flash",
-       "plugin-types application/x-shockwave-flash application/pdf text/plain, "
-       "plugin-types application/x-shockwave-flash",
-       true},
-      // `policyA` does not subsume `policiesB`.
-      {"script-src http://example.com; plugin-types text/plain", "", false},
-      {"script-src http://example.com; plugin-types text/plain",
-       "script-src http://example.com", false},
-      {"plugin-types random-value",
-       "script-src 'unsafe-inline', plugin-types text/plain", false},
-      {"plugin-types random-value",
-       "script-src http://example.com, script-src http://example.com", false},
-      {"plugin-types random-value",
-       "plugin-types  text/plain, plugin-types text/plain", false},
-      {"script-src http://example.com; plugin-types text/plain",
-       "plugin-types , plugin-types ", false},
-      {"plugin-types application/pdf text/plain",
-       "plugin-types application/x-blink-test-plugin,"
-       "plugin-types application/x-blink-test-plugin",
-       false},
-      {"plugin-types application/pdf text/plain",
-       "plugin-types application/pdf application/x-blink-test-plugin, "
-       "plugin-types application/x-blink-test-plugin",
-       false},
   };
 
   for (const auto& test : cases) {

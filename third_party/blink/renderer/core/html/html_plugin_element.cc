@@ -712,8 +712,7 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
 
   AtomicString declared_mime_type = FastGetAttribute(html_names::kTypeAttr);
   auto* csp = GetExecutionContext()->GetContentSecurityPolicy();
-  if (!csp->AllowObjectFromSource(url) ||
-      !csp->AllowPluginType(mime_type, declared_mime_type, url)) {
+  if (!csp->AllowObjectFromSource(url)) {
     if (auto* layout_object = GetLayoutEmbeddedObject()) {
       plugin_is_available_ = false;
       layout_object->SetPluginAvailability(

@@ -195,7 +195,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool IsBound();
   void BindToDelegate(ContentSecurityPolicyDelegate&);
   void CopyStateFrom(const ContentSecurityPolicy*);
-  void CopyPluginTypesFrom(const ContentSecurityPolicy*);
 
   void DidReceiveHeaders(const ContentSecurityPolicyResponseHeaders&);
   void DidReceiveHeader(const String&,
@@ -225,10 +224,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool AllowWasmEval(ReportingDisposition,
                      ExceptionStatus,
                      const String& script_content);
-  bool AllowPluginType(const String& type,
-                       const String& type_attribute,
-                       const KURL&,
-                       ReportingDisposition = ReportingDisposition::kReport);
 
   // AllowFromSource() wrappers.
   bool AllowBaseURI(const KURL&);
@@ -336,7 +331,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   void ReportInvalidPathCharacter(const String& directive_name,
                                   const String& value,
                                   const char);
-  void ReportInvalidPluginTypes(const String&);
   void ReportInvalidRequireTrustedTypesFor(const String&);
   void ReportInvalidSandboxFlags(const String&);
   void ReportInvalidSourceExpression(const String& directive_name,

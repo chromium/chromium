@@ -1851,10 +1851,6 @@ crbug.com/706350 external/wpt/html/browsers/browsing-the-web/history-traversal/w
 crbug.com/706350 external/wpt/html/browsers/browsing-the-web/history-traversal/window-name-after-same-origin-aux-frame-navigation.sub.html [ Skip ]
 crbug.com/706350 external/wpt/html/browsers/browsing-the-web/history-traversal/window-name-after-same-origin-sub-frame-navigation.sub.html [ Skip ]
 
-# We don't fully implement the plugin-types check
-crbug.com/911114 external/wpt/content-security-policy/plugin-types/plugintypes-mismatched-data.html [ Skip ]
-crbug.com/911114 external/wpt/content-security-policy/plugin-types/plugintypes-mismatched-url.html [ Skip ]
-
 crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Failure ]
 
 crbug.com/713587 external/wpt/css/css-ui/caret-color-006.html [ Skip ]
@@ -2759,7 +2755,6 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.ht
 crbug.com/626703 [ Mac10.13 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1001-2000 [ Failure Timeout ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.html?3001-last [ Failure Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/content-security-policy/object-src/object-src-no-url-allowed.html [ Timeout ]
-crbug.com/626703 [ Win7 ] external/wpt/content-security-policy/plugin-types/plugintypes-nourl-allowed.html [ Timeout ]
 crbug.com/626703 external/wpt/service-workers/service-worker/ready.https.window.html [ Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-css_touch.html [ Timeout ]
 crbug.com/1040874 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html [ Pass Failure ]
@@ -4623,8 +4618,6 @@ crbug.com/931533 media/video-played-collapse.html [ Pass Failure ]
 
 # Sheriff 2019-03-14
 crbug.com/806357 virtual/threaded/fast/events/pointerevents/pinch/pointerevent_touch-action-pinch_zoom_touch.html [ Pass Failure Crash Timeout ]
-crbug.com/941931 [ Linux ] http/tests/security/contentSecurityPolicy/1.1/plugintypes-affects-cross-site-child-disallowed.html [ Pass Failure ]
-crbug.com/941931 [ Win ] http/tests/security/contentSecurityPolicy/1.1/plugintypes-affects-cross-site-child-disallowed.html [ Pass Failure ]
 
 # Trooper 2019-03-19
 crbug.com/943388 [ Win ] http/tests/devtools/network/network-recording-after-reload-with-screenshots-enabled.js [ Pass Failure ]

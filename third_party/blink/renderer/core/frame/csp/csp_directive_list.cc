@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/frame/csp/media_list_directive.h"
 #include "third_party/blink/renderer/core/frame/csp/require_trusted_types_for_directive.h"
 #include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 #include "third_party/blink/renderer/core/frame/csp/trusted_types_directive.h"
@@ -409,9 +408,6 @@ void AddDirective(const String& name,
       csp.block_all_mixed_content =
           ParseBlockAllMixedContent(name, value, policy);
       return;
-    case CSPDirectiveName::PluginTypes:
-      csp.plugin_types = CSPPluginTypesParse(value, policy);
-      return;
     case CSPDirectiveName::ReportTo:
       ParseReportTo(name, value, csp, policy);
       return;
@@ -696,14 +692,6 @@ bool CheckSource(ContentSecurityPolicy* policy,
       url.IsEmpty() ? policy->FallbackUrlForPlugin() : url, redirect_status);
 }
 
-bool CheckMediaType(const Vector<String>& plugin_types,
-                    const String& type,
-                    const String& type_attribute) {
-  if (type_attribute.IsEmpty() || type_attribute.StripWhiteSpace() != type)
-    return false;
-  return plugin_types.Contains(type);
-}
-
 bool CheckEvalAndReportViolation(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
@@ -766,35 +754,6 @@ bool CheckWasmEvalAndReportViolation(
     return false;
   }
   return true;
-}
-
-bool CheckMediaTypeAndReportViolation(
-    const network::mojom::blink::ContentSecurityPolicy& csp,
-    ContentSecurityPolicy* policy,
-    const String& type,
-    const String& type_attribute,
-    const String& console_message) {
-  if (CheckMediaType(csp.plugin_types.value(), type, type_attribute))
-    return true;
-
-  String raw_directive = GetRawDirectiveForMessage(
-      csp.raw_directives, network::mojom::blink::CSPDirectiveName::PluginTypes);
-  String message = console_message + "\'" + raw_directive + "\'.";
-  if (type_attribute.IsEmpty()) {
-    message = message +
-              " When enforcing the 'plugin-types' directive, the plugin's "
-              "media type must be explicitly declared with a 'type' attribute "
-              "on the containing element (e.g. '<object type=\"[TYPE GOES "
-              "HERE]\" ...>').";
-  }
-
-  // 'RedirectStatus::NoRedirect' is safe here, as we do the media type check
-  // before actually loading data; this means that we shouldn't leak redirect
-  // targets, as we won't have had a chance to redirect yet.
-  ReportViolation(csp, policy, raw_directive, CSPDirectiveName::PluginTypes,
-                  message + "\n", NullURL(),
-                  ResourceRequest::RedirectStatus::kNoRedirect);
-  return CSPDirectiveListIsReportOnly(csp);
 }
 
 bool CheckInlineAndReportViolation(
@@ -1139,26 +1098,6 @@ bool CSPDirectiveListShouldDisableEval(
   return false;
 }
 
-bool CSPDirectiveListAllowPluginType(
-    const network::mojom::blink::ContentSecurityPolicy& csp,
-    ContentSecurityPolicy* policy,
-    const String& type,
-    const String& type_attribute,
-    const KURL& url,
-    ReportingDisposition reporting_disposition) {
-  if (!csp.plugin_types.has_value())
-    return true;
-
-  return reporting_disposition == ReportingDisposition::kReport
-             ? CheckMediaTypeAndReportViolation(
-                   csp, policy, type, type_attribute,
-                   "Refused to load '" + url.ElidedString() + "' (MIME type '" +
-                       type_attribute +
-                       "') because it violates the following Content Security "
-                       "Policy Directive: ")
-             : CheckMediaType(csp.plugin_types.value(), type, type_attribute);
-}
-
 bool CSPDirectiveListAllowFromSource(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
@@ -1293,13 +1232,6 @@ bool CSPDirectiveListAllowDynamic(
     CSPDirectiveName directive_type) {
   return CheckDynamic(OperativeDirective(csp, directive_type).source_list,
                       directive_type);
-}
-
-String CSPDirectiveListPluginTypesText(
-    const network::mojom::blink::ContentSecurityPolicy& csp) {
-  DCHECK(csp.plugin_types);
-  return GetRawDirectiveForMessage(
-      csp.raw_directives, network::mojom::blink::CSPDirectiveName::PluginTypes);
 }
 
 bool CSPDirectiveListIsObjectRestrictionReasonable(

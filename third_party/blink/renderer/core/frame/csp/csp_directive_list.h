@@ -115,15 +115,6 @@ bool CSPDirectiveListShouldDisableEval(
     String& error_message);
 
 CORE_EXPORT
-bool CSPDirectiveListAllowPluginType(
-    const network::mojom::blink::ContentSecurityPolicy& csp,
-    ContentSecurityPolicy* policy,
-    const String& type,
-    const String& type_attribute,
-    const KURL& url,
-    ReportingDisposition reporting_disposition);
-
-CORE_EXPORT
 bool CSPDirectiveListAllowDynamic(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     CSPDirectiveName directive_type);
@@ -133,12 +124,6 @@ bool CSPDirectiveListAllowHash(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     const network::mojom::blink::CSPHashSource& hash_value,
     const ContentSecurityPolicy::InlineType inline_type);
-
-// Used to copy plugin-types into a plugin document in a nested
-// browsing context.
-CORE_EXPORT
-String CSPDirectiveListPluginTypesText(
-    const network::mojom::blink::ContentSecurityPolicy& csp);
 
 // We consider `object-src` restrictions to be reasonable iff they're
 // equivalent to `object-src 'none'`.
