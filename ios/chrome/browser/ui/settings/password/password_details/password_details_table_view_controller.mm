@@ -373,6 +373,11 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   }
 }
 
+- (BOOL)tableView:(UITableView*)tableView
+    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  return !self.editing;
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -380,9 +385,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
 
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   cell.tag = itemType;
+  cell.selectionStyle = UITableViewCellSelectionStyleDefault;
 
   switch (itemType) {
     case ItemTypeUsername: {
@@ -394,6 +399,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                     action:@selector(didTapUsernameErrorInfo:)
           forControlEvents:UIControlEventTouchUpInside];
       self.usernameErrorAnchorView = textFieldCell.iconView;
+      textFieldCell.textField.backgroundColor = UIColor.clearColor;
+      textFieldCell.textLabel.backgroundColor = UIColor.clearColor;
       break;
     }
     case ItemTypePassword: {
@@ -404,14 +411,22 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                  addTarget:self
                     action:@selector(didTapShowHideButton:)
           forControlEvents:UIControlEventTouchUpInside];
-      return textFieldCell;
+      textFieldCell.textField.backgroundColor = UIColor.clearColor;
+      textFieldCell.textLabel.backgroundColor = UIColor.clearColor;
+      break;
     }
     case ItemTypeChangePasswordButton:
-      cell.selectionStyle = UITableViewCellSelectionStyleDefault;
       break;
     case ItemTypeWebsite:
-    case ItemTypeFederation:
+    case ItemTypeFederation: {
+      TableViewTextEditCell* textFieldCell =
+          base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+      textFieldCell.textField.backgroundColor = UIColor.clearColor;
+      textFieldCell.textLabel.backgroundColor = UIColor.clearColor;
+      break;
+    }
     case ItemTypeChangePasswordRecommendation:
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
   }
   return cell;
