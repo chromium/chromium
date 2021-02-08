@@ -5,6 +5,7 @@
 #ifndef UI_GFX_RENDERING_STAGE_SCHEDULER_H_
 #define UI_GFX_RENDERING_STAGE_SCHEDULER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/threading/platform_thread.h"
