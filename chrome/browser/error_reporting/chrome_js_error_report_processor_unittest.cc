@@ -125,6 +125,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, Basic) {
   // This is from MockChromeJsErrorReportProcessor::GetOsVersion()
   EXPECT_THAT(actual_report->query, HasSubstr("os_version=7.20.1"));
   EXPECT_THAT(actual_report->query, HasSubstr("browser=Chrome"));
+  EXPECT_THAT(actual_report->query, Not(HasSubstr("source_system=")));
   // These are from MockCrashEndpoint::Client::GetProductNameAndVersion, which
   // is only defined for non-MAC POSIX systems. TODO(https://crbug.com/1121816):
   // Get this info for non-POSIX platforms.
@@ -147,6 +148,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, AllFields) {
   report.stack_trace = "bad_func(1, 2)\nonclick()\n";
   report.renderer_process_uptime_ms = 1234;
   report.window_type = WindowType::kSystemWebApp;
+  report.source_system = JavaScriptErrorReport::SourceSystem::kWebUIObserver;
 
   SendErrorReport(std::move(report));
   EXPECT_TRUE(finish_callback_was_called_);
@@ -175,6 +177,7 @@ TEST_F(ChromeJsErrorReportProcessorTest, AllFields) {
   EXPECT_THAT(actual_report->query, HasSubstr("ver=6.2.3.4"));
   EXPECT_THAT(actual_report->query, HasSubstr("line=83"));
   EXPECT_THAT(actual_report->query, HasSubstr("column=14"));
+  EXPECT_THAT(actual_report->query, HasSubstr("source_system=webui_observer"));
   // These are from MockCrashEndpoint::Client::GetProductNameAndVersion, which
   // is only defined for non-MAC POSIX systems. TODO(https://crbug.com/1121816):
   // Get this info for non-POSIX platforms.

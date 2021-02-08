@@ -188,6 +188,8 @@ TEST_F(WebUIMainFrameObserverTest, ErrorReported) {
   EXPECT_EQ(processor_->error_report_count(), 1);
   EXPECT_EQ(processor_->last_error_report().message, kMessage8);
   EXPECT_EQ(processor_->last_error_report().url, kSourceURL8);
+  EXPECT_EQ(processor_->last_error_report().source_system,
+            JavaScriptErrorReport::SourceSystem::kWebUIObserver);
   EXPECT_THAT(processor_->last_error_report().stack_trace,
               Optional(Eq(kStackTrace8)));
   // WebUI should use default product & version.

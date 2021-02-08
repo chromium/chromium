@@ -313,6 +313,17 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   params["os"] = base::SysInfo::OperatingSystemName();
 #endif
   params["os_version"] = platform.os_version;
+  constexpr char kSourceSystemParamName[] = "source_system";
+  switch (error_report->source_system) {
+    case JavaScriptErrorReport::SourceSystem::kUnknown:
+      break;
+    case JavaScriptErrorReport::SourceSystem::kCrashReportApi:
+      params[kSourceSystemParamName] = "crash_report_api";
+      break;
+    case JavaScriptErrorReport::SourceSystem::kWebUIObserver:
+      params[kSourceSystemParamName] = "webui_observer";
+      break;
+  }
   params["full_url"] = source.spec();
   params["url"] = source.path();
   params["src"] = source.spec();

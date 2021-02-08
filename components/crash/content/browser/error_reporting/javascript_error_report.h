@@ -37,6 +37,16 @@ struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
   // (e.g. http://www.example.com).
   std::string url;
 
+  // The system that created the error report. Useful for checking that each of
+  // the various different systems that generate JavaScript error reports is
+  // working as expected.
+  enum class SourceSystem {
+    kUnknown,
+    kCrashReportApi,
+    kWebUIObserver,
+  };
+  SourceSystem source_system = SourceSystem::kUnknown;
+
   // Name of the product where the error occurred. If empty, use the product
   // variant of Chrome that is hosting the extension. (e.g. "Chrome" or
   // "Chrome_ChromeOS").
