@@ -271,64 +271,57 @@ String HebrewAlgorithm(unsigned value) {
 String SimpChineseInformalAlgorithm(unsigned value) {
   // @counter-style algorithm works on absolute value, but the legacy
   // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kSimpChineseInformal, value);
+  // its own). Clamp to the signed int range before proceeding.
+  return list_marker_text::GetText(EListStyleType::kSimpChineseInformal,
+                                   base::saturated_cast<int>(value));
 }
 
 String SimpChineseFormalAlgorithm(unsigned value) {
   // @counter-style algorithm works on absolute value, but the legacy
   // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kSimpChineseFormal, value);
+  // its own). Clamp to the signed int range before proceeding.
+  return list_marker_text::GetText(EListStyleType::kSimpChineseFormal,
+                                   base::saturated_cast<int>(value));
 }
 
 String TradChineseInformalAlgorithm(unsigned value) {
   // @counter-style algorithm works on absolute value, but the legacy
   // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kTradChineseInformal, value);
+  // its own). Clamp to the signed int range before proceeding.
+  return list_marker_text::GetText(EListStyleType::kTradChineseInformal,
+                                   base::saturated_cast<int>(value));
 }
 
 String TradChineseFormalAlgorithm(unsigned value) {
   // @counter-style algorithm works on absolute value, but the legacy
   // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kTradChineseFormal, value);
+  // its own). Clamp to the signed int range before proceeding.
+  return list_marker_text::GetText(EListStyleType::kTradChineseFormal,
+                                   base::saturated_cast<int>(value));
 }
 
 String KoreanHangulFormalAlgorithm(unsigned value) {
   // @counter-style algorithm works on absolute value, but the legacy
   // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kKoreanHangulFormal, value);
+  // its own). Clamp to the signed int range before proceeding.
+  return list_marker_text::GetText(EListStyleType::kKoreanHangulFormal,
+                                   base::saturated_cast<int>(value));
 }
 
 String KoreanHanjaInformalAlgorithm(unsigned value) {
   // @counter-style algorithm works on absolute value, but the legacy
   // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kKoreanHanjaInformal, value);
+  // its own). Clamp to the signed int range before proceeding.
+  return list_marker_text::GetText(EListStyleType::kKoreanHanjaInformal,
+                                   base::saturated_cast<int>(value));
 }
 
 String KoreanHanjaFormalAlgorithm(unsigned value) {
   // @counter-style algorithm works on absolute value, but the legacy
   // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kKoreanHanjaFormal, value);
+  // its own). Clamp to the signed int range before proceeding.
+  return list_marker_text::GetText(EListStyleType::kKoreanHanjaFormal,
+                                   base::saturated_cast<int>(value));
 }
 
 String LowerArmenianAlgorithm(unsigned value) {
