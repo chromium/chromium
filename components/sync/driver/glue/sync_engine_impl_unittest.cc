@@ -221,10 +221,8 @@ class SyncEngineImplTest : public testing::Test {
 
   void TearDown() override {
     if (backend_) {
-      backend_->StopSyncingForShutdown();
-      backend_->Shutdown(STOP_SYNC);
+      ShutdownBackend(BROWSER_SHUTDOWN);
     }
-    backend_.reset();
     // Pump messages posted by the sync thread.
     base::RunLoop().RunUntilIdle();
   }
@@ -252,6 +250,13 @@ class SyncEngineImplTest : public testing::Test {
       EXPECT_TRUE(engine_types_.Empty());
       engine_types_ = fake_manager_->GetEnabledTypes();
     }
+  }
+
+  void ShutdownBackend(ShutdownReason reason) {
+    DCHECK(backend_);
+    backend_->StopSyncingForShutdown();
+    backend_->Shutdown(reason);
+    backend_.reset();
   }
 
   // Synchronously configures the backend's datatypes.
@@ -356,9 +361,7 @@ TEST_F(SyncEngineImplTest, InitShutdownWithStopSync) {
   EXPECT_EQ(ControlTypes(), fake_manager_->InitialSyncEndedTypes());
 
   EXPECT_CALL(sync_transport_data_cleared_cb_, Run()).Times(0);
-  backend_->StopSyncingForShutdown();
-  backend_->Shutdown(STOP_SYNC);
-  backend_.reset();
+  ShutdownBackend(STOP_SYNC);
 }
 
 TEST_F(SyncEngineImplTest, InitShutdownWithDisableSync) {
@@ -367,9 +370,7 @@ TEST_F(SyncEngineImplTest, InitShutdownWithDisableSync) {
   EXPECT_EQ(ControlTypes(), fake_manager_->InitialSyncEndedTypes());
 
   EXPECT_CALL(sync_transport_data_cleared_cb_, Run());
-  backend_->StopSyncingForShutdown();
-  backend_->Shutdown(DISABLE_SYNC);
-  backend_.reset();
+  ShutdownBackend(DISABLE_SYNC);
 }
 
 // Test first time sync scenario. All types should be properly configured.
@@ -613,15 +614,15 @@ TEST_F(SyncEngineImplTest,
           backend_.get(), ModelTypeSetToTopicSet(invalidation_enabled_types)));
   ConfigureDataTypes();
 
-  // At shutdown, we clear the registered invalidation ids.
+  // When Sync is stopped, we clear the registered invalidation ids.
   EXPECT_CALL(invalidator_,
               UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
+  ShutdownBackend(STOP_SYNC);
 }
 
 TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
-  // Testing that noisy types doesn't used for registration, when
-  // they're disabled in Sync, hence removing noisy datatypes from
-  // |enabled_types_|.
+  // Tests that noisy types aren't used for registration if they're disabled,
+  // hence removing noisy datatypes from |enabled_types_|.
   enabled_types_.Remove(SESSIONS);
 
   InitializeBackend();
@@ -631,9 +632,10 @@ TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
                                          enabled_types_, CommitOnlyTypes()))));
   ConfigureDataTypes();
 
-  // At shutdown, we clear the registered invalidation ids.
+  // When Sync is stopped, we clear the registered invalidation ids.
   EXPECT_CALL(invalidator_,
               UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
+  ShutdownBackend(STOP_SYNC);
 }
 
 TEST_F(SyncEngineImplTest,
@@ -660,9 +662,10 @@ TEST_F(SyncEngineImplTest,
                                          enabled_types, CommitOnlyTypes()))));
   backend_->SetInvalidationsForSessionsEnabled(false);
 
-  // At shutdown, we clear the registered invalidation ids.
+  // When Sync is stopped, we clear the registered invalidation ids.
   EXPECT_CALL(invalidator_,
               UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
+  ShutdownBackend(STOP_SYNC);
 }
 
 // Regression test for crbug.com/1019956.
@@ -713,9 +716,10 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
                               {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER})));
   ConfigureDataTypes();
 
-  // At shutdown, we clear the registered invalidation ids.
+  // When Sync is stopped, we clear the registered invalidation ids.
   EXPECT_CALL(invalidator_,
               UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
+  ShutdownBackend(STOP_SYNC);
 }
 
 TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,

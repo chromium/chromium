@@ -7,9 +7,10 @@
 
 namespace syncer {
 
-// Reason for shutting down sync engine.
+// Reason for shutting down the sync engine.
 enum ShutdownReason {
-  STOP_SYNC,         // Sync is asked to stop, e.g. due to scarce resource.
+  STOP_SYNC,         // Sync is stopping temporarily, e.g. due to content area
+                     // sign-out.
   DISABLE_SYNC,      // Sync is disabled, e.g. user sign out, dashboard clear.
   BROWSER_SHUTDOWN,  // Browser is closed.
 };
