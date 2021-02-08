@@ -1113,27 +1113,35 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // cx
+  const Length& Cx() const { return SvgStyle().Cx(); }
   void SetCx(const Length& cx) { AccessSVGStyle().SetCx(cx); }
 
   // cy
+  const Length& Cy() const { return SvgStyle().Cy(); }
   void SetCy(const Length& cy) { AccessSVGStyle().SetCy(cy); }
 
   // d
+  StylePath* D() const { return SvgStyle().D(); }
   void SetD(scoped_refptr<StylePath> d) { AccessSVGStyle().SetD(std::move(d)); }
 
   // x
+  const Length& X() const { return SvgStyle().X(); }
   void SetX(const Length& x) { AccessSVGStyle().SetX(x); }
 
   // y
+  const Length& Y() const { return SvgStyle().Y(); }
   void SetY(const Length& y) { AccessSVGStyle().SetY(y); }
 
   // r
+  const Length& R() const { return SvgStyle().R(); }
   void SetR(const Length& r) { AccessSVGStyle().SetR(r); }
 
   // rx
+  const Length& Rx() const { return SvgStyle().Rx(); }
   void SetRx(const Length& rx) { AccessSVGStyle().SetRx(rx); }
 
   // ry
+  const Length& Ry() const { return SvgStyle().Ry(); }
   void SetRy(const Length& ry) { AccessSVGStyle().SetRy(ry); }
 
   // fill-opacity

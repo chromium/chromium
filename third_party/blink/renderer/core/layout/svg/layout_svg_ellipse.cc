@@ -84,20 +84,18 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
   DCHECK(GetElement());
   SVGLengthContext length_context(GetElement());
   const ComputedStyle& style = StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-  center_ =
-      length_context.ResolveLengthPair(svg_style.Cx(), svg_style.Cy(), style);
+  center_ = length_context.ResolveLengthPair(style.Cx(), style.Cy(), style);
 
   if (IsA<SVGCircleElement>(*GetElement())) {
-    float radius = length_context.ValueForLength(svg_style.R(), style,
-                                                 SVGLengthMode::kOther);
+    float radius =
+        length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther);
     radii_ = FloatSize(radius, radius);
   } else {
-    radii_ = ToFloatSize(length_context.ResolveLengthPair(
-        svg_style.Rx(), svg_style.Ry(), style));
-    if (svg_style.Rx().IsAuto())
+    radii_ = ToFloatSize(
+        length_context.ResolveLengthPair(style.Rx(), style.Ry(), style));
+    if (style.Rx().IsAuto())
       radii_.SetWidth(radii_.Height());
-    else if (svg_style.Ry().IsAuto())
+    else if (style.Ry().IsAuto())
       radii_.SetHeight(radii_.Width());
   }
 }

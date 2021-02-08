@@ -141,11 +141,10 @@ bool LayoutSVGImage::UpdateBoundingBox() {
 
   SVGLengthContext length_context(GetElement());
   const ComputedStyle& style = StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
-  object_bounding_box_ = FloatRect(
-      length_context.ResolveLengthPair(svg_style.X(), svg_style.Y(), style),
-      ToFloatSize(length_context.ResolveLengthPair(style.Width(),
-                                                   style.Height(), style)));
+  object_bounding_box_ =
+      FloatRect(length_context.ResolveLengthPair(style.X(), style.Y(), style),
+                ToFloatSize(length_context.ResolveLengthPair(
+                    style.Width(), style.Height(), style)));
 
   if (style.Width().IsAuto() || style.Height().IsAuto())
     object_bounding_box_.SetSize(CalculateObjectSize());

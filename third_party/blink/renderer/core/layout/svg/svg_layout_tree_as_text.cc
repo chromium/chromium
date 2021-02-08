@@ -337,14 +337,13 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   DCHECK(svg_element);
   SVGLengthContext length_context(svg_element);
   const ComputedStyle& style = shape.StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
 
   if (IsA<SVGRectElement>(*svg_element)) {
-    WriteNameValuePair(ts, "x",
-                       length_context.ValueForLength(svg_style.X(), style,
-                                                     SVGLengthMode::kWidth));
+    WriteNameValuePair(
+        ts, "x",
+        length_context.ValueForLength(style.X(), style, SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "y",
-                       length_context.ValueForLength(svg_style.Y(), style,
+                       length_context.ValueForLength(style.Y(), style,
                                                      SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "width",
                        length_context.ValueForLength(style.Width(), style,
@@ -363,34 +362,33 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
                        element->y2()->CurrentValue()->Value(length_context));
   } else if (IsA<SVGEllipseElement>(*svg_element)) {
     WriteNameValuePair(ts, "cx",
-                       length_context.ValueForLength(svg_style.Cx(), style,
+                       length_context.ValueForLength(style.Cx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "cy",
-                       length_context.ValueForLength(svg_style.Cy(), style,
+                       length_context.ValueForLength(style.Cy(), style,
                                                      SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "rx",
-                       length_context.ValueForLength(svg_style.Rx(), style,
+                       length_context.ValueForLength(style.Rx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "ry",
-                       length_context.ValueForLength(svg_style.Ry(), style,
+                       length_context.ValueForLength(style.Ry(), style,
                                                      SVGLengthMode::kHeight));
   } else if (IsA<SVGCircleElement>(*svg_element)) {
     WriteNameValuePair(ts, "cx",
-                       length_context.ValueForLength(svg_style.Cx(), style,
+                       length_context.ValueForLength(style.Cx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "cy",
-                       length_context.ValueForLength(svg_style.Cy(), style,
+                       length_context.ValueForLength(style.Cy(), style,
                                                      SVGLengthMode::kHeight));
-    WriteNameValuePair(ts, "r",
-                       length_context.ValueForLength(svg_style.R(), style,
-                                                     SVGLengthMode::kOther));
+    WriteNameValuePair(
+        ts, "r",
+        length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther));
   } else if (auto* svg_poly_element = DynamicTo<SVGPolyElement>(svg_element)) {
     WriteNameAndQuotedValue(
         ts, "points",
         svg_poly_element->Points()->CurrentValue()->ValueAsString());
   } else if (IsA<SVGPathElement>(*svg_element)) {
-    const StylePath& path =
-        svg_style.D() ? *svg_style.D() : *StylePath::EmptyPath();
+    const StylePath& path = style.D() ? *style.D() : *StylePath::EmptyPath();
     WriteNameAndQuotedValue(
         ts, "data",
         BuildStringFromByteStream(path.ByteStream(), kNoTransformation));

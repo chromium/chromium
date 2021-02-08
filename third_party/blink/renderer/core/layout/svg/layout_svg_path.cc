@@ -75,7 +75,7 @@ const StylePath* LayoutSVGPath::GetStylePath() const {
   NOT_DESTROYED();
   if (!IsA<SVGPathElement>(*GetElement()))
     return nullptr;
-  return StyleRef().SvgStyle().D();
+  return StyleRef().D();
 }
 
 void LayoutSVGPath::UpdateMarkers() {

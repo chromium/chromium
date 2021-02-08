@@ -2440,11 +2440,10 @@ const CSSValue* Cx::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* Cx::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(svg_style.Cx(),
-                                                             style);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Cx(), style);
 }
 
 const CSSValue* Cy::ParseSingleValue(CSSParserTokenRange& range,
@@ -2456,11 +2455,10 @@ const CSSValue* Cy::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* Cy::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(svg_style.Cy(),
-                                                             style);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Cy(), style);
 }
 
 const CSSValue* D::ParseSingleValue(CSSParserTokenRange& range,
@@ -2471,10 +2469,10 @@ const CSSValue* D::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* D::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (const StylePath* style_path = svg_style.D())
+  if (const StylePath* style_path = style.D())
     return style_path->ComputedCSSValue();
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
@@ -5657,11 +5655,10 @@ const CSSValue* R::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* R::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(svg_style.R(),
-                                                             style);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.R(), style);
 }
 
 const CSSValue* Resize::CSSValueFromComputedStyleInternal(
@@ -5789,11 +5786,10 @@ const CSSValue* Rx::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* Rx::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(svg_style.Rx(),
-                                                             style);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Rx(), style);
 }
 
 const CSSValue* Ry::ParseSingleValue(CSSParserTokenRange& range,
@@ -5807,11 +5803,10 @@ const CSSValue* Ry::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* Ry::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(svg_style.Ry(),
-                                                             style);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Ry(), style);
 }
 
 const CSSValue* Scale::ParseSingleValue(CSSParserTokenRange& range,
@@ -8920,11 +8915,10 @@ const CSSValue* X::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* X::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(svg_style.X(),
-                                                             style);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.X(), style);
 }
 
 const CSSValue* Y::ParseSingleValue(CSSParserTokenRange& range,
@@ -8936,11 +8930,10 @@ const CSSValue* Y::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* Y::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(svg_style.Y(),
-                                                             style);
+  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Y(), style);
 }
 
 const CSSValue* ZIndex::ParseSingleValue(CSSParserTokenRange& range,

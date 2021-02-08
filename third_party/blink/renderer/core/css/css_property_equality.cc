@@ -367,21 +367,21 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWordSpacing:
       return a.WordSpacing() == b.WordSpacing();
     case CSSPropertyID::kD:
-      return DataEquivalent(a.SvgStyle().D(), b.SvgStyle().D());
+      return DataEquivalent(a.D(), b.D());
     case CSSPropertyID::kCx:
-      return a.SvgStyle().Cx() == b.SvgStyle().Cx();
+      return a.Cx() == b.Cx();
     case CSSPropertyID::kCy:
-      return a.SvgStyle().Cy() == b.SvgStyle().Cy();
+      return a.Cy() == b.Cy();
     case CSSPropertyID::kX:
-      return a.SvgStyle().X() == b.SvgStyle().X();
+      return a.X() == b.X();
     case CSSPropertyID::kY:
-      return a.SvgStyle().Y() == b.SvgStyle().Y();
+      return a.Y() == b.Y();
     case CSSPropertyID::kR:
-      return a.SvgStyle().R() == b.SvgStyle().R();
+      return a.R() == b.R();
     case CSSPropertyID::kRx:
-      return a.SvgStyle().Rx() == b.SvgStyle().Rx();
+      return a.Rx() == b.Rx();
     case CSSPropertyID::kRy:
-      return a.SvgStyle().Ry() == b.SvgStyle().Ry();
+      return a.Ry() == b.Ry();
     case CSSPropertyID::kZIndex:
       return a.HasAutoZIndex() == b.HasAutoZIndex() &&
              (a.HasAutoZIndex() || a.ZIndex() == b.ZIndex());

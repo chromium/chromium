@@ -24,7 +24,7 @@ const StylePath* GetPath(const CSSProperty& property,
                          const ComputedStyle& style) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kD:
-      return style.SvgStyle().D();
+      return style.D();
     case CSSPropertyID::kOffsetPath:
       return DynamicTo<StylePath>(style.OffsetPath());
     case CSSPropertyID::kClipPath: {
