@@ -1322,40 +1322,6 @@ TEST_F(InteractiveWindowCycleControllerTest, KeysConfirmSelection) {
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 }
 
-// When a user taps on an item, it should set the focus ring to that item. After
-// they release their finger it should confirm the selection.
-TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
-  std::unique_ptr<Window> w0 = CreateTestWindow();
-  std::unique_ptr<Window> w1 = CreateTestWindow();
-  std::unique_ptr<Window> w2 = CreateTestWindow();
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-
-  // Start cycle and tap third item. On tap down, the focus ring should be set
-  // to the third item. On tap release, the selection should be confirmed.
-  // Starting order of windows in cycle list is [2,1,0].
-  controller->StartCycling();
-  generator->PressTouch(
-      GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(controller->IsCycling());
-  EXPECT_EQ(GetTargetWindow(), w0.get());
-  generator->ReleaseTouch();
-  EXPECT_FALSE(controller->IsCycling());
-  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
-
-  // Start cycle and tap second item. On tap down, the focus ring should be set
-  // to the second item. On tap release, the selection should be confirmed.
-  // Starting order of windows in cycle list is [0,2,1].
-  controller->StartCycling();
-  generator->PressTouch(
-      GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(controller->IsCycling());
-  EXPECT_EQ(GetTargetWindow(), w2.get());
-  generator->ReleaseTouch();
-  EXPECT_FALSE(controller->IsCycling());
-  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
-}
-
 // Tests that mouse events are filtered until the mouse is actually used,
 // preventing the mouse from unexpectedly triggering events.
 // See crbug.com/1143275.
@@ -1609,6 +1575,166 @@ TEST_F(InteractiveWindowCycleControllerTest, VerticalScroll) {
   Scroll(horizontal_scroll, vertical_scroll, 3);
   EXPECT_FALSE(window_cycle_controller->IsCycling());
   EXPECT_TRUE(InOverviewSession());
+}
+
+// Tests that touch continuous scrolls for the window cycle list.
+TEST_F(InteractiveWindowCycleControllerTest, TouchScroll) {
+  const gfx::Rect bounds(0, 0, 200, 200);
+  std::unique_ptr<aura::Window> window5 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
+  auto* shell = Shell::Get();
+  auto* cycle_controller = shell->window_cycle_controller();
+  auto* event_generator = GetEventGenerator();
+
+  // Start cycling.
+  cycle_controller->StartCycling();
+  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  ASSERT_TRUE(cycle_controller->IsCycling());
+  ASSERT_EQ(window2.get(), GetTargetWindow());
+
+  // There should be five preview items and the first three should be contained
+  // by the screen. The fourth should be in the screen, but not contained. The
+  // last one should not be in the screen at all.
+  auto preview_items = GetWindowCycleItemViews();
+  ASSERT_EQ(5u, preview_items.size());
+  auto cycle_view_bounds =
+      GetWindowCycleListWidget()->GetWindowBoundsInScreen();
+  ASSERT_TRUE(cycle_view_bounds.x() <
+              preview_items[0]->GetBoundsInScreen().x());
+  ASSERT_TRUE(preview_items[2]->GetBoundsInScreen().x() <
+              cycle_view_bounds.right());
+  ASSERT_TRUE(cycle_view_bounds.right() <
+              preview_items[3]->GetBoundsInScreen().right());
+  ASSERT_TRUE(preview_items[3]->GetBoundsInScreen().x() <
+              cycle_view_bounds.right());
+  ASSERT_TRUE(cycle_view_bounds.right() <
+              preview_items[4]->GetBoundsInScreen().x());
+
+  // Drag from the middle of the first item to the right. The preview items
+  // should not move since we're at the beginning of the cycle list. Also the
+  // focus ring should not move.
+  auto drag_origin = preview_items[0]->GetBoundsInScreen().CenterPoint();
+  auto drag_dest = preview_items[1]->GetBoundsInScreen().CenterPoint();
+  event_generator->GestureScrollSequence(drag_origin, drag_dest,
+                                         base::TimeDelta::FromSeconds(1), 10);
+  EXPECT_EQ(drag_origin, preview_items[0]->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(window2.get(), GetTargetWindow());
+
+  // Drag from the middle of the second item to the left. The item should follow
+  // the cursor and the focus ring should not move.
+  drag_origin = preview_items[1]->GetBoundsInScreen().CenterPoint();
+  drag_dest = preview_items[0]->GetBoundsInScreen().CenterPoint();
+  event_generator->GestureScrollSequence(drag_origin, drag_dest,
+                                         base::TimeDelta::FromSeconds(1), 10);
+  EXPECT_TRUE(base::IsApproximatelyEqual(
+      drag_dest.x(), preview_items[1]->GetBoundsInScreen().CenterPoint().x(),
+      10));
+  EXPECT_TRUE(preview_items[0]->GetBoundsInScreen().CenterPoint().x() <
+              cycle_view_bounds.x());
+  EXPECT_EQ(window2.get(), GetTargetWindow());
+
+  // The last preview item should now be visible, but it shouldn't be contained.
+  EXPECT_TRUE(preview_items[4]->GetBoundsInScreen().x() <
+              cycle_view_bounds.right());
+  EXPECT_TRUE(cycle_view_bounds.right() <
+              preview_items[4]->GetBoundsInScreen().right());
+
+  // Drag from the middle of the fourth item to the left one preview item's
+  // width. Since the last item is already visible, the mirror container should
+  // not be dragged the full amount and the last item's right edge should be at
+  // the end of the cycle view.
+  drag_origin = preview_items[3]->GetBoundsInScreen().CenterPoint();
+  drag_dest = preview_items[1]->GetBoundsInScreen().CenterPoint();
+  event_generator->GestureScrollSequence(drag_origin, drag_dest,
+                                         base::TimeDelta::FromSeconds(1), 10);
+  EXPECT_EQ(cycle_view_bounds.right(),
+            preview_items[4]->GetBoundsInScreen().right() +
+                WindowCycleList::kInsideBorderHorizontalPaddingDp);
+  EXPECT_EQ(window2.get(), GetTargetWindow());
+
+  // Diagonally drag from the middle of the fourth item to the right, ending up
+  // outside of the cycle view. This should still drag the full distance.
+  drag_origin = preview_items[3]->GetBoundsInScreen().CenterPoint();
+  drag_dest = preview_items[4]->GetBoundsInScreen().CenterPoint();
+  drag_dest.set_y(cycle_view_bounds.bottom() + 100);
+  event_generator->GestureScrollSequence(drag_origin, drag_dest,
+                                         base::TimeDelta::FromSeconds(1), 10);
+  EXPECT_TRUE(base::IsApproximatelyEqual(
+      drag_dest.x(), preview_items[3]->GetBoundsInScreen().CenterPoint().x(),
+      10));
+}
+
+// When a user taps on an item, it should set the focus ring to that item. After
+// they release their finger it should confirm the selection.
+TEST_F(InteractiveWindowCycleControllerTest, TapSelect) {
+  std::unique_ptr<aura::Window> w0 = CreateTestWindow();
+  std::unique_ptr<aura::Window> w1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> w2 = CreateTestWindow();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+
+  auto generate_gesture_event = [](ui::test::EventGenerator* generator,
+                                   const gfx::Point& location,
+                                   ui::EventType type) {
+    ui::GestureEvent event(location.x(), location.y(),
+                           /*flags=*/0, base::TimeTicks::Now(),
+                           ui::GestureEventDetails{type});
+    generator->Dispatch(&event);
+  };
+
+  auto tap_without_release = [generate_gesture_event](
+                                 ui::test::EventGenerator* generator,
+                                 const gfx::Point& location) {
+    // Generates the following events at |location| in the given order:
+    // ET_GESTURE_BEGIN, ET_GESTURE_TAP_DOWN, ET_GESTURE_SHOW_PRESS
+    generate_gesture_event(generator, location, ui::ET_GESTURE_BEGIN);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_TAP_DOWN);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_SHOW_PRESS);
+  };
+
+  // Start cycle and tap third item without releasing finger. On tap down, the
+  // focus ring should be set to the third item. Selection should not be
+  // confirmed since finger was not released. Starting order of windows in cycle
+  // list is [2,1,0].
+  controller->StartCycling();
+  gfx::Point center_point =
+      GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint();
+  tap_without_release(generator, center_point);
+  EXPECT_TRUE(controller->IsCycling());
+  EXPECT_EQ(GetTargetWindow(), w0.get());
+
+  // Complete cycling and confirm window 0 is active.
+  controller->CompleteCycling();
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
+
+  // Start cycle and tap second item without releasing finger. On tap down, the
+  // focus ring should be set to the second item. Selection should not be
+  // confirmed since finger was not released. Starting order of windows in cycle
+  // list is [0,2,1].
+  controller->StartCycling();
+  center_point =
+      GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint();
+  tap_without_release(generator, center_point);
+  EXPECT_TRUE(controller->IsCycling());
+  EXPECT_EQ(GetTargetWindow(), w2.get());
+
+  // Complete cycling and confirm window 2 is active.
+  controller->CompleteCycling();
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+
+  // Start cycling again and tap and release.  This should confirm the
+  // selection. Starting order of windows in cycle list is [2,0,1].
+  controller->StartCycling();
+  center_point =
+      GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint();
+  generator->GestureTapDownAndUp(center_point);
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
 }
 
 class ReverseGestureWindowCycleControllerTest

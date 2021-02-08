@@ -127,21 +127,24 @@ void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void WindowCycleEventFilter::OnGestureEvent(ui::GestureEvent* event) {
-  if (features::IsInteractiveWindowCycleListEnabled() &&
-      Shell::Get()->window_cycle_controller()->IsEventInCycleView(event)) {
-    return;
-  }
-
-  // Prevent any form of tap from doing anything while the Alt+Tab UI is active.
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_DOUBLE_TAP ||
-      event->type() == ui::ET_GESTURE_TAP_CANCEL ||
-      event->type() == ui::ET_GESTURE_TAP_DOWN ||
-      event->type() == ui::ET_GESTURE_TAP_UNCONFIRMED ||
-      event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
-      event->type() == ui::ET_GESTURE_LONG_PRESS ||
-      event->type() == ui::ET_GESTURE_LONG_TAP) {
-    event->StopPropagation();
+  if (features::IsInteractiveWindowCycleListEnabled()) {
+    if (ProcessGestureEvent(event)) {
+      event->SetHandled();
+      event->StopPropagation();
+    }
+  } else {
+    // Prevent any form of tap from doing anything while the Alt+Tab UI is
+    // active.
+    if (event->type() == ui::ET_GESTURE_TAP ||
+        event->type() == ui::ET_GESTURE_DOUBLE_TAP ||
+        event->type() == ui::ET_GESTURE_TAP_CANCEL ||
+        event->type() == ui::ET_GESTURE_TAP_DOWN ||
+        event->type() == ui::ET_GESTURE_TAP_UNCONFIRMED ||
+        event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
+        event->type() == ui::ET_GESTURE_LONG_PRESS ||
+        event->type() == ui::ET_GESTURE_LONG_TAP) {
+      event->StopPropagation();
+    }
   }
 }
 
@@ -235,6 +238,61 @@ void WindowCycleEventFilter::ProcessMouseEvent(ui::MouseEvent* event) {
       event->StopPropagation();
     }
   }
+}
+
+bool WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
+  // TODO(chinsenj): Implement handling for ui::ET_SCROLL_FLING_START events.
+  switch (event->type()) {
+    case ui::ET_GESTURE_TAP:
+    case ui::ET_GESTURE_TAP_DOWN:
+    case ui::ET_GESTURE_DOUBLE_TAP:
+    case ui::ET_GESTURE_TAP_UNCONFIRMED:
+    case ui::ET_GESTURE_TWO_FINGER_TAP:
+    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::ET_GESTURE_LONG_TAP: {
+      tapped_window_ =
+          Shell::Get()->window_cycle_controller()->GetWindowAtPoint(
+              event->AsLocatedEvent());
+      return true;
+    }
+    case ui::ET_GESTURE_TAP_CANCEL:
+      // Do nothing because the event after this one determines whether we
+      // scrolled or tapped.
+      return true;
+    case ui::ET_GESTURE_SCROLL_BEGIN: {
+      tapped_window_ = nullptr;
+      auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+      if (!window_cycle_controller->IsEventInCycleView(event))
+        return false;
+
+      touch_scrolling_ = true;
+      return true;
+    }
+    case ui::ET_GESTURE_SCROLL_UPDATE: {
+      if (!touch_scrolling_)
+        return false;
+
+      Shell::Get()->window_cycle_controller()->Drag(
+          event->details().scroll_x());
+      return true;
+    }
+    case ui::ET_GESTURE_END: {
+      if (tapped_window_)
+        Shell::Get()->window_cycle_controller()->CompleteCycling();
+      tapped_window_ = nullptr;
+      touch_scrolling_ = false;
+      return true;
+    }
+    default:
+      if (tapped_window_) {
+        Shell::Get()->window_cycle_controller()->SetFocusedWindow(
+            tapped_window_);
+        return true;
+      }
+      break;
+  }
+
+  return false;
 }
 
 bool WindowCycleEventFilter::ProcessEventImpl(int finger_count,

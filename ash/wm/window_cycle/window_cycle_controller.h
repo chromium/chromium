@@ -70,6 +70,9 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
   // ring.
   void Scroll(WindowCyclingDirection direction);
 
+  // Drags the cycle view's mirror container |delta_x|.
+  void Drag(float delta_x);
+
   // Returns true if we are in the middle of a window cycling gesture.
   bool IsCycling() const { return window_cycle_list_.get() != NULL; }
 
@@ -93,7 +96,12 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
   void SetFocusedWindow(aura::Window* window);
 
   // Checks whether |event| occurs within the cycle view.
-  bool IsEventInCycleView(ui::LocatedEvent* event);
+  bool IsEventInCycleView(const ui::LocatedEvent* event);
+
+  // Gets the window for the preview item located at |event|. Returns nullptr if
+  // |event| is not on the cycle view or a preview item, or |window_cycle_list_|
+  // does not exist.
+  aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
 
   // Returns whether or not the window cycle view is visible.
   bool IsWindowListVisible();

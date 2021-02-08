@@ -76,8 +76,7 @@ constexpr int kFixedPreviewHeightDp = 256;
 constexpr int kMinPreviewWidthDp = kFixedPreviewHeightDp / 2;
 constexpr int kMaxPreviewWidthDp = kFixedPreviewHeightDp * 2;
 
-// Padding between the alt-tab bandshield and the window previews.
-constexpr int kInsideBorderHorizontalPaddingDp = 64;
+// Vertical padding between the alt-tab bandshield and the window previews.
 constexpr int kInsideBorderVerticalPaddingDp = 60;
 
 // Padding between the alt-tab bandshield and the tab slider container.
@@ -140,6 +139,14 @@ class CustomWindowTargeter : public aura::WindowTargeter {
   aura::Window* tab_cycler_;
 };
 
+gfx::Point ConvertEventToScreen(const ui::LocatedEvent* event) {
+  aura::Window* target = static_cast<aura::Window*>(event->target());
+  aura::Window* event_root = target->GetRootWindow();
+  gfx::Point event_screen_point = event->root_location();
+  wm::ConvertPointToScreen(event_root, &event_screen_point);
+  return event_screen_point;
+}
+
 }  // namespace
 
 // This view represents a single aura::Window by displaying a title and a
@@ -174,25 +181,6 @@ class WindowCycleItemView : public WindowMiniView {
     Shell::Get()->window_cycle_controller()->SetFocusedWindow(source_window());
     Shell::Get()->window_cycle_controller()->CompleteCycling();
     return true;
-  }
-
-  void OnGestureEvent(ui::GestureEvent* event) override {
-    switch (event->type()) {
-      case ui::ET_GESTURE_TAP_DOWN:
-      case ui::ET_GESTURE_SHOW_PRESS:
-      case ui::ET_GESTURE_LONG_TAP:
-      case ui::ET_GESTURE_TAP:
-        Shell::Get()->window_cycle_controller()->SetFocusedWindow(
-            source_window());
-        event->SetHandled();
-        break;
-      case ui::ET_GESTURE_END:
-        Shell::Get()->window_cycle_controller()->CompleteCycling();
-        event->SetHandled();
-        break;
-      default:
-        break;
-    }
   }
 
  private:
@@ -328,9 +316,9 @@ class WindowCycleView : public views::WidgetDelegateView,
                                 ->IsInteractiveAltTabModeAllowed()
                             ? kMirrorContainerVerticalPaddingDp
                             : kInsideBorderVerticalPaddingDp,
-                        kInsideBorderHorizontalPaddingDp,
+                        WindowCycleList::kInsideBorderHorizontalPaddingDp,
                         kInsideBorderVerticalPaddingDp,
-                        kInsideBorderHorizontalPaddingDp),
+                        WindowCycleList::kInsideBorderHorizontalPaddingDp),
             kBetweenChildPaddingDp));
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStart);
@@ -443,6 +431,10 @@ class WindowCycleView : public views::WidgetDelegateView,
       no_previews_set_.insert(view);
     }
 
+    // If there was an ongoing drag session, it's now been completed so reset
+    // |horizontal_distance_dragged_|.
+    horizontal_distance_dragged_ = 0.f;
+
     gfx::Rect widget_rect = GetTargetBounds();
     if (is_interactive_alt_tab_mode_allowed)
       ScaleCycleView(widget_rect);
@@ -472,6 +464,10 @@ class WindowCycleView : public views::WidgetDelegateView,
 
   void ScrollToWindow(aura::Window* target) {
     current_window_ = target;
+
+    // If there was an ongoing drag session, it's now been completed so reset
+    // |horizontal_distance_dragged_|.
+    horizontal_distance_dragged_ = 0.f;
 
     if (GetWidget()) {
       Layout();
@@ -527,6 +523,11 @@ class WindowCycleView : public views::WidgetDelegateView,
     RemoveAllChildViews(true);
   }
 
+  void Drag(float delta_x) {
+    horizontal_distance_dragged_ += delta_x;
+    Layout();
+  }
+
   // views::WidgetDelegateView:
   gfx::Size CalculatePreferredSize() const override {
     gfx::Size size = mirror_container_->GetPreferredSize();
@@ -566,23 +567,35 @@ class WindowCycleView : public views::WidgetDelegateView,
     gfx::RectF target_bounds(target_view->GetLocalBounds());
     views::View::ConvertRectToTarget(target_view, mirror_container_,
                                      &target_bounds);
-    gfx::Rect container_bounds(mirror_container_->GetPreferredSize());
+    gfx::Rect mirror_container_bounds(mirror_container_->GetPreferredSize());
     // Case one: the container is narrower than the screen. Center the
     // container.
-    int x_offset = (width() - container_bounds.width()) / 2;
+    int x_offset = (width() - mirror_container_bounds.width()) / 2;
     if (x_offset < 0) {
       // Case two: the container is wider than the screen. Center the target
       // view by moving the list just enough to ensure the target view is in
-      // the center.
+      // the center. Additionally, offset by however much the user has dragged.
       x_offset = width() / 2 - mirror_container_->GetMirroredXInView(
                                    target_bounds.CenterPoint().x());
 
       // However, the container must span the screen, i.e. the maximum x is 0
       // and the minimum for its right boundary is the width of the screen.
-      x_offset = std::min(x_offset, 0);
-      x_offset = std::max(x_offset, width() - container_bounds.width());
+      int minimum_x = width() - mirror_container_bounds.width();
+      x_offset = base::ClampToRange(x_offset, minimum_x, 0);
+
+      // If the user has dragged, offset the container based on how much they
+      // have dragged.
+      if (features::IsInteractiveWindowCycleListEnabled()) {
+        // Cap |horizontal_distance_dragged_| based on the available distance
+        // from the container to the left and right boundaries.
+        horizontal_distance_dragged_ =
+            base::ClampToRange(horizontal_distance_dragged_,
+                               static_cast<float>(minimum_x - x_offset),
+                               static_cast<float>(-x_offset));
+        x_offset += horizontal_distance_dragged_;
+      }
     }
-    container_bounds.set_x(x_offset);
+    mirror_container_bounds.set_x(x_offset);
 
     // Layout a tab slider if Bento is enabled.
     if (Shell::Get()
@@ -591,23 +604,24 @@ class WindowCycleView : public views::WidgetDelegateView,
       // Layout the tab slider.
       const gfx::Size tab_slider_size =
           tab_slider_container_->GetPreferredSize();
-      const gfx::Rect tab_slider_container_bounds(
+      const gfx::Rect tab_slider_mirror_container_bounds(
           (width() - tab_slider_size.width()) / 2,
           kTabSliderContainerVerticalPaddingDp, tab_slider_size.width(),
           tab_slider_size.height());
-      tab_slider_container_->SetBoundsRect(tab_slider_container_bounds);
+      tab_slider_container_->SetBoundsRect(tab_slider_mirror_container_bounds);
 
       // Move window cycle container down.
-      container_bounds.set_y(tab_slider_container_->y() +
-                             tab_slider_container_->height());
+      mirror_container_bounds.set_y(tab_slider_container_->y() +
+                                    tab_slider_container_->height());
 
       // Unlike the bounds of scrollable mirror container, the bounds of label
       // should not overflow out of the screen.
       if (no_previews_set_.empty()) {
         const gfx::Rect no_recent_item_bounds_(
-            std::max(0, container_bounds.x()), container_bounds.y(),
-            std::min(width(), container_bounds.width()),
-            container_bounds.height());
+            std::max(0, mirror_container_bounds.x()),
+            mirror_container_bounds.y(),
+            std::min(width(), mirror_container_bounds.width()),
+            mirror_container_bounds.height());
         no_recent_items_label_->SetBoundsRect(no_recent_item_bounds_);
       }
     }
@@ -633,7 +647,7 @@ class WindowCycleView : public views::WidgetDelegateView,
             UMA_HISTOGRAM_PERCENTAGE(kContainerAnimationSmoothness, smoothness);
           })));
     }
-    mirror_container_->SetBoundsRect(container_bounds);
+    mirror_container_->SetBoundsRect(mirror_container_bounds);
 
     // If an element in |no_previews_set_| is no onscreen (its bounds in |this|
     // coordinates intersects |this|), create the rest of its elements and
@@ -653,6 +667,14 @@ class WindowCycleView : public views::WidgetDelegateView,
   }
 
   aura::Window* GetTargetWindow() { return target_window_; }
+
+  aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) {
+    for (const auto& entry : window_view_map_) {
+      if (entry.second->GetBoundsInScreen().Contains(screen_point))
+        return entry.first;
+    }
+    return nullptr;
+  }
 
   void SetFocusTabSlider(bool focus) {
     tab_slider_container_->SetHighlightVisibility(focus);
@@ -722,6 +744,11 @@ class WindowCycleView : public views::WidgetDelegateView,
   // fade in animation.
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
       occlusion_tracker_pauser_;
+
+  // Tracks the distance that a user has dragged, offsetting the
+  // |mirror_container_|. This should be reset only when a user cycles the
+  // window cycle list or when the user switches alt-tab modes.
+  float horizontal_distance_dragged_ = 0.f;
 };
 
 WindowCycleList::WindowCycleList(const WindowList& windows)
@@ -829,6 +856,11 @@ void WindowCycleList::ScrollInDirection(
   Scroll(offset);
 }
 
+void WindowCycleList::Drag(float delta_x) {
+  DCHECK(cycle_view_);
+  cycle_view_->Drag(delta_x);
+}
+
 void WindowCycleList::SetFocusedWindow(aura::Window* window) {
   if (windows_.empty())
     return;
@@ -837,15 +869,15 @@ void WindowCycleList::SetFocusedWindow(aura::Window* window) {
     cycle_view_->SetTargetWindow(windows_[GetIndexOfWindow(window)]);
 }
 
-bool WindowCycleList::IsEventInCycleView(ui::LocatedEvent* event) {
-  if (!cycle_view_)
-    return false;
+bool WindowCycleList::IsEventInCycleView(const ui::LocatedEvent* event) {
+  return cycle_view_ &&
+         cycle_view_->GetBoundsInScreen().Contains(ConvertEventToScreen(event));
+}
 
-  aura::Window* target = static_cast<aura::Window*>(event->target());
-  aura::Window* event_root = target->GetRootWindow();
-  gfx::Point event_screen_point = event->root_location();
-  wm::ConvertPointToScreen(event_root, &event_screen_point);
-  return cycle_view_->GetBoundsInScreen().Contains(event_screen_point);
+aura::Window* WindowCycleList::GetWindowAtPoint(const ui::LocatedEvent* event) {
+  return cycle_view_
+             ? cycle_view_->GetWindowAtPoint(ConvertEventToScreen(event))
+             : nullptr;
 }
 
 bool WindowCycleList::ShouldShowUi() {

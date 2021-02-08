@@ -159,6 +159,11 @@ void WindowCycleController::Scroll(WindowCyclingDirection direction) {
   window_cycle_list_->ScrollInDirection(direction);
 }
 
+void WindowCycleController::Drag(float delta_x) {
+  DCHECK(window_cycle_list_);
+  window_cycle_list_->Drag(delta_x);
+}
+
 void WindowCycleController::StartCycling() {
   // Close the wallpaper preview if it is open to prevent visual glitches where
   // the window view item for the preview is transparent
@@ -204,8 +209,14 @@ void WindowCycleController::SetFocusedWindow(aura::Window* window) {
   window_cycle_list_->SetFocusedWindow(window);
 }
 
-bool WindowCycleController::IsEventInCycleView(ui::LocatedEvent* event) {
+bool WindowCycleController::IsEventInCycleView(const ui::LocatedEvent* event) {
   return window_cycle_list_ && window_cycle_list_->IsEventInCycleView(event);
+}
+
+aura::Window* WindowCycleController::GetWindowAtPoint(
+    const ui::LocatedEvent* event) {
+  return window_cycle_list_ ? window_cycle_list_->GetWindowAtPoint(event)
+                            : nullptr;
 }
 
 bool WindowCycleController::IsWindowListVisible() {
