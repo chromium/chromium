@@ -40,10 +40,6 @@ TEST_F(StabilityMetricsProviderTest, ProvideStabilityMetrics) {
   EXPECT_FALSE(stability.has_launch_count());
   EXPECT_FALSE(stability.has_crash_count());
   EXPECT_FALSE(stability.has_incomplete_shutdown_count());
-  EXPECT_FALSE(stability.has_breakpad_registration_success_count());
-  EXPECT_FALSE(stability.has_breakpad_registration_failure_count());
-  EXPECT_FALSE(stability.has_debugger_present_count());
-  EXPECT_FALSE(stability.has_debugger_not_present_count());
 
   histogram_tester.ExpectBucketCount("Stability.Counts2",
                                      StabilityEventType::kLaunch, 0);
@@ -61,10 +57,6 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
     recorder.LogCrash(base::Time());
     recorder.MarkSessionEndCompleted(false);
     recorder.CheckLastSessionEndCompleted();
-    recorder.RecordBreakpadRegistration(true);
-    recorder.RecordBreakpadRegistration(false);
-    recorder.RecordBreakpadHasDebugger(true);
-    recorder.RecordBreakpadHasDebugger(false);
   }
 
   {
@@ -78,10 +70,6 @@ TEST_F(StabilityMetricsProviderTest, RecordStabilityMetrics) {
     EXPECT_EQ(1, stability.launch_count());
     EXPECT_EQ(1, stability.crash_count());
     EXPECT_EQ(1, stability.incomplete_shutdown_count());
-    EXPECT_EQ(1, stability.breakpad_registration_success_count());
-    EXPECT_EQ(1, stability.breakpad_registration_failure_count());
-    EXPECT_EQ(1, stability.debugger_present_count());
-    EXPECT_EQ(1, stability.debugger_not_present_count());
 
     histogram_tester.ExpectBucketCount("Stability.Counts2",
                                        StabilityEventType::kLaunch, 1);

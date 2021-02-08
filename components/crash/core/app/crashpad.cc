@@ -262,17 +262,6 @@ void SetUploadConsent(bool consent) {
                               crash_reporter_client->GetCollectStatsInSample());
 }
 
-bool GetUploadsEnabled() {
-  if (g_database) {
-    crashpad::Settings* settings = g_database->GetSettings();
-    bool enable_uploads;
-    if (settings->GetUploadsEnabled(&enable_uploads)) {
-      return enable_uploads;
-    }
-  }
-
-  return false;
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !defined(OS_ANDROID)

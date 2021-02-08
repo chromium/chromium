@@ -542,6 +542,16 @@ const char kRapporCohortSeed[] = "rappor.cohort_seed";
 const char kRapporLastDailySample[] = "rappor.last_daily_sample";
 const char kRapporSecret[] = "rappor.secret";
 
+// Deprecated 02/2021
+const char kStabilityDebuggerPresent[] =
+    "user_experience_metrics.stability.debugger_present";
+const char kStabilityDebuggerNotPresent[] =
+    "user_experience_metrics.stability.debugger_not_present";
+const char kStabilityBreakpadRegistrationSuccess[] =
+    "user_experience_metrics.stability.breakpad_registration_ok";
+const char kStabilityBreakpadRegistrationFail[] =
+    "user_experience_metrics.stability.breakpad_registration_fail";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -573,6 +583,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kRapporCohortSeed, -1);
   registry->RegisterInt64Pref(kRapporLastDailySample, 0);
   registry->RegisterStringPref(kRapporSecret, std::string());
+
+  registry->RegisterIntegerPref(kStabilityBreakpadRegistrationFail, 0);
+  registry->RegisterIntegerPref(kStabilityBreakpadRegistrationSuccess, 0);
+  registry->RegisterIntegerPref(kStabilityDebuggerPresent, 0);
+  registry->RegisterIntegerPref(kStabilityDebuggerNotPresent, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1205,6 +1220,12 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kRapporCohortSeed);
   local_state->ClearPref(kRapporLastDailySample);
   local_state->ClearPref(kRapporSecret);
+
+  // Added 02/2021
+  local_state->ClearPref(kStabilityBreakpadRegistrationFail);
+  local_state->ClearPref(kStabilityBreakpadRegistrationSuccess);
+  local_state->ClearPref(kStabilityDebuggerPresent);
+  local_state->ClearPref(kStabilityDebuggerNotPresent);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

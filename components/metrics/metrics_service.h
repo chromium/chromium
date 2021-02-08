@@ -140,14 +140,6 @@ class MetricsService : public base::HistogramFlattener {
   void LogNeedForCleanShutdown();
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
-  // Saves in the preferences if the crash report registration was successful.
-  // This count is eventually send via UMA logs.
-  void RecordBreakpadRegistration(bool success);
-
-  // Saves in the preferences if the browser is running under a debugger.
-  // This count is eventually send via UMA logs.
-  void RecordBreakpadHasDebugger(bool has_debugger);
-
   bool recording_active() const;
   bool reporting_active() const;
   bool has_unsent_logs() const;

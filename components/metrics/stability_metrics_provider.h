@@ -24,9 +24,6 @@ class StabilityMetricsProvider : public MetricsProvider {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  void RecordBreakpadRegistration(bool success);
-  void RecordBreakpadHasDebugger(bool has_debugger);
-
   void CheckLastSessionEndCompleted();
   void MarkSessionEndCompleted(bool end_completed);
 

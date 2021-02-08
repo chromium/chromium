@@ -1539,8 +1539,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif
 
   HandleTestParameters(parsed_command_line());
-  browser_process_->metrics_service()->RecordBreakpadHasDebugger(
-      base::debug::BeingDebugged());
 
   language::LanguageUsageMetrics::RecordAcceptLanguages(
       profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));

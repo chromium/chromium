@@ -433,14 +433,6 @@ void MetricsService::LogNeedForCleanShutdown() {
 }
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
-void MetricsService::RecordBreakpadRegistration(bool success) {
-  StabilityMetricsProvider(local_state_).RecordBreakpadRegistration(success);
-}
-
-void MetricsService::RecordBreakpadHasDebugger(bool has_debugger) {
-  StabilityMetricsProvider(local_state_)
-      .RecordBreakpadHasDebugger(has_debugger);
-}
 
 void MetricsService::ClearSavedStabilityMetrics() {
   delegating_provider_.ClearSavedStabilityMetrics();

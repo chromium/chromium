@@ -77,27 +77,6 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   ChromeBrowserMainPartsPosix::PreProfileInit();
 }
 
-void ChromeBrowserMainPartsLinux::PostProfileInit() {
-  ChromeBrowserMainPartsPosix::PostProfileInit();
-
-  bool breakpad_registered;
-  if (crash_reporter::IsCrashpadEnabled()) {
-    // If we're using crashpad, there's no breakpad and crashpad is always
-    // registered as a crash handler. Since setting |breakpad_registered| to
-    // true all the time isn't useful, we overload the meaning of the breakpad
-    // registration metric to mean "is crash reporting enabled", since that's
-    // what breakpad registration effectively meant in the days before crashpad.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-    breakpad_registered = GoogleUpdateSettings::GetCollectStatsConsent();
-#else
-    breakpad_registered = crash_reporter::GetUploadsEnabled();
-#endif
-  } else {
-    breakpad_registered = breakpad::IsCrashReporterEnabled();
-  }
-  g_browser_process->metrics_service()->RecordBreakpadRegistration(
-      breakpad_registered);
-}
 
 void ChromeBrowserMainPartsLinux::PostMainMessageLoopStart() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -120,9 +120,6 @@ crashpad::CrashpadClient& GetCrashpadClient();
 // running.
 void SetUploadConsent(bool consent);
 
-// Determines whether uploads are enabled or disabled. This information is only
-// available in the browser process.
-bool GetUploadsEnabled();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 enum class ReportUploadState {
