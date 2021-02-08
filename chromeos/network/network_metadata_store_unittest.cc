@@ -71,8 +71,10 @@ class NetworkMetadataStoreTest : public ::testing::Test {
             nullptr /* network_device_handler */);
 
     network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
-    network_connection_handler_->Init(helper_.network_state_handler(),
-                                      network_configuration_handler_, nullptr);
+    network_connection_handler_->Init(
+        helper_.network_state_handler(), network_configuration_handler_,
+        /*managed_network_configuration_handler=*/nullptr,
+        /*cellular_esim_connection_handler=*/nullptr);
 
     network_state_handler_ = helper_.network_state_handler();
     NetworkHandler::Initialize();

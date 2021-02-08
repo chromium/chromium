@@ -100,7 +100,8 @@ class CrosNetworkConfigTest : public testing::Test {
         NetworkConnectionHandler::InitializeForTesting(
             helper_.network_state_handler(),
             network_configuration_handler_.get(),
-            managed_network_configuration_handler_.get());
+            managed_network_configuration_handler_.get(),
+            /*cellular_esim_connection_handler=*/nullptr);
     network_certificate_handler_ =
         std::make_unique<NetworkCertificateHandler>();
     cros_network_config_ = std::make_unique<CrosNetworkConfig>(

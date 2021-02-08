@@ -165,9 +165,10 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         nullptr /* prohibited_tecnologies_handler */);
 
     network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
-    network_connection_handler_->Init(helper_.network_state_handler(),
-                                      network_config_handler_.get(),
-                                      managed_config_handler_.get());
+    network_connection_handler_->Init(
+        helper_.network_state_handler(), network_config_handler_.get(),
+        managed_config_handler_.get(),
+        /*cellular_esim_connection_handler=*/nullptr);
     network_connection_observer_.reset(new TestNetworkConnectionObserver);
     network_connection_handler_->AddObserver(
         network_connection_observer_.get());

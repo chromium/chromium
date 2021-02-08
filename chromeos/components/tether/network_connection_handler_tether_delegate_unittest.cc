@@ -78,10 +78,12 @@ class TestNetworkConnectionHandler : public NetworkConnectionHandler {
       base::OnceClosure success_callback,
       network_handler::ErrorCallback error_callback) override {}
 
-  void Init(NetworkStateHandler* network_state_handler,
-            NetworkConfigurationHandler* network_configuration_handler,
-            ManagedNetworkConfigurationHandler*
-                managed_network_configuration_handler) override {}
+  void Init(
+      NetworkStateHandler* network_state_handler,
+      NetworkConfigurationHandler* network_configuration_handler,
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      CellularESimConnectionHandler* cellular_esim_connection_handler)
+      override {}
 };
 
 }  // namespace
