@@ -212,6 +212,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--include', metavar='TEST_OR_DIR',
                         action=WPTPassThroughArgs,
                         help='Test(s) to run, defaults to run all tests.')
+    parser.add_argument('--test-groups',
+                        action=WPTPassThroughArgs,
+                        help='Path to json file containing '
+                        'a mapping {group_name: [test_ids]}')
     parser.add_argument('--list-tests', action=WPTPassThroughArgs, nargs=0,
                         help="Don't run any tests, just print out a list of"
                         ' tests that would be run.')
