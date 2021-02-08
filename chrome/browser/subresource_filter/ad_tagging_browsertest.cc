@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
       CreateSrcFrame(ad_child, GetURL("frame_factory.html?sub=1&3&ad=true"));
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_2->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
-      ad_child_2, /*parent_is_ad=*/true, FilterListEvidence::kNeverChecked,
+      ad_child_2, /*parent_is_ad=*/true, FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // (4) Vanilla child of 2.
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
       CreateSrcFrame(ad_child, GetURL("frame_factory.html?4"));
   EXPECT_TRUE(observer.GetIsAdSubframe(vanilla_child_2->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
-      vanilla_child_2, /*parent_is_ad=*/true, FilterListEvidence::kNeverChecked,
+      vanilla_child_2, /*parent_is_ad=*/true, FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // (5) Vanilla child of 1. This tests something subtle.
@@ -531,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FrameLoadedByAdScript) {
       GetWebContents(), GetURL("frame_factory.html?1"));
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
-      ad_child, /*parent_is_ad=*/false, FilterListEvidence::kNeverChecked,
+      ad_child, /*parent_is_ad=*/false, FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, SameOriginFrameTagging) {
   content::RenderFrameHost* ad_frame =
       CreateDocWrittenFrameFromAdScript(GetWebContents());
   observer.VerifyEvidenceForAdSubframe(
-      ad_frame, /*parent_is_ad=*/false, FilterListEvidence::kNeverChecked,
+      ad_frame, /*parent_is_ad=*/false, FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
@@ -580,14 +580,14 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       ad_child_of_vanilla, /*parent_is_ad=*/false,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Ad frame and descendants
   content::RenderFrameHost* ad_frame =
       CreateDocWrittenFrameFromAdScript(GetWebContents());
   observer.VerifyEvidenceForAdSubframe(
-      ad_frame, /*parent_is_ad=*/false, FilterListEvidence::kNeverChecked,
+      ad_frame, /*parent_is_ad=*/false, FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* vanilla_child_of_ad =
@@ -596,14 +596,14 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       vanilla_child_of_ad, /*parent_is_ad=*/true,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* ad_child_of_ad =
       CreateSrcFrameFromAdScript(ad_frame, GetURL("frame_factory.html"));
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
-      ad_child_of_ad, /*parent_is_ad=*/true, FilterListEvidence::kNeverChecked,
+      ad_child_of_ad, /*parent_is_ad=*/true, FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       ad_frame_with_aborted_load->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       ad_frame_with_aborted_load, /*parent_is_ad=*/false,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Child with ad parent.
@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       child_frame_of_ad_with_aborted_load->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       child_frame_of_ad_with_aborted_load, /*parent_is_ad=*/true,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
@@ -668,7 +668,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       ad_frame_with_aborted_load->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       ad_frame_with_aborted_load, /*parent_is_ad=*/false,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Child with ad parent.
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       child_frame_of_ad_with_aborted_load->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       child_frame_of_ad_with_aborted_load, /*parent_is_ad=*/true,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(
       observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       ad_child_of_vanilla, /*parent_is_ad=*/false,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Create a frame and abort its initial load in ad script. The children of
@@ -722,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(
       ad_frame_with_aborted_load->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       ad_frame_with_aborted_load, /*parent_is_ad=*/false,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* vanilla_child_of_ad =
@@ -731,14 +731,14 @@ IN_PROC_BROWSER_TEST_F(
       observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       vanilla_child_of_ad, /*parent_is_ad=*/true,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* ad_child_of_ad = CreateSrcFrameFromAdScript(
       ad_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
-      ad_child_of_ad, /*parent_is_ad=*/true, FilterListEvidence::kNeverChecked,
+      ad_child_of_ad, /*parent_is_ad=*/true, FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(
       observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       ad_child_of_vanilla, /*parent_is_ad=*/false,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // Create a frame and abort its initial load in ad script. The children of
@@ -780,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(
       ad_frame_with_aborted_load->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       ad_frame_with_aborted_load, /*parent_is_ad=*/false,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* vanilla_child_of_ad =
@@ -789,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(
       observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       vanilla_child_of_ad, /*parent_is_ad=*/true,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 
   content::RenderFrameHost* ad_child_of_ad = CreateSrcFrameFromAdScript(
@@ -797,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
   observer.VerifyEvidenceForAdSubframe(
       vanilla_child_of_ad, /*parent_is_ad=*/true,
-      FilterListEvidence::kNeverChecked,
+      FilterListEvidence::kNotChecked,
       ScriptHeuristicEvidence::kCreatedByAdScript);
 }
 

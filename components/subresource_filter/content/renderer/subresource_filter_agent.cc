@@ -252,15 +252,16 @@ void SubresourceFilterAgent::SetIsAdSubframeIfNecessary() {
   // browser but also populated here when the browser has not informed the
   // renderer.
   FrameAdEvidence ad_evidence(IsParentAdSubframe());
-  ad_evidence.filter_list_result = FilterListEvidence::kNeverChecked;
-  ad_evidence.created_by_ad_script =
+  ad_evidence.set_created_by_ad_script(
       IsSubframeCreatedByAdScript()
           ? ScriptHeuristicEvidence::kCreatedByAdScript
-          : ScriptHeuristicEvidence::kNotCreatedByAdScript;
+          : ScriptHeuristicEvidence::kNotCreatedByAdScript);
+  ad_evidence.set_is_complete();
+
   if (ad_evidence.IndicatesAdSubframe()) {
     blink::mojom::AdFrameType ad_frame_type =
-        ad_evidence.parent_is_ad ? blink::mojom::AdFrameType::kChildAd
-                                 : blink::mojom::AdFrameType::kRootAd;
+        ad_evidence.parent_is_ad() ? blink::mojom::AdFrameType::kChildAd
+                                   : blink::mojom::AdFrameType::kRootAd;
     SetIsAdSubframe(ad_frame_type);
     SendFrameIsAdSubframe();
   }

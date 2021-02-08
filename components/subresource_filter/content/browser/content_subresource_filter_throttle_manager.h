@@ -250,15 +250,6 @@ class ContentSubresourceFilterThrottleManager
   // `tracked_ad_evidence_` to `ad_frames_` (and thus freezing it).
   void SetFrameAsAdSubframe(content::RenderFrameHost* render_frame_host);
 
-  // If `render_frame_host` is tagged as an ad, does nothing. Otherwise, updates
-  // `render_frame_host`'s FrameAdEvidence. `load_policy` should be equal to
-  // base::nullopt if the frame's URL was not checked against the filter list.
-  // Otherwise, `load_policy.value()` should equal the LoadPolicy that resulted
-  // from the lookup.
-  void MaybeUpdateEvidenceBasedOnLoadPolicy(
-      content::RenderFrameHost* render_frame_host,
-      base::Optional<LoadPolicy> load_policy);
-
   // For each RenderFrameHost where the last committed load (or the initial load
   // if no committed load has occurred) has subresource filtering activated,
   // owns the corresponding AsyncDocumentSubresourceFilter.

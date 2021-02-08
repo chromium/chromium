@@ -116,9 +116,10 @@ void TestSubresourceFilterObserver::VerifyEvidenceForAdSubframe(
     ScriptHeuristicEvidence created_by_ad_script) const {
   const FrameAdEvidence& ad_evidence =
       GetEvidenceForAdSubframe(frame_host->GetFrameTreeNodeId());
-  EXPECT_EQ(ad_evidence.parent_is_ad, parent_is_ad);
-  EXPECT_EQ(ad_evidence.filter_list_result, filter_list_result);
-  EXPECT_EQ(ad_evidence.created_by_ad_script, created_by_ad_script);
+  EXPECT_TRUE(ad_evidence.is_complete());
+  EXPECT_EQ(ad_evidence.parent_is_ad(), parent_is_ad);
+  EXPECT_EQ(ad_evidence.filter_list_result(), filter_list_result);
+  EXPECT_EQ(ad_evidence.created_by_ad_script(), created_by_ad_script);
 }
 
 }  // namespace subresource_filter

@@ -9,7 +9,7 @@ namespace subresource_filter {
 FilterListEvidence InterpretLoadPolicyAsEvidence(
     const base::Optional<LoadPolicy>& load_policy) {
   if (!load_policy.has_value()) {
-    return FilterListEvidence::kNeverChecked;
+    return FilterListEvidence::kNotChecked;
   }
   switch (load_policy.value()) {
     case LoadPolicy::EXPLICITLY_ALLOW:
@@ -23,25 +23,18 @@ FilterListEvidence InterpretLoadPolicyAsEvidence(
 }
 
 FrameAdEvidence::FrameAdEvidence(bool parent_is_ad)
-    : parent_is_ad(parent_is_ad) {}
+    : parent_is_ad_(parent_is_ad) {}
 
 FrameAdEvidence::FrameAdEvidence(const FrameAdEvidence&) = default;
 
-FrameAdEvidence& FrameAdEvidence::operator=(const FrameAdEvidence&) = default;
-
 FrameAdEvidence::~FrameAdEvidence() = default;
 
-bool FrameAdEvidence::IsPopulated() const {
-  return created_by_ad_script != ScriptHeuristicEvidence::kUnknown &&
-         filter_list_result != FilterListEvidence::kUnknown;
-}
-
 bool FrameAdEvidence::IndicatesAdSubframe() const {
-  DCHECK(IsPopulated());
+  DCHECK(is_complete_);
 
-  return parent_is_ad ||
-         filter_list_result == FilterListEvidence::kMatchedBlockingRule ||
-         created_by_ad_script == ScriptHeuristicEvidence::kCreatedByAdScript;
+  return parent_is_ad_ ||
+         filter_list_result_ == FilterListEvidence::kMatchedBlockingRule ||
+         created_by_ad_script_ == ScriptHeuristicEvidence::kCreatedByAdScript;
 }
 
 }  // namespace subresource_filter
