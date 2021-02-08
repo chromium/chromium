@@ -315,7 +315,7 @@ RenderViewHostImpl::RenderViewHostImpl(
   // brief window where the internal ChannelProxy is null. This ensures that the
   // ChannelProxy is re-initialized in such cases so that subsequent messages
   // make their way to the new renderer once its restarted.
-  // TODO(crbug.com/1111231): Should this go via AgentSchedulerGroupHost? Is it
+  // TODO(crbug.com/1111231): Should this go via AgentSchedulingGroupHost? Is it
   // even needed after the migration?
   GetProcess()->EnableSendQueue();
 
@@ -343,10 +343,10 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   // We can't release the SessionStorageNamespace until our peer
   // in the renderer has wound down.
   // TODO(crbug.com/1111231): `WillDestroyRenderView()` should probably be
-  // called on the AgentSchedulerGroupHost rather than the
+  // called on the AgentSchedulingGroupHost rather than the
   // RenderProcessHostImpl. If that happens, does it still make sense to test if
   // the process is still alive, or should that be encapsulated in
-  // `AgentSchedulerGroupHost::WillDestroyRenderView()`?
+  // `AgentSchedulingGroupHost::WillDestroyRenderView()`?
   if (GetProcess()->IsInitializedAndNotDead()) {
     RenderProcessHostImpl::WillDestroyRenderView(
         GetProcess(), delegate_->GetSessionStorageNamespaceMap(),
