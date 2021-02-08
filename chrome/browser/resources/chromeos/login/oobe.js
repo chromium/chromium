@@ -22,6 +22,8 @@
 // <include src="web_view_helper.js">
 
 HTMLImports.whenReady(() => {
+  i18nTemplate.process(document, loadTimeData);
+
   cr.define('cr.ui.Oobe', function() {
     return {
       /**

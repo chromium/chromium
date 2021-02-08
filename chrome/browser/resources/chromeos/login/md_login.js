@@ -30,6 +30,8 @@ function ensurePinKeyboardLoaded(onLoaded) {
 }
 
 HTMLImports.whenReady(() => {
+  i18nTemplate.process(document, loadTimeData);
+
   cr.define('cr.ui.Oobe', function() {
     return {
       /**
