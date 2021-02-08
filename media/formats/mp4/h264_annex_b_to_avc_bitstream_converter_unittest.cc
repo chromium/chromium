@@ -37,10 +37,11 @@ std::vector<uint8_t> ReadTestFile(std::string name) {
 namespace media {
 
 TEST(H264AnnexBToAvcBitstreamConverterTest, Success) {
-  std::string chunks[] = {"chunk1-config-idr.bin", "chunk2-non-idr.bin",
-                          "chunk3-non-idr.bin",    "chunk4-non-idr.bin",
-                          "chunk5-non-idr.bin",    "chunk6-config-idr.bin",
-                          "chunk7-non-idr.bin"};
+  std::string chunks[] = {
+      "chunk1-config-idr.bin", "chunk2-non-idr.bin",
+      "chunk3-non-idr.bin",    "chunk4-non-idr.bin",
+      "chunk5-non-idr.bin",    "chunk6-config-idr.bin",
+      "chunk7-non-idr.bin",    "pps_neq_sps_config_idr.bin"};
   H264AnnexBToAvcBitstreamConverter converter;
 
   for (std::string& name : chunks) {
