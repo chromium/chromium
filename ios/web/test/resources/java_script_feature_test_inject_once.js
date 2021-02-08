@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Add functionality used in JavaScriptFeature inttests.
+ * @fileoverview Setup functions used in JavaScriptFeature inttests. This file
+ * will be executed once for a given |window| JS object.
  */
-goog.provide('__crWeb.javaScriptFeatureTest');
+goog.provide('__crWeb.javaScriptFeatureTestInjectOnce');
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
@@ -17,6 +18,13 @@ __gCrWeb.javaScriptFeatureTest = {};
 // string, so it does not get renamed by closure compiler during the
 // minification.
 __gCrWeb['javaScriptFeatureTest'] = __gCrWeb.javaScriptFeatureTest;
+
+// A counter which is incremented on error.
+__gCrWeb.javaScriptFeatureTest.errorReceivedCount = 0;
+
+__gCrWeb.javaScriptFeatureTest.getErrorCount = function() {
+  return __gCrWeb.javaScriptFeatureTest.errorReceivedCount;
+}
 
 __gCrWeb.javaScriptFeatureTest.replaceDivContents = function() {
   document.getElementById('div').innerHTML = 'updated';
