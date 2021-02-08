@@ -1779,8 +1779,6 @@ static_library("ui") {
       "app_list/search/cros_action_history/cros_action_recorder_tab_tracker.h",
       "app_list/search/drive_quick_access_chip_result.cc",
       "app_list/search/drive_quick_access_chip_result.h",
-      "app_list/search/drive_quick_access_provider.cc",
-      "app_list/search/drive_quick_access_provider.h",
       "app_list/search/drive_quick_access_result.cc",
       "app_list/search/drive_quick_access_result.h",
       "app_list/search/file_chip_result.cc",
