@@ -1721,7 +1721,7 @@ void TabDragController::RevertDragAt(size_t drag_index) {
             ++target_index;
         }
       }
-      source_context_->GetTabStripModel()->MoveWebContentsAt(
+      target_index = source_context_->GetTabStripModel()->MoveWebContentsAt(
           index, target_index, false);
     }
   } else {
