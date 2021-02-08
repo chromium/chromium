@@ -4675,8 +4675,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Drive.PushNotificationInitiallyEnabled" enum="BooleanEnabled"
     expires_after="2021-06-20">
-  <owner>dats@chromium.org</owner>
-  <owner>austinct@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Tracks whether the push notification is initially enabled for Drive.
     Recorded when the first notification is processed. Notification is emulated
@@ -4686,8 +4686,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Drive.PushNotificationRegistered" enum="BooleanRegistered"
     expires_after="2021-06-20">
-  <owner>dats@chromium.org</owner>
-  <owner>austinct@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Tracks whether the push notification request is registered correctly for
     Drive. Recorded when the push notification manager is initialized.
@@ -4696,8 +4696,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DriveCommon.Lifecycle.FirstLaunchTime" units="ms"
     expires_after="2021-04-19">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to launch Google Drive for the first time.
   </summary>
@@ -4705,29 +4705,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DriveCommon.Lifecycle.Mount" enum="DriveMountStatus"
     expires_after="2021-06-20">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Records outcomes of attempts to mount Google Drive.</summary>
 </histogram>
 
 <histogram name="DriveCommon.Lifecycle.MountTime" units="ms"
     expires_after="2021-06-20">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>How long did it take to mount Google Drive.</summary>
 </histogram>
 
 <histogram name="DriveCommon.Lifecycle.Unmount" enum="DriveMountStatus"
     expires_after="2021-04-19">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Records outcomes of attempts to unmount Google Drive.</summary>
 </histogram>
 
 <histogram name="DriveCommon.LocalSearch.OfflineSearchTime" units="ms"
     expires_after="2021-04-19">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to perform a lookup of pinned files in local Google
     Drive cache.
@@ -4736,8 +4736,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DriveCommon.LocalSearch.SharedSearchTime" units="ms"
     expires_after="2021-04-19">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to perform a search of shared files in local Google
     Drive cache.
@@ -4746,8 +4746,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DriveCommon.LocalSearch.TextSearchTime" units="ms"
     expires_after="2021-04-19">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to search a title in local Google Drive cache.
   </summary>
@@ -4755,8 +4755,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DriveCommon.RemoteSearch.SharedSearchTime" units="ms"
     expires_after="2021-04-19">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to perform a search of shared files in online Google
     Drive.
@@ -4765,17 +4765,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DriveCommon.RemoteSearch.TextSearchTime" units="ms"
     expires_after="2021-04-19">
-  <owner>dats@chromium.org</owner>
-  <owner>sammc@chromium.org</owner>
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     How long did it take to perform a search in online Google Drive.
   </summary>
 </histogram>
 
 <histogram name="DriveOffline.CrosAutoEnableOutcome"
-    enum="CrosEnableDriveOfflineOutcome" expires_after="2021-03-05">
-  <owner>slangley@chromium.org</owner>
-  <owner>weifangsun@chromium.org</owner>
+    enum="CrosEnableDriveOfflineOutcome" expires_after="2022-02-05">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Outcome of enabling Google Drive offline mode automatically when a user
     first logs into a Chrome OS device. This process involves opening a hidden
