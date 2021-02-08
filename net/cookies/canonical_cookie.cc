@@ -307,12 +307,6 @@ CanonicalCookie::~CanonicalCookie() = default;
 std::string CanonicalCookie::CanonPathWithString(
     const GURL& url,
     const std::string& path_string) {
-  // The RFC says the path should be a prefix of the current URL path.
-  // However, Mozilla allows you to set any path for compatibility with
-  // broken websites.  We unfortunately will mimic this behavior.  We try
-  // to be generous and accept cookies with an invalid path attribute, and
-  // default the path to something reasonable.
-
   // The path was supplied in the cookie, we'll take it.
   if (!path_string.empty() && path_string[0] == '/')
     return path_string;
