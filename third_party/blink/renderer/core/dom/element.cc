@@ -3278,19 +3278,14 @@ void Element::setEditContext(EditContext* edit_context) {
 
   // An element is considered editable if there is an active EditContext
   // associated with the element.
-  if (GetDocument()
-          .GetFrame()
-          ->GetInputMethodController()
-          .GetActiveEditContext()) {
-    MutableCSSPropertyValueSet& style = EnsureMutableInlineStyle();
-    if (edit_context) {
+  if (auto* frame = GetDocument().GetFrame()) {
+    if (frame->GetInputMethodController().GetActiveEditContext()) {
+      MutableCSSPropertyValueSet& style = EnsureMutableInlineStyle();
       AddPropertyToPresentationAttributeStyle(
-          &style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadWrite);
-    } else {
-      AddPropertyToPresentationAttributeStyle(
-          &style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadOnly);
+          &style, CSSPropertyID::kWebkitUserModify,
+          edit_context ? CSSValueID::kReadWrite : CSSValueID::kReadOnly);
+      InlineStyleChanged();
     }
-    InlineStyleChanged();
   }
 }
 
