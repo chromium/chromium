@@ -91,10 +91,6 @@ bool PrimaryAccountPolicyManagerImpl::IsSigninAllowed() const {
 
 void PrimaryAccountPolicyManagerImpl::OnSigninAllowedPrefChanged(
     PrimaryAccountManager* primary_account_manager) {
-  // On iOS, monitoring the pref and signing the user out is the responsibility
-  // of the embedder, which allows doing additional sign-out tasks such as
-  // dismissing sign-in UI and clearing sync'd account data.
-#if !defined(OS_IOS)
   if (!IsSigninAllowed() &&
       primary_account_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     VLOG(0) << "IsSigninAllowed() set to false, signing out the user";
@@ -102,7 +98,6 @@ void PrimaryAccountPolicyManagerImpl::OnSigninAllowedPrefChanged(
         signin_metrics::SIGNOUT_PREF_CHANGED,
         signin_metrics::SignoutDelete::IGNORE_METRIC);
   }
-#endif  // defined(OS_IOS)
 }
 
 bool PrimaryAccountPolicyManagerImpl::IsAllowedUsername(

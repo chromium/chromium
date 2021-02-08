@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/policy_signout_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -84,6 +85,7 @@
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
+#import "ios/chrome/browser/ui/main/policy_signout_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -661,9 +663,13 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
       ->SetApplicationCommandsHandler(handler);
 
-  // Add Scene Agent that requires CommandDispatcher.
+  // Add scene agents that require CommandDispatcher.
   [self.sceneState
       addAgent:[[DefaultBrowserSceneAgent alloc]
+                   initWithCommandDispatcher:self.mainInterface.browser
+                                                 ->GetCommandDispatcher()]];
+  [self.sceneState
+      addAgent:[[PolicySignoutSceneAgent alloc]
                    initWithCommandDispatcher:self.mainInterface.browser
                                                  ->GetCommandDispatcher()]];
 
@@ -1237,9 +1243,25 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       AuthenticationServiceFactory::GetForBrowserState(
           self.mainInterface.browser->GetBrowserState());
   auto signOut = ^{
-    service->SignOut(signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
-                     /*force_clear_browsing_data=*/true,
-                     /*completion=*/nil);
+    if (!service->IsAuthenticated()) {
+      return;
+    }
+    // Sign the user out, but keep synced data (bookmarks, passwords, etc)
+    // locally to be consistent with the policy's behavior on other platforms.
+    service->SignOut(
+        signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
+        /*force_clear_browsing_data=*/false, ^{
+          BOOL sceneIsActive = self.sceneState.activationLevel >=
+                               SceneActivationLevelForegroundActive;
+          if (sceneIsActive) {
+            id<PolicySignoutPromptCommands> handler = HandlerForProtocol(
+                self.mainInterface.browser->GetCommandDispatcher(),
+                PolicySignoutPromptCommands);
+            [handler showPolicySignoutPrompt];
+          } else {
+            self.sceneState.appState.shouldShowPolicySignoutPrompt = YES;
+          }
+        });
   };
 
   if (self.signinCoordinator) {

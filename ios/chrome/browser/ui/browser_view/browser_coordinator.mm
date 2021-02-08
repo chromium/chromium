@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/policy_signout_commands.h"
+#import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
@@ -89,6 +91,7 @@
                                   FormInputAccessoryCoordinatorNavigator,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
+                                  PolicySignoutPromptCommands,
                                   RepostFormTabHelperDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
@@ -189,6 +192,11 @@
 @property(nonatomic, strong)
     OverlayContainerCoordinator* infobarModalOverlayContainerCoordinator;
 
+// The coordinator that manages the prompt for when the user is signed out due
+// to policy.
+@property(nonatomic, strong)
+    UserPolicySignoutCoordinator* policySignoutPromptCoordinator;
+
 @end
 
 @implementation BrowserCoordinator {
@@ -222,7 +230,7 @@
     @protocol(ActivityServiceCommands), @protocol(BrowserCoordinatorCommands),
     @protocol(FindInPageCommands), @protocol(PageInfoCommands),
     @protocol(PasswordBreachCommands), @protocol(TextZoomCommands),
-    @protocol(WhatsNewCommands)
+    @protocol(WhatsNewCommands), @protocol(PolicySignoutPromptCommands)
   ];
 
   for (Protocol* protocol in protocols) {
@@ -962,6 +970,23 @@
                         leakType:leakType
                              URL:URL];
   [self.passwordBreachCoordinator start];
+}
+
+#pragma mark - PolicySignoutPromptCommands
+
+- (void)showPolicySignoutPrompt {
+  if (!self.policySignoutPromptCoordinator) {
+    self.policySignoutPromptCoordinator = [[UserPolicySignoutCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    self.policySignoutPromptCoordinator.handler = self;
+  }
+  [self.policySignoutPromptCoordinator start];
+}
+
+- (void)hidePolicySignoutPrompt {
+  [self.policySignoutPromptCoordinator stop];
+  self.policySignoutPromptCoordinator = nil;
 }
 
 @end

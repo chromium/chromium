@@ -80,6 +80,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/activity_services/requirements",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin/user_signin",
     "//ios/chrome/browser/ui/autofill:autofill",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/ui/badges:badges_popup_menu",

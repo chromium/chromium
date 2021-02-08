@@ -83,6 +83,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // shown after the last cold start.
 @property(nonatomic) BOOL shouldShowDefaultBrowserPromo;
 
+// YES if the sign-out prompt should be shown to the user when the scene becomes
+// active and enters the foreground. This can happen if the policies have
+// changed since the last cold start, meaning the user was signed out during
+// startup.
+@property(nonatomic) BOOL shouldShowPolicySignoutPrompt;
+
 // When multiwindow is unavailable, this is the only scene state. It is created
 // by the app delegate.
 @property(nonatomic, strong) SceneState* mainSceneState;
