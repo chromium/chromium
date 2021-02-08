@@ -12,7 +12,7 @@ found in the LICENSE file.
     const _total_video_height = 900;
 
     const parsedString = (function (names) {
-      var pairs = {};
+      const pairs = {};
       for (let i = 0; i < names.length; ++i) {
         var keyValue = names[i].split('=', 2);
         if (keyValue.length == 1)
@@ -22,6 +22,19 @@ found in the LICENSE file.
       }
       return pairs;
     })(window.location.search.substr(1).split('&'));
+
+    function GetVideoSource(videoCount, index) {
+      if (videoCount <= 4) {
+        return './teddy1_vp9_640x360_30fps.webm';
+      } else {
+        if (index < 4)
+          return './teddy3_vp9_320x180_30fps.webm';
+        else if (index < 16)
+          return './teddy2_vp9_320x180_15fps.webm';
+        else
+          return './teddy1_vp9_320x180_7fps.webm';
+      }
+    }
 
     function startMxNVideos() {
       const container = document.getElementById('container');
@@ -39,7 +52,7 @@ found in the LICENSE file.
       // These videos will not load when the number is too big.
       const max_col_row = Math.max(video_rows, video_columns);
       if (max_col_row > 20) {
-        var p = container.appendChild(document.createElement('p'));
+        const p = container.appendChild(document.createElement('p'));
         p.style.position = "absolute";
         p.style.top = 0;
         p.style.left = 0;
@@ -50,32 +63,41 @@ found in the LICENSE file.
         return;
       }
 
-      // Calculate the video size
+      // Calculate the video onscreen size
       const video_width = _total_video_width / max_col_row;
       const video_height = _total_video_height / max_col_row;
 
       // Create MxN videos.
+      const video_count = video_rows * video_columns;
       for (let row = 0; row < video_rows; row++) {
         for (let column = 0; column < video_columns; column++) {
+          // Onscreen position.
           const video_top = row * video_height;
           const video_left = column * video_width;
-          createOneVideo(video_top, video_left, video_width, video_height);
+
+          // Video source.
+          const i = row * video_columns + column;
+          const video_src = GetVideoSource(video_count, i);
+
+          createOneVideo(video_top, video_left, video_width, video_height,
+                         video_src);
           // Create an icon on top of each video.
           createOneIcon(video_top, video_left, video_width, video_height);
         }
       }
 
-      // Create one smal video (size = 89x50) at the upper right corner to similate the one
-      // from the local camera.
-      createOneVideo(0, _total_video_width - 89, 89, 50);
+      // Create one smal video (size = 89x50) at the upper right corner to
+      // similate the one from the local camera.
+      const video_src = GetVideoSource(video_count, video_count);
+      createOneVideo(0, _total_video_width - 89, 89, 50, video_src);
     }
 
-    function createOneVideo(top, left, width, height) {
+    function createOneVideo(top, left, width, height, video_src) {
       const video = document.createElement('video');
       video.loop = true;
       video.autoplay = true;
       video.muted = true;
-      video.src = './kitty2_960x540_24fps.mp4';
+      video.src = video_src;
       video.width = width;
       video.height = height;
       video.style.position = "absolute";

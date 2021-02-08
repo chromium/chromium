@@ -25,6 +25,19 @@ found in the LICENSE file.
       return pairs;
     })(window.location.search.substr(1).split('&'));
 
+    function GetVideoSource(videoCount, index) {
+      if (videoCount <= 4) {
+        return './teddy1_vp9_640x360_30fps.webm';
+      } else {
+        if (index < 4)
+          return './teddy3_vp9_320x180_30fps.webm';
+        else if (index < 16)
+          return './teddy2_vp9_320x180_15fps.webm';
+        else
+          return './teddy1_vp9_320x180_7fps.webm';
+      }
+    }
+
     async function startMxNVideos() {
       const container = document.getElementById('container');
 
@@ -74,13 +87,14 @@ found in the LICENSE file.
       // Create MxN videos and TODO(magchen@)- a small video(size = 89x50) at
       // the upper right corner to similate the one from the local camera.
       var videos = [];
-      for (let i = 0; i < videoRows * videoColumns; i++) {
+      const videoCount = videoRows * videoColumns;
+      for (let i = 0; i < videoCount; i++) {
         const video = document.createElement('video');
         video.id = 'video_' + i;
         video.loop = true;
         video.autoplay = true;
         video.muted = true;
-        video.src = './kitty2_960x540_24fps.mp4';
+        video.src = GetVideoSource(videoCount, i);
         video.width = videoWidth;
         video.height = videoHeight;
         await video.play();
