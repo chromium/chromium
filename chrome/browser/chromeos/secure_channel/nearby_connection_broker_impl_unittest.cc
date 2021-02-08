@@ -324,6 +324,8 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     disconnect_from_endpoint_run_loop.Run();
   }
 
+  bool IsTimerRunning() const { return mock_timer_->IsRunning(); }
+
   NearbyConnectionsMojom::RequestConnectionCallback
       request_connection_callback_;
   NearbyConnectionsMojom::AcceptConnectionCallback accept_connection_callback_;
@@ -466,6 +468,24 @@ TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection) {
   InvokeAcceptConnectionCallback(/*success=*/false);
   InvokeDisconnectedFromEndpointCallback(/*success=*/true);
   InvokeDisconnectedCallback();
+}
+
+// Regression test for https://crbug.com/1175489.
+TEST_F(NearbyConnectionBrokerImplTest, OnAcceptedBeforeAcceptCallback) {
+  DiscoverEndpoint();
+  InvokeRequestConnectionCallback(/*success=*/true);
+  NotifyConnectionInitiated();
+
+  // Invoke OnConnectionAccepted() callback before the AcceptConnection()
+  // call returns a value. Generally we expect AcceptConnection() to return
+  // before OnConnectionAccepted(), but we've seen in practice that this is
+  // sometimes not the case.
+  NotifyConnectionAccepted();
+  InvokeAcceptConnectionCallback(/*success=*/true);
+
+  // The connection is now considered complete, so there should be no further
+  // timeout.
+  EXPECT_FALSE(IsTimerRunning());
 }
 
 TEST_F(NearbyConnectionBrokerImplTest, FailAcceptingConnection_Timeout) {
