@@ -4872,10 +4872,6 @@
         "name": "webrtc/insertable_streams_video_processing_camera_canvas2d_video"
     },
     {
-        "duration": "38.0",
-        "name": "webrtc/insertable_streams_video_processing_camera_drop_video"
-    },
-    {
         "duration": "39.0",
         "name": "webrtc/insertable_streams_video_processing_camera_webgl_pc"
     },

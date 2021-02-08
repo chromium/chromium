@@ -228,12 +228,6 @@ class WebrtcPageSet(story.StorySet):
     self.AddStory(
         InsertableStreamsVideoProcessing(self,
                                          'camera',
-                                         'drop',
-                                         'video',
-                                         tags=['insertableStreams']))
-    self.AddStory(
-        InsertableStreamsVideoProcessing(self,
-                                         'camera',
                                          'noop',
                                          'video',
                                          tags=['insertableStreams']))

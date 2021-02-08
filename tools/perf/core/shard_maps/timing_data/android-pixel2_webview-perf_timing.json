@@ -4313,10 +4313,6 @@
     },
     {
         "duration": "17.0",
-        "name": "webrtc/insertable_streams_video_processing_camera_drop_video"
-    },
-    {
-        "duration": "17.0",
         "name": "webrtc/insertable_streams_video_processing_camera_webgl_pc"
     },
     {
