@@ -723,6 +723,11 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
   // Check that the original sim_hash is not 0.
   EXPECT_NE(0u, FlocId::SimHashHistory({test_host()}));
 
+  // Navigate to an https site. The initial about:blank page is not considered
+  // as a secure context to be able to use the API.
+  ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL(test_host(), "/title1.html"));
+
   // Expect that the final id is 0 because the sorting-lsh was applied.
   EXPECT_EQ("0.1.9", InvokeInterestCohortJsApi(web_contents()));
 }
