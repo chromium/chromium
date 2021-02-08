@@ -122,8 +122,10 @@ bool IsValidCookieValue(const std::string& value) {
   return true;
 }
 
+// RFC 5234 states that control characters are considered to be:
+//         CTL            =  %x00-1F / %x7F
 bool IsControlCharacter(unsigned char c) {
-  return c <= 31;
+  return c <= 0x1F || c == 0x7F;
 }
 
 }  // namespace
