@@ -198,10 +198,13 @@ public class WebMessageTest {
         });
     }
 
+    /* Disable BackForwardCacheMemoryControl to allow BackForwardCache for all devices regardless of
+     * their memory. */
     @MinWebLayerVersion(90)
     @Test
     @SmallTest
-    @CommandLineFlags.Add("enable-features=BackForwardCache")
+    @CommandLineFlags.
+    Add({"enable-features=BackForwardCache", "disable-features=BackForwardCacheMemoryControl"})
     public void onActiveChangedForBackForwardCache() throws Exception {
         TestWebServer testServer = TestWebServer.start();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
