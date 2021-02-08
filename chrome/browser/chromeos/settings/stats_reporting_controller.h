@@ -74,6 +74,14 @@ class StatsReportingController
   // ownership::OwnerSettingsService::Observer implementation:
   void OnSignedPolicyStored(bool success) override;
 
+  // Sets the callback which is called once when the |enabled| value is
+  // propagated to the device settings. Support only one callback at a time.
+  // CHECKs if the second callback is being set.
+  // It's different from the |AddObserver| API. Observers are called
+  // immediately after |SetEnabled| is called with the different |enabled|
+  // setting.
+  void SetOnDeviceSettingsStoredCallBack(base::OnceClosure callback);
+
  private:
   friend class StatsReportingControllerTest;
 
@@ -141,6 +149,8 @@ class StatsReportingController
   base::ScopedObservation<ownership::OwnerSettingsService,
                           ownership::OwnerSettingsService::Observer>
       owner_settings_service_observation_{this};
+
+  base::OnceClosure on_device_settings_stored_callback_;
 
   base::WeakPtrFactory<StatsReportingController> weak_factory_{this};
 

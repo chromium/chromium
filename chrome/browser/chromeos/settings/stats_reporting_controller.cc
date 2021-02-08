@@ -130,7 +130,15 @@ void StatsReportingController::OnSignedPolicyStored(bool success) {
     owner_settings_service_observation_.Reset();
     ClearPendingValue();
     NotifyObservers();
+    if (on_device_settings_stored_callback_)
+      std::move(on_device_settings_stored_callback_).Run();
   }
+}
+
+void StatsReportingController::SetOnDeviceSettingsStoredCallBack(
+    base::OnceClosure callback) {
+  CHECK(!on_device_settings_stored_callback_);
+  on_device_settings_stored_callback_ = std::move(callback);
 }
 
 StatsReportingController::StatsReportingController(PrefService* local_state)

@@ -1199,9 +1199,8 @@ class AutotestPrivateSetMetricsEnabledFunction : public ExtensionFunction {
   ~AutotestPrivateSetMetricsEnabledFunction() override;
   ResponseAction Run() override;
 
-  void OnStatsReportingStateChanged();
+  void OnDeviceSettingsStored();
 
-  base::CallbackListSubscription stats_reporting_observer_subscription_;
   bool target_value_ = false;
 };
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/chromeos/extensions/autotest_private/autotest_private_api.h"
+#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
@@ -74,6 +75,8 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
         ->Get(browser()->profile())
         ->set_test_mode(true);
   }
+
+  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AutotestPrivateApiTest);
