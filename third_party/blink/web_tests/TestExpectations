@@ -5683,6 +5683,10 @@ crbug.com/1134103 http/tests/devtools/unit/view-location.js [ Skip ]
 crbug.com/1170062 [ Linux ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Timeout Pass ]
 crbug.com/1170062 [ mac ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Timeout Pass ]
 
+# Expected to fail with SuppressDifferentOriginSubframeJSDialogs feature disabled, tested in VirtualTestSuite
+crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html [ Failure ]
+crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html [ Failure ]
+
 # Sheriff 2021-01-27
 crbug.com/1171331 [ Mac ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 

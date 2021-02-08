@@ -852,5 +852,11 @@
     "prefix": "prerender",
     "bases": [ "wpt_internal/prerender" ],
     "args": [ "--enable-features=Prerender2" ]
+  },
+  {
+    "prefix": "no-different-origin-dialogs",
+    "bases": ["external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html",
+              "external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html"],
+    "args": [ "--enable-features=SuppressDifferentOriginSubframeJSDialogs"]
   }
 ]

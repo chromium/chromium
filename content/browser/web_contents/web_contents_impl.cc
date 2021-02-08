@@ -6421,6 +6421,14 @@ void WebContentsImpl::RunJavaScriptDialog(
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;
   bool suppress_this_message = should_suppress || !has_handlers;
 
+  if (base::FeatureList::IsEnabled(
+          features::kSuppressDifferentOriginSubframeJSDialogs)) {
+    bool is_different_origin_subframe =
+        render_frame_host->GetLastCommittedURL().GetOrigin() !=
+        render_frame_host->GetMainFrame()->GetLastCommittedURL().GetOrigin();
+    suppress_this_message |= is_different_origin_subframe;
+  }
+
   if (suppress_this_message) {
     std::move(callback).Run(true, false, base::string16());
     return;
