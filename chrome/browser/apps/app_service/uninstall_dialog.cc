@@ -40,6 +40,7 @@ UninstallDialog::UninstallDialog(Profile* profile,
 
   switch (app_type) {
     case apps::mojom::AppType::kArc:
+    case apps::mojom::AppType::kBorealis:
     case apps::mojom::AppType::kPluginVm:
       break;
     case apps::mojom::AppType::kCrostini:

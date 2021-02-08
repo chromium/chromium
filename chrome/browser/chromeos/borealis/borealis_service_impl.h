@@ -8,6 +8,7 @@
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
 
 #include "chrome/browser/chromeos/borealis/borealis_app_launcher.h"
+#include "chrome/browser/chromeos/borealis/borealis_app_uninstaller.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_impl.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_impl.h"
@@ -25,6 +26,7 @@ class BorealisServiceImpl : public BorealisService {
  private:
   // BorealisService overrides.
   BorealisAppLauncher& AppLauncher() override;
+  BorealisAppUninstaller& AppUninstaller() override;
   BorealisContextManager& ContextManager() override;
   BorealisFeatures& Features() override;
   BorealisInstaller& Installer() override;
@@ -34,6 +36,7 @@ class BorealisServiceImpl : public BorealisService {
   Profile* const profile_;
 
   BorealisAppLauncher app_launcher_;
+  BorealisAppUninstaller app_uninstaller_;
   BorealisContextManagerImpl context_manager_;
   BorealisFeatures features_;
   BorealisInstallerImpl installer_;

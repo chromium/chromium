@@ -9,6 +9,7 @@ namespace borealis {
 BorealisServiceImpl::BorealisServiceImpl(Profile* profile)
     : profile_(profile),
       app_launcher_(profile_),
+      app_uninstaller_(profile_),
       context_manager_(profile),
       features_(profile_),
       installer_(profile_),
@@ -19,6 +20,10 @@ BorealisServiceImpl::~BorealisServiceImpl() = default;
 
 BorealisAppLauncher& BorealisServiceImpl::AppLauncher() {
   return app_launcher_;
+}
+
+BorealisAppUninstaller& BorealisServiceImpl::AppUninstaller() {
+  return app_uninstaller_;
 }
 
 BorealisContextManager& BorealisServiceImpl::ContextManager() {

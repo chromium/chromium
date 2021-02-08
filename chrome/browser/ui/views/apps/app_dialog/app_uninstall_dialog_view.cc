@@ -149,7 +149,6 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kLacros:
     case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kBorealis:
       NOTREACHED();
       break;
     case apps::mojom::AppType::kArc:
@@ -167,6 +166,9 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       NOTREACHED();
 #endif
       break;
+    case apps::mojom::AppType::kBorealis:
+      // TODO(b/178741230): Borealis' uninstaller needs custom text.  For now
+      // just use Crostini's.
     case apps::mojom::AppType::kCrostini:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       InitializeViewWithMessage(l10n_util::GetStringUTF16(

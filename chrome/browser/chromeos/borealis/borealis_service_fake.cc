@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/borealis/borealis_service_fake.h"
 
+#include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_service_factory.h"
 
 namespace borealis {
@@ -24,6 +25,11 @@ BorealisServiceFake::~BorealisServiceFake() = default;
 BorealisAppLauncher& BorealisServiceFake::AppLauncher() {
   DCHECK(app_launcher_);
   return *app_launcher_;
+}
+
+BorealisAppUninstaller& BorealisServiceFake::AppUninstaller() {
+  DCHECK(app_uninstaller_);
+  return *app_uninstaller_;
 }
 
 BorealisContextManager& BorealisServiceFake::ContextManager() {
@@ -54,6 +60,11 @@ BorealisWindowManager& BorealisServiceFake::WindowManager() {
 void BorealisServiceFake::SetAppLauncherForTesting(
     BorealisAppLauncher* app_launcher) {
   app_launcher_ = app_launcher;
+}
+
+void BorealisServiceFake::SetAppUninstallerForTesting(
+    BorealisAppUninstaller* app_uninstaller) {
+  app_uninstaller_ = app_uninstaller;
 }
 
 void BorealisServiceFake::SetContextManagerForTesting(
