@@ -35,6 +35,13 @@ class NavigationUIDataImpl : public content::NavigationUIData {
   }
 
 #if defined(OS_ANDROID)
+  void set_allow_intent_launches_in_background(bool value) {
+    intent_launches_allowed_in_background_ = value;
+  }
+  bool are_intent_launches_allowed_in_background() const {
+    return intent_launches_allowed_in_background_;
+  }
+
   void SetResponse(
       std::unique_ptr<embedder_support::WebResourceResponse> response);
   std::unique_ptr<embedder_support::WebResourceResponse> TakeResponse();
@@ -42,7 +49,10 @@ class NavigationUIDataImpl : public content::NavigationUIData {
 
  private:
   bool disable_network_error_auto_reload_ = false;
+
 #if defined(OS_ANDROID)
+  bool intent_launches_allowed_in_background_ = false;
+
   // Even though NavigationUIData is copyable, the WebResourceResponse would
   // only be used once since there are no network-retries applicable in this
   // case.

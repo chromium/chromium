@@ -129,7 +129,7 @@ public class FullscreenCallbackTest {
         InstrumentationActivity.registerOnCreatedCallback(
                 new InstrumentationActivity.OnCreatedCallback() {
                     @Override
-                    public void onCreated(Browser browser) {
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
                         browser.registerBrowserControlsOffsetCallback(
                                 new BrowserControlsOffsetCallbackImpl(callbackHelper));
                     }

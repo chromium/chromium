@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 public class NavigateParams {
     private boolean mShouldReplaceCurrentEntry;
     private boolean mIntentProcessingDisabled;
+    private boolean mIntentLaunchesAllowedInBackground;
     private boolean mNetworkErrorAutoReloadDisabled;
     private boolean mAutoPlayEnabled;
     private WebResourceResponse mResponse;
@@ -59,6 +60,24 @@ public class NavigateParams {
         @NonNull
         public Builder disableIntentProcessing() {
             mParams.mIntentProcessingDisabled = true;
+            return this;
+        }
+
+        /**
+         * Enables intent launching to occur for this navigation even if it is being executed in a
+         * background (i.e., non-visible) tab (by default, intent launches are disallowed in
+         * background tabs).
+         *
+         * @since 89
+         */
+        @NonNull
+        public Builder allowIntentLaunchesInBackground() {
+            if (WebLayer.shouldPerformVersionChecks()
+                    && WebLayer.getSupportedMajorVersionInternal() < 89) {
+                throw new UnsupportedOperationException();
+            }
+
+            mParams.mIntentLaunchesAllowedInBackground = true;
             return this;
         }
 
@@ -120,6 +139,22 @@ public class NavigateParams {
      */
     public boolean isIntentProcessingDisabled() {
         return mIntentProcessingDisabled;
+    }
+
+    /**
+     * Returns true if intent launches are allowed in the background.
+     *
+     * @return Whether intent launches are allowed in the background.
+     *
+     * @since 89
+     */
+    public boolean areIntentLaunchesAllowedInBackground() {
+        if (WebLayer.shouldPerformVersionChecks()
+                && WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
+
+        return mIntentLaunchesAllowedInBackground;
     }
 
     /**

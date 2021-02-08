@@ -92,6 +92,7 @@ class NavigationImpl : public Navigation {
     return IsServedFromBackForwardCache();
   }
   jboolean DisableNetworkErrorAutoReload(JNIEnv* env);
+  jboolean AreIntentLaunchesAllowedInBackground(JNIEnv* env);
 
   void SetResponse(
       std::unique_ptr<embedder_support::WebResourceResponse> response);

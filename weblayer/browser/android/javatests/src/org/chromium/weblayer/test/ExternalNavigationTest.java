@@ -4,6 +4,13 @@
 
 package org.chromium.weblayer.test;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -224,6 +231,498 @@ public class ExternalNavigationTest {
 
         Assert.assertNull(intentInterceptor.mLastIntent);
         Assert.assertEquals(mTestServerSiteUrl, mActivityTestRule.getCurrentDisplayUrl());
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in a background tab is blocked.
+     */
+    @Test
+    @SmallTest
+    public void testExternalIntentWithNoRedirectInBackgroundTabBlockedByDefault() throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+
+        Tab backgroundTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> activity.getTab().getBrowser().createTab());
+        Tab activeTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return activity.getTab().getBrowser().getActiveTab(); });
+        Assert.assertNotEquals(backgroundTab, activeTab);
+
+        // Navigate directly to an intent in the background and verify that the intent is not
+        // launched.
+        NavigationWaiter waiter = new NavigationWaiter(INTENT_TO_CHROME_URL, backgroundTab,
+                /*expectFailure=*/true, /*waitForPaint=*/false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            backgroundTab.getNavigationController().navigate(Uri.parse(INTENT_TO_CHROME_URL));
+        });
+
+        waiter.waitForNavigation();
+
+        Assert.assertNull(intentInterceptor.mLastIntent);
+        int numNavigationsInBackgroundTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return backgroundTab.getNavigationController().getNavigationListSize(); });
+        Assert.assertEquals(0, numNavigationsInBackgroundTab);
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in a background tab is launched when
+     * intent launches are allowed in the background for this navigation.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(89)
+    public void
+    testExternalIntentWithNoRedirectInBackgroundTabLaunchedWhenBackgroundLaunchesAllowed()
+            throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+
+        Tab backgroundTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> activity.getTab().getBrowser().createTab());
+        Tab activeTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return activity.getTab().getBrowser().getActiveTab(); });
+        Assert.assertNotEquals(backgroundTab, activeTab);
+
+        // Put a initial navigation in the background tab to ease verification of state
+        // afterward (note that this navigation will not result in a paint due to the tab being in
+        // the background).
+        mActivityTestRule.navigateAndWait(backgroundTab, ABOUT_BLANK_URL, /*waitForPaint=*/false);
+
+        // Navigate directly to an intent in the background tab with intent launching in the
+        // background allowed and verify that the intent is launched.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            NavigateParams.Builder navigateParamsBuilder = new NavigateParams.Builder();
+            navigateParamsBuilder.allowIntentLaunchesInBackground();
+            backgroundTab.getNavigationController().navigate(
+                    Uri.parse(INTENT_TO_CHROME_URL), navigateParamsBuilder.build());
+        });
+
+        intentInterceptor.waitForIntent();
+
+        // The intent should have been launched, and there should still be only the initial
+        // navigation in the background tab.
+        Intent intent = intentInterceptor.mLastIntent;
+        Assert.assertNotNull(intent);
+        Assert.assertEquals(INTENT_TO_CHROME_PACKAGE, intent.getPackage());
+        Assert.assertEquals(INTENT_TO_CHROME_ACTION, intent.getAction());
+        Assert.assertEquals(INTENT_TO_CHROME_DATA_STRING, intent.getDataString());
+
+        int numNavigationsInBackgroundTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return backgroundTab.getNavigationController().getNavigationListSize(); });
+        Assert.assertEquals(1, numNavigationsInBackgroundTab);
+    }
+
+    /**
+     * Tests that a redirect to an external intent in a background tab is blocked.
+     */
+    @Test
+    @SmallTest
+    public void testExternalIntentAfterRedirectInBackgroundTabBlockedByDefault() throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+
+        Tab backgroundTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> activity.getTab().getBrowser().createTab());
+        Tab activeTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return activity.getTab().getBrowser().getActiveTab(); });
+        Assert.assertNotEquals(backgroundTab, activeTab);
+
+        // Perform a navigation that redirects to an intent in the background and verify that the
+        // intent is not launched.
+        NavigationWaiter waiter = new NavigationWaiter(INTENT_TO_CHROME_URL, backgroundTab,
+                /*expectFailure=*/true, /*waitForPaint=*/false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            backgroundTab.getNavigationController().navigate(
+                    Uri.parse(mRedirectToIntentToChromeURL));
+        });
+
+        waiter.waitForNavigation();
+
+        Assert.assertNull(intentInterceptor.mLastIntent);
+        int numNavigationsInBackgroundTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return backgroundTab.getNavigationController().getNavigationListSize(); });
+        Assert.assertEquals(0, numNavigationsInBackgroundTab);
+    }
+
+    /**
+     * Tests that a redirect to an external intent in a background tab is launched when
+     * intent launches are allowed in the background for this navigation.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(89)
+    public void
+    testExternalIntentAfterRedirectInBackgroundTabLaunchedWhenBackgroundLaunchesAllowed()
+            throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+
+        Tab backgroundTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> activity.getTab().getBrowser().createTab());
+        Tab activeTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return activity.getTab().getBrowser().getActiveTab(); });
+        Assert.assertNotEquals(backgroundTab, activeTab);
+
+        // Put a initial navigation in the background tab to ease verification of state
+        // afterward (note that this navigation will not result in a paint due to the tab being in
+        // the background).
+        mActivityTestRule.navigateAndWait(backgroundTab, ABOUT_BLANK_URL, /*waitForPaint=*/false);
+
+        // Perform a navigation that redirects to an intent in the background tab with intent
+        // launching in the background allowed and verify that the intent is launched.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            NavigateParams.Builder navigateParamsBuilder = new NavigateParams.Builder();
+            navigateParamsBuilder.allowIntentLaunchesInBackground();
+            backgroundTab.getNavigationController().navigate(
+                    Uri.parse(mRedirectToIntentToChromeURL), navigateParamsBuilder.build());
+        });
+
+        intentInterceptor.waitForIntent();
+
+        // The intent should have been launched, and there should still be only the initial
+        // navigation in the background tab.
+        Intent intent = intentInterceptor.mLastIntent;
+        Assert.assertNotNull(intent);
+        Assert.assertEquals(INTENT_TO_CHROME_PACKAGE, intent.getPackage());
+        Assert.assertEquals(INTENT_TO_CHROME_ACTION, intent.getAction());
+        Assert.assertEquals(INTENT_TO_CHROME_DATA_STRING, intent.getDataString());
+
+        int numNavigationsInBackgroundTab = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return backgroundTab.getNavigationController().getNavigationListSize(); });
+        Assert.assertEquals(1, numNavigationsInBackgroundTab);
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in browser startup is blocked as the
+     * browser is not yet attached to the window at the time of the navigation and thus the tab is
+     * not visible.
+     */
+    @Test
+    @SmallTest
+    public void testExternalIntentWithNoRedirectInBrowserStartupBlockedByDefault()
+            throws Throwable {
+        CallbackHelper onNavigationFailedCallbackHelper = new CallbackHelper();
+        NavigationCallback navigationCallback = new NavigationCallback() {
+            @Override
+            public void onNavigationFailed(Navigation navigation) {
+                if (navigation.getUri().toString().equals(INTENT_TO_CHROME_URL)) {
+                    onNavigationFailedCallbackHelper.notifyCalled();
+                }
+            }
+        };
+
+        // The flow being tested is where the navigation occurs synchronously with initial browser
+        // creation.
+        final IntentInterceptor intentInterceptor = new IntentInterceptor();
+        InstrumentationActivity.registerOnCreatedCallback(
+                new InstrumentationActivity.OnCreatedCallback() {
+                    @Override
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
+                        activity.setIntentInterceptor(intentInterceptor);
+                        browser.getActiveTab().getNavigationController().registerNavigationCallback(
+                                navigationCallback);
+                        browser.getActiveTab().getNavigationController().navigate(
+                                Uri.parse(INTENT_TO_CHROME_URL));
+                    }
+                });
+
+        mActivityTestRule.launchShell(new Bundle());
+
+        // The navigation should fail...
+        onNavigationFailedCallbackHelper.waitForFirst();
+
+        // ...the intent should not have been launched...
+        Assert.assertNull(intentInterceptor.mLastIntent);
+
+        // ...and there should be one tab in the browser without any navigations in it.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numTabs =
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.getTabs().size(); });
+        Assert.assertEquals(1, numTabs);
+        int numNavigationsInTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return browser.getActiveTab().getNavigationController().getNavigationListSize();
+        });
+        Assert.assertEquals(0, numNavigationsInTab);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            browser.getActiveTab().getNavigationController().unregisterNavigationCallback(
+                    navigationCallback);
+        });
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in browser startup is launched if the
+     * embedder specifies that intent launches in the background are allowed for this navigation.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(89)
+    public void
+    testExternalIntentWithNoRedirectInBrowserStartupLaunchedWhenBackgroundLaunchesAllowed()
+            throws Throwable {
+        CallbackHelper onTabRemovedCallbackHelper = new CallbackHelper();
+        TabListCallback tabListCallback = new TabListCallback() {
+            @Override
+            public void onTabRemoved(Tab tab) {
+                onTabRemovedCallbackHelper.notifyCalled();
+            }
+        };
+
+        final IntentInterceptor intentInterceptor = new IntentInterceptor();
+        InstrumentationActivity.registerOnCreatedCallback(
+                new InstrumentationActivity.OnCreatedCallback() {
+                    @Override
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
+                        activity.setIntentInterceptor(intentInterceptor);
+                        browser.registerTabListCallback(tabListCallback);
+
+                        NavigateParams.Builder navigateParamsBuilder = new NavigateParams.Builder();
+                        navigateParamsBuilder.allowIntentLaunchesInBackground();
+                        browser.getActiveTab().getNavigationController().navigate(
+                                Uri.parse(INTENT_TO_CHROME_URL), navigateParamsBuilder.build());
+                    }
+                });
+
+        mActivityTestRule.launchShell(new Bundle());
+
+        // The intent should be launched...
+        intentInterceptor.waitForIntent();
+        Intent intent = intentInterceptor.mLastIntent;
+        Assert.assertNotNull(intent);
+        Assert.assertEquals(INTENT_TO_CHROME_PACKAGE, intent.getPackage());
+        Assert.assertEquals(INTENT_TO_CHROME_ACTION, intent.getAction());
+        Assert.assertEquals(INTENT_TO_CHROME_DATA_STRING, intent.getDataString());
+
+        // ...the tab created for the initial navigation should be closed...
+        onTabRemovedCallbackHelper.waitForFirst();
+
+        // ...and there should now be no tabs in the browser.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numTabs =
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.getTabs().size(); });
+        Assert.assertEquals(0, numTabs);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { browser.unregisterTabListCallback(tabListCallback); });
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in browser startup in incognito mode is
+     * blocked as the browser is not yet attached to the window at the time of the navigation and
+     * thus the tab is not visible.
+     */
+    @Test
+    @SmallTest
+    public void testExternalIntentWithNoRedirectOnBrowserStartupInIncognitoBlockedByDefault()
+            throws Throwable {
+        CallbackHelper onNavigationFailedCallbackHelper = new CallbackHelper();
+        NavigationCallback navigationCallback = new NavigationCallback() {
+            @Override
+            public void onNavigationFailed(Navigation navigation) {
+                if (navigation.getUri().toString().equals(INTENT_TO_CHROME_URL)) {
+                    onNavigationFailedCallbackHelper.notifyCalled();
+                }
+            }
+        };
+
+        final IntentInterceptor intentInterceptor = new IntentInterceptor();
+        InstrumentationActivity.registerOnCreatedCallback(
+                new InstrumentationActivity.OnCreatedCallback() {
+                    @Override
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
+                        Assert.assertEquals(true, browser.getProfile().isIncognito());
+                        activity.setIntentInterceptor(intentInterceptor);
+                        browser.getActiveTab().getNavigationController().registerNavigationCallback(
+                                navigationCallback);
+                        browser.getActiveTab().getNavigationController().navigate(
+                                Uri.parse(INTENT_TO_CHROME_URL));
+                    }
+                });
+
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_IS_INCOGNITO, true);
+        mActivityTestRule.launchShell(extras);
+
+        // The navigation should fail...
+        onNavigationFailedCallbackHelper.waitForFirst();
+
+        // ...the intent should not have been launched...
+        Assert.assertNull(intentInterceptor.mLastIntent);
+
+        // ...and there should be one tab in the browser without any navigations in it.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numTabs =
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.getTabs().size(); });
+        Assert.assertEquals(1, numTabs);
+        int numNavigationsInTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return browser.getActiveTab().getNavigationController().getNavigationListSize();
+        });
+        Assert.assertEquals(0, numNavigationsInTab);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            browser.getActiveTab().getNavigationController().unregisterNavigationCallback(
+                    navigationCallback);
+        });
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in browser startup in incognito mode
+     * causes an alert dialog to be shown if the embedder specifies that intent launches in the
+     * background are allowed for this navigation, and that it is then launched if the user consents
+     * via the dialog.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(89)
+    public void
+    testExternalIntentWithNoRedirectInBrowserStartupInIncognitoLaunchedWhenBackgroundLaunchesAllowedAndUserConsents()
+            throws Throwable {
+        CallbackHelper onTabRemovedCallbackHelper = new CallbackHelper();
+        TabListCallback tabListCallback = new TabListCallback() {
+            @Override
+            public void onTabRemoved(Tab tab) {
+                onTabRemovedCallbackHelper.notifyCalled();
+            }
+        };
+
+        final IntentInterceptor intentInterceptor = new IntentInterceptor();
+        InstrumentationActivity.registerOnCreatedCallback(
+                new InstrumentationActivity.OnCreatedCallback() {
+                    @Override
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
+                        Assert.assertEquals(true, browser.getProfile().isIncognito());
+                        activity.setIntentInterceptor(intentInterceptor);
+                        browser.registerTabListCallback(tabListCallback);
+
+                        NavigateParams.Builder navigateParamsBuilder = new NavigateParams.Builder();
+                        navigateParamsBuilder.allowIntentLaunchesInBackground();
+                        browser.getActiveTab().getNavigationController().navigate(
+                                Uri.parse(INTENT_TO_CHROME_URL), navigateParamsBuilder.build());
+                    }
+                });
+
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_IS_INCOGNITO, true);
+        mActivityTestRule.launchShell(extras);
+
+        // The alert dialog notifying the user that they are about to leave incognito should pop up.
+        // Click the AlertDialog positive button (button1) when it does.
+        onView(withId(android.R.id.button1))
+                .check(matches(withText("Leave")))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // The intent should be launched...
+        intentInterceptor.waitForIntent();
+        Intent intent = intentInterceptor.mLastIntent;
+        Assert.assertNotNull(intent);
+        Assert.assertEquals(INTENT_TO_CHROME_PACKAGE, intent.getPackage());
+        Assert.assertEquals(INTENT_TO_CHROME_ACTION, intent.getAction());
+        Assert.assertEquals(INTENT_TO_CHROME_DATA_STRING, intent.getDataString());
+
+        // ...the tab created for the initial navigation should be closed...
+        onTabRemovedCallbackHelper.waitForFirst();
+
+        // ...and there should now be no tabs in the browser.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numTabs =
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return browser.getTabs().size(); });
+        Assert.assertEquals(0, numTabs);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { browser.unregisterTabListCallback(tabListCallback); });
+    }
+
+    /**
+     * Tests that a direct navigation to an external intent in browser startup in incognito mode
+     * causes an alert dialog to be shown if the embedder specifies that intent launches in the
+     * background are allowed for this navigation, and that it is blocked if the user forbids it via
+     * the dialog.
+     */
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(89)
+    public void
+    testExternalIntentWithNoRedirectInBrowserStartupInIncognitoBlockedWhenBackgroundLaunchesAllowedAndUserForbids()
+            throws Throwable {
+        CallbackHelper onNavigationToIntentFailedCallbackHelper = new CallbackHelper();
+        CallbackHelper onNavigationToIntentDataStringStartedCallbackHelper = new CallbackHelper();
+        NavigationCallback navigationCallback = new NavigationCallback() {
+            @Override
+            public void onNavigationStarted(Navigation navigation) {
+                if (navigation.getUri().toString().equals(INTENT_TO_CHROME_DATA_STRING)) {
+                    // Stop the navigation so that it doesn't hit the network.
+                    mActivityTestRule.getActivity()
+                            .getBrowser()
+                            .getActiveTab()
+                            .getNavigationController()
+                            .stop();
+                    onNavigationToIntentDataStringStartedCallbackHelper.notifyCalled();
+                }
+            }
+            @Override
+            public void onNavigationFailed(Navigation navigation) {
+                if (navigation.getUri().toString().equals(INTENT_TO_CHROME_URL)) {
+                    onNavigationToIntentFailedCallbackHelper.notifyCalled();
+                }
+            }
+        };
+
+        final IntentInterceptor intentInterceptor = new IntentInterceptor();
+        InstrumentationActivity.registerOnCreatedCallback(
+                new InstrumentationActivity.OnCreatedCallback() {
+                    @Override
+                    public void onCreated(Browser browser, InstrumentationActivity activity) {
+                        activity.setIntentInterceptor(intentInterceptor);
+                        Assert.assertEquals(true, browser.getProfile().isIncognito());
+                        browser.getActiveTab().getNavigationController().registerNavigationCallback(
+                                navigationCallback);
+
+                        NavigateParams.Builder navigateParamsBuilder = new NavigateParams.Builder();
+                        navigateParamsBuilder.allowIntentLaunchesInBackground();
+                        browser.getActiveTab().getNavigationController().navigate(
+                                Uri.parse(INTENT_TO_CHROME_URL), navigateParamsBuilder.build());
+                    }
+                });
+
+        Bundle extras = new Bundle();
+        extras.putBoolean(InstrumentationActivity.EXTRA_IS_INCOGNITO, true);
+        mActivityTestRule.launchShell(extras);
+
+        // The alert dialog notifying the user that they are about to leave incognito should pop up.
+        // Click the AlertDialog negative button (button2) when it does.
+        onView(withId(android.R.id.button2))
+                .check(matches(withText("Stay")))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // The navigation should fail...
+        onNavigationToIntentFailedCallbackHelper.waitForFirst();
+
+        // ...the intent should not have been launched...
+        Assert.assertNull(intentInterceptor.mLastIntent);
+
+        // ...and per the behavior of WebLayer's intent launching logic in this flow, there should
+        // be a navigation to the data string contained in the intent (which is a valid URL in this
+        // case).
+        onNavigationToIntentDataStringStartedCallbackHelper.waitForFirst();
+
+        // As the navigation to the data string was stopped, there should be zero navigations in
+        // the tab.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numNavigationsInTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return browser.getActiveTab().getNavigationController().getNavigationListSize();
+        });
+        Assert.assertEquals(0, numNavigationsInTab);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            browser.getActiveTab().getNavigationController().unregisterNavigationCallback(
+                    navigationCallback);
+        });
     }
 
     /**

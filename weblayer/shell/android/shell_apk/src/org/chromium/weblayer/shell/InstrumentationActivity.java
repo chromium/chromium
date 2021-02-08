@@ -107,9 +107,9 @@ public class InstrumentationActivity extends FragmentActivity {
      * created.
      */
     public static interface OnCreatedCallback {
-        // Notification that a Browser was created.
+        // Notification that a Browser was created in |activity|.
         // This is called on the UI thread.
-        public void onCreated(Browser browser);
+        public void onCreated(Browser browser, InstrumentationActivity activity);
     }
 
     // Registers a callback that is notified on the UI thread when a Browser is created.
@@ -336,7 +336,7 @@ public class InstrumentationActivity extends FragmentActivity {
         }
 
         if (sOnCreatedCallback != null) {
-            sOnCreatedCallback.onCreated(mBrowser);
+            sOnCreatedCallback.onCreated(mBrowser, this);
             // Don't reset |sOnCreatedCallback| as it's needed for tests that exercise activity
             // recreation.
         }
@@ -444,7 +444,7 @@ public class InstrumentationActivity extends FragmentActivity {
                 }
                 if (sOnCreatedCallback != null) {
                     for (int i = 1; i < fragments.size(); ++i) {
-                        sOnCreatedCallback.onCreated(Browser.fromFragment(fragments.get(i)));
+                        sOnCreatedCallback.onCreated(Browser.fromFragment(fragments.get(i)), this);
                     }
                 }
                 return fragments.get(0);
@@ -483,7 +483,7 @@ public class InstrumentationActivity extends FragmentActivity {
         transaction.commitNow();
 
         if (viewId != mMainViewId && sOnCreatedCallback != null) {
-            sOnCreatedCallback.onCreated(Browser.fromFragment(fragment));
+            sOnCreatedCallback.onCreated(Browser.fromFragment(fragment), this);
         }
 
         return fragment;

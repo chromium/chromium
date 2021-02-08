@@ -71,6 +71,7 @@ class NavigationControllerImpl : public NavigationController,
                 const base::android::JavaParamRef<jstring>& url,
                 jboolean should_replace_current_entry,
                 jboolean disable_intent_processing,
+                jboolean allow_intent_launches_in_background,
                 jboolean disable_network_error_auto_reload,
                 jboolean enable_auto_play,
                 const base::android::JavaParamRef<jobject>& response);

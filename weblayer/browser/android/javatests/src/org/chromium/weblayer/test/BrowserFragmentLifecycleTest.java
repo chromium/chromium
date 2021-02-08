@@ -338,7 +338,7 @@ public class BrowserFragmentLifecycleTest {
         }
 
         @Override
-        public void onCreated(Browser browser) {
+        public void onCreated(Browser browser, InstrumentationActivity activity) {
             mBrowsers.add(browser);
             if (!browser.isRestoringPreviousState()) {
                 mCallbackHelper.notifyCalled();
