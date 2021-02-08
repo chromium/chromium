@@ -299,6 +299,7 @@ void AppendStyleInfo(Node* node,
                         ToHEXA(node_contrast.background_color));
     contrast->setString("contrastAlgorithm",
                         ContrastAlgorithmToString(contrast_algorithm));
+    contrast->setDouble("textOpacity", node_contrast.text_opacity);
     element_info->setValue("contrast", std::move(contrast));
   }
 }

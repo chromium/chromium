@@ -2310,7 +2310,9 @@ Response InspectorCSSAgent::getBackgroundColors(
   Vector<Color> bgcolors;
   String fs;
   String fw;
-  InspectorCSSAgent::GetBackgroundColors(element, &bgcolors, &fs, &fw);
+  float text_opacity = 1.0f;
+  InspectorCSSAgent::GetBackgroundColors(element, &bgcolors, &fs, &fw,
+                                         &text_opacity);
 
   if (bgcolors.size()) {
     *background_colors = std::make_unique<protocol::Array<String>>();
@@ -2330,10 +2332,10 @@ Response InspectorCSSAgent::getBackgroundColors(
 void InspectorCSSAgent::GetBackgroundColors(Element* element,
                                             Vector<Color>* colors,
                                             String* computed_font_size,
-                                            String* computed_font_weight) {
+                                            String* computed_font_weight,
+                                            float* text_opacity) {
   InspectorContrast contrast(&element->GetDocument());
-  float text_opacity = 1.0f;
-  *colors = contrast.GetBackgroundColors(element, &text_opacity);
+  *colors = contrast.GetBackgroundColors(element, text_opacity);
   auto text_info = contrast.GetTextInfo(element);
   *computed_font_size = text_info.font_size;
   *computed_font_weight = text_info.font_weight;

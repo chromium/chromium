@@ -45,12 +45,14 @@ InspectorHighlightContrastInfo FetchContrast(Node* node) {
   Vector<Color> bgcolors;
   String font_size;
   String font_weight;
+  float text_opacity = 1.0f;
   InspectorCSSAgent::GetBackgroundColors(element, &bgcolors, &font_size,
-                                         &font_weight);
+                                         &font_weight, &text_opacity);
   if (bgcolors.size() == 1) {
     result.font_size = font_size;
     result.font_weight = font_weight;
     result.background_color = bgcolors[0];
+    result.text_opacity = text_opacity;
   }
   return result;
 }

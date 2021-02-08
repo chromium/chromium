@@ -149,6 +149,7 @@ struct InspectorHighlightContrastInfo {
   Color background_color;
   String font_size;
   String font_weight;
+  float text_opacity;
 };
 
 class InspectorHighlightBase {
