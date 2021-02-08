@@ -16,6 +16,6 @@ interface INavigateParams {
   void enableAutoPlay() = 3;
   void setResponse(in IObjectWrapper response) = 4;
 
-  // @since 90
+  // @since 89
   void allowIntentLaunchesInBackground() = 5;
 }

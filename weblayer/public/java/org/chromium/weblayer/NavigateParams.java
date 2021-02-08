@@ -68,12 +68,12 @@ public class NavigateParams {
          * background (i.e., non-visible) tab (by default, intent launches are disallowed in
          * background tabs).
          *
-         * @since 90
+         * @since 89
          */
         @NonNull
         public Builder allowIntentLaunchesInBackground() {
             if (WebLayer.shouldPerformVersionChecks()
-                    && WebLayer.getSupportedMajorVersionInternal() < 90) {
+                    && WebLayer.getSupportedMajorVersionInternal() < 89) {
                 throw new UnsupportedOperationException();
             }
 
@@ -146,11 +146,11 @@ public class NavigateParams {
      *
      * @return Whether intent launches are allowed in the background.
      *
-     * @since 90
+     * @since 89
      */
     public boolean areIntentLaunchesAllowedInBackground() {
         if (WebLayer.shouldPerformVersionChecks()
-                && WebLayer.getSupportedMajorVersionInternal() < 90) {
+                && WebLayer.getSupportedMajorVersionInternal() < 89) {
             throw new UnsupportedOperationException();
         }
 

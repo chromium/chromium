@@ -269,7 +269,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(90)
+    @MinWebLayerVersion(89)
     public void
     testExternalIntentWithNoRedirectInBackgroundTabLaunchedWhenBackgroundLaunchesAllowed()
             throws Throwable {
@@ -351,7 +351,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(90)
+    @MinWebLayerVersion(89)
     public void
     testExternalIntentAfterRedirectInBackgroundTabLaunchedWhenBackgroundLaunchesAllowed()
             throws Throwable {
@@ -458,7 +458,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(90)
+    @MinWebLayerVersion(89)
     public void
     testExternalIntentWithNoRedirectInBrowserStartupLaunchedWhenBackgroundLaunchesAllowed()
             throws Throwable {
@@ -575,7 +575,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(90)
+    @MinWebLayerVersion(89)
     public void
     testExternalIntentWithNoRedirectInBrowserStartupInIncognitoLaunchedWhenBackgroundLaunchesAllowedAndUserConsents()
             throws Throwable {
@@ -643,7 +643,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
-    @MinWebLayerVersion(90)
+    @MinWebLayerVersion(89)
     public void
     testExternalIntentWithNoRedirectInBrowserStartupInIncognitoBlockedWhenBackgroundLaunchesAllowedAndUserForbids()
             throws Throwable {

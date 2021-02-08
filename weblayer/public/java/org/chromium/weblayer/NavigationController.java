@@ -63,7 +63,7 @@ public class NavigationController {
             if (params != null) {
                 if (params.getShouldReplaceCurrentEntry()) iparams.replaceCurrentEntry();
                 if (params.isIntentProcessingDisabled()) iparams.disableIntentProcessing();
-                if (WebLayer.getSupportedMajorVersionInternal() >= 90
+                if (WebLayer.getSupportedMajorVersionInternal() >= 89
                         && params.areIntentLaunchesAllowedInBackground()) {
                     iparams.allowIntentLaunchesInBackground();
                 }
