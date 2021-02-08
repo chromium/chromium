@@ -1604,7 +1604,9 @@ bool TabStrip::ShouldTabBeVisible(const Tab* tab) const {
   // tabstrip were resized to its greatest possible width, it shouldn't be
   // visible.
   const int right_edge = tab->bounds().right();
-  const int tabstrip_right = CalculateAvailableWidthForTabs();
+  const int tabstrip_right = tab->dragging()
+                                 ? drag_context_->GetTabDragAreaWidth()
+                                 : GetAvailableWidthForTabStrip();
   if (right_edge > tabstrip_right)
     return false;
 
