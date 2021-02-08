@@ -57,6 +57,8 @@ base::TimeDelta GetCMSampleBufferTimestamp(CMSampleBufferRef sampleBuffer) {
   return timestamp;
 }
 
+constexpr size_t kPixelBufferPoolSize = 10;
+
 }  // anonymous namespace
 
 namespace media {
@@ -172,9 +174,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
             self);
     [self setFrameReceiver:frameReceiver];
     _captureSession.reset([[AVCaptureSession alloc] init]);
-    _sampleBufferTransformer =
-        media::SampleBufferTransformer::CreateIfAutoReconfigureEnabled();
-    if (_sampleBufferTransformer) {
+    if (base::FeatureList::IsEnabled(media::kInCaptureConvertToNv12)) {
+      _sampleBufferTransformer = media::SampleBufferTransformer::Create();
       VLOG(1) << "Capturing with SampleBufferTransformer enabled";
     }
   }
@@ -272,7 +273,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       media::FindBestCaptureFormat([_captureDevice formats], width, height,
                                    frameRate),
       base::scoped_policy::RETAIN);
-  // Default to NV12, a pixel format commonly supported by web cameras.
   FourCharCode best_fourcc = kDefaultFourCCPixelFormat;
   if (_bestCaptureFormat) {
     best_fourcc = CMFormatDescriptionGetMediaSubType(
@@ -732,18 +732,26 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // TODO(https://crbug.com/1160315): When the SampleBufferTransformer is
   // patched to support non-MJPEG-and-non-pixel-buffer sample buffers, remove
   // this workaround.
-  bool sampleBufferLacksPixelBufferAndIsNotMjpeg =
-      !CMSampleBufferGetImageBuffer(sampleBuffer) &&
+  bool sampleHasPixelBufferOrIsMjpeg =
+      CMSampleBufferGetImageBuffer(sampleBuffer) ||
       CMFormatDescriptionGetMediaSubType(CMSampleBufferGetFormatDescription(
-          sampleBuffer)) != kCMVideoCodecType_JPEG_OpenDML;
+          sampleBuffer)) == kCMVideoCodecType_JPEG_OpenDML;
 
   // If the SampleBufferTransformer is enabled, convert all possible capture
   // formats to an IOSurface-backed NV12 pixel buffer.
-  // TODO(hbos): If |_sampleBufferTransformer| gets shipped 100%, delete the
+  // TODO(https://crbug.com/1175142): Update this code path so that it is
+  // possible to turn on/off the kAVFoundationCaptureV2ZeroCopy feature and the
+  // kInCaptureConvertToNv12 feature separately.
+  // TODO(hbos): When |_sampleBufferTransformer| gets shipped 100%, delete the
   // other code paths.
-  if (_sampleBufferTransformer && !sampleBufferLacksPixelBufferAndIsNotMjpeg) {
+  if (_sampleBufferTransformer && sampleHasPixelBufferOrIsMjpeg) {
+    _sampleBufferTransformer->Reconfigure(
+        media::SampleBufferTransformer::GetBestTransformerForNv12Output(
+            sampleBuffer),
+        kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+        media::GetSampleBufferSize(sampleBuffer), kPixelBufferPoolSize);
     base::ScopedCFTypeRef<CVPixelBufferRef> pixelBuffer =
-        _sampleBufferTransformer->AutoReconfigureAndTransform(sampleBuffer);
+        _sampleBufferTransformer->Transform(sampleBuffer);
     if (!pixelBuffer) {
       LOG(ERROR) << "Failed to transform captured frame. Dropping frame.";
       return;
@@ -751,7 +759,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
     CHECK(ioSurface);
     CHECK_EQ(CVPixelBufferGetPixelFormatType(pixelBuffer),
-             kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);  // NV12
+             kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
     const media::VideoCaptureFormat captureFormat(
         gfx::Size(CVPixelBufferGetWidth(pixelBuffer),
                   CVPixelBufferGetHeight(pixelBuffer)),
