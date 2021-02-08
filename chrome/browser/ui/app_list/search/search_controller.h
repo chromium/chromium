@@ -76,8 +76,7 @@ class SearchController {
 
   // Called when items in the results list have been on screen for some amount
   // of time, or the user clicked a search result.
-  // TODO(959679): Rename this function to better reflect its nature.
-  void OnSearchResultsDisplayed(
+  void OnSearchResultsImpressionMade(
       const base::string16& trimmed_query,
       const ash::SearchResultIdWithPositionIndices& results,
       int launched_index);

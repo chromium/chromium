@@ -176,7 +176,7 @@ ChromeSearchResult* SearchController::FindSearchResult(
   return nullptr;
 }
 
-void SearchController::OnSearchResultsDisplayed(
+void SearchController::OnSearchResultsImpressionMade(
     const base::string16& trimmed_query,
     const ash::SearchResultIdWithPositionIndices& results,
     int launched_index) {

@@ -473,8 +473,8 @@ void AppListClientImpl::NotifySearchResultsForLogging(
     const ash::SearchResultIdWithPositionIndices& results,
     int position_index) {
   if (search_controller_) {
-    search_controller_->OnSearchResultsDisplayed(trimmed_query, results,
-                                                 position_index);
+    search_controller_->OnSearchResultsImpressionMade(trimmed_query, results,
+                                                      position_index);
   }
 }
 
