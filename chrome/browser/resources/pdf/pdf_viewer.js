@@ -30,7 +30,7 @@ import {ViewerPdfToolbarNewElement} from './elements/viewer-pdf-toolbar-new.js';
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
-import {record, recordTwoUpViewEnabled, UserAction} from './metrics.js';
+import {record, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 import {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
@@ -665,7 +665,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   onTwoUpViewChanged_(e) {
     const twoUpViewEnabled = e.detail;
     this.currentController.setTwoUpView(twoUpViewEnabled);
-    recordTwoUpViewEnabled(twoUpViewEnabled);
+    record(
+        twoUpViewEnabled ? UserAction.TWO_UP_VIEW_ENABLE :
+                           UserAction.TWO_UP_VIEW_DISABLE);
   }
 
   /**

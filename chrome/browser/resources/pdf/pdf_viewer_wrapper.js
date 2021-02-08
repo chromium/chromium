@@ -15,7 +15,7 @@ export {ViewerPropertiesDialogElement} from './elements/viewer-properties-dialog
 export {ViewerThumbnailBarElement} from './elements/viewer-thumbnail-bar.js';
 export {PAINTED_ATTRIBUTE, ViewerThumbnailElement} from './elements/viewer-thumbnail.js';
 export {GestureDetector, PinchEventDetail} from './gesture_detector.js';
-export {record, recordFitTo, recordTwoUpViewEnabled, recordZoomAction, resetForTesting, UserAction} from './metrics.js';
+export {record, recordFitTo, resetForTesting, UserAction} from './metrics.js';
 export {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 export {OpenPdfParamsParser} from './open_pdf_params_parser.js';
 export {PDFScriptingAPI} from './pdf_scripting_api.js';

@@ -21,24 +21,6 @@ export function recordFitTo(fittingType) {
 }
 
 /**
- * Records when the two up view mode is enabled or disabled.
- * @param {boolean} enabled True when two up view mode is enabled.
- */
-export function recordTwoUpViewEnabled(enabled) {
-  record(
-      enabled ? UserAction.TWO_UP_VIEW_ENABLE : UserAction.TWO_UP_VIEW_DISABLE);
-}
-
-/**
- * Records zoom in and zoom out actions.
- * @param {boolean} isZoomIn True when the action is zooming in, false when
- *     the action is zooming out.
- */
-export function recordZoomAction(isZoomIn) {
-  record(isZoomIn ? UserAction.ZOOM_IN : UserAction.ZOOM_OUT);
-}
-
-/**
  * Records the given action to chrome.metricsPrivate.
  * @param {UserAction} action
  */
