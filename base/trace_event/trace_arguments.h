@@ -373,11 +373,18 @@ struct TraceValue::Helper<bool> {
 };
 
 //  TraceValue::Helper for generic pointer types.
-template <typename T>
-struct TraceValue::Helper<T*> {
+template <>
+struct TraceValue::Helper<const void*> {
   static constexpr unsigned char kType = TRACE_VALUE_TYPE_POINTER;
-  static inline void SetValue(TraceValue* v,
-                              const typename std::decay<T>::type* value) {
+  static inline void SetValue(TraceValue* v, const void* value) {
+    v->as_pointer = value;
+  }
+};
+
+template <>
+struct TraceValue::Helper<void*> {
+  static constexpr unsigned char kType = TRACE_VALUE_TYPE_POINTER;
+  static inline void SetValue(TraceValue* v, void* value) {
     v->as_pointer = value;
   }
 };
