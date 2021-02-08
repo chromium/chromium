@@ -63,6 +63,7 @@ include_rules = [
     "+base/types/strong_alias.h",
     "+build",
     "+components/crash/core/common/crash_key.h",
+    "+components/power_scheduler",
     "+net/cookies",
     "+net/http/structured_headers.h",
     "+services/network/public/mojom",

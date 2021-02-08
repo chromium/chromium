@@ -27,6 +27,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -2100,6 +2101,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Indicates how many sources are currently suppressing the unresponsive
   // renderer dialog.
   int suppress_unresponsive_renderer_count_ = 0;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter_;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

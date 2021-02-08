@@ -47,6 +47,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_stats.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/bad_message.h"
@@ -857,7 +860,10 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
           std::make_unique<MediaWebContentsObserver>(this)),
       is_overlay_content_(false),
       showing_context_menu_(false),
-      text_autosizer_page_info_({0, 0, 1.f}) {
+      text_autosizer_page_info_({0, 0, 1.f}),
+      audible_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Audible")) {
   TRACE_EVENT0("content", "WebContentsImpl::WebContentsImpl");
 #if BUILDFLAG(ENABLE_PLUGINS)
   pepper_playback_observer_ = std::make_unique<PepperPlaybackObserver>(this);
@@ -2021,6 +2027,10 @@ void WebContentsImpl::OnAudioStateChanged() {
   // Update internal state.
   is_currently_audible_ = is_currently_audible;
   was_ever_audible_ = was_ever_audible_ || is_currently_audible_;
+
+  audible_power_mode_voter_->VoteFor(is_currently_audible_
+                                         ? power_scheduler::PowerMode::kAudible
+                                         : power_scheduler::PowerMode::kIdle);
 
   ExecutePageBroadcastMethod(base::BindRepeating(
       [](bool is_currently_audible, RenderViewHostImpl* rvh) {

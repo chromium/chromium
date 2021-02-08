@@ -25,6 +25,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
@@ -493,7 +496,10 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
       compositor_priority(TaskQueue::QueuePriority::kNormalPriority,
                           "Scheduler.CompositorPriority",
                           &main_thread_scheduler_impl->tracing_controller_,
-                          TaskQueue::PriorityToString) {}
+                          TaskQueue::PriorityToString),
+      audible_power_mode_voter(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Audible")) {}
 
 MainThreadSchedulerImpl::MainThreadOnly::~MainThreadOnly() = default;
 
@@ -1123,6 +1129,10 @@ void MainThreadSchedulerImpl::OnAudioStateChanged() {
     return;
 
   main_thread_only().is_audio_playing = is_audio_playing;
+
+  main_thread_only().audible_power_mode_voter->VoteFor(
+      is_audio_playing ? power_scheduler::PowerMode::kAudible
+                       : power_scheduler::PowerMode::kIdle);
 }
 
 std::unique_ptr<ThreadScheduler::RendererPauseHandle>
@@ -2619,6 +2629,11 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
 
   if (IsIpcTrackingEnabledForAllPages()) {
     SetOnIPCTaskPostedWhileInBackForwardCacheIfNeeded();
+  }
+
+  if (main_thread_only().is_audio_playing && page_scheduler->IsAudioPlaying()) {
+    // This page may have been the only one playing audio.
+    OnAudioStateChanged();
   }
 
   base::AutoLock lock(any_thread_lock_);

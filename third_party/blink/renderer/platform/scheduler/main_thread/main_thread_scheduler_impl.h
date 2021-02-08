@@ -23,6 +23,7 @@
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
@@ -985,6 +986,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         compositor_priority;
 
     WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
+
+    std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter;
   };
 
   struct AnyThread {
