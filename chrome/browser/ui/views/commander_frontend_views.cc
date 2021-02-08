@@ -248,8 +248,10 @@ void CommanderFrontendViews::OnViewModelUpdated(
 void CommanderFrontendViews::OnSystemProfileAvailable(
     Profile* profile,
     Profile::CreateStatus status) {
-  if (status == Profile::CreateStatus::CREATE_STATUS_CREATED && !is_showing())
+  if (status == Profile::CreateStatus::CREATE_STATUS_INITIALIZED &&
+      !is_showing()) {
     CreateWebView(profile);
+  }
 }
 
 void CommanderFrontendViews::CreateWebView(Profile* profile) {
