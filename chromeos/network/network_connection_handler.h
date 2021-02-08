@@ -108,6 +108,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // delegate present.
   static const char kErrorTetherAttemptWithNoDelegate[];
 
+  // Error occurred while trying to use inhibit/uninhibit logic for cellular
+  // operations.
+  static const char kErrorCellularInhibitFailure[];
+
+  // Error occurred while trying to perform an operation with an eSIM profile.
+  static const char kErrorESimProfileIssue[];
+
   class COMPONENT_EXPORT(CHROMEOS_NETWORK) TetherDelegate {
    public:
     using StringErrorCallback =

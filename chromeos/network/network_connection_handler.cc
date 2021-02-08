@@ -63,6 +63,10 @@ const char NetworkConnectionHandler::kErrorEnabledOrDisabledWhenNotAvailable[] =
     "not-available";
 const char NetworkConnectionHandler::kErrorTetherAttemptWithNoDelegate[] =
     "tether-with-no-delegate";
+const char NetworkConnectionHandler::kErrorCellularInhibitFailure[] =
+    "cellular-inhibit-failure";
+const char NetworkConnectionHandler::kErrorESimProfileIssue[] =
+    "esim-profile-issue";
 
 NetworkConnectionHandler::NetworkConnectionHandler()
     : tether_delegate_(nullptr) {}
