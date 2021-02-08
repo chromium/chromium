@@ -30,6 +30,7 @@
 #include "chromeos/dbus/kerberos/kerberos_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/media_analytics/media_analytics_client.h"
+#include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -88,6 +89,7 @@ void InitializeDBus() {
   InitializeDBusClient<KerberosClient>(bus);
   InitializeDBusClient<MachineLearningClient>(bus);
   InitializeDBusClient<MediaAnalyticsClient>(bus);
+  InitializeDBusClient<PciguardClient>(bus);
   InitializeDBusClient<PermissionBrokerClient>(bus);
   InitializeDBusClient<PowerManagerClient>(bus);
   InitializeDBusClient<SessionManagerClient>(bus);
@@ -129,6 +131,7 @@ void ShutdownDBus() {
   SessionManagerClient::Shutdown();
   PowerManagerClient::Shutdown();
   PermissionBrokerClient::Shutdown();
+  PciguardClient::Shutdown();
   MediaAnalyticsClient::Shutdown();
   MachineLearningClient::Shutdown();
   KerberosClient::Shutdown();
