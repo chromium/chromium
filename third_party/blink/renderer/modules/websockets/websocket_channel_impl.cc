@@ -64,7 +64,6 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
-#include "third_party/blink/renderer/platform/network/network_log.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -207,7 +206,7 @@ WebSocketChannelImpl::WebSocketChannelImpl(
 WebSocketChannelImpl::~WebSocketChannelImpl() = default;
 
 bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
-  NETWORK_DVLOG(1) << this << " Connect()";
+  DVLOG(1) << this << " Connect()";
 
   if (GetBaseFetchContext()->ShouldBlockWebSocketByMixedContentCheck(url)) {
     has_initiated_opening_handshake_ = false;
@@ -292,7 +291,7 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
 WebSocketChannel::SendResult WebSocketChannelImpl::Send(
     const std::string& message,
     base::OnceClosure completion_callback) {
-  NETWORK_DVLOG(1) << this << " Send(" << message << ") (std::string argument)";
+  DVLOG(1) << this << " Send(" << message << ") (std::string argument)";
   probe::DidSendWebSocketMessage(execution_context_, identifier_,
                                  WebSocketOpCode::kOpCodeText, true,
                                  message.c_str(), message.length());
@@ -324,10 +323,10 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
 
 void WebSocketChannelImpl::Send(
     scoped_refptr<BlobDataHandle> blob_data_handle) {
-  NETWORK_DVLOG(1) << this << " Send(" << blob_data_handle->Uuid() << ", "
-                   << blob_data_handle->GetType() << ", "
-                   << blob_data_handle->size() << ") "
-                   << "(BlobDataHandle argument)";
+  DVLOG(1) << this << " Send(" << blob_data_handle->Uuid() << ", "
+           << blob_data_handle->GetType() << ", " << blob_data_handle->size()
+           << ") "
+           << "(BlobDataHandle argument)";
   // FIXME: We can't access the data here.
   // Since Binary data are not displayed in Inspector, this does not
   // affect actual behavior.
@@ -342,9 +341,9 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
     size_t byte_offset,
     size_t byte_length,
     base::OnceClosure completion_callback) {
-  NETWORK_DVLOG(1) << this << " Send(" << buffer.Data() << ", " << byte_offset
-                   << ", " << byte_length << ") "
-                   << "(DOMArrayBuffer argument)";
+  DVLOG(1) << this << " Send(" << buffer.Data() << ", " << byte_offset << ", "
+           << byte_length << ") "
+           << "(DOMArrayBuffer argument)";
   probe::DidSendWebSocketMessage(
       execution_context_, identifier_, WebSocketOpCode::kOpCodeBinary, true,
       static_cast<const char*>(buffer.Data()) + byte_offset, byte_length);
@@ -377,7 +376,7 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
 void WebSocketChannelImpl::Close(int code, const String& reason) {
   DCHECK_EQ(GetState(), State::kOpen);
   DCHECK(!execution_context_->IsContextDestroyed());
-  NETWORK_DVLOG(1) << this << " Close(" << code << ", " << reason << ")";
+  DVLOG(1) << this << " Close(" << code << ", " << reason << ")";
   uint16_t code_to_send = static_cast<uint16_t>(
       code == kCloseEventCodeNotSpecified ? kCloseEventCodeNoStatusRcvd : code);
   messages_.push_back(Message(code_to_send, reason));
@@ -387,7 +386,7 @@ void WebSocketChannelImpl::Close(int code, const String& reason) {
 void WebSocketChannelImpl::Fail(const String& reason,
                                 mojom::ConsoleMessageLevel level,
                                 std::unique_ptr<SourceLocation> location) {
-  NETWORK_DVLOG(1) << this << " Fail(" << reason << ")";
+  DVLOG(1) << this << " Fail(" << reason << ")";
   probe::DidReceiveWebSocketMessageError(execution_context_, identifier_,
                                          reason);
   const String message =
@@ -413,7 +412,7 @@ void WebSocketChannelImpl::Fail(const String& reason,
 }
 
 void WebSocketChannelImpl::Disconnect() {
-  NETWORK_DVLOG(1) << this << " disconnect()";
+  DVLOG(1) << this << " disconnect()";
   if (identifier_) {
     TRACE_EVENT_INSTANT1(
         "devtools.timeline", "WebSocketDestroy", TRACE_EVENT_SCOPE_THREAD,
@@ -426,7 +425,7 @@ void WebSocketChannelImpl::Disconnect() {
 }
 
 void WebSocketChannelImpl::CancelHandshake() {
-  NETWORK_DVLOG(1) << this << " CancelHandshake()";
+  DVLOG(1) << this << " CancelHandshake()";
   if (GetState() != State::kConnecting)
     return;
 
@@ -438,12 +437,12 @@ void WebSocketChannelImpl::CancelHandshake() {
 }
 
 void WebSocketChannelImpl::ApplyBackpressure() {
-  NETWORK_DVLOG(1) << this << " ApplyBackpressure";
+  DVLOG(1) << this << " ApplyBackpressure";
   backpressure_ = true;
 }
 
 void WebSocketChannelImpl::RemoveBackpressure() {
-  NETWORK_DVLOG(1) << this << " RemoveBackpressure";
+  DVLOG(1) << this << " RemoveBackpressure";
   if (backpressure_) {
     backpressure_ = false;
     ConsumePendingDataFrames();
@@ -453,8 +452,8 @@ void WebSocketChannelImpl::RemoveBackpressure() {
 void WebSocketChannelImpl::OnOpeningHandshakeStarted(
     network::mojom::blink::WebSocketHandshakeRequestPtr request) {
   DCHECK_EQ(GetState(), State::kConnecting);
-  NETWORK_DVLOG(1) << this << " OnOpeningHandshakeStarted("
-                   << request->url.GetString() << ")";
+  DVLOG(1) << this << " OnOpeningHandshakeStarted(" << request->url.GetString()
+           << ")";
 
   TRACE_EVENT_INSTANT1(
       "devtools.timeline", "WebSocketSendHandshakeRequest",
@@ -468,8 +467,8 @@ void WebSocketChannelImpl::OnOpeningHandshakeStarted(
 void WebSocketChannelImpl::OnFailure(const WTF::String& message,
                                      int net_error,
                                      int response_code) {
-  NETWORK_DVLOG(1) << this << " OnFailure(" << message << ", " << net_error
-                   << ", " << response_code << ")";
+  DVLOG(1) << this << " OnFailure(" << message << ", " << net_error << ", "
+           << response_code << ")";
   failure_message_ = message;
 }
 
@@ -483,8 +482,8 @@ void WebSocketChannelImpl::OnConnectionEstablished(
   DCHECK_EQ(GetState(), State::kConnecting);
   const String& protocol = response->selected_protocol;
   const String& extensions = response->extensions;
-  NETWORK_DVLOG(1) << this << " OnConnectionEstablished(" << protocol << ", "
-                   << extensions << ")";
+  DVLOG(1) << this << " OnConnectionEstablished(" << protocol << ", "
+           << extensions << ")";
   TRACE_EVENT_INSTANT1(
       "devtools.timeline", "WebSocketReceiveHandshakeResponse",
       TRACE_EVENT_SCOPE_THREAD, "data",
@@ -539,8 +538,8 @@ void WebSocketChannelImpl::OnDataFrame(
     network::mojom::blink::WebSocketMessageType type,
     uint64_t data_length) {
   DCHECK_EQ(GetState(), State::kOpen);
-  NETWORK_DVLOG(1) << this << " OnDataFrame(" << fin << ", " << type << ", "
-                   << "(data_length = " << data_length << "))";
+  DVLOG(1) << this << " OnDataFrame(" << fin << ", " << type << ", "
+           << "(data_length = " << data_length << "))";
   pending_data_frames_.push_back(
       DataFrame(fin, type, static_cast<uint32_t>(data_length)));
   ConsumePendingDataFrames();
@@ -551,8 +550,8 @@ void WebSocketChannelImpl::OnDropChannel(bool was_clean,
                                          const String& reason) {
   // TODO(yhirano): This should be DCHECK_EQ(GetState(), State::kOpen).
   DCHECK(GetState() == State::kOpen || GetState() == State::kConnecting);
-  NETWORK_DVLOG(1) << this << " OnDropChannel(" << was_clean << ", " << code
-                   << ", " << reason << ")";
+  DVLOG(1) << this << " OnDropChannel(" << was_clean << ", " << code << ", "
+           << reason << ")";
 
   if (identifier_) {
     TRACE_EVENT_INSTANT1(
@@ -567,7 +566,7 @@ void WebSocketChannelImpl::OnDropChannel(bool was_clean,
 
 void WebSocketChannelImpl::OnClosingHandshake() {
   DCHECK_EQ(GetState(), State::kOpen);
-  NETWORK_DVLOG(1) << this << " OnClosingHandshake()";
+  DVLOG(1) << this << " OnClosingHandshake()";
 
   client_->DidStartClosingHandshake();
 }
@@ -862,7 +861,7 @@ BaseFetchContext* WebSocketChannelImpl::GetBaseFetchContext() const {
 void WebSocketChannelImpl::OnReadable(MojoResult result,
                                       const mojo::HandleSignalsState& state) {
   DCHECK_EQ(GetState(), State::kOpen);
-  NETWORK_DVLOG(2) << this << " OnReadable mojo_result=" << result;
+  DVLOG(2) << this << " OnReadable mojo_result=" << result;
   if (result != MOJO_RESULT_OK) {
     // We don't detect mojo errors on data pipe. Mojo connection errors will
     // be detected via |client_receiver_|.
@@ -876,9 +875,9 @@ void WebSocketChannelImpl::ConsumePendingDataFrames() {
   while (!pending_data_frames_.empty() && !backpressure_ &&
          GetState() == State::kOpen) {
     DataFrame& data_frame = pending_data_frames_.front();
-    NETWORK_DVLOG(2) << " ConsumePendingDataFrame frame=(" << data_frame.fin
-                     << ", " << data_frame.type
-                     << ", (data_length = " << data_frame.data_length << "))";
+    DVLOG(2) << " ConsumePendingDataFrame frame=(" << data_frame.fin << ", "
+             << data_frame.type << ", (data_length = " << data_frame.data_length
+             << "))";
     if (data_frame.data_length == 0) {
       ConsumeDataFrame(data_frame.fin, data_frame.type, nullptr, 0);
       pending_data_frames_.pop_front();
@@ -994,7 +993,7 @@ void WebSocketChannelImpl::ConsumeDataFrame(
 void WebSocketChannelImpl::OnWritable(MojoResult result,
                                       const mojo::HandleSignalsState& state) {
   DCHECK_EQ(GetState(), State::kOpen);
-  NETWORK_DVLOG(2) << this << " OnWritable mojo_result=" << result;
+  DVLOG(2) << this << " OnWritable mojo_result=" << result;
   if (result != MOJO_RESULT_OK) {
     // We don't detect mojo errors on data pipe. Mojo connection errors will
     // be detected via |client_receiver_|.
@@ -1081,10 +1080,10 @@ void WebSocketChannelImpl::OnConnectionError(const base::Location& set_from,
                                              uint32_t custom_reason,
                                              const std::string& description) {
   DCHECK_NE(GetState(), State::kDisconnected);
-  NETWORK_DVLOG(1) << " OnConnectionError("
-                   << ", description:" << description
-                   << ", failure_message:" << failure_message_
-                   << "), set_from:" << set_from.ToString();
+  DVLOG(1) << " OnConnectionError("
+           << ", description:" << description
+           << ", failure_message:" << failure_message_
+           << "), set_from:" << set_from.ToString();
   String message;
   if (description.empty()) {
     message = failure_message_;
