@@ -13,6 +13,11 @@ source_set("android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//chrome/app:generated_resources",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:affiliation",
+    "//components/url_formatter",
+    "//ui/base",
   ]
 }
 

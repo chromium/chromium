@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_entry_edit;
 import android.content.Context;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
@@ -29,7 +30,18 @@ class CredentialEditBridge {
     }
 
     @CalledByNative
+    void setCredential(String displayUrlOrAppName, String username, String password,
+            String displayFederationOrigin) {
+        // TODO(crbug.com/1170289): Pass the credential data to the UI to be displayed.
+    }
+
+    @CalledByNative
     void destroy() {
         mNativeCredentialEditBridge = 0;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void getCredential(long nativeCredentialEditBridge);
     }
 }

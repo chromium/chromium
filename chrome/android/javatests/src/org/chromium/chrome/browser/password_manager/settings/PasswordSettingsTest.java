@@ -257,7 +257,8 @@ public class PasswordSettingsTest {
         }
 
         @Override
-        public void showPasswordEntryEditingView(Context context, SettingsLauncher launcher) {
+        public void showPasswordEntryEditingView(
+                Context context, SettingsLauncher launcher, int index) {
             assert false : "Define this method before starting to use it in tests.";
         }
     }

@@ -93,6 +93,8 @@ public interface PasswordManagerHandler {
      * @param context the current Activity to launch the edit view from, or an application context
      * if no Activity is available.
      * @param settingsLauncher the {@link SettingsLauncher} used to launch the edit UI fragment
+     * @param index the index of the password entry to edit
      */
-    void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher);
+    void showPasswordEntryEditingView(
+            Context context, SettingsLauncher settingsLauncher, int index);
 }

@@ -7,11 +7,19 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "chrome/browser/password_entry_edit/android/jni_headers/CredentialEditBridge_jni.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/url_formatter/url_formatter.h"
+#include "ui/base/l10n/l10n_util.h"
 
 CredentialEditBridge::CredentialEditBridge(
+    const password_manager::PasswordForm* credential,
     const base::android::JavaRef<jobject>& context,
-    const base::android::JavaRef<jobject>& settings_launcher) {
+    const base::android::JavaRef<jobject>& settings_launcher)
+    : credential_(credential) {
   java_bridge_.Reset(Java_CredentialEditBridge_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       context, settings_launcher));
@@ -20,4 +28,51 @@ CredentialEditBridge::CredentialEditBridge(
 CredentialEditBridge::~CredentialEditBridge() {
   Java_CredentialEditBridge_destroy(base::android::AttachCurrentThread(),
                                     java_bridge_);
+}
+
+void CredentialEditBridge::GetCredential(JNIEnv* env) {
+  Java_CredentialEditBridge_setCredential(
+      env, java_bridge_,
+      base::android::ConvertUTF16ToJavaString(env, GetDisplayURLOrAppName()),
+      base::android::ConvertUTF16ToJavaString(env, credential_->username_value),
+      base::android::ConvertUTF16ToJavaString(env, credential_->password_value),
+      base::android::ConvertUTF16ToJavaString(env,
+                                              GetDisplayFederationOrigin()));
+}
+
+base::string16 CredentialEditBridge::GetDisplayURLOrAppName() {
+  auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
+      credential_->signon_realm);
+
+  if (facet.IsValidAndroidFacetURI()) {
+    if (credential_->app_display_name.empty()) {
+      // In case no affiliation information could be obtained show the
+      // formatted package name to the user.
+      return l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PASSWORDS_ANDROID_APP,
+          base::UTF8ToUTF16(facet.android_package_name()));
+    }
+
+    return base::UTF8ToUTF16(credential_->app_display_name);
+  }
+
+  return url_formatter::FormatUrl(
+      credential_->url.GetOrigin(),
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlTrimAfterHost,
+      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+}
+
+base::string16 CredentialEditBridge::GetDisplayFederationOrigin() {
+  return credential_->IsFederatedCredential()
+             ? url_formatter::FormatUrl(
+                   credential_->federation_origin.GetURL(),
+                   url_formatter::kFormatUrlOmitDefaults |
+                       url_formatter::kFormatUrlOmitHTTPS |
+                       url_formatter::kFormatUrlOmitTrivialSubdomains |
+                       url_formatter::kFormatUrlTrimAfterHost,
+                   net::UnescapeRule::SPACES, nullptr, nullptr, nullptr)
+             : base::string16();
 }

@@ -99,9 +99,10 @@ public final class PasswordUIView implements PasswordManagerHandler {
     }
 
     @Override
-    public void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher) {
-        PasswordUIViewJni.get().handleShowPasswordEntryEditingView(
-                mNativePasswordUIViewAndroid, context, settingsLauncher, PasswordUIView.this);
+    public void showPasswordEntryEditingView(
+            Context context, SettingsLauncher settingsLauncher, int index) {
+        PasswordUIViewJni.get().handleShowPasswordEntryEditingView(mNativePasswordUIViewAndroid,
+                context, settingsLauncher, index, PasswordUIView.this);
     }
 
     /**
@@ -149,6 +150,6 @@ public final class PasswordUIView implements PasswordManagerHandler {
                 String targetPath, IntStringCallback successCallback,
                 Callback<String> errorCallback);
         void handleShowPasswordEntryEditingView(long nativePasswordUIViewAndroid, Context context,
-                SettingsLauncher launcher, PasswordUIView caller);
+                SettingsLauncher launcher, int index, PasswordUIView caller);
     }
 }

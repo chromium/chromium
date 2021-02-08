@@ -210,9 +210,14 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& context,
     const base::android::JavaRef<jobject>& settings_launcher,
+    int index,
     const JavaParamRef<jobject>& obj) {
-  credential_edit_bridge_.reset(
-      new CredentialEditBridge(context, settings_launcher));
+  const password_manager::PasswordForm* form =
+      password_manager_presenter_.GetPassword(index);
+  if (form) {
+    credential_edit_bridge_.reset(
+        new CredentialEditBridge(form, context, settings_launcher));
+  }
 }
 
 ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetAccountDashboardURL(
