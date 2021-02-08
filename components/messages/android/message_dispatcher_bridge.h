@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MESSAGES_ANDROID_MESSAGE_DISPATCHER_BRIDGE_H_
 #define COMPONENTS_MESSAGES_ANDROID_MESSAGE_DISPATCHER_BRIDGE_H_
 
+#include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 
 namespace content {
@@ -20,7 +21,8 @@ class MessageDispatcherBridge {
   static void EnqueueMessage(MessageWrapper* message,
                              content::WebContents* web_contents);
   static void DismissMessage(MessageWrapper* message,
-                             content::WebContents* web_contents);
+                             content::WebContents* web_contents,
+                             DismissReason dismiss_reason);
 };
 
 }  // namespace messages

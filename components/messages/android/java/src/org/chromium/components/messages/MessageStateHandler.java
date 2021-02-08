@@ -23,6 +23,7 @@ public interface MessageStateHandler {
 
     /**
      * Notify that the message is about to be dismissed from the queue.
+     * @param dismissReason The reason why the message is being dismissed.
      */
-    void dismiss();
+    void dismiss(@DismissReason int dismissReason);
 }

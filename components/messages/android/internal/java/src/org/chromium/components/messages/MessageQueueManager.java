@@ -49,14 +49,15 @@ class MessageQueueManager {
      * Dismisses a message specified by its key. Hdes the message if it is currently displayed.
      * Displays the next message in the queue if available.
      * @param key The key associated with the message to dismiss.
+     * @param dismissReason The reason why message is being dismissed.
      */
-    public void dismissMessage(Object key) {
+    public void dismissMessage(Object key, @DismissReason int dismissReason) {
         MessageStateHandler message = mMessageMap.get(key);
         if (message == null) return;
         mMessageMap.remove(key);
         mMessageQueue.remove(message);
         Runnable onAnimationFinished = () -> {
-            message.dismiss();
+            message.dismiss(dismissReason);
             updateCurrentDisplayedMessage();
         };
         if (mCurrentDisplayedMessage == message) {
@@ -101,17 +102,17 @@ class MessageQueueManager {
         }
     }
 
-    void dismissAllMessages() {
+    void dismissAllMessages(@DismissReason int dismissReason) {
         if (mCurrentDisplayedMessage != null) {
             mMessageQueue.remove(mCurrentDisplayedMessage);
             mCurrentDisplayedMessage.hide(false, () -> {
                 mMessageQueueDelegate.onFinishHiding();
-                mCurrentDisplayedMessage.dismiss();
+                mCurrentDisplayedMessage.dismiss(dismissReason);
                 mCurrentDisplayedMessage = null;
             });
         }
         for (MessageStateHandler h : mMessageQueue) {
-            h.dismiss();
+            h.dismiss(dismissReason);
         }
         mMessageMap.clear();
         mMessageQueue.clear();

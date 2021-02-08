@@ -44,7 +44,7 @@ public class MessageQueueManagerTest {
         }
 
         @Override
-        public void dismiss() {}
+        public void dismiss(@DismissReason int dismissReason) {}
     }
 
     /**
@@ -62,15 +62,15 @@ public class MessageQueueManagerTest {
 
         queueManager.enqueueMessage(m1, m1);
         verify(m1).show();
-        queueManager.dismissMessage(m1);
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(anyBoolean(), any());
-        verify(m1).dismiss();
+        verify(m1).dismiss(DismissReason.TIMER);
 
         queueManager.enqueueMessage(m2, m2);
         verify(m2).show();
-        queueManager.dismissMessage(m2);
+        queueManager.dismissMessage(m2, DismissReason.TIMER);
         verify(m2).hide(anyBoolean(), any());
-        verify(m2).dismiss();
+        verify(m2).dismiss(DismissReason.TIMER);
     }
 
     /**
@@ -89,9 +89,9 @@ public class MessageQueueManagerTest {
         verify(m1).show();
         verify(m2, never()).show();
 
-        queueManager.dismissMessage(m1);
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(anyBoolean(), any());
-        verify(m1).dismiss();
+        verify(m1).dismiss(DismissReason.TIMER);
         verify(m2).show();
     }
 
@@ -112,10 +112,10 @@ public class MessageQueueManagerTest {
         verify(m1).show();
         verify(m2, never()).show();
 
-        queueManager.dismissMessage(m2);
-        verify(m2).dismiss();
+        queueManager.dismissMessage(m2, DismissReason.TIMER);
+        verify(m2).dismiss(DismissReason.TIMER);
 
-        queueManager.dismissMessage(m1);
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m2, never()).show();
         verify(m2, never()).hide(anyBoolean(), any());
     }
@@ -147,9 +147,9 @@ public class MessageQueueManagerTest {
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1);
-        queueManager.dismissMessage(m1);
-        queueManager.dismissMessage(m1);
-        verify(m1, times(1)).dismiss();
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
+        verify(m1, times(1)).dismiss(DismissReason.TIMER);
     }
 
     /**
@@ -166,9 +166,9 @@ public class MessageQueueManagerTest {
             handlers[i] = Mockito.spy(new EmptyMessageStateHandler());
             queueManager.enqueueMessage(handlers[i], handlers[i]);
         }
-        queueManager.dismissAllMessages();
+        queueManager.dismissAllMessages(DismissReason.TAB_SWITCHED);
         for (MessageStateHandler h : handlers) {
-            verify(h).dismiss();
+            verify(h).dismiss(DismissReason.TAB_SWITCHED);
         }
         Assert.assertEquals("Map should be cleared after all messages are dismissed", 0,
                 queueManager.getMessageMapForTesting().size());
@@ -221,7 +221,7 @@ public class MessageQueueManagerTest {
         verify(m1, never()).show();
         verify(m1, never()).hide(anyBoolean(), any());
 
-        queueManager.dismissMessage(m1);
+        queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(delegate, never()).onStartShowing(any());
         verify(delegate, never()).onFinishHiding();
         verify(m1, never()).show();

@@ -56,9 +56,14 @@ void SavePasswordMessageDelegate::DisplaySavePasswordPrompt(
 }
 
 void SavePasswordMessageDelegate::DismissSavePasswordPrompt() {
+  DismissSavePasswordPromptInternal(messages::DismissReason::UNKNOWN);
+}
+
+void SavePasswordMessageDelegate::DismissSavePasswordPromptInternal(
+    messages::DismissReason dismiss_reason) {
   if (message_ != nullptr) {
-    messages::MessageDispatcherBridge::DismissMessage(message_.get(),
-                                                      web_contents_);
+    messages::MessageDispatcherBridge::DismissMessage(
+        message_.get(), web_contents_, dismiss_reason);
   }
 }
 
@@ -66,7 +71,6 @@ void SavePasswordMessageDelegate::CreateMessage(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
     base::Optional<AccountInfo> account_info) {
-  ui_dismissal_reason_ = password_manager::metrics_util::NO_DIRECT_INTERACTION;
   web_contents_ = web_contents;
   form_to_save_ = std::move(form_to_save);
 
@@ -123,24 +127,23 @@ void SavePasswordMessageDelegate::CreateMessage(
 
 void SavePasswordMessageDelegate::HandleSaveClick() {
   form_to_save_->Save();
-  ui_dismissal_reason_ = password_manager::metrics_util::CLICKED_ACCEPT;
 }
 
 void SavePasswordMessageDelegate::HandleNeverClick() {
   form_to_save_->Blocklist();
-  ui_dismissal_reason_ = password_manager::metrics_util::CLICKED_NEVER;
-  DismissSavePasswordPrompt();
+  DismissSavePasswordPromptInternal(messages::DismissReason::SECONDARY_ACTION);
 }
 
-void SavePasswordMessageDelegate::HandleDismissCallback() {
+void SavePasswordMessageDelegate::HandleDismissCallback(
+    messages::DismissReason dismiss_reason) {
   // The message is dismissed. Record metrics and cleanup state.
-  RecordDismissalReasonMetrics();
+  RecordDismissalReasonMetrics(
+      MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
   message_.reset();
   form_to_save_.reset();
-  // Following fields are also set in CreateMessage(). Resetting them here to
-  // keep the state clean when no message is enqueued.
+  // web_contents_ is also set in CreateMessage(). Resetting it here to keep the
+  // state clean when no message is enqueued.
   web_contents_ = nullptr;
-  ui_dismissal_reason_ = password_manager::metrics_util::NO_DIRECT_INTERACTION;
 }
 
 void SavePasswordMessageDelegate::RecordMessageShownMetrics() {
@@ -151,14 +154,38 @@ void SavePasswordMessageDelegate::RecordMessageShownMetrics() {
   }
 }
 
-void SavePasswordMessageDelegate::RecordDismissalReasonMetrics() {
+void SavePasswordMessageDelegate::RecordDismissalReasonMetrics(
+    password_manager::metrics_util::UIDismissalReason ui_dismissal_reason) {
   password_manager::metrics_util::LogSaveUIDismissalReason(
-      ui_dismissal_reason_, /*user_state=*/base::nullopt);
+      ui_dismissal_reason, /*user_state=*/base::nullopt);
   if (form_to_save_->WasUnblocklisted()) {
     password_manager::metrics_util::LogSaveUIDismissalReasonAfterUnblocklisting(
-        ui_dismissal_reason_);
+        ui_dismissal_reason);
   }
   if (auto* recorder = form_to_save_->GetMetricsRecorder()) {
-    recorder->RecordUIDismissalReason(ui_dismissal_reason_);
+    recorder->RecordUIDismissalReason(ui_dismissal_reason);
   }
+}
+
+// static
+password_manager::metrics_util::UIDismissalReason SavePasswordMessageDelegate::
+    MessageDismissReasonToPasswordManagerUIDismissalReason(
+        messages::DismissReason dismiss_reason) {
+  password_manager::metrics_util::UIDismissalReason ui_dismissal_reason;
+  switch (dismiss_reason) {
+    case messages::DismissReason::PRIMARY_ACTION:
+      ui_dismissal_reason = password_manager::metrics_util::CLICKED_ACCEPT;
+      break;
+    case messages::DismissReason::SECONDARY_ACTION:
+      ui_dismissal_reason = password_manager::metrics_util::CLICKED_NEVER;
+      break;
+    case messages::DismissReason::GESTURE:
+      ui_dismissal_reason = password_manager::metrics_util::CLICKED_CANCEL;
+      break;
+    default:
+      ui_dismissal_reason =
+          password_manager::metrics_util::NO_DIRECT_INTERACTION;
+      break;
+  }
+  return ui_dismissal_reason;
 }

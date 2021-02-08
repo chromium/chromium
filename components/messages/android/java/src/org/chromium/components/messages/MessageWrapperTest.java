@@ -88,8 +88,9 @@ public class MessageWrapperTest {
         Mockito.verify(mNativeMock).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock).handleSecondaryActionClick(nativePtr);
-        messageProperties.get(MessageBannerProperties.ON_DISMISSED).run();
-        Mockito.verify(mNativeMock).handleDismissCallback(nativePtr);
+        messageProperties.get(MessageBannerProperties.ON_DISMISSED)
+                .onResult(DismissReason.PRIMARY_ACTION);
+        Mockito.verify(mNativeMock).handleDismissCallback(nativePtr, DismissReason.PRIMARY_ACTION);
     }
 
     /**
@@ -107,7 +108,9 @@ public class MessageWrapperTest {
         Mockito.verify(mNativeMock, never()).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock, never()).handleSecondaryActionClick(nativePtr);
-        messageProperties.get(MessageBannerProperties.ON_DISMISSED).run();
-        Mockito.verify(mNativeMock, never()).handleDismissCallback(nativePtr);
+        messageProperties.get(MessageBannerProperties.ON_DISMISSED)
+                .onResult(DismissReason.PRIMARY_ACTION);
+        Mockito.verify(mNativeMock, never())
+                .handleDismissCallback(Mockito.anyLong(), Mockito.anyInt());
     }
 }

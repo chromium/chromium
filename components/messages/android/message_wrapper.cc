@@ -12,7 +12,7 @@
 namespace messages {
 
 MessageWrapper::MessageWrapper(base::OnceClosure action_callback,
-                               base::OnceClosure dismiss_callback)
+                               DismissCallback dismiss_callback)
     : action_callback_(std::move(action_callback)),
       dismiss_callback_(std::move(dismiss_callback)),
       message_dismissed_(false) {
@@ -129,13 +129,14 @@ void MessageWrapper::HandleSecondaryActionClick(JNIEnv* env) {
     std::move(secondary_action_callback_).Run();
 }
 
-void MessageWrapper::HandleDismissCallback(JNIEnv* env) {
+void MessageWrapper::HandleDismissCallback(JNIEnv* env, int dismiss_reason) {
   // Make sure message dismissed callback is called exactly once.
   CHECK(!message_dismissed_);
   message_dismissed_ = true;
   Java_MessageWrapper_clearNativePtr(env, java_message_wrapper_);
   if (!dismiss_callback_.is_null())
-    std::move(dismiss_callback_).Run();
+    std::move(dismiss_callback_)
+        .Run(static_cast<DismissReason>(dismiss_reason));
   // Dismiss callback typically deletes the instance of MessageWrapper,
   // invalidating |this| pointer. Don't call any methods after dismiss_callback_
   // is invoked.

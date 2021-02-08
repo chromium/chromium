@@ -94,6 +94,7 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessagesFactory;
@@ -292,7 +293,7 @@ public class RootUiCoordinator
         mActivity.getLayoutManagerSupplier().removeObserver(mLayoutManagerSupplierCallback);
 
         if (mMessageDispatcher != null) {
-            mMessageDispatcher.dismissAllMessages();
+            mMessageDispatcher.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
             MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
             mMessageDispatcher = null;
         }

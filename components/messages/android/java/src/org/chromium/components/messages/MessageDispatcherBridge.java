@@ -22,9 +22,10 @@ public class MessageDispatcherBridge {
     }
 
     @CalledByNative
-    private static void dismissMessage(MessageWrapper message, WebContents webContents) {
+    private static void dismissMessage(
+            MessageWrapper message, WebContents webContents, @DismissReason int dismissReason) {
         MessageDispatcher messageDispatcher =
                 MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
-        messageDispatcher.dismissMessage(message.getMessageProperties());
+        messageDispatcher.dismissMessage(message.getMessageProperties(), dismissReason);
     }
 }

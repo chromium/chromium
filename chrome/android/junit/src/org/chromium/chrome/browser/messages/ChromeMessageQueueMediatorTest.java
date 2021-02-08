@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -133,7 +134,7 @@ public class ChromeMessageQueueMediatorTest {
         doNothing().when(mTabModelFilterProvider).addTabModelFilterObserver(observer.capture());
         initMediator();
         observer.getValue().didSelectTab(null, TabSelectionType.FROM_NEW, 1);
-        verify(mMessageDispatcher).dismissAllMessages();
+        verify(mMessageDispatcher).dismissAllMessages(DismissReason.TAB_SWITCHED);
     }
 
     /**

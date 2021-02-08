@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageQueueDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -107,7 +108,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         @Override
         public void didSelectTab(Tab tab, int type, int lastId) {
             if (mQueueController != null) {
-                mQueueController.dismissAllMessages();
+                mQueueController.dismissAllMessages(DismissReason.TAB_SWITCHED);
             }
         }
         @Override
@@ -115,7 +116,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
             assert mTabModelSelector != null;
             if (tab != mTabModelSelector.getCurrentTab()) return;
             if (mQueueController != null) {
-                mQueueController.dismissAllMessages();
+                mQueueController.dismissAllMessages(DismissReason.TAB_DESTROYED);
             }
         }
     };
