@@ -74,8 +74,8 @@
       hidden="[[isReadingListEmpty_(unreadItems_, readItems_)]]">$i18n{title}
   </div>
   <cr-icon-button id="closeButton" aria-label="$i18n{tooltipClose}"
-      disable-ripple iron-icon="cr:close" on-click="onCloseClick_"
-      title="$i18n{tooltipClose}">
+      iron-icon="cr:close" noink="[[!buttonRipples_]]" no-ripple-on-focus
+      on-click="onCloseClick_" title="$i18n{tooltipClose}">
   </cr-icon-button>
 </div>
 <div id="readLaterList">

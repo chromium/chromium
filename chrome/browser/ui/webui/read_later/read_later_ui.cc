@@ -22,6 +22,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/views/style/platform_style.h"
 
 namespace {
 void AddLocalizedString(content::WebUIDataSource* source,
@@ -53,6 +54,8 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   };
   for (const auto& str : kLocalizedStrings)
     AddLocalizedString(source, str.name, str.id);
+
+  source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(
