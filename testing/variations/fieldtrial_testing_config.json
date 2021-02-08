@@ -861,9 +861,27 @@
             ],
             "experiments": [
                 {
-                    "name": "AllEnabledFeatures",
+                    "name": "AutofillFixFillableFieldTypes",
                     "enable_features": [
                         "AutofillFixFillableFieldTypes"
+                    ]
+                },
+                {
+                    "name": "EnableAutofillSectionUponRedundantNameInfo",
+                    "enable_features": [
+                        "AutofillSectionUponRedundantNameInfo"
+                    ]
+                },
+                {
+                    "name": "AutofillEnableLabelPrecedenceForTurkishAddresses",
+                    "enable_features": [
+                        "AutofillEnableLabelPrecedenceForTurkishAddresses"
+                    ]
+                },
+                {
+                    "name": "AutofillEnableDependentLocalityParsing",
+                    "enable_features": [
+                        "AutofillEnableDependentLocalityParsing"
                     ]
                 }
             ]
