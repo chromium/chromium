@@ -147,6 +147,39 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
 // --- Private API end ---
 
+// An NSTextAttachmentCell to show the [New] tag on a menu item.
+//
+// /!\ WARNING /!\
+//
+// Do NOT update to the "new in macOS 10.11" API of NSTextAttachment.image until
+// macOS 10.15 is the minimum required macOS for Chromium. Because menus are
+// Carbon-based, the new NSTextAttachment.image API did not function correctly
+// until then. Specifically, in macOS 10.11-10.12, images that use the new API
+// do not appear. In macOS 10.13-10.14, the flipped flag of -[NSImage
+// imageWithSize:flipped:drawingHandler:] is not respected. Only when 10.15 is
+// the minimum required OS can https://crrev.com/c/2572937 be relanded.
+@interface NewTagAttachmentCell : NSTextAttachmentCell
+@end
+
+@implementation NewTagAttachmentCell
+
+- (instancetype)init {
+  if (self = [super init]) {
+    self.image = NewTagImage();
+  }
+  return self;
+}
+
+- (NSPoint)cellBaselineOffset {
+  return NSMakePoint(0, views::NewBadge::kNewBadgeBaselineOffsetMac);
+}
+
+- (NSSize)cellSize {
+  return [self.image size];
+}
+
+@end
+
 @interface MenuControllerDelegate : NSObject <MenuControllerCocoaDelegate> {
   id<NSObject> _menuOpenObserver;
 }
@@ -167,13 +200,13 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
   static const bool newBadgeFeatureEnabled =
       base::FeatureList::IsEnabled(views::features::kEnableNewBadgeOnMenuItems);
   if (newBadgeFeatureEnabled && model->IsNewFeatureAt(index)) {
+    // /!\ WARNING /!\ Do not update this to use NSTextAttachment.image until
+    // macOS 10.15 is the minimum required OS. See the details on the class
+    // comment above.
     NSTextAttachment* attachment =
-        [[[NSTextAttachment alloc] initWithData:nil ofType:nil] autorelease];
-    attachment.image = NewTagImage();
-    NSSize newTagSize = attachment.image.size;
-    attachment.bounds =
-        NSMakeRect(0, views::NewBadge::kNewBadgeBaselineOffsetMac,
-                   newTagSize.width, newTagSize.height);
+        [[[NSTextAttachment alloc] init] autorelease];
+    attachment.attachmentCell =
+        [[[NewTagAttachmentCell alloc] init] autorelease];
 
     NSMutableAttributedString* attrTitle =
         MutableAttributedStringForMenuItemTitleString(menuItem.title);
