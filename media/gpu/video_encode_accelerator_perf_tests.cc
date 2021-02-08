@@ -67,6 +67,10 @@ media::test::VideoEncoderTestEnvironment* g_env;
 
 constexpr size_t kNumFramesToEncodeForPerformance = 300;
 
+// The event timeout used in perf tests because encoding 2160p
+// |kNumFramesToEncodeForPerformance| frames take much time.
+constexpr base::TimeDelta kPerfEventTimeout = base::TimeDelta::FromSeconds(180);
+
 // Default output folder used to store performance metrics.
 constexpr const base::FilePath::CharType* kDefaultOutputFolder =
     FILE_PATH_LITERAL("perf_metrics");
@@ -500,6 +504,7 @@ class VideoEncoderTest : public ::testing::Test {
 TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
   auto encoder =
       CreateVideoEncoder(g_env->Video(), g_env->Profile(), g_env->Bitrate());
+  encoder->SetEventWaitTimeout(kPerfEventTimeout);
 
   performance_evaluator_->StartMeasuring();
   encoder->Encode();
@@ -521,6 +526,8 @@ TEST_F(VideoEncoderTest, MeasureCappedPerformance) {
   const uint32_t kEncodeRate = 30;
   auto encoder = CreateVideoEncoder(g_env->Video(), g_env->Profile(),
                                     g_env->Bitrate(), kEncodeRate);
+  encoder->SetEventWaitTimeout(kPerfEventTimeout);
+
   performance_evaluator_->StartMeasuring();
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
@@ -537,6 +544,8 @@ TEST_F(VideoEncoderTest, MeasureCappedPerformance) {
 TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
   auto encoder = CreateVideoEncoderForQualityPerformance(
       g_env->Video(), g_env->Profile(), g_env->Bitrate());
+  encoder->SetEventWaitTimeout(kPerfEventTimeout);
+
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
