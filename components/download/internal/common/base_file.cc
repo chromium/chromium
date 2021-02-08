@@ -594,6 +594,9 @@ GURL GetEffectiveAuthorityURL(const GURL& source_url,
     // ftp:// has an authority.
     if (source_url.SchemeIs(url::kFtpScheme))
       return source_url;
+
+    if (source_url.SchemeIs(url::kBlobScheme))
+      return url::Origin::Create(source_url).GetURL();
   }
 
   if (referrer_url.is_valid() && referrer_url.SchemeIsHTTPOrHTTPS())
