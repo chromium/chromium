@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/tab_stats_tracker.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -26,6 +27,25 @@
 namespace metrics {
 
 namespace {
+
+class TestTabStatsObserver : public TabStatsObserver {
+ public:
+  // Functions used to update the window/tab count.
+  void OnWindowAdded() override { ++window_count_; }
+  void OnWindowRemoved() override { --window_count_; }
+  void OnTabAdded(content::WebContents* web_contents) override { ++tab_count_; }
+  void OnTabRemoved(content::WebContents* web_contents) override {
+    --tab_count_;
+  }
+
+  size_t tab_count() { return tab_count_; }
+
+  size_t window_count() { return window_count_; }
+
+ private:
+  size_t tab_count_ = 0;
+  size_t window_count_ = 0;
+};
 
 using TabsStats = TabStatsDataStore::TabsStats;
 using TabLifecycleObserver = resource_coordinator::TabLifecycleObserver;
@@ -70,7 +90,7 @@ class MockTabStatsTrackerDelegate : public TabStatsTrackerDelegate {
 
 class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
  public:
-  TabStatsTrackerBrowserTest() : tab_stats_tracker_(nullptr) {}
+  TabStatsTrackerBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     tab_stats_tracker_ = TabStatsTracker::GetInstance();
@@ -81,7 +101,8 @@ class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
   // Used to make sure that the metrics are reported properly.
   base::HistogramTester histogram_tester_;
 
-  TabStatsTracker* tab_stats_tracker_;
+  TabStatsTracker* tab_stats_tracker_{nullptr};
+  std::vector<std::unique_ptr<TestTabStatsObserver>> test_tab_stats_observers_;
 
   DISALLOW_COPY_AND_ASSIGN(TabStatsTrackerBrowserTest);
 };
@@ -136,6 +157,51 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   expected_stats.window_count = 1;
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
+                       AdditionalTabStatsObserverGetsInitiliazed) {
+  // Assert that the |TabStatsTracker| instance is initialized during the
+  // creation of the main browser.
+  ASSERT_TRUE(tab_stats_tracker_ != nullptr);
+
+  TabsStats expected_stats = {};
+
+  // There should be only one window with one tab at startup.
+  expected_stats.total_tab_count = 1;
+  expected_stats.total_tab_count_max = 1;
+  expected_stats.max_tab_per_window = 1;
+  expected_stats.window_count = 1;
+  expected_stats.window_count_max = 1;
+
+  EnsureTabStatsMatchExpectations(expected_stats,
+                                  tab_stats_tracker_->tab_stats());
+
+  test_tab_stats_observers_.push_back(std::make_unique<TestTabStatsObserver>());
+  TestTabStatsObserver* first_observer = test_tab_stats_observers_.back().get();
+  tab_stats_tracker_->AddObserverAndSetInitialState(first_observer);
+
+  // Observer is initialized properly.
+  DCHECK_EQ(first_observer->tab_count(), expected_stats.total_tab_count);
+  DCHECK_EQ(first_observer->window_count(), expected_stats.window_count);
+
+  // Add some tabs and windows to increase the counts.
+  Browser* browser = CreateBrowser(ProfileManager::GetActiveUserProfile());
+  ++expected_stats.total_tab_count;
+  ++expected_stats.window_count;
+
+  AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
+                         ui::PAGE_TRANSITION_TYPED, true);
+  ++expected_stats.total_tab_count;
+
+  test_tab_stats_observers_.push_back(std::make_unique<TestTabStatsObserver>());
+  TestTabStatsObserver* second_observer =
+      test_tab_stats_observers_.back().get();
+  tab_stats_tracker_->AddObserverAndSetInitialState(second_observer);
+
+  // Observer is initialized properly.
+  DCHECK_EQ(second_observer->tab_count(), expected_stats.total_tab_count);
+  DCHECK_EQ(second_observer->window_count(), expected_stats.window_count);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,

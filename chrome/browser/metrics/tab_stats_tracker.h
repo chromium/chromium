@@ -54,6 +54,10 @@ class TabStatsTracker : public TabStripModelObserver,
   // Returns the |TabStatsTracker| global instance.
   static TabStatsTracker* GetInstance();
 
+  // Registers a TabStatsObserver instance. Upon registering the initial state
+  // of the observer is made to match the current browser/tab state.
+  void AddObserverAndSetInitialState(TabStatsObserver* observer);
+
   // Registers prefs used to track tab stats.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

@@ -143,6 +143,9 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
                                        kTabStatsDailyEventHistogramName)) {
   DCHECK(pref_service);
 
+  // Add owned observers to the list manually since they are about to be
+  // initialized. Subsequent observers should be added with
+  // AddObserverAndSetInitialState().
   tab_stats_observers_.AddObserver(tab_stats_data_store_.get());
 
   // Get the list of existing windows/tabs. There shouldn't be any if this is
@@ -214,6 +217,22 @@ void TabStatsTracker::SetInstance(std::unique_ptr<TabStatsTracker> instance) {
 
 TabStatsTracker* TabStatsTracker::GetInstance() {
   return g_tab_stats_tracker_instance;
+}
+
+void TabStatsTracker::AddObserverAndSetInitialState(
+    TabStatsObserver* observer) {
+  tab_stats_observers_.AddObserver(observer);
+
+  // Initialization of |this| is complete at this point and all existing
+  // Browsers are already observed. TabStatsObserver functions are called
+  // directly only for |observer| which is new and needs to be caught up to the
+  // current state.
+  BrowserList* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    observer->OnWindowAdded();
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i)
+      observer->OnTabAdded(browser->tab_strip_model()->GetWebContentsAt(i));
+  }
 }
 
 void TabStatsTracker::RegisterPrefs(PrefRegistrySimple* registry) {
