@@ -55,6 +55,7 @@ class MODULES_EXPORT Cache : public ScriptWrappable {
 
  public:
   Cache(GlobalFetch::ScopedFetcher*,
+        CacheStorageBlobClientList* blob_client_list,
         mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache>,
         scoped_refptr<base::SingleThreadTaskRunner>);
 

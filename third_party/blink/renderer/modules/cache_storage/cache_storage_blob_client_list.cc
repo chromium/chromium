@@ -83,17 +83,17 @@ void CacheStorageBlobClientList::AddClient(
     mojo::PendingReceiver<mojom::blink::BlobReaderClient>
         client_pending_receiver,
     DataPipeBytesConsumer::CompletionNotifier* completion_notifier) {
-  clients.emplace_back(MakeGarbageCollected<Client>(
+  clients_.emplace_back(MakeGarbageCollected<Client>(
       this, context, std::move(client_pending_receiver), completion_notifier));
 }
 
 void CacheStorageBlobClientList::Trace(Visitor* visitor) const {
-  visitor->Trace(clients);
+  visitor->Trace(clients_);
 }
 
 void CacheStorageBlobClientList::RevokeClient(Client* client) {
-  auto index = clients.Find(client);
-  clients.EraseAt(index);
+  auto index = clients_.Find(client);
+  clients_.EraseAt(index);
 }
 
 }  // namespace blink

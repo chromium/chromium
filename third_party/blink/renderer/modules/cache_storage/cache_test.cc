@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -277,7 +278,10 @@ class TestCache : public Cache {
       GlobalFetch::ScopedFetcher* fetcher,
       mojo::PendingAssociatedRemote<mojom::blink::CacheStorageCache> remote,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : Cache(fetcher, std::move(remote), std::move(task_runner)) {}
+      : Cache(fetcher,
+              MakeGarbageCollected<CacheStorageBlobClientList>(),
+              std::move(remote),
+              std::move(task_runner)) {}
 
   bool IsAborted() const {
     return abort_controller_ && abort_controller_->signal()->aborted();
