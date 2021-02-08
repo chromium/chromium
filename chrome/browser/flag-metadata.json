@@ -1691,7 +1691,7 @@
   {
     "name": "enable-ftp",
     "owners": [ "asanka" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 91
   },
   {
     "name": "enable-fullpage-screenshot",
