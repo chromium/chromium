@@ -99,7 +99,7 @@ export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_brow
 export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.m.js';
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.m.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.m.js';
-export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page/device_page_browser_proxy.m.js';
+export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.m.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.m.js';
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.m.js';
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.m.js';

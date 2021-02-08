@@ -60,6 +60,7 @@ js_modulizer("modulize") {
     "cups_printer_page_tests.js",
     "cups_printer_test_utils.js",
     "date_time_page_tests.js",
+    "device_page_tests.js",
     "esim_remove_profile_dialog_test.js",
     "esim_rename_dialog_test.js",
     "fake_bluetooth.js",
@@ -67,6 +68,7 @@ js_modulizer("modulize") {
     "fake_quick_unlock_private.js",
     "fake_receive_manager.js",
     "fake_settings_search_handler.js",
+    "fake_system_display.js",
     "fake_user_action_recorder.js",
     "google_assistant_page_test.js",
     "guest_os_shared_paths_test.js",
@@ -151,5 +153,7 @@ js_modulizer("modulize") {
                          "cr.ui.TestStore|TestStore",
                          "app_management.util.conveapp_management.convertOptionalBoolToBool|convertOptionalBoolToBool",
                          "app_management.actions.changePage|changePage",
+                         "settings.FakeSystemDisplay|FakeSystemDisplay",
+                         "settings.setDisplayApiForTesting|setDisplayApiForTesting",
                        ]
 }

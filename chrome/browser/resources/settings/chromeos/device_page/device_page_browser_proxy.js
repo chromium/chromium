@@ -7,6 +7,18 @@
 // clang-format on
 
 cr.define('settings', function() {
+  /**
+   * Enumeration for device state about remaining space.
+   * These values must be kept in sync with
+   * StorageManagerHandler::StorageSpaceState in C++ code.
+   * @enum {number}
+   */
+  /* #export */ const StorageSpaceState = {
+    NORMAL: 0,
+    LOW: 1,
+    CRITICALLY_LOW: 2
+  };
+
   let systemDisplayApi = null;
 
   /* #export */ function setDisplayApiForTesting(testDisplayApi) {
@@ -19,7 +31,6 @@ cr.define('settings', function() {
     }
     return systemDisplayApi;
   }
-
 
   /**
    * @typedef {{
@@ -348,5 +359,6 @@ cr.define('settings', function() {
     PowerSource,
     setDisplayApiForTesting,
     getDisplayApi,
+    StorageSpaceState,
   };
 });

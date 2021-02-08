@@ -4,14 +4,6 @@
 
 cr.define('settings', function() {
   /**
-   * Enumeration for device state about remaining space.
-   * These values must be kept in sync with
-   * StorageManagerHandler::StorageSpaceState in C++ code.
-   * @enum {number}
-   */
-  const StorageSpaceState = {NORMAL: 0, LOW: 1, CRITICALLY_LOW: 2};
-
-  /**
    * @typedef {{
    *   availableSize: string,
    *   usedSize: string,
@@ -338,5 +330,5 @@ cr.define('settings', function() {
   });
 
   // #cr_define_end
-  return {StorageSpaceState, StorageSizeStat};
+  return {StorageSizeStat};
 });

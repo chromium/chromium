@@ -54,6 +54,39 @@ var OSSettingsOsLanguagesPageV3Test = class extends OSSettingsV3BrowserTest {
 
 TEST_F('OSSettingsOsLanguagesPageV3Test', 'All', () => mocha.run());
 
+// eslint-disable-next-line no-var
+var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.m.js';
+  }
+};
+
+TEST_F(
+    'OSSettingsDevicePageV3Test', 'All',
+    () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
+
+// eslint-disable-next-line no-var
+var OSSettingsDevicePageKeyboardArrangementDisabledV3Test =
+    class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled,
+      disabled: ['ash::features::kKeyboardBasedDisplayArrangementInSettings']
+    };
+  }
+};
+
+TEST_F(
+    'OSSettingsDevicePageKeyboardArrangementDisabledV3Test', 'All',
+    () => mocha.grep('/.*arrow_key_arrangement_disabled.*/').run());
+
 // TODO(crbug/1146900): Move this test down to the bottom where the rest are
 // once the FullRestore flag is enabled by default.
 // eslint-disable-next-line no-var
