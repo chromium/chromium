@@ -89,6 +89,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsAXNodeObject() const final;
 
   // Check object role or purpose.
+  bool IsAutofillAvailable() const override;
   bool IsControllingVideoElement() const;
   bool IsDefault() const final;
   bool IsMultiline() const override;
@@ -183,6 +184,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       Vector<ax::mojom::blink::Dropeffect>& dropeffects) const override;
 
   ax::mojom::blink::HasPopup HasPopup() const override;
+
+  // Modify or take an action on an object.
+  bool OnNativeSetValueAction(const String&) override;
 
   // AX name calculation.
   String GetName(ax::mojom::blink::NameFrom&,

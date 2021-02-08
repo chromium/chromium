@@ -71,7 +71,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   bool IsAXLayoutObject() const final;
 
   // Check object role or purpose.
-  bool IsAutofillAvailable() const override;
   bool IsEditable() const override;
   bool IsRichlyEditable() const override;
   bool IsLineBreakingObject() const override;
@@ -112,9 +111,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
                          ax::mojom::blink::NameFrom&,
                          AXRelatedObjectVector*,
                          NameSources*) const override;
-
-  // Modify or take an action on an object.
-  bool OnNativeSetValueAction(const String&) override;
 
   // Hit testing.
   AXObject* AccessibilityHitTest(const IntPoint&) const override;

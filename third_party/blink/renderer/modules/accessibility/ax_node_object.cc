@@ -1239,6 +1239,12 @@ bool AXNodeObject::IsControllingVideoElement() const {
       MediaControlElementsHelper::ToParentMediaElement(node));
 }
 
+bool AXNodeObject::IsAutofillAvailable() const {
+  // Autofill state is stored in AXObjectCache.
+  WebAXAutofillState state = AXObjectCache().GetAutofillState(AXObjectID());
+  return state == WebAXAutofillState::kAutofillAvailable;
+}
+
 bool AXNodeObject::IsDefault() const {
   if (IsDetached())
     return false;
@@ -2736,6 +2742,46 @@ static bool IsInSameNonInlineBlockFlow(LayoutObject* r1, LayoutObject* r2) {
   LayoutBlockFlow* b1 = NonInlineBlockFlow(r1);
   LayoutBlockFlow* b2 = NonInlineBlockFlow(r2);
   return b1 && b2 && b1 == b2;
+}
+
+//
+// Modify or take an action on an object.
+//
+
+bool AXNodeObject::OnNativeSetValueAction(const String& string) {
+  if (!GetNode() || !GetNode()->IsElementNode())
+    return false;
+  const LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object || !layout_object->IsBoxModelObject())
+    return false;
+
+  auto* html_input_element = DynamicTo<HTMLInputElement>(*GetNode());
+  if (html_input_element && layout_object->IsTextFieldIncludingNG()) {
+    html_input_element->setValue(
+        string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+    return true;
+  }
+
+  if (auto* text_area_element = DynamicTo<HTMLTextAreaElement>(*GetNode())) {
+    DCHECK(layout_object->IsTextAreaIncludingNG());
+    text_area_element->setValue(
+        string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+    return true;
+  }
+
+  if (HasContentEditableAttributeSet()) {
+    ExceptionState exception_state(v8::Isolate::GetCurrent(),
+                                   ExceptionState::kUnknownContext, nullptr,
+                                   nullptr);
+    To<HTMLElement>(GetNode())->setInnerText(string, exception_state);
+    if (exception_state.HadException()) {
+      exception_state.ClearException();
+      return false;
+    }
+    return true;
+  }
+
+  return false;
 }
 
 //
