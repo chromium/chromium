@@ -18,7 +18,7 @@
 #include "components/sync/base/hash_util.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
-#include "components/sync/test/test_matchers.h"
+#include "components/sync/test/model/test_matchers.h"
 #include "components/sync_device_info/local_device_info_util.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/session_sync_prefs.h"

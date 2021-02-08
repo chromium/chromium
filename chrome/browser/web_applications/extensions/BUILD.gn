@@ -48,7 +48,7 @@ source_set("extensions") {
     "//chrome/common",
     "//components/pref_registry",
     "//components/services/app_service/public/mojom",
-    "//components/sync:rest_of_sync",
+    "//components/sync/model",
     "//content/public/browser",
     "//extensions/browser",
     "//skia",

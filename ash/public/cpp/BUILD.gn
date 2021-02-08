@@ -327,7 +327,7 @@ component("cpp") {
     "//chromeos/ui/vector_icons",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/sync:rest_of_sync",
+    "//components/sync/model",
     "//mojo/public/cpp/bindings",
     "//net/traffic_annotation",
     "//services/network/public/cpp:cpp",

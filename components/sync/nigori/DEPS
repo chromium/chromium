@@ -1,9 +1,6 @@
 include_rules = [
   "+components/sync/base",
   "+components/sync/engine",
-  "+components/sync/engine",
-  "+components/sync/model",
   "+components/sync/model",
   "+components/sync/protocol",
-  "+crypto",
 ]

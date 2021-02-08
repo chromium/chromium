@@ -18,7 +18,7 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
-#include "components/sync/test/test_matchers.h"
+#include "components/sync/test/model/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"

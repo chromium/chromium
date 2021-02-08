@@ -10,7 +10,6 @@ include_rules = [
   "+components/signin/public",
   "+components/sync/base",
   "+components/sync/engine",
-  "+components/sync/engine",
   "+components/sync/invalidations",
   "+components/sync/js",
   "+components/sync/model",

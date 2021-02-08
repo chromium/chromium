@@ -14,6 +14,11 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/sync.pb.h"
 
+// TODO(crbug.com/947443): Code outside components/sync depends on this file
+// to implement new datatypes, so components/sync/engine can't be hidden while
+// this file lives there. Consider moving to components/sync/protocol or
+// elsewhere.
+
 namespace syncer {
 
 // A light-weight container for sync entity data which represents either

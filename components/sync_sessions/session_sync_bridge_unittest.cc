@@ -31,7 +31,7 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
-#include "components/sync/test/test_matchers.h"
+#include "components/sync/test/model/test_matchers.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/tab_node_pool.h"

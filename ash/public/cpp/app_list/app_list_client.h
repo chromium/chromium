@@ -15,7 +15,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"
-#include "components/sync/model/string_ordinal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/models/simple_menu_model.h"
 

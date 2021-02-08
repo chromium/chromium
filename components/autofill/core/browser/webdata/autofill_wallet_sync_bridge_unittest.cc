@@ -41,7 +41,7 @@
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
-#include "components/sync/test/test_matchers.h"
+#include "components/sync/test/model/test_matchers.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
