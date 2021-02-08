@@ -39,11 +39,7 @@ void ScoreNormalizer::RecordResults(const Results& results) {
 double ScoreNormalizer::NormalizeScore(const double score) const {
   // Returns the quantile of the score, bound between [0,1]
   // If dividers size is 0 we return 1.
-  if (reservoir_.get_dividers().size() == 0) {
-    return 1;
-  }
-  return reservoir_.GetBin(score) /
-         static_cast<double>(reservoir_.get_dividers().size());
+  return reservoir_.NormalizeScore(score);
 }
 
 void ScoreNormalizer::NormalizeResults(Results* results) {

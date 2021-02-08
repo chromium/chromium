@@ -40,6 +40,13 @@ class BalancedReservoir {
   // Calculates the mean squared error of counts.
   double GetError() const;
 
+  // Normalizes the score by returning the quantile the score belongs in.
+  // Also adds a continuous offset calculated with a linear mapping between bin
+  // boundaries or hyperbolic decay at the left and rightmost bins to map to
+  // a continuous score bound between quantile it belongs to and the next
+  // quantile.
+  double NormalizeScore(const double score) const;
+
   // Reads distribution parameters from prefs and updates member variables.
   // If data in prefs does not exist no update occurs.
   void ReadPrefs();

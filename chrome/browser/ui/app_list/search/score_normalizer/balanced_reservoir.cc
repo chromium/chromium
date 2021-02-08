@@ -113,7 +113,7 @@ void BalancedReservoir::MergeSmallestBins() {
 }
 
 double BalancedReservoir::GetError() const {
-  if (counts_.size() == 0) {
+  if (counts_.empty()) {
     return 0;
   }
   const double mean = std::accumulate(counts_.begin(), counts_.end(), 0.0) /
@@ -123,6 +123,43 @@ double BalancedReservoir::GetError() const {
     error += std::pow((count - mean), 2);
   }
   return error / static_cast<double>(counts_.size());
+}
+
+double BalancedReservoir::NormalizeScore(const double score) const {
+  if (dividers_.empty()) {
+    return 1;
+  }
+
+  const int index = GetBin(score);
+  const int n = dividers_.size();
+  double continuous_offset;
+
+  if (index > 0 && index < n) {
+    if (dividers_[index] == dividers_[index - 1]) {
+      // If bin has equal, finite left and right boundaries, the
+      // continuous offset is 0.
+      continuous_offset = 0;
+    } else {
+      // If bin has non-equal, finite left and right boundaries, use a
+      // linear mapping between the two boundaries.
+      continuous_offset = (score - dividers_[index - 1]) /
+                          (dividers_[index] - dividers_[index - 1]);
+    }
+  } else if (index == 0) {
+    // If the bin has a finite right boundary but a -infinite left boundary,
+    // use a hyperbolic decay function. The continuous offset is bound in
+    // (0,1].
+    continuous_offset = 1 / (-score + dividers_[0] + 1);
+  } else if (index == n) {
+    // If the bin has a finite left boundary but a infinite right boundary,
+    // use a hyperbolic decay function. The continuous offset is bound in
+    // [0,1).
+    continuous_offset = 1 - 1 / (score - dividers_[n - 1] + 1);
+  } else {
+    // If the bin index is out of range, return 1 as the normalized score.
+    return 1;
+  }
+  return (index + continuous_offset) / static_cast<double>(n + 1);
 }
 
 void BalancedReservoir::ReadPrefs() {

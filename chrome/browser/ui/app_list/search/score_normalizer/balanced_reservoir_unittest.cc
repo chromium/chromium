@@ -215,6 +215,29 @@ TEST_F(BalancedReservoirTest, GetErrorUneven) {
   EXPECT_EQ(reservoir_->GetError(), 2 / 3.0);
 }
 
+// Check NormalizeScore() for when no dividers.
+TEST_F(BalancedReservoirTest, NormalizeScoreEmpty) {
+  EXPECT_EQ(reservoir_->NormalizeScore(100), 1);
+}
+
+// Check NormalizeScore() for default scores.
+TEST_F(BalancedReservoirTest, NormalizeScoreDefault) {
+  reservoir_->set_dividers_for_test({1, 2, 3, 3, 5});
+  EXPECT_EQ(reservoir_->NormalizeScore(0), 0.5 / 6);
+  EXPECT_EQ(reservoir_->NormalizeScore(1.5), 1.5 / 6);
+  EXPECT_EQ(reservoir_->NormalizeScore(2), 2.0 / 6);
+  EXPECT_EQ(reservoir_->NormalizeScore(3), 4.0 / 6);
+  EXPECT_EQ(reservoir_->NormalizeScore(7), (5 + 2.0 / 3) / 6);
+}
+
+// Check NormalizeScore() for identical scores.
+TEST_F(BalancedReservoirTest, NormalizeScoreIdentical) {
+  reservoir_->set_dividers_for_test({1, 1, 1, 1, 1});
+  EXPECT_EQ(reservoir_->NormalizeScore(1), 5.0 / 6);
+  EXPECT_EQ(reservoir_->NormalizeScore(2), 5.5 / 6);
+  EXPECT_EQ(reservoir_->NormalizeScore(0), 0.5 / 6);
+}
+
 // Check that we can read and write to prefs.
 TEST_F(BalancedReservoirTest, WritePrefsReadPrefs) {
   reservoir_->set_dividers_for_test({1, 2, 3, 4, 5});

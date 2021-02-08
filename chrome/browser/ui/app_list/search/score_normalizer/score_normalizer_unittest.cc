@@ -19,7 +19,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::DoubleNear;
 using testing::ElementsAre;
+using testing::Pointwise;
 
 namespace app_list {
 
@@ -102,38 +104,38 @@ TEST_F(ScoreNormalizerTest, RecordNormalizeScore) {
   normalizer_->RecordScore(1);
   EXPECT_THAT(get_dividers(), ElementsAre(1));
   EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
-  EXPECT_EQ(normalizer_->NormalizeScore(10), 1);
-  EXPECT_EQ(normalizer_->NormalizeScore(-10), 0);
+  EXPECT_EQ(normalizer_->NormalizeScore(10), 1.9 / 2);
+  EXPECT_EQ(normalizer_->NormalizeScore(-10), 1 / 24.0);
 
   normalizer_->RecordScore(1);
   EXPECT_THAT(get_dividers(), ElementsAre(1, 1));
   EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
-  EXPECT_EQ(normalizer_->NormalizeScore(1), 1);
-  EXPECT_EQ(normalizer_->NormalizeScore(0.5), 0);
+  EXPECT_EQ(normalizer_->NormalizeScore(1), 2.0 / 3);
+  EXPECT_EQ(normalizer_->NormalizeScore(0.5), 1 / 4.5);
 
   normalizer_->RecordScore(3);
   EXPECT_THAT(get_dividers(), ElementsAre(1, 1, 3));
   EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
-  EXPECT_EQ(normalizer_->NormalizeScore(1), 2.0 / 3);
-  EXPECT_EQ(normalizer_->NormalizeScore(-1), 0);
-  EXPECT_EQ(normalizer_->NormalizeScore(10), 1);
+  EXPECT_EQ(normalizer_->NormalizeScore(1), 2.0 / 4);
+  EXPECT_EQ(normalizer_->NormalizeScore(-1), 1 / 12.0);
+  EXPECT_EQ(normalizer_->NormalizeScore(10), (3 + 7.0 / 8) / 4);
 
   normalizer_->RecordScore(-1);
   EXPECT_THAT(get_dividers(), ElementsAre(-1, 1, 1, 3));
   EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
-  EXPECT_EQ(normalizer_->NormalizeScore(1), 0.75);
-  EXPECT_EQ(normalizer_->NormalizeScore(-1), 0.25);
-  EXPECT_EQ(normalizer_->NormalizeScore(10), 1);
-  EXPECT_EQ(normalizer_->NormalizeScore(-10), 0);
+  EXPECT_EQ(normalizer_->NormalizeScore(1), 3.0 / 5);
+  EXPECT_EQ(normalizer_->NormalizeScore(-1), 1.0 / 5);
+  EXPECT_EQ(normalizer_->NormalizeScore(10), (4 + 7.0 / 8) / 5);
+  EXPECT_EQ(normalizer_->NormalizeScore(-10), 0.1 / 5);
 
   normalizer_->RecordScore(5);
   EXPECT_THAT(get_dividers(), ElementsAre(-1, 1, 1, 3, 5));
   EXPECT_THAT(get_counts(), ElementsAre(0, 0, 0, 0, 0, 0));
-  EXPECT_EQ(normalizer_->NormalizeScore(1), 0.6);
-  EXPECT_EQ(normalizer_->NormalizeScore(-1), 0.2);
-  EXPECT_EQ(normalizer_->NormalizeScore(10), 1);
-  EXPECT_EQ(normalizer_->NormalizeScore(-10), 0);
-  EXPECT_EQ(normalizer_->NormalizeScore(3), 0.8);
+  EXPECT_EQ(normalizer_->NormalizeScore(1), 3.0 / 6);
+  EXPECT_EQ(normalizer_->NormalizeScore(-1), 1.0 / 6);
+  EXPECT_EQ(normalizer_->NormalizeScore(10), (5 + 5.0 / 6) / 6);
+  EXPECT_EQ(normalizer_->NormalizeScore(-10), 0.1 / 6);
+  EXPECT_EQ(normalizer_->NormalizeScore(3), 4.0 / 6);
 
   normalizer_->RecordScore(1);
   EXPECT_THAT(get_dividers(), ElementsAre(1, 1, 1, 3, 5));
@@ -185,7 +187,8 @@ TEST_F(ScoreNormalizerTest, SmallNormalizeScores) {
   normalizer_->RecordResults(results);
   normalizer_->NormalizeResults(&results);
   EXPECT_THAT(get_dividers(), ElementsAre(0.9, 1.0, 1.2, 1.5));
-  EXPECT_THAT(ConvertResultsToScores(results), ElementsAre(0.25, 0.5, 0.75, 1));
+  EXPECT_THAT(ConvertResultsToScores(results),
+              Pointwise(DoubleNear(1e-10), {0.2, 0.4, 0.6, 0.8}));
 }
 
 // Check normalizing of results for results of size = reservoir size.
@@ -197,7 +200,8 @@ TEST_F(ScoreNormalizerTest, MediumNormalizeScores) {
   EXPECT_THAT(get_dividers(), ElementsAre(-0.1, 0.2, 0.9, 1.2, 1.5));
   EXPECT_THAT(get_counts(), ElementsAre(0, 0.5, 0.5, 0, 0, 0));
   EXPECT_THAT(ConvertResultsToScores(results),
-              ElementsAre(0.6, 0.6, 0.8, 1, 0.2, 0.4));
+              Pointwise(DoubleNear(1e-10), {3.0 / 6, (3 + 1.0 / 3) / 6, 4.0 / 6,
+                                            5.0 / 6, 1.0 / 6, 2.0 / 6}));
 }
 
 // Check normalizing of results for results of size > reservoir size.
@@ -208,8 +212,10 @@ TEST_F(ScoreNormalizerTest, LargeNormalizeResults) {
   normalizer_->NormalizeResults(&results);
   EXPECT_THAT(get_dividers(), ElementsAre(0.2, 0.5, 0.9, 1.1, 1.5));
   EXPECT_THAT(get_counts(), ElementsAre(0.5, 0.75, 0.75, 0.5, 0.5, 0));
-  EXPECT_THAT(ConvertResultsToScores(results),
-              ElementsAre(0.6, 0.6, 0.8, 1, 0, 0.2, 0.4, 0.8));
+  EXPECT_THAT(
+      ConvertResultsToScores(results),
+      Pointwise(DoubleNear(1e-10), {3.0 / 6, 3.5 / 6, 4.25 / 6, 5.0 / 6,
+                                    1 / (1.3 * 6), 1.0 / 6, 2.0 / 6, 4.0 / 6}));
 }
 
 // Check record and normalizing of multiple results.
@@ -220,13 +226,17 @@ TEST_F(ScoreNormalizerTest, MultipleRecordAndNormalizeResults) {
       ScoreNormalizerTest::MakeSearchResults({0.5, 1.1});
   normalizer_->RecordResults(results1);
   normalizer_->NormalizeResults(&results1);
+  EXPECT_THAT(get_dividers(), ElementsAre(-0.1, 0.2, 0.9, 1.2, 1.5));
+  EXPECT_THAT(get_counts(), ElementsAre(0, 0.5, 0.5, 0, 0, 0));
   normalizer_->RecordResults(results2);
   normalizer_->NormalizeResults(&results2);
   EXPECT_THAT(get_dividers(), ElementsAre(0.2, 0.5, 0.9, 1.1, 1.5));
   EXPECT_THAT(get_counts(), ElementsAre(0.5, 0.75, 0.75, 0.5, 0.5, 0));
   EXPECT_THAT(ConvertResultsToScores(results1),
-              ElementsAre(0.6, 0.6, 0.8, 1, 0.2, 0.4));
-  EXPECT_THAT(ConvertResultsToScores(results2), ElementsAre(0.4, 0.8));
+              Pointwise(DoubleNear(1e-10), {3.0 / 6, (3 + 1.0 / 3) / 6, 4.0 / 6,
+                                            5.0 / 6, 1.0 / 6, 2.0 / 6}));
+  EXPECT_THAT(ConvertResultsToScores(results2),
+              Pointwise(DoubleNear(1e-10), {2.0 / 6, 4.0 / 6}));
 }
 
 }  // namespace app_list
