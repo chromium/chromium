@@ -12,6 +12,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
@@ -31,14 +32,18 @@ constexpr int kBadgedProfilePhotoHeight = BadgedProfilePhoto::kImageSize;
 // including the (transparent) border.
 class CustomImageView : public views::ImageView {
  public:
+  METADATA_HEADER(CustomImageView);
   CustomImageView() = default;
+  CustomImageView(const CustomImageView&) = delete;
+  CustomImageView& operator=(const CustomImageView&) = delete;
 
  private:
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomImageView);
 };
+
+BEGIN_METADATA(CustomImageView, views::ImageView)
+END_METADATA
 
 void CustomImageView::OnPaint(gfx::Canvas* canvas) {
   // Remove the part of the ImageView that contains the badge.
