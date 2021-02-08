@@ -97,7 +97,7 @@ alert('hello from external_element');
     self._write_file_to_src_dir('element.js', "alert('yay');")
     self._write_file_to_src_dir('ui.js', '''
 import './element.js';
-import 'some-fake-scheme://bar/external_dir/external_element.js';
+import 'some-fake-scheme://foo/external_dir/external_element.js';
 ''')
     self._write_file_to_src_dir('ui.html', '''
 <script type="module" src="ui.js"></script>
@@ -110,8 +110,9 @@ import 'some-fake-scheme://bar/external_dir/external_element.js';
     os.makedirs(os.path.dirname(resources_path))
 
     self._tmp_dirs.append('gen')
-    self._write_file_to_dir(resources_path,
-                            "alert('hello from shared resource');")
+    self._write_file_to_dir(resources_path, '''
+export const foo = 5;
+alert('hello from shared resource');''');
 
     self._write_file_to_src_dir('element.js', '''
 import 'chrome://resources/js/fake_resource.js';
@@ -257,7 +258,7 @@ import './element_in_dir/element_in_dir.js';
         os.path.relpath(manifest['base_dir'], _CWD).replace('\\', '/'))
 
   def testV3OptimizeWithCustomPaths(self):
-    custom_dir = os.path.join(self._create_tmp_dir(), 'bar_root')
+    custom_dir = os.path.join(self._create_tmp_dir(), 'foo_root')
     self._write_v3_files_with_custom_path_to_src_dir(custom_dir)
     resources_path = os.path.join(
         'gen', 'ui', 'webui', 'resources', 'preprocessed')
@@ -267,7 +268,7 @@ import './element_in_dir/element_in_dir.js';
       '--js_out_files', 'ui.rollup.js',
       '--external_paths',
       'chrome://resources|%s' % resources_path,
-      'some-fake-scheme://bar|%s' % custom_dir,
+      'some-fake-scheme://foo|%s' % os.path.abspath(custom_dir),
     ]
     self._run_optimize(args)
 
@@ -305,6 +306,60 @@ import './element_in_dir/element_in_dir.js';
     self.assertIn('element.js', depfile_d)
     self.assertNotIn('element_in_dir', depfile_d)
 
+  def testV3OptimizeWithCustomLayeredPaths(self):
+    tmp_dir = self._create_tmp_dir()
+    custom_dir_foo = os.path.join(tmp_dir, 'foo_root')
+    custom_dir_bar = os.path.join(tmp_dir, 'bar_root')
+
+    self._write_v3_files_with_custom_path_to_src_dir(custom_dir_foo)
+
+    # Overwrite one of the foo files to import something from
+    # some-fake-scheme://bar.
+    self._write_file_to_dir(os.path.join(
+        custom_dir_foo, 'external_dir', 'sub_dir',
+        'external_element_dep.js'), '''
+import 'some-fake-scheme://bar/another_element.js';
+alert('hello from external_element_dep');''')
+
+    # Write that file to the bar_root directory.
+    self._write_file_to_dir(os.path.join(custom_dir_bar, 'another_element.js'),
+                            "alert('hello from another external dep');")
+
+    resources_path = os.path.join(
+        'gen', 'ui', 'webui', 'resources', 'preprocessed')
+    args = [
+      '--host', 'fake-host',
+      '--js_module_in_files', 'ui.js',
+      '--js_out_files', 'ui.rollup.js',
+      '--external_paths',
+      'chrome://resources|%s' % resources_path,
+      'some-fake-scheme://foo|%s' % os.path.abspath(custom_dir_foo),
+      'some-fake-scheme://bar|%s' % os.path.abspath(custom_dir_bar),
+    ]
+    self._run_optimize(args)
+
+    ui_rollup_js = self._read_out_file('ui.rollup.js')
+    self.assertIn('yay', ui_rollup_js)
+    self.assertIn('hello from external_element', ui_rollup_js)
+    self.assertIn('hello from external_element_dep', ui_rollup_js)
+    self.assertIn('hello from another external dep', ui_rollup_js)
+
+    depfile_d = self._read_out_file('depfile.d')
+    self.assertIn('element.js', depfile_d)
+    # Relative path from the src of the root module to the external root dir
+    relpath = os.path.relpath(custom_dir_foo, self._tmp_src_dir)
+    self.assertIn(os.path.normpath(
+        os.path.join(relpath, 'external_dir', 'external_element.js')),
+        depfile_d)
+    self.assertIn(os.path.normpath(
+        os.path.join(relpath, 'external_dir', 'sub_dir',
+                     'external_element_dep.js')),
+        depfile_d)
+    # Relative path from the src of the root module to the secondary dependency
+    # root dir.
+    relpath_bar = os.path.relpath(custom_dir_bar, self._tmp_src_dir)
+    self.assertIn(os.path.normpath(
+        os.path.join(relpath_bar, 'another_element.js')), depfile_d)
 
 if __name__ == '__main__':
   unittest.main()
