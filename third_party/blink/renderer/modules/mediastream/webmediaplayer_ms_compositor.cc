@@ -61,7 +61,7 @@ scoped_refptr<media::VideoFrame> CopyFrame(
         frame->natural_size(), frame->timestamp());
 
     auto provider = Platform::Current()->SharedMainThreadContextProvider();
-    if (!provider) {
+    if (!new_frame || !provider) {
       // Return a black frame (yuv = {0, 0x80, 0x80}).
       return media::VideoFrame::CreateColorFrame(
           frame->visible_rect().size(), 0u, 0x80, 0x80, frame->timestamp());
@@ -99,26 +99,42 @@ scoped_refptr<media::VideoFrame> CopyFrame(
   } else {
     DCHECK(frame->IsMappable());
     DCHECK(frame->format() == media::PIXEL_FORMAT_I420A ||
-           frame->format() == media::PIXEL_FORMAT_I420);
+           frame->format() == media::PIXEL_FORMAT_I420 ||
+           frame->format() == media::PIXEL_FORMAT_NV12);
     const gfx::Size& coded_size = frame->coded_size();
     new_frame = media::VideoFrame::CreateFrame(
-        media::IsOpaque(frame->format()) ? media::PIXEL_FORMAT_I420
-                                         : media::PIXEL_FORMAT_I420A,
-        coded_size, frame->visible_rect(), frame->natural_size(),
-        frame->timestamp());
-    libyuv::I420Copy(frame->data(media::VideoFrame::kYPlane),
-                     frame->stride(media::VideoFrame::kYPlane),
-                     frame->data(media::VideoFrame::kUPlane),
-                     frame->stride(media::VideoFrame::kUPlane),
-                     frame->data(media::VideoFrame::kVPlane),
-                     frame->stride(media::VideoFrame::kVPlane),
-                     new_frame->data(media::VideoFrame::kYPlane),
-                     new_frame->stride(media::VideoFrame::kYPlane),
-                     new_frame->data(media::VideoFrame::kUPlane),
-                     new_frame->stride(media::VideoFrame::kUPlane),
-                     new_frame->data(media::VideoFrame::kVPlane),
-                     new_frame->stride(media::VideoFrame::kVPlane),
-                     coded_size.width(), coded_size.height());
+        frame->format(), coded_size, frame->visible_rect(),
+        frame->natural_size(), frame->timestamp());
+    if (!new_frame) {
+      return media::VideoFrame::CreateColorFrame(
+          frame->visible_rect().size(), 0u, 0x80, 0x80, frame->timestamp());
+    }
+
+    if (frame->format() == media::PIXEL_FORMAT_NV12) {
+      libyuv::NV12Copy(frame->data(media::VideoFrame::kYPlane),
+                       frame->stride(media::VideoFrame::kYPlane),
+                       frame->data(media::VideoFrame::kUVPlane),
+                       frame->stride(media::VideoFrame::kUVPlane),
+                       new_frame->data(media::VideoFrame::kYPlane),
+                       new_frame->stride(media::VideoFrame::kYPlane),
+                       new_frame->data(media::VideoFrame::kUVPlane),
+                       new_frame->stride(media::VideoFrame::kUVPlane),
+                       coded_size.width(), coded_size.height());
+    } else {
+      libyuv::I420Copy(frame->data(media::VideoFrame::kYPlane),
+                       frame->stride(media::VideoFrame::kYPlane),
+                       frame->data(media::VideoFrame::kUPlane),
+                       frame->stride(media::VideoFrame::kUPlane),
+                       frame->data(media::VideoFrame::kVPlane),
+                       frame->stride(media::VideoFrame::kVPlane),
+                       new_frame->data(media::VideoFrame::kYPlane),
+                       new_frame->stride(media::VideoFrame::kYPlane),
+                       new_frame->data(media::VideoFrame::kUPlane),
+                       new_frame->stride(media::VideoFrame::kUPlane),
+                       new_frame->data(media::VideoFrame::kVPlane),
+                       new_frame->stride(media::VideoFrame::kVPlane),
+                       coded_size.width(), coded_size.height());
+    }
     if (frame->format() == media::PIXEL_FORMAT_I420A) {
       libyuv::CopyPlane(frame->data(media::VideoFrame::kAPlane),
                         frame->stride(media::VideoFrame::kAPlane),
