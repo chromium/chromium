@@ -46,8 +46,6 @@ target(link_target_type, "renderer_sources") {
     "render_thread_observer.cc",
     "render_thread_observer.h",
     "render_view.h",
-    "render_view_observer.cc",
-    "render_view_observer.h",
     "render_view_visitor.h",
     "renderer_ppapi_host.h",
     "url_loader_throttle_provider.h",

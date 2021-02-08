@@ -90,6 +90,7 @@ blink_core_sources("exported") {
     "web_v8_context_snapshot.cc",
     "web_view_impl.cc",
     "web_view_impl.h",
+    "web_view_observer.cc",
   ]
 
   if (is_debug || dcheck_always_on) {

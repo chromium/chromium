@@ -171,15 +171,11 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void PrintPage(blink::WebLocalFrame* frame) override;
   bool AcceptsLoadDrops() override;
   bool CanUpdateLayout() override;
-  void DidUpdateMainFrameLayout() override;
   int HistoryBackListCount() override;
   int HistoryForwardListCount() override;
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
   void DidUpdateRendererPreferences() override;
-  void ZoomLevelChanged() override;
-  void DidCommitCompositorFrameForLocalMainFrame(
-      base::TimeTicks commit_start_time) override;
   void OnSetHistoryOffsetAndLength(int history_offset,
                                    int history_length) override;
 

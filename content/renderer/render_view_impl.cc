@@ -18,7 +18,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/render_view_observer.h"
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/agent_scheduling_group.h"
@@ -194,11 +193,6 @@ RenderViewImpl::~RenderViewImpl() {
        it != routing_id_views->end(); ++it)
     DCHECK_NE(this, it->second) << "Failed to call Close?";
 #endif
-
-  for (auto& observer : observers_)
-    observer.RenderViewGone();
-  for (auto& observer : observers_)
-    observer.OnDestruct();
 }
 
 /*static*/
@@ -264,15 +258,6 @@ void RenderViewImpl::Destroy() {
   webview_ = nullptr;
 
   delete this;
-}
-
-void RenderViewImpl::AddObserver(RenderViewObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void RenderViewImpl::RemoveObserver(RenderViewObserver* observer) {
-  observer->RenderViewGone();
-  observers_.RemoveObserver(observer);
 }
 
 // IPC message handlers -----------------------------------------
@@ -503,17 +488,6 @@ void RenderViewImpl::PrintPage(WebLocalFrame* frame) {
   render_frame->ScriptedPrint(frame_widget->HandlingInputEvent());
 }
 
-void RenderViewImpl::ZoomLevelChanged() {
-  for (auto& observer : observers_)
-    observer.OnZoomLevelChanged();
-}
-
-void RenderViewImpl::DidCommitCompositorFrameForLocalMainFrame(
-    base::TimeTicks commit_start_time) {
-  for (auto& observer : observers_)
-    observer.DidCommitCompositorFrame();
-}
-
 void RenderViewImpl::PropagatePageZoomToNewlyAttachedFrame(
     bool use_zoom_for_dsf,
     float device_scale_factor) {
@@ -553,11 +527,6 @@ bool RenderViewImpl::AcceptsLoadDrops() {
   return GetRendererPreferences().can_accept_load_drops;
 }
 
-void RenderViewImpl::DidUpdateMainFrameLayout() {
-  for (auto& observer : observers_)
-    observer.DidUpdateMainFrameLayout();
-}
-
 void RenderViewImpl::RegisterRendererPreferenceWatcher(
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {
   GetWebView()->RegisterRendererPreferenceWatcher(std::move(watcher));
@@ -580,8 +549,6 @@ void RenderViewImpl::OnPageVisibilityChanged(PageVisibilityState visibility) {
 #if defined(OS_ANDROID)
   SuspendVideoCaptureDevices(visibility != PageVisibilityState::kVisible);
 #endif
-  for (auto& observer : observers_)
-    observer.OnPageVisibilityChanged(visibility);
 }
 
 void RenderViewImpl::OnPageFrozenChanged(bool frozen) {

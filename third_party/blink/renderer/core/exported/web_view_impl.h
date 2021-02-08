@@ -53,6 +53,7 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/resize_viewport_anchor.h"
@@ -201,6 +202,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetWebPreferences(const web_pref::WebPreferences& preferences) override;
   const web_pref::WebPreferences& GetWebPreferences() override;
 
+  // Functions to add and remove observers for this object.
+  void AddObserver(WebViewObserver* observer);
+  void RemoveObserver(WebViewObserver* observer);
+
   // Overrides the page's background and base background color. You
   // can use this to enforce a transparent background, which is useful if you
   // want to have some custom background rendered behind the widget.
@@ -335,7 +340,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // notification unless the view did not need a layout.
   void MainFrameLayoutUpdated();
   void ResizeAfterLayout();
-
+  void DidCommitCompositorFrameForLocalMainFrame();
   void DidChangeContentsSize();
   void PageScaleFactorChanged();
   void MainFrameScrollOffsetChanged();
@@ -815,6 +820,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // keeping WorkerFetchContext in sync.
   mojo::RemoteSet<mojom::blink::RendererPreferenceWatcher>
       renderer_preference_watchers_;
+
+  // All the registered observers.
+  base::ObserverList<WebViewObserver> observers_;
 
   base::WeakPtrFactory<WebViewImpl> weak_ptr_factory_{this};
 };

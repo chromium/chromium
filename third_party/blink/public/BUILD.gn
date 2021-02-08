@@ -401,6 +401,7 @@ source_set("blink_headers") {
     "web/web_v8_context_snapshot.h",
     "web/web_view.h",
     "web/web_view_client.h",
+    "web/web_view_observer.h",
     "web/web_widget.h",
     "web/web_window_features.h",
   ]

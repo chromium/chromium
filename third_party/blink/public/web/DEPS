@@ -2,6 +2,7 @@ include_rules = [
     "+base/containers/span.h",
     "+base/files/file_path.h",
     "+base/i18n/rtl.h",
+    "+base/observer_list_types.h",
     "+base/optional.h",
     "+base/macros.h",
     "+base/memory/ref_counted.h",

@@ -24,7 +24,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
-#include "content/public/renderer/render_view_observer.h"
 #include "content/public/renderer/render_view_visitor.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
@@ -74,6 +73,7 @@
 #include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/color_space.h"
@@ -2169,10 +2169,10 @@ void TestRunnerBindings::NotImplemented(const gin::Arguments& args) {}
 
 // This class helps track active main windows and when the RenderView is
 // destroyed it will remove it from TestRunner's list.
-class TestRunner::MainWindowTracker : public RenderViewObserver {
+class TestRunner::MainWindowTracker : public blink::WebViewObserver {
  public:
-  MainWindowTracker(RenderView* view, TestRunner* test_runner)
-      : RenderViewObserver(view), test_runner_(test_runner) {}
+  MainWindowTracker(blink::WebView* view, TestRunner* test_runner)
+      : blink::WebViewObserver(view), test_runner_(test_runner) {}
 
   void OnDestruct() override {
     EraseIf(test_runner_->main_windows_, base::MatchesUniquePtr(this));
@@ -2802,7 +2802,7 @@ void TestRunner::ReplicateWorkQueueStates(const base::DictionaryValue& values) {
 bool TestRunner::IsFrameInMainWindow(blink::WebLocalFrame* frame) {
   blink::WebView* view = frame->View();
   for (auto& window : main_windows_) {
-    if (window->render_view()->GetWebView() == view)
+    if (window->GetWebView() == view)
       return true;
   }
   return false;
@@ -2815,8 +2815,7 @@ void TestRunner::SetMainWindowAndTestConfiguration(
 
   // Add |view| into the main window collection if it isn't there already.
   if (!IsFrameInMainWindow(frame)) {
-    main_windows_.push_back(std::make_unique<MainWindowTracker>(
-        RenderView::FromWebView(view), this));
+    main_windows_.push_back(std::make_unique<MainWindowTracker>(view, this));
   }
   // This may be called for a local root in the same process as another local
   // root, in which case we just keep the original config, which should match.

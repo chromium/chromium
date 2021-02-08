@@ -150,7 +150,7 @@ void ContentRendererClientImpl::RenderFrameCreated(
 
 void ContentRendererClientImpl::RenderViewCreated(
     content::RenderView* render_view) {
-  new prerender::NoStatePrefetchClient(render_view);
+  new prerender::NoStatePrefetchClient(render_view->GetWebView());
 }
 
 SkBitmap* ContentRendererClientImpl::GetSadPluginBitmap() {

@@ -6,20 +6,20 @@
 #define COMPONENTS_NO_STATE_PREFETCH_RENDERER_NO_STATE_PREFETCH_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "content/public/renderer/render_view_observer.h"
 #include "third_party/blink/public/web/web_no_state_prefetch_client.h"
+#include "third_party/blink/public/web/web_view_observer.h"
 
 namespace prerender {
 
-class NoStatePrefetchClient : public content::RenderViewObserver,
+class NoStatePrefetchClient : public blink::WebViewObserver,
                               public blink::WebNoStatePrefetchClient {
  public:
-  explicit NoStatePrefetchClient(content::RenderView* render_view);
+  explicit NoStatePrefetchClient(blink::WebView* web_view);
 
  private:
   ~NoStatePrefetchClient() override;
 
-  // RenderViewObserver implementation.
+  // blink::WebViewObserver implementation.
   void OnDestruct() override;
 
   // Implements blink::WebNoStatePrefetchClient

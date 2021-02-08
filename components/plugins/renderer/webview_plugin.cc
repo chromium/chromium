@@ -48,10 +48,10 @@ using blink::WebVector;
 using blink::WebView;
 using blink::web_pref::WebPreferences;
 
-WebViewPlugin::WebViewPlugin(content::RenderView* render_view,
+WebViewPlugin::WebViewPlugin(WebView* web_view,
                              WebViewPlugin::Delegate* delegate,
                              const WebPreferences& preferences)
-    : content::RenderViewObserver(render_view),
+    : blink::WebViewObserver(web_view),
       delegate_(delegate),
       container_(nullptr),
       finished_loading_(false),
@@ -61,13 +61,13 @@ WebViewPlugin::WebViewPlugin(content::RenderView* render_view,
       web_view_helper_(this, preferences) {}
 
 // static
-WebViewPlugin* WebViewPlugin::Create(content::RenderView* render_view,
+WebViewPlugin* WebViewPlugin::Create(WebView* web_view,
                                      WebViewPlugin::Delegate* delegate,
                                      const WebPreferences& preferences,
                                      const std::string& html_data,
                                      const GURL& url) {
   DCHECK(url.is_valid()) << "Blink requires the WebView to have a valid URL.";
-  WebViewPlugin* plugin = new WebViewPlugin(render_view, delegate, preferences);
+  WebViewPlugin* plugin = new WebViewPlugin(web_view, delegate, preferences);
   // Loading may synchronously access |delegate| which could be
   // uninitialized just yet, so load in another task.
   plugin->GetTaskRunner()->PostTask(
@@ -136,7 +136,7 @@ void WebViewPlugin::Destroy() {
     delegate_ = nullptr;
   }
   container_ = nullptr;
-  content::RenderViewObserver::Observe(nullptr);
+  blink::WebViewObserver::Observe(nullptr);
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);
 }
 

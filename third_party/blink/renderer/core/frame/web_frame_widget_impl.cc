@@ -2027,8 +2027,7 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
     base::TimeTicks commit_start_time) {
   DCHECK(commit_compositor_frame_start_time_.has_value());
   if (ForMainFrame()) {
-    View()->Client()->DidCommitCompositorFrameForLocalMainFrame(
-        commit_start_time);
+    View()->DidCommitCompositorFrameForLocalMainFrame();
     View()->UpdatePreferredSize();
     if (!View()->MainFrameImpl()) {
       // Trying to track down why the view's idea of the main frame varies

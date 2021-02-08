@@ -178,7 +178,7 @@ void AwContentRendererClient::RenderFrameCreated(
 
 void AwContentRendererClient::RenderViewCreated(
     content::RenderView* render_view) {
-  AwRenderViewExt::RenderViewCreated(render_view);
+  AwRenderViewExt::WebViewCreated(render_view->GetWebView());
 }
 
 void AwContentRendererClient::PrepareErrorPage(

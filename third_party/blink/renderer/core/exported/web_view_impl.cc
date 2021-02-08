@@ -1065,6 +1065,9 @@ void WebViewImpl::Close() {
   // deleted.
   web_view_client_ = nullptr;
 
+  for (auto& observer : observers_)
+    observer.WebViewDestroyed();
+
   Release();  // Balances a reference acquired in WebView::Create
 }
 
@@ -2186,7 +2189,8 @@ double WebViewImpl::SetZoomLevel(double zoom_level) {
   PropagateZoomFactorToLocalFrameRoots(page_->MainFrame(), zoom_factor);
 
   if (old_zoom_level != zoom_level_) {
-    Client()->ZoomLevelChanged();
+    for (auto& observer : observers_)
+      observer.OnZoomLevelChanged();
     CancelPagePopup();
   }
 
@@ -3183,6 +3187,14 @@ void WebViewImpl::UpdateWebPreferences(
   ApplyCommandLineToSettings(SettingsImpl());
 }
 
+void WebViewImpl::AddObserver(WebViewObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebViewImpl::RemoveObserver(WebViewObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void WebViewImpl::SetIsActive(bool active) {
   if (GetPage())
     GetPage()->GetFocusController().SetActive(active);
@@ -3212,6 +3224,11 @@ void WebViewImpl::DidCommitLoad(bool is_new_navigation,
 
   // Give the visual viewport's scroll layer its initial size.
   GetPage()->GetVisualViewport().MainFrameDidChangeSize();
+}
+
+void WebViewImpl::DidCommitCompositorFrameForLocalMainFrame() {
+  for (auto& observer : observers_)
+    observer.DidCommitCompositorFrame();
 }
 
 void WebViewImpl::ResizeAfterLayout() {
@@ -3248,7 +3265,8 @@ void WebViewImpl::MainFrameLayoutUpdated() {
   if (!web_view_client_)
     return;
 
-  web_view_client_->DidUpdateMainFrameLayout();
+  for (auto& observer : observers_)
+    observer.DidUpdateMainFrameLayout();
   needs_preferred_size_update_ = true;
 }
 
@@ -3505,6 +3523,8 @@ void WebViewImpl::SetVisibilityState(
   if (!is_initial_state) {
     // Preserve the side effects of visibility change.
     web_view_client_->OnPageVisibilityChanged(visibility_state);
+    for (auto& observer : observers_)
+      observer.OnPageVisibilityChanged(visibility_state);
   }
   GetPage()->SetVisibilityState(visibility_state, is_initial_state);
   GetPage()->GetPageScheduler()->SetPageVisible(

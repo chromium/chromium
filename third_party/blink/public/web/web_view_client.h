@@ -114,27 +114,11 @@ class WebViewClient {
   // Called to check if layout update should be processed.
   virtual bool CanUpdateLayout() { return false; }
 
-  // Indicates two things:
-  //   1) This view may have a new layout now.
-  //   2) Layout is up-to-date.
-  // After calling WebWidget::updateAllLifecyclePhases(), expect to get this
-  // notification unless the view did not need a layout.
-  virtual void DidUpdateMainFrameLayout() {}
-
   // Called when the View has changed size as a result of an auto-resize.
   virtual void DidAutoResize(const gfx::Size& new_size) {}
 
   // Called when the View acquires focus.
   virtual void DidFocus() {}
-
-  // Called when the View's zoom has changed.
-  virtual void ZoomLevelChanged() {}
-
-  // Notification that the output of a BeginMainFrame was committed to the
-  // compositor (thread), though would not be submitted to the display
-  // compositor yet. This will only be called for local main frames.
-  virtual void DidCommitCompositorFrameForLocalMainFrame(
-      base::TimeTicks commit_start_time) {}
 
   // Session history -----------------------------------------------------
 
