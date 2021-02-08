@@ -129,7 +129,11 @@ def FindSrcSrvFile(filename, toolchain_dir):
   If |toolchain_dir| is null then this will assume that the file is in this
   script's directory.
   """
-  bin_dir = os.path.join(toolchain_dir, 'win_sdk', 'Debuggers', 'x64', 'srcsrv')
+  bin_dir = os.path.join(toolchain_dir, 'Windows Kits', '10', 'Debuggers',
+                         'x64', 'srcsrv')
+  if not os.path.exists(bin_dir):
+    bin_dir = os.path.join(toolchain_dir, 'win_sdk', 'Debuggers', 'x64',
+                           'srcsrv')
   assert(os.path.exists(bin_dir))
   return os.path.abspath(os.path.join(bin_dir, filename))
 
