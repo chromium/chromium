@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is a .pyl, or "Python Literal", file. You can treat it just like a
+# .json file, with the following exceptions:
+# * all keys must be quoted (use single quotes, please);
+# * comments are allowed, using '#' syntax; and
+# * trailing commas are allowed.
+
+# See README.md for usage.
+{
+  # This is the config name.
+  'console_error': {
+    'v2_metric': 'consoleErrorMetric',
+    'v3_metric': 'console_error_metric',
+    'histogram_mappings': {
+      # mappings are 'v2_histogram: 'v3_histogram'.
+      'console:error:all': 'console_error::all_errors',
+      'console:error:js': 'console_error::js_errors',
+      'console:error:network': 'console_error::network_errors',
+    },
+  },
+}

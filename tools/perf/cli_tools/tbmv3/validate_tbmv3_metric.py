@@ -4,6 +4,7 @@
 
 from __future__ import print_function
 
+import ast
 import argparse
 import importlib
 import logging
@@ -13,10 +14,19 @@ import sys
 import unittest
 import csv
 
+from collections import namedtuple
+
 from core.tbmv3 import trace_processor
 from cli_tools.tbmv3 import trace_downloader
 from tracing.metrics import metric_runner
 from tracing.value import histogram_set
+
+
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+SIMPLE_CONFIG_PATH = os.path.join(SCRIPT_DIR, 'validators',
+                                  'simple_configs.pyl')
+
+SimpleConfig = namedtuple('SimpleConfig', ['name', 'config'])
 
 
 def SetUpLogging(level):
@@ -54,7 +64,9 @@ def ParseArgs():
                       type=str,
                       default=None,
                       help=('Name of the validtor from tools/perf/'
-                            'cli_tools/tbmv3/validators/'))
+                            'cli_tools/tbmv3/validators/, or alternatively '
+                            'a simple config defined in cli_tools/tbmv3/'
+                            'validators/simple_configs.pyl'))
   parser.add_argument('--tracelist-csv',
                       type=str,
                       required=False,
@@ -89,8 +101,18 @@ def ParseArgs():
 
 class ValidatorContext(object):
   def __init__(self, args):
-    self.validator = importlib.import_module('cli_tools.tbmv3.validators.' +
-                                             args.validator)
+    with open(SIMPLE_CONFIG_PATH) as f:
+      simple_configs = ast.literal_eval(f.read())
+    validator_name = args.validator
+    if validator_name in simple_configs:
+      self.validator = importlib.import_module('cli_tools.tbmv3.validators.'
+                                               'simple_validator')
+      self.simple_config = SimpleConfig(validator_name,
+                                        simple_configs[validator_name])
+    else:
+      self.validator = importlib.import_module('cli_tools.tbmv3.validators.' +
+                                               args.validator)
+      self.simple_config = None
 
     self.trace_processor_path = args.trace_processor_path
     if self.trace_processor_path and not os.path.exists(
@@ -189,6 +211,8 @@ def ValidateSingleTrace(ctx, trace_info):
   class ValidatorTestCase(unittest.TestCase):
     def setUp(self):
       self.trace_info = trace_info
+      if ctx.simple_config:
+        self.simple_config = ctx.simple_config
 
     def RunTBMv2(self, metric):
       return RunTBMv2Metric(metric, trace_info.json_trace)
