@@ -46,6 +46,7 @@
 #include "build/build_config.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/app/mojo_ipc_support.h"
 #include "content/app/partition_alloc_support.h"
@@ -936,6 +937,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
     BrowserTaskExecutor::PostFeatureListSetup();
 
     tracing::InitTracingPostThreadPoolStartAndFeatureList();
+
+    power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();
 
 #if defined(OS_ANDROID)
     SetupCpuTimeMetrics();

@@ -39,7 +39,9 @@ PowerModeArbiter::~PowerModeArbiter() {
 }
 
 void PowerModeArbiter::OnThreadPoolAvailable() {
-  DCHECK(!task_runner_);
+  // May be called multiple times in single-process mode.
+  if (task_runner_)
+    return;
 
   // Currently only used for the delayed votes.
   task_runner_ = base::ThreadPool::CreateTaskRunner(
