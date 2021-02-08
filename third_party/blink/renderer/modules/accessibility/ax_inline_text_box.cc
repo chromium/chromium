@@ -197,6 +197,10 @@ Node* AXInlineTextBox::GetNode() const {
   return inline_text_box_->GetNode();
 }
 
+Document* AXInlineTextBox::GetDocument() const {
+  return ParentObject() ? ParentObject()->GetDocument() : nullptr;
+}
+
 AXObject* AXInlineTextBox::NextOnLine() const {
   if (IsDetached())
     return nullptr;

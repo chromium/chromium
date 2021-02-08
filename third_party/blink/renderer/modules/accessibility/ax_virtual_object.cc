@@ -21,6 +21,10 @@ void AXVirtualObject::Detach() {
   accessible_node_ = nullptr;
 }
 
+Document* AXVirtualObject::GetDocument() const {
+  return GetAccessibleNode() ? GetAccessibleNode()->GetDocument() : nullptr;
+}
+
 bool AXVirtualObject::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignoredReasons) const {
   return AccessibilityIsIgnoredByDefault(ignoredReasons);

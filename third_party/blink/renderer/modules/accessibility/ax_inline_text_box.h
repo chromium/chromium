@@ -59,6 +59,7 @@ class AXInlineTextBox final : public AXObject {
                          bool* clips_children = nullptr) const override;
   ax::mojom::blink::WritingDirection GetTextDirection() const override;
   Node* GetNode() const override;
+  Document* GetDocument() const override;
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
   void SerializeMarkerAttributes(ui::AXNodeData* node_data) const override;

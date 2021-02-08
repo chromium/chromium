@@ -1350,14 +1350,6 @@ Document* AXLayoutObject::GetDocument() const {
   return &GetLayoutObject()->GetDocument();
 }
 
-LocalFrameView* AXLayoutObject::DocumentFrameView() const {
-  if (!GetLayoutObject())
-    return nullptr;
-
-  // this is the LayoutObject's Document's LocalFrame's LocalFrameView
-  return GetLayoutObject()->GetDocument().View();
-}
-
 Element* AXLayoutObject::AnchorElement() const {
   if (!layout_object_)
     return nullptr;

@@ -38,12 +38,6 @@ AXMenuListOption::AXMenuListOption(HTMLOptionElement* element,
                                    AXObjectCacheImpl& ax_object_cache)
     : AXNodeObject(element, ax_object_cache) {}
 
-LocalFrameView* AXMenuListOption::DocumentFrameView() const {
-  if (IsDetached())
-    return nullptr;
-  return GetElement()->GetDocument().View();
-}
-
 Element* AXMenuListOption::ActionElement() const {
   return GetElement();
 }

@@ -42,7 +42,6 @@ class AXMenuListOption final : public AXNodeObject {
  private:
   bool IsMenuListOption() const override { return true; }
 
-  LocalFrameView* DocumentFrameView() const override;
   bool CanHaveChildren() const override { return false; }
   AXObject* ComputeParentImpl() const override;
 

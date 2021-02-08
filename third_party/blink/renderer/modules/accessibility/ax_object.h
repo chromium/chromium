@@ -1095,8 +1095,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual Node* GetNode() const { return nullptr; }
   Element* GetElement() const;  // Same as GetNode, if it's an Element.
   virtual LayoutObject* GetLayoutObject() const { return nullptr; }
-  virtual Document* GetDocument() const;
-  virtual LocalFrameView* DocumentFrameView() const;
+  virtual Document* GetDocument() const = 0;
+  LocalFrameView* DocumentFrameView() const;
   virtual Element* AnchorElement() const { return nullptr; }
   virtual Element* ActionElement() const { return nullptr; }
   virtual AtomicString Language() const;

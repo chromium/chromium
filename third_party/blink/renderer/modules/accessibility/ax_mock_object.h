@@ -44,6 +44,7 @@ class MODULES_EXPORT AXMockObject : public AXObject {
   // AXObject overrides.
   AXRestriction Restriction() const override { return kRestrictionNone; }
   bool IsMockObject() const final { return true; }
+  Document* GetDocument() const override;
 
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;

@@ -35,6 +35,7 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
                          ax::mojom::NameFrom&,
                          AXRelatedObjectVector*,
                          NameSources*) const override;
+  Document* GetDocument() const override;
 
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;

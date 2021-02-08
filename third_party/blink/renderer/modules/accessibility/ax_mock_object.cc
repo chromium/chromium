@@ -39,4 +39,8 @@ bool AXMockObject::ComputeAccessibilityIsIgnored(
   return AccessibilityIsIgnoredByDefault(ignored_reasons);
 }
 
+Document* AXMockObject::GetDocument() const {
+  return ParentObject() ? ParentObject()->GetDocument() : nullptr;
+}
+
 }  // namespace blink
