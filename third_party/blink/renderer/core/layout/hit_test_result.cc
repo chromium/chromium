@@ -74,10 +74,8 @@ HitTestResult::HitTestResult(const HitTestResult& other)
       inner_possibly_pseudo_node_(other.inner_possibly_pseudo_node_),
       point_in_inner_node_frame_(other.point_in_inner_node_frame_),
       local_point_(other.LocalPoint()),
-      box_fragment_local_point_(other.box_fragment_local_point_),
       inner_url_element_(other.URLElement()),
       scrollbar_(other.GetScrollbar()),
-      box_fragment_(other.box_fragment_),
       is_over_embedded_content_view_(other.IsOverEmbeddedContentView()),
       canvas_region_id_(other.CanvasRegionId()) {
   // Only copy the NodeSet in case of list hit test.
@@ -105,7 +103,6 @@ bool HitTestResult::EqualForCacheability(const HitTestResult& other) const {
          local_point_ == other.LocalPoint() &&
          inner_url_element_ == other.URLElement() &&
          scrollbar_ == other.GetScrollbar() &&
-         box_fragment_ == other.box_fragment_ &&
          is_over_embedded_content_view_ == other.IsOverEmbeddedContentView();
 }
 
@@ -121,10 +118,8 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
   inner_possibly_pseudo_node_ = other.InnerPossiblyPseudoNode();
   point_in_inner_node_frame_ = other.point_in_inner_node_frame_;
   local_point_ = other.LocalPoint();
-  box_fragment_local_point_ = other.box_fragment_local_point_;
   inner_url_element_ = other.URLElement();
   scrollbar_ = other.GetScrollbar();
-  box_fragment_ = other.box_fragment_;
 
   is_over_embedded_content_view_ = other.IsOverEmbeddedContentView();
   cacheable_ = other.cacheable_;
@@ -152,29 +147,17 @@ void HitTestResult::SetNodeAndPosition(
     scoped_refptr<const NGPhysicalBoxFragment> box_fragment,
     const PhysicalOffset& position) {
   if (box_fragment) {
-    box_fragment_local_point_ = position;
     local_point_ = position + box_fragment->OffsetFromOwnerLayoutBox();
   } else {
     local_point_ = position;
   }
-  SetInnerNodeAndBoxFragment(node, std::move(box_fragment));
+  SetInnerNode(node);
 }
 
 void HitTestResult::OverrideNodeAndPosition(Node* node,
                                             PhysicalOffset position) {
-  // We are replacing the inner node. Reset any box fragment previously found.
-  ForceComputeFromNode();
-
-  // The new inner node needs to be monolithic.
-  DCHECK(!node->GetLayoutBox() ||
-         node->GetLayoutBox()->PhysicalFragmentCount() <= 1);
-
   local_point_ = position;
   SetInnerNode(node);
-}
-
-void HitTestResult::ForceComputeFromNode() {
-  box_fragment_.reset();
 }
 
 PositionWithAffinity HitTestResult::GetPosition() const {
@@ -301,18 +284,10 @@ HTMLAreaElement* HitTestResult::ImageAreaForImage() const {
 }
 
 void HitTestResult::SetInnerNode(Node* n) {
-  SetInnerNodeAndBoxFragment(n, /* box_fragment */ nullptr);
-}
-
-void HitTestResult::SetInnerNodeAndBoxFragment(
-    Node* n,
-    scoped_refptr<const NGPhysicalBoxFragment> box_fragment) {
   if (!n) {
     inner_possibly_pseudo_node_ = nullptr;
     inner_node_ = nullptr;
     inner_element_ = nullptr;
-    DCHECK(!box_fragment);
-    box_fragment_ = nullptr;
     return;
   }
 
@@ -328,26 +303,6 @@ void HitTestResult::SetInnerNodeAndBoxFragment(
       if (inert_node_ && n != inert_node_ &&
           !n->IsShadowIncludingInclusiveAncestorOf(*inert_node_)) {
         return;
-      }
-    }
-  }
-
-  if (box_fragment) {
-    box_fragment_ = std::move(box_fragment);
-  } else if (RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
-    if (const LayoutBox* layout_box = n->GetLayoutBox()) {
-      // Fragmentation-aware code will set the correct box fragment on its own,
-      // but sometimes we enter legacy layout code when hit-testing, e.g. for
-      // replaced content. In such cases we need to set it here.
-      if (box_fragment_) {
-        DCHECK(!box_fragment_->GetLayoutObject() ||
-               layout_box == box_fragment_->GetLayoutObject());
-      } else if (layout_box->PhysicalFragmentCount() > 0) {
-        // If we set the fragment on our own, make sure that there's only one of
-        // them, since there's no way for us to pick the right one here.
-        DCHECK_EQ(layout_box->PhysicalFragmentCount(), 1u);
-        box_fragment_ = layout_box->GetPhysicalFragment(0);
-        box_fragment_local_point_ = local_point_;
       }
     }
   }

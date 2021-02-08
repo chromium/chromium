@@ -130,7 +130,6 @@ TEST_F(HitTestingTest, LegacyInputElementInFragmentTraversal) {
 
   ASSERT_EQ(layout_object->Parent()->GetNode(),
             GetDocument().getElementById("target"));
-  EXPECT_FALSE(hit_result.BoxFragment());
 }
 
 TEST_F(HitTestingTest, ScrolledInline) {
