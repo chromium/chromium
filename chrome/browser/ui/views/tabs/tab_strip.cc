@@ -630,10 +630,24 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       // If we're dragging a group by its header, the first element of
       // |dragged_views| is a group header, and the second one is the first tab
       // in that group.
-      int first_dragged_tab_index =
-          tab_strip_->GetModelIndexOf(dragged_views[group.has_value() ? 1 : 0]);
-      index = CalculateInsertionIndex(dragged_bounds, first_dragged_tab_index,
-                                      num_dragged_tabs, std::move(group));
+      int first_dragged_tab_index = group.has_value() ? 1 : 0;
+      if (static_cast<size_t>(first_dragged_tab_index) >=
+          dragged_views.size()) {
+        // TODO(tbergquist): This shouldn't happen, but we're getting crashes
+        // that indicate that it might be anyways. This logging might help
+        // narrow down exactly which cases it's happening in.
+        NOTREACHED()
+            << "Calculating a drag insertion index from invalid dependencies: "
+            << "Dragging a group: " << group.has_value()
+            << ", dragged_views.size(): " << dragged_views.size()
+            << ", num_dragged_tabs: " << num_dragged_tabs;
+      } else {
+        int first_dragged_tab_model_index =
+            tab_strip_->GetModelIndexOf(dragged_views[first_dragged_tab_index]);
+        index = CalculateInsertionIndex(dragged_bounds,
+                                        first_dragged_tab_model_index,
+                                        num_dragged_tabs, std::move(group));
+      }
     }
     if (!index) {
       const int last_tab_right = ideal_bounds(GetTabCount() - 1).right();
