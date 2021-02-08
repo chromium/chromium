@@ -65,9 +65,10 @@ GEN('#include "content/public/test/browser_test.h"');
 ].forEach(test => registerTest('NetworkHealth', 'network', ...test));
 
 [
-  ['ActivationCodePage', 'cellular_setup/activation_code_page_test.js',[
-    './cellular_setup/fake_media_devices.js',
-  ]],
+  // TODO(https://crbug.com/1173345): Reenable flaky test suite.
+  // ['ActivationCodePage', 'cellular_setup/activation_code_page_test.js',[
+  //   './cellular_setup/fake_media_devices.js',
+  // ]],
   ['BasePage', 'cellular_setup/base_page_test.js', []],
   ['ButtonBar', 'cellular_setup/button_bar_test.js',[]],
   ['CellularSetup', 'cellular_setup/cellular_setup_test.js', [
