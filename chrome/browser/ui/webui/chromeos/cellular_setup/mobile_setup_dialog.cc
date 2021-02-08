@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/mobile_setup_dialog.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/mobile/mobile_activator.h"
+#include "chrome/browser/ash/mobile/mobile_activator.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/common/url_constants.h"

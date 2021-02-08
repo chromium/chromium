@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MOBILE_MOBILE_ACTIVATOR_H_
-#define CHROME_BROWSER_CHROMEOS_MOBILE_MOBILE_ACTIVATOR_H_
+#ifndef CHROME_BROWSER_ASH_MOBILE_MOBILE_ACTIVATOR_H_
+#define CHROME_BROWSER_ASH_MOBILE_MOBILE_ACTIVATOR_H_
 
 #include <map>
 #include <memory>
@@ -260,4 +260,4 @@ class MobileActivator : public NetworkStateHandlerObserver {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_MOBILE_MOBILE_ACTIVATOR_H_
+#endif  // CHROME_BROWSER_ASH_MOBILE_MOBILE_ACTIVATOR_H_

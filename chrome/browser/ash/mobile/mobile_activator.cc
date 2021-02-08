@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/mobile/mobile_activator.h"
+#include "chrome/browser/ash/mobile/mobile_activator.h"
 
 #include <algorithm>
 #include <map>
