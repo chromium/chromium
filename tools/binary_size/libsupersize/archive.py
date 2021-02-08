@@ -2038,10 +2038,11 @@ def _DeduceNativeInfo(tentative_output_dir,
     if not map_path.endswith('.map') and not map_path.endswith('.map.gz'):
       on_config_error('Expected --map-file to end with .map or .map.gz')
   elif elf_path:
-    # Look for a .map file named for either the ELF file, or in the
-    # partitioned native library case, the combined ELF file from which the
-    # main library was extracted. Note that we don't yet have |tool_prefix| to
-    # use here, but that's not a problem for this use case.
+    # TODO(agrieve): Support breaking down partitions.
+    is_partition = elf_path.endswith('_partition.so')
+    if is_partition:
+      return None, None, None
+
     if _ElfIsMainPartition(elf_path, ''):
       map_path = elf_path.replace('.so', '__combined.so') + '.map'
     else:
