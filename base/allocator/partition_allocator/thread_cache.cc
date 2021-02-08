@@ -231,7 +231,7 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
 
   // Make sure that only one PartitionRoot wants a thread cache.
   PartitionRoot<ThreadSafe>* expected = nullptr;
-  if (!g_thread_cache_root.compare_exchange_strong(expected, nullptr,
+  if (!g_thread_cache_root.compare_exchange_strong(expected, root,
                                                    std::memory_order_seq_cst,
                                                    std::memory_order_seq_cst)) {
     PA_CHECK(false)
