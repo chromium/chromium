@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+// clang-format on
+
 /**
  * @fileoverview A helper object used by the "Google Play Store" (ARC) section
  * to retrieve information about android apps.
@@ -17,11 +21,11 @@
  * }}
  * @see chrome/browser/ui/webui/settings/chromeos/android_apps_handler.cc
  */
-let AndroidAppsInfo;
+/* #export */ let AndroidAppsInfo;
 
 cr.define('settings', function() {
   /** @interface */
-  class AndroidAppsBrowserProxy {
+  /* #export */ class AndroidAppsBrowserProxy {
     requestAndroidAppsInfo() {}
 
     /**
@@ -34,7 +38,7 @@ cr.define('settings', function() {
   /**
    * @implements {settings.AndroidAppsBrowserProxy}
    */
-  class AndroidAppsBrowserProxyImpl {
+  /* #export */ class AndroidAppsBrowserProxyImpl {
     /** @override */
     requestAndroidAppsInfo() {
       chrome.send('requestAndroidAppsInfo');

@@ -51,6 +51,8 @@ import './os_about_page/update_warning_dialog.m.js';
 import './os_search_page/os_search_page.m.js';
 import './os_icons.m.js';
 import './os_settings_icons_css.m.js';
+import './os_apps_page/android_apps_subpage.m.js';
+import './os_apps_page/os_apps_page.m.js';
 import './os_apps_page/app_management_page/app_item.m.js';
 import './os_apps_page/app_management_page/app_detail_view.m.js';
 import './os_apps_page/app_management_page/app_management_page.m.js';
@@ -101,6 +103,7 @@ export {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page
 export {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './os_a11y_page/switch_access_subpage_browser_proxy.m.js';
 export {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './os_a11y_page/tts_subpage_browser_proxy.m.js';
 export {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.m.js';
+export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.m.js';
 export {updateArcSupported, updateSelectedAppId} from './os_apps_page/app_management_page/actions.m.js';
 export {BrowserProxy} from './os_apps_page/app_management_page/browser_proxy.m.js';
 export {ArcPermissionType, Bool, PageType, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './os_apps_page/app_management_page/constants.m.js';

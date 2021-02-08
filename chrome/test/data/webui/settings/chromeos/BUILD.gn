@@ -33,6 +33,7 @@ js_library("fake_settings_search_handler") {
 js_modulizer("modulize") {
   input_files = [
     "ambient_mode_page_test.js",
+    "apps_page_test.js",
     "app_management/app_detail_view_test.js",
     "app_management/app_item_test.js",
     "app_management/app_management_page_tests.js",
@@ -119,6 +120,7 @@ js_modulizer("modulize") {
     "switch_access_subpage_tests.js",
     "test_about_page_browser_proxy_chromeos.js",
     "test_crostini_browser_proxy.js",
+    "test_android_apps_browser_proxy.js",
     "test_cups_printers_browser_proxy.js",
     "test_device_name_browser_proxy.js",
     "test_guest_os_browser_proxy.js",
