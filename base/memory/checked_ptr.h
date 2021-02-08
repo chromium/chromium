@@ -105,50 +105,51 @@ struct BackupRefPtrImpl {
   // modify the same smart pointer object without synchronization, a data race
   // will occur.
 
+  static ALWAYS_INLINE bool IsSupportedAndNotNull(void* ptr) {
+    // There is a problem on 32-bit systems, where the fake "GigaCage" has many
+    // normal bucket pool regions spread throughout the address space. A pointer
+    // immediately past an allocation may fall into the normal bucket pool,
+    // hence check if |ptr-1| belongs to that pool. However, checking only
+    // |ptr-1| causes a problem with pointers to the beginning of an
+    // out-of-the-pool allocation that happen to be where the pool ends, so
+    // checking for |ptr| is also necessary.
+    //
+    // Note, if |ptr| is in the normal bucket pool, |ptr-1| will not fall out of
+    // it, thanks to the leading guard pages (i.e. |ptr| will never point to the
+    // beginning of GigaCage).
+    //
+    // 64-bit systems don't have this problem, because there is only one normal
+    // bucket pool region, positioned after the direct map pool.
+    bool is_in_normal_buckets = true;
+#if !(defined(ARCH_CPU_64_BITS) && !defined(OS_NACL))
+    auto* adjusted_ptr = reinterpret_cast<char*>(ptr) - 1;
+    is_in_normal_buckets &=
+        IsManagedByPartitionAllocNormalBuckets(adjusted_ptr);
+#endif
+    // This covers the nullptr case, as address 0 is never in GigaCage.
+    is_in_normal_buckets &= IsManagedByPartitionAllocNormalBuckets(ptr);
+    return is_in_normal_buckets;
+  }
+
   // Wraps a pointer, and returns its uintptr_t representation.
   // Use |const volatile| to prevent compiler error. These will be dropped
   // anyway when casting to uintptr_t and brought back upon pointer extraction.
   static ALWAYS_INLINE uintptr_t WrapRawPtr(const volatile void* cv_ptr) {
-    void* orig_ptr = const_cast<void*>(cv_ptr);
-    uintptr_t addr = reinterpret_cast<uintptr_t>(orig_ptr);
+    void* ptr = const_cast<void*>(cv_ptr);
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
-    // Adjust the pointer so that pointers right past the allocation don't fall
-    // under GigaCage. Subtracting 1 will bring it back into the original
-    // allocation. Pointers inside GigaCage won't be adjusted out of it,
-    // because of guard pages prevent pointers to its very beginning.
-    // This check covers the nullptr case too, as 0xff...ff is expected to be
-    // outside of GigaCage.
-    // TODO(bartekn): Verify the last statement on all OSes.
-    void* adjusted_ptr = reinterpret_cast<void*>(addr - 1);
-    if (IsManagedByPartitionAllocNormalBuckets(adjusted_ptr)) {
-      DCHECK(orig_ptr != nullptr);
-      // Pass the original, not the adjusted pointer, because
-      // PartitionAllocGetSlotStart() has its own adjustment that works slightly
-      // differently.
-      AcquireInternal(orig_ptr);
-    }
+    if (IsSupportedAndNotNull(ptr))
+      AcquireInternal(ptr);
 
     return addr;
   }
 
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   static ALWAYS_INLINE void ReleaseWrappedPtr(uintptr_t wrapped_ptr) {
-    void* orig_ptr = reinterpret_cast<void*>(wrapped_ptr);
-    // Adjust the pointer so that pointers right past the allocation don't fall
-    // under GigaCage. Subtracting 1 will bring it back into the original
-    // allocation. Pointers inside GigaCage won't be adjusted out of it,
-    // because of guard pages prevent pointers to its very beginning.
-    // This check covers the nullptr case too, as 0xff...ff is expected to be
-    // outside of GigaCage.
-    // TODO(bartekn): Verify the last statement on all OSes.
-    void* adjusted_ptr = reinterpret_cast<void*>(wrapped_ptr - 1);
-    if (IsManagedByPartitionAllocNormalBuckets(adjusted_ptr)) {
-      DCHECK(orig_ptr != nullptr);
-      // Pass the original, not the adjusted pointer, because
-      // PartitionAllocGetSlotStart() has its own adjustment that works slightly
-      // differently.
-      ReleaseInternal(orig_ptr);
-    }
+    void* ptr = reinterpret_cast<void*>(wrapped_ptr);
+
+    if (IsSupportedAndNotNull(ptr))
+      ReleaseInternal(ptr);
   }
 
   // Returns equivalent of |WrapRawPtr(nullptr)|. Separated out to make it a
@@ -164,22 +165,9 @@ struct BackupRefPtrImpl {
   static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(
       uintptr_t wrapped_ptr) {
 #if DCHECK_IS_ON()
-    void* orig_ptr = reinterpret_cast<void*>(wrapped_ptr);
-    // Adjust the pointer so that pointers right past the allocation don't fall
-    // under GigaCage. Subtracting 1 will bring it back into the original
-    // allocation. Pointers inside GigaCage won't be adjusted out of it,
-    // because of guard pages prevent pointers to its very beginning.
-    // This check covers the nullptr case too, as 0xff...ff is expected to be
-    // outside of GigaCage.
-    // TODO(bartekn): Verify the last statement on all OSes.
-    void* adjusted_ptr = reinterpret_cast<void*>(wrapped_ptr - 1);
-    if (IsManagedByPartitionAllocNormalBuckets(adjusted_ptr)) {
-      DCHECK(orig_ptr != nullptr);
-      // Pass the original, not the adjusted pointer, because
-      // PartitionAllocGetSlotStart() has its own adjustment that works slightly
-      // differently.
-      DCHECK(IsPointeeAlive(orig_ptr));
-    }
+    void* ptr = reinterpret_cast<void*>(wrapped_ptr);
+    if (IsSupportedAndNotNull(ptr))
+      DCHECK(IsPointeeAlive(ptr));
 #endif
     return reinterpret_cast<void*>(wrapped_ptr);
   }

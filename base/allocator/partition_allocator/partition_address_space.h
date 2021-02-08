@@ -85,11 +85,17 @@ class BASE_EXPORT PartitionAddressSpace {
   //
   // +----------------+ reserved_base_address_ (16GiB aligned)
   // |   direct map   |     == direct_map_pool_base_address_
-  // |     space      |
+  // |      pool      |
   // +----------------+ reserved_base_address_ + 16GiB
   // | normal bucket  |     == normal_bucket_pool_base_address_
-  // |     space      |
+  // |      pool      |
   // +----------------+ reserved_base_address_ + 32GiB
+  //
+  // NOTE! On 64-bit systems with BackupRefPtr enabled, the direct map pool must
+  // precede normal bucket pool. This is to prevent a pointer immediately past a
+  // non-GigaCage allocation from falling into the normal bucket pool, thus
+  // triggering BackupRefPtr mechanism and likely crashing.
+  // TODO(bartekn): Add a guard page at the end of direct map allocations.
 
   static constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
 
