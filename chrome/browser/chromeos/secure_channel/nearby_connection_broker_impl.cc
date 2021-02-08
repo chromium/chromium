@@ -233,9 +233,16 @@ void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
   util::RecordAcceptConnectionResult(status);
 
   if (status == Status::kSuccess) {
-    DCHECK_EQ(ConnectionStatus::kAcceptingConnection, connection_status_);
-    TransitionToStatus(
-        ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice);
+    // It is possible that by the time OnAcceptConnectionResult() is invoked,
+    // we have already passed the kAcceptingConnection (e.g., if the connection
+    // was already accepted). To ensure we don't accidentally disconnect from a
+    // valid connection, only transition to
+    // kWaitingForConnectionToBeAcceptedByRemoteDevice if we are still accepting
+    // the connection. See https://crbug.com/1175489 for details.
+    if (connection_status_ == ConnectionStatus::kAcceptingConnection) {
+      TransitionToStatus(
+          ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice);
+    }
     return;
   }
 
@@ -373,8 +380,9 @@ void NearbyConnectionBrokerImpl::OnConnectionAccepted(
     return;
   }
 
-  DCHECK_EQ(ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice,
-            connection_status_);
+  DCHECK(connection_status_ == ConnectionStatus::kAcceptingConnection ||
+         connection_status_ ==
+             ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice);
   TransitionToStatus(ConnectionStatus::kConnected);
   RecordConnectionMediumMetric(ConnectionMedium::kConnectedViaBluetooth);
   time_when_connection_accepted_ = base::Time::Now();
