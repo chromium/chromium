@@ -1793,7 +1793,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SYNC_ERROR_CARD_TITLE" desc="Title of the Sync Error Card. [CHAR-LIMIT=32]">
         Sync isn't working
       </message>
-      <message name="IDS_SYNC_PASSWORDS_ERROR_CARD_TITLE" desc="Title of the Sync Error Card when it affects passwords only. [CHAR-LIMIT=32]">
+      <message name="IDS_PASSWORD_SYNC_ERROR_SUMMARY" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords can't be synced (due to missing trusted vault keys). [CHAR-LIMIT=32]">
         Error syncing passwords
       </message>
       <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED_TITLE" desc="Title of the error message shown when sync setup was not complete. [CHAR-LIMIT=60]">
@@ -1805,11 +1805,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_HINT_SYNC_AUTH_ERROR" desc="Hint message to resolve sync auth error.">
         Sign in again to start sync
       </message>
-      <message name="IDS_HINT_SYNC_RETRIEVE_KEYS_LEGACY" desc="Hint message to resolve sync encryption error.">
-        Fix now
-      </message>
       <message name="IDS_HINT_SYNC_RETRIEVE_KEYS" desc="Hint message to resolve sync encryption error.">
-        Error syncing passwords
+        Fix now
       </message>
       <message name="IDS_HINT_PASSPHRASE_REQUIRED" desc="Hint message to resolve passphrase required error.">
         Enter your passphrase to start sync
@@ -1839,9 +1836,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_AUTH_ERROR_CARD_BUTTON" desc="Button text for auth error in sync error cards.">
         Sign in again
-      </message>
-      <message name="IDS_TRUSTED_VAULT_ERROR_CARD_BUTTON" desc="Button text for trusted vault error in sync error cards.">
-        Unlock with Screen Lock
       </message>
 
       <!-- Sync error strings -->

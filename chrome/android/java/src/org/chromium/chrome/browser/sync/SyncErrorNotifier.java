@@ -235,7 +235,7 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
 
         String notificationTextBody = getString(mProfileSyncService.isEncryptEverythingEnabled()
                         ? R.string.sync_error_card_title
-                        : R.string.sync_passwords_error_card_title);
+                        : R.string.password_sync_error_summary);
 
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)

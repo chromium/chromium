@@ -503,7 +503,7 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
                 return getString(R.string.sync_error_card_title);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                return getString(R.string.sync_passwords_error_card_title);
+                return getString(R.string.password_sync_error_summary);
             default:
                 return getString(R.string.sync_error_card_title);
         }

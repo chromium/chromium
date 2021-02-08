@@ -136,8 +136,19 @@ public class SyncErrorCardPreference extends Preference
         } else {
             errorCardView.getStatusMessage().setVisibility(View.VISIBLE);
         }
-        errorCardView.getDescription().setText(
-                SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
+        if (isTrustedVaultError()) {
+            // TODO(crbug.com/1166582): For trusted vault errors, the "hint" string is already so
+            // short ("Fix now"), that the button would end up simply repeating it. So the "summary"
+            // string is used as the card description instead. In the long run, it would probably be
+            // best to make the hint string for trusted vault errors more detailed.
+            errorCardView.getDescription().setText(
+                    ProfileSyncService.get().isEncryptEverythingEnabled()
+                            ? getContext().getString(R.string.sync_error_card_title)
+                            : getContext().getString(R.string.password_sync_error_summary));
+        } else {
+            errorCardView.getDescription().setText(
+                    SyncSettingsUtils.getSyncErrorHint(getContext(), mSyncError));
+        }
 
         errorCardView.getPrimaryButton().setText(
                 SyncSettingsUtils.getSyncErrorCardButtonLabel(getContext(), mSyncError));
@@ -174,5 +185,24 @@ public class SyncErrorCardPreference extends Preference
     @Override
     public void onProfileDataUpdated(String accountEmail) {
         update();
+    }
+
+    private boolean isTrustedVaultError() {
+        switch (mSyncError) {
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return true;
+            case SyncError.ANDROID_SYNC_DISABLED:
+            case SyncError.AUTH_ERROR:
+            case SyncError.CLIENT_OUT_OF_DATE:
+            case SyncError.OTHER_ERRORS:
+            case SyncError.PASSPHRASE_REQUIRED:
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.NO_ERROR:
+                return false;
+            default:
+                assert false : "Unknown sync error";
+                return false;
+        }
     }
 }

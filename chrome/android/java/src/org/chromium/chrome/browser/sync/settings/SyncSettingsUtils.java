@@ -140,10 +140,7 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.hint_passphrase_required);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                return context.getString(
-                        ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-                                ? R.string.hint_sync_retrieve_keys
-                                : R.string.hint_sync_retrieve_keys_legacy);
+                return context.getString(R.string.hint_sync_retrieve_keys);
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 return context.getString(
                         ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
@@ -171,7 +168,7 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.passphrase_required_error_card_button);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                return context.getString(R.string.trusted_vault_error_card_button);
+                return context.getString(R.string.hint_sync_retrieve_keys);
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 return context.getString(R.string.sync_promo_turn_on_sync);
             case SyncError.NO_ERROR:
@@ -244,7 +241,7 @@ public class SyncSettingsUtils {
         if (profileSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
             return profileSyncService.isEncryptEverythingEnabled()
                     ? context.getString(R.string.sync_error_card_title)
-                    : context.getString(R.string.sync_passwords_error_card_title);
+                    : context.getString(R.string.password_sync_error_summary);
         }
 
         return context.getString(R.string.sync_and_services_summary_sync_on);

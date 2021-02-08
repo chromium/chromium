@@ -437,7 +437,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
             closeDialogIfOpen(FRAGMENT_ENTER_PASSPHRASE);
             mSyncEncryption.setSummary(mProfileSyncService.isEncryptEverythingEnabled()
                             ? R.string.sync_error_card_title
-                            : R.string.sync_passwords_error_card_title);
+                            : R.string.password_sync_error_summary);
             return;
         }
 
