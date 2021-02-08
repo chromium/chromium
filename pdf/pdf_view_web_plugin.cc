@@ -400,6 +400,10 @@ void PdfViewWebPlugin::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
   NOTIMPLEMENTED();
 }
 
+void PdfViewWebPlugin::SendMessage(base::Value message) {
+  post_message_sender_.Post(std::move(message));
+}
+
 void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
   mutable_image_data() = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
 }

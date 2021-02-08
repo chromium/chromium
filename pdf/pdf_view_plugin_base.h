@@ -92,6 +92,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handles `postMessage()` calls from the embedder.
   void HandleMessage(const base::Value& message);
 
+  // Enqueues a "message" event carrying `message` to the embedder. Messages are
+  // guaranteed to be received in the order that they are sent. This method is
+  // non-blocking.
+  virtual void SendMessage(base::Value message) = 0;
+
   // Initialize image buffer(s) according to the new context size.
   virtual void InitImageData(const gfx::Size& size) = 0;
 

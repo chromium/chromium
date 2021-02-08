@@ -1124,6 +1124,10 @@ void OutOfProcessInstance::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
   }
 }
 
+void OutOfProcessInstance::SendMessage(base::Value message) {
+  PostMessage(VarFromValue(message));
+}
+
 void OutOfProcessInstance::InitImageData(const gfx::Size& size) {
   pepper_image_data_ =
       pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL, PPSizeFromSize(size),
