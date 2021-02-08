@@ -59,6 +59,8 @@ interface CanvasRenderingContext2D {
     void scale(unrestricted double x, unrestricted double y);
     [RuntimeEnabled=NewCanvas2DAPI] void scale(unrestricted double x, unrestricted double y, unrestricted double z);
     void rotate(unrestricted double angle);
+    [RuntimeEnabled=NewCanvas2DAPI] void rotate3d(unrestricted double angleX, unrestricted double angleY, unrestricted double angleZ);
+    [RuntimeEnabled=NewCanvas2DAPI] void rotateAxis(unrestricted double axisX, unrestricted double axisY, unrestricted double axisZ, unrestricted double angle);
     void translate(unrestricted double x, unrestricted double y);
     [RuntimeEnabled=NewCanvas2DAPI] void translate(unrestricted double x, unrestricted double y, unrestricted double z);
     void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);

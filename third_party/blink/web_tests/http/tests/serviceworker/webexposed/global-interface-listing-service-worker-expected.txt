@@ -1024,6 +1024,8 @@ interface OffscreenCanvasRenderingContext2D
     method resetTransform
     method restore
     method rotate
+    method rotate3d
+    method rotateAxis
     method roundRect
     method save
     method scale

@@ -566,12 +566,70 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   path_.Transform(AffineTransform().RotateRadians(-angle_in_radians));
 }
 
+// All angles are in radians
+void BaseRenderingContext2D::rotate3d(double rx, double ry, double rz) {
+  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
+  if (!c)
+    return;
+
+  if (!std::isfinite(rx) || !std::isfinite(ry) || !std::isfinite(rz))
+    return;
+
+  TransformationMatrix rotation_matrix =
+      TransformationMatrix().Rotate3d(rad2deg(rx), rad2deg(ry), rad2deg(rz));
+
+  // Check if the transformation is a no-op and early out if that is the case.
+  TransformationMatrix new_transform =
+      GetState().GetTransform().Rotate3d(rad2deg(rx), rad2deg(ry), rad2deg(rz));
+  if (GetState().GetTransform() == new_transform)
+    return;
+
+  // Must call setTransform to set the IsTransformInvertible flag.
+  ModifiableState().SetTransform(new_transform);
+  if (!GetState().IsTransformInvertible())
+    return;
+
+  c->concat(TransformationMatrix::ToSkM44(rotation_matrix));
+  path_.Transform(rotation_matrix.Inverse());
+}
+
+void BaseRenderingContext2D::rotateAxis(double axisX,
+                                        double axisY,
+                                        double axisZ,
+                                        double angle_in_radians) {
+  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
+  if (!c)
+    return;
+
+  if (!std::isfinite(axisX) || !std::isfinite(axisY) || !std::isfinite(axisZ) ||
+      !std::isfinite(angle_in_radians))
+    return;
+
+  TransformationMatrix rotation_matrix = TransformationMatrix().Rotate3d(
+      axisX, axisY, axisZ, rad2deg(angle_in_radians));
+
+  // Check if the transformation is a no-op and early out if that is the case.
+  TransformationMatrix new_transform = GetState().GetTransform().Rotate3d(
+      axisX, axisY, axisZ, rad2deg(angle_in_radians));
+  if (GetState().GetTransform() == new_transform)
+    return;
+
+  // Must call setTransform to set the IsTransformInvertible flag.
+  ModifiableState().SetTransform(new_transform);
+  if (!GetState().IsTransformInvertible())
+    return;
+
+  c->concat(TransformationMatrix::ToSkM44(rotation_matrix));
+  path_.Transform(rotation_matrix.Inverse());
+}
+
 void BaseRenderingContext2D::translate(double tx, double ty) {
   // TODO(crbug.com/1140535): Investigate the performance impact of simply
   // calling the 3d version of this function
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
     return;
+
   if (!GetState().IsTransformInvertible())
     return;
 
@@ -599,30 +657,30 @@ void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
   if (!c)
     return;
 
-  if (!GetState().IsTransformInvertible())
-    return;
-
   if (!std::isfinite(tx) || !std::isfinite(ty) || !std::isfinite(tz))
-    return;
-
-  // If there is no translate there's no reason to continue
-  if (tx == 0 && ty == 0 && tz == 0)
     return;
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   float ftx = clampTo<float>(tx);
   float fty = clampTo<float>(ty);
   float ftz = clampTo<float>(ty);
-  // We need to call SetTransform() to set the IsTransformInvertible flag
-  ModifiableState().SetTransform(
-      GetState().GetTransform().Translate3d(ftx, fty, ftz));
+
+  TransformationMatrix translation_matrix =
+      TransformationMatrix().Translate3d(ftx, fty, ftz);
+
+  // Check if the transformation is a no-op and early out if that is the case.
+  TransformationMatrix new_transform =
+      GetState().GetTransform().Translate3d(ftx, fty, ftz);
+  if (GetState().GetTransform() == new_transform)
+    return;
+
+  // Must call setTransform to set the IsTransformInvertible flag.
+  ModifiableState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
-  TransformationMatrix translation_matrix =
-      TransformationMatrix().Translate3d(ftx, fty, ftx);
   c->concat(TransformationMatrix::ToSkM44(translation_matrix));
-  path_.Transform(translation_matrix);
+  path_.Transform(translation_matrix.Inverse());
 }
 
 void BaseRenderingContext2D::transform(double m11,
@@ -671,13 +729,16 @@ void BaseRenderingContext2D::transform(double m11,
   float fm43 = clampTo<float>(m43);
   float fm44 = clampTo<float>(m44);
 
-  TransformationMatrix transform(fm11, fm12, fm13, fm14, fm21, fm22, fm23, fm24,
-                                 fm31, fm32, fm33, fm34, fm41, fm42, fm43,
-                                 fm44);
+  TransformationMatrix transform =
+      TransformationMatrix(fm11, fm12, fm13, fm14, fm21, fm22, fm23, fm24, fm31,
+                           fm32, fm33, fm34, fm41, fm42, fm43, fm44);
+
+  // Check if the transformation is a no-op and early out if that is the case.
   TransformationMatrix new_transform = GetState().GetTransform() * transform;
   if (GetState().GetTransform() == new_transform)
     return;
 
+  // Must call setTransform to set the IsTransformInvertible flag.
   ModifiableState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;

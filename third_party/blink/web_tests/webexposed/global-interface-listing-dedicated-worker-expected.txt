@@ -1043,6 +1043,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method resetTransform
 [Worker]     method restore
 [Worker]     method rotate
+[Worker]     method rotate3d
+[Worker]     method rotateAxis
 [Worker]     method roundRect
 [Worker]     method save
 [Worker]     method scale
