@@ -730,7 +730,7 @@ const base::Feature MEDIA_EXPORT kAVFoundationCaptureV2ZeroCopy{
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature MEDIA_EXPORT kDeprecateLowUsageCodecs{
     "DeprecateLowUsageCodecs", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string GetEffectiveAutoplayPolicy(const base::CommandLine& command_line) {
   // Return the autoplay policy set in the command line, if any.

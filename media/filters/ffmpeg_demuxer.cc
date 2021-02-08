@@ -33,6 +33,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/demuxer_memory_limit.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_types.h"
 #include "media/base/sample_rates.h"
@@ -215,7 +216,7 @@ std::unique_ptr<FFmpegDemuxerStream> FFmpegDemuxerStream::Create(
   std::unique_ptr<AudioDecoderConfig> audio_config;
   std::unique_ptr<VideoDecoderConfig> video_config;
 
-#if defined(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(kDeprecateLowUsageCodecs)) {
     const auto codec_id = stream->codecpar->codec_id;
     if (codec_id == AV_CODEC_ID_AMR_NB || codec_id == AV_CODEC_ID_AMR_WB ||
