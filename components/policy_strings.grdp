@@ -265,7 +265,7 @@ Additional details:
   <message name="IDS_POLICY_LEVEL_ERROR" desc="Text displayed in the status column when a policy is set at an unsupported level.">
     Policy level is not supported.
   </message>
-  <message name="IDS_POLICY_OK" desc="Text displayed in the status column when a valid value is set for a policy.">
+  <message name="IDS_POLICY_OK" desc="Text displayed in the status column when a valid value is set for a policy." meaning="Policy is working as expected.">
     OK
   </message>
   <message name="IDS_POLICY_UNSET" desc="Text displayed in the status column when no value is set for a policy.">
