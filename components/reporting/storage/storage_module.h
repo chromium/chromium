@@ -15,12 +15,13 @@
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/storage.h"
 #include "components/reporting/storage/storage_configuration.h"
+#include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
 
-class StorageModule : public base::RefCountedThreadSafe<StorageModule> {
+class StorageModule : public StorageModuleInterface {
  public:
   // Factory method creates |StorageModule| object.
   static void Create(
@@ -36,35 +37,35 @@ class StorageModule : public base::RefCountedThreadSafe<StorageModule> {
   // AddRecord will add |record| (taking ownership) to the |StorageModule|
   // according to the provided |priority|. On completion, |callback| will be
   // called.
-  virtual void AddRecord(Priority priority,
-                         Record record,
-                         base::OnceCallback<void(Status)> callback);
+  void AddRecord(Priority priority,
+                 Record record,
+                 base::OnceCallback<void(Status)> callback) override;
 
   // Once a record has been successfully uploaded, the sequencing information
   // can be passed back to the StorageModule here for record deletion.
   // If |force| is false (which is used in most cases), |sequencing_information|
   // only affects Storage if no higher sequeincing was confirmed before;
   // otherwise it is accepted unconditionally.
-  virtual void ReportSuccess(SequencingInformation sequencing_information,
-                             bool force);
+  void ReportSuccess(SequencingInformation sequencing_information,
+                     bool force) override;
 
   // If the server attached signed encryption key to the response, it needs to
   // be paased here.
-  virtual void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key);
+  void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) override;
 
   // Returns `false` if encryption key has not been found in the Storage during
   // initialization and not received from the server yet, and `true` otherwise.
   // The result is lazy: the method may return `false` for some time even after
   // the key has already been set - this is harmless, since resetting or even
   // changing the key is OK at any time.
-  virtual bool has_encryption_key() const;
+  bool has_encryption_key() const;
 
  protected:
   // Constructor can only be called by |Create| factory method.
   StorageModule();
 
   // Refcounted object must have destructor declared protected or private.
-  virtual ~StorageModule();
+  ~StorageModule() override;
 
  private:
   friend base::RefCountedThreadSafe<StorageModule>;

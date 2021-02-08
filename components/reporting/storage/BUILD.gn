@@ -62,6 +62,8 @@ static_library("storage_module") {
   sources = [
     "storage_module.cc",
     "storage_module.h",
+    "storage_module_interface.cc",
+    "storage_module_interface.h",
   ]
 
   public_deps = [ ":storage_configuration" ]
@@ -70,6 +72,25 @@ static_library("storage_module") {
     ":storage",
     "//base",
     "//components/reporting/encryption:encryption_module",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+  ]
+}
+
+static_library("missive_storage_module") {
+  sources = [
+    "missive_storage_module.cc",
+    "missive_storage_module.h",
+    "storage_module_interface.cc",
+    "storage_module_interface.h",
+  ]
+
+  public_deps = [ ":storage_configuration" ]
+
+  deps = [
+    ":storage",
+    "//base",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/util:status",
