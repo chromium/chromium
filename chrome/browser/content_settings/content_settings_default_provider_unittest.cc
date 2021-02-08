@@ -169,53 +169,6 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK, prefs->GetInteger(kGeolocationPrefPath));
 }
 
-#if !defined(OS_ANDROID)
-// Tests that file system content settings are migrated.
-TEST_F(ContentSettingsDefaultProviderTest,
-       MigrateDeprecatedFileSystemPreferences) {
-  static const char kDeprecatedNativeFileSystemReadGuardDefaultPref[] =
-      "profile.default_content_setting_values.native_file_system_read_guard";
-  static const char kDeprecatedNativeFileSystemWriteGuardDefaultPref[] =
-      "profile.default_content_setting_values.native_file_system_write_guard";
-
-  PrefService* prefs = profile_.GetPrefs();
-  // Set some pref data.
-  prefs->SetInteger(kDeprecatedNativeFileSystemReadGuardDefaultPref,
-                    CONTENT_SETTING_BLOCK);
-  prefs->SetInteger(kDeprecatedNativeFileSystemWriteGuardDefaultPref,
-                    CONTENT_SETTING_BLOCK);
-
-  // Instantiate a new DefaultProvider; can't use |provider_| because we want to
-  // test the constructor's behavior after setting the above.
-  DefaultProvider provider(prefs, false);
-
-  // Check that settings have been migrated.
-  EXPECT_FALSE(
-      prefs->HasPrefPath(kDeprecatedNativeFileSystemReadGuardDefaultPref));
-  EXPECT_FALSE(
-      prefs->HasPrefPath(kDeprecatedNativeFileSystemWriteGuardDefaultPref));
-
-  WebsiteSettingsRegistry* website_settings =
-      WebsiteSettingsRegistry::GetInstance();
-  EXPECT_TRUE(prefs->HasPrefPath(
-      website_settings->Get(ContentSettingsType::FILE_SYSTEM_READ_GUARD)
-          ->default_value_pref_name()));
-  EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
-      prefs->GetInteger(
-          website_settings->Get(ContentSettingsType::FILE_SYSTEM_READ_GUARD)
-              ->default_value_pref_name()));
-  EXPECT_TRUE(prefs->HasPrefPath(
-      website_settings->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD)
-          ->default_value_pref_name()));
-  EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
-      prefs->GetInteger(
-          website_settings->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD)
-              ->default_value_pref_name()));
-}
-#endif  // !defined(OS_ANDROID)
-
 TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
   DefaultProvider otr_provider(profile_.GetPrefs(), true /* incognito */);
 

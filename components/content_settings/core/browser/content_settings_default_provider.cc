@@ -47,15 +47,6 @@ const char kObsoletePluginsDataDefaultPref[] =
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
-// These settings were renamed, and should be migrated on profile startup.
-// Deprecated 8/2020
-#if !defined(OS_ANDROID)
-const char kDeprecatedNativeFileSystemReadGuardDefaultPref[] =
-    "profile.default_content_setting_values.native_file_system_read_guard";
-const char kDeprecatedNativeFileSystemWriteGuardDefaultPref[] =
-    "profile.default_content_setting_values.native_file_system_write_guard";
-#endif  // !defined(OS_ANDROID)
-
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value* initial_default = info->initial_default_value();
   if (!initial_default)
@@ -132,14 +123,6 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoletePluginsDefaultPref, 0);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
-
-#if !defined(OS_ANDROID)
-  registry->RegisterIntegerPref(kDeprecatedNativeFileSystemReadGuardDefaultPref,
-                                static_cast<int>(CONTENT_SETTING_ASK));
-  registry->RegisterIntegerPref(
-      kDeprecatedNativeFileSystemWriteGuardDefaultPref,
-      static_cast<int>(CONTENT_SETTING_ASK));
-#endif  // !defined(OS_ANDROID)
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
@@ -405,32 +388,6 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePluginsDataDefaultPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
-
-#if !defined(OS_ANDROID)
-  // TODO(https://crbug.com/1111559): Remove this migration logic in M90.
-  WebsiteSettingsRegistry* website_settings =
-      WebsiteSettingsRegistry::GetInstance();
-
-  const PrefService::Preference* deprecated_nfs_read_guard_default_pref =
-      prefs_->FindPreference(kDeprecatedNativeFileSystemReadGuardDefaultPref);
-  if (!deprecated_nfs_read_guard_default_pref->IsDefaultValue()) {
-    prefs_->Set(
-        website_settings->Get(ContentSettingsType::FILE_SYSTEM_READ_GUARD)
-            ->default_value_pref_name(),
-        *deprecated_nfs_read_guard_default_pref->GetValue());
-  }
-  prefs_->ClearPref(kDeprecatedNativeFileSystemReadGuardDefaultPref);
-
-  const PrefService::Preference* deprecated_nfs_write_guard_default_pref =
-      prefs_->FindPreference(kDeprecatedNativeFileSystemWriteGuardDefaultPref);
-  if (!deprecated_nfs_write_guard_default_pref->IsDefaultValue()) {
-    prefs_->Set(
-        website_settings->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD)
-            ->default_value_pref_name(),
-        *deprecated_nfs_write_guard_default_pref->GetValue());
-  }
-  prefs_->ClearPref(kDeprecatedNativeFileSystemWriteGuardDefaultPref);
-#endif  // !defined(OS_ANDROID)
 }
 
 }  // namespace content_settings
