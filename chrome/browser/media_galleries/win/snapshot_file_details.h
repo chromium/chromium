@@ -13,11 +13,12 @@
 
 // Structure used to represent snapshot file request params.
 struct SnapshotRequestInfo {
-  SnapshotRequestInfo(const base::FilePath& device_file_path,
-                      const base::FilePath& snapshot_file_path,
-                      MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback
-                          success_callback,
-                      MTPDeviceAsyncDelegate::ErrorCallback error_callback);
+  SnapshotRequestInfo(
+      const base::FilePath& device_file_path,
+      const base::FilePath& snapshot_file_path,
+      const MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback&
+          success_callback,
+      MTPDeviceAsyncDelegate::ErrorCallback error_callback);
   SnapshotRequestInfo(SnapshotRequestInfo&& other);
   SnapshotRequestInfo(const SnapshotRequestInfo& other) = delete;
   SnapshotRequestInfo& operator=(const SnapshotRequestInfo& other) = delete;
@@ -48,10 +49,6 @@ class SnapshotFileDetails {
   void set_optimal_transfer_size(DWORD optimal_transfer_size);
 
   const SnapshotRequestInfo& request_info() const { return request_info_; }
-
-  MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback success_callback() {
-    return std::move(request_info_.success_callback);
-  }
 
   MTPDeviceAsyncDelegate::ErrorCallback error_callback() {
     return std::move(request_info_.error_callback);

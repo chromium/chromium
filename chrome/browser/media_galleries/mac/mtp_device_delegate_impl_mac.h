@@ -42,19 +42,20 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
   void CreateDirectory(const base::FilePath& directory_path,
                        const bool exclusive,
                        const bool recursive,
-                       CreateDirectorySuccessCallback success_callback,
+                       const CreateDirectorySuccessCallback& success_callback,
                        ErrorCallback error_callback) override;
 
   // Note: passed absolute paths, but expects relative paths in reply.
   void ReadDirectory(const base::FilePath& root,
-                     ReadDirectorySuccessCallback success_callback,
+                     const ReadDirectorySuccessCallback& success_callback,
                      ErrorCallback error_callback) override;
 
   // Note: passed absolute paths.
-  void CreateSnapshotFile(const base::FilePath& device_file_path,
-                          const base::FilePath& local_path,
-                          CreateSnapshotFileSuccessCallback success_callback,
-                          ErrorCallback error_callback) override;
+  void CreateSnapshotFile(
+      const base::FilePath& device_file_path,
+      const base::FilePath& local_path,
+      const CreateSnapshotFileSuccessCallback& success_callback,
+      ErrorCallback error_callback) override;
   bool IsStreaming() override;
   void ReadBytes(const base::FilePath& device_file_path,
                  const scoped_refptr<net::IOBuffer>& buf,
@@ -68,23 +69,24 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
       const CopyFileProgressCallback& progress_callback,
-      CopyFileLocalSuccessCallback success_callback,
+      const CopyFileLocalSuccessCallback& success_callback,
       ErrorCallback error_callback) override;
   void MoveFileLocal(
       const base::FilePath& source_file_path,
       const base::FilePath& device_file_path,
       const CreateTemporaryFileCallback& create_temporary_file_callback,
-      MoveFileLocalSuccessCallback success_callback,
+      const MoveFileLocalSuccessCallback& success_callback,
       ErrorCallback error_callback) override;
-  void CopyFileFromLocal(const base::FilePath& source_file_path,
-                         const base::FilePath& device_file_path,
-                         CopyFileFromLocalSuccessCallback success_callback,
-                         ErrorCallback error_callback) override;
+  void CopyFileFromLocal(
+      const base::FilePath& source_file_path,
+      const base::FilePath& device_file_path,
+      const CopyFileFromLocalSuccessCallback& success_callback,
+      ErrorCallback error_callback) override;
   void DeleteFile(const base::FilePath& file_path,
-                  DeleteFileSuccessCallback success_callback,
+                  const DeleteFileSuccessCallback& success_callback,
                   ErrorCallback error_callback) override;
   void DeleteDirectory(const base::FilePath& file_path,
-                       DeleteDirectorySuccessCallback success_callback,
+                       const DeleteDirectorySuccessCallback& success_callback,
                        ErrorCallback error_callback) override;
   void AddWatcher(const GURL& origin,
                   const base::FilePath& file_path,
@@ -123,13 +125,13 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
 
   // Delegate for ReadDirectory, called on the UI thread.
   void ReadDirectoryImpl(const base::FilePath& root,
-                         ReadDirectorySuccessCallback success_callback,
+                         const ReadDirectorySuccessCallback& success_callback,
                          ErrorCallback error_callback);
 
   // Delegate for CreateSnapshotFile, called on the UI thread.
   void DownloadFile(const base::FilePath& device_file_path,
                     const base::FilePath& local_path,
-                    CreateSnapshotFileSuccessCallback success_callback,
+                    const CreateSnapshotFileSuccessCallback& success_callback,
                     ErrorCallback error_callback);
 
   // Public for closures; should not be called except by
