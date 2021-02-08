@@ -559,6 +559,8 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   const bool is_background_blur_enabled_;
   // The state of the app list, controlled via SetState().
   AppListViewState app_list_state_ = AppListViewState::kClosed;
+  // Set to target app list state while `SetState()` is being handled.
+  AppListViewState target_app_list_state_ = AppListViewState::kClosed;
 
   // The timestamp when the ongoing animation ends.
   base::TimeTicks animation_end_timestamp_;
@@ -594,7 +596,16 @@ class APP_LIST_EXPORT AppListView : public views::WidgetDelegateView,
   // goes off when the app list is not visible after a set amount of time.
   base::OneShotTimer page_reset_timer_;
 
-  base::WeakPtrFactory<AppListView> weak_ptr_factory_{this};
+  // Used to cancel in progress `SetState()` request if `SetState()` gets called
+  // again. Updating children state during app list view state update may cause
+  // `SetState()` to get called again - for example, if exiting search results
+  // page causes virtual keyboard to get hidden, and work area bounds available
+  // to the app list change.
+  // When calling methods that may cause nested `SetState()` call, `SetState()`
+  // will bind a weak ptr to this factory, and it will bail out early if it
+  // detects that `SetState()` got called again (in which case the weak ptr will
+  // be invalidated).
+  base::WeakPtrFactory<AppListView> set_state_weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppListView);
 };

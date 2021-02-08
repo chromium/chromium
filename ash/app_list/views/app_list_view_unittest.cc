@@ -56,6 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
@@ -2615,19 +2616,60 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityTest) {
   // Expand arrow view should be visible for peeking launcher.
   view_->SetState(ash::AppListViewState::kPeeking);
   ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 1.0f);
+
   // Expand arrow view should not be visible for half launcher when showing
   // embedded assistant.
   contents_view()->ShowEmbeddedAssistantUI(true);
-  ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 0.0f);
+  EXPECT_FALSE(contents_view()->expand_arrow_view()->GetVisible());
   // Expand arrow should become visible when hiding the assistant view.
   contents_view()->ShowEmbeddedAssistantUI(false);
+  EXPECT_TRUE(contents_view()->expand_arrow_view()->GetVisible());
   ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 1.0f);
+
   // Typing text in the search box should hide the expand arrow view.
   SetTextInSearchBox("https://youtu.be/dQw4w9WgXcQ");
   ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 0.0f);
   // Pressing escape should show the expand arrow view again.
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 1.0f);
+}
+
+// Tests the expand arrow view opacity updtes correctly when transitioning
+// between various app list view states with app list state animations enabled.
+TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
+  Initialize(false /*is_tablet_mode*/);
+  Show();
+
+  AppListView::SetShortAnimationForTesting(false);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Expand arrow view should be visible for peeking launcher.
+  EXPECT_EQ(contents_view()->expand_arrow_view()->layer()->GetTargetOpacity(),
+            1.0f);
+
+  // Expand arrow view should not be visible for half launcher when showing
+  // embedded assistant.
+  contents_view()->ShowEmbeddedAssistantUI(true);
+  EXPECT_FALSE(contents_view()->expand_arrow_view()->GetVisible());
+
+  // Expand arrow should become visible when hiding the assistant view.
+  contents_view()->ShowEmbeddedAssistantUI(false);
+  EXPECT_TRUE(contents_view()->expand_arrow_view()->GetVisible());
+  EXPECT_EQ(contents_view()->expand_arrow_view()->layer()->GetTargetOpacity(),
+            1.0f);
+
+  // Typing text in the search box should hide the expand arrow view.
+  SetTextInSearchBox("https://youtu.be/dQw4w9WgXcQ");
+  EXPECT_EQ(contents_view()->expand_arrow_view()->layer()->GetTargetOpacity(),
+            0.0f);
+
+  // Pressing escape should show the expand arrow view again.
+  view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  EXPECT_EQ(contents_view()->expand_arrow_view()->layer()->GetTargetOpacity(),
+            1.0f);
+
+  AppListView::SetShortAnimationForTesting(true);
 }
 
 // Tests that search box is not visible when showing embedded Assistant UI.
