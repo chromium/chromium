@@ -40,4 +40,7 @@
     <integer name="download_infobar_bar_start_offset">800</integer>
     <integer name="download_infobar_bar_fill_in_delay">400</integer>
     <integer name="download_infobar_bar_fill_out_delay">200</integer>
+
+    <!-- Contextual Search -->
+    <item name="contextual_search_sheet_full_height_fraction" format="float" type="dimen">0.95</item>
 </resources>

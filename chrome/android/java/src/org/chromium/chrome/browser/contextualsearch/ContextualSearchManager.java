@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -286,8 +287,11 @@ public class ContextualSearchManager
      * Initializes this manager.
      * @param parentView The parent view to attach Contextual Search UX to.
      * @param layoutManager A means of attaching the OverlayPanel to the scene.
+     * @param bottomSheetController The {@link BottomSheetController} that is used to show
+     *                              {@link BottomSheetContent}.
      */
-    public void initialize(ViewGroup parentView, LayoutManagerImpl layoutManager) {
+    public void initialize(ViewGroup parentView, LayoutManagerImpl layoutManager,
+            BottomSheetController bottomSheetController) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this);
 
         mParentView = parentView;
@@ -298,7 +302,8 @@ public class ContextualSearchManager
         ContextualSearchPanelInterface panel;
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION)) {
-            panel = new ContextualSearchPanelCoordinator();
+            panel = new ContextualSearchPanelCoordinator(mActivity, mActivity.getWindowAndroid(),
+                    bottomSheetController, this::getBasePageHeight);
         } else {
             panel = new ContextualSearchPanel(
                     mActivity, mLayoutManager, mLayoutManager.getOverlayPanelManager());
@@ -1853,6 +1858,12 @@ public class ContextualSearchManager
 
     private static PrefService getPrefService() {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    }
+
+    private int getBasePageHeight() {
+        final Tab tab = mTabSupplier.get();
+        if (tab == null || tab.getView() == null) return 0;
+        return tab.getView().getHeight();
     }
 
     // ============================================================================================

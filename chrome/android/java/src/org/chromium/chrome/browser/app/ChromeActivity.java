@@ -1848,7 +1848,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         mActivityTabProvider.setLayoutManager(layoutManager);
 
         if (mContextualSearchManager != null) {
-            mContextualSearchManager.initialize(contentContainer, layoutManager);
+            mContextualSearchManager.initialize(
+                    contentContainer, layoutManager, mRootUiCoordinator.getBottomSheetController());
         }
     }
 

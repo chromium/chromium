@@ -4,17 +4,123 @@
 
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
+import androidx.core.content.res.ResourcesCompat;
+
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
+import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewConstraints;
+import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Coordinator for the {@link BottomSheet} and {@link ThinWebView} based Contextual Search panel.
  */
 public class ContextualSearchPanelCoordinator implements ContextualSearchPanelInterface {
-    public ContextualSearchPanelCoordinator() {}
+    private final Context mContext;
+    private final WindowAndroid mWindowAndroid;
+    private final BottomSheetController mBottomSheetController;
+    private final Supplier<Integer> mTabHeightSupplier;
+    private final int mToolbarHeightPx;
+    private final float mFullHeightFraction;
+
+    private final ContextualSearchPanelMetrics mPanelMetrics;
+
+    private ContextualSearchSheetContent mSheetContent;
+    private ViewGroup mSheetContentView;
+    private ThinWebView mThinWebView;
+    private WebContents mWebContents;
+    private ContentView mWebContentView;
+    private BottomSheetObserver mBottomSheetObserver;
+
+    private ContextualSearchManagementDelegate mManagementDelegate;
+
+    private boolean mIsActive;
+
+    /**
+     * Construct a {@link ContextualSearchPanelCoordinator}.
+     * @param context The Android {@link Context}.
+     * @param windowAndroid The associated {@link WindowAndroid}.
+     * @param bottomSheetController The {@link BottomSheetController} that will manage the sheet.
+     * @param tabHeightSupplier The {@link Supplier} for the tab height.
+     */
+    public ContextualSearchPanelCoordinator(Context context, WindowAndroid windowAndroid,
+            BottomSheetController bottomSheetController, Supplier<Integer> tabHeightSupplier) {
+        mContext = context;
+        mWindowAndroid = windowAndroid;
+        mPanelMetrics = new ContextualSearchPanelMetrics();
+        mBottomSheetController = bottomSheetController;
+        mTabHeightSupplier = tabHeightSupplier;
+
+        final Resources resources = mContext.getResources();
+        mToolbarHeightPx = resources.getDimensionPixelSize(
+                org.chromium.chrome.R.dimen.sheet_tab_toolbar_height);
+        mFullHeightFraction = ResourcesCompat.getFloat(resources,
+                org.chromium.chrome.R.dimen.contextual_search_sheet_full_height_fraction);
+    }
+
+    private void createWebContents() {
+        final Profile profile = Profile.getLastUsedRegularProfile();
+        mWebContents = WebContentsFactory.createWebContents(profile, false);
+        mWebContentView = ContentView.createContentView(mContext, null, mWebContents);
+        final ViewAndroidDelegate delegate =
+                ViewAndroidDelegate.createBasicDelegate(mWebContentView);
+        mWebContents.initialize(ChromeVersionInfo.getProductVersion(), delegate, mWebContentView,
+                mWindowAndroid, WebContents.createDefaultInternalsHolder());
+        ContentUtils.setUserAgentOverride(mWebContents);
+    }
+
+    private void destroyWebContents() {
+        mSheetContent = null;
+
+        if (mWebContents != null) {
+            mWebContents.destroy();
+            mWebContents = null;
+            mWebContentView = null;
+        }
+
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
+
+    private void createSheetContent() {
+        assert mWebContentView != null;
+        if (mWebContentView.getParent() != null) {
+            ((ViewGroup) mWebContentView.getParent()).removeView(mWebContentView);
+        }
+
+        final int maxHeight = (int) (mTabHeightSupplier.get() * mFullHeightFraction);
+        mThinWebView = ThinWebViewFactory.create(mContext, new ThinWebViewConstraints());
+        mThinWebView.getView().setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, maxHeight - mToolbarHeightPx));
+        mThinWebView.attachWebContents(mWebContents, mWebContentView, null);
+
+        mSheetContentView = new FrameLayout(mContext);
+        mSheetContentView.addView(mThinWebView.getView());
+        mSheetContentView.setPadding(0, mToolbarHeightPx, 0, 0);
+        mSheetContent = new ContextualSearchSheetContent(mSheetContentView, mFullHeightFraction);
+    }
+
+    // region ContextualSearchPanelInterface implementation
+    // ---------------------------------------------------------------------------------------------
 
     @Override
     public void destroy() {}
@@ -49,7 +155,9 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     public void setCaption(String caption) {}
 
     @Override
-    public void setManagementDelegate(ContextualSearchManagementDelegate delegate) {}
+    public void setManagementDelegate(ContextualSearchManagementDelegate delegate) {
+        mManagementDelegate = delegate;
+    }
 
     @Override
     public void onContextualSearchPrefChanged(boolean isEnabled) {}
@@ -76,7 +184,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     @Override
     public ContextualSearchPanelMetrics getPanelMetrics() {
-        return null;
+        return mPanelMetrics;
     }
 
     @Override
@@ -88,10 +196,39 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     public void setIsPanelHelpActive(boolean isActive) {}
 
     @Override
-    public void requestPanelShow(int reason) {}
+    public void requestPanelShow(int reason) {
+        if (mWebContents == null) {
+            createWebContents();
+            createSheetContent();
+            mBottomSheetObserver = new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetOpened(int reason) {
+                    mManagementDelegate.getOverlayContentDelegate().onVisibilityChanged(true);
+                }
+
+                @Override
+                public void onSheetStateChanged(int newState) {
+                    if (newState == SheetState.HIDDEN) {
+                        mIsActive = false;
+                        destroyWebContents();
+                    }
+                }
+            };
+            // TODO(sinansahin): It's not guaranteed that we'll be observing the BottomSheet with
+            // the contents we provide. We should probably use the return value from
+            // BottomSheetController#requestShowContent to decide whether we want to observe the
+            // BottomSheet.
+            mBottomSheetController.addObserver(mBottomSheetObserver);
+        }
+
+        mIsActive = true;
+        mBottomSheetController.requestShowContent(mSheetContent, true);
+    }
 
     @Override
-    public void loadUrlInPanel(String url) {}
+    public void loadUrlInPanel(String url) {
+        mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url));
+    }
 
     @Override
     public void updateBrowserControlsState() {}
@@ -107,12 +244,13 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     @Override
     public boolean isActive() {
-        return false;
+        return mIsActive;
     }
 
     @Override
     public boolean isContentShowing() {
-        return false;
+        // TODO(sinansahin): Replace with real impl. True for the other methods.
+        return true;
     }
 
     @Override
@@ -122,22 +260,22 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     @Override
     public boolean isPeeking() {
-        return false;
+        return mBottomSheetController.getSheetState() == SheetState.PEEK;
     }
 
     @Override
     public WebContents getWebContents() {
-        return null;
+        return mWebContents;
     }
 
     @Override
     public boolean isPanelOpened() {
-        return false;
+        return mBottomSheetController.isSheetOpen();
     }
 
     @Override
     public boolean isShowing() {
-        return false;
+        return mBottomSheetController.getCurrentOffset() > 0;
     }
 
     @Override
@@ -159,4 +297,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     public @PanelState int getPanelState() {
         return PanelState.UNDEFINED;
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // endregion
 }
