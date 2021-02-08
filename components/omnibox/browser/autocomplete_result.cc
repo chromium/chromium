@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -496,6 +497,7 @@ void AutocompleteResult::AttachPedalsToMatches(
 void AutocompleteResult::ConvertOpenTabMatches(
     AutocompleteProviderClient* client,
     const AutocompleteInput* input) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   for (auto& match : matches_) {
     // If already converted this match, don't re-search through open tabs and
     // possibly re-change the description.
@@ -506,6 +508,11 @@ void AutocompleteResult::ConvertOpenTabMatches(
       match.has_tab_match = true;
     }
   }
+
+  base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Omnibox.TabMatchTime", time_delta, base::TimeDelta::FromMicroseconds(1),
+      base::TimeDelta::FromMilliseconds(5), 50);
 }
 
 bool AutocompleteResult::HasCopiedMatches() const {

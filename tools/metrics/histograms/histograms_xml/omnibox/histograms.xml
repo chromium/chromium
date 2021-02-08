@@ -953,6 +953,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.TabMatchTime" units="microseconds"
+    expires_after="2021-06-30">
+  <owner>gangwu@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    This histogram reports the amount of time it takes to match one set of
+    suggestions against all open tabs. This metric is collected once for every
+    time a new set of suggestions is received. This includes the Omnibox Focus
+    event (when zero-prefix suggestions are offered) and every subsequent key
+    stroke, including deletion, backspace etc.
+
+    Each keystroke produces multiple events offering autocomplete matches: a)
+    one synchronous, when Start() is called. b) any number of intermediate
+    events, depending on whether Providers request the update. c) one at the
+    end, when the process completes.
+
+    Since these are produced about 3 times per keystroke, the total time
+    consumed per Omnibox interaction is - optimistically -
+    3*Omnibox.TypedLength*TabMatchTime. this excludes all the time spent
+    formulating the query, such as correcting the input. This metric does not
+    express the cumulative time spent matching the tabs (because we do not have
+    a metric that counts the number of suggestions the user actually fetched -
+    eg. we do not count the number of suggestions received when user pressed the
+    backspace key).
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ToggleSuggestionGroupId.Off" enum="SuggestionGroupId"
     expires_after="2021-08-01">
   <owner>mahmadi@google.com</owner>
