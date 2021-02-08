@@ -30,6 +30,7 @@ generate_grd("build_grd") {
   input_files = [
     "index.html",
     "types.js",
+    "constants.js",
     "events.js",
     "store.js",
     "emoji_test_ordering.json",
@@ -72,6 +73,7 @@ grit("resources") {
 
 js_library("emoji_picker") {
   deps = [
+    ":constants",
     ":emoji_group",
     ":emoji_group_button",
     ":events",
@@ -127,6 +129,9 @@ js_library("icons") {
 js_library("types") {
 }
 
+js_library("constants") {
+}
+
 js_library("events") {
 }
 
@@ -137,6 +142,7 @@ js_library("store") {
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
+    ":constants",
     ":emoji_button",
     ":emoji_group",
     ":emoji_group_button",

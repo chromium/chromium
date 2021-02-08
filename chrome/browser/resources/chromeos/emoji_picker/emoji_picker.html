@@ -1,17 +1,19 @@
 <style>
   :host {
-    /* These should match the dialog size in EmojiPickerDialog. */
-    --emoji-picker-height: 343px;
-    --emoji-picker-width: 280px;
+    /* values overriden in Javascript from constants.js */
+    --emoji-picker-height: 0;
+    --emoji-picker-width: 0;
+    --emoji-size: 0;
+    --emoji-per-row: 0;
   }
 
   .emoji-picker {
     display: flex;
     flex-direction: column;
     font-family: 'Roboto', sans-serif;
-    height: calc(var(--emoji-picker-height) - 10px);
-    margin: 10px;
+    height: calc(var(--emoji-picker-height) - 20px);
     margin-top: 0;
+    padding: 10px;
     width: calc(var(--emoji-picker-width) - 20px);
   }
 

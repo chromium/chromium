@@ -19,7 +19,7 @@ export let EmojiButtonEvent;
 export const EMOJI_BUTTON_EVENT = 'emoji-button';
 
 /**
- * @typedef {!CustomEvent}
+ * @typedef {!CustomEvent<{button: Element, variants: Element}>}
  */
 export let ShowVariantsEvent;
 

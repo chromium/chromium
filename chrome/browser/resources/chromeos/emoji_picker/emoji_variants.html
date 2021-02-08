@@ -1,5 +1,5 @@
 <style>
-  .emoji-variants {
+  #container {
     background: var(--cr-card-background-color);
     border-radius: 4px;
     box-shadow: var(--cr-elevation-3);
@@ -55,7 +55,7 @@
   }
 </style>
 
-<div class="emoji-variants">
+<div id="container">
   <div class="grid-base-emoji">
     <template is="dom-if" if="[[baseEmoji.length]]">
       <emoji-button emoji="[[baseEmoji]]"></emoji-button>

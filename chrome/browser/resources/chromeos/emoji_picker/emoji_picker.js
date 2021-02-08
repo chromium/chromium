@@ -10,8 +10,9 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE, EMOJI_SIZE_PX} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
-import {createCustomEvent, DATA_LOADED_EVENT, EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT, SHOW_VARIANTS_EVENT} from './events.js';
+import {createCustomEvent, DATA_LOADED_EVENT, EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT, SHOW_VARIANTS_EVENT, ShowVariantsEvent} from './events.js';
 import {RecentEmojiStore} from './store.js';
 import {Codepoints, Emoji, EmojiData, EmojiGroup} from './types.js';
 
@@ -98,8 +99,16 @@ export class EmojiPicker extends PolymerElement {
     this.addEventListener(
         EMOJI_BUTTON_EVENT, ev => this.insertEmoji(ev.detail.emoji));
     this.addEventListener(
-        SHOW_VARIANTS_EVENT, ev => this.onShowEmojiVariants(ev));
+        SHOW_VARIANTS_EVENT,
+        ev => this.onShowEmojiVariants(/** @type {!ShowVariantsEvent} */ (ev)));
     this.addEventListener('click', () => this.hideEmojiVariants());
+
+    this.updateStyles({
+      '--emoji-picker-width': EMOJI_PICKER_WIDTH_PX,
+      '--emoji-picker-height': EMOJI_PICKER_HEIGHT_PX,
+      '--emoji-size': EMOJI_SIZE_PX,
+      '--emoji-per-row': EMOJI_PER_ROW,
+    });
   }
 
   /**
@@ -169,11 +178,37 @@ export class EmojiPicker extends PolymerElement {
     }
   }
 
+  /**
+   * @param {!ShowVariantsEvent} ev
+   */
   onShowEmojiVariants(ev) {
-    const el = ev.path[0];
-    assert(el.tagName === 'EMOJI-BUTTON');
     this.hideEmojiVariants();
-    this.activeVariant = el;
+    this.activeVariant = /** @type {EmojiButton} */ (ev.detail.button);
+    this.positionEmojiVariants(ev.detail.variants);
+  }
+
+  positionEmojiVariants(el) {
+    // TODO(crbug.com/1174311): currently positions horizontally within page.
+    // ideal UI would be overflowing the bounds of the page.
+    // also need to account for vertical positioning.
+
+    // compute width required for the variant popup as: SIZE * columns + 10.
+    // SIZE is emoji width in pixels. number of columns is determined by width
+    // of variantRows, then one column each for the base emoji and skin tone
+    // indicators if present. 10 pixels are added for padding and the shadow.
+
+    // get size of emoji picker
+    const pickerRect =
+        this.shadowRoot.querySelector('.emoji-picker').getBoundingClientRect();
+
+    // determine how much overflows the right edge of the window.
+    const container = el.shadowRoot.getElementById('container');
+    const rect = container.getBoundingClientRect();
+    const overflowWidth = rect.x + rect.width - pickerRect.width;
+    // shift left by overflowWidth rounded up to next multiple of EMOJI_SIZE.
+    const shift = EMOJI_SIZE * Math.ceil(overflowWidth / EMOJI_SIZE);
+    // negative value means we are already within bounds, so no shift needed.
+    container.style.marginLeft = `-${Math.max(shift, 0)}px`;
   }
 
 

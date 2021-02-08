@@ -5,12 +5,12 @@
 import {EmojiButton} from 'chrome://emoji-picker/emoji_button.js';
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiVariants} from 'chrome://emoji-picker/emoji_variants.js';
-import {DATA_LOADED_EVENT} from 'chrome://emoji-picker/events.js';
+import {DATA_LOADED_EVENT, SHOW_VARIANTS_EVENT} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertGT} from '../../chai_assert.js';
-import {deepQuerySelector, dispatchMouseEvent, waitForCondition} from './emoji_picker_test_util.js';
+import {assertGT, assertLT} from '../../chai_assert.js';
+import {deepQuerySelector, dispatchMouseEvent, waitForCondition, waitForEvent} from './emoji_picker_test_util.js';
 
 const ACTIVE_CLASS = 'emoji-group-active';
 
@@ -119,6 +119,7 @@ suite('<emoji-picker>', () => {
   suite('<emoji-variants>', () => {
     /** @type {!EmojiButton} */
     let emojiButton;
+
     /** @type {function(!EmojiButton): ?EmojiVariants} */
     const findEmojiVariants = el => {
       const variants =
@@ -132,7 +133,10 @@ suite('<emoji-picker>', () => {
               ['[data-group="0"] > emoji-group', 'emoji-button:nth-child(2)']));
 
       // right click and wait for variants to appear.
+      const variantsPromise = waitForEvent(emojiPicker, SHOW_VARIANTS_EVENT);
       dispatchMouseEvent(emojiButton.querySelector('button'), 2);
+
+      await variantsPromise;
       await waitForCondition(
           () => findEmojiVariants(emojiButton),
           'emoji-variants failed to appear.');
@@ -169,6 +173,42 @@ suite('<emoji-picker>', () => {
       await waitForCondition(
           () => findEmojiVariants(emojiButton2),
           'second emoji-variants failed to appear.');
+    });
+
+    test('opening variants on the left side should not overflow', async () => {
+      const emojiGroups = findInEmojiPicker(['.emoji-groups']);
+      const groupsRect = emojiGroups.getBoundingClientRect();
+
+      flush();
+      const variants = findEmojiVariants(emojiButton);
+      const variantsRect = variants.$['container'].getBoundingClientRect();
+
+      assertLT(groupsRect.left, variantsRect.left);
+      assertLT(variantsRect.right, groupsRect.right);
+    });
+
+    test('opening large variants should not overflow', async () => {
+      const coupleEmojiButton = await waitForCondition(
+          () => findInEmojiPicker(
+              ['[data-group="0"] > emoji-group', 'emoji-button:nth-child(5)']));
+
+      // listen for emoji variants event.
+      const variantsPromise = waitForEvent(emojiPicker, SHOW_VARIANTS_EVENT);
+
+      // right click on couple emoji to show 5x5 grid with skin tone.
+      dispatchMouseEvent(coupleEmojiButton.querySelector('button'), 2);
+      const variants =
+          await waitForCondition(() => findEmojiVariants(coupleEmojiButton));
+
+      // ensure variants are positioned before we get bounding rectangle.
+      await variantsPromise;
+      const variantsRect = variants.$['container'].getBoundingClientRect();
+
+      const emojiGroups = findInEmojiPicker(['.emoji-picker']);
+      const groupsRect = emojiGroups.getBoundingClientRect();
+
+      assertLT(groupsRect.left, variantsRect.left);
+      assertLT(variantsRect.right, groupsRect.right);
     });
   });
 });

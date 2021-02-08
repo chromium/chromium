@@ -4,7 +4,7 @@
 
 import './emoji_variants.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createCustomEvent, EMOJI_BUTTON_EVENT, SHOW_VARIANTS_EVENT} from './events.js';
 import {Codepoints} from './types.js';
@@ -56,7 +56,14 @@ export class EmojiButton extends PolymerElement {
     if (this.variants && this.variants.length) {
       this.variantsVisible = !this.variantsVisible;
       if (this.variantsVisible) {
-        this.dispatchEvent(createCustomEvent(SHOW_VARIANTS_EVENT));
+        // need to defer this until <emoji-variants> is created and sized by
+        // Polymer.
+        beforeNextRender(this, () => {
+          this.dispatchEvent(createCustomEvent(SHOW_VARIANTS_EVENT, {
+            button: this,
+            variants: this.shadowRoot.querySelector('emoji-variants'),
+          }));
+        });
       }
     }
     ev.preventDefault();

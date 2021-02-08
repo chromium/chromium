@@ -68,6 +68,21 @@ export function timeout(ms) {
 }
 
 /**
+ * Constructs a promise which resolves when the given element receives
+ * an event of the given type.
+ * Note: this function should be called *before* event is expected to set up
+ * the handler, then it should be awaited when the event is required.
+ * @param {!Element} element element to listen on.
+ * @param {!string} eventType event type to listen for.
+ * @return {!Promise<!Event>} event promise.
+ */
+export function waitForEvent(element, eventType) {
+  return new Promise(
+      resolve => element.addEventListener(eventType, resolve, {once: true}));
+}
+
+
+/**
  * Simulates a mouse click event on the given element.
  * @param {!Element} element element to right click.
  * @param {!number} button button number for event.
