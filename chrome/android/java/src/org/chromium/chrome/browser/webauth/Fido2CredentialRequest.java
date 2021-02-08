@@ -32,14 +32,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.net.GURLUtils;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
@@ -57,7 +55,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     private HandlerResponseCallback mIsUserVerifyingPlatformAuthenticatorAvailableCallback;
     private Fido2PrivilegedApiClient mFido2ApiClient;
     private WebContents mWebContents;
-    private ActivityWindowAndroid mWindow;
+    private WindowAndroid mWindow;
     private @RequestStatus int mRequestStatus;
     private boolean mAppIdExtensionUsed;
     private long mStartTimeMs;
@@ -97,7 +95,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             }
 
             if (mWindow == null) {
-                mWindow = ChromeActivity.fromWebContents(mWebContents).getWindowAndroid();
+                mWindow = mWebContents.getTopLevelNativeWindow();
                 if (mWindow == null) {
                     Log.e(TAG, "Couldn't get ActivityWindowAndroid.");
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
@@ -267,7 +265,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     }
 
     @VisibleForTesting
-    protected void setActivityWindowForTesting(ActivityWindowAndroid window) {
+    protected void setWindowForTesting(WindowAndroid window) {
         mWindow = window;
     }
 
