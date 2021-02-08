@@ -42,6 +42,20 @@ content::GetServiceSandboxType<media::mojom::CdmService>() {
   return sandbox::policy::SandboxType::kCdm;
 }
 
+#if defined(OS_WIN)
+// media::mojom::MediaService
+namespace media {
+namespace mojom {
+class MediaService;
+}
+}  // namespace media
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<media::mojom::MediaService>() {
+  return sandbox::policy::SandboxType::kMediaFoundationCdm;
+}
+#endif  // defined(OS_WIN)
+
 // network::mojom::NetworkService
 namespace network {
 namespace mojom {

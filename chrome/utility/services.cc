@@ -41,6 +41,7 @@
 #include "components/services/quarantine/public/cpp/quarantine_features_win.h"  // nogncheck
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
+#include "media/mojo/services/media_service_factory.h"       // nogncheck
 #endif  // defined(OS_WIN)
 
 #if !defined(OS_ANDROID)
@@ -292,6 +293,13 @@ auto RunAssistantAudioDecoder(
 #endif
 #endif
 
+#if defined(OS_WIN)
+auto RunMediaService(
+    mojo::PendingReceiver<media::mojom::MediaService> receiver) {
+  return media::CreateMediaService(std::move(receiver));
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace
 
 void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
@@ -323,6 +331,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunQuarantineService);
   services.Add(RunWindowsUtility);
   services.Add(RunWindowsIconReader);
+  services.Add(RunMediaService);
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)

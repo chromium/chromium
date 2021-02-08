@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/cdm_initialized_promise.h"
@@ -78,6 +79,8 @@ class MojoCdm final : public ContentDecryptionModule,
   std::unique_ptr<CallbackRegistration> RegisterEventCB(EventCB event_cb) final;
   Decryptor* GetDecryptor() final;
   base::Optional<base::UnguessableToken> GetCdmId() const final;
+
+  bool RequiresMediaFoundationRenderer() final;
 
  private:
   ~MojoCdm() final;
@@ -147,6 +150,11 @@ class MojoCdm final : public ContentDecryptionModule,
   CdmPromiseAdapter cdm_promise_adapter_;
 
   CallbackRegistry<EventCB::RunType> event_callbacks_;
+
+#if defined(OS_WIN)
+  // The current content is for MediaFoundationRenderer or not.
+  bool is_mf_renderer_content_ = false;
+#endif  // defined(OS_WIN)
 
   // This must be the last member.
   base::WeakPtrFactory<MojoCdm> weak_factory_{this};

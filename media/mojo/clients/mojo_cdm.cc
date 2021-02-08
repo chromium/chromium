@@ -58,6 +58,12 @@ MojoCdm::MojoCdm(mojo::Remote<mojom::ContentDecryptionModule> remote_cdm,
   DCHECK(session_keys_change_cb_);
   DCHECK(session_expiration_update_cb_);
 
+#if defined(OS_WIN)
+  // TODO(xhwang): Need a way to implement RequiresMediaFoundationRenderer().
+  // The plan is to pass back this info when we create the CDM, e.g. in the
+  // `cdm_created_cb` of `MojoCdmFactory::Create()`.
+#endif  // defined(OS_WIN)
+
   remote_cdm_->SetClient(client_receiver_.BindNewEndpointAndPassRemote());
 
   // Report a false event here as a baseline.
@@ -347,6 +353,17 @@ void MojoCdm::OnNewSessionCdmPromiseResult(uint32_t promise_id,
                                        result->system_code,
                                        result->error_message);
   }
+}
+
+bool MojoCdm::RequiresMediaFoundationRenderer() {
+#if defined(OS_WIN)
+  DVLOG(2) << __func__ << " this:" << this
+           << " is_mf_renderer_content_:" << is_mf_renderer_content_;
+
+  return is_mf_renderer_content_;
+#endif  // defined(OS_WIN)
+
+  return false;
 }
 
 }  // namespace media

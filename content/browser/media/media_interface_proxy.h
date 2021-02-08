@@ -32,6 +32,11 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
+#if defined(OS_WIN)
+#include "base/sequenced_task_runner.h"
+#include "media/mojo/mojom/media_service.mojom.h"
+#endif
+
 namespace content {
 
 class RenderFrameHost;
@@ -126,6 +131,17 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
       const std::string& error_message);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if defined(OS_WIN)
+  void ConnectToMFMediaService();
+  InterfaceFactory* GetMFMediaInterfaceFactory();
+  void OnMFMediaServiceConnectionError();
+  bool ShouldUseMediaFoundationServiceForCdm(const std::string& key_system,
+                                             base::FilePath& cdm_path);
+
+  mojo::Remote<media::mojom::InterfaceFactory> mf_interface_factory_remote_;
+  media::mojom::MediaService* mf_service_ptr_ = nullptr;
+#endif  // defined(OS_WIN)
 
   // Safe to hold a raw pointer since |this| is owned by RenderFrameHostImpl.
   RenderFrameHost* const render_frame_host_;
