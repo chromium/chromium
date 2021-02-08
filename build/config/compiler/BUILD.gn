@@ -622,14 +622,15 @@ config("compiler") {
     # available disk space, 40GB and 100000 files.
     cache_policy = "cache_size=10%:cache_size_bytes=40g:cache_size_files=100000"
 
-    # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
-    # should be able to better manage binary size increases on its own.
-    import_instr_limit = 5
-
     if (is_win) {
       ldflags += [
         "/opt:lldltojobs=all",
-        "-mllvm:-import-instr-limit=$import_instr_limit",
+
+        # Experimentally determined to yield a reasonable trade-off between
+        # build time, run-time performance, and binary size.
+        # Keep this in sync with the Android/Linux value below.
+        "-mllvm:-import-instr-limit=5",
+
         "/lldltocache:" +
             rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
         "/lldltocachepolicy:$cache_policy",
@@ -654,6 +655,10 @@ config("compiler") {
       ]
 
       if (thin_lto_enable_optimizations) {
+        # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
+        # should be able to better manage binary size increases on its own.
+        import_instr_limit = 5
+
         if (is_chromeos_ash) {
           # Not much performance difference was noted between the default (100)
           # and these. ARM was originally set lower than x86 to keep the size
