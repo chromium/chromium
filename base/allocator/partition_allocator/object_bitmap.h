@@ -16,6 +16,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 
 namespace base {
 namespace internal {
@@ -38,6 +39,10 @@ class ObjectBitmap final {
   static constexpr size_t kPageBaseMask = ~kPageOffsetMask;
 
  public:
+  enum class AccessType : uint8_t {
+    kAtomic,
+    kNonAtomic,
+  };
   static constexpr size_t kPageSize = PageSize;
   static constexpr size_t kPageAlignment = PageAlignment;
   static constexpr size_t kObjectAlignment = ObjectAlignment;
@@ -46,16 +51,19 @@ class ObjectBitmap final {
 
   inline ObjectBitmap();
 
-  inline void SetBit(uintptr_t address);
-  inline void ClearBit(uintptr_t address);
-  inline bool CheckBit(uintptr_t address) const;
+  template <AccessType = AccessType::kAtomic>
+  ALWAYS_INLINE void SetBit(uintptr_t address);
+  template <AccessType = AccessType::kAtomic>
+  ALWAYS_INLINE void ClearBit(uintptr_t address);
+  template <AccessType = AccessType::kAtomic>
+  ALWAYS_INLINE bool CheckBit(uintptr_t address) const;
 
   // Iterates all objects recorded in the bitmap.
   //
   // The callback is of type
   //   void(Address)
   // and is passed the object address as parameter.
-  template <typename Callback>
+  template <AccessType = AccessType::kAtomic, typename Callback>
   inline void Iterate(Callback) const;
 
   inline void Clear();
@@ -68,8 +76,10 @@ class ObjectBitmap final {
     return reinterpret_cast<const std::atomic<CellType>&>(bitmap_[cell_index]);
   }
 
-  inline CellType LoadCell(size_t cell_index) const;
-  static constexpr std::pair<size_t, size_t> ObjectIndexAndBit(uintptr_t);
+  template <AccessType>
+  ALWAYS_INLINE CellType LoadCell(size_t cell_index) const;
+  ALWAYS_INLINE static constexpr std::pair<size_t, size_t> ObjectIndexAndBit(
+      uintptr_t);
 
   std::array<CellType, kBitmapSize> bitmap_;
 };
@@ -85,42 +95,65 @@ inline ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ObjectBitmap() =
     default;
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
-void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::SetBit(
+template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
+              AccessType access_type>
+ALWAYS_INLINE void
+ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::SetBit(
     uintptr_t address) {
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = ObjectIndexAndBit(address);
+  if (access_type == AccessType::kNonAtomic) {
+    bitmap_[cell_index] |= (static_cast<CellType>(1) << object_bit);
+    return;
+  }
   auto& cell = AsAtomicCell(cell_index);
   cell.fetch_or(static_cast<CellType>(1) << object_bit,
                 std::memory_order_relaxed);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
-void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ClearBit(
+template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
+              AccessType access_type>
+ALWAYS_INLINE void
+ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ClearBit(
     uintptr_t address) {
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = ObjectIndexAndBit(address);
+  if (access_type == AccessType::kNonAtomic) {
+    bitmap_[cell_index] &= ~(static_cast<CellType>(1) << object_bit);
+    return;
+  }
   auto& cell = AsAtomicCell(cell_index);
   cell.fetch_and(~(static_cast<CellType>(1) << object_bit),
                  std::memory_order_relaxed);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
-bool ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::CheckBit(
+template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
+              AccessType access_type>
+ALWAYS_INLINE bool
+ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::CheckBit(
     uintptr_t address) const {
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = ObjectIndexAndBit(address);
-  return LoadCell(cell_index) & (static_cast<CellType>(1) << object_bit);
+  return LoadCell<access_type>(cell_index) &
+         (static_cast<CellType>(1) << object_bit);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
-typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::CellType
-ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::LoadCell(
-    size_t cell_index) const {
+template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
+              AccessType access_type>
+ALWAYS_INLINE
+    typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::CellType
+    ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::LoadCell(
+        size_t cell_index) const {
+  if (access_type == AccessType::kNonAtomic)
+    return bitmap_[cell_index];
   return AsAtomicCell(cell_index).load(std::memory_order_relaxed);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
-constexpr std::pair<size_t, size_t>
+ALWAYS_INLINE constexpr std::pair<size_t, size_t>
 ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ObjectIndexAndBit(
     uintptr_t address) {
   const uintptr_t offset_in_page = address & kPageOffsetMask;
@@ -132,13 +165,15 @@ ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ObjectIndexAndBit(
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
-template <typename Callback>
+template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
+              AccessType access_type,
+          typename Callback>
 inline void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::Iterate(
     Callback callback) const {
   // The bitmap (|this|) is allocated inside the page with |kPageAlignment|.
   const uintptr_t base = reinterpret_cast<uintptr_t>(this) & kPageBaseMask;
   for (size_t cell_index = 0; cell_index < kBitmapSize; ++cell_index) {
-    CellType value = LoadCell(cell_index);
+    CellType value = LoadCell<access_type>(cell_index);
     while (value) {
       const int trailing_zeroes = base::bits::CountTrailingZeroBits(value);
       const size_t object_number =

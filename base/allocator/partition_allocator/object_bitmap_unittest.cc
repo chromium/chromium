@@ -42,25 +42,38 @@ class PageWithBitmap final {
   TestBitmap* bitmap_;
 };
 
+using AccessType = TestBitmap::AccessType;
+
+// Wrap access types into types so that they can be used with typed gtests.
+struct AtomicAccess {
+  static constexpr AccessType value = AccessType::kAtomic;
+};
+struct NonAtomicAccess {
+  static constexpr AccessType value = AccessType::kNonAtomic;
+};
+
+template <typename Access>
 class ObjectBitmapTest : public ::testing::Test {
  protected:
+  static constexpr AccessType kAccessType = Access::value;
+
   TestBitmap& bitmap() const { return page.bitmap(); }
 
   void SetBitForObject(size_t object_position) {
-    page.bitmap().SetBit(ObjectAddress(object_position));
+    page.bitmap().SetBit<kAccessType>(ObjectAddress(object_position));
   }
 
   void ClearBitForObject(size_t object_position) {
-    page.bitmap().ClearBit(ObjectAddress(object_position));
+    page.bitmap().ClearBit<kAccessType>(ObjectAddress(object_position));
   }
 
   bool CheckBitForObject(size_t object_position) const {
-    return page.bitmap().CheckBit(ObjectAddress(object_position));
+    return page.bitmap().CheckBit<kAccessType>(ObjectAddress(object_position));
   }
 
   bool IsEmpty() const {
     size_t count = 0;
-    bitmap().Iterate([&count](uintptr_t) { count++; });
+    bitmap().template Iterate<kAccessType>([&count](uintptr_t) { count++; });
     return count == 0;
   }
 
@@ -79,67 +92,76 @@ class ObjectBitmapTest : public ::testing::Test {
 
 }  // namespace
 
-TEST_F(ObjectBitmapTest, MoreThanZeroEntriesPossible) {
+using AccessTypes = ::testing::Types<AtomicAccess, NonAtomicAccess>;
+TYPED_TEST_SUITE(ObjectBitmapTest, AccessTypes);
+
+TYPED_TEST(ObjectBitmapTest, MoreThanZeroEntriesPossible) {
   const size_t max_entries = TestBitmap::kMaxEntries;
   EXPECT_LT(0u, max_entries);
 }
 
-TEST_F(ObjectBitmapTest, InitialEmpty) {
-  EXPECT_TRUE(IsEmpty());
+TYPED_TEST(ObjectBitmapTest, InitialEmpty) {
+  EXPECT_TRUE(this->IsEmpty());
 }
 
-TEST_F(ObjectBitmapTest, SetBitImpliesNonEmpty) {
-  SetBitForObject(0);
-  EXPECT_FALSE(IsEmpty());
+TYPED_TEST(ObjectBitmapTest, SetBitImpliesNonEmpty) {
+  this->SetBitForObject(0);
+  EXPECT_FALSE(this->IsEmpty());
 }
 
-TEST_F(ObjectBitmapTest, SetBitCheckBit) {
-  SetBitForObject(0);
-  EXPECT_TRUE(CheckBitForObject(0));
+TYPED_TEST(ObjectBitmapTest, SetBitCheckBit) {
+  this->SetBitForObject(0);
+  EXPECT_TRUE(this->CheckBitForObject(0));
 }
 
-TEST_F(ObjectBitmapTest, SetBitClearbitCheckBit) {
-  SetBitForObject(0);
-  ClearBitForObject(0);
-  EXPECT_FALSE(CheckBitForObject(0));
+TYPED_TEST(ObjectBitmapTest, SetBitClearbitCheckBit) {
+  this->SetBitForObject(0);
+  this->ClearBitForObject(0);
+  EXPECT_FALSE(this->CheckBitForObject(0));
 }
 
-TEST_F(ObjectBitmapTest, SetBitClearBitImpliesEmpty) {
-  SetBitForObject(LastIndex());
-  ClearBitForObject(LastIndex());
-  EXPECT_TRUE(IsEmpty());
+TYPED_TEST(ObjectBitmapTest, SetBitClearBitImpliesEmpty) {
+  this->SetBitForObject(this->LastIndex());
+  this->ClearBitForObject(this->LastIndex());
+  EXPECT_TRUE(this->IsEmpty());
 }
 
-TEST_F(ObjectBitmapTest, AdjacentObjectsAtBegin) {
-  SetBitForObject(0);
-  SetBitForObject(1);
-  EXPECT_FALSE(CheckBitForObject(3));
+TYPED_TEST(ObjectBitmapTest, AdjacentObjectsAtBegin) {
+  static constexpr AccessType kAccessType = TestFixture::kAccessType;
+
+  this->SetBitForObject(0);
+  this->SetBitForObject(1);
+  EXPECT_FALSE(this->CheckBitForObject(3));
   size_t count = 0;
-  bitmap().Iterate([&count, this](uintptr_t current) {
-    if (count == 0) {
-      EXPECT_EQ(ObjectAddress(0), current);
-    } else if (count == 1) {
-      EXPECT_EQ(ObjectAddress(1), current);
-    }
-    count++;
-  });
+  this->bitmap().template Iterate<kAccessType>(
+      [&count, this](uintptr_t current) {
+        if (count == 0) {
+          EXPECT_EQ(this->ObjectAddress(0), current);
+        } else if (count == 1) {
+          EXPECT_EQ(this->ObjectAddress(1), current);
+        }
+        count++;
+      });
   EXPECT_EQ(2u, count);
 }
 
-TEST_F(ObjectBitmapTest, AdjacentObjectsAtEnd) {
-  static const size_t last_entry_index = LastIndex();
-  SetBitForObject(last_entry_index - 1);
-  SetBitForObject(last_entry_index);
-  EXPECT_FALSE(CheckBitForObject(last_entry_index - 2));
+TYPED_TEST(ObjectBitmapTest, AdjacentObjectsAtEnd) {
+  static constexpr AccessType kAccessType = TestFixture::kAccessType;
+  static const size_t last_entry_index = this->LastIndex();
+
+  this->SetBitForObject(last_entry_index - 1);
+  this->SetBitForObject(last_entry_index);
+  EXPECT_FALSE(this->CheckBitForObject(last_entry_index - 2));
   size_t count = 0;
-  bitmap().Iterate([&count, this](uintptr_t current) {
-    if (count == 0) {
-      EXPECT_EQ(ObjectAddress(last_entry_index - 1), current);
-    } else if (count == 1) {
-      EXPECT_EQ(ObjectAddress(last_entry_index), current);
-    }
-    count++;
-  });
+  this->bitmap().template Iterate<kAccessType>(
+      [&count, this](uintptr_t current) {
+        if (count == 0) {
+          EXPECT_EQ(this->ObjectAddress(last_entry_index - 1), current);
+        } else if (count == 1) {
+          EXPECT_EQ(this->ObjectAddress(last_entry_index), current);
+        }
+        count++;
+      });
   EXPECT_EQ(2u, count);
 }
 

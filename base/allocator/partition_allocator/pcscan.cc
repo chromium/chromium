@@ -342,9 +342,11 @@ template <typename LookupPolicy>
 ALWAYS_INLINE size_t
 PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
     uintptr_t maybe_ptr) const {
+  using AccessType = QuarantineBitmap::AccessType;
   // Check if maybe_ptr points somewhere to the heap.
-  auto* bitmap = TryFindScannerBitmapForPointer<LookupPolicy>(maybe_ptr);
-  if (!bitmap)
+  auto* scanner_bitmap =
+      TryFindScannerBitmapForPointer<LookupPolicy>(maybe_ptr);
+  if (!scanner_bitmap)
     return 0;
 
   auto* root =
@@ -353,7 +355,7 @@ PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
   // Check if pointer was in the quarantine bitmap.
   const uintptr_t base =
       GetObjectStartInSuperPage<thread_safe>(maybe_ptr, *root);
-  if (!base || !bitmap->CheckBit(base))
+  if (!base || !scanner_bitmap->template CheckBit<AccessType::kNonAtomic>(base))
     return 0;
 
   PA_DCHECK((maybe_ptr & kSuperPageBaseMask) == (base & kSuperPageBaseMask));
@@ -368,24 +370,29 @@ PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
     return 0;
 
   // Now we are certain that |maybe_ptr| is a dangling pointer. Mark it again in
-  // the mutator bitmap and clear from the scanner bitmap.
-  bitmap->ClearBit(base);
+  // the mutator bitmap and clear from the scanner bitmap. Note that since
+  // PCScan has exclusive access to the scanner bitmap, we can avoid atomic rmw
+  // operation for it.
+  scanner_bitmap->template ClearBit<AccessType::kNonAtomic>(base);
   QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
                               pcscan_.quarantine_data_.epoch(),
                               reinterpret_cast<char*>(base))
-      ->SetBit(base);
+      ->template SetBit<AccessType::kAtomic>(base);
   return target_slot_span->bucket->slot_size;
 }
 
 template <bool thread_safe>
 void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
+  using AccessType = QuarantineBitmap::AccessType;
+
   PCSCAN_EVENT(scopes::kClear);
+
   for (auto super_page : super_pages_) {
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
         reinterpret_cast<char*>(super_page));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
-    bitmap->Iterate([root](uintptr_t ptr) {
+    bitmap->template Iterate<AccessType::kNonAtomic>([root](uintptr_t ptr) {
       auto* object = reinterpret_cast<void*>(ptr);
       auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
       // Use zero as a zapping value to speed up the fast bailout check in
@@ -635,6 +642,8 @@ size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
 
 template <bool thread_safe>
 size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
+  using AccessType = QuarantineBitmap::AccessType;
+
   PCSCAN_EVENT(scopes::kSweep);
   size_t swept_bytes = 0;
 
@@ -643,12 +652,13 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
         QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
         reinterpret_cast<char*>(super_page));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
-    bitmap->Iterate([root, &swept_bytes](uintptr_t ptr) {
-      auto* object = reinterpret_cast<void*>(ptr);
-      auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
-      swept_bytes += slot_span->bucket->slot_size;
-      root->FreeNoHooksImmediate(object, slot_span);
-    });
+    bitmap->template Iterate<AccessType::kNonAtomic>(
+        [root, &swept_bytes](uintptr_t ptr) {
+          auto* object = reinterpret_cast<void*>(ptr);
+          auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
+          swept_bytes += slot_span->bucket->slot_size;
+          root->FreeNoHooksImmediate(object, slot_span);
+        });
     bitmap->Clear();
   }
 
