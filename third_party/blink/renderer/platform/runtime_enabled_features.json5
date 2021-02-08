@@ -2333,7 +2333,7 @@
     {
       name: "WebXRViewportScale",
       depends_on: ["WebXRARModule"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WheelEventRegions",
