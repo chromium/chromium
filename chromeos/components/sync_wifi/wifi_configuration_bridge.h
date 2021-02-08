@@ -115,8 +115,7 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
 
   void SaveNetworkToSync(
       base::Optional<sync_pb::WifiConfigurationSpecifics> proto);
-  void RemoveNetworkFromSync(
-      base::Optional<sync_pb::WifiConfigurationSpecifics> proto);
+  void RemoveNetworkFromSync(const std::string& storage_key);
 
   // Starts an async request to serialize a network to a proto and save to sync.
   void OnNetworkConfiguredDelayComplete(const std::string& network_guid);
@@ -139,10 +138,12 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       network_guid_to_timer_map_;
 
-  // Map of network_id to proto which tracks networks that should be synced once
-  // the service is ready.  This is keyed on network_id to ensure that the most
-  // recent change is kept if there are multiple changes to the same network.
-  base::flat_map<NetworkIdentifier, sync_pb::WifiConfigurationSpecifics>
+  // Map of storage_key to proto which tracks networks that should be synced
+  // once the service is ready.  This is keyed on network_id to ensure that the
+  // most recent change is kept if there are multiple changes to the same
+  // network.
+  base::flat_map<std::string,
+                 base::Optional<sync_pb::WifiConfigurationSpecifics>>
       networks_to_sync_when_ready_;
 
   // The on disk store of WifiConfigurationSpecifics protos that mirrors what

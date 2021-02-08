@@ -351,9 +351,17 @@ void WifiConfigurationBridge::OnReadAllMetadata(
   }
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
-  // Sync pending updates.
-  for (auto const& it : networks_to_sync_when_ready_) {
-    SaveNetworkToSync(it.second);
+  // Make a copy in case the map is modified while iterating over the pending
+  // updates.  This could happen if sync is disabled while iterating.
+  base::flat_map<std::string,
+                 base::Optional<sync_pb::WifiConfigurationSpecifics>>
+      updates = networks_to_sync_when_ready_;
+  for (auto const& it : updates) {
+    if (it.second) {
+      SaveNetworkToSync(it.second);
+      continue;
+    }
+    RemoveNetworkFromSync(it.first);
   }
   networks_to_sync_when_ready_.clear();
 }
@@ -442,7 +450,7 @@ void WifiConfigurationBridge::SaveNetworkToSync(
   // this update to be processed later.
   if (!store_ || !change_processor()->IsTrackingMetadata()) {
     networks_to_sync_when_ready_.insert_or_assign(
-        NetworkIdentifier::FromProto(*proto), *proto);
+        NetworkIdentifier::FromProto(*proto).SerializeToString(), proto);
     return;
   }
 
@@ -507,9 +515,7 @@ void WifiConfigurationBridge::OnBeforeConfigurationRemoved(
 
   NET_LOG(EVENT) << "Storing metadata for " << NetworkPathId(service_path)
                  << " in preparation for removal.";
-  std::string storage_key = id->SerializeToString();
-  if (entries_.contains(storage_key))
-    pending_deletes_[guid] = storage_key;
+  pending_deletes_[guid] = id->SerializeToString();
 }
 
 void WifiConfigurationBridge::OnConfigurationRemoved(
@@ -521,7 +527,21 @@ void WifiConfigurationBridge::OnConfigurationRemoved(
     return;
   }
 
-  std::string storage_key = pending_deletes_[network_guid];
+  const std::string& storage_key = pending_deletes_[network_guid];
+  if (!store_ || !change_processor()->IsTrackingMetadata()) {
+    networks_to_sync_when_ready_.insert_or_assign(storage_key, base::nullopt);
+    return;
+  }
+
+  RemoveNetworkFromSync(storage_key);
+}
+
+void WifiConfigurationBridge::RemoveNetworkFromSync(
+    const std::string& storage_key) {
+  if (!entries_.contains(storage_key)) {
+    return;  // Network is not synced.
+  }
+
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->DeleteData(storage_key);
