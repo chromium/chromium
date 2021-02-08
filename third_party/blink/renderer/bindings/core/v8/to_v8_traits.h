@@ -29,6 +29,89 @@ namespace blink {
 template <typename T, typename SFINAEHelper = void>
 struct ToV8Traits;
 
+// Integer
+// int8_t
+template <bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLIntegerTypeBase<int8_t, mode>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        int8_t value) WARN_UNUSED_RESULT {
+    return v8::Integer::New(script_state->GetIsolate(), value);
+  }
+};
+
+// int16_t
+template <bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLIntegerTypeBase<int16_t, mode>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        int16_t value) WARN_UNUSED_RESULT {
+    return v8::Integer::New(script_state->GetIsolate(), value);
+  }
+};
+
+// int32_t
+template <bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLIntegerTypeBase<int32_t, mode>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        int32_t value) WARN_UNUSED_RESULT {
+    return v8::Integer::New(script_state->GetIsolate(), value);
+  }
+};
+
+// int64_t
+template <bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLIntegerTypeBase<int64_t, mode>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        int64_t value) WARN_UNUSED_RESULT {
+    int32_t value_in_32bit = static_cast<int32_t>(value);
+    if (value_in_32bit == value)
+      return v8::Integer::New(script_state->GetIsolate(), value_in_32bit);
+    // v8::Integer cannot represent 64-bit integers.
+    return v8::Number::New(script_state->GetIsolate(), value);
+  }
+};
+
+// uint8_t
+template <bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLIntegerTypeBase<uint8_t, mode>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        uint8_t value) WARN_UNUSED_RESULT {
+    return v8::Integer::NewFromUnsigned(script_state->GetIsolate(), value);
+  }
+};
+
+// uint16_t
+template <bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLIntegerTypeBase<uint16_t, mode>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        uint16_t value) WARN_UNUSED_RESULT {
+    return v8::Integer::NewFromUnsigned(script_state->GetIsolate(), value);
+  }
+};
+
+// uint32_t
+template <bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLIntegerTypeBase<uint32_t, mode>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        uint32_t value) WARN_UNUSED_RESULT {
+    return v8::Integer::NewFromUnsigned(script_state->GetIsolate(), value);
+  }
+};
+
+// uint64_t
+template <bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLIntegerTypeBase<uint64_t, mode>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        uint64_t value) WARN_UNUSED_RESULT {
+    uint32_t value_in_32bit = static_cast<uint32_t>(value);
+    if (value_in_32bit == value) {
+      return v8::Integer::NewFromUnsigned(script_state->GetIsolate(),
+                                          value_in_32bit);
+    }
+    // v8::Integer cannot represent 64-bit integers.
+    return v8::Number::New(script_state->GetIsolate(), value);
+  }
+};
+
 // String
 template <typename T>
 struct ToV8Traits<

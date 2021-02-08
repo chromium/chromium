@@ -36,6 +36,61 @@ void TestToV8Traits(const V8TestingScope& scope,
   }
 }
 
+TEST(ToV8TraitsTest, Numeric) {
+  const V8TestingScope scope;
+  // Test type matching
+  // Integer
+  TEST_TOV8_TRAITS(scope, IDLByte, "0", static_cast<int8_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLByte, "1", static_cast<int8_t>(1));
+  TEST_TOV8_TRAITS(scope, IDLByte, "-2", static_cast<int8_t>(-2));
+  TEST_TOV8_TRAITS(scope, IDLShort, "0", static_cast<int16_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLLong, "0", static_cast<int32_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLLongLong, "0", static_cast<int64_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLOctet, "0", static_cast<uint8_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedShort, "0", static_cast<uint16_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedLong, "0", static_cast<uint32_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedLongLong, "0", static_cast<uint64_t>(0));
+  // [Clamp] Integer
+  TEST_TOV8_TRAITS(scope, IDLByteClamp, "0", static_cast<int8_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLShortClamp, "0", static_cast<int16_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLLongClamp, "0", static_cast<int32_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLLongLongClamp, "0", static_cast<int64_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLOctetClamp, "0", static_cast<uint8_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedShortClamp, "0", static_cast<uint16_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedLongClamp, "0", static_cast<uint32_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedLongLongClamp, "0",
+                   static_cast<uint64_t>(0));
+  // [EnforceRange] Integer
+  TEST_TOV8_TRAITS(scope, IDLByteEnforceRange, "0", static_cast<int8_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLShortEnforceRange, "0", static_cast<int16_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLLongEnforceRange, "0", static_cast<int32_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLLongLongEnforceRange, "0",
+                   static_cast<int64_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLOctetEnforceRange, "0", static_cast<uint8_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedShortEnforceRange, "0",
+                   static_cast<uint16_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedLongEnforceRange, "0",
+                   static_cast<uint32_t>(0));
+  TEST_TOV8_TRAITS(scope, IDLUnsignedLongLongEnforceRange, "0",
+                   static_cast<uint64_t>(0));
+
+  // Test the maximum and the minimum integer in the range
+  TEST_TOV8_TRAITS(scope, IDLLong, "-2147483648",
+                   std::numeric_limits<int32_t>::min());
+  TEST_TOV8_TRAITS(scope, IDLLong, "2147483647",
+                   std::numeric_limits<int32_t>::max());
+  TEST_TOV8_TRAITS(scope, IDLUnsignedLong, "4294967295",
+                   std::numeric_limits<uint32_t>::max());
+
+  // v8::Number can represent exact numbers in [-(2^53-1), 2^53-1].
+  TEST_TOV8_TRAITS(scope, IDLLongLong, "-9007199254740991",
+                   static_cast<int64_t>(-9007199254740991));  // -(2^53-1)
+  TEST_TOV8_TRAITS(scope, IDLLongLong, "9007199254740991",
+                   static_cast<int64_t>(9007199254740991));  // 2^53-1
+  TEST_TOV8_TRAITS(scope, IDLUnsignedLongLong, "9007199254740991",
+                   static_cast<uint64_t>(9007199254740991));  // 2^53-1
+}
+
 TEST(ToV8TraitsTest, String) {
   const V8TestingScope scope;
   const String string("string");
