@@ -1604,19 +1604,10 @@ void NavigationRequest::BeginNavigation() {
     std::unique_ptr<PrerenderHost> prerender_host =
         prerender_host_registry->FindHostToActivate(common_params_->url,
                                                     *frame_tree_node_);
-    switch (blink::features::kPrerender2Param.Get()) {
-      case blink::features::Prerender2ActivationMode::kEnabled:
-        // If `prerender_host_` exists, this navigation will activate the
-        // prerendered page on navigation commit.
-        prerender_host_ = std::move(prerender_host);
-        break;
-      case blink::features::Prerender2ActivationMode::kDisabled:
-        // The feature param disallows activation of the prerendered page for
-        // testing. Destroy `prerender_host` to dispose of the prerendered
-        // page.
-        prerender_host.reset();
-        break;
-    }
+
+    // If `prerender_host_` exists, this navigation will activate the
+    // prerendered page on navigation commit.
+    prerender_host_ = std::move(prerender_host);
   }
 
   WillStartRequest();

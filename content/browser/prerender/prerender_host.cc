@@ -68,8 +68,6 @@ bool PrerenderHost::ActivatePrerenderedContents(
   TRACE_EVENT1("navigation", "PrerenderHost::ActivatePrerenderedContents",
                "render_frame_host",
                base::trace_event::ToTracedValue(&current_render_frame_host));
-  DCHECK_EQ(blink::features::kPrerender2Param.Get(),
-            blink::features::Prerender2ActivationMode::kEnabled);
 
   DCHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;

@@ -48,11 +48,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kPlzDedicatedWorker;
 BLINK_COMMON_EXPORT extern const base::Feature kPortals;
 BLINK_COMMON_EXPORT extern const base::Feature kPortalsCrossOrigin;
 
+// Prerender2:
 BLINK_COMMON_EXPORT extern const base::Feature kPrerender2;
-enum class Prerender2ActivationMode { kEnabled, kDisabled };
-BLINK_COMMON_EXPORT extern const base::FeatureParam<Prerender2ActivationMode>
-    kPrerender2Param;
-
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 

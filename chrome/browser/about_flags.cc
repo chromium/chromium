@@ -2418,13 +2418,6 @@ const FeatureEntry::FeatureVariation kCheckOfflineCapabilityVariations[] = {
      base::size(kCheckOfflineCapabilityEnforce), nullptr},
 };
 
-const FeatureEntry::FeatureParam kPrerender2DisableActivation[]{
-    {"activation", "disabled"}};
-const FeatureEntry::FeatureVariation kPrerender2Variations[] = {
-    {"without activation", kPrerender2DisableActivation,
-     base::size(kPrerender2DisableActivation), nullptr},
-};
-
 const FeatureEntry::FeatureParam kSubresourceRedirectPublicImageHints[] = {
     {"enable_public_image_hints_based_compression", "true"},
     {"enable_subresource_server_redirect", "true"},
@@ -6957,9 +6950,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-prerender2", flag_descriptions::kPrerender2Name,
      flag_descriptions::kPrerender2Description, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kPrerender2,
-                                    kPrerender2Variations,
-                                    "Prerender2")},
+     FEATURE_VALUE_TYPE(blink::features::kPrerender2)},
 
 #if defined(OS_ANDROID)
     {"enable-swipe-to-move-cursor", flag_descriptions::kSwipeToMoveCursorName,

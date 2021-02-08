@@ -33,30 +33,15 @@
 namespace content {
 namespace {
 
-class PrerenderBrowserTest : public ContentBrowserTest,
-                             public testing::WithParamInterface<bool> {
+class PrerenderBrowserTest : public ContentBrowserTest {
  public:
   PrerenderBrowserTest() {
-    std::map<std::string, std::string> parameters;
-    if (IsActivationDisabled())
-      parameters["activation"] = "disabled";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrerender2, parameters);
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
   }
   ~PrerenderBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    // Make sure the feature param is correctly set before testing.
-    if (IsActivationDisabled()) {
-      ASSERT_EQ(blink::features::kPrerender2Param.Get(),
-                blink::features::Prerender2ActivationMode::kDisabled);
-    } else {
-      ASSERT_EQ(blink::features::kPrerender2Param.Get(),
-                blink::features::Prerender2ActivationMode::kEnabled);
-    }
-
     host_resolver()->AddRule("*", "127.0.0.1");
     ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
     ssl_server_.SetSSLConfig(
@@ -150,8 +135,6 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return request_count_by_path_[url.PathForRequest()];
   }
 
-  bool IsActivationDisabled() const { return GetParam(); }
-
   void TestRenderFrameHostPrerenderingState(const GURL& prerender_url) {
     const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
 
@@ -210,11 +193,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   base::Lock lock_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderBrowserTest,
-                         /*disable_activation=*/testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -237,16 +216,11 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
   // The prerender host should be consumed.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
-  if (IsActivationDisabled()) {
-    // Activation is disabled. The navigation should issue a request again.
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
-  } else {
-    // Activating the prerendered page should not issue a request.
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  }
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
@@ -277,18 +251,12 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
-  if (IsActivationDisabled()) {
-    // Activation is disabled. The navigation should issue a request again.
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 2);
-  } else {
-    // Activating the prerendered page should not issue a request.
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
-  }
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   const GURL kInitialUrl = GetUrl("/prerender/duplicate_prerenders.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
@@ -325,18 +293,12 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
 
-  if (IsActivationDisabled()) {
-    // Activation is disabled. The navigation should issue a request again.
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 2);
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
-  } else {
-    // Activating the prerendered page should not issue a request.
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
-    EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
-  }
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl1), 1);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, SameOriginRedirection) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SameOriginRedirection) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -356,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, SameOriginRedirection) {
   EXPECT_FALSE(registry.FindHostByUrlForTesting(kRedirectedUrl));
 }
 
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CrossOriginRedirection) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginRedirection) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -380,7 +342,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CrossOriginRedirection) {
 // URL.
 
 // Makes sure that activation on navigation for an iframes doesn't happen.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_iFrame) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -405,7 +367,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
 }
 
 // Makes sure that activation on navigation for a pop-up window doesn't happen.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PopUpWindow) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_PopUpWindow) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -431,7 +393,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PopUpWindow) {
 
 // Makes sure that activation on navigation for a page that has a pop-up window
 // doesn't happen.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -462,11 +424,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
 }
 
 // Tests that back-forward history is preserved after activation.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, HistoryAfterActivation) {
-  // This test is only meaningful with activation.
-  if (IsActivationDisabled())
-    return;
-
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, HistoryAfterActivation) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -487,16 +445,15 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, HistoryAfterActivation) {
 
 // Tests that all RenderFrameHostImpls in the prerendering page know the
 // prerendering state.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderIframe) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderIframe) {
   TestRenderFrameHostPrerenderingState(GetUrl("/page_with_iframe.html"));
 }
 
 // Blank <iframe> is a special case. Tests that the blank iframe knows the
 // prerendering state as well.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderBlankIframe) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderBlankIframe) {
   TestRenderFrameHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
-
 
 class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
@@ -556,7 +513,7 @@ class MojoCapabilityControlTestContentBrowserClient
 
 // Tests that binding requests are handled according to MojoBinderPolicyMap
 // during prerendering.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
@@ -604,11 +561,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
   // Verify that BrowserInterfaceBrokerImpl executes kGrant binders immediately.
   EXPECT_EQ(test_browser_client.GetGrantReceiverSetSize(), frames.size());
 
-  // The rest of this test is only meaningful with activation.
-  if (IsActivationDisabled()) {
-    SetBrowserClientForTesting(old_browser_client);
-    return;
-  }
   // Activate the prerendered page.
   NavigateWithLocation(kPrerenderingUrl);
   EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), frames.size());
@@ -618,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
 
 // Tests that mojo capability control will cancel prerendering if the main frame
 // receives a request for a kCancel interface.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        MojoCapabilityControl_CancelMainFrame) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
@@ -654,7 +606,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 
 // Tests that mojo capability control will cancel prerendering if child frames
 // receive a request for a kCancel interface.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        MojoCapabilityControl_CancelIframe) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
@@ -703,7 +655,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 // - Tests for feature-specific code methodology restrictions ==================
 
 // Tests that window.open() in a prerendering page fails.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -733,7 +685,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
 // the prerendering state.
 // TODO(https://crbug.com/1166470): This can be a tentative behavior. We may
 // stop exposing the clients.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        FeatureRestriction_ClientsMatchAll) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/clients_matchall.html");
@@ -760,7 +712,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 // - Tests for Mojo capability control methodology restrictions ================
 
 // Tests that prerendering pages can access cookies.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CookieAccess) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CookieAccess) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
   // Navigate to an initial page.
@@ -795,7 +747,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CookieAccess) {
 }
 
 // Tests that prerendering pages can access local storage.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LocalStorageAccess) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LocalStorageAccess) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
   // Navigate to an initial page.

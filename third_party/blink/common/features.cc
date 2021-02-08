@@ -151,16 +151,9 @@ const base::Feature kPortals {
 const base::Feature kPortalsCrossOrigin{"PortalsCrossOrigin",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable the prerender V2. https://crbug.com/1126305.
+// Enable the prerender2. https://crbug.com/1126305.
 const base::Feature kPrerender2{"Prerender2",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
-const base::FeatureParam<Prerender2ActivationMode>::Option prerender2_types[] =
-    {{Prerender2ActivationMode::kEnabled, "enabled"},
-     {Prerender2ActivationMode::kDisabled, "disabled"}};
-const base::FeatureParam<Prerender2ActivationMode> kPrerender2Param{
-    &kPrerender2, "activation", Prerender2ActivationMode::kEnabled,
-    &prerender2_types};
-
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
 }
