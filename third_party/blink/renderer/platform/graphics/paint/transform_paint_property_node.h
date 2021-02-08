@@ -208,7 +208,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
       bool transform_has_simple_change = true;
       if (!transform_changed) {
         transform_has_simple_change = false;
-      } else if (animation_state.is_running_animation_on_compositor) {
+      } else if (!origin_changed &&
+                 animation_state.is_running_animation_on_compositor) {
+        // |is_running_animation_on_compositor| means a transform animation is
+        // running. Composited transform origin animations are not supported so
+        // origin changes need to be considered as simple changes.
         transform_has_simple_change = false;
       } else if (matrix_changed &&
                  !transform_and_origin.ChangePreserves2dAxisAlignment(
