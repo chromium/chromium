@@ -415,6 +415,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
   scoped_refptr<media::VideoFrame> frame = request->frame->frame();
 
+  // Currently underlying encoders can't handle frame backed by textures,
+  // so let's readback pixel data to CPU memory.
   if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
     scoped_refptr<viz::RasterContextProvider> raster_provider;
     auto wrapper = SharedGpuContext::ContextProviderWrapper();
@@ -439,6 +441,14 @@ void VideoEncoder::ProcessEncode(Request* request) {
                                WrapPersistent(request), std::move(status)));
       return;
     }
+  }
+
+  // Currently underlying encoders can't handle alpha channel, so let's
+  // wrap a frame with an alpha channel into a frame without it.
+  // For example such frames can come from 2D canvas context with alpha = true.
+  if (frame->storage_type() == media::VideoFrame::STORAGE_OWNED_MEMORY &&
+      frame->format() == media::PIXEL_FORMAT_I420A) {
+    frame = media::WrapAsI420VideoFrame(std::move(frame));
   }
 
   bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&

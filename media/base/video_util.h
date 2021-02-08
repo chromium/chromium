@@ -166,7 +166,7 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     GrDirectContext* gr_context,
     VideoFramePool* pool = nullptr);
 
-// Converts a frame with YV12A format into I420 by dropping alpha channel.
+// Converts a frame with I420A format into I420 by dropping alpha channel.
 MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
     scoped_refptr<VideoFrame> frame);
 

@@ -493,8 +493,6 @@ scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 
   scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
       frame, PIXEL_FORMAT_I420, frame->visible_rect(), frame->natural_size());
-  if (!wrapped_frame)
-    return nullptr;
   return wrapped_frame;
 }
 

@@ -858,15 +858,37 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
     return nullptr;
   }
 
+  size_t new_plane_count = NumPlanes(format);
+  base::Optional<VideoFrameLayout> new_layout;
+  if (format == frame->format()) {
+    new_layout = frame->layout();
+  } else {
+    std::vector<ColorPlaneLayout> new_planes = frame->layout().planes();
+    if (new_plane_count > new_planes.size()) {
+      DLOG(ERROR) << " Wrapping frame has more planes than old one."
+                  << " old plane count: " << new_planes.size()
+                  << " new plane count: " << new_plane_count;
+      return nullptr;
+    }
+    new_planes.resize(new_plane_count);
+    new_layout = VideoFrameLayout::CreateWithPlanes(format, frame->coded_size(),
+                                                    new_planes);
+  }
+
+  if (!new_layout.has_value()) {
+    DLOG(ERROR) << " Can't create layout for the wrapping frame";
+    return nullptr;
+  }
+
   scoped_refptr<VideoFrame> wrapping_frame(
-      new VideoFrame(frame->layout(), frame->storage_type(), visible_rect,
+      new VideoFrame(new_layout.value(), frame->storage_type(), visible_rect,
                      natural_size, frame->timestamp()));
 
   // Copy all metadata to the wrapped frame->
   wrapping_frame->metadata().MergeMetadataFrom(frame->metadata());
 
   if (frame->IsMappable()) {
-    for (size_t i = 0; i < NumPlanes(format); ++i) {
+    for (size_t i = 0; i < new_plane_count; ++i) {
       wrapping_frame->data_[i] = frame->data_[i];
     }
   }
@@ -986,7 +1008,7 @@ int VideoFrame::PlaneHorizontalBitsPerPixel(VideoPixelFormat format,
 int VideoFrame::PlaneBitsPerPixel(VideoPixelFormat format, size_t plane) {
   DCHECK(IsValidPlane(format, plane));
   return PlaneHorizontalBitsPerPixel(format, plane) /
-      SampleSize(format, plane).height();
+         SampleSize(format, plane).height();
 }
 
 // static
@@ -1203,8 +1225,8 @@ uint8_t* VideoFrame::visible_data(size_t plane) {
       static_cast<const VideoFrame*>(this)->visible_data(plane));
 }
 
-const gpu::MailboxHolder&
-VideoFrame::mailbox_holder(size_t texture_index) const {
+const gpu::MailboxHolder& VideoFrame::mailbox_holder(
+    size_t texture_index) const {
   DCHECK(HasTextures());
   DCHECK(IsValidPlane(format(), texture_index));
   return wrapped_frame_ ? wrapped_frame_->mailbox_holders_[texture_index]
