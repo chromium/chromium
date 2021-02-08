@@ -30,26 +30,29 @@ class MediaCodecBridgeBuilder {
         try {
             Log.i(TAG, "create MediaCodec video decoder, mime %s", mime);
             info = MediaCodecUtil.createDecoder(mime, codecType, mediaCrypto);
+
+            if (info.mediaCodec == null) return null;
+
+            MediaCodecBridge bridge =
+                    new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, useAsyncApi);
+            byte[][] csds = {csd0, csd1};
+            MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(mime, width, height,
+                    csds, hdrMetadata, info.supportsAdaptivePlayback && allowAdaptivePlayback);
+
+            if (!bridge.configureVideo(format, surface, mediaCrypto, 0)) return null;
+
+            if (!bridge.start()) {
+                bridge.release();
+                return null;
+            }
+
+            return bridge;
         } catch (Exception e) {
             Log.e(TAG, "Failed to create MediaCodec video decoder: %s, codecType: %d", mime,
                     codecType, e);
         }
 
-        if (info.mediaCodec == null) return null;
-
-        MediaCodecBridge bridge =
-                new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, useAsyncApi);
-        byte[][] csds = {csd0, csd1};
-        MediaFormat format = MediaFormatBuilder.createVideoDecoderFormat(mime, width, height, csds,
-                hdrMetadata, info.supportsAdaptivePlayback && allowAdaptivePlayback);
-
-        if (!bridge.configureVideo(format, surface, mediaCrypto, 0)) return null;
-
-        if (!bridge.start()) {
-            bridge.release();
-            return null;
-        }
-        return bridge;
+        return null;
     }
 
     @CalledByNative
