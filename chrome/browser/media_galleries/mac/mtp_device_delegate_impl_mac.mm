@@ -149,12 +149,13 @@ MTPDeviceDelegateImplMac::~MTPDeviceDelegateImplMac() {
 
 namespace {
 
-void ForwardGetFileInfo(base::File::Info* info,
-                        base::File::Error* error,
-                        GetFileInfoSuccessCallback success_callback,
-                        const ErrorCallback& error_callback) {
+void ForwardGetFileInfo(
+    base::File::Info* info,
+    base::File::Error* error,
+    const GetFileInfoSuccessCallback& success_callback,
+    const ErrorCallback& error_callback) {
   if (*error == base::File::FILE_OK)
-    std::move(success_callback).Run(*info);
+    success_callback.Run(*info);
   else
     error_callback.Run(*error);
 }
@@ -163,7 +164,7 @@ void ForwardGetFileInfo(base::File::Info* info,
 
 void MTPDeviceDelegateImplMac::GetFileInfo(
     const base::FilePath& file_path,
-    GetFileInfoSuccessCallback success_callback,
+    const GetFileInfoSuccessCallback& success_callback,
     const ErrorCallback& error_callback) {
   base::File::Info* info = new base::File::Info;
   base::File::Error* error = new base::File::Error;
@@ -172,8 +173,8 @@ void MTPDeviceDelegateImplMac::GetFileInfo(
       FROM_HERE,
       base::Bind(&MTPDeviceDelegateImplMac::GetFileInfoImpl,
                  base::Unretained(this), file_path, info, error),
-      base::BindOnce(&ForwardGetFileInfo, base::Owned(info), base::Owned(error),
-                     std::move(success_callback), error_callback));
+      base::Bind(&ForwardGetFileInfo, base::Owned(info), base::Owned(error),
+                 success_callback, error_callback));
 }
 
 void MTPDeviceDelegateImplMac::CreateDirectory(
