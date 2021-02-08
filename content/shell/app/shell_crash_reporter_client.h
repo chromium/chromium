@@ -20,11 +20,11 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
 #if defined(OS_WIN)
   // Returns a textual description of the product type and version to include
   // in the crash report.
-  void GetProductNameAndVersion(const base::string16& exe_path,
-                                base::string16* product_name,
-                                base::string16* version,
-                                base::string16* special_build,
-                                base::string16* channel_name) override;
+  void GetProductNameAndVersion(const std::wstring& exe_path,
+                                std::wstring* product_name,
+                                std::wstring* version,
+                                std::wstring* special_build,
+                                std::wstring* channel_name) override;
 #endif
 
 #if defined(OS_POSIX) && !defined(OS_MAC)
@@ -41,7 +41,7 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
   // The location where minidump files should be written. Returns true if
   // |crash_dir| was set.
 #if defined(OS_WIN)
-  bool GetCrashDumpLocation(base::string16* crash_dir) override;
+  bool GetCrashDumpLocation(std::wstring* crash_dir) override;
 #else
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
 #endif

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 
 #if !defined(OS_WIN)
@@ -51,26 +50,26 @@ class CrashReporterClient {
   // Returns true if the pipe name to connect to breakpad should be computed and
   // stored in the process's environment block. By default, returns true for the
   // "browser" process.
-  virtual bool ShouldCreatePipeName(const base::string16& process_type);
+  virtual bool ShouldCreatePipeName(const std::wstring& process_type);
 
   // Returns true if an alternative location to store the minidump files was
   // specified. Returns true if |crash_dir| was set.
-  virtual bool GetAlternativeCrashDumpLocation(base::string16* crash_dir);
+  virtual bool GetAlternativeCrashDumpLocation(std::wstring* crash_dir);
 
   // Returns a textual description of the product type and version to include
   // in the crash report.
-  virtual void GetProductNameAndVersion(const base::string16& exe_path,
-                                        base::string16* product_name,
-                                        base::string16* version,
-                                        base::string16* special_build,
-                                        base::string16* channel_name);
+  virtual void GetProductNameAndVersion(const std::wstring& exe_path,
+                                        std::wstring* product_name,
+                                        std::wstring* version,
+                                        std::wstring* special_build,
+                                        std::wstring* channel_name);
 
   // Returns true if a restart dialog should be displayed. In that case,
   // |message| and |title| are set to a message to display in a dialog box with
   // the given title before restarting, and |is_rtl_locale| indicates whether
   // to display the text as RTL.
-  virtual bool ShouldShowRestartDialog(base::string16* title,
-                                       base::string16* message,
+  virtual bool ShouldShowRestartDialog(std::wstring* title,
+                                       std::wstring* message,
                                        bool* is_rtl_locale);
 
   // Returns true if it is ok to restart the application. Invoked right before
@@ -111,21 +110,21 @@ class CrashReporterClient {
 #endif
 
   // The location where minidump files should be written. Returns true if
-  // |crash_dir| was set. Windows has to use base::string16 because this code
+  // |crash_dir| was set. Windows has to use std::wstring because this code
   // needs to work in chrome_elf, where only kernel32.dll is allowed, and
   // base::FilePath and its dependencies pull in other DLLs.
 #if defined(OS_WIN)
-  virtual bool GetCrashDumpLocation(base::string16* crash_dir);
+  virtual bool GetCrashDumpLocation(std::wstring* crash_dir);
 #else
   virtual bool GetCrashDumpLocation(base::FilePath* crash_dir);
 #endif
 
   // The location where metrics files should be written. Returns true if
-  // |metrics_dir| was set. Windows has to use base::string16 because this code
+  // |metrics_dir| was set. Windows has to use std::wstring because this code
   // needs to work in chrome_elf, where only kernel32.dll is allowed, and
   // base::FilePath and its dependencies pull in other DLLs.
 #if defined(OS_WIN)
-  virtual bool GetCrashMetricsLocation(base::string16* metrics_dir);
+  virtual bool GetCrashMetricsLocation(std::wstring* metrics_dir);
 #else
   virtual bool GetCrashMetricsLocation(base::FilePath* metrics_dir);
 #endif

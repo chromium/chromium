@@ -5,13 +5,13 @@
 #include "components/crash/core/app/crashpad.h"
 
 #include <memory>
+#include <string>
 
 #include "base/debug/crash_logging.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -33,12 +33,11 @@ void GetPlatformCrashpadAnnotations(
   CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
   wchar_t exe_file[MAX_PATH] = {};
   CHECK(::GetModuleFileName(nullptr, exe_file, base::size(exe_file)));
-  base::string16 product_name, version, special_build, channel_name;
+  std::wstring product_name, version, special_build, channel_name;
   crash_reporter_client->GetProductNameAndVersion(
-      base::WideToUTF16(exe_file), &product_name, &version, &special_build,
-      &channel_name);
-  (*annotations)["prod"] = base::UTF16ToUTF8(product_name);
-  (*annotations)["ver"] = base::UTF16ToUTF8(version);
+      exe_file, &product_name, &version, &special_build, &channel_name);
+  (*annotations)["prod"] = base::WideToUTF8(product_name);
+  (*annotations)["ver"] = base::WideToUTF8(version);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Empty means stable.
   const bool allow_empty_channel = true;
@@ -46,9 +45,9 @@ void GetPlatformCrashpadAnnotations(
   const bool allow_empty_channel = false;
 #endif
   if (allow_empty_channel || !channel_name.empty())
-    (*annotations)["channel"] = base::UTF16ToUTF8(channel_name);
+    (*annotations)["channel"] = base::WideToUTF8(channel_name);
   if (!special_build.empty())
-    (*annotations)["special"] = base::UTF16ToUTF8(special_build);
+    (*annotations)["special"] = base::WideToUTF8(special_build);
 #if defined(ARCH_CPU_X86)
   (*annotations)["plat"] = std::string("Win32");
 #elif defined(ARCH_CPU_X86_64)
@@ -73,13 +72,13 @@ base::FilePath PlatformCrashpadInitialization(
   CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
 
   if (initial_client) {
-    base::string16 database_path_str;
+    std::wstring database_path_str;
     if (crash_reporter_client->GetCrashDumpLocation(&database_path_str))
-      database_path = base::FilePath::FromUTF16Unsafe(database_path_str);
+      database_path = base::FilePath(database_path_str);
 
-    base::string16 metrics_path_str;
+    std::wstring metrics_path_str;
     if (crash_reporter_client->GetCrashMetricsLocation(&metrics_path_str)) {
-      metrics_path = base::FilePath::FromUTF16Unsafe(metrics_path_str);
+      metrics_path = base::FilePath(metrics_path_str);
       CHECK(base::CreateDirectoryAndGetError(metrics_path, nullptr));
     }
 
