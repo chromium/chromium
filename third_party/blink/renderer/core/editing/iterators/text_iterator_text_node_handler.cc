@@ -109,6 +109,14 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
       return;
     }
 
+    if (mapping_units_index_ >= mapping_units_.size()) {
+      // mapping_units_ got in HandleTextNodeInRange() ran out. It was for
+      // :first-letter. We call GetMappingUnitsForDOMRange() again for the
+      // remaining part of |text_node_|.
+      mapping_units_ = mapping->GetMappingUnitsForDOMRange(range_to_emit);
+      mapping_units_index_ = 0;
+    }
+
     const unsigned initial_offset = offset_;
     for (; mapping_units_index_ < mapping_units_.size();
          ++mapping_units_index_) {

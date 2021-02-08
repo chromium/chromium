@@ -864,6 +864,14 @@ TEST_P(TextIteratorTest, StartAndEndInMultiCharFirstLetterInPre) {
   EXPECT_TRUE(iter.AtEnd());
 }
 
+// crbug.com/1175482
+TEST_P(TextIteratorTest, FirstLetterAndReaminingAreDifferentBlocks) {
+  SetBodyContent(R"HTML(
+      <style>.class11 { float:left; } *:first-letter { float:inherit; }</style>
+      <body contenteditable=true autofocus><dt class="class11">Cascade)HTML");
+  EXPECT_EQ("[C][ascade]", Iterate<DOMTree>());
+}
+
 TEST_P(TextIteratorTest, StartAtRemainingTextInPre) {
   SetBodyContent("<style>pre:first-letter {color:red;}</style><pre>Axyz</pre>");
 
