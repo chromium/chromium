@@ -32,16 +32,23 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class ReadingListSectionHeaderTest {
+    private static final int NEWER_CREATION_TIMESTAMP = 2;
+    private static final int OLDER_CREATION_TIMESTAMP = 1;
+
     @Before
     public void setup() {
         ShadowRecordHistogram.reset();
     }
 
-    private BookmarkListEntry createReadingListEntry(long id, boolean read) {
+    private BookmarkListEntry createReadingListEntry(long id, boolean read, int dateAdded) {
         BookmarkId bookmarkId = new BookmarkId(id, BookmarkType.READING_LIST);
-        BookmarkItem bookmarkItem =
-                new BookmarkItem(bookmarkId, null, null, false, null, false, false, 0, read);
+        BookmarkItem bookmarkItem = new BookmarkItem(
+                bookmarkId, null, null, false, null, false, false, dateAdded, read);
         return BookmarkListEntry.createBookmarkEntry(bookmarkItem);
+    }
+
+    private BookmarkListEntry createReadingListEntry(long id, boolean read) {
+        return createReadingListEntry(id, read, /*dateAdded=*/0);
     }
 
     private void assertSectionHeader(
@@ -140,12 +147,17 @@ public class ReadingListSectionHeaderTest {
         String titleUnread = context.getString(R.string.reading_list_unread);
 
         List<BookmarkListEntry> listItems = new ArrayList<>();
-        listItems.add(createReadingListEntry(1, false));
-        listItems.add(createReadingListEntry(2, false));
+        listItems.add(createReadingListEntry(1, false, OLDER_CREATION_TIMESTAMP));
+        listItems.add(createReadingListEntry(2, false, NEWER_CREATION_TIMESTAMP));
         ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
 
         assertEquals("Incorrect number of items in the adapter", 4, listItems.size());
         assertSectionHeader(listItems.get(0), R.string.reading_list_unread, 0);
+        String msg = "Items should be sorted by creation date, newer items comes first.";
+        assertEquals(
+                msg, NEWER_CREATION_TIMESTAMP, listItems.get(1).getBookmarkItem().getDateAdded());
+        assertEquals(
+                msg, OLDER_CREATION_TIMESTAMP, listItems.get(2).getBookmarkItem().getDateAdded());
         assertSectionHeader(listItems.get(3), R.string.reading_list_read,
                 R.dimen.bookmark_reading_list_section_header_padding_top);
     }
