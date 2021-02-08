@@ -30,7 +30,7 @@ AppCommand::AppCommand()
       is_auto_run_on_os_upgrade_(false),
       is_run_as_user_(false) {}
 
-AppCommand::AppCommand(const base::string16& command_line)
+AppCommand::AppCommand(const std::wstring& command_line)
     : command_line_(command_line),
       sends_pings_(false),
       is_web_accessible_(false),
@@ -44,7 +44,7 @@ bool AppCommand::Initialize(const base::win::RegKey& key) {
   }
 
   LONG result = ERROR_SUCCESS;
-  base::string16 cmd_line;
+  std::wstring cmd_line;
 
   result = key.ReadValue(google_update::kRegCommandLineField, &cmd_line);
   if (result != ERROR_SUCCESS) {
@@ -66,7 +66,7 @@ bool AppCommand::Initialize(const base::win::RegKey& key) {
 }
 
 void AppCommand::AddWorkItems(HKEY predefined_root,
-                              const base::string16& command_path,
+                              const std::wstring& command_path,
                               WorkItemList* item_list) const {
   // Command_path is derived from GetRegCommandKey which always returns
   // value from GetClientsKeyPath() which should be 32-bit hive.

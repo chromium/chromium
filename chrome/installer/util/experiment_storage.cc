@@ -35,7 +35,7 @@ namespace installer {
 
 namespace {
 
-constexpr base::char16 kExperimentLabelName[] = L"CrExp60";
+constexpr wchar_t kExperimentLabelName[] = L"CrExp60";
 constexpr wchar_t kRegKeyRetention[] = L"\\Retention";
 constexpr wchar_t kRegValueActionDelay[] = L"ActionDelay";
 constexpr wchar_t kRegValueFirstDisplayTime[] = L"FirstDisplayTime";
@@ -70,8 +70,8 @@ constexpr int kLowestUnusedBit =
 // Helper functions ------------------------------------------------------------
 
 // Returns the name of the global mutex used to protect the storage location.
-base::string16 GetMutexName() {
-  base::string16 name(L"Global\\");
+std::wstring GetMutexName() {
+  std::wstring name(L"Global\\");
   name.append(install_static::kCompanyPathName);
   name.append(ShellUtil::GetBrowserModelId(!install_static::IsSystemInstall()));
   name.append(L"ExperimentStorageMutex");
@@ -81,7 +81,7 @@ base::string16 GetMutexName() {
 // Populates |path| with the path to the registry key in which the current
 // user's experiment state is stored. Returns false if the path cannot be
 // determined.
-bool GetExperimentStateKeyPath(bool system_level, base::string16* path) {
+bool GetExperimentStateKeyPath(bool system_level, std::wstring* path) {
   const install_static::InstallDetails& install_details =
       install_static::InstallDetails::Get();
 
@@ -90,7 +90,7 @@ bool GetExperimentStateKeyPath(bool system_level, base::string16* path) {
     return true;
   }
 
-  base::string16 user_sid;
+  std::wstring user_sid;
   if (base::win::GetUserSidString(&user_sid)) {
     *path = install_details.GetClientStateMediumKeyPath()
                 .append(kRegKeyRetention)
@@ -287,11 +287,11 @@ void ExperimentStorage::SetUint64Bits(int value,
   *target |= ((static_cast<uint64_t>(value) & bit_mask) << low_bit);
 }
 
-bool ExperimentStorage::DecodeMetrics(base::StringPiece16 encoded_metrics,
+bool ExperimentStorage::DecodeMetrics(base::WStringPiece encoded_metrics,
                                       ExperimentMetrics* metrics) {
   std::string metrics_data;
 
-  if (!base::Base64Decode(base::UTF16ToASCII(encoded_metrics), &metrics_data))
+  if (!base::Base64Decode(base::WideToASCII(encoded_metrics), &metrics_data))
     return false;
 
   if (metrics_data.size() != 6)
@@ -341,7 +341,7 @@ bool ExperimentStorage::DecodeMetrics(base::StringPiece16 encoded_metrics,
 }
 
 // static
-base::string16 ExperimentStorage::EncodeMetrics(
+std::wstring ExperimentStorage::EncodeMetrics(
     const ExperimentMetrics& metrics) {
   uint64_t metrics_value = 0;
   SetUint64Bits(metrics.session_length_bucket,
@@ -377,17 +377,17 @@ base::string16 ExperimentStorage::EncodeMetrics(
   }
   std::string encoded_metrics;
   base::Base64Encode(metrics_data, &encoded_metrics);
-  return base::ASCIIToUTF16(encoded_metrics);
+  return base::ASCIIToWide(encoded_metrics);
 }
 
 bool ExperimentStorage::LoadMetricsUnsafe(ExperimentMetrics* metrics) {
-  base::string16 value;
+  std::wstring value;
 
   if (!GoogleUpdateSettings::ReadExperimentLabels(&value))
     return false;
 
   ExperimentLabels experiment_labels(value);
-  base::StringPiece16 encoded_metrics =
+  base::WStringPiece encoded_metrics =
       experiment_labels.GetValueForLabel(kExperimentLabelName);
   if (encoded_metrics.empty()) {
     *metrics = ExperimentMetrics();
@@ -398,7 +398,7 @@ bool ExperimentStorage::LoadMetricsUnsafe(ExperimentMetrics* metrics) {
 }
 
 bool ExperimentStorage::StoreMetricsUnsafe(const ExperimentMetrics& metrics) {
-  base::string16 value;
+  std::wstring value;
   if (!GoogleUpdateSettings::ReadExperimentLabels(&value))
     return false;
   ExperimentLabels experiment_labels(value);
@@ -413,7 +413,7 @@ bool ExperimentStorage::StoreMetricsUnsafe(const ExperimentMetrics& metrics) {
 bool ExperimentStorage::LoadStateUnsafe(Experiment* experiment) {
   const bool system_level = install_static::IsSystemInstall();
 
-  base::string16 path;
+  std::wstring path;
   if (!GetExperimentStateKeyPath(system_level, &path))
     return false;
 
@@ -448,7 +448,7 @@ bool ExperimentStorage::LoadStateUnsafe(Experiment* experiment) {
 bool ExperimentStorage::StoreStateUnsafe(const Experiment& experiment) {
   const bool system_level = install_static::IsSystemInstall();
 
-  base::string16 path;
+  std::wstring path;
   if (!GetExperimentStateKeyPath(system_level, &path))
     return false;
 

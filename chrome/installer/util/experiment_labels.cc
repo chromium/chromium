@@ -15,13 +15,13 @@ namespace installer {
 
 namespace {
 
-constexpr base::StringPiece16 kNameValueSeparator = STRING16_LITERAL("=");
-constexpr base::StringPiece16 kValueExpirationSeparator = STRING16_LITERAL("|");
-constexpr base::StringPiece16 kLabelSeparator = STRING16_LITERAL(";");
+constexpr base::WStringPiece kNameValueSeparator = L"=";
+constexpr base::WStringPiece kValueExpirationSeparator = L"|";
+constexpr base::WStringPiece kLabelSeparator = L";";
 
 // Returns a vector of string pieces, one for each "name=value|expiration"
 // group in |value|.
-std::vector<base::StringPiece16> Parse(base::StringPiece16 value) {
+std::vector<base::WStringPiece> Parse(base::WStringPiece value) {
   return base::SplitStringPiece(value, kLabelSeparator, base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_NONEMPTY);
 }
@@ -45,7 +45,7 @@ const wchar_t* AbbreviatedMonth(int month) {
 
 // Returns a formatted string given a date that is compatible with Omaha (see
 // https://github.com/google/omaha/blob/master/omaha/base/time.cc#L132).
-base::string16 FormatDate(base::Time date) {
+std::wstring FormatDate(base::Time date) {
   base::Time::Exploded exploded_time;
   date.UTCExplode(&exploded_time);
 
@@ -59,28 +59,27 @@ base::string16 FormatDate(base::Time date) {
 }
 
 // Appends "label_name=label_value|expiration" to |label|.
-void AppendLabel(base::StringPiece16 label_name,
-                 base::StringPiece16 label_value,
+void AppendLabel(base::WStringPiece label_name,
+                 base::WStringPiece label_value,
                  base::Time expiration,
-                 base::string16* label) {
+                 std::wstring* label) {
   base::StrAppend(label, {label_name, kNameValueSeparator, label_value,
                           kValueExpirationSeparator, FormatDate(expiration)});
 }
 
 }  // namespace
 
-ExperimentLabels::ExperimentLabels(const base::string16& value)
-    : value_(value) {}
+ExperimentLabels::ExperimentLabels(const std::wstring& value) : value_(value) {}
 
-base::StringPiece16 ExperimentLabels::GetValueForLabel(
-    base::StringPiece16 label_name) const {
+base::WStringPiece ExperimentLabels::GetValueForLabel(
+    base::WStringPiece label_name) const {
   DCHECK(!label_name.empty());
 
   return FindLabel(label_name).second;
 }
 
-void ExperimentLabels::SetValueForLabel(base::StringPiece16 label_name,
-                                        base::StringPiece16 label_value,
+void ExperimentLabels::SetValueForLabel(base::WStringPiece label_name,
+                                        base::WStringPiece label_value,
                                         base::TimeDelta lifetime) {
   DCHECK(!label_name.empty());
   DCHECK(!label_value.empty());
@@ -89,8 +88,8 @@ void ExperimentLabels::SetValueForLabel(base::StringPiece16 label_name,
   SetValueForLabel(label_name, label_value, base::Time::Now() + lifetime);
 }
 
-void ExperimentLabels::SetValueForLabel(base::StringPiece16 label_name,
-                                        base::StringPiece16 label_value,
+void ExperimentLabels::SetValueForLabel(base::WStringPiece label_name,
+                                        base::WStringPiece label_value,
                                         base::Time expiration) {
   DCHECK(!label_name.empty());
   DCHECK(!label_value.empty());
@@ -104,8 +103,8 @@ void ExperimentLabels::SetValueForLabel(base::StringPiece16 label_name,
   } else {
     // Replace the existing value and expiration.
     // Get the stuff before the old label.
-    base::string16 new_label(value_, 0,
-                             label_and_value.first.data() - value_.data());
+    std::wstring new_label(value_, 0,
+                           label_and_value.first.data() - value_.data());
     // Append the new label.
     AppendLabel(label_name, label_value, expiration, &new_label);
     // Find the stuff after the old label and append it.
@@ -113,18 +112,18 @@ void ExperimentLabels::SetValueForLabel(base::StringPiece16 label_name,
         kLabelSeparator[0],
         (label_and_value.second.data() + label_and_value.second.size()) -
             value_.data());
-    if (next_separator != base::string16::npos)
-      new_label.append(value_, next_separator, base::string16::npos);
+    if (next_separator != std::wstring::npos)
+      new_label.append(value_, next_separator, std::wstring::npos);
     // Presto.
     new_label.swap(value_);
   }
 }
 
 ExperimentLabels::LabelAndValue ExperimentLabels::FindLabel(
-    base::StringPiece16 label_name) const {
+    base::WStringPiece label_name) const {
   DCHECK(!label_name.empty());
 
-  std::vector<base::StringPiece16> labels = Parse(value_);
+  std::vector<base::WStringPiece> labels = Parse(value_);
   for (const auto& label : labels) {
     if (label.size() < label_name.size() + 2 ||
         !base::StartsWith(label, label_name) ||
@@ -133,7 +132,7 @@ ExperimentLabels::LabelAndValue ExperimentLabels::FindLabel(
     }
     size_t value_start = label_name.size() + 1;
     size_t value_end = label.find(kValueExpirationSeparator, value_start);
-    if (value_end == base::StringPiece16::npos)
+    if (value_end == base::WStringPiece::npos)
       break;
     return std::make_pair(label,
                           label.substr(value_start, value_end - value_start));

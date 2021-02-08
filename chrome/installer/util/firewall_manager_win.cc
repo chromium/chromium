@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/installer/util/advanced_firewall_manager_win.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installer_util_strings.h"
@@ -27,7 +27,7 @@ class FirewallManagerAdvancedImpl : public FirewallManager {
   FirewallManagerAdvancedImpl() {}
   ~FirewallManagerAdvancedImpl() override {}
 
-  bool Init(const base::string16& app_name, const base::FilePath& app_path) {
+  bool Init(const std::wstring& app_name, const base::FilePath& app_path) {
     return manager_.Init(app_name, app_path);
   }
 
@@ -44,11 +44,11 @@ class FirewallManagerAdvancedImpl : public FirewallManager {
   void RemoveFirewallRules() override { manager_.DeleteAllRules(); }
 
  private:
-  static base::string16 GetMdnsRuleName() {
+  static std::wstring GetMdnsRuleName() {
     return GetLocalizedString(IDS_INBOUND_MDNS_RULE_NAME_BASE);
   }
 
-  static base::string16 GetMdnsRuleDescription() {
+  static std::wstring GetMdnsRuleDescription() {
     return GetLocalizedString(IDS_INBOUND_MDNS_RULE_DESCRIPTION_BASE);
   }
 

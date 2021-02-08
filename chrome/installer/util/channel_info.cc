@@ -35,48 +35,48 @@ static_assert(NUM_MODIFIERS == base::size(kModifiers),
 // location at which the modifier was found.  The number of characters in the
 // modifier is returned in |length|, if non-nullptr.
 bool FindModifier(ModifierIndex index,
-                  const base::string16& ap_value,
-                  base::string16::size_type* position,
-                  base::string16::size_type* length) {
+                  const std::wstring& ap_value,
+                  std::wstring::size_type* position,
+                  std::wstring::size_type* length) {
   DCHECK_NE(position, nullptr);
-  base::string16::size_type mod_position = base::string16::npos;
-  base::string16::size_type mod_length =
-      base::string16::traits_type::length(kModifiers[index]);
+  std::wstring::size_type mod_position = std::wstring::npos;
+  std::wstring::size_type mod_length =
+      std::wstring::traits_type::length(kModifiers[index]);
   char last_char = kModifiers[index][mod_length - 1];
   const bool mod_takes_arg = (last_char == L':' || last_char == L'_');
-  base::string16::size_type pos = 0;
+  std::wstring::size_type pos = 0;
   do {
     mod_position = ap_value.find(kModifiers[index], pos, mod_length);
-    if (mod_position == base::string16::npos)
+    if (mod_position == std::wstring::npos)
       return false;  // Modifier not found.
     pos = mod_position + mod_length;
     // Modifiers that take an argument gobble up to the next separator or to the
     // end.
     if (mod_takes_arg) {
       pos = ap_value.find(L'-', pos);
-      if (pos == base::string16::npos)
+      if (pos == std::wstring::npos)
         pos = ap_value.size();
       break;
     }
     // Regular modifiers must be followed by '-' or the end of the string.
   } while (pos != ap_value.size() && ap_value[pos] != L'-');
-  DCHECK_NE(mod_position, base::string16::npos);
+  DCHECK_NE(mod_position, std::wstring::npos);
   *position = mod_position;
   if (length != nullptr)
     *length = pos - mod_position;
   return true;
 }
 
-bool HasModifier(ModifierIndex index, const base::string16& ap_value) {
+bool HasModifier(ModifierIndex index, const std::wstring& ap_value) {
   DCHECK(index >= 0 && index < NUM_MODIFIERS);
-  base::string16::size_type position;
+  std::wstring::size_type position;
   return FindModifier(index, ap_value, &position, nullptr);
 }
 
-base::string16::size_type FindInsertionPoint(ModifierIndex index,
-                                             const base::string16& ap_value) {
+std::wstring::size_type FindInsertionPoint(ModifierIndex index,
+                                           const std::wstring& ap_value) {
   // Return the location of the next modifier.
-  base::string16::size_type result;
+  std::wstring::size_type result;
 
   for (int scan = index + 1; scan < NUM_MODIFIERS; ++scan) {
     if (FindModifier(static_cast<ModifierIndex>(scan), ap_value, &result,
@@ -89,11 +89,11 @@ base::string16::size_type FindInsertionPoint(ModifierIndex index,
 }
 
 // Returns true if |ap_value| is modified.
-bool SetModifier(ModifierIndex index, bool set, base::string16* ap_value) {
+bool SetModifier(ModifierIndex index, bool set, std::wstring* ap_value) {
   DCHECK(index >= 0 && index < NUM_MODIFIERS);
   DCHECK(ap_value);
-  base::string16::size_type position;
-  base::string16::size_type length;
+  std::wstring::size_type position;
+  std::wstring::size_type length;
   bool have_modifier = FindModifier(index, *ap_value, &position, &length);
   if (set) {
     if (!have_modifier) {
@@ -112,19 +112,19 @@ bool SetModifier(ModifierIndex index, bool set, base::string16* ap_value) {
 // Returns the value of a modifier - that is for a modifier of the form
 // "-foo:bar", returns "bar". Returns an empty string if the modifier
 // is not present or does not have a value.
-base::string16 GetModifierValue(ModifierIndex modifier_index,
-                                const base::string16& value) {
-  base::string16::size_type position;
-  base::string16::size_type length;
+std::wstring GetModifierValue(ModifierIndex modifier_index,
+                              const std::wstring& value) {
+  std::wstring::size_type position;
+  std::wstring::size_type length;
 
   if (FindModifier(modifier_index, value, &position, &length)) {
     // Return the portion after the prefix.
-    base::string16::size_type pfx_length =
-        base::string16::traits_type::length(kModifiers[modifier_index]);
+    std::wstring::size_type pfx_length =
+        std::wstring::traits_type::length(kModifiers[modifier_index]);
     DCHECK_LE(pfx_length, length);
     return value.substr(position + pfx_length, length - pfx_length);
   }
-  return base::string16();
+  return std::wstring();
 }
 
 }  // namespace
@@ -151,8 +151,8 @@ bool ChannelInfo::Write(RegKey* key) const {
 }
 
 bool ChannelInfo::ClearStage() {
-  base::string16::size_type position;
-  base::string16::size_type length;
+  std::wstring::size_type position;
+  std::wstring::size_type length;
   if (FindModifier(MOD_STAGE, value_, &position, &length)) {
     value_.erase(position, length);
     return true;
@@ -160,7 +160,7 @@ bool ChannelInfo::ClearStage() {
   return false;
 }
 
-base::string16 ChannelInfo::GetStatsDefault() const {
+std::wstring ChannelInfo::GetStatsDefault() const {
   return GetModifierValue(MOD_STATS_DEFAULT, value_);
 }
 

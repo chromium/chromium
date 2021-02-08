@@ -33,7 +33,7 @@ base::FilePath GetExecutableVersionDirName(const base::FilePath& exe_path) {
       FileVersionInfo::CreateFileVersionInfo(exe_path));
   if (!file_version_info.get())
     return base::FilePath();
-  return base::FilePath(file_version_info->file_version());
+  return base::FilePath::FromUTF16Unsafe(file_version_info->file_version());
 }
 
 // Returns the names of the old version directories found in |install_dir|. The

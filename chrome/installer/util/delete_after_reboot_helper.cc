@@ -327,10 +327,10 @@ HRESULT GetPendingMovesValue(std::vector<PendingMove>* pending_moves) {
 bool MatchPendingDeletePath(const base::FilePath& short_form_needle,
                             const base::FilePath& reg_path) {
   // Stores the path stored in each entry.
-  base::string16 match_path(reg_path.value());
+  std::wstring match_path(reg_path.value());
 
   // First chomp the prefix since that will mess up GetShortPathName.
-  base::StringPiece16 prefix(L"\\??\\");
+  base::WStringPiece prefix(L"\\??\\");
   if (base::StartsWith(match_path, prefix, base::CompareCase::SENSITIVE))
     match_path = match_path.substr(prefix.size());
 

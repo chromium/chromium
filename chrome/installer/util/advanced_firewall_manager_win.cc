@@ -21,7 +21,7 @@ AdvancedFirewallManager::AdvancedFirewallManager() {}
 
 AdvancedFirewallManager::~AdvancedFirewallManager() {}
 
-bool AdvancedFirewallManager::Init(const base::string16& app_name,
+bool AdvancedFirewallManager::Init(const std::wstring& app_name,
                                    const base::FilePath& app_path) {
   firewall_rules_ = nullptr;
   HRESULT hr = ::CoCreateInstance(CLSID_NetFwPolicy2, nullptr, CLSCTX_ALL,
@@ -68,8 +68,8 @@ bool AdvancedFirewallManager::HasAnyRule() {
   return !rules.empty();
 }
 
-bool AdvancedFirewallManager::AddUDPRule(const base::string16& rule_name,
-                                         const base::string16& description,
+bool AdvancedFirewallManager::AddUDPRule(const std::wstring& rule_name,
+                                         const std::wstring& description,
                                          uint16_t port) {
   // Delete the rule. According MDSN |INetFwRules::Add| should replace rule with
   // same "rule identifier". It's not clear what is "rule identifier", but it
@@ -87,15 +87,13 @@ bool AdvancedFirewallManager::AddUDPRule(const base::string16& rule_name,
   return SUCCEEDED(hr);
 }
 
-void AdvancedFirewallManager::DeleteRuleByName(
-    const base::string16& rule_name) {
+void AdvancedFirewallManager::DeleteRuleByName(const std::wstring& rule_name) {
   std::vector<Microsoft::WRL::ComPtr<INetFwRule>> rules;
   GetAllRules(&rules);
   for (size_t i = 0; i < rules.size(); ++i) {
     base::win::ScopedBstr name;
     HRESULT hr = rules[i]->get_Name(name.Receive());
-    if (SUCCEEDED(hr) && name.Get() &&
-        base::string16(name.Get()) == rule_name) {
+    if (SUCCEEDED(hr) && name.Get() && std::wstring(name.Get()) == rule_name) {
       DeleteRule(rules[i]);
     }
   }
@@ -106,7 +104,7 @@ void AdvancedFirewallManager::DeleteRule(
   // Rename rule to unique name and delete by unique name. We can't just delete
   // rule by name. Multiple rules with the same name and different app are
   // possible.
-  base::win::ScopedBstr unique_name(base::UTF8ToUTF16(base::GenerateGUID()));
+  base::win::ScopedBstr unique_name(base::ASCIIToWide(base::GenerateGUID()));
   rule->put_Name(unique_name.Get());
   firewall_rules_->Remove(unique_name.Get());
 }
@@ -120,8 +118,8 @@ void AdvancedFirewallManager::DeleteAllRules() {
 }
 
 Microsoft::WRL::ComPtr<INetFwRule> AdvancedFirewallManager::CreateUDPRule(
-    const base::string16& rule_name,
-    const base::string16& description,
+    const std::wstring& rule_name,
+    const std::wstring& description,
     uint16_t port) {
   Microsoft::WRL::ComPtr<INetFwRule> udp_rule;
 

@@ -29,7 +29,7 @@ TEST(ExperimentLabels, GetValueForLabel) {
       L"name2=value2|Fri, 14 Aug 2015 16:13:03 GMT";
   ExperimentLabels labels(kDummyValue);
 
-  base::StringPiece16 value = labels.GetValueForLabel(L"name");
+  base::WStringPiece value = labels.GetValueForLabel(L"name");
   EXPECT_EQ(value, L"value");
 
   value = labels.GetValueForLabel(L"name2");
@@ -43,7 +43,7 @@ TEST(ExperimentLabels, SetValueForLabel) {
   ExperimentLabels label(L"");
 
   label.SetValueForLabel(L"name", L"value", base::TimeDelta::FromSeconds(1));
-  base::StringPiece16 value = label.GetValueForLabel(L"name");
+  base::WStringPiece value = label.GetValueForLabel(L"name");
   EXPECT_EQ(value, L"value");
   EXPECT_THAT(label.value(), StartsWith(L"name=value|"));
 
