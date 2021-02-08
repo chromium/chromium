@@ -10,12 +10,9 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "mojo/public/cpp/bindings/lib/binding_state.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
@@ -23,6 +20,48 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
+
+class MessageFilter;
+class MessageReceiver;
+
+namespace internal {
+
+// Base class containing common code for various AssociatedReceiver template
+// expansions to reduce code size.
+class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedReceiverBase {
+ public:
+  AssociatedReceiverBase();
+
+  void SetFilter(std::unique_ptr<MessageFilter> filter);
+
+  void reset();
+  void ResetWithReason(uint32_t custom_reason, const std::string& description);
+
+  void set_disconnect_handler(base::OnceClosure error_handler);
+  void set_disconnect_with_reason_handler(
+      ConnectionErrorWithReasonCallback error_handler);
+
+  bool is_bound() const { return !!endpoint_client_; }
+  explicit operator bool() const { return !!endpoint_client_; }
+
+  void FlushForTesting();
+
+ protected:
+  ~AssociatedReceiverBase();
+
+  // TODO(dcheng): should probably document this thing.
+  void BindImpl(ScopedInterfaceEndpointHandle handle,
+                MessageReceiverWithResponderStatus* receiver,
+                std::unique_ptr<MessageReceiver> payload_validator,
+                bool expect_sync_requests,
+                scoped_refptr<base::SequencedTaskRunner> runner,
+                uint32_t interface_version,
+                const char* interface_name);
+
+  std::unique_ptr<InterfaceEndpointClient> endpoint_client_;
+};
+
+}  // namespace internal
 
 // An AssociatedReceiver is used to receive and dispatch Interface method calls
 // to a local implementation of Interface. Every AssociatedReceiver object is
@@ -34,7 +73,7 @@ namespace mojo {
 // begin piggybacking on that Remote's interface pipe.
 template <typename Interface,
           typename ImplRefTraits = RawPtrImplRefTraits<Interface>>
-class AssociatedReceiver {
+class AssociatedReceiver : public internal::AssociatedReceiverBase {
  public:
   // Typically (and by default) an AssociatedReceiver uses a raw pointer to
   // reference its linked Interface implementation object, because typically
@@ -47,8 +86,9 @@ class AssociatedReceiver {
   // of the AssociatedReceiver's lifetime. The AssociatedReceiver can be bound
   // later by calling |Bind()| or |BindNewEndpointAndPassRemote()|. An unbound
   // AssociatedReceiver does not schedule any asynchronous tasks.
-  explicit AssociatedReceiver(ImplPointerType impl)
-      : binding_(std::move(impl)) {}
+  explicit AssociatedReceiver(ImplPointerType impl) {
+    stub_.set_sink(std::move(impl));
+  }
 
   // Constructs a bound AssociatedReceiver by consuming |pending_receiver|. The
   // AssociatedReceiver is permanently linked to |impl| and will schedule
@@ -67,9 +107,12 @@ class AssociatedReceiver {
   AssociatedReceiver(ImplPointerType impl,
                      PendingAssociatedReceiver<Interface> pending_receiver,
                      scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : binding_(std::move(impl)) {
+      : AssociatedReceiver(std::move(impl)) {
     Bind(std::move(pending_receiver), std::move(task_runner));
   }
+
+  AssociatedReceiver(const AssociatedReceiver&) = delete;
+  AssociatedReceiver& operator=(const AssociatedReceiver&) = delete;
 
   ~AssociatedReceiver() = default;
 
@@ -78,7 +121,7 @@ class AssociatedReceiver {
   //
   // NOTE: An AssociatedReceiver is NEVER passively unbound. The only way for it
   // to become unbound is to explicitly call |reset()| or |Unbind()|.
-  bool is_bound() const { return binding_.is_bound(); }
+  using AssociatedReceiverBase::is_bound;
 
   // Sets a OnceClosure to be invoked if this AssociatedReceiver is cut off from
   // its AssociatedRemote (or PendingAssociatedRemote). This can happen if the
@@ -89,28 +132,21 @@ class AssociatedReceiver {
   //
   // If ever invoked, |handler| will be scheduled asynchronously on the
   // AssociatedReceiver's bound SequencedTaskRunner.
-  void set_disconnect_handler(base::OnceClosure handler) {
-    binding_.set_connection_error_handler(std::move(handler));
-  }
+  using AssociatedReceiverBase::set_disconnect_handler;
 
   // Like above but when invoked |handler| will receive additional metadata
   // about why the remote endpoint was closed, if provided.
-  void set_disconnect_with_reason_handler(
-      ConnectionErrorWithReasonCallback handler) {
-    binding_.set_connection_error_with_reason_handler(std::move(handler));
-  }
+  using AssociatedReceiverBase::set_disconnect_with_reason_handler;
 
   // Resets this AssociatedReceiver to an unbound state. An unbound
   // AssociatedReceiver will NEVER schedule method calls or disconnection
   // notifications, and any pending tasks which were scheduled prior to
   // unbinding are effectively cancelled.
-  void reset() { binding_.Close(); }
+  using AssociatedReceiverBase::reset;
 
   // Similar to above but provides additional information to the remote endpoint
   // about why this end is hanging up.
-  void ResetWithReason(uint32_t custom_reason, const std::string& description) {
-    binding_.CloseWithReason(custom_reason, description);
-  }
+  using AssociatedReceiverBase::ResetWithReason;
 
   // Binds this AssociatedReceiver, connecting it to a new
   // PendingAssociatedRemote which is returned for transmission elsewhere
@@ -189,9 +225,10 @@ class AssociatedReceiver {
   void Bind(PendingAssociatedReceiver<Interface> pending_receiver,
             scoped_refptr<base::SequencedTaskRunner> task_runner) {
     if (pending_receiver) {
-      binding_.Bind(
-          AssociatedInterfaceRequest<Interface>(pending_receiver.PassHandle()),
-          std::move(task_runner));
+      BindImpl(pending_receiver.PassHandle(), &stub_,
+               base::WrapUnique(new typename Interface::RequestValidator_()),
+               Interface::HasSyncMethods_, std::move(task_runner),
+               Interface::Version_, Interface::Name_);
     } else {
       reset();
     }
@@ -216,30 +253,34 @@ class AssociatedReceiver {
   // responses.
   PendingAssociatedReceiver<Interface> Unbind() WARN_UNUSED_RESULT {
     DCHECK(is_bound());
-    return PendingAssociatedReceiver<Interface>(binding_.Unbind().PassHandle());
+    // TODO(dcheng): Consider moving implementation into base class:
+    //   std::exchange(endpoint_client_, nullptr)->PassHandle();
+    PendingAssociatedReceiver<Interface> pending_receiver(
+        endpoint_client_->PassHandle());
+    endpoint_client_.reset();
+    return pending_receiver;
   }
 
   // Sets a message filter to be notified of each incoming message before
   // dispatch. If a filter returns |false| from Accept(), the message is not
   // dispatched and the pipe is closed. Filters cannot be removed once added
   // and only one can be set.
-  void SetFilter(std::unique_ptr<MessageFilter> filter) {
-    DCHECK(is_bound());
-    binding_.SetFilter(std::move(filter));
-  }
+  using AssociatedReceiverBase::SetFilter;
 
   // Sends a message on the underlying message pipe and runs the current
   // message loop until its response is received. This can be used in tests to
   // verify that no message was sent on a message pipe in response to some
   // stimulus.
-  void FlushForTesting() { binding_.FlushForTesting(); }
+  using AssociatedReceiverBase::FlushForTesting;
 
   // Returns the interface implementation that was previously specified.
-  Interface* impl() { return binding_.impl(); }
+  Interface* impl() { return ImplRefTraits::GetRawPointer(&stub_.sink()); }
 
   // Allows test code to swap the interface implementation.
   ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
-    return binding_.SwapImplForTesting(new_impl);
+    Interface* old_impl = impl();
+    stub_.set_sink(std::move(new_impl));
+    return old_impl;
   }
 
   // Reports the currently dispatching message as bad and resets this receiver.
@@ -259,15 +300,20 @@ class AssociatedReceiver {
   // message, and the returned callback must be run on the same sequence to
   // which this Receiver is bound.
   ReportBadMessageCallback GetBadMessageCallback() {
-    return binding_.GetBadMessageCallback();
+    return base::BindOnce(
+        [](ReportBadMessageCallback inner_callback,
+           base::WeakPtr<AssociatedReceiver> receiver,
+           const std::string& error) {
+          std::move(inner_callback).Run(error);
+          if (receiver)
+            receiver->reset();
+        },
+        mojo::GetBadMessageCallback(), weak_ptr_factory_.GetWeakPtr());
   }
 
- private:
-  // TODO(https://crbug.com/875030): Move AssociatedBinding details into this
-  // class.
-  AssociatedBinding<Interface, ImplRefTraits> binding_;
+  typename Interface::template Stub_<ImplRefTraits> stub_;
 
-  DISALLOW_COPY_AND_ASSIGN(AssociatedReceiver);
+  base::WeakPtrFactory<AssociatedReceiver> weak_ptr_factory_{this};
 };
 
 }  // namespace mojo
