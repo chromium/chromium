@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
@@ -341,12 +342,18 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   if (IsA<HTMLScriptElement>(node))
     return false;
 
-  // Not a <head>/<style>/<script>:
+  // Style elements in SVG are not display: none, unlike HTML style elements,
+  // but they are still hidden and thus treated as irrelevant for accessibility.
+  if (IsA<SVGStyleElement>(node))
+    return false;
+
+  // Not a <head>/<style>/<script>, or SVG<style>:
   // Use a slower check to see if this node is anywhere inside of a <head>,
   // <style> or <script>.
   // This check is not necessary if the parent_ax is already known, which means
   // we are attempting to add this object from something already relevant in the
-  // AX tree, and therefore can't be inside a <head>, <style> or <script>.
+  // AX tree, and therefore can't be inside a <head>, <style>, <script> or SVG
+  // <style> element.
   if (parent_ax_known)
     return true;  // No need to check inside if the parent exists.
   // Objects inside <head> are irrelevant, except <title> (collects title text).
@@ -357,6 +364,9 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     return false;
   // Objects inside a <script> are irrelevant.
   if (Traversal<HTMLScriptElement>::FirstAncestor(*node))
+    return false;
+  // Objects inside an SVG <style> are irrelevant.
+  if (Traversal<SVGStyleElement>::FirstAncestor(*node))
     return false;
 
   // All other objects are relevant, even if hidden.

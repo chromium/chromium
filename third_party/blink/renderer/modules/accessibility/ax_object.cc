@@ -2638,14 +2638,10 @@ bool AXObject::ComputeIsHiddenViaStyle() const {
   if (!node)
     return false;
 
-  // Style elements in SVG are not display: none, unlike HTML style elements,
-  // but they are still hidden and thus treated as hidden from style.
-  if (IsA<SVGStyleElement>(node))
-    return true;
-
   if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*node)) {
     // Ensure contents of head, style and script are never exposed.
     // Note: an AXObject is created for <title> to gather the document's name.
+    DCHECK(!Traversal<SVGStyleElement>::FirstAncestorOrSelf(*node)) << node;
     DCHECK(!Traversal<HTMLHeadElement>::FirstAncestorOrSelf(*node) ||
            IsA<HTMLTitleElement>(node))
         << node;
@@ -2653,11 +2649,8 @@ bool AXObject::ComputeIsHiddenViaStyle() const {
     DCHECK(!Traversal<HTMLScriptElement>::FirstAncestorOrSelf(*node)) << node;
 
     // content-visibility: hidden subtrees are always hidden.
-    if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
-            *node, DisplayLockActivationReason::kAccessibility)) {
-      return true;
-    }
-    return false;
+    return DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
+        *node, DisplayLockActivationReason::kAccessibility);
   }
 
   // For elements with layout objects we can get their style directly.
