@@ -18,6 +18,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -1364,21 +1365,30 @@ v8::Local<v8::Object> WebAXObjectProxy::ParentElement() {
 
 void WebAXObjectProxy::Increment() {
   UpdateLayout();
-  accessibility_object_.Increment();
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kIncrement;
+  accessibility_object_.PerformAction(action_data);
 }
 
 void WebAXObjectProxy::Decrement() {
   UpdateLayout();
-  accessibility_object_.Decrement();
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDecrement;
+  accessibility_object_.PerformAction(action_data);
 }
 
 void WebAXObjectProxy::ShowMenu() {
-  accessibility_object_.ShowContextMenu();
+  UpdateLayout();
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kShowContextMenu;
+  accessibility_object_.PerformAction(action_data);
 }
 
 void WebAXObjectProxy::Press() {
   UpdateLayout();
-  accessibility_object_.Click();
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kDoDefault;
+  accessibility_object_.PerformAction(action_data);
 }
 
 bool WebAXObjectProxy::SetValue(const std::string& value) {
@@ -1387,8 +1397,10 @@ bool WebAXObjectProxy::SetValue(const std::string& value) {
       accessibility_object_.StringValue().IsEmpty())
     return false;
 
-  accessibility_object_.SetValue(blink::WebString::FromUTF8(value));
-  return true;
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kSetValue;
+  action_data.value = value;
+  return accessibility_object_.PerformAction(action_data);
 }
 
 bool WebAXObjectProxy::IsEqual(v8::Local<v8::Object> proxy) {
@@ -1410,7 +1422,9 @@ void WebAXObjectProxy::UnsetNotificationListener() {
 
 void WebAXObjectProxy::TakeFocus() {
   UpdateLayout();
-  accessibility_object_.Focus();
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kFocus;
+  accessibility_object_.PerformAction(action_data);
 }
 
 void WebAXObjectProxy::ScrollToMakeVisible() {
@@ -1429,7 +1443,10 @@ void WebAXObjectProxy::ScrollToMakeVisibleWithSubFocus(int x,
 
 void WebAXObjectProxy::ScrollToGlobalPoint(int x, int y) {
   UpdateLayout();
-  accessibility_object_.ScrollToGlobalPoint(gfx::Point(x, y));
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kScrollToPoint;
+  action_data.target_point = gfx::Point(x, y);
+  accessibility_object_.PerformAction(action_data);
 }
 
 int WebAXObjectProxy::ScrollX() {

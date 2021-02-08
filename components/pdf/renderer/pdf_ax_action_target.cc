@@ -5,6 +5,7 @@
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace pdf {
@@ -59,8 +60,18 @@ ui::AXActionTarget::Type PdfAXActionTarget::GetType() const {
   return ui::AXActionTarget::Type::kPdf;
 }
 
-bool PdfAXActionTarget::ClearAccessibilityFocus() const {
-  return false;
+bool PdfAXActionTarget::PerformAction(
+    const ui::AXActionData& action_data) const {
+  switch (action_data.action) {
+    case ax::mojom::Action::kDoDefault:
+      return Click();
+    case ax::mojom::Action::kShowContextMenu:
+      return ShowContextMenu();
+    case ax::mojom::Action::kScrollToPoint:
+      return ScrollToGlobalPoint(action_data.target_point);
+    default:
+      return false;
+  }
 }
 
 bool PdfAXActionTarget::Click() const {
@@ -85,18 +96,6 @@ bool PdfAXActionTarget::Click() const {
   return true;
 }
 
-bool PdfAXActionTarget::Decrement() const {
-  return false;
-}
-
-bool PdfAXActionTarget::Increment() const {
-  return false;
-}
-
-bool PdfAXActionTarget::Focus() const {
-  return false;
-}
-
 gfx::Rect PdfAXActionTarget::GetRelativeBounds() const {
   return gfx::Rect();
 }
@@ -111,10 +110,6 @@ gfx::Point PdfAXActionTarget::MinimumScrollOffset() const {
 
 gfx::Point PdfAXActionTarget::MaximumScrollOffset() const {
   return gfx::Point();
-}
-
-bool PdfAXActionTarget::SetAccessibilityFocus() const {
-  return false;
 }
 
 void PdfAXActionTarget::SetScrollOffset(const gfx::Point& point) const {}
@@ -151,14 +146,6 @@ bool PdfAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
        target_plugin_node_.data().relative_bounds.bounds.height()}};
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
-}
-
-bool PdfAXActionTarget::SetSequentialFocusNavigationStartingPoint() const {
-  return false;
-}
-
-bool PdfAXActionTarget::SetValue(const std::string& value) const {
-  return false;
 }
 
 bool PdfAXActionTarget::ShowContextMenu() const {

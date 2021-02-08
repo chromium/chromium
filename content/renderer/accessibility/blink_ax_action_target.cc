@@ -36,24 +36,9 @@ ui::AXActionTarget::Type BlinkAXActionTarget::GetType() const {
   return ui::AXActionTarget::Type::kBlink;
 }
 
-bool BlinkAXActionTarget::ClearAccessibilityFocus() const {
-  return web_ax_object_.ClearAccessibilityFocus();
-}
-
-bool BlinkAXActionTarget::Click() const {
-  return web_ax_object_.Click();
-}
-
-bool BlinkAXActionTarget::Decrement() const {
-  return web_ax_object_.Decrement();
-}
-
-bool BlinkAXActionTarget::Increment() const {
-  return web_ax_object_.Increment();
-}
-
-bool BlinkAXActionTarget::Focus() const {
-  return web_ax_object_.Focus();
+bool BlinkAXActionTarget::PerformAction(
+    const ui::AXActionData& action_data) const {
+  return web_ax_object_.PerformAction(action_data);
 }
 
 gfx::Rect BlinkAXActionTarget::GetRelativeBounds() const {
@@ -75,10 +60,6 @@ gfx::Point BlinkAXActionTarget::MinimumScrollOffset() const {
 
 gfx::Point BlinkAXActionTarget::MaximumScrollOffset() const {
   return web_ax_object_.MaximumScrollOffset();
-}
-
-bool BlinkAXActionTarget::SetAccessibilityFocus() const {
-  return web_ax_object_.SetAccessibilityFocus();
 }
 
 void BlinkAXActionTarget::SetScrollOffset(const gfx::Point& point) const {
@@ -105,18 +86,6 @@ bool BlinkAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
       blink_focus_object->WebAXObject(), focus_offset);
 }
 
-bool BlinkAXActionTarget::SetSequentialFocusNavigationStartingPoint() const {
-  return web_ax_object_.SetSequentialFocusNavigationStartingPoint();
-}
-
-bool BlinkAXActionTarget::SetValue(const std::string& value) const {
-  return web_ax_object_.SetValue(blink::WebString::FromUTF8(value));
-}
-
-bool BlinkAXActionTarget::ShowContextMenu() const {
-  return web_ax_object_.ShowContextMenu();
-}
-
 bool BlinkAXActionTarget::ScrollToMakeVisible() const {
   return web_ax_object_.ScrollToMakeVisible();
 }
@@ -129,10 +98,6 @@ bool BlinkAXActionTarget::ScrollToMakeVisibleWithSubFocus(
   return web_ax_object_.ScrollToMakeVisibleWithSubFocus(
       rect, horizontal_scroll_alignment, vertical_scroll_alignment,
       scroll_behavior);
-}
-
-bool BlinkAXActionTarget::ScrollToGlobalPoint(const gfx::Point& point) const {
-  return web_ax_object_.ScrollToGlobalPoint(point);
 }
 
 }  // namespace content

@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 
@@ -4371,6 +4372,63 @@ LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
 //
 // Modify or take an action on an object.
 //
+
+bool AXObject::PerformAction(const ui::AXActionData& action_data) {
+  switch (action_data.action) {
+    case ax::mojom::blink::Action::kBlur:
+      return RequestFocusAction();
+    case ax::mojom::blink::Action::kClearAccessibilityFocus:
+      return InternalClearAccessibilityFocusAction();
+    case ax::mojom::blink::Action::kDecrement:
+      return RequestDecrementAction();
+    case ax::mojom::blink::Action::kDoDefault:
+      return RequestClickAction();
+    case ax::mojom::blink::Action::kFocus:
+      return RequestFocusAction();
+    case ax::mojom::blink::Action::kIncrement:
+      return RequestIncrementAction();
+    case ax::mojom::blink::Action::kScrollToPoint:
+      return RequestScrollToGlobalPointAction(
+          IntPoint(action_data.target_point));
+    case ax::mojom::blink::Action::kSetAccessibilityFocus:
+      return InternalSetAccessibilityFocusAction();
+    case ax::mojom::blink::Action::kSetScrollOffset:
+      SetScrollOffset(IntPoint(action_data.target_point));
+      return true;
+    case ax::mojom::blink::Action::kSetSequentialFocusNavigationStartingPoint:
+      return RequestSetSequentialFocusNavigationStartingPointAction();
+      break;
+    case ax::mojom::blink::Action::kSetValue:
+      return RequestSetValueAction(
+          WTF::String::FromUTF8(action_data.value.c_str()));
+    case ax::mojom::blink::Action::kShowContextMenu:
+      return RequestShowContextMenuAction();
+
+    case ax::mojom::blink::Action::kAnnotatePageImages:
+    case ax::mojom::blink::Action::kCollapse:
+    case ax::mojom::blink::Action::kCustomAction:
+    case ax::mojom::blink::Action::kExpand:
+    case ax::mojom::blink::Action::kGetImageData:
+    case ax::mojom::blink::Action::kGetTextLocation:
+    case ax::mojom::blink::Action::kHideTooltip:
+    case ax::mojom::blink::Action::kHitTest:
+    case ax::mojom::blink::Action::kInternalInvalidateTree:
+    case ax::mojom::blink::Action::kLoadInlineTextBoxes:
+    case ax::mojom::blink::Action::kNone:
+    case ax::mojom::blink::Action::kReplaceSelectedText:
+    case ax::mojom::blink::Action::kScrollBackward:
+    case ax::mojom::blink::Action::kScrollDown:
+    case ax::mojom::blink::Action::kScrollForward:
+    case ax::mojom::blink::Action::kScrollLeft:
+    case ax::mojom::blink::Action::kScrollRight:
+    case ax::mojom::blink::Action::kScrollToMakeVisible:
+    case ax::mojom::blink::Action::kScrollUp:
+    case ax::mojom::blink::Action::kSetSelection:
+    case ax::mojom::blink::Action::kShowTooltip:
+    case ax::mojom::blink::Action::kSignalEndOfTest:
+      return false;
+  }
+}
 
 bool AXObject::RequestDecrementAction() {
   Event* event =

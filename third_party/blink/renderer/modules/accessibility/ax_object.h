@@ -57,6 +57,7 @@
 class SkMatrix44;
 
 namespace ui {
+struct AXActionData;
 struct AXNodeData;
 }
 
@@ -1158,6 +1159,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // that isn't handled it calls |DoNativeIncrement|.
   //
   // These all return true if handled.
+  //
+  // Note: we're migrating to have PerformAction() be the only public
+  // interface, the others will all be private.
+  bool PerformAction(const ui::AXActionData&);
   bool RequestDecrementAction();
   bool RequestClickAction();
   bool RequestFocusAction();

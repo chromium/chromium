@@ -42,6 +42,8 @@ component("ax_base") {
     "accessibility_features.h",
     "accessibility_switches.cc",
     "accessibility_switches.h",
+    "ax_action_data.cc",
+    "ax_action_data.h",
     "ax_action_handler.cc",
     "ax_action_handler.h",
     "ax_action_handler_base.cc",
@@ -101,8 +103,6 @@ component("accessibility") {
   defines = [ "AX_IMPLEMENTATION" ]
 
   sources = [
-    "ax_action_data.cc",
-    "ax_action_data.h",
     "ax_action_target.h",
     "ax_active_popup.cc",
     "ax_active_popup.h",

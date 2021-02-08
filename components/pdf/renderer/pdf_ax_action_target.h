@@ -30,34 +30,29 @@ class PdfAXActionTarget : public ui::AXActionTarget {
  protected:
   // AXActionTarget overrides.
   Type GetType() const override;
-  bool ClearAccessibilityFocus() const override;
-  bool Click() const override;
-  bool Decrement() const override;
-  bool Increment() const override;
-  bool Focus() const override;
+  bool PerformAction(const ui::AXActionData& action_data) const override;
   gfx::Rect GetRelativeBounds() const override;
   gfx::Point GetScrollOffset() const override;
   gfx::Point MinimumScrollOffset() const override;
   gfx::Point MaximumScrollOffset() const override;
-  bool SetAccessibilityFocus() const override;
   void SetScrollOffset(const gfx::Point& point) const override;
   bool SetSelected(bool selected) const override;
   bool SetSelection(const ui::AXActionTarget* anchor_object,
                     int anchor_offset,
                     const ui::AXActionTarget* focus_object,
                     int focus_offset) const override;
-  bool SetSequentialFocusNavigationStartingPoint() const override;
-  bool SetValue(const std::string& value) const override;
-  bool ShowContextMenu() const override;
   bool ScrollToMakeVisible() const override;
   bool ScrollToMakeVisibleWithSubFocus(
       const gfx::Rect& rect,
       ax::mojom::ScrollAlignment horizontal_scroll_alignment,
       ax::mojom::ScrollAlignment vertical_scroll_alignment,
       ax::mojom::ScrollBehavior scroll_behavior) const override;
-  bool ScrollToGlobalPoint(const gfx::Point& point) const override;
 
  private:
+  bool Click() const;
+  bool ShowContextMenu() const;
+  bool ScrollToGlobalPoint(const gfx::Point& point) const;
+
   const ui::AXNode& target_plugin_node_;
   PdfAccessibilityTree* pdf_accessibility_tree_source_;
 };

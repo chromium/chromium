@@ -582,35 +582,12 @@ WebString WebAXObject::Language() const {
   return private_->Language();
 }
 
-bool WebAXObject::ClearAccessibilityFocus() const {
+bool WebAXObject::PerformAction(const ui::AXActionData& action_data) const {
   if (IsDetached())
     return false;
 
   ScopedActionAnnotator annotater(private_.Get());
-  return private_->InternalClearAccessibilityFocusAction();
-}
-
-bool WebAXObject::Click() const {
-  if (IsDetached())
-    return false;
-
-  return private_->RequestClickAction();
-}
-
-bool WebAXObject::Increment() const {
-  if (IsDetached())
-    return false;
-
-  ScopedActionAnnotator annotater(private_.Get());
-  return private_->RequestIncrementAction();
-}
-
-bool WebAXObject::Decrement() const {
-  if (IsDetached())
-    return false;
-
-  ScopedActionAnnotator annotater(private_.Get());
-  return private_->RequestDecrementAction();
+  return private_->PerformAction(action_data);
 }
 
 WebAXObject WebAXObject::InPageLinkTarget() const {
@@ -724,14 +701,6 @@ void WebAXObject::Selection(bool& is_selection_backward,
   }
 }
 
-bool WebAXObject::SetAccessibilityFocus() const {
-  if (IsDetached())
-    return false;
-
-  ScopedActionAnnotator annotater(private_.Get());
-  return private_->InternalSetAccessibilityFocusAction();
-}
-
 bool WebAXObject::SetSelected(bool selected) const {
   if (IsDetached())
     return false;
@@ -781,38 +750,6 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
   AXSelection ax_selection =
       builder.SetBase(ax_base).SetExtent(ax_extent).Build();
   return ax_selection.Select();
-}
-
-bool WebAXObject::Focus() const {
-  if (IsDetached())
-    return false;
-
-  ScopedActionAnnotator annotater(private_.Get());
-  return private_->RequestFocusAction();
-}
-
-bool WebAXObject::SetSequentialFocusNavigationStartingPoint() const {
-  if (IsDetached())
-    return false;
-
-  ScopedActionAnnotator annotater(private_.Get());
-  return private_->RequestSetSequentialFocusNavigationStartingPointAction();
-}
-
-bool WebAXObject::SetValue(WebString value) const {
-  if (IsDetached())
-    return false;
-
-  ScopedActionAnnotator annotater(private_.Get());
-  return private_->RequestSetValueAction(value);
-}
-
-bool WebAXObject::ShowContextMenu() const {
-  if (IsDetached())
-    return false;
-
-  ScopedActionAnnotator annotater(private_.Get());
-  return private_->RequestShowContextMenuAction();
 }
 
 WebString WebAXObject::StringValue() const {
@@ -1302,14 +1239,6 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
   return private_->RequestScrollToMakeVisibleWithSubFocusAction(
       IntRect(subfocus), blink_horizontal_scroll_alignment,
       blink_vertical_scroll_alignment);
-}
-
-bool WebAXObject::ScrollToGlobalPoint(const gfx::Point& point) const {
-  if (IsDetached())
-    return false;
-
-  ScopedActionAnnotator annotater(private_.Get());
-  return private_->RequestScrollToGlobalPointAction(IntPoint(point));
 }
 
 void WebAXObject::Swap(WebAXObject& other) {

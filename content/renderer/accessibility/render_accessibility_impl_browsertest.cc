@@ -1116,21 +1116,37 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
             text_two_action_target->GetType());
 
   EXPECT_EQ(ax::mojom::CheckedState::kFalse, input_checkbox.CheckedState());
-  EXPECT_TRUE(input_checkbox_action_target->Click());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    EXPECT_TRUE(input_checkbox_action_target->PerformAction(action_data));
+  }
   EXPECT_EQ(ax::mojom::CheckedState::kTrue, input_checkbox.CheckedState());
 
   float value = 0.0f;
   EXPECT_TRUE(input_range.ValueForRange(&value));
   EXPECT_EQ(2.0f, value);
-  EXPECT_TRUE(input_range_action_target->Decrement());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDecrement;
+    EXPECT_TRUE(input_range_action_target->PerformAction(action_data));
+  }
   EXPECT_TRUE(input_range.ValueForRange(&value));
   EXPECT_EQ(1.0f, value);
-  EXPECT_TRUE(input_range_action_target->Increment());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kIncrement;
+    EXPECT_TRUE(input_range_action_target->PerformAction(action_data));
+  }
   EXPECT_TRUE(input_range.ValueForRange(&value));
   EXPECT_EQ(2.0f, value);
 
   EXPECT_FALSE(input_range.IsFocused());
-  EXPECT_TRUE(input_range_action_target->Focus());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kFocus;
+    EXPECT_TRUE(input_range_action_target->PerformAction(action_data));
+  }
   EXPECT_TRUE(input_range.IsFocused());
 
   gfx::RectF expected_bounds;
@@ -1160,7 +1176,12 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 #endif
 
   std::string value_to_set("test-value");
-  input_text_action_target->SetValue(value_to_set);
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kSetValue;
+    action_data.value = value_to_set;
+    EXPECT_TRUE(input_text_action_target->PerformAction(action_data));
+  }
   EXPECT_EQ(value_to_set, input_text.StringValue().Utf8());
 
   // Setting selection requires layout to be clean.
@@ -1198,8 +1219,12 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 
   scroller_action_target->SetScrollOffset(gfx::Point(0, 0));
   EXPECT_EQ(gfx::Point(0, 0), scroller_action_target->GetScrollOffset());
-  EXPECT_TRUE(
-      scroller_child_action_target->ScrollToGlobalPoint(gfx::Point(0, 0)));
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kScrollToPoint;
+    action_data.target_point = gfx::Point(0, 0);
+    EXPECT_TRUE(scroller_child_action_target->PerformAction(action_data));
+  }
   EXPECT_GE(scroller_action_target->GetScrollOffset().y(), 900);
 }
 

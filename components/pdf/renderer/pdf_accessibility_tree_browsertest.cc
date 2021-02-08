@@ -19,6 +19,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -1855,7 +1856,12 @@ TEST_F(PdfAccessibilityTreeTest, TestScrollToGlobalPointDataConversion) {
       pdf_accessibility_tree.CreateActionTarget(*root_node);
   ASSERT_TRUE(pdf_action_target);
   EXPECT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
-  EXPECT_TRUE(pdf_action_target->ScrollToGlobalPoint(gfx::Point(50, 50)));
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kScrollToPoint;
+    action_data.target_point = gfx::Point(50, 50);
+    EXPECT_TRUE(pdf_action_target->PerformAction(action_data));
+  }
 
   PP_PdfAccessibilityActionData action_data =
       fake_pepper_instance.GetReceivedActionData();
@@ -1921,7 +1927,11 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
       pdf_accessibility_tree.CreateActionTarget(*link_node);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
-  pdf_action_target->Click();
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    pdf_action_target->PerformAction(action_data);
+  }
   PP_PdfAccessibilityActionData pdf_action_data =
       fake_pepper_instance.GetReceivedActionData();
 
@@ -1958,11 +1968,6 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
       pdf_accessibility_tree.CreateActionTarget(*root_node);
   ASSERT_TRUE(pdf_action_target);
-  EXPECT_FALSE(pdf_action_target->ClearAccessibilityFocus());
-  EXPECT_FALSE(pdf_action_target->Click());
-  EXPECT_FALSE(pdf_action_target->Decrement());
-  EXPECT_FALSE(pdf_action_target->Increment());
-  EXPECT_FALSE(pdf_action_target->Focus());
   gfx::Rect rect = pdf_action_target->GetRelativeBounds();
   EXPECT_TRUE(rect.origin().IsOrigin());
   EXPECT_TRUE(rect.IsEmpty());
@@ -1979,11 +1984,8 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
   EXPECT_EQ(point.x(), 0);
   EXPECT_EQ(point.y(), 0);
 
-  EXPECT_FALSE(pdf_action_target->SetAccessibilityFocus());
   EXPECT_FALSE(pdf_action_target->SetSelected(true));
   EXPECT_FALSE(pdf_action_target->SetSelected(false));
-  EXPECT_FALSE(pdf_action_target->SetSequentialFocusNavigationStartingPoint());
-  EXPECT_FALSE(pdf_action_target->SetValue("test"));
   EXPECT_FALSE(pdf_action_target->ScrollToMakeVisible());
 }
 
@@ -2172,7 +2174,11 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
       pdf_accessibility_tree.CreateActionTarget(*root_node);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
-  EXPECT_TRUE(pdf_action_target->ShowContextMenu());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kShowContextMenu;
+    EXPECT_TRUE(pdf_action_target->PerformAction(action_data));
+  }
 }
 
 }  // namespace pdf

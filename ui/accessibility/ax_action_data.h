@@ -5,8 +5,8 @@
 #ifndef UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 #define UI_ACCESSIBILITY_AX_ACTION_DATA_H_
 
+#include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -14,7 +14,7 @@ namespace ui {
 
 // A compact representation of an accessibility action and the arguments
 // associated with that action.
-struct AX_EXPORT AXActionData {
+struct AX_BASE_EXPORT AXActionData {
   AXActionData();
   AXActionData(const AXActionData& other);
   ~AXActionData();

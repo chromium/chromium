@@ -49,6 +49,7 @@ class Size;
 }
 
 namespace ui {
+struct AXActionData;
 struct AXNodeData;
 }
 
@@ -252,22 +253,24 @@ class WebAXObject {
   BLINK_EXPORT bool AccessibilityIsIgnored() const;
   BLINK_EXPORT bool AccessibilityIsIncludedInTree() const;
 
-  // Actions. Return true if handled.
+  // Get the verb associated with performing the default action
+  // on this object.
   BLINK_EXPORT ax::mojom::DefaultActionVerb Action() const;
-  BLINK_EXPORT bool ClearAccessibilityFocus() const;
-  BLINK_EXPORT bool Click() const;
-  BLINK_EXPORT bool Decrement() const;
-  BLINK_EXPORT bool Increment() const;
-  BLINK_EXPORT bool Focus() const;
-  BLINK_EXPORT bool SetAccessibilityFocus() const;
+
+  // Perform an action, return true if handled.
+  //
+  // NEW: we're migrating to have all actions handled via this interface.
+  BLINK_EXPORT bool PerformAction(const ui::AXActionData&) const;
+
+  // Actions. Return true if handled.
+  //
+  // OLD: the od way is that we had separate APIs for every individual
+  // action. We're migrating to use PerformAction() for everything.
   BLINK_EXPORT bool SetSelected(bool) const;
   BLINK_EXPORT bool SetSelection(const WebAXObject& anchor_object,
                                  int anchor_offset,
                                  const WebAXObject& focus_object,
                                  int focus_offset) const;
-  BLINK_EXPORT bool SetSequentialFocusNavigationStartingPoint() const;
-  BLINK_EXPORT bool SetValue(WebString) const;
-  BLINK_EXPORT bool ShowContextMenu() const;
   // Make this object visible by scrolling as many nested scrollable views as
   // needed.
   BLINK_EXPORT bool ScrollToMakeVisible() const;
@@ -282,9 +285,6 @@ class WebAXObject {
           ax::mojom::ScrollAlignment::kScrollAlignmentCenter,
       ax::mojom::ScrollBehavior scroll_behavior =
           ax::mojom::ScrollBehavior::kDoNotScrollIfVisible) const;
-  // Scroll this object to a given point in global coordinates of the top-level
-  // window.
-  BLINK_EXPORT bool ScrollToGlobalPoint(const gfx::Point&) const;
 
   // For a table
   BLINK_EXPORT unsigned ColumnCount() const;
