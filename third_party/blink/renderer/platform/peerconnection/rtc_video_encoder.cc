@@ -266,7 +266,6 @@ bool CreateSpatialLayersConfig(
           sl.height = base::checked_cast<int32_t>(rtc_sl.height);
           if (!ConvertKbpsToBps(rtc_sl.targetBitrate, &sl.bitrate_bps))
             return false;
-          sl.bitrate_bps = rtc_sl.targetBitrate * 1000;
           sl.framerate = base::saturated_cast<int32_t>(rtc_sl.maxFramerate);
           sl.max_qp = base::saturated_cast<uint8_t>(rtc_sl.qpMax);
           sl.num_of_temporal_layers =
