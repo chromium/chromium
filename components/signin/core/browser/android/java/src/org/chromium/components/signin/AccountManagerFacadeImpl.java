@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.os.UserManager;
+import android.text.TextUtils;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
@@ -39,7 +40,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * AccountManagerFacade wraps our access of AccountManager in Android.
- *
  */
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private static final String TAG = "Sync_Signin";
@@ -205,14 +205,18 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * Synchronously clears an OAuth2 access token from the cache. Use {@link #getAccessToken}
-     * to issue a new token after invalidating the old one.
+     * Removes an OAuth2 access token from the cache with retries asynchronously.
+     * Uses {@link #getAccessToken} to issue a new token after invalidating the old one.
      * @param accessToken The access token to invalidate.
      */
     @Override
-    public void invalidateAccessToken(String accessToken) throws AuthException {
-        assert accessToken != null;
-        mDelegate.invalidateAuthToken(accessToken);
+    public void invalidateAccessToken(String accessToken) {
+        if (!TextUtils.isEmpty(accessToken)) {
+            ConnectionRetry.runAuthTask(() -> {
+                mDelegate.invalidateAuthToken(accessToken);
+                return true;
+            });
+        }
     }
 
     @Override

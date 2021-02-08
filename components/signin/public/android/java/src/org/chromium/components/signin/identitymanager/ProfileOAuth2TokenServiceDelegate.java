@@ -5,26 +5,21 @@
 package org.chromium.components.signin.identitymanager;
 
 import android.accounts.Account;
-import android.text.TextUtils;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
-import org.chromium.net.NetworkChangeNotifier;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.chromium.components.signin.ConnectionRetry;
+import org.chromium.components.signin.ConnectionRetry.AuthTask;
 
 /**
  * Java instance for the native ProfileOAuth2TokenServiceDelegate.
@@ -35,8 +30,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 final class ProfileOAuth2TokenServiceDelegate
         implements AccountTrackerService.OnSystemAccountsSeededListener {
-    private static final String TAG = "OAuth2TokenService";
-
     /**
      * A simple callback for getAccessToken.
      */
@@ -170,22 +163,7 @@ final class ProfileOAuth2TokenServiceDelegate
     @MainThread
     @CalledByNative
     void invalidateAccessToken(String accessToken) {
-        if (TextUtils.isEmpty(accessToken)) {
-            return;
-        }
-        ConnectionRetry.runAuthTask(new AuthTask<Boolean>() {
-            @Override
-            public Boolean run() throws AuthException {
-                mAccountManagerFacade.invalidateAccessToken(accessToken);
-                return true;
-            }
-            @Override
-            public void onSuccess(Boolean result) {}
-            @Override
-            public void onFailure(boolean isTransientError) {
-                Log.e(TAG, "Failed to invalidate auth token: " + accessToken);
-            }
-        });
+        mAccountManagerFacade.invalidateAccessToken(accessToken);
     }
 
     /**
@@ -231,84 +209,6 @@ final class ProfileOAuth2TokenServiceDelegate
     private void reloadAllAccountsWithPrimaryAccountAfterSeeding(@Nullable String accountId) {
         ProfileOAuth2TokenServiceDelegateJni.get().reloadAllAccountsWithPrimaryAccountAfterSeeding(
                 mNativeProfileOAuth2TokenServiceDelegate, accountId);
-    }
-
-    private interface AuthTask<T> {
-        T run() throws AuthException;
-        void onSuccess(T result);
-        void onFailure(boolean isTransientError);
-    }
-
-    /**
-     * A helper class to encapsulate network connection retry logic for AuthTasks.
-     *
-     * The task will be run on the background thread. If it encounters a transient error, it
-     * will wait for a network change and retry up to MAX_TRIES times.
-     */
-    private static class ConnectionRetry<T>
-            implements NetworkChangeNotifier.ConnectionTypeObserver {
-        private static final int MAX_TRIES = 3;
-
-        private final AuthTask<T> mAuthTask;
-        private final AtomicInteger mNumTries;
-        private final AtomicBoolean mIsTransientError;
-
-        public static <T> void runAuthTask(AuthTask<T> authTask) {
-            new ConnectionRetry<>(authTask).attempt();
-        }
-
-        private ConnectionRetry(AuthTask<T> authTask) {
-            mAuthTask = authTask;
-            mNumTries = new AtomicInteger(0);
-            mIsTransientError = new AtomicBoolean(false);
-        }
-
-        /**
-         * Tries running the {@link AuthTask} in the background. This object is never registered
-         * as a {@link NetworkChangeNotifier.ConnectionTypeObserver} when this method is called.
-         */
-        private void attempt() {
-            ThreadUtils.assertOnUiThread();
-            // Clear any transient error.
-            mIsTransientError.set(false);
-            new AsyncTask<T>() {
-                @Override
-                public T doInBackground() {
-                    try {
-                        return mAuthTask.run();
-                    } catch (AuthException ex) {
-                        Log.w(TAG, "Failed to perform auth task: %s", ex.stringifyCausalChain());
-                        Log.d(TAG, "Exception details:", ex);
-                        mIsTransientError.set(ex.isTransientError());
-                    }
-                    return null;
-                }
-                @Override
-                public void onPostExecute(T result) {
-                    if (result != null) {
-                        mAuthTask.onSuccess(result);
-                    } else if (!mIsTransientError.get() || mNumTries.incrementAndGet() >= MAX_TRIES
-                            || !NetworkChangeNotifier.isInitialized()) {
-                        // Permanent error, ran out of tries, or we can't listen for network
-                        // change events; give up.
-                        mAuthTask.onFailure(mIsTransientError.get());
-                    } else {
-                        // Transient error with tries left; register for another attempt.
-                        NetworkChangeNotifier.addConnectionTypeObserver(ConnectionRetry.this);
-                    }
-                }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
-
-        @Override
-        public void onConnectionTypeChanged(int connectionType) {
-            assert mNumTries.get() < MAX_TRIES;
-            if (NetworkChangeNotifier.isOnline()) {
-                // The network is back; stop listening and try again.
-                NetworkChangeNotifier.removeConnectionTypeObserver(this);
-                attempt();
-            }
-        }
     }
 
     @NativeMethods

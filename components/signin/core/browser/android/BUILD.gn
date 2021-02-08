@@ -38,6 +38,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/AccountsChangeObserver.java",
     "java/src/org/chromium/components/signin/AuthException.java",
     "java/src/org/chromium/components/signin/ChildAccountStatus.java",
+    "java/src/org/chromium/components/signin/ConnectionRetry.java",
     "java/src/org/chromium/components/signin/GmsAvailabilityException.java",
     "java/src/org/chromium/components/signin/GmsJustUpdatedException.java",
     "java/src/org/chromium/components/signin/MutableObservableValue.java",

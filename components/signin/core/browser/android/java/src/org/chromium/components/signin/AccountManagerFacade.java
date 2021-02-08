@@ -120,12 +120,12 @@ public interface AccountManagerFacade {
     AccessTokenData getAccessToken(Account account, String scope) throws AuthException;
 
     /**
-     * Synchronously clears an OAuth2 access token from the cache. Use {@link #getAccessToken}
-     * to issue a new token after invalidating the old one.
+     * Removes an OAuth2 access token from the cache with retries asynchronously.
+     * Uses {@link #getAccessToken} to issue a new token after invalidating the old one.
      * @param accessToken The access token to invalidate.
      */
-    @WorkerThread
-    void invalidateAccessToken(String accessToken) throws AuthException;
+    @MainThread
+    void invalidateAccessToken(String accessToken);
 
     /**
      * Checks the child account status of the given account.
