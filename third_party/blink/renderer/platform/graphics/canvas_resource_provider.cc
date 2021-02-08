@@ -923,7 +923,8 @@ CanvasResourceProvider::CreateSharedImageProvider(
       base::FeatureList::IsEnabled(blink::features::kDawn2dCanvas);
   // TODO(senorblanco): once Dawn reports maximum texture size, Dawn Canvas
   // should respect it.  http://crbug.com/1082760
-  if (!skia_use_dawn && (size.Width() > capabilities.max_texture_size ||
+  if (!skia_use_dawn && (size.Width() < 1 || size.Height() < 1 ||
+                         size.Width() > capabilities.max_texture_size ||
                          size.Height() > capabilities.max_texture_size)) {
     return nullptr;
   }
