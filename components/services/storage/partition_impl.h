@@ -19,6 +19,7 @@
 namespace storage {
 
 class LocalStorageImpl;
+class ServiceWorkerStorageControlImpl;
 class SessionStorageImpl;
 class StorageServiceImpl;
 
@@ -51,6 +52,9 @@ class PartitionImpl : public mojom::Partition {
       mojo::PendingReceiver<mojom::SessionStorageControl> receiver) override;
   void BindLocalStorageControl(
       mojo::PendingReceiver<mojom::LocalStorageControl> receiver) override;
+  void BindServiceWorkerStorageControl(
+      mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver)
+      override;
 
  private:
   friend class OriginContextImpl;
@@ -65,6 +69,7 @@ class PartitionImpl : public mojom::Partition {
 
   std::unique_ptr<SessionStorageImpl> session_storage_;
   std::unique_ptr<LocalStorageImpl> local_storage_;
+  std::unique_ptr<ServiceWorkerStorageControlImpl> service_worker_storage_;
 
   DISALLOW_COPY_AND_ASSIGN(PartitionImpl);
 };

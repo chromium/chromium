@@ -1594,11 +1594,13 @@ ServiceWorkerContextWrapper::
 void ServiceWorkerContextWrapper::BindStorageControl(
     mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
         receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (storage_control_binder_for_test_) {
     storage_control_binder_for_test_.Run(std::move(receiver));
-  } else {
+  } else if (base::FeatureList::IsEnabled(
+                 features::kStorageServiceOutOfProcess)) {
     // TODO(crbug.com/1055677): Use storage_partition() to bind the control when
-    // ServiceWorkerStorageControl is moved to the Storage Service.
+    // ServiceWorkerStorageControl is sandboxed in the Storage Service.
     DCHECK(!storage_control_);
 
     // The database task runner is BLOCK_SHUTDOWN in order to support
@@ -1613,6 +1615,14 @@ void ServiceWorkerContextWrapper::BindStorageControl(
         std::make_unique<storage::ServiceWorkerStorageControlImpl>(
             user_data_directory_, std::move(database_task_runner),
             std::move(receiver));
+  } else {
+    // Drop `receiver` when the browser is shutting down.
+    if (!storage_partition())
+      return;
+    DCHECK(storage_partition()->GetStorageServicePartition());
+    storage_partition()
+        ->GetStorageServicePartition()
+        ->BindServiceWorkerStorageControl(std::move(receiver));
   }
 }
 
