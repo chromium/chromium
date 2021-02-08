@@ -32,7 +32,6 @@
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -579,7 +578,7 @@ int __stdcall GoogleChromeDaysSinceLastRun() {
                         gcapi_internals::kChromeRegClientStateKey,
                         KEY_QUERY_VALUE | KEY_WOW64_32KEY);
     if (client_state.Valid()) {
-      base::string16 last_run;
+      std::wstring last_run;
       int64_t last_run_value = 0;
       if (client_state.ReadValue(google_update::kRegLastRunTimeField,
                                  &last_run) == ERROR_SUCCESS &&
@@ -690,7 +689,7 @@ BOOL __stdcall CanOfferRelaunch(const wchar_t** partner_brandcode_list,
 
   // b) the installed brandcode should belong to that partner (in
   // brandcode_list);
-  base::string16 installed_brandcode;
+  std::wstring installed_brandcode;
   bool valid_brandcode = false;
   if (gcapi_internals::GetBrand(&installed_brandcode)) {
     for (int i = 0; i < partner_brandcode_list_length; ++i) {

@@ -123,7 +123,7 @@ TEST_F(GetPreviousSetupExePathTest, SimpleTest) {
 TEST_F(GetPreviousSetupExePathTest, QuoteStripping) {
   static constexpr wchar_t kSetupExePath[] =
       L"C:\\SomePath\\To\\" PREVIOUS_VERSION L"\\setup.exe";
-  base::string16 quoted_path(L"\"");
+  std::wstring quoted_path(L"\"");
   quoted_path += kSetupExePath;
   quoted_path += L"\"";
   ASSERT_NO_FATAL_FAILURE(SetPreviousSetup(quoted_path.c_str()));

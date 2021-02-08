@@ -22,7 +22,7 @@ const wchar_t kChromeRegClientStateMediumKey[] =
     L"{8A69D345-D564-463c-AFF1-A69D9E530F96}";
 
 // Mirror the strategy used by GoogleUpdateSettings::GetBrand.
-bool GetBrand(base::string16* value) {
+bool GetBrand(std::wstring* value) {
   const HKEY kRoots[] = {HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE};
   for (HKEY root : kRoots) {
     if (base::win::RegKey(root, kChromeRegClientStateKey,
@@ -36,7 +36,7 @@ bool GetBrand(base::string16* value) {
 
 // Mirror the strategy used by GoogleUpdateSettings::ReadExperimentLabels.
 bool ReadExperimentLabels(bool system_install,
-                          base::string16* experiment_labels) {
+                          std::wstring* experiment_labels) {
   const HKEY root_key = system_install ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
   const wchar_t* const key_path = system_install
                                       ? kChromeRegClientStateMediumKey
@@ -57,7 +57,7 @@ bool ReadExperimentLabels(bool system_install,
 
 // Mirror the strategy used by GoogleUpdateSettings::SetExperimentLabels.
 bool SetExperimentLabels(bool system_install,
-                         const base::string16& experiment_labels) {
+                         const std::wstring& experiment_labels) {
   const HKEY root_key = system_install ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
   const wchar_t* const key_path = system_install
                                       ? kChromeRegClientStateMediumKey

@@ -192,7 +192,7 @@ BASE_EXPORT std::wstring JoinString(std::initializer_list<WStringPiece> parts,
 
 BASE_EXPORT std::wstring ReplaceStringPlaceholders(
     WStringPiece format_string,
-    const std::vector<string16>& subst,
+    const std::vector<std::wstring>& subst,
     std::vector<size_t>* offsets);
 #endif
 
