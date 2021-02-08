@@ -7,9 +7,21 @@
 
 #include "content/common/input/input_injector.mojom.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
+#include "content/common/input/synthetic_tap_gesture_params.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace mojo {
+
+template <>
+struct CONTENT_EXPORT
+    EnumTraits<content::mojom::GestureSourceType,
+               content::SyntheticGestureParams::GestureSourceType> {
+  static content::mojom::GestureSourceType ToMojom(
+      content::SyntheticGestureParams::GestureSourceType input);
+  static bool FromMojom(
+      content::mojom::GestureSourceType input,
+      content::SyntheticGestureParams::GestureSourceType* output);
+};
 
 template <>
 struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticPinchDataView,
@@ -30,6 +42,27 @@ struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticPinchDataView,
 
   static bool Read(content::mojom::SyntheticPinchDataView r,
                    content::SyntheticPinchGestureParams* out);
+};
+
+template <>
+struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticTapDataView,
+                                   content::SyntheticTapGestureParams> {
+  static content::SyntheticGestureParams::GestureSourceType gesture_source_type(
+      const content::SyntheticTapGestureParams& r) {
+    return r.gesture_source_type;
+  }
+
+  static const gfx::PointF& position(
+      const content::SyntheticTapGestureParams& r) {
+    return r.position;
+  }
+
+  static float duration_ms(const content::SyntheticTapGestureParams& r) {
+    return r.duration_ms;
+  }
+
+  static bool Read(content::mojom::SyntheticTapDataView r,
+                   content::SyntheticTapGestureParams* out);
 };
 
 }  // namespace mojo

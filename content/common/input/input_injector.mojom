@@ -7,12 +7,32 @@ module content.mojom;
 import "content/common/native_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// Describes which type of input events synthetic gesture objects should
+// generate. When specifying DEFAULT_INPUT the platform will be queried for
+// the preferred input event type.
+enum GestureSourceType {
+  kDefaultInput,
+  kTouchInput,
+  kMouseInput,
+  kTouchpadInput = kMouseInput,
+  kPenInput,
+  kGestureSourceTypeMax = kPenInput,
+};
+
 // The pinth parameters sent by the renderer to the browser, that are needed to
 // queue the synthetic pinch.
 struct SyntheticPinch {
   float scale_factor;
   gfx.mojom.PointF anchor;
   float relative_pointer_speed_in_pixels_s;
+};
+
+// The tap parameters sent by the renderer to the browser, that are needed to
+// queue the synthetic tap.
+struct SyntheticTap {
+  GestureSourceType gesture_source_type;
+  gfx.mojom.PointF position;
+  float duration_ms;
 };
 
 // Host interface representing the ability to inject input
