@@ -239,20 +239,16 @@ bool MatchPatternImpl(const std::wstring& source,
   return false;
 }
 
-// Defines the type of whitespace characters typically found in strings.
-constexpr char kWhiteSpaces[] = " \t\n\r\f\v";
-constexpr wchar_t kWhiteSpaces16[] = L" \t\n\r\f\v";
-
 // Define specializations for white spaces based on the type of the string.
 template <class StringType>
 StringType GetWhiteSpacesForType();
 template <>
 std::wstring GetWhiteSpacesForType() {
-  return kWhiteSpaces16;
+  return L" \t\n\r\f\v";
 }
 template <>
 std::string GetWhiteSpacesForType() {
-  return kWhiteSpaces;
+  return " \t\n\r\f\v";
 }
 
 // Trim whitespaces from left & right
@@ -601,7 +597,7 @@ bool IsCrashpadHandlerProcess() {
 }
 
 bool ProcessNeedsProfileDir(const std::string& process_type) {
-  return ProcessNeedsProfileDir(GetProcessType(UTF8ToUTF16(process_type)));
+  return ProcessNeedsProfileDir(GetProcessType(UTF8ToWide(process_type)));
 }
 
 std::wstring GetCrashDumpLocation() {
@@ -616,11 +612,10 @@ std::wstring GetCrashDumpLocation() {
 }
 
 std::string GetEnvironmentString(const std::string& variable_name) {
-  return UTF16ToUTF8(
-      GetEnvironmentString16(UTF8ToUTF16(variable_name).c_str()));
+  return WideToUTF8(GetEnvironmentString(UTF8ToWide(variable_name).c_str()));
 }
 
-std::wstring GetEnvironmentString16(const wchar_t* variable_name) {
+std::wstring GetEnvironmentString(const wchar_t* variable_name) {
   DWORD value_length = ::GetEnvironmentVariableW(variable_name, nullptr, 0);
   if (!value_length)
     return std::wstring();
@@ -635,20 +630,19 @@ std::wstring GetEnvironmentString16(const wchar_t* variable_name) {
 
 bool SetEnvironmentString(const std::string& variable_name,
                           const std::string& new_value) {
-  return SetEnvironmentString16(UTF8ToUTF16(variable_name),
-                                UTF8ToUTF16(new_value));
+  return SetEnvironmentString(UTF8ToWide(variable_name), UTF8ToWide(new_value));
 }
 
-bool SetEnvironmentString16(const std::wstring& variable_name,
-                            const std::wstring& new_value) {
+bool SetEnvironmentString(const std::wstring& variable_name,
+                          const std::wstring& new_value) {
   return !!SetEnvironmentVariable(variable_name.c_str(), new_value.c_str());
 }
 
 bool HasEnvironmentVariable(const std::string& variable_name) {
-  return HasEnvironmentVariable16(UTF8ToUTF16(variable_name));
+  return HasEnvironmentVariable(UTF8ToWide(variable_name));
 }
 
-bool HasEnvironmentVariable16(const std::wstring& variable_name) {
+bool HasEnvironmentVariable(const std::wstring& variable_name) {
   return !!::GetEnvironmentVariable(variable_name.c_str(), nullptr, 0);
 }
 
@@ -716,7 +710,7 @@ bool MatchPattern(const std::wstring& source, const std::wstring& pattern) {
   return MatchPatternImpl(source, pattern, 0, 0);
 }
 
-std::string UTF16ToUTF8(const std::wstring& source) {
+std::string WideToUTF8(const std::wstring& source) {
   if (source.empty() ||
       static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
     return std::string();
@@ -734,7 +728,7 @@ std::string UTF16ToUTF8(const std::wstring& source) {
   return result;
 }
 
-std::wstring UTF8ToUTF16(const std::string& source) {
+std::wstring UTF8ToWide(const std::string& source) {
   if (source.empty() ||
       static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
     return std::wstring();
@@ -754,13 +748,13 @@ std::wstring UTF8ToUTF16(const std::string& source) {
 std::vector<std::string> TokenizeString(const std::string& str,
                                         char delimiter,
                                         bool trim_spaces) {
-  return TokenizeStringT<std::string>(str, delimiter, trim_spaces);
+  return TokenizeStringT(str, delimiter, trim_spaces);
 }
 
-std::vector<std::wstring> TokenizeString16(const std::wstring& str,
-                                           wchar_t delimiter,
-                                           bool trim_spaces) {
-  return TokenizeStringT<std::wstring>(str, delimiter, trim_spaces);
+std::vector<std::wstring> TokenizeString(const std::wstring& str,
+                                         wchar_t delimiter,
+                                         bool trim_spaces) {
+  return TokenizeStringT(str, delimiter, trim_spaces);
 }
 
 std::vector<std::wstring> TokenizeCommandLineToArray(

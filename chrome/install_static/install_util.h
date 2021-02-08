@@ -216,19 +216,19 @@ std::wstring GetCrashDumpLocation();
 // block of the calling process. Returns an empty string if the variable does
 // not exist.
 std::string GetEnvironmentString(const std::string& variable_name);
-std::wstring GetEnvironmentString16(const wchar_t* variable_name);
+std::wstring GetEnvironmentString(const wchar_t* variable_name);
 
 // Sets the environment variable identified by |variable_name| to the value
 // identified by |new_value|.
 bool SetEnvironmentString(const std::string& variable_name,
                           const std::string& new_value);
-bool SetEnvironmentString16(const std::wstring& variable_name,
-                            const std::wstring& new_value);
+bool SetEnvironmentString(const std::wstring& variable_name,
+                          const std::wstring& new_value);
 
 // Returns true if the environment variable identified by |variable_name|
 // exists.
 bool HasEnvironmentVariable(const std::string& variable_name);
-bool HasEnvironmentVariable16(const std::wstring& variable_name);
+bool HasEnvironmentVariable(const std::wstring& variable_name);
 
 // Gets the exe version details like the |product_name|, |version|,
 // |special_build|, |channel_name|, etc. Most of this information is read
@@ -254,10 +254,10 @@ std::wstring GetChromeChannelName();
 // as '*xyz*'.
 bool MatchPattern(const std::wstring& source, const std::wstring& pattern);
 
-// UTF8 to UTF16 and vice versa conversion helpers.
-std::wstring UTF8ToUTF16(const std::string& source);
+// UTF8 to Wide and vice versa conversion helpers.
+std::wstring UTF8ToWide(const std::string& source);
 
-std::string UTF16ToUTF8(const std::wstring& source);
+std::string WideToUTF8(const std::wstring& source);
 
 // Tokenizes a string |str| based on single character delimiter.
 // The tokens are returned in a vector. The |trim_spaces| parameter indicates
@@ -265,9 +265,9 @@ std::string UTF16ToUTF8(const std::wstring& source);
 std::vector<std::string> TokenizeString(const std::string& str,
                                         char delimiter,
                                         bool trim_spaces);
-std::vector<std::wstring> TokenizeString16(const std::wstring& str,
-                                           wchar_t delimiter,
-                                           bool trim_spaces);
+std::vector<std::wstring> TokenizeString(const std::wstring& str,
+                                         wchar_t delimiter,
+                                         bool trim_spaces);
 
 // Tokenizes |command_line| in the same way as CommandLineToArgvW() in
 // shell32.dll, handling quoting, spacing etc. Normally only used from

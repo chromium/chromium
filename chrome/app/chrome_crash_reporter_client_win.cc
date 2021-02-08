@@ -56,8 +56,8 @@ void ChromeCrashReporterClient::InitializeCrashReportingForProcess() {
       install_static::GetUserDataDirectory(&user_data_dir, nullptr);
 
     crash_reporter::InitializeCrashpadWithEmbeddedHandler(
-        process_type.empty(), install_static::UTF16ToUTF8(process_type),
-        install_static::UTF16ToUTF8(user_data_dir), base::FilePath());
+        process_type.empty(), install_static::WideToUTF8(process_type),
+        install_static::WideToUTF8(user_data_dir), base::FilePath());
   }
 }
 #endif  // !defined(NACL_WIN64)
@@ -67,7 +67,7 @@ bool ChromeCrashReporterClient::GetAlternativeCrashDumpLocation(
   // By setting the BREAKPAD_DUMP_LOCATION environment variable, an alternate
   // location to write breakpad crash dumps can be set.
   *crash_dir = base::WideToUTF16(
-      install_static::GetEnvironmentString16(L"BREAKPAD_DUMP_LOCATION"));
+      install_static::GetEnvironmentString(L"BREAKPAD_DUMP_LOCATION"));
   return !crash_dir->empty();
 }
 
@@ -94,20 +94,18 @@ void ChromeCrashReporterClient::GetProductNameAndVersion(
 bool ChromeCrashReporterClient::ShouldShowRestartDialog(base::string16* title,
                                                         base::string16* message,
                                                         bool* is_rtl_locale) {
-  if (!install_static::HasEnvironmentVariable16(
-          install_static::kShowRestart) ||
-      !install_static::HasEnvironmentVariable16(
-          install_static::kRestartInfo)) {
+  if (!install_static::HasEnvironmentVariable(install_static::kShowRestart) ||
+      !install_static::HasEnvironmentVariable(install_static::kRestartInfo)) {
     return false;
   }
 
   std::wstring restart_info =
-      install_static::GetEnvironmentString16(install_static::kRestartInfo);
+      install_static::GetEnvironmentString(install_static::kRestartInfo);
 
   // The CHROME_RESTART var contains the dialog strings separated by '|'.
   // See ChromeBrowserMainPartsWin::PrepareRestartOnCrashEnviroment()
   // for details.
-  std::vector<std::wstring> dlg_strings = install_static::TokenizeString16(
+  std::vector<std::wstring> dlg_strings = install_static::TokenizeString(
       restart_info, L'|', true);  // true = Trim whitespace.
 
   if (dlg_strings.size() < 3)
@@ -120,10 +118,10 @@ bool ChromeCrashReporterClient::ShouldShowRestartDialog(base::string16* title,
 }
 
 bool ChromeCrashReporterClient::AboutToRestart() {
-  if (!install_static::HasEnvironmentVariable16(install_static::kRestartInfo))
+  if (!install_static::HasEnvironmentVariable(install_static::kRestartInfo))
     return false;
 
-  install_static::SetEnvironmentString16(install_static::kShowRestart, L"1");
+  install_static::SetEnvironmentString(install_static::kShowRestart, L"1");
   return true;
 }
 
@@ -177,7 +175,7 @@ bool ChromeCrashReporterClient::GetCrashMetricsLocation(
 }
 
 bool ChromeCrashReporterClient::IsRunningUnattended() {
-  return install_static::HasEnvironmentVariable16(install_static::kHeadless);
+  return install_static::HasEnvironmentVariable(install_static::kHeadless);
 }
 
 bool ChromeCrashReporterClient::GetCollectStatsConsent() {

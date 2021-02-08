@@ -42,7 +42,7 @@ void NotificationHelperCrashReporterClient::
   install_static::GetUserDataDirectory(&user_data_dir, nullptr);
 
   crash_reporter::InitializeCrashpadWithEmbeddedHandler(
-      true, "notification-helper", install_static::UTF16ToUTF8(user_data_dir),
+      true, "notification-helper", install_static::WideToUTF8(user_data_dir),
       exe_path);
 }
 
@@ -124,7 +124,7 @@ bool NotificationHelperCrashReporterClient::GetCrashMetricsLocation(
 }
 
 bool NotificationHelperCrashReporterClient::IsRunningUnattended() {
-  return install_static::HasEnvironmentVariable16(install_static::kHeadless);
+  return install_static::HasEnvironmentVariable(install_static::kHeadless);
 }
 
 bool NotificationHelperCrashReporterClient::GetCollectStatsConsent() {

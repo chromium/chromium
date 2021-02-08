@@ -76,7 +76,7 @@ bool GetDefaultUserDataDirectory(const InstallConstants& mode,
                                  std::wstring* result) {
   // This environment variable should be set on Windows Vista and later
   // (https://msdn.microsoft.com/library/windows/desktop/dd378457.aspx).
-  std::wstring user_data_dir = GetEnvironmentString16(L"LOCALAPPDATA");
+  std::wstring user_data_dir = GetEnvironmentString(L"LOCALAPPDATA");
 
   if (user_data_dir.empty()) {
     // LOCALAPPDATA was not set; fallback to the temporary files path.
