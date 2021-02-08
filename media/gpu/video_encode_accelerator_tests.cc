@@ -478,15 +478,14 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   if (auto skip_reason = SupportsNV12DmaBufInput())
     GTEST_SKIP() << *skip_reason;
-  auto nv12_video = g_env->Video()->ConvertToNV12();
-  ASSERT_TRUE(nv12_video);
 
-  VideoEncoderClientConfig config(nv12_video.get(), g_env->Profile(),
+  Video* nv12_video = g_env->GenerateNV12Video();
+  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
                                   g_env->NumTemporalLayers(), g_env->Bitrate());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kDmabuf;
 
-  auto encoder = CreateVideoEncoder(nv12_video.get(), config);
+  auto encoder = CreateVideoEncoder(nv12_video, config);
 
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
@@ -514,18 +513,17 @@ TEST_F(VideoEncoderTest, DISABLED_FlushAtEndOfStream_NV12DmabufScaling) {
                  << kMinOutputResolution.ToString();
   }
 
-  auto nv12_video = g_env->Video()->ConvertToNV12();
-  ASSERT_TRUE(nv12_video);
+  auto* nv12_video = g_env->GenerateNV12Video();
   // Set 1/4 of the original bitrate because the area of |output_resolution| is
   // 1/4 of the original resolution.
-  VideoEncoderClientConfig config(nv12_video.get(), g_env->Profile(),
+  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
                                   g_env->NumTemporalLayers(),
                                   g_env->Bitrate() / 4);
   config.output_resolution = output_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kDmabuf;
 
-  auto encoder = CreateVideoEncoder(nv12_video.get(), config);
+  auto encoder = CreateVideoEncoder(nv12_video, config);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
@@ -550,12 +548,10 @@ TEST_F(VideoEncoderTest,
                                         original_resolution.height());
   const gfx::Size expanded_resolution(
       original_resolution.width(), original_resolution.height() + kGrowHeight);
-  auto nv12_video = g_env->Video()->ConvertToNV12();
-  ASSERT_TRUE(nv12_video);
-  auto nv12_expanded_video =
-      nv12_video->Expand(expanded_resolution, expanded_visible_rect);
+
+  auto nv12_expanded_video = g_env->GenerateNV12Video()->Expand(
+      expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
-  nv12_video.reset();
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
                                   g_env->NumTemporalLayers(), g_env->Bitrate());
   config.output_resolution = original_resolution;
@@ -583,12 +579,10 @@ TEST_F(VideoEncoderTest,
                                         original_resolution.height());
   const gfx::Size expanded_resolution(original_resolution.width() + kGrowWidth,
                                       original_resolution.height());
-  auto nv12_video = g_env->Video()->ConvertToNV12();
-  ASSERT_TRUE(nv12_video);
-  auto nv12_expanded_video =
-      nv12_video->Expand(expanded_resolution, expanded_visible_rect);
+
+  auto nv12_expanded_video = g_env->GenerateNV12Video()->Expand(
+      expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
-  nv12_video.reset();
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
                                   g_env->NumTemporalLayers(), g_env->Bitrate());
   config.output_resolution = original_resolution;

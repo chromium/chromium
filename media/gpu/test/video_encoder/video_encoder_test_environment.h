@@ -47,6 +47,8 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
 
   // Get the video the tests will be ran on.
   media::test::Video* Video() const;
+  // Generate the nv12 video from |video_| the test will be ran on.
+  media::test::Video* GenerateNV12Video();
   // Whether bitstream validation is enabled.
   bool IsBitstreamValidatorEnabled() const;
   // Get the output folder.
@@ -84,6 +86,8 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
 
   // Video file to be used for testing.
   const std::unique_ptr<media::test::Video> video_;
+  // NV12 video file to be used for testing.
+  std::unique_ptr<media::test::Video> nv12_video_;
   // Whether bitstream validation should be enabled while testing.
   const bool enable_bitstream_validator_;
   // Output folder to be used to store test artifacts (e.g. perf metrics).

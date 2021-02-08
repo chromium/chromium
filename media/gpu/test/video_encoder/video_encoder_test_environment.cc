@@ -177,6 +177,14 @@ media::test::Video* VideoEncoderTestEnvironment::Video() const {
   return video_.get();
 }
 
+media::test::Video* VideoEncoderTestEnvironment::GenerateNV12Video() {
+  if (!nv12_video_) {
+    nv12_video_ = video_->ConvertToNV12();
+    CHECK(nv12_video_);
+  }
+  return nv12_video_.get();
+}
+
 bool VideoEncoderTestEnvironment::IsBitstreamValidatorEnabled() const {
   return enable_bitstream_validator_;
 }
