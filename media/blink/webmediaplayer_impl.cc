@@ -1023,9 +1023,12 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
 
   if (delegate_has_audio_ != HasUnmutedAudio()) {
     delegate_has_audio_ = HasUnmutedAudio();
-    delegate_->DidMediaMetadataChange(
-        delegate_id_, delegate_has_audio_, HasVideo(),
-        DurationToMediaContentType(GetPipelineMediaDuration()));
+    MediaContentType content_type =
+        DurationToMediaContentType(GetPipelineMediaDuration());
+    client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
+                                    content_type);
+    delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
+                                      HasVideo(), content_type);
   }
 
   // The play state is updated because the player might have left the autoplay
@@ -2022,9 +2025,12 @@ void WebMediaPlayerImpl::OnMetadata(const PipelineMetadata& metadata) {
     observer_->OnMetadataChanged(pipeline_metadata_);
 
   delegate_has_audio_ = HasUnmutedAudio();
-  delegate_->DidMediaMetadataChange(
-      delegate_id_, delegate_has_audio_, HasVideo(),
-      DurationToMediaContentType(GetPipelineMediaDuration()));
+  MediaContentType content_type =
+      DurationToMediaContentType(GetPipelineMediaDuration());
+  client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
+                                  content_type);
+  delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
+                                    HasVideo(), content_type);
 
   // It could happen that the demuxer successfully completed initialization
   // (implying it had determined media metadata), but then removed all audio and
@@ -2312,9 +2318,12 @@ void WebMediaPlayerImpl::OnDurationChange() {
 
   client_->DurationChanged();
 
-  delegate_->DidMediaMetadataChange(
-      delegate_id_, delegate_has_audio_, HasVideo(),
-      DurationToMediaContentType(GetPipelineMediaDuration()));
+  MediaContentType content_type =
+      DurationToMediaContentType(GetPipelineMediaDuration());
+  client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
+                                  content_type);
+  delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
+                                    HasVideo(), content_type);
 
   if (watch_time_reporter_)
     watch_time_reporter_->OnDurationChanged(GetPipelineMediaDuration());
@@ -3047,10 +3056,12 @@ void WebMediaPlayerImpl::SetDelegateState(DelegateState new_state,
     case DelegateState::PLAYING: {
       if (HasVideo())
         client_->DidPlayerSizeChange(NaturalSize());
+      client_->DidPlayerStartPlaying();
       delegate_->DidPlay(delegate_id_);
       break;
     }
     case DelegateState::PAUSED:
+      client_->DidPlayerPaused(ended_);
       delegate_->DidPause(delegate_id_, ended_);
       break;
   }

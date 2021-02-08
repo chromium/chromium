@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "media/base/media_content_type.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,6 +94,12 @@ class WebMediaStubLocalFrameClient : public EmptyLocalFrameClient {
 class MockMediaPlayerObserverReceiverForTesting
     : public media::mojom::blink::MediaPlayerObserver {
  public:
+  struct OnMetadataChangedResult {
+    bool has_audio;
+    bool has_video;
+    media::MediaContentType media_content_type;
+  };
+
   explicit MockMediaPlayerObserverReceiverForTesting(
       HTMLMediaElement* html_media_element) {
     // Bind the remote to the receiver, so that we can intercept incoming
@@ -110,8 +117,28 @@ class MockMediaPlayerObserverReceiverForTesting
   }
 
   // media::mojom::blink::MediaPlayerObserver implementation.
+  void OnMediaPlaying() override {
+    received_media_playing_ = true;
+    run_loop_->Quit();
+  }
+
+  void OnMediaPaused(bool stream_ended) override {
+    received_media_paused_stream_ended_ = stream_ended;
+    run_loop_->Quit();
+  }
+
   void OnMutedStatusChanged(bool muted) override {
     received_muted_status_type_ = muted;
+    run_loop_->Quit();
+  }
+
+  void OnMediaMetadataChanged(bool has_audio,
+                              bool has_video,
+                              media::MediaContentType content_type) override {
+    // struct OnMetadataChangedResult result{has_audio, has_video,
+    // content_type};
+    received_metadata_changed_result_ =
+        OnMetadataChangedResult{has_audio, has_video, content_type};
     run_loop_->Quit();
   }
 
@@ -135,8 +162,19 @@ class MockMediaPlayerObserverReceiverForTesting
   void OnSeek() override {}
 
   // Getters used from HTMLMediaElementTest.
+  bool received_media_playing() const { return received_media_playing_; }
+
+  const base::Optional<bool>& received_media_paused_stream_ended() const {
+    return received_media_paused_stream_ended_;
+  }
+
   const base::Optional<bool>& received_muted_status() const {
     return received_muted_status_type_;
+  }
+
+  const base::Optional<OnMetadataChangedResult>&
+  received_metadata_changed_result() const {
+    return received_metadata_changed_result_;
   }
 
   gfx::Size received_media_size() const { return received_media_size_; }
@@ -146,7 +184,10 @@ class MockMediaPlayerObserverReceiverForTesting
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   mojo::Receiver<media::mojom::blink::MediaPlayerObserver> receiver_{this};
+  bool received_media_playing_{false};
+  base::Optional<bool> received_media_paused_stream_ended_;
   base::Optional<bool> received_muted_status_type_;
+  base::Optional<OnMetadataChangedResult> received_metadata_changed_result_;
   gfx::Size received_media_size_{0, 0};
   bool received_buffer_underflow_{false};
 };
@@ -240,6 +281,25 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
  protected:
   // Helpers to call MediaPlayerObserver mojo methods and check their results.
+  void NotifyMediaPlaying() {
+    media_->DidPlayerStartPlaying();
+    media_player_observer_receiver_->WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageMediaPlaying() {
+    return media_player_observer_receiver_->received_media_playing();
+  }
+
+  void NotifyMediaPaused(bool stream_ended) {
+    media_->DidPlayerPaused(stream_ended);
+    media_player_observer_receiver_->WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageMediaPaused(bool stream_ended) {
+    return media_player_observer_receiver_
+               ->received_media_paused_stream_ended() == stream_ended;
+  }
+
   void NotifyMutedStatusChange(bool muted) {
     media_->DidPlayerMutedStatusChange(muted);
     media_player_observer_receiver_->WaitUntilReceivedMessage();
@@ -247,6 +307,23 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   bool ReceivedMessageMutedStatusChange(bool muted) {
     return media_player_observer_receiver_->received_muted_status() == muted;
+  }
+
+  void NotifyMediaMetadataChanged(bool has_audio,
+                                  bool has_video,
+                                  media::MediaContentType media_content_type) {
+    media_->DidMediaMetadataChange(has_audio, has_video, media_content_type);
+    media_player_observer_receiver_->WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedMessageMediaMetadataChanged(
+      bool has_audio,
+      bool has_video,
+      media::MediaContentType media_content_type) {
+    const auto& result =
+        media_player_observer_receiver_->received_metadata_changed_result();
+    return result->has_audio == has_audio && result->has_video == has_video &&
+           result->media_content_type == media_content_type;
   }
 
   void NotifyMediaSizeChange(const gfx::Size& size) {
@@ -903,12 +980,43 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterPlayBeforeReady) {
   EXPECT_FALSE(Media()->IsShowPosterFlagSet());
 }
 
+TEST_P(HTMLMediaElementTest, SendMediaPlayingToObserver) {
+  NotifyMediaPlaying();
+  EXPECT_TRUE(ReceivedMessageMediaPlaying());
+}
+
+TEST_P(HTMLMediaElementTest, SendMediaPausedToObserver) {
+  NotifyMediaPaused(true);
+  EXPECT_TRUE(ReceivedMessageMediaPaused(true));
+
+  NotifyMediaPaused(false);
+  EXPECT_TRUE(ReceivedMessageMediaPaused(false));
+}
+
 TEST_P(HTMLMediaElementTest, SendMutedStatusChangeToObserver) {
   NotifyMutedStatusChange(true);
   EXPECT_TRUE(ReceivedMessageMutedStatusChange(true));
 
   NotifyMutedStatusChange(false);
   EXPECT_TRUE(ReceivedMessageMutedStatusChange(false));
+}
+
+TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
+  bool has_audio = false;
+  bool has_video = true;
+  media::MediaContentType media_content_type =
+      media::MediaContentType::Transient;
+
+  NotifyMediaMetadataChanged(has_audio, has_video, media_content_type);
+  EXPECT_TRUE(ReceivedMessageMediaMetadataChanged(has_audio, has_video,
+                                                  media_content_type));
+  // Change values and test again.
+  has_audio = true;
+  has_video = false;
+  media_content_type = media::MediaContentType::OneShot;
+  NotifyMediaMetadataChanged(has_audio, has_video, media_content_type);
+  EXPECT_TRUE(ReceivedMessageMediaMetadataChanged(has_audio, has_video,
+                                                  media_content_type));
 }
 
 TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {

@@ -16,6 +16,7 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "media/base/media_content_type.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_size.h"
@@ -103,9 +104,6 @@ void RendererWebMediaPlayerDelegate::DidMediaMetadataChange(
     playing_videos_.erase(player_id);
   }
 
-  Send(new MediaPlayerDelegateHostMsg_OnMediaMetadataChanged(
-      routing_id(), player_id, has_audio, has_video, media_content_type));
-
   ScheduleUpdateTask();
 }
 
@@ -119,8 +117,6 @@ void RendererWebMediaPlayerDelegate::DidPlay(int player_id) {
     has_played_video_ = true;
   }
 
-  Send(new MediaPlayerDelegateHostMsg_OnMediaPlaying(routing_id(), player_id));
-
   ScheduleUpdateTask();
 }
 
@@ -130,8 +126,6 @@ void RendererWebMediaPlayerDelegate::DidPause(int player_id,
            << ")";
   DCHECK(id_map_.Lookup(player_id));
   playing_videos_.erase(player_id);
-  Send(new MediaPlayerDelegateHostMsg_OnMediaPaused(routing_id(), player_id,
-                                                    reached_end_of_stream));
 
   // Required to keep background playback statistics up to date.
   ScheduleUpdateTask();

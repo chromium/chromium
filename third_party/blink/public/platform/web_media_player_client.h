@@ -43,6 +43,10 @@ namespace cc {
 class Layer;
 }
 
+namespace media {
+enum class MediaContentType;
+}  // namespace media
+
 namespace blink {
 
 class WebInbandTextTrack;
@@ -166,8 +170,21 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   // Request the player to pause playback.
   virtual void PausePlayback() = 0;
 
+  // Notify the client that the media player started playing content.
+  virtual void DidPlayerStartPlaying() = 0;
+
+  // Notify the client that the media player stopped playing content, indicating
+  // in |stream_ended| if playback has reached the end of the stream.
+  virtual void DidPlayerPaused(bool stream_ended) = 0;
+
   // Notify the client that the muted status of the media player has changed.
   virtual void DidPlayerMutedStatusChange(bool muted) = 0;
+
+  // Notify the client that the media metadata of the media player has changed.
+  virtual void DidMediaMetadataChange(
+      bool has_audio,
+      bool has_video,
+      media::MediaContentType media_content_type) = 0;
 
   // Notify the client that the playback position has changed.
   virtual void DidPlayerMediaPositionStateChange(double playback_rate,

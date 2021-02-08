@@ -101,6 +101,20 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.MediaContentType"
+          cpp = "::media::MediaContentType"
+        },
+      ]
+      traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
+      traits_public_deps = [
+        "//base",
+        "//media",
+        "//media/base/ipc",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.VideoFrameMetadata"
           cpp = "::media::VideoFrameMetadata"
         },
@@ -232,7 +246,6 @@ mojom("mojom") {
         "//media/base/ipc",
       ]
     },
-
     {
       types = [
         {

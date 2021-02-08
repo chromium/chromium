@@ -665,6 +665,8 @@ void WebMediaPlayerMS::ReloadVideo() {
   // TODO(perkj, magjed): We use OneShot focus type here so that it takes
   // audio focus once it starts, and then will not respond to further audio
   // focus changes. See https://crbug.com/596516 for more details.
+  client_->DidMediaMetadataChange(HasAudio(), HasVideo(),
+                                  media::MediaContentType::OneShot);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
                                     media::MediaContentType::OneShot);
 }
@@ -723,6 +725,8 @@ void WebMediaPlayerMS::ReloadAudio() {
   // TODO(perkj, magjed): We use OneShot focus type here so that it takes
   // audio focus once it starts, and then will not respond to further audio
   // focus changes. See https://crbug.com/596516 for more details.
+  client_->DidMediaMetadataChange(HasAudio(), HasVideo(),
+                                  media::MediaContentType::OneShot);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
                                     media::MediaContentType::OneShot);
 }
@@ -746,6 +750,7 @@ void WebMediaPlayerMS::Play() {
   if (HasVideo())
     client_->DidPlayerSizeChange(NaturalSize());
 
+  client_->DidPlayerStartPlaying();
   delegate_->DidPlay(delegate_id_);
 
   delegate_->SetIdle(delegate_id_, false);
@@ -770,6 +775,7 @@ void WebMediaPlayerMS::Pause() {
   if (audio_renderer_)
     audio_renderer_->Pause();
 
+  client_->DidPlayerPaused(/* stream_ended = */ false);
   delegate_->DidPause(delegate_id_, /* reached_end_of_stream = */ false);
   delegate_->SetIdle(delegate_id_, true);
 

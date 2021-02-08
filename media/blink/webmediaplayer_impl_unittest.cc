@@ -29,6 +29,7 @@
 #include "cc/layers/layer.h"
 #include "components/viz/test/test_context_provider.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/memory_dump_provider_proxy.h"
@@ -156,7 +157,11 @@ class MockWebMediaPlayerClient : public blink::WebMediaPlayerClient {
   MOCK_CONST_METHOD0(CouldPlayIfEnoughData, bool());
   MOCK_METHOD0(ResumePlayback, void());
   MOCK_METHOD0(PausePlayback, void());
+  MOCK_METHOD0(DidPlayerStartPlaying, void());
+  MOCK_METHOD1(DidPlayerPaused, void(bool));
   MOCK_METHOD1(DidPlayerMutedStatusChange, void(bool));
+  MOCK_METHOD3(DidMediaMetadataChange,
+               void(bool, bool, media::MediaContentType));
   MOCK_METHOD3(DidPlayerMediaPositionStateChange,
                void(double, base::TimeDelta, base::TimeDelta position));
   MOCK_METHOD0(DidDisableAudioOutputSinkChanges, void());

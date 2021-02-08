@@ -17,6 +17,7 @@
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/media/renderer_webmediaplayer_delegate.h"
 #include "content/renderer/render_process.h"
+#include "media/base/media_content_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -95,63 +96,6 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
  private:
   DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegateTest);
 };
-
-TEST_F(RendererWebMediaPlayerDelegateTest, SendsMessagesCorrectly) {
-  StrictMock<MockWebMediaPlayerDelegateObserver> observer;
-  const int delegate_id = delegate_manager_->AddObserver(&observer);
-
-  // Verify the metadata message.
-  {
-    const bool kHasAudio = false;
-    const bool kHasVideo = true;
-    const media::MediaContentType kMediaContentType =
-        media::MediaContentType::Transient;
-    delegate_manager_->DidMediaMetadataChange(delegate_id, kHasAudio, kHasVideo,
-                                              kMediaContentType);
-
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(
-        MediaPlayerDelegateHostMsg_OnMediaMetadataChanged::ID);
-    ASSERT_TRUE(msg);
-
-    std::tuple<int, bool, bool, media::MediaContentType> result;
-    ASSERT_TRUE(
-        MediaPlayerDelegateHostMsg_OnMediaMetadataChanged::Read(msg, &result));
-    EXPECT_EQ(delegate_id, std::get<0>(result));
-    EXPECT_EQ(kHasAudio, std::get<1>(result));
-    EXPECT_EQ(kHasVideo, std::get<2>(result));
-    EXPECT_EQ(kMediaContentType, std::get<3>(result));
-  }
-
-  // Verify the playing message.
-  {
-    test_sink().ClearMessages();
-    delegate_manager_->DidPlay(delegate_id);
-
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(
-        MediaPlayerDelegateHostMsg_OnMediaPlaying::ID);
-    ASSERT_TRUE(msg);
-
-    std::tuple<int> result;
-    ASSERT_TRUE(MediaPlayerDelegateHostMsg_OnMediaPlaying::Read(msg, &result));
-    EXPECT_EQ(delegate_id, std::get<0>(result));
-  }
-
-  // Verify the paused message.
-  {
-    test_sink().ClearMessages();
-    const bool kReachedEndOfStream = false;
-    delegate_manager_->DidPause(delegate_id, kReachedEndOfStream);
-
-    const IPC::Message* msg = test_sink().GetUniqueMessageMatching(
-        MediaPlayerDelegateHostMsg_OnMediaPaused::ID);
-    ASSERT_TRUE(msg);
-
-    std::tuple<int, bool> result;
-    ASSERT_TRUE(MediaPlayerDelegateHostMsg_OnMediaPaused::Read(msg, &result));
-    EXPECT_EQ(delegate_id, std::get<0>(result));
-    EXPECT_EQ(kReachedEndOfStream, std::get<1>(result));
-  }
-}
 
 TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {
   const int delegate_id = delegate_manager_->AddObserver(&observer_1_);

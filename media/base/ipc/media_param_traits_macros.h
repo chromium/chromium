@@ -22,6 +22,7 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/eme_constants.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/media_content_type.h"
 #include "media/base/media_log_record.h"
 #include "media/base/media_status.h"
 #include "media/base/output_device_info.h"
@@ -94,6 +95,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::EncryptionScheme,
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::HdcpVersion,
                           media::HdcpVersion::kHdcpVersionMax)
+
+IPC_ENUM_TRAITS_MAX_VALUE(media::MediaContentType, media::MediaContentType::Max)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::MediaLogRecord::Type,
                           media::MediaLogRecord::Type::kMaxValue)

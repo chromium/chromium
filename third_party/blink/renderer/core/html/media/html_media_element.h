@@ -60,6 +60,10 @@ namespace cc {
 class Layer;
 }
 
+namespace media {
+enum class MediaContentType;
+}  // namespace media
+
 namespace blink {
 
 class AudioSourceProviderClient;
@@ -477,7 +481,13 @@ class CORE_EXPORT HTMLMediaElement
   bool IsInAutoPIP() const override { return false; }
   void ResumePlayback() final;
   void PausePlayback() final;
+  void DidPlayerStartPlaying() override;
+  void DidPlayerPaused(bool stream_ended) override;
   void DidPlayerMutedStatusChange(bool muted) override;
+  void DidMediaMetadataChange(
+      bool has_audio,
+      bool has_video,
+      media::MediaContentType media_content_type) override;
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
                                          base::TimeDelta position) override;

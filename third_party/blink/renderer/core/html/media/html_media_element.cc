@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "media/base/logging_override_if_enabled.h"
+#include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -4397,11 +4398,38 @@ void HTMLMediaElement::PausePlayback() {
   RequestPause(false);
 }
 
+void HTMLMediaElement::DidPlayerStartPlaying() {
+  for (auto& observer : media_player_observer_remote_set_) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnMediaPlaying();
+  }
+}
+
+void HTMLMediaElement::DidPlayerPaused(bool stream_ended) {
+  for (auto& observer : media_player_observer_remote_set_) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnMediaPaused(stream_ended);
+  }
+}
+
 void HTMLMediaElement::DidPlayerMutedStatusChange(bool muted) {
   for (auto& observer : media_player_observer_remote_set_) {
     if (!observer.is_bound())
       continue;
     observer->OnMutedStatusChanged(muted);
+  }
+}
+
+void HTMLMediaElement::DidMediaMetadataChange(
+    bool has_audio,
+    bool has_video,
+    media::MediaContentType media_content_type) {
+  for (auto& observer : media_player_observer_remote_set_) {
+    if (!observer.is_bound())
+      continue;
+    observer->OnMediaMetadataChanged(has_audio, has_video, media_content_type);
   }
 }
 

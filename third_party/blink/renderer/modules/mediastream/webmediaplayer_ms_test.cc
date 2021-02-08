@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/layers/layer.h"
+#include "media/base/media_content_type.h"
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
@@ -110,17 +111,13 @@ class FakeWebMediaPlayerDelegate
 
   void DidPlay(int delegate_id) override {
     EXPECT_EQ(delegate_id_, delegate_id);
-    EXPECT_FALSE(playing_);
-    playing_ = true;
     is_gone_ = false;
   }
 
   void DidPause(int delegate_id, bool reached_end_of_stream) override {
     EXPECT_EQ(delegate_id_, delegate_id);
     EXPECT_FALSE(reached_end_of_stream);
-    EXPECT_TRUE(playing_);
     EXPECT_FALSE(is_gone_);
-    playing_ = false;
   }
 
   void PlayerGone(int delegate_id) override {
@@ -168,7 +165,6 @@ class FakeWebMediaPlayerDelegate
  private:
   int delegate_id_ = 1234;
   Observer* observer_ = nullptr;
-  bool playing_ = false;
   bool is_hidden_ = false;
   bool is_gone_ = true;
   bool is_idle_ = false;
@@ -585,7 +581,13 @@ class WebMediaPlayerMSTest
   void MediaRemotingStopped(int error_code) override {}
   void ResumePlayback() override {}
   void PausePlayback() override {}
+  void DidPlayerStartPlaying() override {}
+  void DidPlayerPaused(bool) override {}
   void DidPlayerMutedStatusChange(bool muted) override {}
+  void DidMediaMetadataChange(
+      bool has_audio,
+      bool has_video,
+      media::MediaContentType media_content_type) override {}
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
                                          base::TimeDelta position) override {}

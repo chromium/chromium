@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -39,8 +40,20 @@ interface MediaPlayer {
 // Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the
 // browser process.
 interface MediaPlayerObserver {
+  // Notifies that the media player started playing content.
+  OnMediaPlaying();
+
+  // Notifies that the media player stopped playing content,
+  // indicating in |stream_ended| if playback has reached the end of the stream.
+  OnMediaPaused(bool stream_ended);
+
   // Notifies that the muted status of the media player has changed.
   OnMutedStatusChanged(bool muted);
+
+  // Notifies that the media metadata of the media player has changed, along
+  // with the kind of tracks the media player has, and the type of content.
+  OnMediaMetadataChanged(
+      bool has_audio, bool has_video, MediaContentType content_type);
 
   // Notifies the browser process that the media playback position has changed,
   // and reports the new current position via |media_position|.

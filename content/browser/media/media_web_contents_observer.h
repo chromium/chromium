@@ -190,7 +190,13 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     BindMediaPlayerObserverReceiverAndPassRemote();
 
     // media::mojom::MediaPlayerObserver implementation.
+    void OnMediaPlaying() override;
+    void OnMediaPaused(bool stream_ended) override;
     void OnMutedStatusChanged(bool muted) override;
+    void OnMediaMetadataChanged(
+        bool has_audio,
+        bool has_video,
+        media::MediaContentType media_content_type) override;
     void OnMediaPositionStateChanged(
         const media_session::MediaPosition& media_position) override;
     void OnMediaSizeChanged(const ::gfx::Size& size) override;
@@ -218,15 +224,11 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   // PlayerInfo exists.
   PlayerInfo* GetPlayerInfo(const MediaPlayerId& id) const;
 
-  void OnMediaPaused(RenderFrameHost* render_frame_host,
-                     int delegate_id,
-                     bool reached_end_of_stream);
-  void OnMediaMetadataChanged(RenderFrameHost* render_frame_host,
-                              int delegate_id,
+  void OnMediaMetadataChanged(const MediaPlayerId& player_id,
                               bool has_video,
                               bool has_audio,
                               media::MediaContentType media_content_type);
-  void OnMediaPlaying(RenderFrameHost* render_frame_host, int delegate_id);
+
   void OnMediaEffectivelyFullscreenChanged(
       RenderFrameHost* render_frame_host,
       int delegate_id,

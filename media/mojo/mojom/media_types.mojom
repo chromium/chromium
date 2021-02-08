@@ -38,6 +38,10 @@ enum DecodeStatus;
 [Native]
 enum StatusCode;
 
+// See media/base/media_content_type.h for descriptions.
+[Native]
+enum MediaContentType;
+
 // See media/base/media_log_record.h for description.
 [Native]
 struct MediaLogRecord;
