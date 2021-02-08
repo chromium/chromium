@@ -16,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/css/page_size_type.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy_features.h"
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
@@ -606,6 +607,23 @@ class WebLocalFrame : public WebFrame {
   // Copy to the clipboard the image located at a particular point in visual
   // viewport coordinates.
   virtual void CopyImageAtForTesting(const gfx::Point&) = 0;
+
+  // Shows a context menu with the given information from an external context
+  // menu request. The given client will be called with the result.
+  //
+  // The request ID will be returned by this function. This is passed to the
+  // client functions for identification.
+  //
+  // If the client is destroyed, CancelContextMenu() should be called with the
+  // request ID returned by this function.
+  //
+  // Note: if you end up having clients outliving the WebLocalFrame, we should
+  // add a CancelContextMenuCallback function that takes a request id.
+  virtual void ShowContextMenuFromExternal(
+      const UntrustworthyContextMenuParams& params,
+      CrossVariantMojoAssociatedRemote<
+          blink::mojom::ContextMenuClientInterfaceBase>
+          context_menu_client) = 0;
 
   // Events --------------------------------------------------------------
 

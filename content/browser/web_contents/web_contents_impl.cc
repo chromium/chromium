@@ -4436,20 +4436,21 @@ void WebContentsImpl::ReplaceMisspelling(const base::string16& word) {
   input_handler->ReplaceMisspelling(word);
 }
 
-void WebContentsImpl::NotifyContextMenuClosed(
-    const blink::CustomContextMenuContext& context) {
+void WebContentsImpl::NotifyContextMenuClosed(const GURL& link_followed) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::NotifyContextMenuClosed");
   RenderFrameHost* focused_frame = GetFocusedFrame();
   if (!focused_frame)
     return;
 
-  focused_frame->Send(new FrameMsg_ContextMenuClosed(
-      focused_frame->GetRoutingID(), context));
+  if (context_menu_client_)
+    context_menu_client_->ContextMenuClosed(link_followed);
+
+  context_menu_client_.reset();
 }
 
 void WebContentsImpl::ExecuteCustomContextMenuCommand(
     int action,
-    const blink::CustomContextMenuContext& context) {
+    const GURL& link_followed) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::ExecuteCustomContextMenuCommand",
                         "action", action);
@@ -4457,8 +4458,8 @@ void WebContentsImpl::ExecuteCustomContextMenuCommand(
   if (!focused_frame)
     return;
 
-  focused_frame->Send(new FrameMsg_CustomContextMenuAction(
-      focused_frame->GetRoutingID(), context, action));
+  if (context_menu_client_)
+    context_menu_client_->CustomContextMenuAction(action);
 }
 
 gfx::NativeView WebContentsImpl::GetNativeView() {
@@ -6331,8 +6332,11 @@ void WebContentsImpl::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
                          blink::mojom::FullscreenOptionsPtr());
 }
 
-void WebContentsImpl::ShowContextMenu(RenderFrameHost* render_frame_host,
-                                      const ContextMenuParams& params) {
+void WebContentsImpl::ShowContextMenu(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+        context_menu_client,
+    const ContextMenuParams& params) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShowContextMenu",
                         "render_frame_host",
                         base::trace_event::ToTracedValue(render_frame_host));
@@ -6340,6 +6344,11 @@ void WebContentsImpl::ShowContextMenu(RenderFrameHost* render_frame_host,
   // first context menu is closed, just ignore it. https://crbug.com/707534
   if (showing_context_menu_)
     return;
+
+  if (context_menu_client) {
+    context_menu_client_.reset();
+    context_menu_client_.Bind(std::move(context_menu_client));
+  }
 
   ContextMenuParams context_menu_params(params);
   // Allow WebContentsDelegates to handle the context menu operation first.

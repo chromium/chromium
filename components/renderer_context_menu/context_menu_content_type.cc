@@ -43,10 +43,7 @@ bool ContextMenuContentType::SupportsGroup(int group) {
       // For menus with custom items, if there is no selection, we do not
       // add items other than developer items. And for Pepper menu, don't even
       // add developer items.
-      if (!params_.custom_context.is_pepper_menu)
-        return group == ITEM_GROUP_DEVELOPER;
-
-      return false;
+      return group == ITEM_GROUP_DEVELOPER;
     }
 
     // If there's a selection when there are custom items, fall through to

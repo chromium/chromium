@@ -370,12 +370,12 @@ void RenderViewContextMenuBase::ExecuteCommand(int id, int event_flags) {
   // Process custom actions range.
   if (IsContentCustomCommandId(id)) {
     unsigned action = id - content_context_custom_first;
-    const blink::CustomContextMenuContext& context = params_.custom_context;
+    const GURL& link_followed = params_.link_followed;
 #if BUILDFLAG(ENABLE_PLUGINS)
-    if (context.request_id && !context.is_pepper_menu)
-      HandleAuthorizeAllPlugins();
+    HandleAuthorizeAllPlugins();
 #endif
-    source_web_contents_->ExecuteCustomContextMenuCommand(action, context);
+    source_web_contents_->ExecuteCustomContextMenuCommand(action,
+                                                          link_followed);
     return;
   }
   command_executed_ = false;
@@ -405,7 +405,7 @@ void RenderViewContextMenuBase::MenuClosed(ui::SimpleMenuModel* source) {
     return;
 
   source_web_contents_->SetShowingContextMenu(false);
-  source_web_contents_->NotifyContextMenuClosed(params_.custom_context);
+  source_web_contents_->NotifyContextMenuClosed(params_.link_followed);
   for (auto& observer : observers_) {
     observer.OnMenuClosed();
   }
@@ -440,7 +440,7 @@ void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
 
   if (params_.link_url == url &&
       disposition != WindowOpenDisposition::OFF_THE_RECORD)
-    params_.custom_context.link_followed = url;
+    params_.link_followed = url;
 
   OpenURLParams open_url_params(url, referrer, disposition, transition, false,
                                 started_from_context_menu);

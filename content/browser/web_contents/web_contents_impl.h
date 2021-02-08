@@ -445,11 +445,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void CollapseSelection() override;
   void Replace(const base::string16& word) override;
   void ReplaceMisspelling(const base::string16& word) override;
-  void NotifyContextMenuClosed(
-      const blink::CustomContextMenuContext& context) override;
-  void ExecuteCustomContextMenuCommand(
-      int action,
-      const blink::CustomContextMenuContext& context) override;
+  void NotifyContextMenuClosed(const GURL& link_followed) override;
+  void ExecuteCustomContextMenuCommand(int action,
+                                       const GURL& link_followed) override;
   gfx::NativeView GetNativeView() override;
   gfx::NativeView GetContentNativeView() override;
   gfx::NativeWindow GetTopLevelNativeWindow() override;
@@ -583,8 +581,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   const GURL& GetMainFrameLastCommittedURL() override;
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
-                       const ContextMenuParams& params) override;
+  void ShowContextMenu(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+          context_menu_client,
+      const ContextMenuParams& params) override;
   void RunJavaScriptDialog(RenderFrameHost* render_frame_host,
                            const base::string16& message,
                            const base::string16& default_prompt,
@@ -1926,6 +1927,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool last_dialog_suppressed_;
 
   mojo::Remote<device::mojom::GeolocationContext> geolocation_context_;
+
+  mojo::AssociatedRemote<blink::mojom::ContextMenuClient> context_menu_client_;
 
   std::unique_ptr<WakeLockContextHost> wake_lock_context_host_;
 

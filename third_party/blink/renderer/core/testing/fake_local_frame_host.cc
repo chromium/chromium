@@ -177,6 +177,11 @@ void FakeLocalFrameHost::ShowPopupMenu(
     bool right_aligned,
     bool allow_multiple_selection) {}
 
+void FakeLocalFrameHost::ShowContextMenu(
+    mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient>
+        context_menu_client,
+    const blink::UntrustworthyContextMenuParams& params) {}
+
 void FakeLocalFrameHost::DidLoadResourceFromMemoryCache(
     const KURL& url,
     const WTF::String& http_method,

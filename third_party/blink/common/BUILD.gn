@@ -77,6 +77,8 @@ source_set("common") {
     "browser_interface_broker_proxy.cc",
     "cache_storage/cache_storage_utils.cc",
     "client_hints/client_hints.cc",
+    "context_menu_data/context_menu_mojom_traits.cc",
+    "context_menu_data/context_menu_params_builder.cc",
     "context_menu_data/menu_item.cc",
     "context_menu_data/untrustworthy_context_menu_params.cc",
     "custom_handlers/protocol_handler_utils.cc",

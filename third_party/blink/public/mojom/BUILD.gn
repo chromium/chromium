@@ -426,6 +426,23 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/public/common/web_preferences/web_preferences_mojom_traits.h" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.Impression"
+          cpp = "::blink::Impression"
+        },
+        {
+          mojom = "blink.mojom.CustomContextMenuItemContext"
+          cpp = "::blink::MenuItem"
+        },
+        {
+          mojom = "blink.mojom.UntrustworthyContextMenuParams"
+          cpp = "::blink::UntrustworthyContextMenuParams"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/context_menu_data/context_menu_mojom_traits.h" ]
+    },
   ]
   cpp_typemaps = [
     {

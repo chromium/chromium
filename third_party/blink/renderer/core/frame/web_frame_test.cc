@@ -12870,8 +12870,9 @@ class ContextMenuWebFrameClient
   ~ContextMenuWebFrameClient() override = default;
 
   // WebLocalFrameClient:
-  void ShowContextMenu(const ContextMenuData& data,
-                       const base::Optional<gfx::Point>&) override {
+  void UpdateContextMenuDataForTesting(
+      const ContextMenuData& data,
+      const base::Optional<gfx::Point>&) override {
     menu_data_ = data;
   }
 

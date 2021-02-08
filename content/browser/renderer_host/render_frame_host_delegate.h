@@ -26,6 +26,7 @@
 #include "content/public/common/javascript_dialog_type.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/services/media_metrics_provider.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -172,8 +173,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // A context menu should be shown, to be built using the context information
   // provided in the supplied params.
-  virtual void ShowContextMenu(RenderFrameHost* render_frame_host,
-                               const ContextMenuParams& params) {}
+  virtual void ShowContextMenu(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+          context_menu_client,
+      const ContextMenuParams& params) {}
 
   // A JavaScript alert, confirmation or prompt dialog should be shown.
   virtual void RunJavaScriptDialog(RenderFrameHost* render_frame_host,

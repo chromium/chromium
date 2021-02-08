@@ -74,7 +74,6 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/context_menu_client.h"
 #include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_visitor.h"
@@ -86,7 +85,6 @@
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/content_security_policy_util.h"
-#include "content/renderer/context_menu_params_builder.h"
 #include "content/renderer/crash_helpers.h"
 #include "content/renderer/dom_automation_controller.h"
 #include "content/renderer/effective_connection_type_helper.h"
@@ -2264,14 +2262,7 @@ bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
       return true;
   }
 
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(RenderFrameImpl, msg)
-    IPC_MESSAGE_HANDLER(FrameMsg_ContextMenuClosed, OnContextMenuClosed)
-    IPC_MESSAGE_HANDLER(FrameMsg_CustomContextMenuAction,
-                        OnCustomContextMenuAction)
-  IPC_END_MESSAGE_MAP()
-
-  return handled;
+  return false;
 }
 
 void RenderFrameImpl::OnAssociatedInterfaceRequest(
@@ -2462,39 +2453,6 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   // This will result in a call to RenderFrameImpl::FrameDetached, which
   // deletes the object. Do not access |this| after detach.
   frame_->Detach();
-}
-
-void RenderFrameImpl::OnContextMenuClosed(
-    const blink::CustomContextMenuContext& custom_context) {
-  if (custom_context.request_id) {
-    // External request, should be in our map.
-    ContextMenuClient* client =
-        pending_context_menus_.Lookup(custom_context.request_id);
-    if (client) {
-      client->OnMenuClosed(custom_context.request_id);
-      pending_context_menus_.Remove(custom_context.request_id);
-    }
-  } else {
-    if (custom_context.link_followed.is_valid())
-      frame_->SendPings(custom_context.link_followed);
-  }
-
-  render_view()->GetWebView()->DidCloseContextMenu();
-}
-
-void RenderFrameImpl::OnCustomContextMenuAction(
-    const blink::CustomContextMenuContext& custom_context,
-    unsigned action) {
-  if (custom_context.request_id) {
-    // External context menu request, look in our map.
-    ContextMenuClient* client =
-        pending_context_menus_.Lookup(custom_context.request_id);
-    if (client)
-      client->OnMenuAction(custom_context.request_id, action);
-  } else {
-    // Internal request, forward to WebKit.
-    render_view_->GetWebView()->PerformCustomContextMenuAction(action);
-  }
 }
 
 void RenderFrameImpl::JavaScriptMethodExecuteRequest(
@@ -2764,31 +2722,6 @@ const blink::web_pref::WebPreferences& RenderFrameImpl::GetBlinkPreferences() {
 const blink::RendererPreferences& RenderFrameImpl::GetRendererPreferences()
     const {
   return render_view_->GetRendererPreferences();
-}
-
-int RenderFrameImpl::ShowContextMenu(
-    ContextMenuClient* client,
-    const blink::UntrustworthyContextMenuParams& params) {
-  DCHECK(client);  // A null client means "internal" when we issue callbacks.
-  blink::UntrustworthyContextMenuParams our_params(params);
-
-  // TODO(crbug.com/1093904): This essentially is a floor of the coordinates.
-  // Determine if rounding is more appropriate.
-  gfx::Rect position_in_dips =
-      GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
-          gfx::Rect(params.x, params.y, 0, 0));
-
-  our_params.x = position_in_dips.x();
-  our_params.y = position_in_dips.y();
-
-  our_params.custom_context.request_id = pending_context_menus_.Add(client);
-  Send(new FrameHostMsg_ContextMenu(routing_id_, our_params));
-  return our_params.custom_context.request_id;
-}
-
-void RenderFrameImpl::CancelContextMenu(int request_id) {
-  DCHECK(pending_context_menus_.Lookup(request_id));
-  pending_context_menus_.Remove(request_id);
 }
 
 void RenderFrameImpl::ShowVirtualKeyboard() {
@@ -4452,62 +4385,6 @@ void RenderFrameImpl::DidChangeSelection(bool is_empty_selection) {
   // before selection change.
   GetLocalRootWebFrameWidget()->UpdateTextInputState();
   SyncSelectionIfRequired();
-}
-
-void RenderFrameImpl::ShowContextMenu(
-    const blink::ContextMenuData& data,
-    const base::Optional<gfx::Point>& host_context_menu_location) {
-  blink::UntrustworthyContextMenuParams params =
-      ContextMenuParamsBuilder::Build(data);
-  if (host_context_menu_location.has_value()) {
-    // If the context menu request came from the browser, it came with a
-    // position that was stored on blink::WebFrameWidgetImpl and is relative to
-    // the WindowScreenRect.
-    params.x = host_context_menu_location.value().x();
-    params.y = host_context_menu_location.value().y();
-  } else {
-    // If the context menu request came from the renderer, the position in
-    // |params| is real, but they come in blink viewport coordinates, which
-    // include the device scale factor, but not emulation scale. Here we convert
-    // them to DIP coordinates relative to the WindowScreenRect.
-    // TODO(crbug.com/1093904): This essentially is a floor of the coordinates.
-    // Determine if rounding is more appropriate.
-    gfx::Rect position_in_dips =
-        GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
-            gfx::Rect(params.x, params.y, 0, 0));
-
-    const float scale = GetLocalRootWebFrameWidget()->GetEmulatorScale();
-    params.x = position_in_dips.x() * scale;
-    params.y = position_in_dips.y() * scale;
-  }
-
-  // Serializing a GURL longer than kMaxURLChars will fail, so don't do
-  // it.  We replace it with an empty GURL so the appropriate items are disabled
-  // in the context menu.
-  // TODO(jcivelli): http://crbug.com/45160 This prevents us from saving large
-  //                 data encoded images.  We should have a way to save them.
-  if (params.src_url.spec().size() > url::kMaxURLChars)
-    params.src_url = GURL();
-
-  params.selection_rect =
-      GetLocalRootWebFrameWidget()->BlinkSpaceToEnclosedDIPs(
-          data.selection_rect);
-
-#if defined(OS_ANDROID)
-  // The Samsung Email app relies on the context menu being shown after the
-  // javascript onselectionchanged is triggered.
-  // See crbug.com/729488
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&RenderFrameImpl::ShowDeferredContextMenu,
-                                weak_factory_.GetWeakPtr(), params));
-#else
-  ShowDeferredContextMenu(params);
-#endif
-}
-
-void RenderFrameImpl::ShowDeferredContextMenu(
-    const blink::UntrustworthyContextMenuParams& params) {
-  Send(new FrameHostMsg_ContextMenu(routing_id_, params));
 }
 
 void RenderFrameImpl::OnMainFrameIntersectionChanged(

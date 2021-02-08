@@ -24,6 +24,7 @@ import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
+import "third_party/blink/public/mojom/context_menu/context_menu.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/inspector_issue.mojom";
 import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
@@ -423,6 +424,13 @@ interface LocalFrameHost {
                 array<MenuItem> menu_items,
                 bool right_aligned,
                 bool allow_multiple_selection);
+
+  // Used to tell the parent that the user right clicked on an area of the
+  // content area, and a context menu should be shown for it. The params
+  // object contains information about the node(s) that were selected when the
+  // user right clicked.
+  ShowContextMenu(pending_associated_remote<ContextMenuClient> client,
+                  UntrustworthyContextMenuParams params);
 
   // Sent when the renderer loads a resource from its memory cache. This message
   // lets the browser know we loaded a resource from the memory cache and is

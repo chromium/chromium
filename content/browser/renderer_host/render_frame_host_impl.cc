@@ -1916,13 +1916,7 @@ bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
   if (delegate_->OnMessageReceived(this, msg))
     return true;
 
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(RenderFrameHostImpl, msg)
-    IPC_MESSAGE_HANDLER(FrameHostMsg_ContextMenu, OnContextMenu)
-  IPC_END_MESSAGE_MAP()
-
-  // No further actions here, since we may have been deleted.
-  return handled;
+  return false;
 }
 
 void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
@@ -3607,43 +3601,6 @@ void RenderFrameHostImpl::SetSubframeUnloadTimeoutForTesting(
   subframe_unload_timeout_ = timeout;
 }
 
-void RenderFrameHostImpl::OnContextMenu(
-    const blink::UntrustworthyContextMenuParams& params) {
-  if (IsInactiveAndDisallowReactivation())
-    return;
-
-  // Validate the URLs in |params|.  If the renderer can't request the URLs
-  // directly, don't show them in the context menu.
-  ContextMenuParams validated_params(params);
-  validated_params.page_url = GetMainFrame()->GetLastCommittedURL();
-  if (GetParent())  // Only populate |frame_url| for subframes.
-    validated_params.frame_url = GetLastCommittedURL();
-
-  // We don't validate |unfiltered_link_url| so that this field can be used
-  // when users want to copy the original link URL.
-  RenderProcessHost* process = GetProcess();
-  process->FilterURL(true, &validated_params.link_url);
-  process->FilterURL(true, &validated_params.src_url);
-  process->FilterURL(false, &validated_params.page_url);
-  process->FilterURL(true, &validated_params.frame_url);
-
-  // It is necessary to transform the coordinates to account for nested
-  // RenderWidgetHosts, such as with out-of-process iframes.
-  gfx::Point original_point(validated_params.x, validated_params.y);
-  gfx::Point transformed_point =
-      static_cast<RenderWidgetHostViewBase*>(GetView())
-          ->TransformPointToRootCoordSpace(original_point);
-  validated_params.x = transformed_point.x();
-  validated_params.y = transformed_point.y();
-
-  if (validated_params.selection_start_offset < 0) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_NEGATIVE_SELECTION_START_OFFSET);
-  }
-
-  delegate_->ShowContextMenu(this, validated_params);
-}
-
 #if defined(OS_ANDROID)
 void RenderFrameHostImpl::RequestSmartClipExtract(
     ExtractSmartClipDataCallback callback,
@@ -5047,6 +5004,46 @@ void RenderFrameHostImpl::ShowPopupMenu(
                       std::move(menu_items), right_aligned,
                       allow_multiple_selection);
 #endif
+}
+
+void RenderFrameHostImpl::ShowContextMenu(
+    mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+        context_menu_client,
+    const blink::UntrustworthyContextMenuParams& params) {
+  if (IsInactiveAndDisallowReactivation())
+    return;
+
+  // Validate the URLs in |params|.  If the renderer can't request the URLs
+  // directly, don't show them in the context menu.
+  ContextMenuParams validated_params(params);
+  validated_params.page_url = GetMainFrame()->GetLastCommittedURL();
+  if (GetParent())  // Only populate |frame_url| for subframes.
+    validated_params.frame_url = GetLastCommittedURL();
+
+  // We don't validate |unfiltered_link_url| so that this field can be used
+  // when users want to copy the original link URL.
+  RenderProcessHost* process = GetProcess();
+  process->FilterURL(true, &validated_params.link_url);
+  process->FilterURL(true, &validated_params.src_url);
+  process->FilterURL(false, &validated_params.page_url);
+  process->FilterURL(true, &validated_params.frame_url);
+
+  // It is necessary to transform the coordinates to account for nested
+  // RenderWidgetHosts, such as with out-of-process iframes.
+  gfx::Point original_point(validated_params.x, validated_params.y);
+  gfx::Point transformed_point =
+      static_cast<RenderWidgetHostViewBase*>(GetView())
+          ->TransformPointToRootCoordSpace(original_point);
+  validated_params.x = transformed_point.x();
+  validated_params.y = transformed_point.y();
+
+  if (validated_params.selection_start_offset < 0) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_NEGATIVE_SELECTION_START_OFFSET);
+  }
+
+  delegate_->ShowContextMenu(this, std::move(context_menu_client),
+                             validated_params);
 }
 
 void RenderFrameHostImpl::DidLoadResourceFromMemoryCache(

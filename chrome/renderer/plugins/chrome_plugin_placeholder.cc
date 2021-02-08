@@ -26,6 +26,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/public/renderer/render_view.h"
 #include "gin/object_template_builder.h"
 #include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -96,8 +98,7 @@ ChromePluginPlaceholder::ChromePluginPlaceholder(
     const base::string16& title)
     : plugins::LoadablePluginPlaceholder(render_frame, params, html_data),
       status_(chrome::mojom::PluginStatus::kAllowed),
-      title_(title),
-      context_menu_request_id_(0) {
+      title_(title) {
   RenderThread::Get()->AddObserver(this);
   prerender::PrerenderObserverList::AddObserverForFrame(render_frame, this);
 
@@ -116,9 +117,6 @@ ChromePluginPlaceholder::~ChromePluginPlaceholder() {
 
     prerender::PrerenderObserverList::RemoveObserverForFrame(render_frame(),
                                                              this);
-
-    if (context_menu_request_id_)
-      render_frame()->CancelContextMenu(context_menu_request_id_);
   }
 }
 
@@ -251,35 +249,6 @@ void ChromePluginPlaceholder::PluginListChanged() {
   }
 }
 
-void ChromePluginPlaceholder::OnMenuAction(int request_id, unsigned action) {
-  DCHECK_EQ(context_menu_request_id_, request_id);
-  if (g_last_active_menu != this)
-    return;
-  switch (action) {
-    case MENU_COMMAND_PLUGIN_RUN: {
-      RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Load_Menu"));
-      LoadPlugin();
-      break;
-    }
-    case MENU_COMMAND_PLUGIN_HIDE: {
-      RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Hide_Menu"));
-      HidePlugin();
-      break;
-    }
-    case MENU_COMMAND_ENABLE_FLASH: {
-      ShowPermissionBubbleCallback();
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-}
-
-void ChromePluginPlaceholder::OnMenuClosed(int request_id) {
-  DCHECK_EQ(context_menu_request_id_, request_id);
-  context_menu_request_id_ = 0;
-}
-
 v8::Local<v8::Value> ChromePluginPlaceholder::GetV8Handle(
     v8::Isolate* isolate) {
   return gin::CreateHandle(isolate, this).ToV8();
@@ -287,8 +256,9 @@ v8::Local<v8::Value> ChromePluginPlaceholder::GetV8Handle(
 
 void ChromePluginPlaceholder::ShowContextMenu(
     const blink::WebMouseEvent& event) {
-  if (context_menu_request_id_)
+  if (context_menu_client_receiver_.is_bound())
     return;  // Don't allow nested context menu requests.
+
   if (!render_frame())
     return;
 
@@ -338,11 +308,50 @@ void ChromePluginPlaceholder::ShowContextMenu(
   if (plugin() && plugin()->Container())
     point = plugin()->Container()->LocalToRootFramePoint(point);
 
-  params.x = point.x();
-  params.y = point.y();
+  // TODO(crbug.com/1093904): This essentially is a floor of the coordinates.
+  // Determine if rounding is more appropriate.
+  gfx::Rect position_in_dips =
+      render_frame()
+          ->GetWebFrame()
+          ->LocalRoot()
+          ->FrameWidget()
+          ->BlinkSpaceToEnclosedDIPs(gfx::Rect(point.x(), point.y(), 0, 0));
 
-  context_menu_request_id_ = render_frame()->ShowContextMenu(this, params);
+  params.x = position_in_dips.x();
+  params.y = position_in_dips.y();
+
+  render_frame()->GetWebFrame()->ShowContextMenuFromExternal(
+      params, context_menu_client_receiver_.BindNewEndpointAndPassRemote());
+
   g_last_active_menu = this;
+}
+
+void ChromePluginPlaceholder::CustomContextMenuAction(uint32_t action) {
+  if (g_last_active_menu != this)
+    return;
+  switch (action) {
+    case MENU_COMMAND_PLUGIN_RUN: {
+      RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Load_Menu"));
+      LoadPlugin();
+      break;
+    }
+    case MENU_COMMAND_PLUGIN_HIDE: {
+      RenderThread::Get()->RecordAction(UserMetricsAction("Plugin_Hide_Menu"));
+      HidePlugin();
+      break;
+    }
+    case MENU_COMMAND_ENABLE_FLASH: {
+      ShowPermissionBubbleCallback();
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+}
+
+void ChromePluginPlaceholder::ContextMenuClosed(const GURL&) {
+  context_menu_client_receiver_.reset();
+  render_frame()->GetWebFrame()->View()->DidCloseContextMenu();
 }
 
 blink::WebPlugin* ChromePluginPlaceholder::CreatePlugin() {

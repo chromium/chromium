@@ -461,10 +461,10 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // UI ------------------------------------------------------------------
 
-  // Shows a context menu with commands relevant to a specific element on
-  // the given frame. Additional context data and location are supplied.
-  virtual void ShowContextMenu(const ContextMenuData&,
-                               const base::Optional<gfx::Point>&) {}
+  // Update a context menu data for testing.
+  virtual void UpdateContextMenuDataForTesting(
+      const ContextMenuData&,
+      const base::Optional<gfx::Point>&) {}
 
   // Called when a new element gets focused. |from_element| is the previously
   // focused element, |to_element| is the newly focused one. Either can be null.

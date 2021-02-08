@@ -86,12 +86,14 @@ void ContextMenuController::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
   visitor->Trace(menu_provider_);
   visitor->Trace(hit_test_result_);
+  visitor->Trace(context_menu_client_receiver_);
 }
 
 void ContextMenuController::ClearContextMenu() {
   if (menu_provider_)
     menu_provider_->ContextMenuCleared();
   menu_provider_ = nullptr;
+  context_menu_client_receiver_.reset();
   hit_test_result_ = HitTestResult();
 }
 
@@ -136,6 +138,22 @@ Node* ContextMenuController::ContextMenuNodeForFrame(LocalFrame* frame) {
   return hit_test_result_.InnerNodeFrame() == frame
              ? hit_test_result_.InnerNodeOrImageMapImage()
              : nullptr;
+}
+
+void ContextMenuController::CustomContextMenuAction(uint32_t action) {
+  CustomContextMenuItemSelected(action);
+}
+
+void ContextMenuController::ContextMenuClosed(const KURL& link_followed) {
+  if (!link_followed.IsValid())
+    return;
+
+  WebLocalFrameImpl* selected_web_frame =
+      WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame());
+  if (!selected_web_frame)
+    return;
+
+  selected_web_frame->SendPings(link_followed);
 }
 
 static int ComputeEditFlags(Document& selected_document, Editor& editor) {
@@ -227,6 +245,9 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   // in response to the above input events before popping up the context menu.
   if (!ContextMenuAllowedScope::IsContextMenuAllowed())
     return false;
+
+  if (context_menu_client_receiver_.is_bound())
+    context_menu_client_receiver_.reset();
 
   HitTestRequest::HitTestRequestType type = HitTestRequest::kReadOnly |
                                             HitTestRequest::kActive |
@@ -543,8 +564,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (!selected_web_frame || !selected_web_frame->Client())
     return false;
 
-  selected_web_frame->Client()->ShowContextMenu(data,
-                                                host_context_menu_location);
+  selected_web_frame->ShowContextMenu(
+      context_menu_client_receiver_.BindNewEndpointAndPassRemote(
+          selected_web_frame->GetTaskRunner(TaskType::kInternalDefault)),
+      data, host_context_menu_location);
 
   return true;
 }

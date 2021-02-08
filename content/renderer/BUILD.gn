@@ -62,8 +62,6 @@ target(link_target_type, "renderer") {
     "compositor/compositor_dependencies.h",
     "content_security_policy_util.cc",
     "content_security_policy_util.h",
-    "context_menu_params_builder.cc",
-    "context_menu_params_builder.h",
     "crash_helpers.cc",
     "crash_helpers.h",
     "discardable_memory_utils.cc",

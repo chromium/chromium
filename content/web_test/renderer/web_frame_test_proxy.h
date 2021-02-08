@@ -67,8 +67,9 @@ class WebFrameTestProxy : public RenderFrameImpl,
   void DidChangeSelection(bool is_selection_empty) override;
   void DidChangeContents() override;
   blink::WebEffectiveConnectionType GetEffectiveConnectionType() override;
-  void ShowContextMenu(const blink::ContextMenuData& context_menu_data,
-                       const base::Optional<gfx::Point>&) override;
+  void UpdateContextMenuDataForTesting(
+      const blink::ContextMenuData& context_menu_data,
+      const base::Optional<gfx::Point>&) override;
   void DidDispatchPingLoader(const blink::WebURL& url) override;
   void WillSendRequest(blink::WebURLRequest& request,
                        ForRedirect for_redirect) override;

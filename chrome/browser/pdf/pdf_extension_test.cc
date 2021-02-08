@@ -1625,10 +1625,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
       FindAccessibilityNodeInSubtree(pdf_root, find_criteria);
   ASSERT_TRUE(pdf_doc_node);
 
-  content::RenderProcessHost* guest_process_host =
-      guest_contents->GetMainFrame()->GetProcess();
-  auto context_menu_filter = base::MakeRefCounted<content::ContextMenuFilter>();
-  guest_process_host->AddFilter(context_menu_filter.get());
+  auto context_menu_interceptor =
+      std::make_unique<content::ContextMenuInterceptor>();
+  context_menu_interceptor->Init(guest_contents->GetMainFrame());
 
   ContextMenuWaiter menu_waiter;
   // Invoke kShowContextMenu accessibility action on PDF document node.
@@ -1637,9 +1636,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
   pdf_doc_node->AccessibilityPerformAction(data);
   menu_waiter.WaitForMenuOpenAndClose();
 
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
   blink::UntrustworthyContextMenuParams params =
-      context_menu_filter->get_params();
+      context_menu_interceptor->get_params();
 
   // Validate the context menu params for selection.
   EXPECT_EQ(blink::mojom::ContextMenuDataMediaType::kPlugin, params.media_type);
@@ -2540,9 +2539,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   ASSERT_NE(nullptr, guest_contents);
   content::WaitForHitTestData(guest_contents);
 
-  content::RenderProcessHost* guest_process_host =
-      guest_contents->GetMainFrame()->GetProcess();
-
   // Get coords for mouse event.
   content::RenderWidgetHostView* guest_view =
       guest_contents->GetRenderWidgetHostView();
@@ -2550,8 +2546,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   gfx::Point root_context_menu_position =
       guest_view->TransformPointToRootCoordSpace(local_context_menu_position);
 
-  auto context_menu_filter = base::MakeRefCounted<content::ContextMenuFilter>();
-  guest_process_host->AddFilter(context_menu_filter.get());
+  auto context_menu_interceptor =
+      std::make_unique<content::ContextMenuInterceptor>();
+  context_menu_interceptor->Init(guest_contents->GetMainFrame());
 
   ContextMenuWaiter menu_observer;
   // Send mouse right-click to activate context menu.
@@ -2566,9 +2563,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   ASSERT_EQ(root_context_menu_position.y(), menu_observer.params().y);
 
   // We expect the IPC, received from the renderer, to be using local coords.
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
   blink::UntrustworthyContextMenuParams params =
-      context_menu_filter->get_params();
+      context_menu_interceptor->get_params();
   EXPECT_EQ(local_context_menu_position.x(), params.x);
   EXPECT_EQ(local_context_menu_position.y(), params.y);
 

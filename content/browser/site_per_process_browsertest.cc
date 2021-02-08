@@ -9493,8 +9493,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Pretend that a.com just requested a context menu. This used to cause a
   // because the RenderWidgetHostView is destroyed when the frame is unloaded
   // and added to pending delete list.
-  rfh->OnMessageReceived(
-      FrameHostMsg_ContextMenu(rfh->GetRoutingID(), ContextMenuParams()));
+  rfh->ShowContextMenu(mojo::NullAssociatedRemote(), ContextMenuParams());
 }
 
 // Test iframe container policy is replicated properly to the browser.

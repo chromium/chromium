@@ -30,9 +30,11 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 
 namespace blink {
 
@@ -43,11 +45,12 @@ class MouseEvent;
 class Page;
 struct ContextMenuData;
 
-class CORE_EXPORT ContextMenuController final
-    : public GarbageCollected<ContextMenuController> {
+class CORE_EXPORT ContextMenuController
+    : public GarbageCollected<ContextMenuController>,
+      public mojom::blink::ContextMenuClient {
  public:
   explicit ContextMenuController(Page*);
-  ~ContextMenuController();
+  ~ContextMenuController() override;
   void Trace(Visitor*) const;
 
   void ClearContextMenu();
@@ -64,6 +67,10 @@ class CORE_EXPORT ContextMenuController final
 
   Node* ContextMenuNodeForFrame(LocalFrame*);
 
+  // mojom::blink::ContextMenuClient methods.
+  void CustomContextMenuAction(uint32_t action) override;
+  void ContextMenuClosed(const KURL& link_followed) override;
+
  private:
   friend class ContextMenuControllerTest;
 
@@ -75,6 +82,11 @@ class CORE_EXPORT ContextMenuController final
   bool ShouldShowContextMenuFromTouch(const ContextMenuData&);
 
   void UpdateTextFragmentSelectorGenerator(LocalFrame*);
+
+  HeapMojoAssociatedReceiver<mojom::blink::ContextMenuClient,
+                             ContextMenuController,
+                             HeapMojoWrapperMode::kWithoutContextObserver>
+      context_menu_client_receiver_{this, nullptr};
 
   Member<Page> page_;
   Member<ContextMenuProvider> menu_provider_;

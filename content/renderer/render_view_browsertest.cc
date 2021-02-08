@@ -59,6 +59,7 @@
 #include "content/test/fake_compositor_dependencies.h"
 #include "content/test/mock_keyboard.h"
 #include "content/test/test_render_frame.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "net/base/net_errors.h"
@@ -2156,12 +2157,43 @@ TEST_F(RenderViewImplTest, SetHistoryLengthAndOffset) {
   EXPECT_EQ(1, view()->history_list_offset_);
 }
 
+namespace {
+
+class ContextMenuFrameHost : public LocalFrameHostInterceptor {
+ public:
+  explicit ContextMenuFrameHost(blink::AssociatedInterfaceProvider* provider)
+      : LocalFrameHostInterceptor(provider) {}
+
+  MOCK_METHOD2(
+      ShowContextMenu,
+      void(
+          mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient> client,
+          const blink::UntrustworthyContextMenuParams& params));
+};
+
+}  // namespace
+
+class RenderViewImplContextMenuTest : public RenderViewImplTest {
+ public:
+  using MockedTestRenderFrame =
+      MockedLocalFrameHostInterceptorTestRenderFrame<ContextMenuFrameHost>;
+
+  RenderViewImplContextMenuTest()
+      : RenderViewImplTest(&MockedTestRenderFrame::CreateTestRenderFrame) {}
+
+  ContextMenuFrameHost* context_menu_frame_host() {
+    return static_cast<MockedTestRenderFrame*>(frame())
+        ->mock_local_frame_host();
+  }
+};
+
 #if !defined(OS_ANDROID)
-TEST_F(RenderViewImplTest, ContextMenu) {
+TEST_F(RenderViewImplContextMenuTest, ContextMenu) {
   LoadHTML("<div>Page A</div>");
 
   // Create a right click in the center of the iframe. (I'm hoping this will
-  // make this a bit more robust in case of some other formatting or other bug.)
+  // make this a bit more robust in case of some other formatting or other
+  // bug.)
   WebMouseEvent mouse_event(WebInputEvent::Type::kMouseDown,
                             WebInputEvent::kNoModifiers, ui::EventTimeForNow());
   mouse_event.button = WebMouseEvent::Button::kRight;
@@ -2174,12 +2206,13 @@ TEST_F(RenderViewImplTest, ContextMenu) {
   mouse_event.SetType(WebInputEvent::Type::kMouseUp);
   SendWebMouseEvent(mouse_event);
 
-  EXPECT_TRUE(render_thread_->sink().GetUniqueMessageMatching(
-      FrameHostMsg_ContextMenu::ID));
+  EXPECT_CALL(*context_menu_frame_host(),
+              ShowContextMenu(testing::_, testing::_))
+      .Times(1);
 }
 
 #else
-TEST_F(RenderViewImplTest, AndroidContextMenuSelectionOrdering) {
+TEST_F(RenderViewImplContextMenuTest, AndroidContextMenuSelectionOrdering) {
   LoadHTML("<div>Page A</div><div id=result>Not selected</div>");
 
   ExecuteJavaScriptForTests(
@@ -2193,20 +2226,22 @@ TEST_F(RenderViewImplTest, AndroidContextMenuSelectionOrdering) {
                                 ui::EventTimeForNow());
   gesture_event.SetPositionInWidget(gfx::PointF(250, 250));
 
+  EXPECT_CALL(*context_menu_frame_host(),
+              ShowContextMenu(testing::_, testing::_))
+      .Times(0);
+
   SendWebGestureEvent(gesture_event);
+
+  EXPECT_CALL(*context_menu_frame_host(),
+              ShowContextMenu(testing::_, testing::_))
+      .Times(1);
 
   scoped_refptr<content::MessageLoopRunner> message_loop_runner =
       new content::MessageLoopRunner;
   blink::scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
       FROM_HERE, message_loop_runner->QuitClosure());
 
-  EXPECT_FALSE(render_thread_->sink().GetUniqueMessageMatching(
-      FrameHostMsg_ContextMenu::ID));
-
   message_loop_runner->Run();
-
-  EXPECT_TRUE(render_thread_->sink().GetUniqueMessageMatching(
-      FrameHostMsg_ContextMenu::ID));
 
   int did_select = -1;
   base::string16 check_did_select = base::ASCIIToUTF16(

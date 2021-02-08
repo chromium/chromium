@@ -13,15 +13,15 @@
 #include "chrome/common/plugin.mojom.h"
 #include "components/no_state_prefetch/renderer/prerender_observer.h"
 #include "components/plugins/renderer/loadable_plugin_placeholder.h"
-#include "content/public/renderer/context_menu_client.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 
 class ChromePluginPlaceholder final
     : public plugins::LoadablePluginPlaceholder,
       public content::RenderThreadObserver,
-      public content::ContextMenuClient,
+      public blink::mojom::ContextMenuClient,
       public chrome::mojom::PluginRenderer,
       public prerender::PrerenderObserver,
       public gin::Wrappable<ChromePluginPlaceholder> {
@@ -74,10 +74,6 @@ class ChromePluginPlaceholder final
   // content::RenderThreadObserver methods:
   void PluginListChanged() override;
 
-  // content::ContextMenuClient methods:
-  void OnMenuAction(int request_id, unsigned action) override;
-  void OnMenuClosed(int request_id) override;
-
   // Show the Plugins permission bubble.
   void ShowPermissionBubbleCallback();
 
@@ -87,6 +83,10 @@ class ChromePluginPlaceholder final
   void UpdateSuccess() override;
   void UpdateFailure() override;
 
+  // blink::mojom::ContextMenuClient methods.
+  void CustomContextMenuAction(uint32_t action) override;
+  void ContextMenuClosed(const GURL& link_followed) override;
+
   // prerender::PrerenderObserver methods:
   void SetIsPrerendering(bool is_prerendering) override;
 
@@ -94,10 +94,12 @@ class ChromePluginPlaceholder final
 
   base::string16 title_;
 
-  int context_menu_request_id_;  // Nonzero when request pending.
   base::string16 plugin_name_;
 
   mojo::Receiver<chrome::mojom::PluginRenderer> plugin_renderer_receiver_{this};
+
+  mojo::AssociatedReceiver<blink::mojom::ContextMenuClient>
+      context_menu_client_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromePluginPlaceholder);
 };

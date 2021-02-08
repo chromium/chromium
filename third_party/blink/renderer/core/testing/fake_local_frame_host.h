@@ -8,6 +8,8 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
@@ -113,6 +115,10 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       Vector<mojom::blink::MenuItemPtr> menu_items,
       bool right_aligned,
       bool allow_multiple_selection) override;
+  void ShowContextMenu(
+      mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient>
+          context_menu_client,
+      const blink::UntrustworthyContextMenuParams& params) override;
   void DidLoadResourceFromMemoryCache(
       const KURL& url,
       const WTF::String& http_method,

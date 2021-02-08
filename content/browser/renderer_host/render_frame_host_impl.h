@@ -1728,6 +1728,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
       std::vector<blink::mojom::MenuItemPtr> menu_items,
       bool right_aligned,
       bool allow_multiple_selection) override;
+  void ShowContextMenu(
+      mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+          context_menu_client,
+      const blink::UntrustworthyContextMenuParams& params) override;
   void DidLoadResourceFromMemoryCache(
       const GURL& url,
       const std::string& http_method,
@@ -2085,7 +2089,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bad_message::BadMessageReason reason);
 
   // IPC Message handlers.
-  void OnContextMenu(const blink::UntrustworthyContextMenuParams& params);
   void OnForwardResourceTimingToParent(
       const ResourceTimingInfo& resource_timing);
   void OnSetNeedsOcclusionTracking(bool needs_tracking);

@@ -513,21 +513,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
   BrowserAccessibility* target_node = FindNode(ax::mojom::Role::kLink, "2");
   EXPECT_NE(target_node, nullptr);
 
-  // Register a ContextMenuFilter in the render process to wait for the
-  // ShowContextMenu event to be raised.
-  content::RenderProcessHost* render_process_host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
-  auto context_menu_filter = base::MakeRefCounted<ContextMenuFilter>();
-  render_process_host->AddFilter(context_menu_filter.get());
+  // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
+  // before RenderFrameHost receives.
+  auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      ContextMenuInterceptor::ShowBehavior::kPreventShow);
+  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the second link.
   ui::AXActionData context_menu_action;
   context_menu_action.action = ax::mojom::Action::kShowContextMenu;
   target_node->AccessibilityPerformAction(context_menu_action);
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
 
   blink::UntrustworthyContextMenuParams context_menu_params =
-      context_menu_filter->get_params();
+      context_menu_interceptor->get_params();
   EXPECT_EQ(base::ASCIIToUTF16("2"), context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);
@@ -544,21 +543,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       FindNode(ax::mojom::Role::kLink, "This is a multiline link.");
   EXPECT_NE(target_node, nullptr);
 
-  // Register a ContextMenuFilter in the render process to wait for the
-  // ShowContextMenu event to be raised.
-  content::RenderProcessHost* render_process_host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
-  auto context_menu_filter = base::MakeRefCounted<ContextMenuFilter>();
-  render_process_host->AddFilter(context_menu_filter.get());
+  // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
+  // before RenderFrameHost receives.
+  auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      ContextMenuInterceptor::ShowBehavior::kPreventShow);
+  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;
   context_menu_action.action = ax::mojom::Action::kShowContextMenu;
   target_node->AccessibilityPerformAction(context_menu_action);
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
 
   blink::UntrustworthyContextMenuParams context_menu_params =
-      context_menu_filter->get_params();
+      context_menu_interceptor->get_params();
   std::string link_text = base::UTF16ToUTF8(context_menu_params.link_text);
   base::ReplaceChars(link_text, "\n", "\\n", &link_text);
   EXPECT_EQ("This is a\\n\\n\\n\\nmultiline link.", link_text);
@@ -582,21 +580,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       FindNode(ax::mojom::Role::kLink, "Offscreen");
   EXPECT_NE(target_node, nullptr);
 
-  // Register a ContextMenuFilter in the render process to wait for the
-  // ShowContextMenu event to be raised.
-  content::RenderProcessHost* render_process_host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
-  auto context_menu_filter = base::MakeRefCounted<ContextMenuFilter>();
-  render_process_host->AddFilter(context_menu_filter.get());
+  // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
+  // before RenderFrameHost receives.
+  auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      ContextMenuInterceptor::ShowBehavior::kPreventShow);
+  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;
   context_menu_action.action = ax::mojom::Action::kShowContextMenu;
   target_node->AccessibilityPerformAction(context_menu_action);
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
 
   blink::UntrustworthyContextMenuParams context_menu_params =
-      context_menu_filter->get_params();
+      context_menu_interceptor->get_params();
   EXPECT_EQ(base::ASCIIToUTF16("Offscreen"), context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);
@@ -617,21 +614,20 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       FindNode(ax::mojom::Role::kLink, "Obscured");
   EXPECT_NE(target_node, nullptr);
 
-  // Register a ContextMenuFilter in the render process to wait for the
-  // ShowContextMenu event to be raised.
-  content::RenderProcessHost* render_process_host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
-  auto context_menu_filter = base::MakeRefCounted<ContextMenuFilter>();
-  render_process_host->AddFilter(context_menu_filter.get());
+  // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
+  // before RenderFrameHost receives.
+  auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      ContextMenuInterceptor::ShowBehavior::kPreventShow);
+  context_menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   // Raise the ShowContextMenu event from the link.
   ui::AXActionData context_menu_action;
   context_menu_action.action = ax::mojom::Action::kShowContextMenu;
   target_node->AccessibilityPerformAction(context_menu_action);
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
 
   blink::UntrustworthyContextMenuParams context_menu_params =
-      context_menu_filter->get_params();
+      context_menu_interceptor->get_params();
   EXPECT_EQ(base::ASCIIToUTF16("Obscured"), context_menu_params.link_text);
   EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             context_menu_params.source_type);

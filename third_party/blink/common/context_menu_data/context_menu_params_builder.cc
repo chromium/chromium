@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/renderer/context_menu_params_builder.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
 
 #include <stddef.h>
 
 #include "base/strings/utf_string_conversions.h"
-#include "content/public/renderer/content_renderer_client.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
-#include "third_party/blink/public/platform/impression_conversions.h"
 
-namespace content {
+namespace blink {
 
 // static
-blink::UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
+UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
     const blink::ContextMenuData& data) {
   blink::UntrustworthyContextMenuParams params;
   params.media_type = data.media_type;
@@ -46,10 +44,10 @@ blink::UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   for (size_t i = 0; i < data.dictionary_suggestions.size(); ++i)
     params.dictionary_suggestions.push_back(data.dictionary_suggestions[i]);
 
-  params.custom_context.is_pepper_menu = false;
-  for (size_t i = 0; i < data.custom_items.size(); ++i)
+  for (size_t i = 0; i < data.custom_items.size(); ++i) {
     params.custom_items.push_back(
         blink::MenuItemBuilder::Build(data.custom_items[i]));
+  }
 
   params.link_text = base::UTF8ToUTF16(data.link_text);
 
@@ -61,4 +59,4 @@ blink::UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   return params;
 }
 
-}  // namespace content
+}  // namespace blink

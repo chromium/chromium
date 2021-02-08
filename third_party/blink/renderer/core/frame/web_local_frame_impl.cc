@@ -97,6 +97,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
@@ -2535,6 +2536,78 @@ WebFrameWidget* WebLocalFrameImpl::FrameWidget() const {
 void WebLocalFrameImpl::CopyImageAtForTesting(
     const gfx::Point& pos_in_viewport) {
   GetFrame()->CopyImageAtViewportPoint(IntPoint(pos_in_viewport));
+}
+
+void WebLocalFrameImpl::ShowContextMenuFromExternal(
+    const UntrustworthyContextMenuParams& params,
+    CrossVariantMojoAssociatedRemote<
+        mojom::blink::ContextMenuClientInterfaceBase> context_menu_client) {
+  GetFrame()->GetLocalFrameHostRemote().ShowContextMenu(
+      std::move(context_menu_client), params);
+}
+
+void WebLocalFrameImpl::ShowContextMenu(
+    mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
+    const blink::ContextMenuData& data,
+    const base::Optional<gfx::Point>& host_context_menu_location) {
+  UntrustworthyContextMenuParams params =
+      blink::ContextMenuParamsBuilder::Build(data);
+  if (host_context_menu_location.has_value()) {
+    // If the context menu request came from the browser, it came with a
+    // position that was stored on blink::WebFrameWidgetImpl and is relative to
+    // the WindowScreenRect.
+    params.x = host_context_menu_location.value().x();
+    params.y = host_context_menu_location.value().y();
+  } else {
+    // If the context menu request came from the renderer, the position in
+    // |params| is real, but they come in blink viewport coordinates, which
+    // include the device scale factor, but not emulation scale. Here we convert
+    // them to DIP coordinates relative to the WindowScreenRect.
+    // TODO(crbug.com/1093904): This essentially is a floor of the coordinates.
+    // Determine if rounding is more appropriate.
+    gfx::Rect position_in_dips =
+        LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(
+            gfx::Rect(params.x, params.y, 0, 0));
+
+    const float scale = LocalRootFrameWidget()->GetEmulatorScale();
+    params.x = position_in_dips.x() * scale;
+    params.y = position_in_dips.y() * scale;
+  }
+
+  // Serializing a GURL longer than kMaxURLChars will fail, so don't do
+  // it.  We replace it with an empty GURL so the appropriate items are disabled
+  // in the context menu.
+  // TODO(jcivelli): http://crbug.com/45160 This prevents us from saving large
+  //                 data encoded images.  We should have a way to save them.
+  if (params.src_url.spec().size() > url::kMaxURLChars)
+    params.src_url = KURL();
+
+  params.selection_rect =
+      LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(data.selection_rect);
+
+#if defined(OS_ANDROID)
+  // The Samsung Email app relies on the context menu being shown after the
+  // javascript onselectionchanged is triggered.
+  // See crbug.com/729488
+  GetFrame()
+      ->GetTaskRunner(TaskType::kInternalDefault)
+      ->PostTask(
+          FROM_HERE,
+          WTF::Bind(&WebLocalFrameImpl::ShowDeferredContextMenu,
+                    WrapWeakPersistent(this), std::move(client), params));
+#else
+  ShowDeferredContextMenu(std::move(client), params);
+#endif
+
+  if (Client())
+    Client()->UpdateContextMenuDataForTesting(data, host_context_menu_location);
+}
+
+void WebLocalFrameImpl::ShowDeferredContextMenu(
+    mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
+    const UntrustworthyContextMenuParams& params) {
+  GetFrame()->GetLocalFrameHostRemote().ShowContextMenu(std::move(client),
+                                                        params);
 }
 
 bool WebLocalFrameImpl::IsAllowedToDownload() const {

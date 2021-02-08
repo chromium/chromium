@@ -5767,6 +5767,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   ContextMenuParams context_menu_params;
   context_menu_params.source_type = ui::MENU_SOURCE_MOUSE;
   contents()->ShowContextMenu(contents()->GetRenderViewHost()->GetMainFrame(),
+                              mojo::NullAssociatedRemote(),
                               context_menu_params);
   EXPECT_TRUE(delegate->context_menu_request_received());
   EXPECT_EQ(delegate->context_menu_source_type(), ui::MENU_SOURCE_MOUSE);
@@ -5778,6 +5779,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   delegate->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_TOUCH;
   contents()->ShowContextMenu(contents()->GetRenderViewHost()->GetMainFrame(),
+                              mojo::NullAssociatedRemote(),
                               context_menu_params);
   EXPECT_TRUE(delegate->context_menu_request_received());
 
@@ -5788,6 +5790,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   delegate->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_LONG_TAP;
   contents()->ShowContextMenu(contents()->GetRenderViewHost()->GetMainFrame(),
+                              mojo::NullAssociatedRemote(),
                               context_menu_params);
   EXPECT_TRUE(delegate->context_menu_request_received());
 
@@ -5798,6 +5801,7 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
   delegate->ClearState();
   context_menu_params.source_type = ui::MENU_SOURCE_LONG_PRESS;
   contents()->ShowContextMenu(contents()->GetRenderViewHost()->GetMainFrame(),
+                              mojo::NullAssociatedRemote(),
                               context_menu_params);
   EXPECT_TRUE(delegate->context_menu_request_received());
 

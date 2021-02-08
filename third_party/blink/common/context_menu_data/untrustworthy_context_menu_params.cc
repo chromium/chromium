@@ -8,13 +8,6 @@
 
 namespace blink {
 
-const int32_t CustomContextMenuContext::kCurrentRenderWidget = INT32_MAX;
-
-CustomContextMenuContext::CustomContextMenuContext()
-    : is_pepper_menu(false),
-      request_id(0),
-      render_widget_id(kCurrentRenderWidget) {}
-
 UntrustworthyContextMenuParams::UntrustworthyContextMenuParams()
     : media_type(blink::mojom::ContextMenuDataMediaType::kNone),
       x(0),

@@ -76,11 +76,6 @@
 #define IPC_MESSAGE_EXPORT CONTENT_EXPORT
 
 #define IPC_MESSAGE_START FrameMsgStart
-IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ContextMenuDataMediaType,
-                          blink::mojom::ContextMenuDataMediaType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(
-    blink::mojom::ContextMenuDataInputFieldType,
-    blink::mojom::ContextMenuDataInputFieldType::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScrollbarMode,
                           blink::mojom::ScrollbarMode::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(content::StopFindAction,
@@ -113,46 +108,6 @@ IPC_STRUCT_TRAITS_BEGIN(blink::Impression)
   IPC_STRUCT_TRAITS_MEMBER(expiry)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(blink::UntrustworthyContextMenuParams)
-  IPC_STRUCT_TRAITS_MEMBER(media_type)
-  IPC_STRUCT_TRAITS_MEMBER(x)
-  IPC_STRUCT_TRAITS_MEMBER(y)
-  IPC_STRUCT_TRAITS_MEMBER(link_url)
-  IPC_STRUCT_TRAITS_MEMBER(link_text)
-  IPC_STRUCT_TRAITS_MEMBER(impression)
-  IPC_STRUCT_TRAITS_MEMBER(unfiltered_link_url)
-  IPC_STRUCT_TRAITS_MEMBER(src_url)
-  IPC_STRUCT_TRAITS_MEMBER(has_image_contents)
-  IPC_STRUCT_TRAITS_MEMBER(media_flags)
-  IPC_STRUCT_TRAITS_MEMBER(selection_text)
-  IPC_STRUCT_TRAITS_MEMBER(title_text)
-  IPC_STRUCT_TRAITS_MEMBER(alt_text)
-  IPC_STRUCT_TRAITS_MEMBER(suggested_filename)
-  IPC_STRUCT_TRAITS_MEMBER(misspelled_word)
-  IPC_STRUCT_TRAITS_MEMBER(dictionary_suggestions)
-  IPC_STRUCT_TRAITS_MEMBER(spellcheck_enabled)
-  IPC_STRUCT_TRAITS_MEMBER(is_editable)
-  IPC_STRUCT_TRAITS_MEMBER(writing_direction_default)
-  IPC_STRUCT_TRAITS_MEMBER(writing_direction_left_to_right)
-  IPC_STRUCT_TRAITS_MEMBER(writing_direction_right_to_left)
-  IPC_STRUCT_TRAITS_MEMBER(edit_flags)
-  IPC_STRUCT_TRAITS_MEMBER(frame_charset)
-  IPC_STRUCT_TRAITS_MEMBER(referrer_policy)
-  IPC_STRUCT_TRAITS_MEMBER(custom_context)
-  IPC_STRUCT_TRAITS_MEMBER(custom_items)
-  IPC_STRUCT_TRAITS_MEMBER(source_type)
-  IPC_STRUCT_TRAITS_MEMBER(input_field_type)
-  IPC_STRUCT_TRAITS_MEMBER(selection_rect)
-  IPC_STRUCT_TRAITS_MEMBER(selection_start_offset)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(blink::CustomContextMenuContext)
-  IPC_STRUCT_TRAITS_MEMBER(is_pepper_menu)
-  IPC_STRUCT_TRAITS_MEMBER(request_id)
-  IPC_STRUCT_TRAITS_MEMBER(render_widget_id)
-  IPC_STRUCT_TRAITS_MEMBER(link_followed)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(blink::FramePolicy)
   IPC_STRUCT_TRAITS_MEMBER(sandbox_flags)
   IPC_STRUCT_TRAITS_MEMBER(container_policy)
@@ -179,29 +134,6 @@ IPC_STRUCT_TRAITS_BEGIN(blink::ParsedFeaturePolicyDeclaration)
   IPC_STRUCT_TRAITS_MEMBER(matches_all_origins)
   IPC_STRUCT_TRAITS_MEMBER(matches_opaque_src)
 IPC_STRUCT_TRAITS_END()
-
-// -----------------------------------------------------------------------------
-// Messages sent from the browser to the renderer.
-
-// Sent in response to a FrameHostMsg_ContextMenu to let the renderer know that
-// the menu has been closed.
-IPC_MESSAGE_ROUTED1(FrameMsg_ContextMenuClosed,
-                    blink::CustomContextMenuContext /* custom_context */)
-
-// Executes custom context menu action that was provided from Blink.
-IPC_MESSAGE_ROUTED2(FrameMsg_CustomContextMenuAction,
-                    blink::CustomContextMenuContext /* custom_context */,
-                    unsigned /* action */)
-
-// -----------------------------------------------------------------------------
-// Messages sent from the renderer to the browser.
-
-// Used to tell the parent that the user right clicked on an area of the
-// content area, and a context menu should be shown for it. The params
-// object contains information about the node(s) that were selected when the
-// user right clicked.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_ContextMenu,
-                    blink::UntrustworthyContextMenuParams)
 
 // Adding a new message? Stick to the sort order above: first platform
 // independent FrameMsg, then ifdefs for platform specific FrameMsg, then

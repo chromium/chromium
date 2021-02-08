@@ -463,18 +463,18 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
                         "https://dest.com" /* conversion_destination */,
                         100 /* left */, 100 /* top */);)"));
 
-  content::RenderProcessHost* render_process_host =
-      web_contents()->GetMainFrame()->GetProcess();
-  auto context_menu_filter = base::MakeRefCounted<content::ContextMenuFilter>();
-  render_process_host->AddFilter(context_menu_filter.get());
+  auto context_menu_interceptor =
+      std::make_unique<content::ContextMenuInterceptor>(
+          ContextMenuInterceptor::ShowBehavior::kPreventShow);
+  context_menu_interceptor->Init(web_contents()->GetMainFrame());
 
   content::SimulateMouseClickAt(web_contents(), 0,
                                 blink::WebMouseEvent::Button::kRight,
                                 gfx::Point(100, 100));
 
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
   blink::UntrustworthyContextMenuParams params =
-      context_menu_filter->get_params();
+      context_menu_interceptor->get_params();
   EXPECT_TRUE(params.impression);
   EXPECT_EQ(10UL, params.impression->impression_data);
   EXPECT_EQ(url::Origin::Create(GURL("https://dest.com")),

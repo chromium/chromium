@@ -128,9 +128,7 @@ class WebMediaStreamDeviceObserver;
 class WebSecurityOrigin;
 class WebString;
 class WebURL;
-struct CustomContextMenuContext;
 struct FramePolicy;
-struct ContextMenuData;
 }  // namespace blink
 
 namespace gfx {
@@ -159,7 +157,6 @@ class RendererPpapiHost;
 class RenderAccessibilityManager;
 class RenderFrameObserver;
 class RenderViewImpl;
-struct CustomContextMenuContext;
 
 class CONTENT_EXPORT RenderFrameImpl
     : public RenderFrame,
@@ -354,10 +351,6 @@ class CONTENT_EXPORT RenderFrameImpl
   int GetRoutingID() override;
   blink::WebLocalFrame* GetWebFrame() override;
   const blink::web_pref::WebPreferences& GetBlinkPreferences() override;
-  int ShowContextMenu(
-      ContextMenuClient* client,
-      const blink::UntrustworthyContextMenuParams& params) override;
-  void CancelContextMenu(int request_id) override;
   void ShowVirtualKeyboard() override;
   blink::WebPlugin* CreatePlugin(const WebPluginInfo& info,
                                  const blink::WebPluginParams& params) override;
@@ -570,9 +563,6 @@ class CONTENT_EXPORT RenderFrameImpl
   base::UnguessableToken GetDevToolsFrameToken() override;
   void AbortClientNavigation() override;
   void DidChangeSelection(bool is_empty_selection) override;
-  void ShowContextMenu(
-      const blink::ContextMenuData& data,
-      const base::Optional<gfx::Point>& host_context_menu_location) override;
   void FocusedElementChanged(const blink::WebElement& element) override;
   void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
   void WillSendRequest(blink::WebURLRequest& request,
@@ -881,11 +871,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // The documentation for these functions should be in
   // content/common/*_messages.h for the message that the function is handling.
   void OnShowContextMenu(const gfx::Point& location);
-  void OnContextMenuClosed(
-      const blink::CustomContextMenuContext& custom_context);
-  void OnCustomContextMenuAction(
-      const blink::CustomContextMenuContext& custom_context,
-      unsigned action);
   void OnMoveCaret(const gfx::Point& point);
   void OnScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect);
   void OnSelectRange(const gfx::Point& base, const gfx::Point& extent);
@@ -1023,9 +1008,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void RequestOverlayRoutingToken(media::RoutingTokenCallback callback);
 
   void BindWebUIReceiver(mojo::PendingReceiver<mojom::WebUI> receiver);
-
-  void ShowDeferredContextMenu(
-      const blink::UntrustworthyContextMenuParams& params);
 
   // Build DidCommitProvisionalLoadParams based on the frame internal state.
   mojom::DidCommitProvisionalLoadParamsPtr MakeDidCommitProvisionalLoadParams(
@@ -1213,19 +1195,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // All the registered observers.
   base::ObserverList<RenderFrameObserver>::Unchecked observers_;
-
-  // External context menu requests we're waiting for. "Internal"
-  // (WebKit-originated) context menu events will have an ID of 0 and will not
-  // be in this map.
-  //
-  // We don't want to add internal ones since some of the "special" page
-  // handlers in the browser process just ignore the context menu requests so
-  // avoid showing context menus, and so this will cause right clicks to leak
-  // entries in this map. Most users of the custom context menu (e.g. Pepper
-  // plugins) are normally only on "regular" pages and the regular pages will
-  // always respond properly to the request, so we don't have to worry so
-  // much about leaks.
-  base::IDMap<ContextMenuClient*> pending_context_menus_;
 
   // The text selection the last time DidChangeSelection got called. May contain
   // additional characters before and after the selected text, for IMEs. The

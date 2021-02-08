@@ -42,7 +42,6 @@ class WebElement;
 class WebFrame;
 class WebLocalFrame;
 class WebPlugin;
-struct UntrustworthyContextMenuParams;
 struct WebPluginParams;
 }  // namespace blink
 
@@ -58,7 +57,6 @@ class SharedURLLoaderFactory;
 
 namespace content {
 
-class ContextMenuClient;
 class RenderAccessibility;
 struct RenderFrameMediaPlaybackOptions;
 class RenderFrameVisitor;
@@ -159,25 +157,6 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
 
   // Gets WebKit related preferences associated with this frame.
   virtual const blink::web_pref::WebPreferences& GetBlinkPreferences() = 0;
-
-  // Shows a context menu with the given information. The given client will
-  // be called with the result.
-  //
-  // The request ID will be returned by this function. This is passed to the
-  // client functions for identification.
-  //
-  // If the client is destroyed, CancelContextMenu() should be called with the
-  // request ID returned by this function.
-  //
-  // Note: if you end up having clients outliving the RenderFrame, we should add
-  // a CancelContextMenuCallback function that takes a request id.
-  virtual int ShowContextMenu(
-      ContextMenuClient* client,
-      const blink::UntrustworthyContextMenuParams& params) = 0;
-
-  // Cancels a context menu in the event that the client is destroyed before the
-  // menu is closed.
-  virtual void CancelContextMenu(int request_id) = 0;
 
   // Issues a request to show the virtual keyboard.
   virtual void ShowVirtualKeyboard() = 0;

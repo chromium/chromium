@@ -2560,7 +2560,7 @@ TEST_F(WebContentsImplTest, HandleContextMenuDelegate) {
       .WillOnce(::testing::Return(true));
 
   ContextMenuParams params;
-  contents()->ShowContextMenu(rfh, params);
+  contents()->ShowContextMenu(rfh, mojo::NullAssociatedRemote(), params);
 
   contents()->SetDelegate(nullptr);
 }

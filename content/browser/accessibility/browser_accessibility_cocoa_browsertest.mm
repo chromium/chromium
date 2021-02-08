@@ -49,16 +49,16 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
   // origin.
   gfx::Point TriggerContextMenuAndGetMenuLocation(
       NSAccessibilityElement* element,
-      ContextMenuFilter* filter) {
+      ContextMenuInterceptor* interceptor) {
     // accessibilityPerformAction is deprecated, but it's still used internally
     // by AppKit.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [element accessibilityPerformAction:NSAccessibilityShowMenuAction];
-    filter->Wait();
+    interceptor->Wait();
 
     blink::UntrustworthyContextMenuParams context_menu_params =
-        filter->get_params();
+        interceptor->get_params();
     return gfx::Point(context_menu_params.x, context_menu_params.y);
 #pragma clang diagnostic pop
   }
@@ -605,18 +605,16 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_NSEQ(@"AXRow", [tree_children[0] role]);
   ASSERT_NSEQ(@"AXRow", [tree_children[1] role]);
 
-  RenderProcessHost* render_process_host =
-      shell()->web_contents()->GetMainFrame()->GetProcess();
-  auto menu_filter = base::MakeRefCounted<ContextMenuFilter>(
-      ContextMenuFilter::ShowBehavior::kPreventShow);
-  render_process_host->AddFilter(menu_filter.get());
+  auto menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      ContextMenuInterceptor::ShowBehavior::kPreventShow);
+  menu_interceptor->Init(shell()->web_contents()->GetMainFrame());
 
   gfx::Point tree_point =
-      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_filter.get());
+      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_interceptor.get());
 
-  menu_filter->Reset();
-  gfx::Point item_2_point =
-      TriggerContextMenuAndGetMenuLocation(tree_children[1], menu_filter.get());
+  menu_interceptor->Reset();
+  gfx::Point item_2_point = TriggerContextMenuAndGetMenuLocation(
+      tree_children[1], menu_interceptor.get());
   EXPECT_NE(tree_point, item_2_point);
 
   // Now focus the second child and trigger a context menu on the tree.
@@ -626,9 +624,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   // Triggering a context menu on the tree should now trigger the menu
   // on the focused child.
-  menu_filter->Reset();
+  menu_interceptor->Reset();
   gfx::Point new_point =
-      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_filter.get());
+      TriggerContextMenuAndGetMenuLocation(cocoa_tree, menu_interceptor.get());
   EXPECT_EQ(new_point, item_2_point);
 }
 

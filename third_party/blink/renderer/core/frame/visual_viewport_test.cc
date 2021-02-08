@@ -1119,7 +1119,7 @@ TEST_P(VisualViewportTest, TestWebViewResizeCausesViewportConstrainedLayout) {
 class VisualViewportMockWebFrameClient
     : public frame_test_helpers::TestWebFrameClient {
  public:
-  MOCK_METHOD2(ShowContextMenu,
+  MOCK_METHOD2(UpdateContextMenuDataForTesting,
                void(const ContextMenuData&, const base::Optional<gfx::Point>&));
   MOCK_METHOD0(DidChangeScrollOffset, void());
 };
@@ -1155,11 +1155,12 @@ TEST_P(VisualViewportTest, TestContextMenuShownInCorrectLocation) {
 
   WebLocalFrameClient* old_client = WebView()->MainFrameImpl()->Client();
   VisualViewportMockWebFrameClient mock_web_frame_client;
-  EXPECT_CALL(mock_web_frame_client,
-              ShowContextMenu(ContextMenuAtLocation(
-                                  mouse_down_event.PositionInWidget().x(),
-                                  mouse_down_event.PositionInWidget().y()),
-                              _));
+  EXPECT_CALL(
+      mock_web_frame_client,
+      UpdateContextMenuDataForTesting(
+          ContextMenuAtLocation(mouse_down_event.PositionInWidget().x(),
+                                mouse_down_event.PositionInWidget().y()),
+          _));
 
   // Do a sanity check with no scale applied.
   WebView()->MainFrameImpl()->SetClient(&mock_web_frame_client);
@@ -1179,11 +1180,12 @@ TEST_P(VisualViewportTest, TestContextMenuShownInCorrectLocation) {
   WebView()->SetPageScaleFactor(2);
   EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
   visual_viewport.SetLocation(FloatPoint(60, 80));
-  EXPECT_CALL(mock_web_frame_client,
-              ShowContextMenu(ContextMenuAtLocation(
-                                  mouse_down_event.PositionInWidget().x(),
-                                  mouse_down_event.PositionInWidget().y()),
-                              _));
+  EXPECT_CALL(
+      mock_web_frame_client,
+      UpdateContextMenuDataForTesting(
+          ContextMenuAtLocation(mouse_down_event.PositionInWidget().x(),
+                                mouse_down_event.PositionInWidget().y()),
+          _));
 
   mouse_down_event.button = WebMouseEvent::Button::kRight;
   WebView()->MainFrameViewWidget()->HandleInputEvent(

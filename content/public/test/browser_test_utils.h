@@ -1717,34 +1717,41 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
-// This class filters for FrameHostMsg_ContextMenu messages coming in from a
+// This class intercepts for ShowContextMenu Mojo method called from a
 // renderer process, and allows observing the UntrustworthyContextMenuParams as
 // sent by the renderer.
-class ContextMenuFilter : public content::BrowserMessageFilter {
+class ContextMenuInterceptor
+    : public blink::mojom::LocalFrameHostInterceptorForTesting {
  public:
   // Whether or not the ContextMenu should be prevented from performing
   // its default action, preventing the context menu from showing.
   enum ShowBehavior { kShow, kPreventShow };
 
-  explicit ContextMenuFilter(ShowBehavior behavior = ShowBehavior::kShow);
+  explicit ContextMenuInterceptor(ShowBehavior behavior = ShowBehavior::kShow);
+  ~ContextMenuInterceptor() override;
 
-  bool OnMessageReceived(const IPC::Message& message) override;
+  void Init(content::RenderFrameHost* render_frame_host);
+  blink::mojom::LocalFrameHost* GetForwardingInterface() override;
+
+  void ShowContextMenu(
+      mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
+          context_menu_client,
+      const blink::UntrustworthyContextMenuParams& params) override;
+
   void Wait();
   void Reset();
 
   blink::UntrustworthyContextMenuParams get_params() { return last_params_; }
 
  private:
-  ~ContextMenuFilter() override;
-
-  void OnContextMenu(const blink::UntrustworthyContextMenuParams& params);
-
+  content::RenderFrameHost* render_frame_host_;
+  blink::mojom::LocalFrameHost* impl_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure quit_closure_;
   blink::UntrustworthyContextMenuParams last_params_;
   const ShowBehavior show_behavior_;
 
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuFilter);
+  DISALLOW_COPY_AND_ASSIGN(ContextMenuInterceptor);
 };
 
 class UpdateUserActivationStateInterceptor

@@ -49,8 +49,9 @@ class MockWebMediaPlayerForContextMenu : public EmptyWebMediaPlayer {
 
 class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
  public:
-  void ShowContextMenu(const ContextMenuData& data,
-                       const base::Optional<gfx::Point>&) override {
+  void UpdateContextMenuDataForTesting(
+      const ContextMenuData& data,
+      const base::Optional<gfx::Point>&) override {
     context_menu_data_ = data;
   }
 

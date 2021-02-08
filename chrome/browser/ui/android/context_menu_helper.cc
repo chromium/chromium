@@ -52,7 +52,7 @@ void ContextMenuHelper::ShowContextMenu(
   // TODO(crbug.com/851495): support context menu in VR.
   if (vr::VrTabHelper::IsUiSuppressedInVr(
           web_contents_, vr::UiSuppressedElement::kContextMenu)) {
-    web_contents_->NotifyContextMenuClosed(params.custom_context);
+    web_contents_->NotifyContextMenuClosed(params.link_followed);
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -72,7 +72,7 @@ void ContextMenuHelper::ShowContextMenu(
 void ContextMenuHelper::OnContextMenuClosed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  web_contents_->NotifyContextMenuClosed(context_menu_params_.custom_context);
+  web_contents_->NotifyContextMenuClosed(context_menu_params_.link_followed);
 }
 
 void ContextMenuHelper::SetPopulatorFactory(

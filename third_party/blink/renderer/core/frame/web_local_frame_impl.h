@@ -37,9 +37,11 @@
 
 #include "base/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
@@ -65,6 +67,7 @@
 namespace blink {
 
 class ChromePrintContext;
+struct ContextMenuData;
 class FindInPage;
 class HTMLPortalElement;
 class IntSize;
@@ -264,6 +267,11 @@ class CORE_EXPORT WebLocalFrameImpl final
                     const WebVector<gfx::Rect>& tickmarks) override;
   WebNode ContextMenuNode() const override;
   void CopyImageAtForTesting(const gfx::Point&) override;
+  void ShowContextMenuFromExternal(
+      const UntrustworthyContextMenuParams& params,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::ContextMenuClientInterfaceBase> context_menu_client)
+      override;
   void UsageCountChromeLoadTimes(const WebString& metric) override;
   bool DispatchedPagehideAndStillHidden() const override;
   FrameScheduler* Scheduler() const override;
@@ -477,6 +485,13 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Copy the current selection to the pboard.
   void CopyToFindPboard();
 
+  // Shows a context menu with commands relevant to a specific element on
+  // the given frame. Additional context data and location are supplied.
+  void ShowContextMenu(
+      mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
+      const blink::ContextMenuData& data,
+      const base::Optional<gfx::Point>& host_context_menu_location);
+
   virtual void Trace(Visitor*) const;
 
  protected:
@@ -538,6 +553,10 @@ class CORE_EXPORT WebLocalFrameImpl final
       std::unique_ptr<PolicyContainer> policy_container,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
+
+  void ShowDeferredContextMenu(
+      mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
+      const UntrustworthyContextMenuParams& params);
 
   WebLocalFrameClient* client_;
 

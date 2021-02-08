@@ -24,28 +24,9 @@
 
 namespace blink {
 
-struct BLINK_COMMON_EXPORT CustomContextMenuContext {
-  static const int32_t kCurrentRenderWidget;
-
-  CustomContextMenuContext();
-
-  bool is_pepper_menu;
-  int request_id;
-  // The routing ID of the render widget on which the context menu is shown.
-  // It could also be |kCurrentRenderWidget|, which means the render widget that
-  // the corresponding ViewHostMsg_ContextMenu is sent to.
-  int32_t render_widget_id;
-
-  // If the context menu was created for a link, and we navigated to that url,
-  // this will contain the url that was navigated. This field may not be set
-  // if, for example, we are transitioning to an incognito window, since we
-  // want to sever any connection to the old renderer.
-  GURL link_followed;
-};
-
-// SECURITY NOTE: Data in this struct is untrustworthy, because it is sent in an
-// IPC from a renderer process.  The browser process should use
-// ContextMenuParams, after validating UntrustworthyContextMenuParams in an IPC
+// SECURITY NOTE: Data in this struct is untrustworthy, because it is sent in a
+// Mojo from a renderer process.  The browser process should use
+// ContextMenuParams, after validating UntrustworthyContextMenuParams in a Mojo
 // handling routine.
 struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   UntrustworthyContextMenuParams();
@@ -137,7 +118,7 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // The referrer policy of the frame on which the menu is invoked.
   network::mojom::ReferrerPolicy referrer_policy;
 
-  CustomContextMenuContext custom_context;
+  GURL link_followed;
   std::vector<blink::MenuItem> custom_items;
 
   ui::MenuSourceType source_type;

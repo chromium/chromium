@@ -464,11 +464,11 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   content::WebContents* guest_web_contents = GetGuestWebContents();
   content::WaitForHitTestData(guest_web_contents);
 
-  // Register a ContextMenuFilter to wait for the context menu event to be sent.
-  content::RenderProcessHost* guest_process_host =
-      guest_web_contents->GetMainFrame()->GetProcess();
-  auto context_menu_filter = base::MakeRefCounted<content::ContextMenuFilter>();
-  guest_process_host->AddFilter(context_menu_filter.get());
+  // Create a ContextMenuInterceptor to intercept the ShowContextMenu event
+  // before RenderFrameHost receives.
+  auto context_menu_interceptor =
+      std::make_unique<content::ContextMenuInterceptor>();
+  context_menu_interceptor->Init(guest_web_contents->GetMainFrame());
 
   // Trigger the context menu. AppShell doesn't show a context menu; this is
   // just a sanity check that nothing breaks.
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestContextMenu) {
   content::SimulateMouseClickAt(
       root_web_contents, blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kRight, root_context_menu_position);
-  context_menu_filter->Wait();
+  context_menu_interceptor->Wait();
 }
 #endif
 

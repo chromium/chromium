@@ -418,14 +418,14 @@ WebFrameTestProxy::GetEffectiveConnectionType() {
   return RenderFrameImpl::GetEffectiveConnectionType();
 }
 
-void WebFrameTestProxy::ShowContextMenu(
+void WebFrameTestProxy::UpdateContextMenuDataForTesting(
     const blink::ContextMenuData& context_menu_data,
     const base::Optional<gfx::Point>& location) {
   blink::FrameWidgetTestHelper* frame_widget =
       GetLocalRootFrameWidgetTestHelper();
   frame_widget->GetEventSender()->SetContextMenuData(context_menu_data);
 
-  RenderFrameImpl::ShowContextMenu(context_menu_data, location);
+  RenderFrameImpl::UpdateContextMenuDataForTesting(context_menu_data, location);
 }
 
 void WebFrameTestProxy::DidDispatchPingLoader(const blink::WebURL& url) {
