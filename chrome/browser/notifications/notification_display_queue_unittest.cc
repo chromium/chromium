@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
@@ -133,7 +134,7 @@ class NotificationDisplayQueueTest : public testing::Test {
  private:
   NotificationDisplayServiceMock service_;
   NotificationDisplayQueue queue_{&service_};
-  FakeNotificationBlocker* notification_blocker_ = nullptr;
+  CheckedPtr<FakeNotificationBlocker> notification_blocker_ = nullptr;
 };
 
 TEST_F(NotificationDisplayQueueTest, ShouldEnqueueWithoutBlockers) {

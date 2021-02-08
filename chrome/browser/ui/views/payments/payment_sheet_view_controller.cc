@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -343,10 +344,10 @@ class PaymentSheetRowBuilder {
 
   views::Button::PressedCallback GetPressedCallback() const {
     return base::BindRepeating(&PaymentSheetViewController::ButtonPressed,
-                               base::Unretained(controller_), closure_);
+                               base::Unretained(controller_.get()), closure_);
   }
 
-  PaymentSheetViewController* const controller_;
+  const CheckedPtr<PaymentSheetViewController> controller_;
   base::string16 section_name_;
   base::string16 accessible_content_;
   base::RepeatingClosure closure_;

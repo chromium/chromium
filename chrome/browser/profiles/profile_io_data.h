@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,7 +75,7 @@ class ProfileIOData {
    private:
     friend class ProfileIOData;
 
-    ProfileIOData* const io_data_;
+    const CheckedPtr<ProfileIOData> io_data_;
   };
 
   // Tracks whether or not we've been lazily initialized.

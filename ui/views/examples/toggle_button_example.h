@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_TOGGLE_BUTTON_EXAMPLE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -24,7 +25,7 @@ class VIEWS_EXAMPLES_EXPORT ToggleButtonExample : public ExampleBase {
 
  private:
   // The only control in this test.
-  ToggleButton* button_ = nullptr;
+  CheckedPtr<ToggleButton> button_ = nullptr;
 
   int count_ = 0;
 

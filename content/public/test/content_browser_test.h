@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test_base.h"
 
@@ -46,7 +47,7 @@ class ContentBrowserTest : public BrowserTestBase {
   base::FilePath GetTestDataFilePath();
 
  private:
-  Shell* shell_ = nullptr;
+  CheckedPtr<Shell> shell_ = nullptr;
 
 #if defined(OS_MAC)
   // On Mac, without the following autorelease pool, code which is directly

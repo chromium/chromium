@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -534,22 +535,23 @@ class RemoteSuggestionsProviderImplTest : public ::testing::Test {
   std::unique_ptr<CategoryRanker> category_ranker_;
   UserClassifier user_classifier_;
   std::unique_ptr<FakeContentSuggestionsProviderObserver> observer_;
-  StrictMock<MockRemoteSuggestionsFetcher>* mock_suggestions_fetcher_;
-  NiceMock<MockImageFetcher>* image_fetcher_;
+  CheckedPtr<StrictMock<MockRemoteSuggestionsFetcher>>
+      mock_suggestions_fetcher_;
+  CheckedPtr<NiceMock<MockImageFetcher>> image_fetcher_;
   image_fetcher::FakeImageDecoder image_decoder_;
   std::unique_ptr<MockScheduler> scheduler_;
-  RemoteSuggestionsStatusService* remote_suggestions_status_service_;
+  CheckedPtr<RemoteSuggestionsStatusService> remote_suggestions_status_service_;
   base::test::TaskEnvironment task_environment_;
 
   RemoteSuggestionsStatusService::StatusChangeCallback status_change_callback_;
 
-  RemoteSuggestionsDatabase* database_;
+  CheckedPtr<RemoteSuggestionsDatabase> database_;
   std::map<std::string, SnippetProto> suggestion_db_storage_;
   std::map<std::string, SnippetImageProto> image_db_storage_;
 
   // Owned by |database_|.
-  FakeDB<SnippetProto>* suggestion_db_;
-  FakeDB<SnippetImageProto>* image_db_;
+  CheckedPtr<FakeDB<SnippetProto>> suggestion_db_;
+  CheckedPtr<FakeDB<SnippetImageProto>> image_db_;
 
   scoped_refptr<TestMockTimeTaskRunner> timer_mock_task_runner_;
 };

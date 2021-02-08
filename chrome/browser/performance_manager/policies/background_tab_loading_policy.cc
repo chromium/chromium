@@ -325,11 +325,11 @@ void BackgroundTabLoadingPolicy::SetUsedInBackgroundAsync(
     PageNodeToLoadData* page_node_to_load_data) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable,
-          weak_factory_.GetWeakPtr(),
-          std::move(PageNodeImpl::FromNode(page_node_to_load_data->page_node))
-              ->GetWeakPtr()));
+      base::BindOnce(&BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(PageNodeImpl::FromNode(
+                                   page_node_to_load_data->page_node.get()))
+                         ->GetWeakPtr()));
 }
 
 void BackgroundTabLoadingPolicy::DispatchNotifyAllTabsScoredIfNeeded() {

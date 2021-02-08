@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -147,7 +148,7 @@ class PRINTING_EXPORT PrintingContext {
   std::unique_ptr<PrintSettings> settings_;
 
   // Printing context delegate.
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 
   // Is a print job being done.
   volatile bool in_print_job_;

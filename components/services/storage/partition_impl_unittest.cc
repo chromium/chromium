@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "components/services/storage/storage_service_impl.h"
 
 #include "base/files/file_path.h"
@@ -43,7 +44,7 @@ class StorageServicePartitionImplTest : public testing::Test {
   StorageServiceImpl service_{remote_service_.BindNewPipeAndPassReceiver(),
                               /*io_task_runner=*/nullptr};
   mojo::Remote<mojom::Partition> remote_test_partition_;
-  PartitionImpl* test_partition_impl_ = nullptr;
+  CheckedPtr<PartitionImpl> test_partition_impl_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(StorageServicePartitionImplTest);
 };

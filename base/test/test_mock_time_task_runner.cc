@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -80,7 +81,7 @@ class TestMockTimeTaskRunner::NonOwningProxyTaskRunner
   ~NonOwningProxyTaskRunner() override = default;
 
   mutable Lock lock_;
-  SingleThreadTaskRunner* target_;  // guarded by lock_
+  CheckedPtr<SingleThreadTaskRunner> target_;  // guarded by lock_
 
   // Used to implement RunsTasksInCurrentSequence, without relying on |target_|.
   ThreadCheckerImpl thread_checker_;

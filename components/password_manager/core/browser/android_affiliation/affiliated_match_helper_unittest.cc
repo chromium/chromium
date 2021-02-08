@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -350,7 +351,7 @@ class AffiliatedMatchHelperTest : public testing::Test {
   std::unique_ptr<AffiliatedMatchHelper> match_helper_;
 
   // Owned by |match_helper_|.
-  MockAndroidAffiliationService* mock_affiliation_service_ = nullptr;
+  CheckedPtr<MockAndroidAffiliationService> mock_affiliation_service_ = nullptr;
 };
 
 // GetAffiliatedAndroidRealm* tests verify that GetAffiliatedAndroidRealms()

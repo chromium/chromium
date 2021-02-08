@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
@@ -695,7 +696,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     GLuint service_id = 0;
     scoped_refptr<gpu::Buffer> shm;
-    QuerySync* sync = nullptr;
+    CheckedPtr<QuerySync> sync = nullptr;
 
     // Time at which the commands for this query started processing. This is
     // used to ensure we only include the time when the decoder is scheduled in
@@ -770,7 +771,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     void Resize(const gfx::Size& new_size);
     void Destroy(bool have_context);
 
-    gl::GLApi* api;
+    CheckedPtr<gl::GLApi> api;
 
     scoped_refptr<TexturePassthrough> texture;
 
@@ -798,7 +799,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     bool Resize(const gfx::Size& new_size, const FeatureInfo* feature_info);
     void Destroy(bool have_context);
 
-    gl::GLApi* api;
+    CheckedPtr<gl::GLApi> api;
     bool supports_separate_fbo_bindings = false;
 
     // Service ID of the framebuffer

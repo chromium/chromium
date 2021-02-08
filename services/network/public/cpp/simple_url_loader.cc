@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -615,7 +616,7 @@ class BodyHandler {
   }
 
  private:
-  SimpleURLLoaderImpl* const simple_url_loader_;
+  const CheckedPtr<SimpleURLLoaderImpl> simple_url_loader_;
   bool const want_download_progress_;
 
   DISALLOW_COPY_AND_ASSIGN(BodyHandler);

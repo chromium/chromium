@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/process/launch.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
@@ -242,7 +243,7 @@ class TestLauncher {
   // is running on the correct thread.
   ThreadChecker thread_checker_;
 
-  TestLauncherDelegate* launcher_delegate_;
+  CheckedPtr<TestLauncherDelegate> launcher_delegate_;
 
   // Support for outer sharding, just like gtest does.
   int32_t total_shards_;  // Total number of outer shards, at least one.

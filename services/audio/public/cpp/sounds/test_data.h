@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -50,7 +51,7 @@ class TestObserver : public AudioStreamHandler::TestObserver {
   int num_stop_requests_;
   int cursor_;
   int is_playing;
-  media::AudioRendererSink::RenderCallback* callback_;
+  CheckedPtr<media::AudioRendererSink::RenderCallback> callback_;
   std::unique_ptr<media::AudioBus> bus_;
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);

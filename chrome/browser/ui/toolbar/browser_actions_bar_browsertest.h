@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -55,7 +56,7 @@ class BrowserActionsBarBrowserTest : public extensions::ExtensionBrowserTest {
   std::unique_ptr<ExtensionActionTestHelper> browser_actions_bar_;
 
   // The associated toolbar model, weak.
-  ToolbarActionsModel* toolbar_model_;
+  CheckedPtr<ToolbarActionsModel> toolbar_model_;
 
   // Extensions with browser actions used for testing.
   scoped_refptr<const extensions::Extension> extension_a_;

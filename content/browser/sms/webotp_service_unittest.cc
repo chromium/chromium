@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -587,7 +588,7 @@ class ServiceWithPrompt : public Service {
   // The actual consent handler is owned by WebOTPService but we keep a ptr to
   // it so it can be used to set expectations for it. It is safe since the
   // sms service lifetime is the same as this object.
-  NiceMock<MockUserConsentHandler>* mock_handler_;
+  CheckedPtr<NiceMock<MockUserConsentHandler>> mock_handler_;
   CompletionCallback on_complete_callback_;
 };
 

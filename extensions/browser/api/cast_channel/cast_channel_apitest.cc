@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
@@ -115,7 +116,8 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
     mock_cast_socket_->SetIPEndpoint(ip_endpoint_);
     mock_cast_socket_->SetKeepAlive(false);
     // Transfers ownership of the socket.
-    api->SetSocketForTest(base::WrapUnique<CastSocket>(mock_cast_socket_));
+    api->SetSocketForTest(
+        base::WrapUnique<CastSocket>(mock_cast_socket_.get()));
   }
 
   void SetUpOpenSendClose() {
@@ -127,7 +129,7 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
       EXPECT_CALL(*mock_cast_socket_, ConnectInternal(_))
           .WillOnce(WithArgs<0>(
               Invoke([&](const MockCastSocket::MockOnOpenCallback& callback) {
-                callback.Run(mock_cast_socket_);
+                callback.Run(mock_cast_socket_.get());
               })));
       EXPECT_CALL(*mock_cast_socket_, ready_state())
           .WillRepeatedly(Return(ReadyState::OPEN));
@@ -152,7 +154,7 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
       EXPECT_CALL(*mock_cast_socket_, ConnectInternal(_))
           .WillOnce(WithArgs<0>(
               Invoke([&](const MockCastSocket::MockOnOpenCallback& callback) {
-                callback.Run(mock_cast_socket_);
+                callback.Run(mock_cast_socket_.get());
               })));
       EXPECT_CALL(*mock_cast_socket_, ready_state())
           .WillRepeatedly(Return(ReadyState::CLOSED));
@@ -174,7 +176,7 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
       EXPECT_CALL(*mock_cast_socket_, ConnectInternal(_))
           .WillOnce(WithArgs<0>(
               Invoke([&](const MockCastSocket::MockOnOpenCallback& callback) {
-                callback.Run(mock_cast_socket_);
+                callback.Run(mock_cast_socket_.get());
               })));
       EXPECT_CALL(*mock_cast_socket_, ready_state())
           .WillOnce(Return(ReadyState::OPEN))
@@ -249,7 +251,7 @@ class CastChannelAPITest : public extensions::ExtensionApiTest {
     return cast_channel_send_function;
   }
 
-  MockCastSocket* mock_cast_socket_;
+  CheckedPtr<MockCastSocket> mock_cast_socket_;
   net::IPEndPoint ip_endpoint_;
   LastError last_error_;
   CastSocket::Observer* message_observer_;
@@ -358,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenReceiveClose) {
     EXPECT_CALL(*mock_cast_socket_, ConnectInternal(_))
         .WillOnce(WithArgs<0>(
             Invoke([&](const MockCastSocket::MockOnOpenCallback& callback) {
-              callback.Run(mock_cast_socket_);
+              callback.Run(mock_cast_socket_.get());
             })));
     EXPECT_CALL(*mock_cast_socket_, ready_state())
         .WillOnce(Return(ReadyState::OPEN));
@@ -399,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(CastChannelAPITest, MAYBE_TestOpenError) {
   EXPECT_CALL(*mock_cast_socket_, ConnectInternal(_))
       .WillOnce(WithArgs<0>(
           Invoke([&](const MockCastSocket::MockOnOpenCallback& callback) {
-            callback.Run(mock_cast_socket_);
+            callback.Run(mock_cast_socket_.get());
           })));
   mock_cast_socket_->SetErrorState(ChannelError::CONNECT_ERROR);
   EXPECT_CALL(*mock_cast_socket_, ready_state())

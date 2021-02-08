@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_TEST_FAKE_DELAY_BASED_TIME_SOURCE_H_
 #define COMPONENTS_VIZ_TEST_FAKE_DELAY_BASED_TIME_SOURCE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 
@@ -42,7 +43,7 @@ class FakeDelayBasedTimeSource : public DelayBasedTimeSource {
 
  private:
   // Not owned.
-  const base::TickClock* now_src_;
+  CheckedPtr<const base::TickClock> now_src_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDelayBasedTimeSource);
 };

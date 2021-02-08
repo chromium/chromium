@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -371,7 +372,7 @@ class DownloadDeepScanningBrowserTestBase
   }
 
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_sb_factory_;
-  FakeBinaryFCMService* binary_fcm_service_;
+  CheckedPtr<FakeBinaryFCMService> binary_fcm_service_;
 
   bool waiting_for_app_;
   enterprise_connectors::ContentAnalysisRequest last_app_request_;

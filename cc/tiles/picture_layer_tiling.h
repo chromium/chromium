@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/base/region.h"
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
@@ -252,12 +253,12 @@ class CC_EXPORT PictureLayerTiling {
    private:
     gfx::Rect ComputeGeometryRect() const;
 
-    const PictureLayerTiling* tiling_ = nullptr;
+    CheckedPtr<const PictureLayerTiling> tiling_ = nullptr;
     gfx::Size coverage_rect_max_bounds_;
     gfx::Rect coverage_rect_;
     gfx::AxisTransform2d coverage_to_content_;
 
-    Tile* current_tile_ = nullptr;
+    CheckedPtr<Tile> current_tile_ = nullptr;
     gfx::Rect current_geometry_rect_;
     int tile_i_ = 0;
     int tile_j_ = 0;
@@ -372,7 +373,7 @@ class CC_EXPORT PictureLayerTiling {
 
   // Given properties.
   const gfx::AxisTransform2d raster_transform_;
-  PictureLayerTilingClient* const client_;
+  const CheckedPtr<PictureLayerTilingClient> client_;
   const WhichTree tree_;
   scoped_refptr<RasterSource> raster_source_;
   const float min_preraster_distance_;

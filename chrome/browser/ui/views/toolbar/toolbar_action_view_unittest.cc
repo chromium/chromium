@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,7 +67,7 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
 
   std::unique_ptr<views::MenuButton> overflow_reference_view_;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 };
 
 class OpenMenuListener : public views::ContextMenuController {
@@ -91,7 +92,7 @@ class OpenMenuListener : public views::ContextMenuController {
   bool opened_menu() const { return opened_menu_; }
 
  private:
-  views::View* view_;
+  CheckedPtr<views::View> view_;
 
   bool opened_menu_;
 };

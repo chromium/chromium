@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
@@ -238,7 +239,8 @@ class InstructionParser {
  public:
   struct Value {
     offset_t instr_offset;
-    const dex::Instruction* instr = nullptr;  // null for unknown instructions.
+    CheckedPtr<const dex::Instruction> instr =
+        nullptr;  // null for unknown instructions.
   };
 
   // Returns pointer to DEX Instruction data for |opcode|, or null if |opcode|
@@ -750,7 +752,7 @@ static void WriteTargetIndex(const dex::MapItem& target_map_item,
 // Buffer for ReadDexHeader() to optionally return results.
 struct ReadDexHeaderResults {
   BufferSource source;
-  const dex::HeaderItem* header;
+  CheckedPtr<const dex::HeaderItem> header;
   int dex_version;
 };
 

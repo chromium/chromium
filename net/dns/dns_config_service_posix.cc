@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -307,7 +308,7 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
   // Raw pointer to owning DnsConfigService. This must never be accessed inside
   // DoWork(), since service may be destroyed while SerialWorker is running
   // on worker thread.
-  DnsConfigServicePosix* const service_;
+  const CheckedPtr<DnsConfigServicePosix> service_;
   // Written in DoWork, read in OnWorkFinished, no locking necessary.
   base::Optional<DnsConfig> dns_config_;
 

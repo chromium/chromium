@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/test/payments/payment_request_test_controller.h"
 
 #include "base/check.h"
@@ -92,10 +93,10 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   content::GlobalFrameRoutingId frame_routing_id_;
   const bool is_off_the_record_;
   const bool valid_ssl_;
-  PrefService* const prefs_;
+  const CheckedPtr<PrefService> prefs_;
   const std::string twa_package_name_;
   const bool has_authenticator_;
-  const PaymentUIObserver* const ui_observer_for_test_;
+  const CheckedPtr<const PaymentUIObserver> ui_observer_for_test_;
 };
 
 }  // namespace
@@ -148,7 +149,7 @@ class PaymentRequestTestController::ObserverConverter
   void OnUIDisplayed() const override { controller_->OnUIDisplayed(); }
 
  private:
-  PaymentRequestTestController* const controller_;
+  const CheckedPtr<PaymentRequestTestController> controller_;
 };
 
 PaymentRequestTestController::PaymentRequestTestController()

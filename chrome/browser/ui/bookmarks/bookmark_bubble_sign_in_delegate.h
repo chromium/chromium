@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 
@@ -32,10 +33,10 @@ class BookmarkBubbleSignInDelegate : public BubbleSyncPromoDelegate,
   void EnsureBrowser();
 
   // The browser in which the sign in page must be loaded.
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
 
   // The profile associated with |browser_|.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleSignInDelegate);
 };

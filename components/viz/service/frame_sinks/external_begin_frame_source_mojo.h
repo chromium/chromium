@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/display.h"
@@ -74,7 +75,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
 
   void MaybeProduceFrameCallback();
 
-  FrameSinkManagerImpl* const frame_sink_manager_;
+  const CheckedPtr<FrameSinkManagerImpl> frame_sink_manager_;
 
   mojo::AssociatedReceiver<mojom::ExternalBeginFrameController> receiver_;
   base::OnceCallback<void(const BeginFrameAck& ack)> pending_frame_callback_;
@@ -84,7 +85,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
   uint64_t original_source_id_ = BeginFrameArgs::kStartingSourceId;
 
   base::flat_set<FrameSinkId> pending_frame_sinks_;
-  Display* display_ = nullptr;
+  CheckedPtr<Display> display_ = nullptr;
 };
 
 }  // namespace viz

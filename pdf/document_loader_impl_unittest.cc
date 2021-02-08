@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "pdf/pdf_features.h"
 #include "pdf/ppapi_migration/callback.h"
@@ -125,7 +126,7 @@ class TestURLLoader : public URLLoaderWrapper {
    private:
     ResultCallback did_open_callback_;
     ResultCallback did_read_callback_;
-    char* buffer_ = nullptr;
+    CheckedPtr<char> buffer_ = nullptr;
     int buffer_size_ = 0;
 
     int content_length_ = -1;
@@ -189,7 +190,7 @@ class TestURLLoader : public URLLoaderWrapper {
   }
 
  private:
-  LoaderData* data_;
+  CheckedPtr<LoaderData> data_;
 };
 
 class TestClient : public DocumentLoader::Client {

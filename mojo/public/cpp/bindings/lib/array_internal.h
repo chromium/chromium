@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/c/system/macros.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
@@ -303,7 +304,7 @@ class Array_Data {
     Array_Data<T>* operator->() { return data(); }
 
    private:
-    Buffer* buffer_ = nullptr;
+    CheckedPtr<Buffer> buffer_ = nullptr;
     size_t index_ = 0;
 
     DISALLOW_COPY_AND_ASSIGN(BufferWriter);

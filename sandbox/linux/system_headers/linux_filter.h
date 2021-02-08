@@ -18,7 +18,7 @@ struct sock_filter {
 
 struct sock_fprog {
   uint16_t len;
-  struct sock_filter *filter;
+  struct sock_filter* filter;
 };
 
 #ifndef BPF_CLASS

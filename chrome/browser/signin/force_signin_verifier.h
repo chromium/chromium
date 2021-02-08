@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -75,7 +76,7 @@ class ForceSigninVerifier
   base::OneShotTimer backoff_request_timer_;
   base::TimeTicks creation_time_;
 
-  signin::IdentityManager* identity_manager_ = nullptr;
+  CheckedPtr<signin::IdentityManager> identity_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ForceSigninVerifier);
 };

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/common/previews_resource_loading_hints.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -58,7 +59,7 @@ class ResourceLoadingHintsWebContentsObserver
   void ReportRedirects(content::NavigationHandle* navigation_handle);
 
   // Set in constructor.
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
 
   mojo::AssociatedRemote<previews::mojom::PreviewsResourceLoadingHintsReceiver>
   GetResourceLoadingHintsReceiver(content::NavigationHandle* navigation_handle);

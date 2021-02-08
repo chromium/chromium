@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/dependency_node.h"
 #include "components/keyed_service/core/keyed_service_export.h"
@@ -101,7 +102,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
 
   // The DependencyManager used. In real code, this will be a singleton used
   // by all the factories of a given type. Unit tests will use their own copy.
-  DependencyManager* dependency_manager_;
+  CheckedPtr<DependencyManager> dependency_manager_;
 
   // Registers any preferences used by this service. This should be overridden
   // by any services that want to register context-specific preferences.

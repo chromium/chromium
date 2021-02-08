@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync_file_system/sync_event_observer.h"
 #include "chrome/browser/sync_file_system/task_logger.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -53,7 +54,7 @@ class SyncFileSystemInternalsHandler
   void HandleClearLogs(const base::ListValue* args);
   void HandleObserveTaskLog(const base::ListValue* args);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   bool observing_task_log_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncFileSystemInternalsHandler);

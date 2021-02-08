@@ -5,6 +5,7 @@
 #include "extensions/browser/url_loader_factory_manager.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_frame_host.h"
@@ -234,7 +235,7 @@ class URLLoaderFactoryManagerBrowserTest : public ShellApiTest,
 
   // Populated by InstallContentScriptsExtension (called by individual tests).
   TestExtensionDir dir_;
-  const Extension* extension_ = nullptr;
+  CheckedPtr<const Extension> extension_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryManagerBrowserTest);
 };

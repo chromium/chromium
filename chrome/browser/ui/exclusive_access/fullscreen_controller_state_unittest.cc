@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -80,7 +81,7 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
   bool IsTransitionReentrant(bool new_fullscreen);
 
   WindowState state_;
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
 };
 
 FullscreenControllerTestWindow::FullscreenControllerTestWindow()
@@ -216,7 +217,7 @@ class FullscreenControllerStateUnitTest : public BrowserWithTestWindowTest,
   // FullscreenControllerStateTest:
   bool ShouldSkipStateAndEventPair(State state, Event event) override;
   Browser* GetBrowser() override;
-  FullscreenControllerTestWindow* window_ = nullptr;
+  CheckedPtr<FullscreenControllerTestWindow> window_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenControllerStateUnitTest);
 };

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/usage_stats/website_event.pb.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -104,9 +105,9 @@ class UsageStatsDatabaseTest : public testing::Test {
   std::map<std::string, Suspension> suspension_store_;
   std::map<std::string, TokenMapping> token_mapping_store_;
 
-  FakeDB<WebsiteEvent>* website_event_db_unowned_;
-  FakeDB<Suspension>* suspension_db_unowned_;
-  FakeDB<TokenMapping>* token_mapping_db_unowned_;
+  CheckedPtr<FakeDB<WebsiteEvent>> website_event_db_unowned_;
+  CheckedPtr<FakeDB<Suspension>> suspension_db_unowned_;
+  CheckedPtr<FakeDB<TokenMapping>> token_mapping_db_unowned_;
 
   std::unique_ptr<UsageStatsDatabase> usage_stats_database_;
 

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -96,8 +97,8 @@ class UserClassifier {
   void SetMetricValue(Metric metric, double metric_value);
   void ClearMetricValue(Metric metric);
 
-  PrefService* pref_service_;
-  base::Clock* clock_;
+  CheckedPtr<PrefService> pref_service_;
+  CheckedPtr<base::Clock> clock_;
 
   // Params of the metric.
   const double discount_rate_per_hour_;

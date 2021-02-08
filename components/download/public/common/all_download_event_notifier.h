@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"
@@ -65,7 +66,8 @@ class COMPONENTS_DOWNLOAD_EXPORT AllDownloadEventNotifier
   void OnDownloadRemoved(DownloadItem* item) override;
   void OnDownloadDestroyed(DownloadItem* item) override;
 
-  SimpleDownloadManagerCoordinator* simple_download_manager_coordinator_;
+  CheckedPtr<SimpleDownloadManagerCoordinator>
+      simple_download_manager_coordinator_;
   std::set<DownloadItem*> observing_;
 
   bool download_initialized_;

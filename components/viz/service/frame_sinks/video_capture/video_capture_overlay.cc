@@ -33,7 +33,7 @@ VideoCaptureOverlay::VideoCaptureOverlay(
   DCHECK(frame_source_);
   receiver_.set_disconnect_handler(
       base::BindOnce(&FrameSource::OnOverlayConnectionLost,
-                     base::Unretained(frame_source_), this));
+                     base::Unretained(frame_source_.get()), this));
 }
 
 VideoCaptureOverlay::~VideoCaptureOverlay() = default;

@@ -22,6 +22,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -392,7 +393,7 @@ class RectangleString {
   bool suppressed_;
 
   // String onto which the output is accumulated.
-  base::string16* output_;
+  CheckedPtr<base::string16> output_;
 
   DISALLOW_COPY_AND_ASSIGN(RectangleString);
 };
@@ -565,7 +566,7 @@ class RectangleText {
   bool last_line_ended_in_lf_ = false;
 
   // The output vector of lines.
-  std::vector<base::string16>* lines_;
+  CheckedPtr<std::vector<base::string16>> lines_;
 
   // Indicates whether a word was so long that it had to be truncated or elided
   // to fit the available width.

@@ -12,6 +12,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -350,7 +351,7 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
     }
 
    private:
-    TestPendingAppManagerImpl* pending_app_manager_impl_;
+    CheckedPtr<TestPendingAppManagerImpl> pending_app_manager_impl_;
     ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
     TestPendingAppInstallTaskManager& test_install_task_manager_;
   };
@@ -388,7 +389,7 @@ class TestPendingAppManagerImpl : public PendingAppManagerImpl {
 
   };
 
-  TestAppRegistrar* test_app_registrar_;
+  CheckedPtr<TestAppRegistrar> test_app_registrar_;
   TestWebAppUrlLoader test_url_loader_;
   TestPendingAppInstallTaskManager& test_install_task_manager_;
 
@@ -552,10 +553,10 @@ class PendingAppManagerImplTest : public ChromeRenderViewHostTestHarness {
   TestInstallFinalizer* install_finalizer() { return install_finalizer_; }
 
  private:
-  TestAppRegistrar* app_registrar_ = nullptr;
-  TestPendingAppManagerImpl* pending_app_manager_impl_ = nullptr;
-  TestInstallFinalizer* install_finalizer_ = nullptr;
-  TestWebAppUiManager* ui_manager_ = nullptr;
+  CheckedPtr<TestAppRegistrar> app_registrar_ = nullptr;
+  CheckedPtr<TestPendingAppManagerImpl> pending_app_manager_impl_ = nullptr;
+  CheckedPtr<TestInstallFinalizer> install_finalizer_ = nullptr;
+  CheckedPtr<TestWebAppUiManager> ui_manager_ = nullptr;
 
   TestPendingAppInstallTaskManager test_install_task_manager_;
 };

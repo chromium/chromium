@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/pending_task.h"
@@ -149,7 +150,7 @@ class SimpleActivityThread : public SimpleThread {
   }
 
  private:
-  const void* source_;
+  CheckedPtr<const void> source_;
   Activity::Type activity_;
   ActivityData data_;
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -62,9 +63,9 @@ class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
   std::unique_ptr<ToolbarActionsBarBubbleDelegate> delegate_;
   bool delegate_notified_of_close_ = false;
   bool observer_notified_of_show_ = false;
-  views::Label* body_text_ = nullptr;
-  views::Label* item_list_ = nullptr;
-  views::ImageButton* learn_more_button_ = nullptr;
+  CheckedPtr<views::Label> body_text_ = nullptr;
+  CheckedPtr<views::Label> item_list_ = nullptr;
+  CheckedPtr<views::ImageButton> learn_more_button_ = nullptr;
   const bool anchored_to_action_;
 };
 
