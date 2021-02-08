@@ -83,7 +83,7 @@ uint32_t GetGbmUsage(gfx::BufferUsage usage) {
     case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
       return GBM_BO_USE_LINEAR | GBM_BO_USE_CAMERA_READ |
              GBM_BO_USE_CAMERA_WRITE;
-    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
       return GBM_BO_USE_LINEAR | GBM_BO_USE_CAMERA_READ |
              GBM_BO_USE_CAMERA_WRITE | GBM_BO_USE_TEXTURING |
              GBM_BO_USE_HW_VIDEO_ENCODER;

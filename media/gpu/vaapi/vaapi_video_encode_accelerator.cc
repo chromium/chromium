@@ -70,7 +70,7 @@ gfx::Size GetInputFrameSize(VideoPixelFormat format,
   // as camera stack.
   base::Optional<VideoFrameLayout> layout = GetPlatformVideoFrameLayout(
       /*gpu_memory_buffer_factory=*/nullptr, format, visible_size,
-      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   if (!layout || layout->planes().empty()) {
     VLOGF(1) << "Failed to allocate VideoFrameLayout";
     return gfx::Size();

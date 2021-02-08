@@ -31,7 +31,8 @@ bool GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
   const gfx::BufferUsage usage =
       *gfx_format == gfx::BufferFormat::R_8
           ? gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE
-          : gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+          : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+
   buffer_ =
       buffer_factory_.CreateGpuMemoryBuffer(dimensions, *gfx_format, usage);
   if (!buffer_) {

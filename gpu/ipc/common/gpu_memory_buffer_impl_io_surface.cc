@@ -25,7 +25,7 @@ const int kMaxCrashDumps = 10;
 uint32_t LockFlags(gfx::BufferUsage usage) {
   switch (usage) {
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-    case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+    case gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
       // The AvoidSync call has the property that it will not preserve the
       // previous contents of the buffer if those contents were written by a
       // GPU.

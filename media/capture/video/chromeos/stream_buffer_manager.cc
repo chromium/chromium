@@ -259,7 +259,7 @@ void StreamBufferManager::SetUpStreamsAndBuffers(
         stream_context->buffer_dimension = gfx::Size(
             stream_context->stream->width, stream_context->stream->height);
         stream_context->buffer_usage =
-            gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
         break;
       case StreamType::kYUVInput:
       case StreamType::kYUVOutput:

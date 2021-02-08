@@ -403,7 +403,7 @@ bool V4L2VideoEncodeAccelerator::CreateImageProcessor(
 
   auto platform_layout = GetPlatformVideoFrameLayout(
       /*gpu_memory_buffer_factory=*/nullptr, output_format, output_size,
-      gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   if (!platform_layout) {
     VLOGF(1) << "Failed to get Platform VideoFrameLayout";
     return false;
@@ -476,7 +476,7 @@ bool V4L2VideoEncodeAccelerator::AllocateImageProcessorOutputBuffers(
             output_config.fourcc.ToVideoPixelFormat(), output_config.size,
             output_config.visible_rect, output_config.visible_rect.size(),
             base::TimeDelta(),
-            gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
         break;
       default:
         VLOGF(1) << "Unsupported output storage type of image processor: "
@@ -1646,7 +1646,7 @@ bool V4L2VideoEncodeAccelerator::SetFormats(VideoPixelFormat input_format,
     auto input_layout = GetPlatformVideoFrameLayout(
         /*gpu_memory_buffer_factory=*/nullptr, input_format,
         encoder_input_visible_rect_.size(),
-        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     if (!input_layout)
       return false;
     input_size = gfx::Size(input_layout->planes()[0].stride,
