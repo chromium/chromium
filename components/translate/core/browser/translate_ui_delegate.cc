@@ -244,8 +244,10 @@ void TranslateUIDelegate::Translate() {
   if (translate_manager_) {
     translate_manager_->RecordTranslateEvent(
         metrics::TranslateEventProto::USER_ACCEPT);
-    translate_manager_->TranslatePage(GetOriginalLanguageCode(),
-                                      GetTargetLanguageCode(), false);
+    translate_manager_->TranslatePage(
+        GetOriginalLanguageCode(), GetTargetLanguageCode(), false,
+        translate_manager_->GetActiveTranslateMetricsLogger()
+            ->GetNextManualTranslationType());
     UMA_HISTOGRAM_BOOLEAN(kPerformTranslate, true);
     if (IsLikelyAmpCacheUrl(translate_driver_->GetLastCommittedURL()))
       UMA_HISTOGRAM_BOOLEAN(kPerformTranslateAmpCacheUrl, true);

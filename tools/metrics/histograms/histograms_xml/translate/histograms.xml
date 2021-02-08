@@ -922,6 +922,66 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.Translation.SourceLanguage" enum="CLD3LanguageCode"
+    expires_after="2021-08-01">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the source language used for a translation. This is the language
+    being translated from.
+
+    This is recorded when a translation (both manual and automatic) is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.Translation.Status" enum="TranslationStatus"
+    expires_after="2021-08-01">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the final status of a translation. We count a translation as
+    successful if the user keeps the translation until the end of the page load.
+    Otherwise we record what followed the translation (for example the user
+    reverted the translation, or the user requested a different translation).
+
+    For each translation one sample is recorded once the status of the
+    translation is determined. This includes when the page load is finished, the
+    user reverts the translation, a new translation is requested, or the
+    translation fails. Note that we consider the user backgrounding Chrome as
+    the page load finishing because we can lose any stored metrics if the user
+    kills Chrome while it is backgrounded.
+  </summary>
+</histogram>
+
+<histogram name="Translate.Translation.TargetLanguage" enum="CLD3LanguageCode"
+    expires_after="2021-08-01">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the target language used for a translation. This is the langauge
+    being translated to.
+
+    This is recorded when a translation (both manual and automatic) is started.
+  </summary>
+</histogram>
+
+<histogram name="Translate.Translation.Type" enum="TranslationType"
+    expires_after="2021-08-01">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the type of translation being performed, either manual or automatic.
+    We additionally breakdown automatic translations by the reason why an
+    automatic translation was performed.
+
+    This is recorded when a translation (both manual and automatic) is started.
+  </summary>
+</histogram>
+
 <histogram name="Translate.UndisplayableLanguage" enum="LanguageCode"
     expires_after="M81">
   <obsolete>

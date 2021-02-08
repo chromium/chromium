@@ -240,8 +240,10 @@ void TranslateInfoBarDelegate::MessageInfoBarButtonPressed() {
   }
   // This is the "Try again..." case.
   DCHECK(translate_manager_);
-  translate_manager_->TranslatePage(original_language_code(),
-                                    target_language_code(), false);
+  translate_manager_->TranslatePage(
+      original_language_code(), target_language_code(), false,
+      translate_manager_->GetActiveTranslateMetricsLogger()
+          ->GetNextManualTranslationType());
 }
 
 bool TranslateInfoBarDelegate::ShouldShowMessageInfoBarButton() {

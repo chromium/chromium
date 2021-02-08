@@ -75666,6 +75666,29 @@ Full version information for the fingerprint enum values:
   <int value="9" label="Close UI by lost focus"/>
 </enum>
 
+<enum name="TranslationStatus">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Succeeded, from manual translation"/>
+  <int value="2" label="Succeeded, automatic translation by user preference"/>
+  <int value="3" label="Succeeded, automatic translation by link"/>
+  <int value="4" label="Reverted by user, manual translation"/>
+  <int value="5" label="Reverted by user, automatic translation"/>
+  <int value="6" label="New translation requested by user"/>
+  <int value="7" label="Abandoned"/>
+  <int value="8" label="Failed with no error, manual translation"/>
+  <int value="9" label="Failed with no error, automatic translation"/>
+  <int value="10" label="Failed with an error, manual translation"/>
+  <int value="11" label="Failed with an error, automatic translation"/>
+</enum>
+
+<enum name="TranslationType">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Manual translation, first translation of page load"/>
+  <int value="2" label="Manual translation, after page was already translated"/>
+  <int value="3" label="Automatic translation by user preference"/>
+  <int value="4" label="Automatic translation by link"/>
+</enum>
+
 <enum name="TrendingTileEvent">
   <int value="0" label="Tile was shown"/>
   <int value="1" label="Tile was removed"/>

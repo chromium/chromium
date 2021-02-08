@@ -345,7 +345,10 @@ void TranslateManager::InitiateManualTranslation(bool auto_translate,
   // Translate the page if it has not been translated and manual translate
   // should trigger translation automatically. Otherwise, only show the infobar.
   if (auto_translate && !language_state_.IsPageTranslated()) {
-    TranslatePage(source_code, target_lang, triggered_from_menu);
+    TranslatePage(source_code, target_lang, triggered_from_menu,
+                  GetLanguageState()->InTranslateNavigation()
+                      ? TranslationType::kAutomaticTranslationByLink
+                      : TranslationType::kAutomaticTranslationByPref);
     return;
   }
 
@@ -356,7 +359,8 @@ void TranslateManager::InitiateManualTranslation(bool auto_translate,
 
 void TranslateManager::TranslatePage(const std::string& original_source_lang,
                                      const std::string& target_lang,
-                                     bool triggered_from_menu) {
+                                     bool triggered_from_menu,
+                                     TranslationType translation_type) {
   if (!translate_driver_->HasCurrentPage()) {
     NOTREACHED();
     return;
@@ -421,7 +425,7 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
       translate::TRANSLATE_STEP_TRANSLATING, source_lang, target_lang,
       TranslateErrors::NONE, triggered_from_menu);
 
-  GetActiveTranslateMetricsLogger()->LogTranslationStarted();
+  GetActiveTranslateMetricsLogger()->LogTranslationStarted(translation_type);
 
   TranslateScript* script = TranslateDownloadManager::GetInstance()->script();
   DCHECK(script != nullptr);
@@ -1119,12 +1123,18 @@ bool TranslateManager::MaterializeDecision(
     const std::string target_lang) {
   // Auto-translating always happens if it's still possible here.
   if (decision.can_auto_translate()) {
-    TranslatePage(page_language_code, decision.auto_translate_target, false);
+    TranslatePage(page_language_code, decision.auto_translate_target, false,
+                  GetLanguageState()->InTranslateNavigation()
+                      ? TranslationType::kAutomaticTranslationByLink
+                      : TranslationType::kAutomaticTranslationByPref);
     return false;
   }
 
   if (decision.can_auto_href_translate()) {
-    TranslatePage(page_language_code, decision.href_translate_target, false);
+    TranslatePage(page_language_code, decision.href_translate_target, false,
+                  GetLanguageState()->InTranslateNavigation()
+                      ? TranslationType::kAutomaticTranslationByLink
+                      : TranslationType::kAutomaticTranslationByPref);
     return false;
   }
 

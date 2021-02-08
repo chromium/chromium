@@ -58,8 +58,9 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogInitialState();
   }
 
-  void LogTranslationStarted() override {
-    mock_translate_metrics_logger_->LogTranslationStarted();
+  void LogTranslationStarted(
+      translate::TranslationType translation_type) override {
+    mock_translate_metrics_logger_->LogTranslationStarted(translation_type);
   }
 
   void LogTranslationFinished(
@@ -97,6 +98,10 @@ class MockTranslateMetricsLoggerContainer
 
   void LogUIInteraction(translate::UIInteraction ui_interaction) override {
     mock_translate_metrics_logger_->LogUIInteraction(ui_interaction);
+  }
+
+  translate::TranslationType GetNextManualTranslationType() override {
+    return mock_translate_metrics_logger_->GetNextManualTranslationType();
   }
 
  private:

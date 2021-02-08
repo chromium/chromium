@@ -38,6 +38,35 @@ enum class TranslateState {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class TranslationStatus {
+  kUninitialized = 0,
+  kSuccessFromManualTranslation = 1,
+  kSuccessFromAutomaticTranslationByPref = 2,
+  kSuccessFromAutomaticTranslationByLink = 3,
+  kRevertedManualTranslation = 4,
+  kRevertedAutomaticTranslation = 5,
+  kNewTranslation = 6,
+  kTranslationAbandoned = 7,
+  kFailedWithNoErrorManualTranslation = 8,
+  kFailedWithNoErrorAutomaticTranslation = 9,
+  kFailedWithErrorManualTranslation = 10,
+  kFailedWithErrorAutomaticTranslation = 11,
+  kMaxValue = kFailedWithErrorAutomaticTranslation,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TranslationType {
+  kUninitialized = 0,
+  kManualInitialTranslation = 1,
+  kManualReTranslation = 2,
+  kAutomaticTranslationByPref = 3,
+  kAutomaticTranslationByLink = 4,
+  kMaxValue = kAutomaticTranslationByLink,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class TriggerDecision {
   kUninitialized = 0,
   kDisabledDoesntNeedTranslation = 1,
@@ -106,7 +135,7 @@ class TranslateMetricsLogger {
 
   // Tracks the state of Translate over the course of the page load.
   virtual void LogInitialState() = 0;
-  virtual void LogTranslationStarted() = 0;
+  virtual void LogTranslationStarted(TranslationType translation_type) = 0;
   virtual void LogTranslationFinished(bool was_successful,
                                       TranslateErrors::Type error_type) = 0;
   virtual void LogReversion() = 0;
@@ -122,6 +151,9 @@ class TranslateMetricsLogger {
 
   // Records the user's high level interactions with the Translate UI.
   virtual void LogUIInteraction(UIInteraction ui_interaction) = 0;
+
+  // Returns the translation type of the next manual translation.
+  virtual TranslationType GetNextManualTranslationType() = 0;
 };
 
 }  // namespace translate

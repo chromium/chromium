@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace language {
@@ -32,7 +33,6 @@ namespace translate {
 
 class TranslateClient;
 class TranslateDriver;
-class TranslateMetricsLogger;
 class TranslatePrefs;
 class TranslateRanker;
 struct TranslateTriggerDecision;
@@ -118,9 +118,11 @@ class TranslateManager {
   // Translates the page contents from |source_lang| to |target_lang|.
   // The actual translation might be performed asynchronously if the translate
   // script is not yet available.
-  void TranslatePage(const std::string& source_lang,
-                     const std::string& target_lang,
-                     bool triggered_from_menu);
+  void TranslatePage(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      bool triggered_from_menu,
+      TranslationType translate_type = TranslationType::kUninitialized);
 
   // Starts the translation process for the page in the |page_lang| language.
   void InitiateTranslation(const std::string& page_lang);

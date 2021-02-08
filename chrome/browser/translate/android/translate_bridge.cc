@@ -22,6 +22,7 @@
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "content/public/browser/web_contents.h"
@@ -85,7 +86,10 @@ static void JNI_TranslateBridge_TranslateToLanguage(
     translate::TranslateManager* manager = client->GetTranslateManager();
     DCHECK(manager);
     manager->TranslatePage(source_language_code, target_language_code,
-                           /*triggered_from_menu=*/false);
+                           /*triggered_from_menu=*/false,
+                           /*translation_type=*/
+                           manager->GetActiveTranslateMetricsLogger()
+                               ->GetNextManualTranslationType());
   }
 }
 
