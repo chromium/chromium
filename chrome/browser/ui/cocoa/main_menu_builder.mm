@@ -425,6 +425,8 @@ base::scoped_nsobject<NSMenuItem> BuildTabMenu(
       Item(IDS_TAB_MENU_MAC)
           .tag(IDC_TAB_MENU)
           .submenu({
+              Item(IDS_TAB_CXMENU_NEWTABTORIGHT)
+                  .command_id(IDC_NEW_TAB_TO_RIGHT),
               Item(IDS_NEXT_TAB_MAC).command_id(IDC_SELECT_NEXT_TAB),
               Item(IDS_PREV_TAB_MAC).command_id(IDC_SELECT_PREVIOUS_TAB),
               Item(IDS_DUPLICATE_TAB_MAC).command_id(IDC_DUPLICATE_TAB),

@@ -420,6 +420,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       NewTab(browser_);
       break;
     }
+    case IDC_NEW_TAB_TO_RIGHT: {
+      NewTabToRight(browser_);
+      break;
+    }
     case IDC_CLOSE_TAB:
       base::RecordAction(base::UserMetricsAction("CloseTabByKey"));
       CloseTab(browser_);
@@ -1108,6 +1112,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_SELECT_TAB_6, supports_tabs);
   command_updater_.UpdateCommandEnabled(IDC_SELECT_TAB_7, supports_tabs);
   command_updater_.UpdateCommandEnabled(IDC_SELECT_LAST_TAB, supports_tabs);
+  command_updater_.UpdateCommandEnabled(IDC_NEW_TAB_TO_RIGHT, supports_tabs);
 
   // These are always enabled; the menu determines their menu item visibility.
   command_updater_.UpdateCommandEnabled(IDC_UPGRADE_DIALOG, true);

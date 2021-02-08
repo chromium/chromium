@@ -696,6 +696,12 @@ void NewTab(Browser* browser) {
   }
 }
 
+void NewTabToRight(Browser* browser) {
+  browser->tab_strip_model()->ExecuteContextMenuCommand(
+      browser->tab_strip_model()->active_index(),
+      TabStripModel::CommandNewTabToRight);
+}
+
 void CloseTab(Browser* browser) {
   base::RecordAction(UserMetricsAction("CloseTab_Accelerator"));
   browser->tab_strip_model()->CloseSelectedTabs();
