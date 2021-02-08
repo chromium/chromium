@@ -252,7 +252,7 @@ class TabGridMediatorTest : public PlatformTest {
     ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
     SnapshotBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID(base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
+        ->SetSessionID([[NSUUID UUID] UUIDString]);
 
     // Insert some web states.
     for (int i = 0; i < 3; i++) {
@@ -302,6 +302,8 @@ class TabGridMediatorTest : public PlatformTest {
         [[TestSessionService alloc] init];
     SessionRestorationBrowserAgent::CreateForBrowser(browser_.get(),
                                                      test_session_service);
+    SessionRestorationBrowserAgent::FromBrowser(browser_.get())
+        ->SetSessionID([[NSUUID UUID] UUIDString]);
   }
 
  protected:

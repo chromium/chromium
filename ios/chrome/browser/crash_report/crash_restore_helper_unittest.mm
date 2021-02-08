@@ -116,17 +116,6 @@ class CrashRestoreHelperTest : public PlatformTest {
   CrashRestoreHelper* helper_;
 };
 
-// Tests that moving session work correctly when multiple windows are not
-// supported.
-TEST_F(CrashRestoreHelperTest, MoveAsideSingleSession) {
-  ASSERT_TRUE(CreateSession(nil));
-  [CrashRestoreHelper moveAsideSessions:[NSSet setWithArray:@[ @"" ]]
-                        forBrowserState:chrome_browser_state_.get()];
-  EXPECT_TRUE(IsSessionErased(nil));
-  EXPECT_EQ(YES,
-            CheckAndDeleteSessionBackedUp(nil, chrome_browser_state_.get()));
-}
-
 // Tests that moving session work correctly when multiple windows are supported.
 TEST_F(CrashRestoreHelperTest, MoveAsideMultipleSessions) {
   NSSet<NSString*>* session_ids =
