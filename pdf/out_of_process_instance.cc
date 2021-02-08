@@ -206,14 +206,6 @@ constexpr char kJSEmailCc[] = "cc";
 constexpr char kJSEmailBcc[] = "bcc";
 constexpr char kJSEmailSubject[] = "subject";
 constexpr char kJSEmailBody[] = "body";
-// Get the named destination with the given name (Page -> Plugin)
-constexpr char kJSGetNamedDestinationType[] = "getNamedDestination";
-constexpr char kJSGetNamedDestination[] = "namedDestination";
-// Reply with the page number of the named destination (Plugin -> Page)
-constexpr char kJSGetNamedDestinationReplyType[] = "getNamedDestinationReply";
-constexpr char kJSNamedDestinationPageNumber[] = "pageNumber";
-constexpr char kJSNamedDestinationView[] = "namedDestinationView";
-
 // Selecting text in document (Plugin -> Page)
 constexpr char kJSSetIsSelectingType[] = "setIsSelecting";
 constexpr char kJSIsSelecting[] = "isSelecting";
@@ -702,8 +694,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     HandleLoadPreviewPageMessage(dict);
   } else if (type == kJSStopScrollingType) {
     stop_scrolling_ = true;
-  } else if (type == kJSGetNamedDestinationType) {
-    HandleGetNamedDestinationMessage(dict);
   } else if (type == kJSGetThumbnailType) {
     HandleGetThumbnailMessage(dict);
   } else {
@@ -1548,38 +1538,6 @@ std::string OutOfProcessInstance::GetFileNameFromUrl(const std::string& url) {
       /*referrer_charset=*/std::string(), /*suggested_name=*/std::string(),
       /*mime_type=*/std::string(), /*default_name=*/std::string());
   return base::UTF16ToUTF8(file_name);
-}
-
-void OutOfProcessInstance::HandleGetNamedDestinationMessage(
-    const pp::VarDictionary& dict) {
-  if (!dict.Get(pp::Var(kJSGetNamedDestination)).is_string() ||
-      !dict.Get(pp::Var(kJSMessageId)).is_string()) {
-    NOTREACHED();
-    return;
-  }
-  base::Optional<PDFEngine::NamedDestination> named_destination =
-      engine()->GetNamedDestination(
-          dict.Get(pp::Var(kJSGetNamedDestination)).AsString());
-  pp::VarDictionary reply;
-  reply.Set(pp::Var(kType), pp::Var(kJSGetNamedDestinationReplyType));
-  reply.Set(pp::Var(kJSNamedDestinationPageNumber),
-            named_destination ? static_cast<int>(named_destination->page) : -1);
-  reply.Set(pp::Var(kJSMessageId), dict.Get(pp::Var(kJSMessageId)).AsString());
-
-  // Handle named destination view.
-  if (named_destination && !named_destination->view.empty()) {
-    std::ostringstream view_stream;
-    view_stream << named_destination->view;
-
-    if (named_destination->xyz_params.empty()) {
-      for (unsigned long i = 0; i < named_destination->num_params; ++i)
-        view_stream << "," << named_destination->params[i];
-    } else {
-      view_stream << "," << named_destination->xyz_params;
-    }
-    reply.Set(pp::Var(kJSNamedDestinationView), view_stream.str());
-  }
-  PostMessage(reply);
 }
 
 void OutOfProcessInstance::HandleGetPasswordCompleteMessage(

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -84,6 +85,8 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
           {"displayAnnotations",
            &PdfViewPluginBase::HandleDisplayAnnotationsMessage},
+          {"getNamedDestination",
+           &PdfViewPluginBase::HandleGetNamedDestinationMessage},
           {"getSelectedText", &PdfViewPluginBase::HandleGetSelectedTextMessage},
           {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
           {"rotateCounterclockwise",
@@ -230,6 +233,38 @@ void PdfViewPluginBase::SetZoom(double scale) {
 void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
     const base::Value& message) {
   engine()->DisplayAnnotations(message.FindBoolKey("display").value());
+}
+
+void PdfViewPluginBase::HandleGetNamedDestinationMessage(
+    const base::Value& message) {
+  const std::string* destination_name =
+      message.FindStringKey("namedDestination");
+  CHECK(destination_name);
+
+  base::Optional<PDFEngine::NamedDestination> named_destination =
+      engine()->GetNamedDestination(*destination_name);
+
+  const int page_number = named_destination.has_value()
+                              ? base::checked_cast<int>(named_destination->page)
+                              : -1;
+
+  base::Value reply = PrepareReplyMessage("getNamedDestinationReply", message);
+  reply.SetIntKey("pageNumber", page_number);
+
+  if (named_destination.has_value() && !named_destination->view.empty()) {
+    std::ostringstream view_stream;
+    view_stream << named_destination->view;
+    if (named_destination->xyz_params.empty()) {
+      for (unsigned long i = 0; i < named_destination->num_params; ++i)
+        view_stream << "," << named_destination->params[i];
+    } else {
+      view_stream << "," << named_destination->xyz_params;
+    }
+
+    reply.SetStringKey("namedDestinationView", view_stream.str());
+  }
+
+  SendMessage(std::move(reply));
 }
 
 void PdfViewPluginBase::HandleGetSelectedTextMessage(

@@ -189,7 +189,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
  private:
   // Message handlers.
-  void HandleGetNamedDestinationMessage(const pp::VarDictionary& dict);
   void HandleGetPasswordCompleteMessage(const pp::VarDictionary& dict);
   void HandleGetThumbnailMessage(const pp::VarDictionary& dict);
   void HandleLoadPreviewPageMessage(const pp::VarDictionary& dict);
