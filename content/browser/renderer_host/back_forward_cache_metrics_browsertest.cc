@@ -680,7 +680,12 @@ class RecordBackForwardCacheMetricsWithoutEnabling
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kRecordBackForwardCacheMetricsWithoutEnabling,
           {{"allowed_websites", allowed_websites}}}},
-        {features::kBackForwardCache});
+        // Disable BackForwardCacheMemoryControl to only allow URLs passed via
+        // params for all devices irrespective of their memory. As when
+        // DeviceHasEnoughMemoryForBackForwardCache() is false, we allow all
+        // URLs as default.
+        {features::kBackForwardCache,
+         features::kBackForwardCacheMemoryControl});
   }
 
   ~RecordBackForwardCacheMetricsWithoutEnabling() override = default;
