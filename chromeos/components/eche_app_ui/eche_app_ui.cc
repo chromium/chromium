@@ -29,6 +29,10 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   html_source->AddResourcePath("assets/app_bundle.css",
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
 
+  // DisableTrustedTypesCSP to support TrustedTypePolicy named 'goog#html'.
+  // It is the Closure templating system that renders our UI, as it does many
+  // other web apps using it.
+  html_source->DisableTrustedTypesCSP();
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 }
