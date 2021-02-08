@@ -145,9 +145,9 @@ message EntitySpecifics {
     ExperimentsSpecifics experiments = 161496 [deprecated = true];
     PriorityPreferenceSpecifics priority_preference = 163425;
     DictionarySpecifics dictionary = 170540;
-    FaviconTrackingSpecifics deprecated_favicon_tracking = 181534
+    FaviconTrackingSpecifics favicon_tracking = 181534
         [deprecated = true];
-    FaviconImageSpecifics deprecated_favicon_image = 182019 [deprecated = true];
+    FaviconImageSpecifics favicon_image = 182019 [deprecated = true];
     ManagedUserSettingSpecifics managed_user_setting = 186662;
     // TODO(tschumann): Remove once server-side dependencies are resolved.
     ManagedUserSpecifics managed_user = 194582 [deprecated = true];

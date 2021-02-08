@@ -442,8 +442,8 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(experiments);
   VISIT(extension);
   VISIT(extension_setting);
-  VISIT(deprecated_favicon_image);
-  VISIT(deprecated_favicon_tracking);
+  VISIT(favicon_image);
+  VISIT(favicon_tracking);
   VISIT(history_delete_directive);
   VISIT(managed_user_setting);
   VISIT(managed_user_whitelist);
