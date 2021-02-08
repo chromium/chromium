@@ -976,9 +976,9 @@ MetricsWebContentsObserver::TestingObserver::GetDelegateForCommittedLoad() {
 }
 
 void MetricsWebContentsObserver::BroadcastEventToObservers(
-    const void* const event_key) {
+    PageLoadMetricsEvent event) {
   if (committed_load_)
-    committed_load_->BroadcastEventToObservers(event_key);
+    committed_load_->BroadcastEventToObservers(event);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsWebContentsObserver)

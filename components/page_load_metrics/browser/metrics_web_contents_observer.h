@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -169,11 +170,10 @@ class MetricsWebContentsObserver
       mojom::InputTimingPtr input_timing_delta,
       const blink::MobileFriendliness& mobile_friendliness);
 
-  // Informs the observers of the currently committed load that the event
-  // corresponding to |event_key| has occurred. This should not be called within
+  // Informs the observers of the currently committed load that |event| has
+  // occurred. This should not be called within
   // WebContentsObserver::DidFinishNavigation methods.
-  // This method is subject to change and may be removed in the future.
-  void BroadcastEventToObservers(const void* const event_key);
+  void BroadcastEventToObservers(PageLoadMetricsEvent event);
 
  private:
   friend class content::WebContentsUserData<MetricsWebContentsObserver>;

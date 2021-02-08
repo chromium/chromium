@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
@@ -83,7 +84,7 @@ class PrefetchProxyPageLoadMetricsObserver
       content::RenderFrameHost* rfh,
       const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
           resources) override;
-  void OnEventOccurred(const void* const event_key) override;
+  void OnEventOccurred(page_load_metrics::PageLoadMetricsEvent event) override;
 
   // Whether data saver was enabled for this page load when it committed.
   bool data_saver_enabled_at_commit_ = false;

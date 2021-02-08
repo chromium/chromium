@@ -10870,6 +10870,12 @@ be describing additional metrics about the same event.
       navigation for this page load was initiated.
     </summary>
   </metric>
+  <metric name="OmniboxUrlCopied" enum="Boolean">
+    <summary>
+      Marked true if the user copied the page's URL from the omnibox at any time
+      for this page load.
+    </summary>
+  </metric>
   <metric name="PageTiming.ForegroundDuration">
     <summary>
       For page loads that start in the foreground, measures the duration of time

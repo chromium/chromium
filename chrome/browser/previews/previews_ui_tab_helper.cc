@@ -23,6 +23,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/previews/content/previews_decider_impl.h"
 #include "components/previews/content/previews_ui_service.h"
 #include "components/previews/core/previews_experiments.h"
@@ -40,8 +41,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-const void* const kOptOutEventKey = 0;
 
 // Adds the preview navigation to the black list.
 void AddPreviewNavigationCallback(content::BrowserContext* browser_context,
@@ -65,7 +64,7 @@ void InformPLMOfOptOut(content::WebContents* web_contents) {
     return;
 
   metrics_web_contents_observer->BroadcastEventToObservers(
-      PreviewsUITabHelper::OptOutEventKey());
+      page_load_metrics::PageLoadMetricsEvent::PREVIEWS_OPT_OUT);
 }
 
 }  // namespace
@@ -286,11 +285,6 @@ previews::PreviewsUserData* PreviewsUITabHelper::GetPreviewsUserData() const {
       previews::PreviewsUserData::DocumentDataHolder::GetForCurrentDocument(
           web_contents()->GetMainFrame());
   return holder ? holder->GetPreviewsUserData() : nullptr;
-}
-
-// static
-const void* PreviewsUITabHelper::OptOutEventKey() {
-  return &kOptOutEventKey;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PreviewsUITabHelper)

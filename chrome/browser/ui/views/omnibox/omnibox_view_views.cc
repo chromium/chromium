@@ -48,6 +48,8 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
@@ -2359,8 +2361,23 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
   bool write_url = false;
   model()->AdjustTextForCopy(GetSelectedRange().GetMin(), &selected_text, &url,
                              &write_url);
-  if (IsSelectAll())
+  if (IsSelectAll()) {
     UMA_HISTOGRAM_COUNTS_1M(OmniboxEditModel::kCutOrCopyAllTextHistogram, 1);
+
+    if (location_bar_view_) {
+      auto* web_contents = location_bar_view_->GetWebContents();
+      if (web_contents) {
+        auto* metrics =
+            page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+                web_contents);
+        if (metrics) {
+          metrics->BroadcastEventToObservers(
+              page_load_metrics::PageLoadMetricsEvent::
+                  OMNIBOX_URL_COPIED_TO_CLIPBOARD);
+        }
+      }
+    }
+  }
 
   ui::ScopedClipboardWriter scoped_clipboard_writer(clipboard_buffer);
   scoped_clipboard_writer.WriteText(selected_text);

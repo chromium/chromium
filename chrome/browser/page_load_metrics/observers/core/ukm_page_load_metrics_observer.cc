@@ -29,6 +29,7 @@
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/protocol_util.h"
@@ -797,6 +798,7 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     builder.SetNavigationEntryOffset(navigation_entry_offset_);
     builder.SetMainDocumentSequenceNumber(main_document_sequence_number_);
   }
+  builder.SetOmniboxUrlCopied(omnibox_url_copied_);
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -1215,6 +1217,14 @@ void UkmPageLoadMetricsObserver::OnCpuTimingUpdate(
   if (GetDelegate().GetVisibilityTracker().currently_in_foreground() &&
       !was_hidden_)
     total_foreground_cpu_time_ += timing.task_time;
+}
+
+void UkmPageLoadMetricsObserver::OnEventOccurred(
+    page_load_metrics::PageLoadMetricsEvent event) {
+  if (event == page_load_metrics::PageLoadMetricsEvent::
+                   OMNIBOX_URL_COPIED_TO_CLIPBOARD) {
+    omnibox_url_copied_ = true;
+  }
 }
 
 void UkmPageLoadMetricsObserver::DidActivatePortal(

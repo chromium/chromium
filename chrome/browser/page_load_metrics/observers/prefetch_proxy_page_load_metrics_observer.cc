@@ -147,8 +147,8 @@ void PrefetchProxyPageLoadMetricsObserver::OnDidInternalNavigationAbort(
 }
 
 void PrefetchProxyPageLoadMetricsObserver::OnEventOccurred(
-    const void* const event_key) {
-  if (event_key == PrefetchProxyTabHelper::PrefetchingLikelyEventKey()) {
+    page_load_metrics::PageLoadMetricsEvent event) {
+  if (event == page_load_metrics::PageLoadMetricsEvent::PREFETCH_LIKELY) {
     GetPrefetchMetrics();
   }
 }

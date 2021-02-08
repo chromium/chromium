@@ -776,9 +776,9 @@ void PageLoadTracker::OnSubframeMetadataChanged(
   }
 }
 
-void PageLoadTracker::BroadcastEventToObservers(const void* const event_key) {
+void PageLoadTracker::BroadcastEventToObservers(PageLoadMetricsEvent event) {
   for (const auto& observer : observers_) {
-    observer->OnEventOccurred(event_key);
+    observer->OnEventOccurred(event);
   }
 }
 

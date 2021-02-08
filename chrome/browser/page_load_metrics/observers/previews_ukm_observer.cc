@@ -166,9 +166,10 @@ void PreviewsUKMObserver::RecordPreviewsTypes() {
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void PreviewsUKMObserver::OnEventOccurred(const void* const event_key) {
+void PreviewsUKMObserver::OnEventOccurred(
+    page_load_metrics::PageLoadMetricsEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (event_key == PreviewsUITabHelper::OptOutEventKey())
+  if (event == page_load_metrics::PageLoadMetricsEvent::PREVIEWS_OPT_OUT)
     opt_out_occurred_ = true;
 }
 

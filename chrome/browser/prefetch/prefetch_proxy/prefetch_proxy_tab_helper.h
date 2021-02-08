@@ -57,9 +57,6 @@ class PrefetchProxyTabHelper
  public:
   ~PrefetchProxyTabHelper() override;
 
-  // A key to identify prefetching likely events to PLM.
-  static const void* PrefetchingLikelyEventKey();
-
   class Observer {
    public:
     // Called when a prefetch for |url| is completed successfully.

@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "net/http/http_response_info.h"
@@ -105,6 +106,8 @@ class UkmPageLoadMetricsObserver
 
   void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
                                  int behavior_flags) override;
+
+  void OnEventOccurred(page_load_metrics::PageLoadMetricsEvent event) override;
 
   void DidActivatePortal(base::TimeTicks activation_time) override;
 
@@ -283,6 +286,10 @@ class UkmPageLoadMetricsObserver
   base::Optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
+
+  // True if the user has cut or copied the omnibox URL to the clipboard for
+  // this page load.
+  bool omnibox_url_copied_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };

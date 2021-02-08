@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/previews/core/previews_experiments.h"
@@ -219,7 +220,7 @@ TEST_F(PreviewsUKMObserverTest, UntrackedPreviewTypeOptOut) {
           false /* origin_opt_out */, false /* save_data_enabled */,
           {} /* eligibility_reasons */);
   tester()->metrics_web_contents_observer()->BroadcastEventToObservers(
-      PreviewsUITabHelper::OptOutEventKey());
+      page_load_metrics::PageLoadMetricsEvent::PREVIEWS_OPT_OUT);
   tester()->NavigateToUntrackedUrl();
 
   // Opt out should not be added since we don't track this type.
@@ -253,7 +254,7 @@ TEST_F(PreviewsUKMObserverTest, DeferAllScriptOptOutChip) {
           {} /* eligibility_reasons */);
 
   tester()->metrics_web_contents_observer()->BroadcastEventToObservers(
-      PreviewsUITabHelper::OptOutEventKey());
+      page_load_metrics::PageLoadMetricsEvent::PREVIEWS_OPT_OUT);
   tester()->NavigateToUntrackedUrl();
 
   ValidatePreviewsUKM(blink::PreviewsTypes::DEFER_ALL_SCRIPT_ON,

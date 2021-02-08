@@ -30,6 +30,7 @@ source_set("browser") {
     "page_load_metrics_embedder_base.cc",
     "page_load_metrics_embedder_base.h",
     "page_load_metrics_embedder_interface.h",
+    "page_load_metrics_event.h",
     "page_load_metrics_observer.cc",
     "page_load_metrics_observer.h",
     "page_load_metrics_observer_delegate.cc",

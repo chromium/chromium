@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/navigation_handle.h"
@@ -536,9 +537,8 @@ class PageLoadMetricsObserver {
                                  bool blocked_by_policy,
                                  StorageType access_type) {}
 
-  // Called when the event corresponding to |event_key| occurs in this page
-  // load.
-  virtual void OnEventOccurred(const void* const event_key) {}
+  // Called when |event| occurs in this page load.
+  virtual void OnEventOccurred(PageLoadMetricsEvent event) {}
 
   // Called when the page tracked was just activated after being loaded inside a
   // portal.

@@ -35,6 +35,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/version_info/version_info.h"
@@ -67,8 +68,6 @@
 #include "url/origin.h"
 
 namespace {
-
-const void* const kPrefetchingLikelyEventKey = 0;
 
 base::Optional<base::TimeDelta> GetTotalPrefetchTime(
     network::mojom::URLResponseHead* head) {
@@ -104,7 +103,7 @@ void InformPLMOfLikelyPrefetching(content::WebContents* web_contents) {
     return;
 
   metrics_web_contents_observer->BroadcastEventToObservers(
-      PrefetchProxyTabHelper::PrefetchingLikelyEventKey());
+      page_load_metrics::PageLoadMetricsEvent::PREFETCH_LIKELY);
 }
 
 void OnGotCookieList(
@@ -209,11 +208,6 @@ PrefetchProxyTabHelper::CurrentPageLoad::~CurrentPageLoad() {
   for (const GURL& url : urls_to_no_state_prefetch_) {
     service->DestroySubresourceManagerForURL(url);
   }
-}
-
-// static
-const void* PrefetchProxyTabHelper::PrefetchingLikelyEventKey() {
-  return &kPrefetchingLikelyEventKey;
 }
 
 static content::ServiceWorkerContext* g_service_worker_context_for_test =

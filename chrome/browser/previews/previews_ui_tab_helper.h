@@ -72,9 +72,6 @@ class PreviewsUITabHelper
   // finished.
   previews::PreviewsUserData* GetPreviewsUserData() const;
 
-  // A key to identify opt out events.
-  static const void* OptOutEventKey();
-
   // Create a PreviewsUserData and associate |navigation_handle| with the
   // PreviewsUserData, so it can be deleted later. |page_id| is the Previews
   // identifier for the load.
