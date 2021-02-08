@@ -25,6 +25,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "net/http/http_status_code.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace {
 
@@ -140,6 +141,8 @@ bool NetworkState::PropertyChanged(const std::string& key,
     return GetStringValue(key, value, &bssid_);
   } else if (key == shill::kPriorityProperty) {
     return GetIntegerValue(key, value, &priority_);
+  } else if (key == shill::kWifiHiddenSsid) {
+    return GetBooleanValue(key, value, &hidden_ssid_);
   } else if (key == shill::kOutOfCreditsProperty) {
     return GetBooleanValue(key, value, &cellular_out_of_credits_);
   } else if (key == kCellularEidProperty) {

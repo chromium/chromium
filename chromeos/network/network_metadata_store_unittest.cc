@@ -182,12 +182,23 @@ class NetworkMetadataStoreTest : public ::testing::Test {
 
 namespace {
 const char* kGuid = "wifi0";
+const char* kGuid1 = "wifi1";
 const char* kConfigWifi0Connectable =
     "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
     "  \"Connectable\": true }";
+const char* kConfigWifi0HiddenUser =
+    "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
+    "  \"Connectable\": true, \"Profile\": \"user_profile_path\", "
+    "\"WiFi.HiddenSSID\": true }";
+const char* kConfigWifi1HiddenUser =
+    "{ \"GUID\": \"wifi1\", \"Type\": \"wifi\", \"State\": \"idle\", "
+    "  \"Connectable\": true, \"Profile\": \"user_profile_path\", "
+    "\"WiFi.HiddenSSID\": true }";
 const char* kConfigWifi1Shared =
     "{ \"GUID\": \"wifi0\", \"Type\": \"wifi\", \"State\": \"idle\", "
     "  \"Connectable\": true, \"Profile\": \"/profile/default\" }";
+const char kHasFixedHiddenNetworks[] =
+    "metadata_store.has_fixed_hidden_networks";
 }  // namespace
 
 TEST_F(NetworkMetadataStoreTest, FirstConnect) {
@@ -395,6 +406,32 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotFirstLogin) {
   UserManager()->set_is_current_user_owner(true);
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
+}
+
+TEST_F(NetworkMetadataStoreTest, FixSyncedHiddenNetworks) {
+  std::string service_path = ConfigureService(kConfigWifi0HiddenUser);
+  metadata_store()->OnConfigurationCreated(service_path, kGuid);
+  base::RunLoop().RunUntilIdle();
+  std::string service_path1 = ConfigureService(kConfigWifi1HiddenUser);
+  metadata_store()->OnConfigurationCreated(service_path1, kGuid1);
+  base::RunLoop().RunUntilIdle();
+
+  metadata_store()->SetIsConfiguredBySync(kGuid);
+  user_prefs()->SetBoolean(kHasFixedHiddenNetworks, false);
+
+  ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
+  ASSERT_TRUE(metadata_store()->GetIsConfiguredBySync(kGuid));
+  ASSERT_TRUE(
+      network_state_handler()->GetNetworkStateFromGuid(kGuid)->hidden_ssid());
+  ASSERT_TRUE(
+      network_state_handler()->GetNetworkStateFromGuid(kGuid1)->hidden_ssid());
+
+  metadata_store()->NetworkListChanged();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(
+      network_state_handler()->GetNetworkStateFromGuid(kGuid)->hidden_ssid());
+  ASSERT_TRUE(
+      network_state_handler()->GetNetworkStateFromGuid(kGuid1)->hidden_ssid());
 }
 
 }  // namespace chromeos

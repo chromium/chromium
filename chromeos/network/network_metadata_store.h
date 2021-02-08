@@ -14,6 +14,7 @@
 #include "chromeos/network/network_configuration_observer.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_metadata_observer.h"
+#include "chromeos/network/network_state_handler_observer.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -34,6 +35,7 @@ class NetworkStateHandler;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
     : public NetworkConnectionObserver,
       public NetworkConfigurationObserver,
+      public NetworkStateHandlerObserver,
       public LoginState::Observer {
  public:
   NetworkMetadataStore(
@@ -67,6 +69,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
                                base::DictionaryValue* set_properties) override;
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;
+
+  // NetworkStateHandlerObserver::
+  void NetworkListChanged() override;
 
   // Records that the network was added by sync.
   void SetIsConfiguredBySync(const std::string& network_guid);
@@ -123,9 +128,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
                              const std::string& key);
   void UpdateExternalModifications(const std::string& network_guid,
                                    const std::string& field);
+  void FixSyncedHiddenNetworks();
+  bool HasFixedHiddenNetworks();
 
   // Sets the owner metadata when there is an active user, otherwise a no-op.
   void SetIsCreatedByUser(const std::string& network_guid);
+  void OnDisableHiddenError(const std::string& error_name,
+                            std::unique_ptr<base::DictionaryValue> error_data);
 
   base::ObserverList<NetworkMetadataObserver> observers_;
   NetworkConfigurationHandler* network_configuration_handler_;

@@ -61,7 +61,6 @@ const char kSsidWoof[] = "woof";
 const char kSsidHonk[] = "honk";
 const char kSyncPsk[] = "sync_psk";
 const char kLocalPsk[] = "local_psk";
-const char kIsFirstRun[] = "sync_wifi.is_first_run";
 
 syncer::EntityData GenerateWifiEntityData(
     const sync_pb::WifiConfigurationSpecifics& data) {
@@ -153,26 +152,17 @@ class WifiConfigurationBridgeTest : public testing::Test {
     metrics_logger_ = std::make_unique<SyncedNetworkMetricsLogger>(
         /*network_state_handler=*/nullptr,
         /*network_connection_handler=*/nullptr);
-    user_prefs_ =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    device_prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    NetworkMetadataStore::RegisterPrefs(user_prefs_->registry());
-    NetworkMetadataStore::RegisterPrefs(device_prefs_->registry());
 
-    user_prefs_->registry()->RegisterBooleanPref(kIsFirstRun, true);
+    WifiConfigurationBridge::RegisterPrefs(
+        network_test_helper_->user_prefs()->registry());
 
-    network_metadata_store_ = std::make_unique<NetworkMetadataStore>(
-        /*network_configuration_handler=*/nullptr,
-        /*network_connection_handler=*/nullptr,
-        network_test_helper_->network_state_helper().network_state_handler(),
-        user_prefs_.get(), device_prefs_.get(),
-        /*is_enterprise_enrolled=*/false);
+    network_metadata_store_ = NetworkHandler::Get()->network_metadata_store();
 
     base::HistogramTester histogram_tester;
     bridge_ = std::make_unique<WifiConfigurationBridge>(
         synced_network_updater(), local_network_collector(),
         /*network_configuration_handler=*/nullptr, metrics_logger_.get(),
-        timer_factory_.get(), user_prefs_.get(),
+        timer_factory_.get(), network_test_helper_->user_prefs(),
         mock_processor_.CreateForwardingProcessor(),
         syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)));
     bridge_->SetNetworkMetadataStore(network_metadata_store_->GetWeakPtr());
@@ -231,7 +221,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
 
   FakeTimerFactory* timer_factory() { return timer_factory_.get(); }
   NetworkMetadataStore* network_metadata_store() {
-    return network_metadata_store_.get();
+    return network_metadata_store_;
   }
   NetworkTestHelper* network_test_helper() {
     return network_test_helper_.get();
@@ -250,10 +240,9 @@ class WifiConfigurationBridgeTest : public testing::Test {
   std::unique_ptr<FakeLocalNetworkCollector> local_network_collector_;
   std::unique_ptr<FakeTimerFactory> timer_factory_;
   std::unique_ptr<TestingPrefServiceSimple> device_prefs_;
-  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> user_prefs_;
-  std::unique_ptr<NetworkMetadataStore> network_metadata_store_;
   std::unique_ptr<SyncedNetworkMetricsLogger> metrics_logger_;
   std::unique_ptr<NetworkTestHelper> network_test_helper_;
+  NetworkMetadataStore* network_metadata_store_;
 
   const NetworkIdentifier woof_network_id_ = GeneratePskNetworkId(kSsidWoof);
   const NetworkIdentifier meow_network_id_ = GeneratePskNetworkId(kSsidMeow);

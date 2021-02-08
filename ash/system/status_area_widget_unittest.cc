@@ -32,6 +32,7 @@
 #include "base/command_line.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_metadata_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/events/event.h"
@@ -224,6 +225,7 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
     // Initializing NetworkHandler before ash is more like production.
     chromeos::NetworkHandler::Initialize();
     AshTestBase::SetUp();
+    chromeos::NetworkMetadataStore::RegisterPrefs(profile_prefs_.registry());
     chromeos::NetworkHandler::Get()->InitializePrefServices(&profile_prefs_,
                                                             &local_state_);
     // Networking stubs may have asynchronous initialization.
