@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/sync/protocol/gaia_password_reuse.pb.h"
+#include "components/safe_browsing/core/features.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -20,6 +22,7 @@
 #include "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -373,6 +376,103 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDialogInteraction(
   dialog_interaction->set_interaction_result(interaction_result);
 
   user_event_service->RecordUserEvent(std::move(specifics));
+}
+
+base::string16 ChromePasswordProtectionService::GetWarningDetailText(
+    ReusedPasswordAccountType password_type,
+    std::vector<size_t>* placeholder_offsets) const {
+  DCHECK(password_type.account_type() ==
+         ReusedPasswordAccountType::SAVED_PASSWORD);
+  DCHECK(base::FeatureList::IsEnabled(
+      safe_browsing::kPasswordProtectionForSavedPasswords));
+  return GetWarningDetailTextForSavedPasswords(placeholder_offsets);
+}
+base::string16
+ChromePasswordProtectionService::GetWarningDetailTextForSavedPasswords(
+    std::vector<size_t>* placeholder_offsets) const {
+  std::vector<base::string16> placeholders =
+      GetPlaceholdersForSavedPasswordWarningText();
+  // The default text is a complete sentence without placeholders.
+  return placeholders.empty()
+             ? l10n_util::GetStringUTF16(
+                   IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED)
+             : GetWarningDetailTextToCheckSavedPasswords(placeholder_offsets);
+}
+
+base::string16
+ChromePasswordProtectionService::GetWarningDetailTextToCheckSavedPasswords(
+    std::vector<size_t>* placeholder_offsets) const {
+  std::vector<base::string16> placeholders =
+      GetPlaceholdersForSavedPasswordWarningText();
+  if (placeholders.size() == 1) {
+    return l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_1_DOMAIN, placeholders,
+        placeholder_offsets);
+  } else if (placeholders.size() == 2) {
+    return l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_2_DOMAIN, placeholders,
+        placeholder_offsets);
+  } else {
+    return l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN, placeholders,
+        placeholder_offsets);
+  }
+}
+
+std::vector<base::string16>
+ChromePasswordProtectionService::GetPlaceholdersForSavedPasswordWarningText()
+    const {
+  const std::vector<std::string>& matching_domains =
+      saved_passwords_matching_domains();
+  const std::list<std::string>& spoofed_domains = common_spoofed_domains();
+
+  // Show most commonly spoofed domains first.
+  // This looks through the top priority spoofed domains and then checks to see
+  // if it's in the matching domains.
+  std::vector<base::string16> placeholders;
+  for (auto priority_domain_iter = spoofed_domains.begin();
+       priority_domain_iter != spoofed_domains.end(); ++priority_domain_iter) {
+    std::string matching_domain;
+
+    // Check if any of the matching domains is equal or a suffix to the current
+    // priority domain.
+    if (std::find_if(matching_domains.begin(), matching_domains.end(),
+                     [priority_domain_iter,
+                      &matching_domain](const std::string& domain) {
+                       // Assigns the matching_domain to add into the priority
+                       // placeholders. This value is only used if the return
+                       // value of this function is true.
+                       matching_domain = domain;
+                       const base::StringPiece domainStringPiece(domain);
+                       // Checks for two cases:
+                       // 1. if the matching domain is equal to the current
+                       // priority domain or
+                       // 2. if "," + the current priority is a suffix of the
+                       // matching domain The second case covers eTLD+1.
+                       return (domain == *priority_domain_iter) ||
+                              base::EndsWith(domainStringPiece,
+                                             "." + *priority_domain_iter);
+                     }) != matching_domains.end()) {
+      placeholders.push_back(base::UTF8ToUTF16(matching_domain));
+    }
+  }
+
+  // If there are less than 3 saved default domains, check the saved
+  //  password domains to see if there are more that can be added to the
+  //  warning text.
+  int domains_idx = placeholders.size();
+  for (size_t idx = 0; idx < matching_domains.size() && domains_idx < 3;
+       idx++) {
+    // Do not add duplicate domains if it was already in the default domains.
+    if (std::find(placeholders.begin(), placeholders.end(),
+                  base::UTF8ToUTF16(matching_domains[idx])) !=
+        placeholders.end()) {
+      continue;
+    }
+    placeholders.push_back(base::UTF8ToUTF16(matching_domains[idx]));
+    domains_idx++;
+  }
+  return placeholders;
 }
 
 password_manager::PasswordStore*

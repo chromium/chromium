@@ -7,7 +7,9 @@
 
 #include <vector>
 
+#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/safe_browsing/core/proto/csd.pb.h"
 #import "components/safe_browsing/ios/password_protection/password_protection_service.h"
 #include "components/sync/protocol/gaia_password_reuse.pb.h"
 
@@ -134,6 +136,32 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
       int64_t navigation_id,
       sync_pb::GaiaPasswordReuse::PasswordReuseDialogInteraction::
           InteractionResult interaction_result);
+
+  // Gets the detailed warning text that should show in the modal warning
+  // dialog. |placeholder_offsets| are the start points/indices of the
+  // placeholders that are passed into the resource string. It is only set for
+  // saved passwords.
+  base::string16 GetWarningDetailText(
+      ReusedPasswordAccountType password_type,
+      std::vector<size_t>* placeholder_offsets) const;
+
+  // Gets the warning text for saved password reuse warnings.
+  // |placeholder_offsets| are the start points/indices of the placeholders that
+  // are passed into the resource string.
+  base::string16 GetWarningDetailTextForSavedPasswords(
+      std::vector<size_t>* placeholder_offsets) const;
+
+  // Gets the warning text of the saved password reuse warnings that tells the
+  // user to check their saved passwords. |placeholder_offsets| are the start
+  // points/indices of the placeholders that are passed into the resource
+  // string.
+  base::string16 GetWarningDetailTextToCheckSavedPasswords(
+      std::vector<size_t>* placeholder_offsets) const;
+
+  // Get placeholders for the warning detail text for saved password reuse
+  // warnings.
+  std::vector<base::string16> GetPlaceholdersForSavedPasswordWarningText()
+      const;
 
  private:
   password_manager::PasswordStore* GetStoreForReusedCredential(
