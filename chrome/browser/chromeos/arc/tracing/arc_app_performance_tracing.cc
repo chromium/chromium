@@ -109,7 +109,14 @@ ArcAppPerformanceTracing::ArcAppPerformanceTracing(
 }
 
 // Releasing resources in DTOR is not safe, see |Shutdown|.
-ArcAppPerformanceTracing::~ArcAppPerformanceTracing() = default;
+ArcAppPerformanceTracing::~ArcAppPerformanceTracing() {
+  if (arc_active_window_) {
+    exo::Surface* const surface = exo::GetShellMainSurface(arc_active_window_);
+    // Surface might be destroyed.
+    if (surface)
+      surface->RemoveSurfaceObserver(this);
+  }
+}
 
 // static
 ArcAppPerformanceTracing* ArcAppPerformanceTracing::GetForBrowserContext(
@@ -249,7 +256,10 @@ void ArcAppPerformanceTracing::OnCommit(exo::Surface* surface) {
   surface->RemoveSurfaceObserver(this);
 }
 
-void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {}
+void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {
+  if (surface)
+    surface->RemoveSurfaceObserver(this);
+}
 
 void ArcAppPerformanceTracing::CancelJankinessTracing() {
   jankiness_timer_.Stop();
