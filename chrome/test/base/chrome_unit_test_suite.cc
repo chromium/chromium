@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/path_service.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -88,6 +89,8 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     content::SetContentClient(nullptr);
 
     TestingBrowserProcess::DeleteInstance();
+    // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
+    base::PowerMonitor::ShutdownForTesting();
   }
 
  private:

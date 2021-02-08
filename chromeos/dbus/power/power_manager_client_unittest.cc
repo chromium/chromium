@@ -687,6 +687,7 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
   }
 
   base::PowerMonitor::RemoveObserver(&observer);
+  base::PowerMonitor::ShutdownForTesting();
 }
 
 }  // namespace chromeos
