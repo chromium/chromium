@@ -304,7 +304,7 @@ FuchsiaCdm::FuchsiaCdm(fuchsia::media::drm::ContentDecryptionModulePtr cdm,
                           << " channel was terminated.";
 
     // Reject all the pending promises.
-    promises_.Clear();
+    promises_.Clear(CdmPromiseAdapter::ClearReason::kConnectionError);
 
     // If the channel closed prior to invoking the ready_cb_, we should invoke
     // it here with failure.

@@ -233,7 +233,7 @@ CdmAdapter::~CdmAdapter() {
   DVLOG(1) << __func__;
 
   // Reject any outstanding promises and close all the existing sessions.
-  cdm_promise_adapter_.Clear();
+  cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kDestruction);
 
   if (audio_init_cb_)
     std::move(audio_init_cb_).Run(false);

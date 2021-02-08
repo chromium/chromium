@@ -537,7 +537,8 @@ void ContentDecryptionModuleAdapter::OnConnectionError() {
 
   // We've lost our communication, so reject all outstanding promises and close
   // any open sessions.
-  cdm_promise_adapter_.Clear();
+  cdm_promise_adapter_.Clear(
+      media::CdmPromiseAdapter::ClearReason::kConnectionError);
   cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
 }
 

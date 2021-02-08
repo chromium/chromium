@@ -89,7 +89,7 @@ MojoCdm::~MojoCdm() {
   }
 
   // Reject any outstanding promises and close all the existing sessions.
-  cdm_promise_adapter_.Clear();
+  cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kDestruction);
   cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
 }
 
@@ -109,7 +109,7 @@ void MojoCdm::OnConnectionError(uint32_t custom_reason,
 
   // As communication with the remote CDM is broken, reject any outstanding
   // promises and close all the existing sessions.
-  cdm_promise_adapter_.Clear();
+  cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kConnectionError);
   cdm_session_tracker_.CloseRemainingSessions(session_closed_cb_);
 }
 

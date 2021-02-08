@@ -42,8 +42,13 @@ class MEDIA_EXPORT CdmPromiseAdapter {
                      uint32_t system_code,
                      const std::string& error_message);
 
+  enum class ClearReason {
+    kDestruction,
+    kConnectionError,
+  };
+
   // Rejects and clears all |promises_|.
-  void Clear();
+  void Clear(ClearReason reason);
 
  private:
   // A map between promise IDs and CdmPromises.

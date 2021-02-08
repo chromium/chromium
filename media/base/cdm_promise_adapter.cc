@@ -8,13 +8,26 @@
 
 namespace media {
 
+namespace {
+
+CdmPromise::SystemCode ToSystemCode(CdmPromiseAdapter::ClearReason reason) {
+  switch (reason) {
+    case CdmPromiseAdapter::ClearReason::kDestruction:
+      return CdmPromise::SystemCode::kAborted;
+    case CdmPromiseAdapter::ClearReason::kConnectionError:
+      return CdmPromise::SystemCode::kConnectionError;
+  }
+}
+
+}  // namespace
+
 CdmPromiseAdapter::CdmPromiseAdapter()
     : next_promise_id_(kInvalidPromiseId + 1) {}
 
 CdmPromiseAdapter::~CdmPromiseAdapter() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DLOG_IF(WARNING, !promises_.empty()) << "There are unfulfilled promises";
-  Clear();
+  Clear(ClearReason::kDestruction);
 }
 
 uint32_t CdmPromiseAdapter::SavePromise(std::unique_ptr<CdmPromise> promise) {
@@ -62,13 +75,12 @@ void CdmPromiseAdapter::RejectPromise(uint32_t promise_id,
   promise->reject(exception_code, system_code, error_message);
 }
 
-void CdmPromiseAdapter::Clear() {
+void CdmPromiseAdapter::Clear(ClearReason reason) {
   // Reject all outstanding promises.
   DCHECK(thread_checker_.CalledOnValidThread());
   for (auto& promise : promises_) {
     promise.second->reject(CdmPromise::Exception::INVALID_STATE_ERROR,
-                           CdmPromise::SystemCode::kAborted,
-                           "Operation aborted.");
+                           ToSystemCode(reason), "Operation aborted.");
   }
   promises_.clear();
 }

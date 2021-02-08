@@ -914,7 +914,7 @@ MediaDrmBridge::~MediaDrmBridge() {
   }
 
   // Rejects all pending promises.
-  cdm_promise_adapter_.Clear();
+  cdm_promise_adapter_.Clear(CdmPromiseAdapter::ClearReason::kDestruction);
 }
 
 MediaDrmBridge::SecurityLevel MediaDrmBridge::GetSecurityLevel() {
