@@ -206,12 +206,6 @@ constexpr char kJSEmailCc[] = "cc";
 constexpr char kJSEmailBcc[] = "bcc";
 constexpr char kJSEmailSubject[] = "subject";
 constexpr char kJSEmailBody[] = "body";
-// Get the selected text in the document (Page -> Plugin)
-constexpr char kJSGetSelectedTextType[] = "getSelectedText";
-// Reply with selected text (Plugin -> Page)
-constexpr char kJSGetSelectedTextReplyType[] = "getSelectedTextReply";
-constexpr char kJSSelectedText[] = "selectedText";
-
 // Get the named destination with the given name (Page -> Plugin)
 constexpr char kJSGetNamedDestinationType[] = "getNamedDestination";
 constexpr char kJSGetNamedDestination[] = "namedDestination";
@@ -708,8 +702,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     HandleLoadPreviewPageMessage(dict);
   } else if (type == kJSStopScrollingType) {
     stop_scrolling_ = true;
-  } else if (type == kJSGetSelectedTextType) {
-    HandleGetSelectedTextMessage(dict);
   } else if (type == kJSGetNamedDestinationType) {
     HandleGetNamedDestinationMessage(dict);
   } else if (type == kJSGetThumbnailType) {
@@ -1598,23 +1590,6 @@ void OutOfProcessInstance::HandleGetPasswordCompleteMessage(
   }
 
   std::move(password_callback_).Run(dict.Get(kJSPassword).AsString());
-}
-
-void OutOfProcessInstance::HandleGetSelectedTextMessage(
-    const pp::VarDictionary& dict) {
-  if (!dict.Get(pp::Var(kJSMessageId)).is_string()) {
-    NOTREACHED();
-    return;
-  }
-
-  std::string selected_text = engine()->GetSelectedText();
-  // Always return unix newlines to JS.
-  base::ReplaceChars(selected_text, "\r", std::string(), &selected_text);
-  pp::VarDictionary reply;
-  reply.Set(pp::Var(kType), pp::Var(kJSGetSelectedTextReplyType));
-  reply.Set(pp::Var(kJSSelectedText), selected_text);
-  reply.Set(pp::Var(kJSMessageId), dict.Get(pp::Var(kJSMessageId)).AsString());
-  PostMessage(reply);
 }
 
 void OutOfProcessInstance::HandleGetThumbnailMessage(

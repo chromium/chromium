@@ -165,6 +165,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
  private:
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value& message);
+  void HandleGetSelectedTextMessage(const base::Value& message);
   void HandleRotateClockwiseMessage(const base::Value& /*message*/);
   void HandleRotateCounterclockwiseMessage(const base::Value& /*message*/);
   void HandleSelectAllMessage(const base::Value& /*message*/);

@@ -14,12 +14,15 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_features.h"
@@ -32,6 +35,27 @@
 #include "ui/gfx/skia_util.h"
 
 namespace chrome_pdf {
+
+namespace {
+
+// Prepares messages from the plugin that reply to messages from the embedder.
+// If the "type" value of `message` is "foo", then the `reply_type` must be
+// "fooReply". The `message` from the embedder must have a "messageId" value
+// that will be copied to the reply message.
+base::Value PrepareReplyMessage(base::StringPiece reply_type,
+                                const base::Value& message) {
+  DCHECK_EQ(reply_type, *message.FindStringKey("type") + "Reply");
+
+  const std::string* message_id = message.FindStringKey("messageId");
+  CHECK(message_id);
+
+  base::Value reply(base::Value::Type::DICTIONARY);
+  reply.SetStringKey("type", reply_type);
+  reply.SetStringKey("messageId", *message_id);
+  return reply;
+}
+
+}  // namespace
 
 // static
 constexpr double PdfViewPluginBase::kMinZoom;
@@ -60,6 +84,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
           {"displayAnnotations",
            &PdfViewPluginBase::HandleDisplayAnnotationsMessage},
+          {"getSelectedText", &PdfViewPluginBase::HandleGetSelectedTextMessage},
           {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
           {"rotateCounterclockwise",
            &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
@@ -205,6 +230,17 @@ void PdfViewPluginBase::SetZoom(double scale) {
 void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
     const base::Value& message) {
   engine()->DisplayAnnotations(message.FindBoolKey("display").value());
+}
+
+void PdfViewPluginBase::HandleGetSelectedTextMessage(
+    const base::Value& message) {
+  // Always return unix newlines to JavaScript.
+  std::string selected_text;
+  base::RemoveChars(engine()->GetSelectedText(), "\r", &selected_text);
+
+  base::Value reply = PrepareReplyMessage("getSelectedTextReply", message);
+  reply.SetStringKey("selectedText", selected_text);
+  SendMessage(std::move(reply));
 }
 
 void PdfViewPluginBase::HandleRotateClockwiseMessage(
