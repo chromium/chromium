@@ -18,9 +18,9 @@ constexpr float kZNear = 0.1f;
 constexpr float kZFar = 10000.0f;
 }  // namespace
 
-GraphicsDelegateWin::GraphicsDelegateWin() {}
+GraphicsDelegateWin::GraphicsDelegateWin() = default;
 
-GraphicsDelegateWin::~GraphicsDelegateWin() {}
+GraphicsDelegateWin::~GraphicsDelegateWin() = default;
 
 bool GraphicsDelegateWin::InitializeOnMainThread() {
   gpu::GpuChannelEstablishFactory* factory =
@@ -148,10 +148,6 @@ gfx::RectF GraphicsDelegateWin::GetRight() {
       static_cast<float>(info_->left_eye->render_width) / size.width(), 0,
       static_cast<float>(info_->right_eye->render_width) / size.width(),
       static_cast<float>(info_->right_eye->render_height) / size.height());
-}
-
-void GraphicsDelegateWin::Cleanup() {
-  context_provider_ = nullptr;
 }
 
 bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {

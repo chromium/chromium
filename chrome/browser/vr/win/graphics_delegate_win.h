@@ -42,7 +42,6 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   // Called on background GL thread.
   void InitializeOnGLThread();
   void SetVRDisplayInfo(device::mojom::VRDisplayInfoPtr info);
-  void Cleanup();
   bool PreRender();
   void PostRender();
   mojo::PlatformHandle GetTexture();
