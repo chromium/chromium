@@ -14,6 +14,7 @@ js_type_check("closure_compile_module") {
     ":cpu_card",
     ":data_point",
     ":diagnostics_app",
+    ":diagnostics_browser_proxy",
     ":diagnostics_card",
     ":diagnostics_types",
     ":diagnostics_utils",
@@ -79,6 +80,10 @@ js_library("diagnostics_app") {
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+}
+
+js_library("diagnostics_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("diagnostics_card") {
