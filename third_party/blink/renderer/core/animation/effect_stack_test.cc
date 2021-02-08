@@ -34,7 +34,7 @@ class AnimationEffectStackTest : public PageTestBase {
 
   Animation* Play(KeyframeEffect* effect, double start_time) {
     Animation* animation = timeline->Play(effect);
-    animation->setStartTime(start_time * 1000);
+    animation->setStartTime(CSSNumberish::FromDouble(start_time * 1000));
     animation->Update(kTimingUpdateOnDemand);
     return animation;
   }

@@ -72,17 +72,18 @@ bool PendingAnimations::Update(
         animation->HasActiveAnimationsOnCompositor();
     // Animations with a start time do not participate in compositor start-time
     // grouping.
-    if (animation->PreCommit(animation->startTime() ? 1 : compositor_group,
-                             paint_artifact_compositor, start_on_compositor)) {
+    if (animation->PreCommit(
+            animation->StartTimeInternal() ? 1 : compositor_group,
+            paint_artifact_compositor, start_on_compositor)) {
       if (animation->HasActiveAnimationsOnCompositor() &&
-          !had_compositor_animation && !animation->startTime()) {
+          !had_compositor_animation && !animation->StartTimeInternal()) {
         started_synchronized_on_compositor = true;
       }
 
       if (!animation->timeline() || !animation->timeline()->IsActive())
         continue;
 
-      if (animation->Playing() && !animation->startTime()) {
+      if (animation->Playing() && !animation->StartTimeInternal()) {
         waiting_for_start_time.push_back(animation.Get());
       } else if (animation->PendingInternal()) {
         DCHECK(animation->timeline()->IsActive() &&
@@ -107,7 +108,7 @@ bool PendingAnimations::Update(
         waiting_for_start_time);
   } else {
     for (auto& animation : waiting_for_start_time) {
-      DCHECK(!animation->startTime());
+      DCHECK(!animation->StartTimeInternal());
       DCHECK(animation->timeline()->IsActive() &&
              animation->timeline()->CurrentTime());
       animation->NotifyReady(animation->timeline()->CurrentTime().value());
@@ -153,7 +154,7 @@ void PendingAnimations::NotifyCompositorAnimationStarted(
   animations.swap(waiting_for_compositor_animation_start_);
 
   for (auto animation : animations) {
-    if (animation->startTime() || !animation->PendingInternal() ||
+    if (animation->StartTimeInternal() || !animation->PendingInternal() ||
         !animation->timeline() || !animation->timeline()->IsActive()) {
       // Already started or no longer relevant.
       continue;

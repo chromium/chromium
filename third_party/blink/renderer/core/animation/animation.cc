@@ -310,9 +310,9 @@ base::Optional<double> Animation::TimelineTime() const {
 }
 
 // https://drafts.csswg.org/web-animations/#setting-the-current-time-of-an-animation.
-void Animation::setCurrentTime(base::Optional<double> new_current_time_ms,
+void Animation::setCurrentTime(CSSNumberish current_time,
                                ExceptionState& exception_state) {
-  if (!new_current_time_ms) {
+  if (current_time.IsNull()) {
     // If the current time is resolved, then throw a TypeError.
     if (CurrentTimeInternal()) {
       exception_state.ThrowTypeError(
@@ -321,10 +321,21 @@ void Animation::setCurrentTime(base::Optional<double> new_current_time_ms,
     return;
   }
 
+  if (current_time.IsCSSNumericValue()) {
+    // Throw exception for CSSNumberish that is a CSSNumericValue
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Invalid startTime. CSSNumericValue not yet supported.");
+    return;
+  }
+
+  DCHECK(current_time.IsDouble());
   // Convert from double to AnimationTimeDelta for internal use.
-  AnimationTimeDelta new_current_time =
-      AnimationTimeDelta::FromMillisecondsD(new_current_time_ms.value());
-  SetCurrentTimeInternal(new_current_time);
+  base::Optional<AnimationTimeDelta> new_current_time =
+      AnimationTimeDelta::FromMillisecondsD(current_time.GetAsDouble());
+
+  DCHECK(new_current_time);
+  SetCurrentTimeInternal(new_current_time.value());
 
   // Synchronously resolve pending pause task.
   if (pending_pause_) {
@@ -345,17 +356,15 @@ void Animation::setCurrentTime(base::Optional<double> new_current_time_ms,
   NotifyProbe();
 }
 
-void Animation::setCurrentTime(base::Optional<double> new_current_time_ms) {
+void Animation::setCurrentTime(CSSNumberish current_time) {
   NonThrowableExceptionState exception_state;
-  setCurrentTime(new_current_time_ms, exception_state);
+  setCurrentTime(current_time, exception_state);
 }
 
 // https://drafts.csswg.org/web-animations/#setting-the-current-time-of-an-animation
 // See steps for silently setting the current time. The preliminary step of
 // handling an unresolved time are to be handled by the caller.
 void Animation::SetCurrentTimeInternal(AnimationTimeDelta new_current_time) {
-  // DCHECK(std::isfinite(new_current_time));
-
   base::Optional<AnimationTimeDelta> previous_start_time = start_time_;
   base::Optional<AnimationTimeDelta> previous_hold_time = hold_time_;
   base::Optional<TimelinePhase> previous_hold_phase = hold_phase_;
@@ -394,18 +403,22 @@ void Animation::ResetHoldTimeAndPhase() {
   hold_phase_ = base::nullopt;
 }
 
-base::Optional<double> Animation::startTime() const {
-  return start_time_
-             ? base::make_optional(start_time_.value().InMillisecondsF())
-             : base::nullopt;
+void Animation::startTime(CSSNumberish& startTime) const {
+  startTime =
+      start_time_
+          ? CSSNumberish::FromDouble(start_time_.value().InMillisecondsF())
+          : CSSNumberish();
 }
 
 // https://drafts.csswg.org/web-animations/#the-current-time-of-an-animation
-base::Optional<double> Animation::currentTime() const {
+void Animation::currentTime(CSSNumberish& currentTime) const {
   // 1. If the animation’s hold time is resolved,
   //    The current time is the animation’s hold time.
-  if (hold_time_.has_value())
-    return hold_time_.value().InMillisecondsF();
+  if (hold_time_.has_value()) {
+    currentTime =
+        CSSNumberish::FromDouble(hold_time_.value().InMillisecondsF());
+    return;
+  }
 
   // 2.  If any of the following are true:
   //    * the animation has no associated timeline, or
@@ -413,7 +426,7 @@ base::Optional<double> Animation::currentTime() const {
   //    * the animation’s start time is unresolved.
   // The current time is an unresolved time value.
   if (!timeline_ || !timeline_->IsActive() || !start_time_)
-    return base::nullopt;
+    return;
 
   // 3. Otherwise,
   // current time = (timeline time - start time) × playback rate
@@ -423,10 +436,11 @@ base::Optional<double> Animation::currentTime() const {
   // is handled in step 2 above, make sure that timeline_time has a value.
   DCHECK(timeline_time.has_value());
 
-  AnimationTimeDelta current_time =
+  AnimationTimeDelta calculated_current_time =
       (timeline_time.value() - start_time_.value()) * playback_rate_;
 
-  return current_time.InMillisecondsF();
+  currentTime =
+      CSSNumberish::FromDouble(calculated_current_time.InMillisecondsF());
 }
 
 bool Animation::ValidateHoldTimeAndPhase() const {
@@ -885,8 +899,22 @@ TimelinePhase Animation::CalculateCurrentPhase() const {
 }
 
 // https://drafts.csswg.org/web-animations/#setting-the-start-time-of-an-animation
-void Animation::setStartTime(base::Optional<double> new_start_time_ms,
+void Animation::setStartTime(CSSNumberish start_time,
                              ExceptionState& exception_state) {
+  if (!start_time.IsNull() && start_time.IsCSSNumericValue()) {
+    // Throw exception for CSSNumberish that is a CSSNumericValue
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Invalid startTime. CSSNumericValue not yet supported.");
+    return;
+  }
+
+  base::Optional<AnimationTimeDelta> new_start_time =
+      !start_time.IsNull()
+          ? base::make_optional(
+                AnimationTimeDelta::FromMillisecondsD(start_time.GetAsDouble()))
+          : base::nullopt;
+
   bool had_start_time = start_time_.has_value();
 
   // 1. Let timeline time be the current time value of the timeline that
@@ -902,7 +930,7 @@ void Animation::setStartTime(base::Optional<double> new_start_time_ms,
   // This preserves the invariant that when we don’t have an active timeline it
   // is only possible to set either the start time or the animation’s current
   // time.
-  if (!timeline_time && new_start_time_ms) {
+  if (!timeline_time && new_start_time) {
     ResetHoldTimeAndPhase();
   }
 
@@ -915,10 +943,7 @@ void Animation::setStartTime(base::Optional<double> new_start_time_ms,
   ApplyPendingPlaybackRate();
 
   // 5. Set animation’s start time to new start time.
-  base::Optional<AnimationTimeDelta> new_start_time;
-  if (new_start_time_ms) {
-    new_start_time =
-        AnimationTimeDelta::FromMillisecondsD(new_start_time_ms.value());
+  if (new_start_time) {
     // Snap to timeline time if within floating point tolerance to ensure
     // deterministic behavior in phase transitions.
     if (timeline_time &&
@@ -975,9 +1000,9 @@ void Animation::setStartTime(base::Optional<double> new_start_time_ms,
   NotifyProbe();
 }
 
-void Animation::setStartTime(base::Optional<double> new_start_time_ms) {
+void Animation::setStartTime(CSSNumberish start_time) {
   NonThrowableExceptionState exception_state;
-  setStartTime(new_start_time_ms, exception_state);
+  setStartTime(start_time, exception_state);
 }
 
 // https://drafts.csswg.org/web-animations-1/#setting-the-associated-effect
@@ -1801,9 +1826,10 @@ void Animation::setPlaybackRate(double playback_rate,
   // 4. If previous time is resolved, set the current time of animation to
   //    previous time
   pending_playback_rate_ = base::nullopt;
-  base::Optional<double> previous_current_time = currentTime();
+  CSSNumberish previous_current_time;
+  currentTime(previous_current_time);
   playback_rate_ = playback_rate;
-  if (previous_current_time.has_value()) {
+  if (!previous_current_time.IsNull()) {
     setCurrentTime(previous_current_time, exception_state);
   }
 

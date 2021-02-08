@@ -522,7 +522,7 @@ void KeyframeEffect::RestartRunningAnimationOnCompositor() {
 
   // No need to to restart an animation that is in the process of starting up,
   // paused or idle.
-  if (!animation->startTime())
+  if (!animation->StartTimeInternal())
     return;
 
   animation->RestartAnimationOnCompositor();

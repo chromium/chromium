@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -347,15 +348,21 @@ TEST_F(CSSAnimationsCompositorSyncTest, SetStartTime) {
   Animation* animation = GetAnimation();
   int compositor_group = animation->CompositorGroup();
 
+  CSSNumberish start_time, current_time;
+  animation->startTime(start_time);
+  animation->currentTime(current_time);
+
   // Partially rewind the animation via setStartTime.
-  double new_start_time =
-      animation->startTime().value() + animation->currentTime().value() / 2;
+  CSSNumberish new_start_time = CSSNumberish::FromDouble(
+      start_time.GetAsDouble() + (current_time.GetAsDouble() / 2));
+
   animation->setStartTime(new_start_time, ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
   // Verify blink updates.
-  EXPECT_NEAR(250, animation->currentTime().value(),
-              kTimeToleranceMilliseconds);
+  animation->currentTime(current_time);
+  EXPECT_TRUE(current_time.IsDouble());
+  EXPECT_NEAR(250, current_time.GetAsDouble(), kTimeToleranceMilliseconds);
   EXPECT_NEAR(0.75, element_->GetComputedStyle()->Opacity(), kTolerance);
 
   // Compositor animation needs to restart and will have a new compositor group.
@@ -386,12 +393,14 @@ TEST_F(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   int compositor_group = animation->CompositorGroup();
 
   // Advance current time.
-  animation->setCurrentTime(750, ASSERT_NO_EXCEPTION);
+  animation->setCurrentTime(CSSNumberish::FromDouble(750), ASSERT_NO_EXCEPTION);
   UpdateAllLifecyclePhasesForTest();
 
   // Verify blink updates.
-  EXPECT_NEAR(750, animation->currentTime().value(),
-              kTimeToleranceMilliseconds);
+  CSSNumberish current_time;
+  animation->currentTime(current_time);
+  EXPECT_TRUE(current_time.IsDouble());
+  EXPECT_NEAR(750, current_time.GetAsDouble(), kTimeToleranceMilliseconds);
   EXPECT_NEAR(0.25, element_->GetComputedStyle()->Opacity(), kTolerance);
 
   // Compositor animation needs to restart and will have a new compositor group.

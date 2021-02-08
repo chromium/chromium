@@ -1039,8 +1039,9 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
 
     // Set the current time as the start time for retargeted transitions
     if (retargeted_compositor_transitions.Contains(property)) {
-      animation->setStartTime(
-          element->GetDocument().Timeline().CurrentTimeMilliseconds());
+      CSSNumberish current_time;
+      element->GetDocument().Timeline().currentTime(current_time);
+      animation->setStartTime(current_time);
     }
     animation->Update(kTimingUpdateOnDemand);
     running_transition->animation = animation;
@@ -1425,14 +1426,19 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
                     a, b, Animation::CompareAnimationsOrdering::kPointerOrder);
               });
 
-    // Sample animations and add to the interpolations map.
+    // Sample animations and add to the interpolatzions map.
     for (Animation* animation : animations) {
-      base::Optional<double> current_time_ms = animation->currentTime();
-      if (!current_time_ms)
+      CSSNumberish current_time_numberish;
+      animation->currentTime(current_time_numberish);
+      if (current_time_numberish.IsNull())
         continue;
 
+      // CSSNumericValue is not yet supported, verify that it is not used
+      DCHECK(!current_time_numberish.IsCSSNumericValue());
+
       base::Optional<AnimationTimeDelta> current_time =
-          AnimationTimeDelta::FromMillisecondsD(current_time_ms.value());
+          AnimationTimeDelta::FromMillisecondsD(
+              current_time_numberish.GetAsDouble());
 
       auto* effect = DynamicTo<KeyframeEffect>(animation->effect());
       if (!effect)

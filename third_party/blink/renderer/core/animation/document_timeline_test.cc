@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
+#include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
@@ -359,7 +360,7 @@ TEST_F(AnimationDocumentTimelineTest, PlaybackRateFastWithOriginTime) {
 }
 
 TEST_F(AnimationDocumentTimelineTest, PauseForTesting) {
-  float seek_time = 1;
+  AnimationTimeDelta seek_time = AnimationTimeDelta::FromSecondsD(1);
   timing.fill_mode = Timing::FillMode::FORWARDS;
   auto* anim1 = MakeGarbageCollected<KeyframeEffect>(
       element.Get(), CreateEmptyEffectModel(), timing);
@@ -367,11 +368,15 @@ TEST_F(AnimationDocumentTimelineTest, PauseForTesting) {
       element.Get(), CreateEmptyEffectModel(), timing);
   Animation* animation1 = timeline->Play(anim1);
   Animation* animation2 = timeline->Play(anim2);
-  timeline->PauseAnimationsForTesting(
-      AnimationTimeDelta::FromSecondsD(seek_time));
+  timeline->PauseAnimationsForTesting(seek_time);
 
-  EXPECT_FLOAT_EQ(seek_time * 1000, animation1->currentTime().value());
-  EXPECT_FLOAT_EQ(seek_time * 1000, animation2->currentTime().value());
+  CSSNumberish current_time;
+  animation1->currentTime(current_time);
+  EXPECT_NEAR(seek_time.InMillisecondsF(), current_time.GetAsDouble(),
+              Animation::kTimeToleranceMs);
+  animation2->currentTime(current_time);
+  EXPECT_NEAR(seek_time.InMillisecondsF(), current_time.GetAsDouble(),
+              Animation::kTimeToleranceMs);
 }
 
 TEST_F(AnimationDocumentTimelineTest, DelayBeforeAnimationStart) {
@@ -405,7 +410,7 @@ TEST_F(AnimationDocumentTimelineTest, UseAnimationAfterTimelineDeref) {
   Animation* animation = timeline->Play(nullptr);
   timeline.Clear();
   // Test passes if this does not crash.
-  animation->setStartTime(0);
+  animation->setStartTime(CSSNumberish::FromDouble(0));
 }
 
 TEST_F(AnimationDocumentTimelineTest, PlayAfterDocumentDeref) {
