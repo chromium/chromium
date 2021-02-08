@@ -2791,7 +2791,7 @@ crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offe
 crbug.com/626703 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success.https.html [ Timeout ]
 crbug.com/626703 [ Win10 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/request/destination/fetch-destination-worker.https.html [ Crash ]
 crbug.com/626703 external/wpt/webauthn/idlharness-manual.https.window.js [ Skip ]
-crbug.com/983503 [ Mac ] external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/contain/contain-size-select-elem-002.html [ Failure ]
+crbug.com/983503 [ Mac ] external/wpt/css/css-contain/contain-size-select-elem-002.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure ]
 crbug.com/1004760 [ Mac ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/626703 external/wpt/mediacapture-streams/MediaStream-MediaElement-srcObject.https.html [ Timeout ]
@@ -4455,7 +4455,7 @@ crbug.com/914782 fast/scrolling/no-hover-during-scroll.html [ Pass Failure ]
 crbug.com/919272 external/wpt/resource-timing/resource-timing.html [ Skip ]
 
 # Sheriff 2019-01-03
-crbug.com/918905 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/block-size-with-min-or-max-content-table-1b.html [ Pass Failure ]
+crbug.com/918905 external/wpt/css/css-sizing/block-size-with-min-or-max-content-table-1b.html [ Pass Failure ]
 
 # Android doesn't support H264/AVC1 encoding.
 # Some other bots are built without H264/AVC1 encoding support.

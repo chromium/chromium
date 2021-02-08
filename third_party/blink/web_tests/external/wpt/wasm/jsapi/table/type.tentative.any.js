@@ -3,10 +3,10 @@
 
 function assert_type(argument) {
     const mytable = new WebAssembly.Table(argument);
-
-    assert_equals(mytable.type.minimum, argument.minimum);
-    assert_equals(mytable.type.maximum, argument.maximum);
-    assert_equals(mytable.type.element, argument.element);
+    const tabletype = mytable.type()
+    assert_equals(tabletype.minimum, argument.minimum);
+    assert_equals(tabletype.maximum, argument.maximum);
+    assert_equals(tabletype.element, argument.element);
 }
 
 test(() => {

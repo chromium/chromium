@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>Blob slice overflow</title>
-<link rel="author" title="Intel" href="http://www.intel.com">
-<link rel="help" href="https://w3c.github.io/FileAPI/#dfn-slice">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Blob slice overflow
+'use strict';
 
 var text = '';
 
@@ -37,6 +30,3 @@ test(function() {
   var sliceBlob = blob.slice(blob.size - 2, blob.size + 999);
   assert_equals(sliceBlob.size, 2, "Blob slice size");
 }, "slice end is greater than blob size, relativeEnd will be min(end, size)");
-
-</script>
-

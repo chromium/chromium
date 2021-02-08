@@ -403,13 +403,13 @@ crbug.com/576815 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 crbug.com/576815 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/selectors4/dir-style-01b.html [ Failure ]
 
 ### external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/block-size-with-min-or-max-content-1a.html [ Failure ]
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/block-size-with-min-or-max-content-1b.html [ Failure ]
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/hori-block-size-small-or-larger-than-container-with-min-or-max-content-1.html [ Failure ]
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/hori-block-size-small-or-larger-than-container-with-min-or-max-content-2a.html [ Failure ]
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/hori-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2a.html [ Failure ]
-crbug.com/591099 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/block-size-with-min-or-max-content-1a.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/block-size-with-min-or-max-content-1b.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/hori-block-size-small-or-larger-than-container-with-min-or-max-content-1.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/hori-block-size-small-or-larger-than-container-with-min-or-max-content-2a.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/hori-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2a.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/vert-block-size-small-or-larger-than-container-with-min-or-max-content-2b.html [ Failure ]
 
 ### external/wpt/quirks/
 crbug.com/591099 external/wpt/quirks/body-fills-html-quirk-vertical.html [ Failure ]

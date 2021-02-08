@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<meta charset=utf-8>
-<title>Blob slice</title>
-<link rel=help href="https://w3c.github.io/FileAPI/#slice-method-algo">
-<link rel=author title="Saurabh Anand" href="mailto:saurabhanandiit@gmail.com">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../support/Blob.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Blob slice
+// META: script=../support/Blob.js
+'use strict';
+
 test_blob(function() {
   var blobTemp = new Blob(["PASS"]);
   return blobTemp.slice();
@@ -235,4 +229,3 @@ validTypes.forEach(function(type) {
     desc: "Valid contentType (" + format_value(type) + ")"
   });
 });
-</script>

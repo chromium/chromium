@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+FAIL i32, mutable Cannot read property 'value' of undefined
+FAIL i32, immutable Cannot read property 'value' of undefined
+FAIL i64, mutable Cannot read property 'value' of undefined
+FAIL i64, immutable Cannot read property 'value' of undefined
+FAIL f32, mutable Cannot read property 'value' of undefined
+FAIL f32, immutable Cannot read property 'value' of undefined
+FAIL f64, mutable Cannot read property 'value' of undefined
+FAIL f64, immutable Cannot read property 'value' of undefined
+FAIL anyref, mutable WebAssembly.Global(): Descriptor property 'value' must be a WebAssembly type
+FAIL anyref, immutable WebAssembly.Global(): Descriptor property 'value' must be a WebAssembly type
+FAIL funcref, mutable WebAssembly.Global(): Descriptor property 'value' must be a WebAssembly type
+FAIL funcref, immutable WebAssembly.Global(): Descriptor property 'value' must be a WebAssembly type
+FAIL key ordering Cannot convert undefined or null to object
+Harness: the test ran to completion.
+

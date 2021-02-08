@@ -1,17 +1,9 @@
-<!DOCTYPE html>
-<meta charset=utf-8>
-<title>Blob constructor</title>
-<link rel=help href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">
-<link rel=help href="https://heycam.github.io/webidl/#es-union">
-<link rel=help href="https://heycam.github.io/webidl/#es-dictionary">
-<link rel=help href="https://heycam.github.io/webidl/#es-sequence">
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="../support/Blob.js"></script>
-<div id="log"></div>
-<script>
+// META: title=Blob constructor
+// META: script=../support/Blob.js
+'use strict';
+
 test(function() {
-  assert_true("Blob" in window, "window should have a Blob property.");
+  assert_true("Blob" in globalThis, "globalThis should have a Blob property.");
   assert_equals(Blob.length, 0, "Blob.length should be 0.");
   assert_true(Blob instanceof Function, "Blob should be a function.");
 }, "Blob interface object");
@@ -55,8 +47,6 @@ test(function() {
     new RegExp(),
     {},
     { 0: "FAIL", length: 1 },
-    document.createElement("div"),
-    window,
   ];
   args.forEach(function(arg) {
     assert_throws_js(TypeError, function() {
@@ -128,19 +118,6 @@ test(function() {
     new Blob(obj);
   });
 }, "The length getter should be invoked and any exceptions should be propagated.");
-
-test(function() {
-  var element = document.createElement("div");
-  element.appendChild(document.createElement("div"));
-  element.appendChild(document.createElement("p"));
-  var list = element.children;
-  Object.defineProperty(list, "length", {
-    get: function() { throw test_error; }
-  });
-  assert_throws_exactly(test_error, function() {
-    new Blob(list);
-  });
-}, "A platform object that supports indexed properties should be treated as a sequence for the blobParts argument (overwritten 'length'.)");
 
 test(function() {
   assert_throws_exactly(test_error, function() {
@@ -334,25 +311,7 @@ test_blob(function() {
   desc: "Passing a Float64Array as element of the blobParts array should work."
 });
 
-test_blob(function() {
-  var select = document.createElement("select");
-  select.appendChild(document.createElement("option"));
-  return new Blob(select);
-}, {
-  expected: "[object HTMLOptionElement]",
-  type: "",
-  desc: "Passing an platform object that supports indexed properties as the blobParts array should work (select)."
-});
 
-test_blob(function() {
-  var elm = document.createElement("div");
-  elm.setAttribute("foo", "bar");
-  return new Blob(elm.attributes);
-}, {
-  expected: "[object Attr]",
-  type: "",
-  desc: "Passing an platform object that supports indexed properties as the blobParts array should work (attributes)."
-});
 
 var t_ports = async_test("Passing a FrozenArray as the blobParts array should work (FrozenArray<MessagePort>).");
 t_ports.step(function() {
@@ -498,4 +457,3 @@ type_tests.forEach(function(t) {
     assert_equals(b.type, t[2]);
   }, "Blob with type " + format_value(t[1]));
 });
-</script>
