@@ -50,6 +50,9 @@
 // Called when a snapshot of the content will be taken.
 - (void)willUpdateSnapshot;
 
+// Stops scrolling in the scroll view.
+- (void)stopScrolling;
+
 // Sets the feed collection contentOffset to |offset| to set the initial scroll
 // position.
 - (void)setContentOffset:(CGFloat)offset;

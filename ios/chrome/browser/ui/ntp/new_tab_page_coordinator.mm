@@ -310,6 +310,14 @@
   [self.contentSuggestionsCoordinator dismissModals];
 }
 
+- (void)stopScrolling {
+  if (IsRefactoredNTP()) {
+    [self.ntpViewController stopScrolling];
+  } else {
+    [self.contentSuggestionsCoordinator stopScrolling];
+  }
+}
+
 - (UIEdgeInsets)contentInset {
   return [self.contentSuggestionsCoordinator contentInset];
 }

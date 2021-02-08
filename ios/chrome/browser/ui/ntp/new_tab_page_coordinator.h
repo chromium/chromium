@@ -59,6 +59,9 @@ class WebState;
 // Called when a snapshot of the content will be taken.
 - (void)willUpdateSnapshot;
 
+// Stop any scrolling in the scroll view.
+- (void)stopScrolling;
+
 // The content offset of the scroll view.
 - (CGPoint)contentOffset;
 

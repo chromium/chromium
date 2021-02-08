@@ -272,6 +272,12 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self.overscrollActionsController clear];
 }
 
+- (void)stopScrolling {
+  UIScrollView* scrollView =
+      self.discoverFeedWrapperViewController.feedCollectionView;
+  [scrollView setContentOffset:scrollView.contentOffset animated:NO];
+}
+
 - (void)setContentOffset:(CGFloat)offset {
   [self setContentOffset:offset fromSavedState:YES];
 }

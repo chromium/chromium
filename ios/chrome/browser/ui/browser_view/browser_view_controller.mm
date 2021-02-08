@@ -2959,6 +2959,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           scrollProxy.contentOffset = scrollOffset;
         }
       }
+
       // This alerts the fullscreen controller to use the correct new content
       // insets.
       self.fullscreenController->FreezeToolbarHeight(true);
@@ -2966,6 +2967,19 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   if (nextViewRevealState == ViewRevealState::Revealed) {
     [self.view endEditing:YES];
+  }
+
+  // Stop scrolling in the current web state when transitioning.
+  if (self.currentWebState) {
+    if (self.isNTPActiveForCurrentWebState) {
+      NewTabPageCoordinator* coordinator =
+          _ntpCoordinatorsForWebStates[self.currentWebState];
+      [coordinator stopScrolling];
+    } else {
+      CRWWebViewScrollViewProxy* scrollProxy =
+          self.currentWebState->GetWebViewProxy().scrollViewProxy;
+      [scrollProxy setContentOffset:scrollProxy.contentOffset animated:NO];
+    }
   }
 }
 

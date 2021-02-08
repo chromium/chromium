@@ -581,6 +581,11 @@
   [self.ntpMediator dismissModals];
 }
 
+- (void)stopScrolling {
+  UIScrollView* scrollView = self.suggestionsViewController.collectionView;
+  [scrollView setContentOffset:scrollView.contentOffset animated:NO];
+}
+
 - (UIEdgeInsets)contentInset {
   return self.suggestionsViewController.collectionView.contentInset;
 }
