@@ -1836,6 +1836,12 @@ template("ios_xctest_bundle") {
                         "${_xcode_app_name}.app/${_xcode_app_name}"
           }
         }
+      } else {
+        not_needed(invoker,
+                   [
+                     "xcode_test_application_name",
+                     "xcode_test_application_output_name",
+                   ])
       }
 
       deps = [ ":$_info_plist_bundle" ]
