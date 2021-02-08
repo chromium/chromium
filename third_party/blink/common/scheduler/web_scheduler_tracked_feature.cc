@@ -99,8 +99,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"WebLocks", "WebLocks"};
     case WebSchedulerTrackedFeature::kWebHID:
       return {"WebHID", "WebHID"};
-    case WebSchedulerTrackedFeature::kWakeLock:
-      return {"WakeLock", "WakeLock"};
     case WebSchedulerTrackedFeature::kWebShare:
       return {"WebShare", "WebShare"};
     case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:

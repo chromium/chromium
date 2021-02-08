@@ -2100,116 +2100,32 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebHID) {
 #endif  // !defined(OS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DoesNotCacheIfAcquiredWakeLock) {
+                       WakeLockReleasedUponEnteringBfcache) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to a page with WakeLock usage.
-  GURL url(https_server()->GetURL("a.com", "/back_forward_cache/empty.html"));
+  GURL url(https_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_wakelock.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver deleted(current_frame_host());
-
   // Acquire WakeLock.
-  EXPECT_EQ("DONE", EvalJs(rfh_a, R"(
-    new Promise(async resolve => {
-      try {
-        await navigator.wakeLock.request('screen');
-        resolve('DONE');
-      } catch (error) {
-        resolve('error: request failed');
-      }
-    });
-  )"));
-
-  // 2) Navigate away.
-  shell()->LoadURL(https_server()->GetURL("b.com", "/title1.html"));
-
-  // The page uses WakeLock so it should be deleted.
-  deleted.WaitUntilDeleted();
-
-  // 3) Go back to the page with WakeLock.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      FROM_HERE);
-  ExpectBlocklistedFeature(
-      blink::scheduler::WebSchedulerTrackedFeature::kWakeLock, FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheIfReleasedWakeLock) {
-  ASSERT_TRUE(CreateHttpsServer()->Start());
-
-  // 1) Navigate to a page with WakeLock usage.
-  GURL url(https_server()->GetURL("a.com", "/back_forward_cache/empty.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  // Acquire and release WakeLock.
-  EXPECT_EQ("DONE", EvalJs(rfh_a, R"(
-    new Promise(async resolve => {
-      try {
-        const lock = await navigator.wakeLock.request('screen');
-        await lock.release();
-        resolve('DONE');
-      } catch (error) {
-        resolve('error: request failed');
-      }
-    });
-  )"));
+  EXPECT_EQ("DONE", EvalJs(rfh_a, "acquireWakeLock()"));
+  // Make sure that WakeLock is not released yet.
+  EXPECT_FALSE(EvalJs(rfh_a, "wakeLockIsReleased()").ExtractBool());
 
   // 2) Navigate away.
   shell()->LoadURL(https_server()->GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // 3) Go back to the page with WakeLock.
+  // 3) Go back to the page with WakeLock, restored from BackForwardCache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(current_frame_host(), rfh_a);
-
-  // This time the page is restored from cache because WakeLock is released.
+  EXPECT_TRUE(EvalJs(rfh_a, "wakeLockIsReleased()").ExtractBool());
   ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
                 FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DoesNotCacheIfAnyWakeLockHeld) {
-  ASSERT_TRUE(CreateHttpsServer()->Start());
-
-  // 1) Navigate to a page with WakeLock usage.
-  GURL url(https_server()->GetURL("/back_forward_cache/empty.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  // Acquire and release WakeLock.
-  EXPECT_EQ("DONE", EvalJs(rfh_a, R"(
-    new Promise(async resolve => {
-      try {
-         const lock1 = await navigator.wakeLock.request('screen');
-         const lock2 = await navigator.wakeLock.request('screen');
-         await lock1.release();
-         resolve('DONE');
-      } catch (error) {
-         resolve('error: request failed');
-      }
-    });
-  )"));
-
-  // 2) Navigate away.
-  shell()->LoadURL(https_server()->GetURL("b.com", "/title1.html"));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  // 3) Go back to the page with WakeLock.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      FROM_HERE);
-  ExpectBlocklistedFeature(
-      blink::scheduler::WebSchedulerTrackedFeature::kWakeLock, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

@@ -76,7 +76,9 @@ enum class WebSchedulerTrackedFeature {
 
   kWebLocks = 33,
   kWebHID = 34,
-  kWakeLock = 35,
+
+  // kWakeLock = 35, Removed because clean-up is done upon visibility change.
+
   kWebShare = 36,
 
   kRequestedStorageAccessGrant = 37,
