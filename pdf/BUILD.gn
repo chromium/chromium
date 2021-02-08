@@ -275,6 +275,8 @@ if (enable_pdf) {
       "pdf_view_web_plugin.h",
       "post_message_receiver.cc",
       "post_message_receiver.h",
+      "post_message_sender.cc",
+      "post_message_sender.h",
     ]
 
     configs += [ ":pdf_common_config" ]
