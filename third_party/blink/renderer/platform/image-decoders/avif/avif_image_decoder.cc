@@ -453,6 +453,7 @@ void AVIFImageDecoder::DecodeToYUV() {
       height = UVSize(height, chroma_shift_y_);
     }
   }
+  image_planes_->SetHasCompleteScan();
 }
 
 int AVIFImageDecoder::RepetitionCount() const {
