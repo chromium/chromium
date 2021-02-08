@@ -1316,4 +1316,47 @@ TEST_F(ScreenManagerTest, ShouldNotUnbindFramebufferOnJoiningMirror) {
   screen_manager.RemoveWindow(1)->Shutdown();
 }
 
+TEST_F(ScreenManagerTest, DrmFramebufferSequenceIdIncrementingAtModeset) {
+  InitializeDrmStateWithDefault(drm_.get());
+
+  scoped_refptr<DrmFramebuffer> pre_modeset_buffer =
+      CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
+  CHECK_EQ(pre_modeset_buffer->modeset_sequence_id_at_allocation(), 0);
+
+  // Successful modeset
+  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+  {
+    ScreenManager::ControllerConfigsList controllers_to_enable;
+    controllers_to_enable.emplace_back(
+        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        GetPrimaryBounds().origin(),
+        std::make_unique<drmModeModeInfo>(kDefaultMode));
+    ASSERT_TRUE(
+        screen_manager_->ConfigureDisplayControllers(controllers_to_enable));
+  }
+
+  scoped_refptr<DrmFramebuffer> first_post_modeset_buffer =
+      CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
+  CHECK_EQ(first_post_modeset_buffer->modeset_sequence_id_at_allocation(), 1);
+  CHECK_EQ(pre_modeset_buffer->modeset_sequence_id_at_allocation(), 0);
+
+  // Unsuccessful modeset
+  {
+    drm_->set_set_crtc_expectation(false);
+    ScreenManager::ControllerConfigsList controllers_to_enable;
+    controllers_to_enable.emplace_back(
+        kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+        GetSecondaryBounds().origin(),
+        std::make_unique<drmModeModeInfo>(kDefaultMode));
+    ASSERT_FALSE(
+        screen_manager_->ConfigureDisplayControllers(controllers_to_enable));
+  }
+
+  scoped_refptr<DrmFramebuffer> second_post_modeset_buffer =
+      CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
+  CHECK_EQ(second_post_modeset_buffer->modeset_sequence_id_at_allocation(), 1);
+  CHECK_EQ(first_post_modeset_buffer->modeset_sequence_id_at_allocation(), 1);
+  CHECK_EQ(pre_modeset_buffer->modeset_sequence_id_at_allocation(), 0);
+}
+
 }  // namespace ui
