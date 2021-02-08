@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -242,6 +243,19 @@ TEST_F(ClipboardHistoryControllerTest, VerifyAvailabilityInUserModes) {
           Shell::Get()->clipboard_history_controller()->IsMenuShowing());
     }
   }
+}
+
+// Verifies that the clipboard history menu is disabled when the screen for
+// user adding shows.
+TEST_F(ClipboardHistoryControllerTest, DisableInUserAddingScreen) {
+  WriteToClipboard("text");
+
+  // Emulate that the user adding screen displays.
+  Shell::Get()->session_controller()->ShowMultiProfileLogin();
+
+  // Try to show the clipboard history menu; verify that the menu does not show.
+  ShowMenu();
+  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
 }
 
 // Tests that pressing and holding VKEY_V, then the search key (EF_COMMAND_DOWN)

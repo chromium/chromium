@@ -149,7 +149,16 @@ bool IsSupported(const ui::ClipboardData& data) {
 }
 
 bool IsEnabledInCurrentMode() {
-  switch (Shell::Get()->session_controller()->login_status()) {
+  const auto* session_controller = Shell::Get()->session_controller();
+
+  // The clipboard history menu is enabled only when a user has logged in and
+  // login UI is hidden.
+  if (session_controller->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    return false;
+  }
+
+  switch (session_controller->login_status()) {
     case LoginStatus::NOT_LOGGED_IN:
     case LoginStatus::LOCKED:
     case LoginStatus::KIOSK_APP:

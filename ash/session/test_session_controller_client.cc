@@ -266,6 +266,8 @@ void TestSessionControllerClient::CycleActiveUser(
 }
 
 void TestSessionControllerClient::ShowMultiProfileLogin() {
+  SetSessionState(session_manager::SessionState::LOGIN_SECONDARY);
+
   views::Widget::InitParams params;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 400, 300);
