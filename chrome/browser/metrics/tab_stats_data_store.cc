@@ -66,6 +66,7 @@ void TabStatsDataStore::OnTabAdded(content::WebContents* web_contents) {
   DCHECK(web_contents);
   DCHECK(!base::Contains(existing_tabs_, web_contents));
   ++tab_stats_.total_tab_count;
+  RecordSamplingMetaData();
   TabID tab_id = GetNewTabId();
   existing_tabs_.insert(std::make_pair(web_contents, tab_id));
   for (auto& interval_map : interval_maps_) {
@@ -82,6 +83,7 @@ void TabStatsDataStore::OnTabRemoved(content::WebContents* web_contents) {
   DCHECK(base::Contains(existing_tabs_, web_contents));
   DCHECK_GT(tab_stats_.total_tab_count, 0U);
   --tab_stats_.total_tab_count;
+  RecordSamplingMetaData();
   TabID web_contents_id = GetTabID(web_contents);
   existing_tabs_.erase(web_contents);
   for (auto& interval_map : interval_maps_) {
@@ -115,6 +117,10 @@ void TabStatsDataStore::OnTabInteraction(content::WebContents* web_contents) {
 
 void TabStatsDataStore::OnTabAudible(content::WebContents* web_contents) {
   OnTabAudibleOrVisible(web_contents);
+}
+
+void TabStatsDataStore::RecordSamplingMetaData() {
+  tab_number_sample_meta_data_.Set(tab_stats_.total_tab_count);
 }
 
 void TabStatsDataStore::OnTabVisibilityChanged(

@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
+#include "base/profiler/sample_metadata.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/metrics/tab_stats_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
@@ -138,8 +139,15 @@ class TabStatsDataStore : public TabStatsObserver {
  private:
   void OnTabAudibleOrVisible(content::WebContents* web_contents);
 
+  // Record the stack sampling meta data with the current tab count;
+  void RecordSamplingMetaData();
+
   // The tabs stats.
   TabsStats tab_stats_;
+
+  // Used to asssociate sampling profiler samples to the number of tabs.
+  base::SampleMetadata tab_number_sample_meta_data_ =
+      base::SampleMetadata("NumberOfTabs");
 
   // A raw pointer to the PrefService used to read and write the statistics.
   PrefService* pref_service_;
