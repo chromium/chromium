@@ -33,6 +33,16 @@ enum AuthenticationType {
   k8021x,
 };
 
+// Tri-state status of hidden_ssid.
+enum HiddenSsidMode {
+  // Let the platform decide based on the presence of the SSID in current scan.
+  kAutomatic,
+  // HiddenSSID = false
+  kDisabled,
+  // HiddenSSID = true
+  kEnabled,
+};
+
 enum ProxyMode {
   // Direct connection to the network.
   kDirect,
@@ -164,6 +174,8 @@ struct WiFiStateProperties {
   int32 signal_strength;
   // The network SSID.
   string ssid;
+  // Whether the AP has a hidden SSID.
+  bool hidden_ssid;
 };
 
 union NetworkTypeStateProperties {
@@ -714,6 +726,8 @@ struct WiFiConfigProperties {
   // |ssid| is required for new configurations, optional otherwise.
   string? ssid;
   SecurityType security = kNone;
+  // Whether the AP has a hidden SSID.
+  HiddenSsidMode hidden_ssid = kAutomatic;
 };
 
 union NetworkTypeConfigProperties {
