@@ -18,7 +18,8 @@ MockPasswordStore::CreateBackgroundTaskRunner() const {
   return base::SequencedTaskRunnerHandle::Get();
 }
 
-bool MockPasswordStore::InitOnBackgroundSequence() {
+bool MockPasswordStore::InitOnBackgroundSequence(
+    bool upload_phished_credentials_to_sync) {
   return true;
 }
 

@@ -48,6 +48,10 @@ extern const char kPasswordRecovery[];
 // prompt was shown or not.
 extern const char kWasAutoSignInFirstRunExperienceShown[];
 
+// Boolean that indicated whether one time upload of phished credentials was
+// performed for syncing users.
+extern const char kWasPhishedCredentialsUploadedToSync[];
+
 // Boolean that indicated if user interacted with the Chrome Sign in promo.
 extern const char kWasSignInPasswordPromoClicked[];
 

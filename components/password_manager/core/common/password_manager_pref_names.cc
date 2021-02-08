@@ -25,6 +25,9 @@ const char kPasswordRecovery[] = "password_manager.password_recovery";
 const char kWasAutoSignInFirstRunExperienceShown[] =
     "profile.was_auto_sign_in_first_run_experience_shown";
 
+const char kWasPhishedCredentialsUploadedToSync[] =
+    "profile.was_phished_credentials_uploaded_to_sync";
+
 const char kWasSignInPasswordPromoClicked[] =
     "profile.was_sign_in_password_promo_clicked";
 

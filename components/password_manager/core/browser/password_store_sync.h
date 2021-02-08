@@ -23,6 +23,8 @@ namespace password_manager {
 struct CompromisedCredentials;
 struct PasswordForm;
 
+using ForceInitialSyncCycle =
+    base::StrongAlias<class ForceInitialSyncCycleTag, bool>;
 using FormPrimaryKey = base::StrongAlias<class FormPrimaryKeyTag, int>;
 using PrimaryKeyToFormMap = std::map<int, std::unique_ptr<PasswordForm>>;
 

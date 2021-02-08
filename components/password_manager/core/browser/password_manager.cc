@@ -230,6 +230,8 @@ void PasswordManager::RegisterProfilePrefs(
                              base::Time());
   registry->RegisterTimePref(prefs::kAccountStoreDateLastUsedForFilling,
                              base::Time());
+  registry->RegisterBooleanPref(prefs::kWasPhishedCredentialsUploadedToSync,
+                                false);
 
 #if defined(OS_APPLE)
   registry->RegisterIntegerPref(prefs::kKeychainMigrationStatus,
