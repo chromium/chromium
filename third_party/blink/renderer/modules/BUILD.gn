@@ -10,6 +10,7 @@ import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/blink/renderer/modules/modules_idl_files.gni")
+import("//third_party/webrtc/webrtc.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -277,6 +278,15 @@ group("make_modules_generated") {
 
 source_set("unit_tests") {
   testonly = true
+
+  # TODO(crbug.com/1173961): avoid depending on testonly webrtc targets.
+  if (rtc_include_tests) {
+    # This target uses some webrtc targets that are not part of
+    # "webrtc_component". This target relies on the fact that including a header
+    # that is not tracked by GN works without raising any warning. However it
+    # leads to build errors if rtc_include_tests = true.
+    check_includes = false
+  }
 
   sources = [
     "accessibility/accessibility_object_model_test.cc",

@@ -16,6 +16,7 @@ import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
+import("//third_party/webrtc/webrtc.gni")
 import("//v8/gni/v8.gni")
 
 # Most targets in this file are private actions so use that as the default.
@@ -1924,6 +1925,15 @@ source_set("blink_platform_unittests_sources") {
   visibility = []  # Allow re-assignment of list.
   visibility = [ "*" ]
   testonly = true
+
+  # TODO(crbug.com/1173961): avoid depending on testonly webrtc targets.
+  if (rtc_include_tests) {
+    # This target uses some webrtc targets that are not part of
+    # "webrtc_component". This target relies on the fact that including a header
+    # that is not tracked by GN works without raising any warning. However it
+    # leads to build errors if rtc_include_tests = true.
+    check_includes = false
+  }
 
   sources = [
     "animation/animation_translation_util_test.cc",

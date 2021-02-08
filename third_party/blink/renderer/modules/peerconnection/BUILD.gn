@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/blink/renderer/modules/modules.gni")
+import("//third_party/webrtc/webrtc.gni")
 
 blink_modules_sources("peerconnection") {
   sources = [
@@ -155,6 +156,15 @@ blink_modules_sources("peerconnection") {
 
 source_set("test_support") {
   testonly = true
+
+  # TODO(crbug.com/1173961): avoid depending on testonly webrtc targets.
+  if (rtc_include_tests) {
+    # This target uses some webrtc targets that are not part of
+    # "webrtc_component". This target relies on the fact that including a header
+    # that is not tracked by GN works without raising any warning. However it
+    # leads to build errors if rtc_include_tests = true.
+    check_includes = false
+  }
 
   sources = [
     "fake_rtc_rtp_transceiver_impl.cc",
