@@ -269,7 +269,6 @@
     "bases": ["external/wpt/css/css-break",
               "external/wpt/css/css-contain",
               "external/wpt/css/css-multicol",
-              "external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/contain",
               "external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements",
               "fast/forms/fieldset",
               "fast/multicol",
