@@ -43,7 +43,6 @@ class Element;
 class PseudoElement;
 class SVGResource;
 class StyleImage;
-class StylePendingImage;
 
 namespace cssvalue {
 
@@ -81,7 +80,7 @@ class ElementStyleResources {
 
   StyleImage* LoadPendingImage(
       ComputedStyle&,
-      StylePendingImage*,
+      CSSValue&,
       FetchParameters::ImageRequestBehavior = FetchParameters::kNone,
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet);
 
