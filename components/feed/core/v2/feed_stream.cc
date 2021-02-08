@@ -58,7 +58,9 @@ void PopulateDebugStreamData(const LoadStreamTask::Result& load_result,
   std::stringstream ss;
   ss << "Code: " << load_result.final_status;
   debug_data.load_stream_status = ss.str();
-  debug_data.fetch_info = load_result.network_response_info;
+  if (load_result.network_response_info) {
+    debug_data.fetch_info = load_result.network_response_info;
+  }
   if (load_result.upload_actions_result) {
     UpdateDebugStreamData(*load_result.upload_actions_result, debug_data);
   }
