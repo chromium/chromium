@@ -62,26 +62,43 @@ id<GREYMatcher> ShareMenuDismissButton() {
 
 // Tests that open in button appears when opening a PDF, and that tapping on it
 // will open the activity view.
-//
-// Disabled due to flakiness: http://crbug.com/1152782
-- (void)DISABLED_testOpenInPDF {
+- (void)testOpenInPDF {
   // Apple is hiding UIActivityViewController's content from the host app on
   // iPad.
   if ([ChromeEarlGrey isIPadIdiom])
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+
+  // UIActivityViewController doesn't display the filename on iOS 12.
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
 
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
-  // UIActivityViewController doesn't display the filename on iOS 12.
-  if (@available(iOS 13, *)) {
     // Test filename label.
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_text(@"testpage"),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()];
+  {
+    // Turn off synchronization of GREYAssert to test the appearance of open in
+    // toolbar. If synchronization is on, the UIActivityViewController could be
+    // not visible.
+    ScopedSynchronizationDisabler disabler;
+    GREYCondition* openInVisibleFilenameCondition = [GREYCondition
+        conditionWithName:@"Check that the open in toolbar is not visible"
+                    block:^BOOL {
+                      NSError* error = nil;
+                      [[EarlGrey
+                          selectElementWithMatcher:
+                              grey_allOf(grey_text(@"testpage"),
+                                         grey_sufficientlyVisible(), nil)]
+                          assertWithMatcher:grey_notNil()
+                                      error:&error];
+                      return error == nil;
+                    }];
+    BOOL openInVisibleFilename = [openInVisibleFilenameCondition
+        waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
+    GREYAssertTrue(openInVisibleFilename, @"The filename is visible.");
   }
 
   // Check that tapping on the Cancel button closes the activity menu and hides
@@ -102,18 +119,37 @@ id<GREYMatcher> ShareMenuDismissButton() {
   if ([ChromeEarlGrey isIPadIdiom])
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
 
+  // UIActivityViewController doesn't display the filename on iOS 12.
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
+
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(KPNGPath)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       performAction:grey_tap()];
 
-  // UIActivityViewController doesn't display the filename on iOS 12.
-  if (@available(iOS 13, *)) {
-    // Test filename label.
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_text(@"chromium_logo"),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()];
+  // Test filename label.
+  {
+    // Turn off synchronization of GREYAssert to test the appearance of open in
+    // toolbar. If synchronization is on, the UIActivityViewController could be
+    // not visible.
+    ScopedSynchronizationDisabler disabler;
+    GREYCondition* openInVisibleFilenameCondition = [GREYCondition
+        conditionWithName:@"Check that the open in toolbar is not visible"
+                    block:^BOOL {
+                      NSError* error = nil;
+                      [[EarlGrey
+                          selectElementWithMatcher:
+                              grey_allOf(grey_text(@"chromium_logo"),
+                                         grey_sufficientlyVisible(), nil)]
+                          assertWithMatcher:grey_notNil()
+                                      error:&error];
+                      return error == nil;
+                    }];
+    BOOL openInVisibleFilename = [openInVisibleFilenameCondition
+        waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
+    GREYAssertTrue(openInVisibleFilename, @"The filename is visible.");
   }
 
   // Check that tapping on the Cancel button closes the activity menu and hides
@@ -124,45 +160,6 @@ id<GREYMatcher> ShareMenuDismissButton() {
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       assertWithMatcher:grey_notVisible()];
-}
-
-// Tests that the open in bar is correctly displayed when a compatible URL is
-// loaded and tapping on the web view makes it appear or disappear.
-//
-// Disabled due to flakiness: http://crbug.com/1146303
-- (void)DISABLED_testOpenInDisplay {
-  // Check that the open in bar is correctly displayed when a compatible URL is
-  // loaded.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that tapping on the web view makes the open in toolbar disappear.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-      assertWithMatcher:grey_notVisible()];
-
-  // Check that tapping on the web view makes the open in toolbar appear.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_tap()];
-  // Turn off synchronization of GREYAssert to test the appearance of open in
-  // toolbar. If synchronization is on, the open in toolbar exists but it's not
-  // considered visible.
-  ScopedSynchronizationDisabler disabler;
-  GREYCondition* openInVisibleCondition = [GREYCondition
-      conditionWithName:@"Check that the open in toolbar is visible"
-                  block:^BOOL {
-                    NSError* error = nil;
-                    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                                            OpenInButton()]
-                        assertWithMatcher:grey_sufficientlyVisible()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  BOOL openInVisible = [openInVisibleCondition
-      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout];
-  GREYAssertTrue(openInVisible, @"The open in toolbar never became visible.");
 }
 
 @end
