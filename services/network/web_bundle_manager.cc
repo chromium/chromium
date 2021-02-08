@@ -8,9 +8,23 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
+#include "services/network/web_bundle_memory_quota_consumer.h"
 #include "services/network/web_bundle_url_loader_factory.h"
 
 namespace network {
+
+namespace {
+
+// The max memory limit per process of subrsource web bundles.
+//
+// Note: Currently the network service keeps the binary of the subresource web
+// bundle in the memory. To protect the network service from OOM attacks, we set
+// the max memory limit per renderer process. When the memory usage of
+// subresource web bundles exceeds the limit, the web bundle loading fails, and
+// the subresouce loading from the web bundle will fail on the page.
+constexpr uint64_t kDefaultMaxMemoryPerProcess = 10ull * 1024 * 1024;
+
+}  // namespace
 
 // Represents a pending subresource request.
 struct WebBundlePendingSubresourceRequest {
@@ -45,7 +59,38 @@ struct WebBundlePendingSubresourceRequest {
   const net::MutableNetworkTrafficAnnotationTag traffic_annotation;
 };
 
-WebBundleManager::WebBundleManager() = default;
+class WebBundleManager::MemoryQuotaConsumer
+    : public WebBundleMemoryQuotaConsumer {
+ public:
+  MemoryQuotaConsumer(base::WeakPtr<WebBundleManager> manager,
+                      int32_t process_id)
+      : manager_(std::move(manager)), process_id_(process_id) {}
+  MemoryQuotaConsumer(const MemoryQuotaConsumer&) = delete;
+  MemoryQuotaConsumer& operator=(const MemoryQuotaConsumer&) = delete;
+
+  ~MemoryQuotaConsumer() override {
+    if (!manager_)
+      return;
+    manager_->ReleaseMemoryForProcess(process_id_, allocated_bytes_);
+  }
+
+  bool AllocateMemory(uint64_t num_bytes) override {
+    if (!manager_)
+      return false;
+    if (!manager_->AllocateMemoryForProcess(process_id_, num_bytes))
+      return false;
+    allocated_bytes_ += num_bytes;
+    return true;
+  }
+
+ private:
+  base::WeakPtr<WebBundleManager> manager_;
+  const int32_t process_id_;
+  uint64_t allocated_bytes_ = 0;
+};
+
+WebBundleManager::WebBundleManager()
+    : max_memory_per_process_(kDefaultMaxMemoryPerProcess) {}
 
 WebBundleManager::~WebBundleManager() = default;
 
@@ -71,7 +116,9 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
 
   auto factory = std::make_unique<WebBundleURLLoaderFactory>(
       bundle_url, std::move(remote),
-      factory_params->request_initiator_origin_lock);
+      factory_params->request_initiator_origin_lock,
+      std::make_unique<MemoryQuotaConsumer>(weak_ptr_factory_.GetWeakPtr(),
+                                            factory_params->process_id));
 
   // Process pending subresource requests if there are.
   // These subresource requests arrived earlier than the request for the bundle.
@@ -133,6 +180,27 @@ void WebBundleManager::DisconnectHandler(
     int32_t process_id) {
   factories_.erase({process_id, web_bundle_token});
   pending_requests_.erase({process_id, web_bundle_token});
+}
+
+bool WebBundleManager::AllocateMemoryForProcess(int32_t process_id,
+                                                uint64_t num_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (memory_usage_per_process_[process_id] + num_bytes >
+      max_memory_per_process_) {
+    return false;
+  }
+  memory_usage_per_process_[process_id] += num_bytes;
+  return true;
+}
+
+void WebBundleManager::ReleaseMemoryForProcess(int32_t process_id,
+                                               uint64_t num_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(memory_usage_per_process_[process_id], num_bytes);
+  memory_usage_per_process_[process_id] -= num_bytes;
+  if (memory_usage_per_process_[process_id] == 0) {
+    memory_usage_per_process_.erase(process_id);
+  }
 }
 
 }  // namespace network

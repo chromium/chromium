@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "components/web_package/test_support/web_bundle_builder.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -23,17 +24,107 @@ namespace {
 const char kInitiatorUrl[] = "https://example.com/";
 const char kBundleUrl[] = "https://example.com/bundle.wbn";
 const char kResourceUrl[] = "https://example.com/a.txt";
+const char kQuotaExceededErrorMessage[] =
+    "Memory quota exceeded. Currently, there is an upper limit on the total "
+    "size of subresource web bundles in a process. See "
+    "https://crbug.com/1154140 for more details.";
 
 const int32_t process_id1 = 100;
 const int32_t process_id2 = 200;
 
-std::vector<uint8_t> CreateSmallBundle() {
+std::string CreateSmallBundleString() {
   web_package::test::WebBundleBuilder builder(kResourceUrl,
                                               "" /* manifest_url */);
   builder.AddExchange(kResourceUrl,
                       {{":status", "200"}, {"content-type", "text/plain"}},
                       "body");
-  return builder.CreateBundle();
+  auto bundle = builder.CreateBundle();
+  return std::string(reinterpret_cast<const char*>(bundle.data()),
+                     bundle.size());
+}
+
+class TestWebBundleHandle : public mojom::WebBundleHandle {
+ public:
+  explicit TestWebBundleHandle(
+      mojo::PendingReceiver<mojom::WebBundleHandle> receiver) {
+    web_bundle_handles_.Add(this, std::move(receiver));
+  }
+
+  const base::Optional<std::pair<mojom::WebBundleErrorType, std::string>>&
+  last_bundle_error() const {
+    return last_bundle_error_;
+  }
+
+  void RunUntilBundleError() {
+    if (last_bundle_error_.has_value())
+      return;
+    base::RunLoop run_loop;
+    quit_closure_for_bundle_error_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // mojom::WebBundleHandle
+  void Clone(mojo::PendingReceiver<mojom::WebBundleHandle> receiver) override {
+    web_bundle_handles_.Add(this, std::move(receiver));
+  }
+
+  void OnWebBundleError(mojom::WebBundleErrorType type,
+                        const std::string& message) override {
+    last_bundle_error_ = std::make_pair(type, message);
+    if (quit_closure_for_bundle_error_)
+      std::move(quit_closure_for_bundle_error_).Run();
+  }
+
+ private:
+  base::Optional<std::pair<mojom::WebBundleErrorType, std::string>>
+      last_bundle_error_;
+  base::OnceClosure quit_closure_for_bundle_error_;
+
+  mojo::ReceiverSet<network::mojom::WebBundleHandle> web_bundle_handles_;
+};
+
+std::tuple<base::WeakPtr<WebBundleURLLoaderFactory>,
+           std::unique_ptr<TestWebBundleHandle>>
+CreateWebBundleLoaderFactory(WebBundleManager& manager, int32_t process_id) {
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  auto factory_params = mojom::URLLoaderFactoryParams::New();
+  factory_params->process_id = process_id;
+  mojo::PendingRemote<mojom::WebBundleHandle> remote_handle;
+  std::unique_ptr<TestWebBundleHandle> handle =
+      std::make_unique<TestWebBundleHandle>(
+          remote_handle.InitWithNewPipeAndPassReceiver());
+  ResourceRequest::WebBundleTokenParams create_params(token,
+                                                      std::move(remote_handle));
+  base::WeakPtr<WebBundleURLLoaderFactory> factory =
+      manager.CreateWebBundleURLLoaderFactory(GURL(kBundleUrl), create_params,
+                                              factory_params);
+
+  return std::forward_as_tuple(std::move(factory), std::move(handle));
+}
+
+mojo::ScopedDataPipeProducerHandle SetBundleStream(
+    WebBundleURLLoaderFactory& factory) {
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  mojo::ScopedDataPipeProducerHandle producer;
+  CHECK_EQ(MOJO_RESULT_OK, CreateDataPipe(nullptr, &producer, &consumer));
+  factory.SetBundleStream(std::move(consumer));
+  return producer;
+}
+
+std::tuple<mojo::Remote<network::mojom::URLLoader>,
+           std::unique_ptr<network::TestURLLoaderClient>>
+StartSubresourceLoad(WebBundleURLLoaderFactory& factory) {
+  mojo::Remote<network::mojom::URLLoader> loader;
+  auto client = std::make_unique<network::TestURLLoaderClient>();
+  network::ResourceRequest request;
+  request.url = GURL(kResourceUrl);
+  request.method = "GET";
+  request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
+  factory.CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0 /* routing_id */,
+      0 /* request_id */, 0 /* options */, request, client->CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  return std::forward_as_tuple(std::move(loader), std::move(client));
 }
 
 }  // namespace
@@ -42,6 +133,12 @@ class WebBundleManagerTest : public testing::Test {
  public:
   WebBundleManagerTest() = default;
   ~WebBundleManagerTest() override = default;
+
+ protected:
+  void SetMaxMemoryPerProces(WebBundleManager& manager,
+                             uint64_t max_memory_per_process) {
+    manager.set_max_memory_per_process_for_testing(max_memory_per_process);
+  }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -187,10 +284,7 @@ TEST_F(WebBundleManagerTest,
   ASSERT_EQ(CreateDataPipe(nullptr, &producer, &consumer), MOJO_RESULT_OK);
   factory->SetBundleStream(std::move(consumer));
 
-  std::vector<uint8_t> bundle = CreateSmallBundle();
-  mojo::BlockingCopyFromString(
-      std::string(reinterpret_cast<const char*>(bundle.data()), bundle.size()),
-      producer);
+  mojo::BlockingCopyFromString(CreateSmallBundleString(), producer);
 
   producer.reset();
 
@@ -203,6 +297,265 @@ TEST_F(WebBundleManagerTest,
   EXPECT_TRUE(
       mojo::BlockingCopyToString(client->response_body_release(), &body));
   EXPECT_EQ("body", body);
+}
+
+TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
+  WebBundleManager manager;
+
+  std::string bundle = CreateSmallBundleString();
+  SetMaxMemoryPerProces(manager, bundle.size() - 1);
+
+  // Start loading the bundle which size is larger than the quota.
+  base::WeakPtr<WebBundleURLLoaderFactory> factory;
+  std::unique_ptr<TestWebBundleHandle> handle;
+  std::tie(factory, handle) =
+      CreateWebBundleLoaderFactory(manager, process_id1);
+  // Input the bundle to the factory.
+  auto producer = SetBundleStream(*factory);
+  mojo::BlockingCopyFromString(bundle, producer);
+  producer.reset();
+  // TestWebBundleHandle must receive the error.
+  handle->RunUntilBundleError();
+  ASSERT_TRUE(handle->last_bundle_error().has_value());
+  EXPECT_EQ(handle->last_bundle_error()->first,
+            mojom::WebBundleErrorType::kMemoryQuotaExceeded);
+  EXPECT_EQ(handle->last_bundle_error()->second, kQuotaExceededErrorMessage);
+
+  // Start the subresource request after triggering the quota error.
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  std::tie(loader, client) = StartSubresourceLoad(*factory);
+  // The subresource request must fail.
+  client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            client->completion_status().error_code);
+}
+
+TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestBeforeReceivingBundle) {
+  WebBundleManager manager;
+
+  std::string bundle = CreateSmallBundleString();
+  SetMaxMemoryPerProces(manager, bundle.size() - 1);
+
+  // Start loading the bundle which size is larger than the quota.
+  base::WeakPtr<WebBundleURLLoaderFactory> factory;
+  std::unique_ptr<TestWebBundleHandle> handle;
+  std::tie(factory, handle) =
+      CreateWebBundleLoaderFactory(manager, process_id1);
+
+  // Start the subresource request.
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  std::tie(loader, client) = StartSubresourceLoad(*factory);
+
+  // Input the bundle to the factory after starting the subresource load.
+  auto producer = SetBundleStream(*factory);
+  mojo::BlockingCopyFromString(bundle, producer);
+  producer.reset();
+
+  // TestWebBundleHandle must receive the error.
+  handle->RunUntilBundleError();
+  ASSERT_TRUE(handle->last_bundle_error().has_value());
+  EXPECT_EQ(handle->last_bundle_error()->first,
+            mojom::WebBundleErrorType::kMemoryQuotaExceeded);
+  EXPECT_EQ(handle->last_bundle_error()->second, kQuotaExceededErrorMessage);
+
+  // The subresource request must fail.
+  client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            client->completion_status().error_code);
+}
+
+TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileReadingBody) {
+  WebBundleManager manager;
+
+  // Create a not small size bundle to trigger the quota error while reading the
+  // body of the subresource.
+  web_package::test::WebBundleBuilder builder(kResourceUrl,
+                                              "" /* manifest_url */);
+  builder.AddExchange(kResourceUrl,
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      std::string(10000, 'X'));
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  std::string bundle_string =
+      std::string(reinterpret_cast<const char*>(bundle.data()), bundle.size());
+
+  // Set the max memory to trigger the quota error while reading the body of
+  // the subresource.
+  // Note: When WebBundleParser::MetadataParser parses the metadata, it reads
+  // "[fallback URL length] + kMaxSectionLengthsCBORSize(8192) +
+  // kMaxCBORItemHeaderSize(9) * 2" bytes after reading 10 bytes of
+  // kBundleMagicBytes and 5 bytes of kVersionB1MagicBytes and (1, 2, 3, 5 or 9)
+  // bytes of CBORHeader of fallback URL. If we set the quota smaller than
+  // this value, the quota error is triggered while parsing the metadata.
+  uint64_t required_bytes_for_parsing_metadata =
+      10 +                        // size of BundleMagicBytes
+      5 +                         // size of VersionB1MagicBytes
+      2 +                         // CBORHeader size for kResourceUrl string
+      sizeof(kResourceUrl) - 1 +  // len(kResourceUrl)
+      8192 +                      // kMaxSectionLengthsCBORSize
+      9 * 2;                      //  kMaxCBORItemHeaderSize * 2
+  SetMaxMemoryPerProces(manager, required_bytes_for_parsing_metadata);
+  ASSERT_GT(bundle_string.size(), required_bytes_for_parsing_metadata);
+
+  // Start loading the bundle.
+  base::WeakPtr<WebBundleURLLoaderFactory> factory;
+  std::unique_ptr<TestWebBundleHandle> handle;
+  std::tie(factory, handle) =
+      CreateWebBundleLoaderFactory(manager, process_id1);
+
+  // Start the subresource request.
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  std::tie(loader, client) = StartSubresourceLoad(*factory);
+
+  // Input the first |required_bytes_for_parsing_metadata| bytes of the bundle
+  // to the factory.
+  auto producer = SetBundleStream(*factory);
+  mojo::BlockingCopyFromString(
+      bundle_string.substr(0, required_bytes_for_parsing_metadata), producer);
+
+  // The subresource request must be able to receive the response header.
+  client->RunUntilResponseReceived();
+  EXPECT_TRUE(client->has_received_response());
+
+  // Input the remaining bytes of the bundle to the factory.
+  mojo::BlockingCopyFromString(
+      bundle_string.substr(required_bytes_for_parsing_metadata), producer);
+  producer.reset();
+
+  // TestWebBundleHandle must receive the error.
+  handle->RunUntilBundleError();
+  ASSERT_TRUE(handle->last_bundle_error().has_value());
+  EXPECT_EQ(handle->last_bundle_error()->first,
+            mojom::WebBundleErrorType::kMemoryQuotaExceeded);
+  EXPECT_EQ(handle->last_bundle_error()->second, kQuotaExceededErrorMessage);
+
+  // The subresource request must receive the error.
+  client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            client->completion_status().error_code);
+}
+
+TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileParsingManifest) {
+  WebBundleManager manager;
+
+  std::string bundle = CreateSmallBundleString();
+
+  // Set the max memory to trigger the quota error while reading the manifest of
+  // the web bundle.
+  SetMaxMemoryPerProces(manager, 10);
+
+  // Start loading the bundle.
+  base::WeakPtr<WebBundleURLLoaderFactory> factory;
+  std::unique_ptr<TestWebBundleHandle> handle;
+  std::tie(factory, handle) =
+      CreateWebBundleLoaderFactory(manager, process_id1);
+
+  // Input the bundle to the factory byte by byte.
+  auto producer = SetBundleStream(*factory);
+  for (size_t i = 0; i < bundle.size(); ++i) {
+    mojo::BlockingCopyFromString(bundle.substr(i, 1), producer);
+    // Run the RunLoop to trigger OnDataAvailable() byte by byte.
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+  producer.reset();
+
+  // TestWebBundleHandle must receive the error.
+  handle->RunUntilBundleError();
+  ASSERT_TRUE(handle->last_bundle_error().has_value());
+  EXPECT_EQ(handle->last_bundle_error()->first,
+            mojom::WebBundleErrorType::kMemoryQuotaExceeded);
+  EXPECT_EQ(handle->last_bundle_error()->second, kQuotaExceededErrorMessage);
+
+  // Start the subresource request.
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  std::tie(loader, client) = StartSubresourceLoad(*factory);
+
+  // The subresource request must fail.
+  client->RunUntilComplete();
+  EXPECT_FALSE(client->has_received_response());
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            client->completion_status().error_code);
+}
+
+TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
+  WebBundleManager manager;
+
+  std::string bundle = CreateSmallBundleString();
+
+  // Set the max memory to trigger the quota error while loading the second
+  // web bundle.
+  SetMaxMemoryPerProces(manager, bundle.size() * 1.5);
+
+  // Start loading the first web bundle in the process 1.
+  base::WeakPtr<WebBundleURLLoaderFactory> factory1_1;
+  std::unique_ptr<TestWebBundleHandle> handle1_1;
+  std::tie(factory1_1, handle1_1) =
+      CreateWebBundleLoaderFactory(manager, process_id1);
+  auto producer1_1 = SetBundleStream(*factory1_1);
+  mojo::BlockingCopyFromString(bundle, producer1_1);
+  producer1_1.reset();
+
+  // Start loading the subresource from the first web bundle.
+  mojo::Remote<network::mojom::URLLoader> loader1_1;
+  std::unique_ptr<network::TestURLLoaderClient> client1_1;
+  std::tie(loader1_1, client1_1) = StartSubresourceLoad(*factory1_1);
+  // Confirm that the subresource is correctly loaded.
+  client1_1->RunUntilComplete();
+  EXPECT_EQ(net::OK, client1_1->completion_status().error_code);
+  EXPECT_EQ(client1_1->response_head()->web_bundle_url, GURL(kBundleUrl));
+  std::string body1_1;
+  EXPECT_TRUE(
+      mojo::BlockingCopyToString(client1_1->response_body_release(), &body1_1));
+  EXPECT_EQ("body", body1_1);
+
+  // Start loading the second web bundle in the process 1.
+  base::WeakPtr<WebBundleURLLoaderFactory> factory1_2;
+  std::unique_ptr<TestWebBundleHandle> handle1_2;
+  std::tie(factory1_2, handle1_2) =
+      CreateWebBundleLoaderFactory(manager, process_id1);
+  auto producer1_2 = SetBundleStream(*factory1_2);
+  mojo::BlockingCopyFromString(bundle, producer1_2);
+  producer1_2.reset();
+  // TestWebBundleHandle must receive the error.
+  handle1_2->RunUntilBundleError();
+  ASSERT_TRUE(handle1_2->last_bundle_error().has_value());
+  EXPECT_EQ(handle1_2->last_bundle_error()->first,
+            mojom::WebBundleErrorType::kMemoryQuotaExceeded);
+  EXPECT_EQ(handle1_2->last_bundle_error()->second, kQuotaExceededErrorMessage);
+
+  // Start loading the subresource from the second web bundle.
+  mojo::Remote<network::mojom::URLLoader> loader1_2;
+  std::unique_ptr<network::TestURLLoaderClient> client1_2;
+  std::tie(loader1_2, client1_2) = StartSubresourceLoad(*factory1_2);
+  // The subresource request must fail.
+  client1_2->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            client1_2->completion_status().error_code);
+
+  // Start loading the third web bundle in the process 2.
+  base::WeakPtr<WebBundleURLLoaderFactory> factory2;
+  std::unique_ptr<TestWebBundleHandle> handle2;
+  std::tie(factory2, handle2) =
+      CreateWebBundleLoaderFactory(manager, process_id2);
+  auto producer2 = SetBundleStream(*factory2);
+  mojo::BlockingCopyFromString(bundle, producer2);
+  producer2.reset();
+  // Start loading the subresource from the third web bundle.
+  mojo::Remote<network::mojom::URLLoader> loader2;
+  std::unique_ptr<network::TestURLLoaderClient> client2;
+  std::tie(loader2, client2) = StartSubresourceLoad(*factory2);
+  // Confirm that the subresource is correctly loaded.
+  client2->RunUntilComplete();
+  EXPECT_EQ(net::OK, client2->completion_status().error_code);
+  EXPECT_EQ(client2->response_head()->web_bundle_url, GURL(kBundleUrl));
+  std::string body2;
+  EXPECT_TRUE(
+      mojo::BlockingCopyToString(client2->response_body_release(), &body2));
+  EXPECT_EQ("body", body2);
 }
 
 }  // namespace network

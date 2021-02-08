@@ -15,13 +15,17 @@
 
 namespace network {
 
+class WebBundleMemoryQuotaConsumer;
+
 class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
     : public mojom::URLLoaderFactory {
  public:
   WebBundleURLLoaderFactory(
       const GURL& bundle_url,
       mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
-      const base::Optional<url::Origin>& request_initiator_origin_lock);
+      const base::Optional<url::Origin>& request_initiator_origin_lock,
+      std::unique_ptr<WebBundleMemoryQuotaConsumer>
+          web_bundle_memory_quota_consumer);
   ~WebBundleURLLoaderFactory() override;
   WebBundleURLLoaderFactory(const WebBundleURLLoaderFactory&) = delete;
   WebBundleURLLoaderFactory& operator=(const WebBundleURLLoaderFactory&) =
@@ -55,14 +59,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
   void OnResponseParsed(base::WeakPtr<URLLoader> loader,
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);
+  void OnMemoryQuotaExceeded();
 
   GURL bundle_url_;
   mojo::Remote<mojom::WebBundleHandle> web_bundle_handle_;
   const base::Optional<::url::Origin> request_initiator_origin_lock_;
+  std::unique_ptr<WebBundleMemoryQuotaConsumer>
+      web_bundle_memory_quota_consumer_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;
   web_package::mojom::BundleMetadataParseErrorPtr metadata_error_;
+  bool quota_exceeded_error_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
 
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_ptr_factory_{this};

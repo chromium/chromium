@@ -187,6 +187,7 @@ component("network_service") {
     "web_bundle_chunked_buffer.h",
     "web_bundle_manager.cc",
     "web_bundle_manager.h",
+    "web_bundle_memory_quota_consumer.h",
     "web_bundle_url_loader_factory.cc",
     "web_bundle_url_loader_factory.h",
   ]

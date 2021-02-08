@@ -12,6 +12,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "services/network/web_bundle_memory_quota_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -103,6 +104,14 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
   base::OnceClosure quit_closure_for_bundle_error_;
 };
 
+class MockMemoryQuotaConsumer : public WebBundleMemoryQuotaConsumer {
+ public:
+  MockMemoryQuotaConsumer() = default;
+  ~MockMemoryQuotaConsumer() override = default;
+
+  bool AllocateMemory(uint64_t num_bytes) override { return true; }
+};
+
 }  // namespace
 
 class WebBundleURLLoaderFactoryTest : public ::testing::Test {
@@ -115,7 +124,9 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     handle_ = std::make_unique<TestWebBundleHandle>(
         handle.BindNewPipeAndPassReceiver());
     factory_ = std::make_unique<WebBundleURLLoaderFactory>(
-        GURL(kBundleUrl), std::move(handle), base::nullopt);
+        GURL(kBundleUrl), std::move(handle),
+        /*request_initiator_origin_lock=*/base::nullopt,
+        std::make_unique<MockMemoryQuotaConsumer>());
     factory_->SetBundleStream(std::move(consumer));
   }
 

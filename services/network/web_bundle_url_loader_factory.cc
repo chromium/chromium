@@ -5,6 +5,7 @@
 #include "services/network/web_bundle_url_loader_factory.h"
 
 #include "base/optional.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -14,6 +15,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/web_bundle_chunked_buffer.h"
+#include "services/network/web_bundle_memory_quota_consumer.h"
 
 namespace network {
 
@@ -229,11 +231,18 @@ class WebBundleURLLoaderFactory::BundleDataSource
 
   BundleDataSource(mojo::PendingReceiver<web_package::mojom::BundleDataSource>
                        data_source_receiver,
-                   mojo::ScopedDataPipeConsumerHandle bundle_body)
+                   mojo::ScopedDataPipeConsumerHandle bundle_body,
+                   std::unique_ptr<WebBundleMemoryQuotaConsumer>
+                       web_bundle_memory_quota_consumer,
+                   base::OnceClosure memory_quota_exceeded_closure)
       : data_source_receiver_(this, std::move(data_source_receiver)),
         pipe_drainer_(
             std::make_unique<mojo::DataPipeDrainer>(this,
-                                                    std::move(bundle_body))) {}
+                                                    std::move(bundle_body))),
+        web_bundle_memory_quota_consumer_(
+            std::move(web_bundle_memory_quota_consumer)),
+        memory_quota_exceeded_closure_(
+            std::move(memory_quota_exceeded_closure)) {}
 
   ~BundleDataSource() override {
     // The receiver must be closed before destructing pending callbacks in
@@ -287,7 +296,6 @@ class WebBundleURLLoaderFactory::BundleDataSource
       pending_reads_.push_back(std::move(pending));
       return;
     }
-
     uint64_t out_len = buffer_.GetAvailableLength(offset, length);
     std::vector<uint8_t> output(base::checked_cast<size_t>(out_len));
     buffer_.ReadData(offset, out_len, output.data());
@@ -297,8 +305,16 @@ class WebBundleURLLoaderFactory::BundleDataSource
   // mojo::DataPipeDrainer::Client
   void OnDataAvailable(const void* data, size_t num_bytes) override {
     DCHECK(!finished_loading_);
-    // TODO(crbug.com/1082020): Set a threshold for buffer size, so that Network
-    // Service does not use memory indefinitely.
+    if (!web_bundle_memory_quota_consumer_->AllocateMemory(num_bytes)) {
+      AbortPendingReads();
+      if (memory_quota_exceeded_closure_) {
+        // Defer calling |memory_quota_exceeded_closure_| to avoid the
+        // UAF call in DataPipeDrainer::ReadData().
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, std::move(memory_quota_exceeded_closure_));
+      }
+      return;
+    }
     buffer_.Append(reinterpret_cast<const uint8_t*>(data), num_bytes);
     ProcessPendingReads();
   }
@@ -311,19 +327,32 @@ class WebBundleURLLoaderFactory::BundleDataSource
 
  private:
   void ProcessPendingReads() {
-    std::vector<PendingRead> pendings;
-    pendings.swap(pending_reads_);
-    for (auto& pending : pendings)
-      Read(pending.offset, pending.length, std::move(pending.callback));
+    std::vector<PendingRead> pendings(std::move(pending_reads_));
+    std::vector<PendingReadToDataPipe> pipe_pendings(
+        std::move(pending_reads_to_data_pipe_));
 
-    std::vector<PendingReadToDataPipe> pipe_pendings;
-    pipe_pendings.swap(pending_reads_to_data_pipe_);
+    for (auto& pending : pendings) {
+      Read(pending.offset, pending.length, std::move(pending.callback));
+    }
+
     for (auto& pending : pipe_pendings) {
       ReadToDataPipe(std::move(pending.producer), pending.offset,
                      pending.length, std::move(pending.callback));
     }
   }
 
+  void AbortPendingReads() {
+    std::vector<PendingRead> pendings(std::move(pending_reads_));
+    std::vector<PendingReadToDataPipe> pipe_pendings(
+        std::move(pending_reads_to_data_pipe_));
+
+    for (auto& pending : pendings) {
+      std::move(pending.callback).Run(std::vector<uint8_t>());
+    }
+    for (auto& pending : pipe_pendings) {
+      std::move(pending.callback).Run(MOJO_RESULT_NOT_FOUND);
+    }
+  }
 
   struct PendingRead {
     uint64_t offset;
@@ -343,15 +372,22 @@ class WebBundleURLLoaderFactory::BundleDataSource
   std::vector<PendingReadToDataPipe> pending_reads_to_data_pipe_;
   bool finished_loading_ = false;
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
+  std::unique_ptr<WebBundleMemoryQuotaConsumer>
+      web_bundle_memory_quota_consumer_;
+  base::OnceClosure memory_quota_exceeded_closure_;
 };
 
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     const GURL& bundle_url,
     mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
-    const base::Optional<url::Origin>& request_initiator_origin_lock)
+    const base::Optional<url::Origin>& request_initiator_origin_lock,
+    std::unique_ptr<WebBundleMemoryQuotaConsumer>
+        web_bundle_memory_quota_consumer)
     : bundle_url_(bundle_url),
       web_bundle_handle_(std::move(web_bundle_handle)),
-      request_initiator_origin_lock_(request_initiator_origin_lock) {}
+      request_initiator_origin_lock_(request_initiator_origin_lock),
+      web_bundle_memory_quota_consumer_(
+          std::move(web_bundle_memory_quota_consumer)) {}
 
 WebBundleURLLoaderFactory::~WebBundleURLLoaderFactory() {
   for (auto loader : pending_loaders_) {
@@ -369,7 +405,10 @@ void WebBundleURLLoaderFactory::SetBundleStream(
     mojo::ScopedDataPipeConsumerHandle body) {
   mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source;
   source_ = std::make_unique<BundleDataSource>(
-      data_source.InitWithNewPipeAndPassReceiver(), std::move(body));
+      data_source.InitWithNewPipeAndPassReceiver(), std::move(body),
+      std::move(web_bundle_memory_quota_consumer_),
+      base::BindOnce(&WebBundleURLLoaderFactory::OnMemoryQuotaExceeded,
+                     weak_ptr_factory_.GetWeakPtr()));
   // WebBundleParser will self-destruct on remote mojo ends' disconnection.
   new web_package::WebBundleParser(parser_.BindNewPipeAndPassReceiver(),
                                    std::move(data_source));
@@ -403,6 +442,10 @@ void WebBundleURLLoaderFactory::CreateLoaderAndStart(
       new URLLoader(std::move(receiver), url_request, std::move(client),
                     request_initiator_origin_lock_);
   if (metadata_error_) {
+    loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
+    return;
+  }
+  if (quota_exceeded_error_) {
     loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     return;
   }
@@ -450,11 +493,14 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
     web_bundle_handle_->OnWebBundleError(
         mojom::WebBundleErrorType::kMetadataParseError,
         metadata_error_->message);
-    for (auto loader : pending_loaders_) {
+    auto pending_loaders = std::move(pending_loaders_);
+    for (auto loader : pending_loaders) {
       if (loader)
         loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
     }
-    pending_loaders_.clear();
+
+    source_.reset();
+    parser_.reset();
     return;
   }
 
@@ -519,6 +565,24 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
   source_->ReadToDataPipe(
       std::move(producer), response->payload_offset, response->payload_length,
       base::BindOnce(&URLLoader::OnWriteCompleted, loader->GetWeakPtr()));
+}
+
+void WebBundleURLLoaderFactory::OnMemoryQuotaExceeded() {
+  TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::OnMemoryQuotaExceeded");
+  quota_exceeded_error_ = true;
+  web_bundle_handle_->OnWebBundleError(
+      mojom::WebBundleErrorType::kMemoryQuotaExceeded,
+      "Memory quota exceeded. Currently, there is an upper limit on the total "
+      "size of subresource web bundles in a process. See "
+      "https://crbug.com/1154140 for more details.");
+  auto pending_loaders = std::move(pending_loaders_);
+  for (auto loader : pending_loaders) {
+    if (loader) {
+      loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
+    }
+  }
+  source_.reset();
+  parser_.reset();
 }
 
 }  // namespace network
