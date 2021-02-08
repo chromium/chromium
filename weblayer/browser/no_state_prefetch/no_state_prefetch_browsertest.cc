@@ -17,8 +17,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "weblayer/browser/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "weblayer/browser/no_state_prefetch/prerender_link_manager_factory.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/prerender_controller.h"
@@ -121,10 +121,12 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   EXPECT_TRUE(no_state_prefetch_manager);
 }
 
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, CreatePrerenderLinkManager) {
-  auto* prerender_link_manager =
-      PrerenderLinkManagerFactory::GetForBrowserContext(GetBrowserContext());
-  EXPECT_TRUE(prerender_link_manager);
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       CreateNoStatePrefetchLinkManager) {
+  auto* no_state_prefetch_link_manager =
+      NoStatePrefetchLinkManagerFactory::GetForBrowserContext(
+          GetBrowserContext());
+  EXPECT_TRUE(no_state_prefetch_link_manager);
 }
 
 // Test that adding a link-rel prerender tag causes a fetch.

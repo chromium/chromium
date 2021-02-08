@@ -4,7 +4,7 @@
 
 #include "components/no_state_prefetch/browser/prerender_processor_impl.h"
 
-#include "components/no_state_prefetch/browser/prerender_link_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -63,7 +63,7 @@ void PrerenderProcessorImpl::Start(
   if (!render_frame_host)
     return;
 
-  auto* link_manager = GetPrerenderLinkManager();
+  auto* link_manager = GetNoStatePrefetchLinkManager();
   if (!link_manager)
     return;
 
@@ -77,26 +77,27 @@ void PrerenderProcessorImpl::Start(
 void PrerenderProcessorImpl::Cancel() {
   if (!link_trigger_id_)
     return;
-  auto* link_manager = GetPrerenderLinkManager();
+  auto* link_manager = GetNoStatePrefetchLinkManager();
   if (link_manager)
     link_manager->OnCancelLinkTrigger(*link_trigger_id_);
 }
 
 void PrerenderProcessorImpl::Abandon() {
   if (link_trigger_id_) {
-    auto* link_manager = GetPrerenderLinkManager();
+    auto* link_manager = GetNoStatePrefetchLinkManager();
     if (link_manager)
       link_manager->OnAbandonLinkTrigger(*link_trigger_id_);
   }
   delete this;
 }
 
-PrerenderLinkManager* PrerenderProcessorImpl::GetPrerenderLinkManager() {
+NoStatePrefetchLinkManager*
+PrerenderProcessorImpl::GetNoStatePrefetchLinkManager() {
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
   if (!render_frame_host)
     return nullptr;
-  return delegate_->GetPrerenderLinkManager(
+  return delegate_->GetNoStatePrefetchLinkManager(
       render_frame_host->GetProcess()->GetBrowserContext());
 }
 

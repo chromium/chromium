@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_link_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 
 #include <functional>
 #include <limits>
@@ -48,7 +48,7 @@ int GetNextLinkTriggerId() {
 
 }  // namespace
 
-PrerenderLinkManager::LinkTrigger::LinkTrigger(
+NoStatePrefetchLinkManager::LinkTrigger::LinkTrigger(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
@@ -67,15 +67,16 @@ PrerenderLinkManager::LinkTrigger::LinkTrigger(
       has_been_abandoned(false),
       link_trigger_id(GetNextLinkTriggerId()) {}
 
-PrerenderLinkManager::LinkTrigger::~LinkTrigger() {
+NoStatePrefetchLinkManager::LinkTrigger::~LinkTrigger() {
   DCHECK_EQ(nullptr, handle.get())
       << "The NoStatePrefetchHandle should be destroyed before its Prerender.";
 }
 
-PrerenderLinkManager::PrerenderLinkManager(NoStatePrefetchManager* manager)
+NoStatePrefetchLinkManager::NoStatePrefetchLinkManager(
+    NoStatePrefetchManager* manager)
     : has_shutdown_(false), manager_(manager) {}
 
-PrerenderLinkManager::~PrerenderLinkManager() {
+NoStatePrefetchLinkManager::~NoStatePrefetchLinkManager() {
   for (auto& trigger : triggers_) {
     if (trigger->handle) {
       DCHECK(!trigger->handle->IsPrefetching())
@@ -86,7 +87,7 @@ PrerenderLinkManager::~PrerenderLinkManager() {
   }
 }
 
-base::Optional<int> PrerenderLinkManager::OnStartLinkTrigger(
+base::Optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_process_id,
     int launcher_render_view_id,
     blink::mojom::PrerenderAttributesPtr attributes,
@@ -135,7 +136,7 @@ base::Optional<int> PrerenderLinkManager::OnStartLinkTrigger(
   return base::nullopt;
 }
 
-void PrerenderLinkManager::OnCancelLinkTrigger(int link_trigger_id) {
+void NoStatePrefetchLinkManager::OnCancelLinkTrigger(int link_trigger_id) {
   LinkTrigger* trigger = FindByLinkTriggerId(link_trigger_id);
   if (!trigger)
     return;
@@ -143,7 +144,7 @@ void PrerenderLinkManager::OnCancelLinkTrigger(int link_trigger_id) {
   StartLinkTriggers();
 }
 
-void PrerenderLinkManager::OnAbandonLinkTrigger(int link_trigger_id) {
+void NoStatePrefetchLinkManager::OnAbandonLinkTrigger(int link_trigger_id) {
   LinkTrigger* trigger = FindByLinkTriggerId(link_trigger_id);
   if (!trigger)
     return;
@@ -164,16 +165,16 @@ void PrerenderLinkManager::OnAbandonLinkTrigger(int link_trigger_id) {
     RemoveLinkTrigger(trigger);
 }
 
-bool PrerenderLinkManager::IsEmpty() const {
+bool NoStatePrefetchLinkManager::IsEmpty() const {
   return triggers_.empty();
 }
 
-bool PrerenderLinkManager::TriggerIsRunningForTesting(
+bool NoStatePrefetchLinkManager::TriggerIsRunningForTesting(
     LinkTrigger* trigger) const {
   return trigger->handle.get() != nullptr;
 }
 
-size_t PrerenderLinkManager::CountRunningTriggers() const {
+size_t NoStatePrefetchLinkManager::CountRunningTriggers() const {
   return std::count_if(triggers_.begin(), triggers_.end(),
                        [](const std::unique_ptr<LinkTrigger>& trigger) {
                          return trigger->handle &&
@@ -181,7 +182,7 @@ size_t PrerenderLinkManager::CountRunningTriggers() const {
                        });
 }
 
-void PrerenderLinkManager::StartLinkTriggers() {
+void NoStatePrefetchLinkManager::StartLinkTriggers() {
   if (has_shutdown_)
     return;
 
@@ -285,8 +286,8 @@ void PrerenderLinkManager::StartLinkTriggers() {
   }
 }
 
-PrerenderLinkManager::LinkTrigger*
-PrerenderLinkManager::FindByNoStatePrefetchHandle(
+NoStatePrefetchLinkManager::LinkTrigger*
+NoStatePrefetchLinkManager::FindByNoStatePrefetchHandle(
     NoStatePrefetchHandle* no_state_prefetch_handle) {
   DCHECK(no_state_prefetch_handle);
   for (auto& trigger : triggers_) {
@@ -296,8 +297,8 @@ PrerenderLinkManager::FindByNoStatePrefetchHandle(
   return nullptr;
 }
 
-PrerenderLinkManager::LinkTrigger* PrerenderLinkManager::FindByLinkTriggerId(
-    int link_trigger_id) {
+NoStatePrefetchLinkManager::LinkTrigger*
+NoStatePrefetchLinkManager::FindByLinkTriggerId(int link_trigger_id) {
   for (auto& trigger : triggers_) {
     if (trigger->link_trigger_id == link_trigger_id)
       return trigger.get();
@@ -305,7 +306,7 @@ PrerenderLinkManager::LinkTrigger* PrerenderLinkManager::FindByLinkTriggerId(
   return nullptr;
 }
 
-void PrerenderLinkManager::RemoveLinkTrigger(LinkTrigger* trigger) {
+void NoStatePrefetchLinkManager::RemoveLinkTrigger(LinkTrigger* trigger) {
   for (auto it = triggers_.begin(); it != triggers_.end(); ++it) {
     LinkTrigger* current_trigger = it->get();
     if (current_trigger == trigger) {
@@ -318,7 +319,7 @@ void PrerenderLinkManager::RemoveLinkTrigger(LinkTrigger* trigger) {
   NOTREACHED();
 }
 
-void PrerenderLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
+void NoStatePrefetchLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
   for (auto it = triggers_.begin(); it != triggers_.end(); ++it) {
     LinkTrigger* current_trigger = it->get();
     if (current_trigger == trigger) {
@@ -333,11 +334,11 @@ void PrerenderLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
   NOTREACHED();
 }
 
-void PrerenderLinkManager::Shutdown() {
+void NoStatePrefetchLinkManager::Shutdown() {
   has_shutdown_ = true;
 }
 
-void PrerenderLinkManager::OnPrefetchStop(
+void NoStatePrefetchLinkManager::OnPrefetchStop(
     NoStatePrefetchHandle* no_state_prefetch_handle) {
   LinkTrigger* trigger = FindByNoStatePrefetchHandle(no_state_prefetch_handle);
   if (!trigger)
@@ -346,7 +347,7 @@ void PrerenderLinkManager::OnPrefetchStop(
   StartLinkTriggers();
 }
 
-void PrerenderLinkManager::OnPrefetchNetworkBytesChanged(
+void NoStatePrefetchLinkManager::OnPrefetchNetworkBytesChanged(
     NoStatePrefetchHandle* no_state_prefetch_handle) {}
 
 }  // namespace prerender

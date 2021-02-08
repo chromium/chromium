@@ -12,7 +12,7 @@ class BrowserContext;
 }
 
 namespace prerender {
-class PrerenderLinkManager;
+class NoStatePrefetchLinkManager;
 }
 
 namespace weblayer {
@@ -24,7 +24,7 @@ class PrerenderProcessorImplDelegateImpl
   ~PrerenderProcessorImplDelegateImpl() override = default;
 
   // prerender::PrerenderProcessorImplDelegate overrides,
-  prerender::PrerenderLinkManager* GetPrerenderLinkManager(
+  prerender::NoStatePrefetchLinkManager* GetNoStatePrefetchLinkManager(
       content::BrowserContext* browser_context) override;
 };
 

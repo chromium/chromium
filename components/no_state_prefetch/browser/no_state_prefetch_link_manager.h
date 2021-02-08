@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_LINK_MANAGER_H_
-#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_LINK_MANAGER_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_LINK_MANAGER_H_
+#define COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_LINK_MANAGER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -27,15 +27,15 @@ namespace prerender {
 
 class NoStatePrefetchManager;
 
-// PrerenderLinkManager implements the API on Link elements for all documents
-// being rendered in this chrome instance.  It receives messages from the
-// renderer indicating addition, cancelation and abandonment of link elements,
-// and controls the NoStatePrefetchManager accordingly.
-class PrerenderLinkManager : public KeyedService,
-                             public NoStatePrefetchHandle::Observer {
+// NoStatePrefetchLinkManager implements the API on Link elements for all
+// documents being rendered in this chrome instance.  It receives messages from
+// the renderer indicating addition, cancelation and abandonment of link
+// elements, and controls the NoStatePrefetchManager accordingly.
+class NoStatePrefetchLinkManager : public KeyedService,
+                                   public NoStatePrefetchHandle::Observer {
  public:
-  explicit PrerenderLinkManager(NoStatePrefetchManager* manager);
-  ~PrerenderLinkManager() override;
+  explicit NoStatePrefetchLinkManager(NoStatePrefetchManager* manager);
+  ~NoStatePrefetchLinkManager() override;
 
   // Called when a <link rel=prerender ...> element has been inserted into the
   // document. Returns the link trigger id that is used for canceling or
@@ -76,7 +76,7 @@ class PrerenderLinkManager : public KeyedService,
     LinkTrigger(const LinkTrigger& other) = delete;
     LinkTrigger& operator=(const LinkTrigger& other) = delete;
 
-    // Parameters from PrerenderLinkManager::OnStartLinkTrigger():
+    // Parameters from NoStatePrefetchLinkManager::OnStartLinkTrigger():
     const int launcher_render_process_id;
     const int launcher_render_view_id;
     const GURL url;
@@ -85,7 +85,7 @@ class PrerenderLinkManager : public KeyedService,
     const url::Origin initiator_origin;
     const gfx::Size size;
 
-    // The time at which this trigger was added to PrerenderLinkManager.
+    // The time at which this trigger was added to NoStatePrefetchLinkManager.
     const base::TimeTicks creation_time;
 
     // If non-null, this trigger was launched by an unswapped prefetcher,
@@ -140,14 +140,15 @@ class PrerenderLinkManager : public KeyedService,
 
   NoStatePrefetchManager* const manager_;
 
-  // All triggers known to this PrerenderLinkManager. Insertions are always
-  // made at the back, so the oldest trigger is at the front, and the youngest
-  // at the back. Using std::unique_ptr<> here as LinkTrigger is not copyable.
+  // All triggers known to this NoStatePrefetchLinkManager. Insertions are
+  // always made at the back, so the oldest trigger is at the front, and the
+  // youngest at the back. Using std::unique_ptr<> here as LinkTrigger is not
+  // copyable.
   std::list<std::unique_ptr<LinkTrigger>> triggers_;
 
-  DISALLOW_COPY_AND_ASSIGN(PrerenderLinkManager);
+  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchLinkManager);
 };
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_PRERENDER_LINK_MANAGER_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_BROWSER_NO_STATE_PREFETCH_LINK_MANAGER_H_

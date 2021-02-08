@@ -37,7 +37,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
-#include "chrome/browser/prefetch/no_state_prefetch/prerender_link_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -56,7 +56,7 @@
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
-#include "components/no_state_prefetch/browser/prerender_link_manager.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -134,8 +134,8 @@ using extensions::MenuItem;
 using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
-using prerender::PrerenderLinkManager;
-using prerender::PrerenderLinkManagerFactory;
+using prerender::NoStatePrefetchLinkManager;
+using prerender::NoStatePrefetchLinkManagerFactory;
 using task_manager::browsertest_util::MatchAboutBlankTab;
 using task_manager::browsertest_util::MatchAnyApp;
 using task_manager::browsertest_util::MatchAnyBackground;
@@ -1934,11 +1934,11 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, NoPrerenderer) {
           "web_view/noprerenderer");
   ASSERT_TRUE(guest_web_contents != nullptr);
 
-  PrerenderLinkManager* prerender_link_manager =
-      PrerenderLinkManagerFactory::GetForBrowserContext(
+  NoStatePrefetchLinkManager* no_state_prefetch_link_manager =
+      NoStatePrefetchLinkManagerFactory::GetForBrowserContext(
           guest_web_contents->GetBrowserContext());
-  ASSERT_TRUE(prerender_link_manager != nullptr);
-  EXPECT_TRUE(prerender_link_manager->IsEmpty());
+  ASSERT_TRUE(no_state_prefetch_link_manager != nullptr);
+  EXPECT_TRUE(no_state_prefetch_link_manager->IsEmpty());
 }
 
 // Verify that existing <webview>'s are detected when the task manager starts

@@ -13,7 +13,7 @@ class BrowserContext;
 
 namespace prerender {
 
-class PrerenderLinkManager;
+class NoStatePrefetchLinkManager;
 
 class ChromePrerenderProcessorImplDelegate
     : public PrerenderProcessorImplDelegate {
@@ -22,7 +22,7 @@ class ChromePrerenderProcessorImplDelegate
   ~ChromePrerenderProcessorImplDelegate() override = default;
 
   // PrerenderProcessorImplDelegate overrides,
-  PrerenderLinkManager* GetPrerenderLinkManager(
+  NoStatePrefetchLinkManager* GetNoStatePrefetchLinkManager(
       content::BrowserContext* browser_context) override;
 };
 

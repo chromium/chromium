@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_PRERENDER_LINK_MANAGER_FACTORY_H_
-#define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_PRERENDER_LINK_MANAGER_FACTORY_H_
+#ifndef CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_NO_STATE_PREFETCH_LINK_MANAGER_FACTORY_H_
+#define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_NO_STATE_PREFETCH_LINK_MANAGER_FACTORY_H_
 
 #include "base/compiler_specific.h"
 #include "base/memory/singleton.h"
@@ -15,19 +15,20 @@ class BrowserContext;
 
 namespace prerender {
 
-class PrerenderLinkManager;
+class NoStatePrefetchLinkManager;
 
-class PrerenderLinkManagerFactory : public BrowserContextKeyedServiceFactory {
+class NoStatePrefetchLinkManagerFactory
+    : public BrowserContextKeyedServiceFactory {
  public:
-  static PrerenderLinkManager* GetForBrowserContext(
+  static NoStatePrefetchLinkManager* GetForBrowserContext(
       content::BrowserContext* browser_context);
-  static PrerenderLinkManagerFactory* GetInstance();
+  static NoStatePrefetchLinkManagerFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<PrerenderLinkManagerFactory>;
+  friend struct base::DefaultSingletonTraits<NoStatePrefetchLinkManagerFactory>;
 
-  PrerenderLinkManagerFactory();
-  ~PrerenderLinkManagerFactory() override {}
+  NoStatePrefetchLinkManagerFactory();
+  ~NoStatePrefetchLinkManagerFactory() override {}
 
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
@@ -37,4 +38,4 @@ class PrerenderLinkManagerFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace prerender
 
-#endif  // CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_PRERENDER_LINK_MANAGER_FACTORY_H_
+#endif  // CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_NO_STATE_PREFETCH_LINK_MANAGER_FACTORY_H_

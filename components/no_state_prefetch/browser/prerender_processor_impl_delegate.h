@@ -11,14 +11,14 @@ class BrowserContext;
 
 namespace prerender {
 
-class PrerenderLinkManager;
+class NoStatePrefetchLinkManager;
 
 class PrerenderProcessorImplDelegate {
  public:
   virtual ~PrerenderProcessorImplDelegate() = default;
 
-  // Gets the PrerenderLinkManager associated with |browser_context|.
-  virtual PrerenderLinkManager* GetPrerenderLinkManager(
+  // Gets the NoStatePrefetchLinkManager associated with |browser_context|.
+  virtual NoStatePrefetchLinkManager* GetNoStatePrefetchLinkManager(
       content::BrowserContext* browser_context) = 0;
 };
 

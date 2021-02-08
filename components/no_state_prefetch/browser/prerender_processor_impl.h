@@ -44,14 +44,14 @@ class PrerenderProcessorImpl : public blink::mojom::PrerenderProcessor {
   // handler.
   void Abandon();
 
-  PrerenderLinkManager* GetPrerenderLinkManager();
+  NoStatePrefetchLinkManager* GetNoStatePrefetchLinkManager();
 
   const int render_process_id_;
   const int render_frame_id_;
   const url::Origin initiator_origin_;
   const std::unique_ptr<PrerenderProcessorImplDelegate> delegate_;
 
-  // The ID of PrerenderLinkManager::LinkTrigger. Used for canceling or
+  // The ID of NoStatePrefetchLinkManager::LinkTrigger. Used for canceling or
   // abandoning prerendering.
   base::Optional<int> link_trigger_id_;
 
