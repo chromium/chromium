@@ -255,7 +255,7 @@ js_library("oobe_adb_sideloading_screen") {
 js_library("oobe_enable_kiosk") {
   deps = [
     "components:login_screen_behavior",
-    "components/oobe_dialog:oobe_dialog",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
