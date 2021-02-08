@@ -49,9 +49,9 @@ PluginResource::~PluginResource() {
 void PluginResource::OnReplyReceived(
     const proxy::ResourceMessageReplyParams& params,
     const IPC::Message& msg) {
-  TRACE_EVENT2("ppapi proxy", "PluginResource::OnReplyReceived",
-               "Class", IPC_MESSAGE_ID_CLASS(msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PluginResource::OnReplyReceived", "Class",
+               IPC_MESSAGE_ID_CLASS(msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg.type()));
   // Grab the callback for the reply sequence number and run it with |msg|.
   CallbackMap::iterator it = callbacks_.find(params.sequence());
   if (it == callbacks_.end()) {
@@ -88,9 +88,9 @@ void PluginResource::NotifyInstanceWasDeleted() {
 }
 
 void PluginResource::SendCreate(Destination dest, const IPC::Message& msg) {
-  TRACE_EVENT2("ppapi proxy", "PluginResource::SendCreate",
-               "Class", IPC_MESSAGE_ID_CLASS(msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PluginResource::SendCreate", "Class",
+               IPC_MESSAGE_ID_CLASS(msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg.type()));
   if (dest == RENDERER) {
     DCHECK(!sent_create_to_renderer_);
     sent_create_to_renderer_ = true;
@@ -118,9 +118,9 @@ void PluginResource::AttachToPendingHost(Destination dest,
 }
 
 void PluginResource::Post(Destination dest, const IPC::Message& msg) {
-  TRACE_EVENT2("ppapi proxy", "PluginResource::Post",
-               "Class", IPC_MESSAGE_ID_CLASS(msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PluginResource::Post", "Class",
+               IPC_MESSAGE_ID_CLASS(msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg.type()));
   ResourceMessageCallParams params(pp_resource(), GetNextSequence());
   SendResourceCall(dest, params, msg);
 }
@@ -146,9 +146,9 @@ int32_t PluginResource::GenericSyncCall(
     const IPC::Message& msg,
     IPC::Message* reply,
     ResourceMessageReplyParams* reply_params) {
-  TRACE_EVENT2("ppapi proxy", "PluginResource::GenericSyncCall",
-               "Class", IPC_MESSAGE_ID_CLASS(msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PluginResource::GenericSyncCall", "Class",
+               IPC_MESSAGE_ID_CLASS(msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg.type()));
   ResourceMessageCallParams params(pp_resource(), GetNextSequence());
   params.set_has_callback();
   bool success = GetSender(dest)->Send(new PpapiHostMsg_ResourceSyncCall(

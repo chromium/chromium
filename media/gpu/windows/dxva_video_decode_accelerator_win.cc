@@ -1825,7 +1825,7 @@ void DXVAVideoDecodeAccelerator::DoDecode(const gfx::Rect& visible_rect,
   }
   TRACE_EVENT_ASYNC_END0("gpu", "DXVAVideoDecodeAccelerator.Decoding", this);
 
-  TRACE_COUNTER1("DXVA Decoding", "TotalPacketsBeforeDecode",
+  TRACE_COUNTER1("DXVA_Decoding", "TotalPacketsBeforeDecode",
                  inputs_before_decode_);
 
   inputs_before_decode_ = 0;

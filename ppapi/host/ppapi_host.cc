@@ -87,9 +87,9 @@ bool PpapiHost::OnMessageReceived(const IPC::Message& msg) {
 
 void PpapiHost::SendReply(const ReplyMessageContext& context,
                           const IPC::Message& msg) {
-  TRACE_EVENT2("ppapi proxy", "PpapiHost::SendReply",
-               "Class", IPC_MESSAGE_ID_CLASS(msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PpapiHost::SendReply", "Class",
+               IPC_MESSAGE_ID_CLASS(msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg.type()));
   if (context.sync_reply_msg) {
     PpapiHostMsg_ResourceSyncCall::WriteReplyParams(context.sync_reply_msg,
                                                     context.params, msg);
@@ -115,9 +115,9 @@ void PpapiHost::SendUnsolicitedReplyWithHandles(
     PP_Resource resource,
     const IPC::Message& msg,
     std::vector<SerializedHandle>* handles) {
-  TRACE_EVENT2("ppapi proxy", "PpapiHost::SendUnsolicitedReplyWithHandles",
-               "Class", IPC_MESSAGE_ID_CLASS(msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PpapiHost::SendUnsolicitedReplyWithHandles",
+               "Class", IPC_MESSAGE_ID_CLASS(msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg.type()));
   DCHECK(resource);  // If this fails, host is probably pending.
   proxy::ResourceMessageReplyParams params(resource, 0);
   for (auto& handle : *handles)
@@ -170,9 +170,9 @@ void PpapiHost::AddInstanceMessageFilter(
 void PpapiHost::OnHostMsgResourceCall(
     const proxy::ResourceMessageCallParams& params,
     const IPC::Message& nested_msg) {
-  TRACE_EVENT2("ppapi proxy", "PpapiHost::OnHostMsgResourceCall",
-               "Class", IPC_MESSAGE_ID_CLASS(nested_msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(nested_msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PpapiHost::OnHostMsgResourceCall", "Class",
+               IPC_MESSAGE_ID_CLASS(nested_msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(nested_msg.type()));
   HostMessageContext context(params);
   HandleResourceCall(params, nested_msg, &context);
 }
@@ -181,9 +181,9 @@ void PpapiHost::OnHostMsgInProcessResourceCall(
     int routing_id,
     const proxy::ResourceMessageCallParams& params,
     const IPC::Message& nested_msg) {
-  TRACE_EVENT2("ppapi proxy", "PpapiHost::OnHostMsgInProcessResourceCall",
-               "Class", IPC_MESSAGE_ID_CLASS(nested_msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(nested_msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PpapiHost::OnHostMsgInProcessResourceCall",
+               "Class", IPC_MESSAGE_ID_CLASS(nested_msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(nested_msg.type()));
   HostMessageContext context(routing_id, params);
   HandleResourceCall(params, nested_msg, &context);
 }
@@ -192,9 +192,9 @@ void PpapiHost::OnHostMsgResourceSyncCall(
     const proxy::ResourceMessageCallParams& params,
     const IPC::Message& nested_msg,
     IPC::Message* reply_msg) {
-  TRACE_EVENT2("ppapi proxy", "PpapiHost::OnHostMsgResourceSyncCall",
-               "Class", IPC_MESSAGE_ID_CLASS(nested_msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(nested_msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PpapiHost::OnHostMsgResourceSyncCall", "Class",
+               IPC_MESSAGE_ID_CLASS(nested_msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(nested_msg.type()));
   // Sync messages should always have callback set because they always expect
   // a reply from the host.
   DCHECK(params.has_callback());
@@ -225,9 +225,9 @@ void PpapiHost::OnHostMsgResourceCreated(
     const proxy::ResourceMessageCallParams& params,
     PP_Instance instance,
     const IPC::Message& nested_msg) {
-  TRACE_EVENT2("ppapi proxy", "PpapiHost::OnHostMsgResourceCreated",
-               "Class", IPC_MESSAGE_ID_CLASS(nested_msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(nested_msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PpapiHost::OnHostMsgResourceCreated", "Class",
+               IPC_MESSAGE_ID_CLASS(nested_msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(nested_msg.type()));
 
   if (pending_resource_hosts_.size() + resources_.size()
       >= kMaxResourcesPerPlugin) {

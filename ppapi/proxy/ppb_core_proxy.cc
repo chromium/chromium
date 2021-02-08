@@ -46,9 +46,9 @@ double GetTimeTicks() {
 }
 
 void CallbackWrapper(PP_CompletionCallback callback, int32_t result) {
-  TRACE_EVENT2("ppapi proxy", "CallOnMainThread callback",
-               "Func", reinterpret_cast<void*>(callback.func),
-               "UserData", callback.user_data);
+  TRACE_EVENT2("ppapi_proxy", "CallOnMainThread callback", "Func",
+               reinterpret_cast<void*>(callback.func), "UserData",
+               callback.user_data);
   CallWhileUnlocked(PP_RunCompletionCallback, &callback, result);
 }
 

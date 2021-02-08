@@ -93,7 +93,7 @@ bool PluginDispatcher::Sender::SendMessage(IPC::Message* msg) {
 }
 
 bool PluginDispatcher::Sender::Send(IPC::Message* msg) {
-  TRACE_EVENT2("ppapi proxy", "PluginDispatcher::Send", "Class",
+  TRACE_EVENT2("ppapi_proxy", "PluginDispatcher::Send", "Class",
                IPC_MESSAGE_ID_CLASS(msg->type()), "Line",
                IPC_MESSAGE_ID_LINE(msg->type()));
   // We always want plugin->renderer messages to arrive in-order. If some sync
@@ -240,9 +240,9 @@ bool PluginDispatcher::Send(IPC::Message* msg) {
 }
 
 bool PluginDispatcher::SendAndStayLocked(IPC::Message* msg) {
-  TRACE_EVENT2("ppapi proxy", "PluginDispatcher::SendAndStayLocked",
-               "Class", IPC_MESSAGE_ID_CLASS(msg->type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg->type()));
+  TRACE_EVENT2("ppapi_proxy", "PluginDispatcher::SendAndStayLocked", "Class",
+               IPC_MESSAGE_ID_CLASS(msg->type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg->type()));
   if (!msg->is_reply())
     msg->set_unblock(true);
   return sender_->SendMessage(msg);
@@ -252,9 +252,9 @@ bool PluginDispatcher::OnMessageReceived(const IPC::Message& msg) {
   // We need to grab the proxy lock to ensure that we don't collide with the
   // plugin making pepper calls on a different thread.
   ProxyAutoLock lock;
-  TRACE_EVENT2("ppapi proxy", "PluginDispatcher::OnMessageReceived",
-               "Class", IPC_MESSAGE_ID_CLASS(msg.type()),
-               "Line", IPC_MESSAGE_ID_LINE(msg.type()));
+  TRACE_EVENT2("ppapi_proxy", "PluginDispatcher::OnMessageReceived", "Class",
+               IPC_MESSAGE_ID_CLASS(msg.type()), "Line",
+               IPC_MESSAGE_ID_LINE(msg.type()));
 
   if (msg.routing_id() == MSG_ROUTING_CONTROL) {
     // Handle some plugin-specific control messages.

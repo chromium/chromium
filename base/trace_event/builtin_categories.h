@@ -16,15 +16,16 @@
 // the name. If the name is going to be used only for testing, please add it to
 // |kIgnoredCategoriesForTesting| instead.
 //
-// Prefer to use '_' to separate word of category name, like content_capture.
+// Since spaces aren't allowed, use '_' to separate words in category names
+// (e.g., "content_capture").
 //
 // Parameter |X| must be a *macro* that takes a single |name| string argument,
 // denoting a category name.
 #define INTERNAL_TRACE_LIST_BUILTIN_CATEGORIES(X)                        \
   /* These entries must go first to be consistent with the               \
    * CategoryRegistry::kCategory* consts.*/                              \
-  X("tracing categories exhausted. must increase kMaxCategories")        \
-  X("tracing already shutdown")                                          \
+  X("tracing_categories_exhausted._must_increase_kMaxCategories")        \
+  X("tracing_already_shutdown")                                          \
   X("__metadata")                                                        \
   /* The rest of the list is in alphabetical order */                    \
   X("accessibility")                                                     \
@@ -73,7 +74,7 @@
   X("drm")                                                               \
   X("drmcursor")                                                         \
   X("dwrite")                                                            \
-  X("DXVA Decoding")                                                     \
+  X("DXVA_Decoding")                                                     \
   X("evdev")                                                             \
   X("event")                                                             \
   X("exo")                                                               \
@@ -126,7 +127,7 @@
   X("PlatformMalloc")                                                    \
   X("power")                                                             \
   X("ppapi")                                                             \
-  X("ppapi proxy")                                                       \
+  X("ppapi_proxy")                                                       \
   X("print")                                                             \
   X("rail")                                                              \
   X("renderer")                                                          \
