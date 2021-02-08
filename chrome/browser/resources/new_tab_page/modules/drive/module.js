@@ -22,17 +22,28 @@ class DriveModuleElement extends PolymerElement {
   static get template() {
     return html`{__html_template__}`;
   }
+
+  static get properties() {
+    return {
+      /** @type {Array<!drive.mojom.Document>} */
+      documents: Array
+    };
+  }
 }
 
 customElements.define(DriveModuleElement.is, DriveModuleElement);
 
 /**
- * @return {!Promise<?DriveModuleElement>}
+ * @return {!Promise<DriveModuleElement>}
  */
 async function createDriveElement() {
-  console.log(await DriveProxy.getInstance().handler.getDocuments());
-  // TODO(cr/1161362): Render results in module.
-  return new DriveModuleElement();
+  const {documents} = await DriveProxy.getInstance().handler.getDocuments();
+  if (documents.length === 0) {
+    return null;
+  }
+  const element = new DriveModuleElement();
+  element.documents = documents;
+  return element;
 }
 
 /** @type {!ModuleDescriptor} */

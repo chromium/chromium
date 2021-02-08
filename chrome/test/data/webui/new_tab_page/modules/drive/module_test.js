@@ -4,6 +4,7 @@
 
 import {driveDescriptor, DriveProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {isVisible} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesDriveModuleTest', () => {
   /**
@@ -21,10 +22,30 @@ suite('NewTabPageModulesDriveModuleTest', () => {
   });
 
   test('module appears on render', async () => {
+    const titles = ['Foo', 'Bar', 'Caz'];
+    testProxy.handler.setResultFor(
+        'getDocuments',
+        Promise.resolve({documents: titles.map(title => ({title}))}));
+
     await driveDescriptor.initialize();
     const module = driveDescriptor.element;
-    assertTrue(!!module);
+    document.body.append(module);
     await testProxy.handler.whenCalled('getDocuments');
-    assertTrue(!!driveDescriptor.element);
+    module.$.documentRepeat.render();
+
+    const items = Array.from(module.shadowRoot.querySelectorAll('.document'));
+    assertTrue(!!module);
+    assertTrue(isVisible(module.$.documents));
+    assertEquals(3, items.length);
+    assertDeepEquals(titles, items.map(item => item.innerText));
+  });
+
+  test('documents do not show without data', async () => {
+    testProxy.handler.setResultFor(
+        'getDocuments', Promise.resolve({documents: []}));
+
+    await driveDescriptor.initialize();
+    await testProxy.handler.whenCalled('getDocuments');
+    assertFalse(!!driveDescriptor.element);
   });
 });

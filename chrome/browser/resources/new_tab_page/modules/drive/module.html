@@ -2,8 +2,27 @@
   :host {
     width: 100%;
   }
+
+  #documents {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+  }
+
+  .document {
+    color: var(--cr-primary-text-color);
+    height: 120px;
+    width: 170px;
+  }
 </style>
 <ntp-module-header>
   $i18n{modulesDriveTitle}
 </ntp-module-header>
-<!-- TODO(crbug/1161005) Build Module UI -->
+<div id="documents">
+  <template id="documentRepeat" is="dom-repeat" items="[[documents]]">
+    <div class="document">
+      [[item.title]]
+    </div>
+  </template>
+</div>

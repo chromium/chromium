@@ -23,7 +23,7 @@ constexpr char kRequestBody[] = R"({
         'scenario_type': 'CHROME_NTP_FILES',
         'request_type': 'LIVE_REQUEST'
       },
-      'max_suggestions': 10,
+      'max_suggestions': 3,
       'type_detail_fields': 'drive_item.title,justification.display_text'
     })";
 // Maximum accepted size of an ItemSuggest response. 1MB.
