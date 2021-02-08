@@ -16734,7 +16734,7 @@ should be kept until we use this API.  -->
 
 <histogram name="TrustedWebActivity.QualityEnforcementViolation"
     enum="TrustedWebActivityQualityEnforcementViolationType"
-    expires_after="2021-07-11">
+    expires_after="2021-12-31">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
@@ -16745,7 +16745,7 @@ should be kept until we use this API.  -->
 
 <histogram name="TrustedWebActivity.QualityEnforcementViolation.Crashed"
     enum="TrustedWebActivityQualityEnforcementViolationType"
-    expires_after="2021-03-07">
+    expires_after="2021-12-31">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
