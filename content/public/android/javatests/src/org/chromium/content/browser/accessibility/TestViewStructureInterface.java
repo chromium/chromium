@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.content.browser.accessibility;
+
+/**
+ * Interface for an implementation of ViewStructure that allows us
+ * to print it out as a string and assert that the data in the
+ * structure is correct.
+ *
+ * This is needed because if AssistViewStructureTest references
+ * TestViewStructure in any way, the entire test APK fails to run
+ * if the SDK version is less than M.
+ */
+interface TestViewStructureInterface {
+    /**
+     * Because ViewStructure can be populated asynchronously,
+     * returns true if it's complete - i.e. if every call to
+     * asyncNewChild has been balanced by a call to asyncCommit.
+     */
+    public boolean isDone();
+}
