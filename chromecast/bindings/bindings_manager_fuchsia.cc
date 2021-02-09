@@ -11,6 +11,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "components/cast/message_port/message_port_fuchsia.h"
 #include "fuchsia/base/mem_buffer_util.h"
+#include "fuchsia/base/message_port.h"
 
 namespace chromecast {
 namespace bindings {

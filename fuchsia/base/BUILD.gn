@@ -56,6 +56,20 @@ source_set("modular") {
   ]
 }
 
+# FIDL/Mojo adapters for MessagePorts.
+source_set("message_port") {
+  sources = [ "message_port.cc" ]
+  public = [ "message_port.h" ]
+  deps = [
+    ":base",
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/common:headers",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
+}
+
 source_set("legacymetrics") {
   sources = [
     "legacymetrics_client.cc",

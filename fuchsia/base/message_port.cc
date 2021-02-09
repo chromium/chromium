@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/browser/message_port.h"
+#include "fuchsia/base/message_port.h"
 
 #include <stdint.h>
 
