@@ -9,12 +9,6 @@
 
 (function() {
 
-// Only inform the user about the number of attempts left if it's smaller or
-// equal to this constant. (This is a pure UX heuristic.)
-// Please keep this constant in sync with the one in
-// //chromeos/components/security_token_pin/error_generator.cc.
-const ATTEMPTS_LEFT_THRESHOLD = 3;
-
 Polymer({
   is: 'security-token-pin',
 
@@ -178,8 +172,7 @@ Polymer({
    * @private
    */
   isAttemptsLeftVisible_(parameters) {
-    return parameters && parameters.attemptsLeft >= 0 &&
-        parameters.attemptsLeft <= ATTEMPTS_LEFT_THRESHOLD;
+    return parameters && parameters.formattedAttemptsLeft !== '';
   },
 
   /**

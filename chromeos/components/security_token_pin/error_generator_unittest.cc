@@ -70,6 +70,9 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, UnknownError) {
 
 // Tests the message when the number of attempts left is given.
 TEST_F(SecurityTokenPinErrorGeneratorTest, Attempts) {
+  EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kNone, /*attempts_left=*/1,
+                                 /*accept_input=*/true),
+            base::ASCIIToUTF16("1 attempt left"));
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kNone, /*attempts_left=*/3,
                                  /*accept_input=*/true),
             base::ASCIIToUTF16("3 attempts left"));
@@ -85,6 +88,9 @@ TEST_F(SecurityTokenPinErrorGeneratorTest, HiddenAttempts) {
 
 // Tests the message for the kInvalidPin error with the number of attempts left.
 TEST_F(SecurityTokenPinErrorGeneratorTest, InvalidPinWithAttempts) {
+  EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kInvalidPin, /*attempts_left=*/1,
+                                 /*accept_input=*/true),
+            base::ASCIIToUTF16("Invalid PIN. 1 attempt left"));
   EXPECT_EQ(GenerateErrorMessage(ErrorLabel::kInvalidPin, /*attempts_left=*/3,
                                  /*accept_input=*/true),
             base::ASCIIToUTF16("Invalid PIN. 3 attempts left"));

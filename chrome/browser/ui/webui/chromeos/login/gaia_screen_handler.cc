@@ -269,24 +269,25 @@ PinDialogManager* GetLoginScreenPinDialogManager() {
 }
 
 base::Value MakeSecurityTokenPinDialogParameters(
-    security_token_pin::CodeType code_type,
     bool enable_user_input,
     security_token_pin::ErrorLabel error_label,
     int attempts_left) {
   base::Value params(base::Value::Type::DICTIONARY);
-  params.SetIntKey("codeType", static_cast<int>(code_type));
+
   params.SetBoolKey("enableUserInput", enable_user_input);
-  params.SetIntKey("attemptsLeft", attempts_left);
   params.SetBoolKey("hasError",
                     error_label != security_token_pin::ErrorLabel::kNone);
   params.SetStringKey(
       "formattedError",
       GenerateErrorMessage(error_label, attempts_left, enable_user_input));
-  params.SetStringKey(
-      "formattedAttemptsLeft",
-      base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(IDS_REQUEST_PIN_DIALOG_ATTEMPTS_LEFT),
-          attempts_left));
+  if (attempts_left == -1) {
+    params.SetStringKey("formattedAttemptsLeft", base::string16());
+  } else {
+    params.SetStringKey(
+        "formattedAttemptsLeft",
+        GenerateErrorMessage(security_token_pin::ErrorLabel::kNone,
+                             attempts_left, true));
+  }
   return params;
 }
 
@@ -594,20 +595,6 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_TITLE);
   builder->Add("securityTokenPinDialogSubtitle",
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_SUBTITLE);
-  builder->Add("securityTokenPinDialogTryAgain",
-               IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_TRY_AGAIN);
-  builder->Add("securityTokenPinDialogAttemptsLeft",
-               IDS_REQUEST_PIN_DIALOG_ATTEMPTS_LEFT);
-  builder->Add("securityTokenPinDialogErrorAttempts",
-               IDS_REQUEST_PIN_DIALOG_ERROR_ATTEMPTS);
-  builder->Add("securityTokenPinDialogUnknownError",
-               IDS_REQUEST_PIN_DIALOG_UNKNOWN_ERROR);
-  builder->Add("securityTokenPinDialogUnknownInvalidPin",
-               IDS_REQUEST_PIN_DIALOG_INVALID_PIN_ERROR);
-  builder->Add("securityTokenPinDialogUnknownInvalidPuk",
-               IDS_REQUEST_PIN_DIALOG_INVALID_PUK_ERROR);
-  builder->Add("securityTokenPinDialogUnknownMaxAttemptsExceeded",
-               IDS_REQUEST_PIN_DIALOG_MAX_ATTEMPTS_EXCEEDED_ERROR);
 }
 
 void GaiaScreenHandler::Initialize() {
@@ -1188,8 +1175,8 @@ void GaiaScreenHandler::ShowSecurityTokenPinDialog(
       std::move(pin_dialog_closed_callback);
 
   CallJS("login.GaiaSigninScreen.showPinDialog",
-         MakeSecurityTokenPinDialogParameters(code_type, enable_user_input,
-                                              error_label, attempts_left));
+         MakeSecurityTokenPinDialogParameters(enable_user_input, error_label,
+                                              attempts_left));
 }
 
 void GaiaScreenHandler::CloseSecurityTokenPinDialog() {

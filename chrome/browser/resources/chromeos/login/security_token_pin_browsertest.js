@@ -34,9 +34,7 @@ var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
 
 TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
   const DEFAULT_PARAMETERS = {
-    codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
     enableUserInput: true,
-    attemptsLeft: -1,
     hasError: false,
     formattedError: '',
     formattedAttemptsLeft: ''
@@ -109,9 +107,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
 
     // The response arrives, requesting to prompt for the PIN again.
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      attemptsLeft: -1,
       hasError: true,
       formattedError: '',
       formattedAttemptsLeft: ''
@@ -177,9 +173,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     pinInput.value = '123';
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      attemptsLeft: -1,
       hasError: true,
       formattedError: '',
       formattedAttemptsLeft: ''
@@ -191,9 +185,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     pinInput.value = '456';
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: false,
-      attemptsLeft: 0,
       hasError: true,
       formattedError: '',
       formattedAttemptsLeft: ''
@@ -211,9 +203,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     // The input gets cleared.
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      attemptsLeft: -1,
       hasError: true,
       formattedError: '',
       formattedAttemptsLeft: ''
@@ -235,9 +225,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     // and that the user input isn't requested anymore. The input gets cleared.
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: false,
-      attemptsLeft: 0,
       hasError: true,
       formattedError: '',
       formattedAttemptsLeft: ''
@@ -283,9 +271,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     pinInput.value = '123';
     submitElement.click();
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      attemptsLeft: -1,
       hasError: true,
       formattedError: '',
       formattedAttemptsLeft: ''
@@ -299,153 +285,38 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
     expectFalse(pinInput.hasAttribute('invalid'));
   });
 
-  // Test the text of the label for the |INVALID_PIN| error.
+  // Test the text of the error label.
   test('label text: invalid PIN', () => {
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      attemptsLeft: -1,
       hasError: true,
-      formattedError:
-          loadTimeData.getString('securityTokenPinDialogUnknownInvalidPin'),
+      formattedError: 'Invalid PIN.',
       formattedAttemptsLeft: ''
     };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString('securityTokenPinDialogUnknownInvalidPin'));
+    expectEquals(errorElement.textContent, 'Invalid PIN.');
   });
 
-  // Test the text of the label for the |INVALID_PUK| error.
-  test('label text: invalid PUK', () => {
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PUK,
-      enableUserInput: true,
-      attemptsLeft: -1,
-      hasError: true,
-      formattedError:
-          loadTimeData.getString('securityTokenPinDialogUnknownInvalidPuk'),
-      formattedAttemptsLeft: ''
-    };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString('securityTokenPinDialogUnknownInvalidPuk'));
-  });
-
-  // Test the text of the label for the |MAX_ATTEMPTS_EXCEEDED| error.
+  // Test the text of the error label when the user input is disabled.
   test('label text: max attempts exceeded', () => {
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: false,
-      attemptsLeft: 0,
       hasError: true,
-      formattedError: loadTimeData.getString(
-          'securityTokenPinDialogUnknownMaxAttemptsExceeded'),
+      formattedError: 'Maximum allowed attempts exceeded.',
       formattedAttemptsLeft: ''
     };
     expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString(
-            'securityTokenPinDialogUnknownMaxAttemptsExceeded'));
-  });
-
-  // Test the text of the label for the |UNKNOWN| error.
-  test('label text: unknown error', () => {
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      attemptsLeft: -1,
-      hasError: true,
-      formattedError:
-          loadTimeData.getString('securityTokenPinDialogUnknownError'),
-      formattedAttemptsLeft: ''
-    };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString('securityTokenPinDialogUnknownError'));
+        errorElement.textContent, 'Maximum allowed attempts exceeded.');
   });
 
   // Test the text of the label when the number of attempts left is given.
   test('label text: attempts number', () => {
-    const ATTEMPTS_LEFT = 3;
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      attemptsLeft: ATTEMPTS_LEFT,
       hasError: false,
       formattedError: '',
       formattedAttemptsLeft: '3 attempts left'
     };
     expectEquals(errorElement.textContent, '3 attempts left');
-
-    const ONE_ATTEMPT_LEFT = 1;
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      attemptsLeft: ONE_ATTEMPT_LEFT,
-      hasError: false,
-      formattedError: '',
-      formattedAttemptsLeft: '1 attempt left'
-    };
-    expectEquals(errorElement.textContent, '1 attempt left');
-  });
-
-  // Test that the label is empty when the number of attempts is, heuristically,
-  // too big to be displayed for the user.
-  test('label text: hidden attempts number', () => {
-    const BIG_ATTEMPTS_LEFT = 4;
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      attemptsLeft: BIG_ATTEMPTS_LEFT,
-      hasError: false,
-      formattedError: '',
-      formattedAttemptsLeft: ''
-    };
-    expectEquals(errorElement.textContent, '');
-  });
-
-  // Test the text of the label for the |INVALID_PIN| error when the number of
-  // attempts left is given.
-  test('label text: invalid PIN with attempts number', () => {
-    const ATTEMPTS_LEFT = 3;
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      attemptsLeft: ATTEMPTS_LEFT,
-      hasError: true,
-      formattedError: 'Invalid PIN. 3 attempts left',
-      formattedAttemptsLeft: ''
-    };
-    expectEquals(errorElement.textContent, 'Invalid PIN. 3 attempts left');
-
-    const ONE_ATTEMPT_LEFT = 1;
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      attemptsLeft: ONE_ATTEMPT_LEFT,
-      hasError: true,
-      formattedError: 'Invalid PIN. 1 attempt left',
-      formattedAttemptsLeft: ''
-    };
-    expectEquals(errorElement.textContent, 'Invalid PIN. 1 attempt left');
-  });
-
-  // Test the text of the label for the |INVALID_PIN| error when the number of
-  // attempts left is, heuristically, too big to be displayed for the user.
-  test('label text: invalid PIN with hidden attempts number', () => {
-    const BIG_ATTEMPTS_LEFT = 4;
-    securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
-      enableUserInput: true,
-      attemptsLeft: BIG_ATTEMPTS_LEFT,
-      hasError: true,
-      formattedError:
-          loadTimeData.getString('securityTokenPinDialogUnknownInvalidPin'),
-      formattedAttemptsLeft: ''
-    };
-    expectEquals(
-        errorElement.textContent,
-        loadTimeData.getString('securityTokenPinDialogUnknownInvalidPin'));
   });
 
   // Test that no scrolling is necessary in order to see all dots after entering
@@ -488,9 +359,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
 
     // The response arrives, requesting to prompt for the PIN again.
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      attemptsLeft: -1,
       hasError: true,
       formattedError: '',
       formattedAttemptsLeft: ''
@@ -519,9 +388,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
 
     // The response arrives, requesting to prompt for the PIN again.
     securityTokenPin.parameters = {
-      codeType: OobeTypes.SecurityTokenPinDialogType.PIN,
       enableUserInput: true,
-      attemptsLeft: -1,
       hasError: true,
       formattedError: '',
       formattedAttemptsLeft: ''

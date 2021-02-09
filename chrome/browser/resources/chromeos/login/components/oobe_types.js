@@ -108,34 +108,8 @@ OobeTypes.OobeConfiguration;
 OobeTypes.PinSetupScreenParameters;
 
 /**
- * Specifies the type of the information that is requested by the security token
- * PIN dialog.
- * Must be kept in sync with chromeos/constants/security_token_pin_types.h.
- * @enum {number}
- */
-OobeTypes.SecurityTokenPinDialogType = {
-  PIN: 0,
-  PUK: 1,
-};
-
-/**
- * Specifies the type of the error that is displayed in the security token PIN
- * dialog.
- * Must be kept in sync with chromeos/constants/security_token_pin_types.h.
- * @enum {number}
- */
-OobeTypes.SecurityTokenPinDialogErrorType = {
-  NONE: 0,
-  UNKNOWN: 1,
-  INVALID_PIN: 2,
-  INVALID_PUK: 3,
-  MAX_ATTEMPTS_EXCEEDED: 4,
-};
-
-/**
  * Configuration of the security token PIN dialog.
  * @typedef {{
- *   codeType: OobeTypes.SecurityTokenPinDialogType,
  *   enableUserInput: boolean,
  *   attemptsLeft: number,
  *   hasError: boolean,

@@ -14,7 +14,6 @@ namespace security_token_pin {
 
 // Only inform the user about the number of attempts left if it's smaller or
 // equal to this constant. (This is a pure UX heuristic.)
-// Please keep this constant in sync with the one in security_token_pin.js.
 constexpr int kAttemptsLeftThreshold = 3;
 
 base::string16 GenerateErrorMessage(ErrorLabel error_label,
