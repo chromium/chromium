@@ -2246,6 +2246,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.UsernameCorrectionFound"
     enum="BooleanUsernameCorrectionVote" expires_after="M85">
+  <obsolete>
+    Obsolete since M86.
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <summary>
     Chrome saves locally all fields a user typed on a sign-up form. If Chrome
@@ -2257,7 +2260,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.UsernameDetectionMethod"
-    enum="UsernameDetectionMethod" expires_after="M85">
+    enum="UsernameDetectionMethod" expires_after="M93">
+  <owner>jdoerrie@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
     Measures what method was used for username field detection in the renderer

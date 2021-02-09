@@ -188,8 +188,6 @@ void PasswordSaveManagerImpl::SetVotesAndRecordMetricsForPendingCredentials(
               form_fetcher_->GetAllRelevantMatches(),
               parsed_submitted_form.username_value,
               parsed_submitted_form.password_value);
-      UMA_HISTOGRAM_BOOLEAN("PasswordManager.UsernameCorrectionFound",
-                            username_correction_found);
       if (username_correction_found) {
         metrics_recorder_->RecordDetailedUserAction(
             password_manager::PasswordFormMetricsRecorder::DetailedUserAction::
