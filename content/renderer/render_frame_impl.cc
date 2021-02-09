@@ -1075,87 +1075,6 @@ void FillNavigationParamsOriginPolicy(
   }
 }
 
-// TODO(https://crbug.com/1114822): The factory below can be replaced with the
-// one from //services/network/public/cpp/not_implemented_url_loader_factory.h
-// *after* confirming that NOTREACHED and DwoC below are not reached in
-// practice.
-class NotImplementedNetworkURLLoaderFactory final
-    : public network::mojom::URLLoaderFactory {
- public:
-  NotImplementedNetworkURLLoaderFactory() = default;
-  ~NotImplementedNetworkURLLoaderFactory() override = default;
-
- private:
-  class ScopedRequestCrashKeys {
-   public:
-    static base::debug::CrashKeyString* GetRequestUrlCrashKey() {
-      static auto* crash_key = base::debug::AllocateCrashKeyString(
-          "request_url", base::debug::CrashKeySize::Size256);
-      return crash_key;
-    }
-
-    static base::debug::CrashKeyString* GetRequestInitiatorCrashKey() {
-      static auto* crash_key = base::debug::AllocateCrashKeyString(
-          "request_initiator", base::debug::CrashKeySize::Size64);
-      return crash_key;
-    }
-
-    explicit ScopedRequestCrashKeys(const network::ResourceRequest& request)
-        : url_(GetRequestUrlCrashKey(), request.url.possibly_invalid_spec()),
-          request_initiator_(
-              GetRequestInitiatorCrashKey(),
-              base::OptionalOrNullptr(request.request_initiator)) {}
-    ~ScopedRequestCrashKeys() = default;
-
-    ScopedRequestCrashKeys(const ScopedRequestCrashKeys&) = delete;
-    ScopedRequestCrashKeys& operator=(const ScopedRequestCrashKeys&) = delete;
-
-   private:
-    base::debug::ScopedCrashKeyString url_;
-    url::debug::ScopedOriginCrashKey request_initiator_;
-  };
-
-  // network::mojom::URLLoaderFactory implementation.
-  void CreateLoaderAndStart(
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
-      int32_t request_id,
-      uint32_t options,
-      const network::ResourceRequest& url_request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override {
-    ScopedRequestCrashKeys request_crash_keys(url_request);
-    NOTREACHED() << "url_request.url = " << url_request.url;
-    base::debug::DumpWithoutCrashing();
-
-    network::URLLoaderCompletionStatus status;
-    status.error_code = net::ERR_NOT_IMPLEMENTED;
-    mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-        ->OnComplete(status);
-  }
-
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override {
-    receivers_.Add(this, std::move(receiver));
-  }
-
- private:
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotImplementedNetworkURLLoaderFactory);
-};
-
-// AVOID: see the comment on CreateDefaultURLLoaderFactoryBundle below.
-mojo::PendingRemote<network::mojom::URLLoaderFactory>
-CreateDefaultURLLoaderFactory() {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<NotImplementedNetworkURLLoaderFactory>(),
-      factory_remote.InitWithNewPipeAndPassReceiver());
-  return factory_remote;
-}
-
 // Returns a non-null pointer to a URLLoaderFactory bundle that is not
 // associated with any specific origin, frame or worker.
 //
@@ -1165,10 +1084,16 @@ CreateDefaultURLLoaderFactory() {
 //
 // It is invalid to call this in an incomplete env where
 // RenderThreadImpl::current() returns nullptr (e.g. in some tests).
+//
+// TODO(https://crbug.com/1114822): Remove if the DwoC/NOTREACHED in
+// ChildURLLoaderFactoryBundle::GetFactory doesn't get hit in practice.
 scoped_refptr<blink::ChildURLLoaderFactoryBundle>
 CreateDefaultURLLoaderFactoryBundle() {
-  return base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>(
-      base::BindOnce(&CreateDefaultURLLoaderFactory));
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> result =
+      base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>(
+          base::BindOnce(&network::NotImplementedURLLoaderFactory::Create));
+  result->MarkAsDeprecatedProcessWideFactory();
+  return result;
 }
 
 v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
@@ -5676,7 +5601,6 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
            GetLoadingUrl().spec() == url::kAboutBlankURL);
     loader_factories->Update(
         CreateDefaultURLLoaderFactoryBundle()->PassInterface());
-    loader_factories->MarkAsDeprecatedProcessWideFactory();
   }
 
   if (info) {
