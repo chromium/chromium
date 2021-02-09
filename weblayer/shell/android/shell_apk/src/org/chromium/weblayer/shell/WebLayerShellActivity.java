@@ -73,6 +73,7 @@ import org.chromium.weblayer.UrlBarOptions;
 import org.chromium.weblayer.UserIdentityCallback;
 import org.chromium.weblayer.WebLayer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -361,30 +362,49 @@ public class WebLayerShellActivity extends AppCompatActivity {
                                          Toast.LENGTH_SHORT)
                                     .show();
                         });
+                return true;
             }
 
             if (item.getItemId() == R.id.enable_incognito_menu_id) {
                 restartShell(true);
+                return true;
             }
 
             if (item.getItemId() == R.id.disable_incognito_menu_id) {
                 restartShell(false);
+                return true;
             }
 
             if (item.getItemId() == R.id.desktop_site_menu_id) {
                 mBrowser.getActiveTab().setDesktopUserAgentEnabled(true);
+                return true;
             }
 
             if (item.getItemId() == R.id.no_desktop_site_menu_id) {
                 mBrowser.getActiveTab().setDesktopUserAgentEnabled(false);
+                return true;
             }
 
             if (item.getItemId() == R.id.set_translate_target_lang_menu_id) {
                 mBrowser.getActiveTab().setTranslateTargetLanguage("de");
+                return true;
             }
 
             if (item.getItemId() == R.id.clear_translate_target_lang_menu_id) {
                 mBrowser.getActiveTab().setTranslateTargetLanguage("");
+                return true;
+            }
+
+            if (item.getItemId() == R.id.add_to_homescreen) {
+                try {
+                    // Since the API is still experimental, it's private.
+                    Method addToHomescreen = Tab.class.getDeclaredMethod("addToHomescreen");
+                    addToHomescreen.setAccessible(true);
+                    addToHomescreen.invoke(mBrowser.getActiveTab());
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to start addToHomescreen", e);
+                }
+                return true;
             }
 
             return false;

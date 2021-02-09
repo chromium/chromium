@@ -768,6 +768,23 @@ public class Tab {
         }
     }
 
+    /**
+     * Experimental (for now) API to trigger the AddToHomescreen dialog for the page in the tab.
+     * This adds a homescreen shortcut for it, or installs as a PWA or WebAPK.
+     *
+     * @since 90
+     */
+    private void addToHomescreen() {
+        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.addToHomescreen();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     private static final class WebMessageCallbackClientImpl extends IWebMessageCallbackClient.Stub {
         private final WebMessageCallback mCallback;
         // Maps from id of IWebMessageReplyProxy to WebMessageReplyProxy. This is done to avoid AIDL

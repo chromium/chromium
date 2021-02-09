@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
@@ -45,6 +46,8 @@ import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindResultBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.webapps.AddToHomescreenCoordinator;
+import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -667,6 +670,19 @@ public final class TabImpl extends ITab.Stub {
     private void continueDownload(NativeContextMenuParamsHolder nativeContextMenuParamsHolder) {
         TabImplJni.get().download(
                 mNativeTab, nativeContextMenuParamsHolder.mNativeContextMenuParams);
+    }
+
+    @Override
+    public void addToHomescreen() {
+        // TODO(estade): should it be verified that |this| is the active tab?
+
+        // This is used for UMA, and is only meaningful for Chrome. TODO(estade): remove.
+        Bundle menuItemData = new Bundle();
+        menuItemData.putInt(AppBannerManager.MENU_TITLE_KEY, 0);
+        // TODO(estade): simplify these parameters.
+        AddToHomescreenCoordinator.showForAppMenu(mBrowser.getContext(),
+                mBrowser.getWindowAndroid(), mBrowser.getWindowAndroid().getModalDialogManager(),
+                mWebContents, menuItemData);
     }
 
     public void removeFaviconCallbackProxy(FaviconCallbackProxy proxy) {

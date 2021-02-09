@@ -77,6 +77,7 @@ include_rules = [
   "+components/variations",
   "+components/version_info",
   "+components/web_cache/browser",
+  "+components/webapps/browser",
   "+components/webrtc",
   "+content/public",
   "+google_apis",

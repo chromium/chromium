@@ -19,6 +19,7 @@ include_rules = [
   "+components/subresource_filter/core/common",
   "+components/translate/content/renderer",
   "+components/translate/core/common",
+  "+components/webapps/renderer",
   "+content/public/common",
   "+content/public/renderer",
   # needed for safebrowsing

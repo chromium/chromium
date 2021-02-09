@@ -78,4 +78,7 @@ interface ITab {
   void setDesktopUserAgentEnabled(in boolean enable) = 29;
   boolean isDesktopUserAgentEnabled() = 30;
   void download(in IContextMenuParams contextMenuParams) = 31;
+
+  // Added in 90
+  void addToHomescreen() = 32;
 }

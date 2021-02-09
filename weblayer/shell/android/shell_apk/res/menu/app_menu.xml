@@ -30,4 +30,6 @@
         android:title="Request desktop site" />
     <item android:id="@+id/no_desktop_site_menu_id"
         android:title="Request mobile site" />
+    <item android:id="@+id/add_to_homescreen"
+        android:title="Add to homescreen" />
 </menu>
