@@ -5783,5 +5783,6 @@ ci.cipd_builder(
     executable = "recipe:chromium_rts/create_model",
     schedule = "0 10 * * *",  # at 2 AM PST, once a day.
     triggered_by = [],
-    execution_timeout = 3 * time.hour,
+    cores = 32,
+    execution_timeout = 6 * time.hour,
 )
