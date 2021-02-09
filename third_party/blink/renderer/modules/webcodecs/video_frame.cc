@@ -220,12 +220,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  const gfx::Size coded_size(source->width(), source->height());
-  const gfx::Rect visible_rect(coded_size);
-  const gfx::Size natural_size = coded_size;
   const auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
-  const auto& paint_image = source->BitmapImage()->PaintImageForCurrentFrame();
-  const auto sk_image_info = paint_image.GetSkImageInfo();
+  const auto sk_image =
+      source->BitmapImage()->PaintImageForCurrentFrame().GetSkImage();
+  const auto sk_image_info = sk_image->imageInfo();
 
   auto sk_color_space = sk_image_info.refColorSpace();
   if (!sk_color_space)
@@ -236,7 +234,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  const auto sk_image = paint_image.GetSkImage();
+  const gfx::Size coded_size(sk_image_info.width(), sk_image_info.height());
+  const gfx::Rect visible_rect(coded_size);
+  const gfx::Size natural_size = coded_size;
 
   scoped_refptr<media::VideoFrame> frame;
 
@@ -245,17 +245,16 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   // implement asyncRescaleAndReadPixelsYUV420.
   if (sk_image->isTextureBacked()) {
     YUVReadbackContext result;
-    result.coded_size = coded_size;
+    result.coded_size = gfx::Size();
     result.visible_rect = visible_rect;
     result.natural_size = natural_size;
     result.timestamp = timestamp;
 
     // While this function indicates it's asynchronous, the flushAndSubmit()
     // call below ensures it completes synchronously.
-    const auto src_rect = SkIRect::MakeWH(source->width(), source->height());
     sk_image->asyncRescaleAndReadPixelsYUV420(
-        kRec709_SkYUVColorSpace, sk_color_space, src_rect,
-        {source->width(), source->height()}, SkImage::RescaleGamma::kSrc,
+        kRec709_SkYUVColorSpace, sk_color_space, sk_image_info.bounds(),
+        sk_image_info.dimensions(), SkImage::RescaleGamma::kSrc,
         SkImage::RescaleMode::kRepeatedCubic, &OnYUVReadbackDone, &result);
     GrDirectContext* gr_context =
         source->BitmapImage()->ContextProvider()->GetGrContext();
@@ -273,8 +272,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         std::move(frame), ExecutionContext::From(script_state));
   }
 
-  frame = media::CreateFromSkImage(sk_image, coded_size, visible_rect,
-                                   natural_size, timestamp);
+  frame =
+      media::CreateFromSkImage(sk_image, visible_rect, natural_size, timestamp);
   if (!frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to create video frame");

@@ -202,7 +202,6 @@ MEDIA_EXPORT Status ConvertAndScaleFrame(const VideoFrame& src_frame,
 // backed images.
 MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
     sk_sp<SkImage> sk_image,
-    const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp);
