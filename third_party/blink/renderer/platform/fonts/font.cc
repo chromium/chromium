@@ -96,7 +96,8 @@ Font::~Font() {
 // should clear the entry from FontFallbackMap.
 // Note that we must not persist a FontFallbackList reference outside Font.
 void Font::ReleaseFontFallbackListRef() const {
-  if (!font_fallback_list_ || !font_fallback_list_->IsValid()) {
+  if (!font_fallback_list_ || !font_fallback_list_->IsValid() ||
+      !font_fallback_list_->HasFontFallbackMap()) {
     font_fallback_list_.reset();
     return;
   }
@@ -106,12 +107,13 @@ void Font::ReleaseFontFallbackListRef() const {
   CHECK(!list_ref.HasOneRef());
   font_fallback_list_.reset();
   if (list_ref.HasOneRef())
-    GetFontFallbackMap(list_ref.GetFontSelector()).Remove(font_description_);
+    list_ref.GetFontFallbackMap().Remove(font_description_);
 }
 
 void Font::RevalidateFontFallbackList() const {
+  DCHECK(font_fallback_list_);
   font_fallback_list_ =
-      GetFontFallbackMap(GetFontSelector()).Get(font_description_);
+      font_fallback_list_->GetFontFallbackMap().Get(font_description_);
 }
 
 FontFallbackList* Font::EnsureFontFallbackList() const {
