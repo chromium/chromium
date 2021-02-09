@@ -44133,6 +44133,7 @@ from previous Chrome versions.
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
+  <int value="-934163513" label="EcheSWA:enabled"/>
   <int value="-933377608"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:enabled"/>
   <int value="-933316841" label="enable-permissions-blacklist"/>
@@ -47390,6 +47391,7 @@ from previous Chrome versions.
   <int value="2129184006" label="NTPOfflinePageDownloadSuggestions:enabled"/>
   <int value="2129524809" label="PasswordCheck:disabled"/>
   <int value="2129929643" label="enable-use-zoom-for-dsf"/>
+  <int value="2132335798" label="EcheSWA:disabled"/>
   <int value="2132595171" label="OmniboxSearchEngineLogo:enabled"/>
   <int value="2133594095" label="CryptAuthV2DeviceActivityStatus:disabled"/>
   <int value="2133647636" label="ClipboardFilenames:disabled"/>

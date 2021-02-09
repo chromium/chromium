@@ -2487,6 +2487,9 @@ extern const char kAudioPlayerJsModulesDescription[];
 extern const char kVideoPlayerJsModulesName[];
 extern const char kVideoPlayerJsModulesDescription[];
 
+extern const char kEcheSWAName[];
+extern const char kEcheSWADescription[];
+
 extern const char kEnableSuggestedFilesName[];
 extern const char kEnableSuggestedFilesDescription[];
 

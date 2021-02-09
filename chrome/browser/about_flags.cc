@@ -4042,6 +4042,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"spectre-v2-mitigation", flag_descriptions::kSpectreVariant2MitigationName,
      flag_descriptions::kSpectreVariant2MitigationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(sandbox::policy::features::kSpectreVariant2Mitigation)},
+    {"eche-swa", flag_descriptions::kEcheSWAName,
+     flag_descriptions::kEcheSWADescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEcheSWA)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
