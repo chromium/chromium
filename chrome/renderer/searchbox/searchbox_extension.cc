@@ -941,9 +941,16 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
                  &NewTabPageBindings::SetCustomBackgroundInfo)
       .SetMethod("selectLocalBackgroundImage",
                  &NewTabPageBindings::SelectLocalBackgroundImage)
+      // These methods have been renamed to match BlocklistSearchSuggestion*
+      // below, but are kept until JavaScript calls can be migrated.
+      // TODO: Remove the following two additions per guidance in b/179534247
       .SetMethod("blacklistSearchSuggestion",
                  &NewTabPageBindings::BlocklistSearchSuggestion)
       .SetMethod("blacklistSearchSuggestionWithHash",
+                 &NewTabPageBindings::BlocklistSearchSuggestionWithHash)
+      .SetMethod("blocklistSearchSuggestion",
+                 &NewTabPageBindings::BlocklistSearchSuggestion)
+      .SetMethod("blocklistSearchSuggestionWithHash",
                  &NewTabPageBindings::BlocklistSearchSuggestionWithHash)
       .SetMethod("searchSuggestionSelected",
                  &NewTabPageBindings::SearchSuggestionSelected)
