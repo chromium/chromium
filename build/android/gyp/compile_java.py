@@ -408,8 +408,11 @@ def _OnStaleMd5(options, javac_cmd, javac_args, java_files):
 
   # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
   # rules run both in parallel, with Error Prone only used for checks.
-  _RunCompiler(options, javac_cmd + javac_args, java_files,
-               options.classpath, options.jar_path,
+  _RunCompiler(options,
+               javac_cmd + javac_args,
+               java_files,
+               options.classpath,
+               options.jar_path,
                save_outputs=not options.enable_errorprone)
   logging.info('Completed all steps in _OnStaleMd5')
 
@@ -635,8 +638,8 @@ def main(argv):
   options, java_files = _ParseOptions(argv)
 
   # Only use the build server for errorprone runs.
-  if (options.enable_errorprone
-      and server_utils.MaybeRunCommand(options.target_name, sys.argv)):
+  if options.enable_errorprone and server_utils.MaybeRunCommand(
+      name=options.target_name, argv=sys.argv, stamp_file=options.jar_path):
     return
 
   colorama.init()
@@ -725,10 +728,9 @@ def main(argv):
     input_paths.append(options.header_jar)
   input_paths += [x[0] for x in options.additional_jar_files]
 
-  output_paths = [
-      options.jar_path,
-      options.jar_path + '.info',
-  ]
+  output_paths = [options.jar_path]
+  if not options.enable_errorprone:
+    output_paths += [options.jar_path + '.info']
 
   input_strings = javac_cmd + javac_args + options.classpath + java_files + [
       options.warnings_as_errors, options.jar_info_exclude_globs

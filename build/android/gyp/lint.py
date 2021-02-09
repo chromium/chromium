@@ -437,8 +437,8 @@ def main():
   #              invocations.
   # Avoid parallelizing cache creation since lint runs without the cache defeat
   # the purpose of creating the cache in the first place.
-  if (not args.create_cache
-      and server_utils.MaybeRunCommand(args.target_name, sys.argv)):
+  if not args.create_cache and server_utils.MaybeRunCommand(
+      name=args.target_name, argv=sys.argv, stamp_file=args.stamp):
     return
 
   sources = []

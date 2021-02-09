@@ -31,6 +31,7 @@ def CommonChecks(input_api, output_api):
           files_to_skip=[
               r'.*_pb2\.py',
               r'.*list_java_targets\.py',  # crbug.com/1100664
+              r'.*fast_local_dev_server\.py',  # crbug.com/1100664
           ] + build_pys,
           extra_paths_list=[
               J(),
