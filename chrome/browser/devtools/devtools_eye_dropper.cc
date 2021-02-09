@@ -33,11 +33,7 @@
 
 DevToolsEyeDropper::DevToolsEyeDropper(content::WebContents* web_contents,
                                        EyeDropperCallback callback)
-    : content::WebContentsObserver(web_contents),
-      callback_(callback),
-      last_cursor_x_(-1),
-      last_cursor_y_(-1),
-      host_(nullptr) {
+    : content::WebContentsObserver(web_contents), callback_(callback) {
   mouse_event_callback_ = base::BindRepeating(
       &DevToolsEyeDropper::HandleMouseEvent, base::Unretained(this));
   if (web_contents->GetMainFrame()->IsRenderFrameCreated())
@@ -45,7 +41,10 @@ DevToolsEyeDropper::DevToolsEyeDropper(content::WebContents* web_contents,
 }
 
 DevToolsEyeDropper::~DevToolsEyeDropper() {
-  DetachFromHost();
+  if (host_) {
+    // If the renderer frame was destroyed already, we're already detached.
+    DetachFromHost();
+  }
 }
 
 void DevToolsEyeDropper::AttachToHost(content::RenderFrameHost* frame_host) {

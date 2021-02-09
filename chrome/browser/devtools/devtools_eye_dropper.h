@@ -55,10 +55,10 @@ class DevToolsEyeDropper : public content::WebContentsObserver,
 
   EyeDropperCallback callback_;
   SkBitmap frame_;
-  int last_cursor_x_;
-  int last_cursor_y_;
+  int last_cursor_x_ = -1;
+  int last_cursor_y_ = -1;
   content::RenderWidgetHost::MouseEventCallback mouse_event_callback_;
-  content::RenderWidgetHost* host_;
+  content::RenderWidgetHost* host_ = nullptr;
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer_;
   base::WeakPtrFactory<DevToolsEyeDropper> weak_factory_{this};
 
