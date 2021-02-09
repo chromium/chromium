@@ -4192,6 +4192,7 @@ test("unit_tests") {
     "//components/offline_pages/task:test_support",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/content/browser:test_support",
+    "//components/optimization_guide/content/renderer",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/os_crypt:test_support",
