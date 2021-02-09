@@ -24384,7 +24384,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'default': 0,
       'example_value': 0,
       'id': 810,
-      'caption': '''Profile picker availabily on startup''',
+      'caption': '''Profile picker availability on startup''',
       'tags': [],
       'desc': '''Specifies whether the profile picker is enabled, disabled or forced at the browser startup.
 
