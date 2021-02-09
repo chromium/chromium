@@ -279,7 +279,6 @@ bool VulkanImage::Initialize(VulkanDeviceQueue* device_queue,
   if (image_tiling_ != VK_IMAGE_TILING_LINEAR)
     return true;
 
-  plane_count_ = 1;
   const VkImageSubresource image_subresource = {
       .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
       .mipLevel = 0,
