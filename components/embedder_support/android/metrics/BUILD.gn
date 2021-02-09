@@ -42,8 +42,6 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//base:jni_java",
-    "//third_party/android_deps:protobuf_lite_runtime_java",
-    "//third_party/metrics_proto:metrics_proto_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

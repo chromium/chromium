@@ -7,5 +7,4 @@ include_rules = [
   "+content/public/test",
   "+services/network/public/cpp",
   "+services/resource_coordinator/public/cpp/memory_instrumentation",
-  "+third_party/metrics_proto",
 ]
