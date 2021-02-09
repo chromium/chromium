@@ -28,6 +28,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -604,6 +605,24 @@ public class ApplicationStatus {
             sCurrentApplicationState = ApplicationState.UNKNOWN;
             sActivity = null;
             sNativeApplicationStateListener = null;
+        }
+    }
+
+    /**
+     * Mark all Activities as destroyed to avoid side-effects in future test.
+     */
+    @MainThread
+    public static void resetActivitiesForInstrumentationTests() {
+        assert ThreadUtils.runningOnUiThread();
+
+        synchronized (sActivityInfo) {
+            // Copy the set to avoid concurrent modifications to the underlying set.
+            for (Activity activity : new HashSet<>(sActivityInfo.keySet())) {
+                assert activity.getApplication()
+                        == null : "Real activities that are launched should be closed by test code "
+                                  + "and not rely on this cleanup of mocks.";
+                onStateChangeForTesting(activity, ActivityState.DESTROYED);
+            }
         }
     }
 

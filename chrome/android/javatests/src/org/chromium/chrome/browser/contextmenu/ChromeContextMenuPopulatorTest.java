@@ -108,18 +108,14 @@ public class ChromeContextMenuPopulatorTest {
         ChromeFeatureList.setTestFeatures(features);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // ApplicationStatus needs to be initialized with an activity to retrieve correct
-            // resources.
-            if (!ApplicationStatus.isInitialized()) {
-                ApplicationStatus.initialize(BaseJUnit4ClassRunner.getApplication());
-            }
             ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         });
     }
 
     @After
     public void tearDown() {
-        ApplicationStatus.destroyForJUnitTests();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ApplicationStatus.resetActivitiesForInstrumentationTests(); });
     }
 
     private void initializePopulator(@ContextMenuMode int mode, ContextMenuParams params) {

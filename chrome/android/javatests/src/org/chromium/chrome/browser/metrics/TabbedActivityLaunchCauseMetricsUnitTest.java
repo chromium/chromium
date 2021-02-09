@@ -48,9 +48,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
     @Before
     public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            if (!ApplicationStatus.isInitialized()) {
-                ApplicationStatus.initialize(BaseJUnit4ClassRunner.getApplication());
-            }
             ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         });
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
@@ -58,8 +55,10 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
 
     @After
     public void tearDown() {
-        ApplicationStatus.destroyForJUnitTests();
-        ThreadUtils.runOnUiThreadBlocking(() -> LaunchCauseMetrics.resetForTests());
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.resetActivitiesForInstrumentationTests();
+            LaunchCauseMetrics.resetForTests();
+        });
     }
 
     private static int histogramCountForValue(int value) {

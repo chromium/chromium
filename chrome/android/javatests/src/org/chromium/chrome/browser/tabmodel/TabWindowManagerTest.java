@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -29,10 +30,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Test for {@link TabWindowManagerImpl} through {@link TabWindowManagerSingleton}.
@@ -43,7 +40,6 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class TabWindowManagerTest {
-    private List<Activity> mActivities = new ArrayList<>();
     private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
             new TabModelSelectorFactory() {
                 @Override
@@ -55,21 +51,28 @@ public class TabWindowManagerTest {
             };
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUpFixture() {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 sMockTabModelSelectorFactory);
     }
 
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { ApplicationStatus.resetActivitiesForInstrumentationTests(); });
+    }
+
     private ChromeActivity buildActivity() {
         ChromeActivity activity = new CustomTabActivity();
-        mActivities.add(activity);
-        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        });
         return activity;
     }
 
     private void destroyActivity(Activity a) {
-        mActivities.remove(a);
-        ApplicationStatus.onStateChangeForTesting(a, ActivityState.DESTROYED);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { ApplicationStatus.onStateChangeForTesting(a, ActivityState.DESTROYED); });
     }
 
     private Pair<Integer, TabModelSelector> requestSelector(
@@ -77,16 +80,6 @@ public class TabWindowManagerTest {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
         return manager.requestSelector(
                 activity, activity, () -> NextTabPolicy.HIERARCHICAL, requestedIndex);
-    }
-
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (Activity a : mActivities) {
-                ApplicationStatus.onStateChangeForTesting(a, ActivityState.DESTROYED);
-            }
-        });
-        mActivities.clear();
     }
 
     /**

@@ -34,15 +34,14 @@ public final class CustomTabLaunchCauseMetricsTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        if (!ApplicationStatus.isInitialized()) {
-            ApplicationStatus.initialize(BaseJUnit4ClassRunner.getApplication());
-        }
     }
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> LaunchCauseMetrics.resetForTests());
-        ApplicationStatus.destroyForJUnitTests();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.resetActivitiesForInstrumentationTests();
+            LaunchCauseMetrics.resetForTests();
+        });
     }
 
     private static int histogramCountForValue(int value) {
