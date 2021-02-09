@@ -931,7 +931,7 @@
 <translation id="4660119392514473465">現在、シークレット モードで閲覧しています。あなたのアクティビティは、このデバイスを利用する他のユーザーには表示されません。ただし、ダウンロードしたファイル、ブックマーク、リーディング リストは通常どおり保存されます。</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
-<translation id="4675657451653251260">ゲストモードでは Chrome プロフィールの情報が表示されません。<ph name="LINK_BEGIN" />ログイン<ph name="LINK_END" />すると、パスワードやお支払い方法などの Google アカウント情報にアクセスできます。</translation>
+<translation id="4675657451653251260">ゲストモードでは Chrome プロファイルの情報が表示されません。<ph name="LINK_BEGIN" />ログイン<ph name="LINK_END" />すると、パスワードやお支払い方法などの Google アカウント情報にアクセスできます。</translation>
 <translation id="467662567472608290">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書にはエラーがあります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> から、ユーザー補助機能のイベントに応答する許可を求められています</translation>
 <translation id="467809019005607715">Google スライド</translation>
