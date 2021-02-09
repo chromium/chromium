@@ -19,14 +19,14 @@ import org.chromium.url.GURL;
  * A tab observer to record the number of back navigations to SRP
  */
 public class BackNavigationTabObserver extends EmptyTabObserver {
-    private GURL mLastSrpUrl;
     private GURL mLastVisitedUrl;
+    private String mLastSrpUrlQuery;
     private int mBackNavigationCount;
 
     public BackNavigationTabObserver(Tab tab) {
         tab.addObserver(this);
-        mLastSrpUrl = null;
         mLastVisitedUrl = null;
+        mLastSrpUrlQuery = null;
         mBackNavigationCount = 0;
     }
 
@@ -43,14 +43,15 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
         if (history.getEntryCount() == 0) return;
 
         NavigationEntry entry = history.getEntryAtIndex(history.getCurrentEntryIndex());
-        if (SearchUrlHelper.isSrpUrl(entry.getUrl())) {
-            if (entry.getUrl().equals(mLastSrpUrl)) {
+        String query = SearchUrlHelper.getQueryIfValidSrpUrl(entry.getUrl());
+        if (query != null) {
+            if (query.equals(mLastSrpUrlQuery)) {
                 // Treat re-navigation to the last seen SRP as a back navigation.
                 mBackNavigationCount++;
             } else {
                 // Encountered a new SRP session. Record the previous session and start a new one.
                 recordMetricAndClearCache();
-                mLastSrpUrl = entry.getUrl();
+                mLastSrpUrlQuery = query;
             }
             // A page opened through SRP has google.com as its referrer URL. Treat other cases as
             // navigating away from the SRP session.
@@ -86,11 +87,11 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
     }
 
     private void recordMetricAndClearCache() {
-        if (mLastSrpUrl != null) {
+        if (mLastSrpUrlQuery != null) {
             RecordHistogram.recordCount100Histogram(
                     "Browser.ContinuousSearch.BackNavigationToSrp", mBackNavigationCount);
         }
-        mLastSrpUrl = null;
+        mLastSrpUrlQuery = null;
         mBackNavigationCount = 0;
     }
 }

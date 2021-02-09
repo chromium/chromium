@@ -65,19 +65,19 @@ public class BackNavigationTabObserverTest {
         when(webContents.getNavigationController()).thenReturn(mNavigationController);
 
         GURL searchUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
-        doReturn(true).when(mSearchUrlHelperJniMock).isSrpUrl(eq(searchUrl));
-        doReturn(true)
+        doReturn("test").when(mSearchUrlHelperJniMock).getQueryIfValidSrpUrl(eq(searchUrl));
+        doReturn("query")
                 .when(mSearchUrlHelperJniMock)
-                .isSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL)));
-        doReturn(false)
+                .getQueryIfValidSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL)));
+        doReturn(null)
                 .when(mSearchUrlHelperJniMock)
-                .isSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)));
-        doReturn(false)
+                .getQueryIfValidSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)));
+        doReturn(null)
                 .when(mSearchUrlHelperJniMock)
-                .isSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1)));
-        doReturn(false)
+                .getQueryIfValidSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1)));
+        doReturn(null)
                 .when(mSearchUrlHelperJniMock)
-                .isSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)));
+                .getQueryIfValidSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)));
         doReturn(true).when(mSearchUrlHelperJniMock).isGoogleDomainUrl(eq(searchUrl));
         doReturn(false).when(mSearchUrlHelperJniMock).isGoogleDomainUrl(eq(GURL.emptyGURL()));
     }

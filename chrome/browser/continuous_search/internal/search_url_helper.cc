@@ -30,15 +30,6 @@ jboolean JNI_SearchUrlHelper_IsGoogleDomainUrl(
                                      google_util::DISALLOW_NON_STANDARD_PORTS));
 }
 
-jboolean JNI_SearchUrlHelper_IsSrpUrl(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_gurl) {
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
-  if (!url->is_valid())
-    return false;
-  return static_cast<jboolean>(google_util::IsGoogleSearchUrl(*url));
-}
-
 base::android::ScopedJavaLocalRef<jstring>
 JNI_SearchUrlHelper_GetQueryIfValidSrpUrl(
     JNIEnv* env,

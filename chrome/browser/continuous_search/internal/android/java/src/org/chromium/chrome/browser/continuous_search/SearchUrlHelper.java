@@ -27,15 +27,6 @@ public class SearchUrlHelper {
     }
 
     /**
-     * Checks whether the provided url represents a valid Google search url.
-     * @param url the url to check.
-     * @return true if the url satisfies the criteria.
-     */
-    public static boolean isSrpUrl(GURL url) {
-        return SearchUrlHelperJni.get().isSrpUrl(url);
-    }
-
-    /**
      * Gets the query of the provided url if it is a SRP URL and shows the "All" or "News" tab
      * results.
      * @param url The url to try to extract the query from.
@@ -48,7 +39,6 @@ public class SearchUrlHelper {
     @NativeMethods
     interface Natives {
         boolean isGoogleDomainUrl(GURL url);
-        boolean isSrpUrl(GURL url);
         String getQueryIfValidSrpUrl(GURL url);
     }
 }
