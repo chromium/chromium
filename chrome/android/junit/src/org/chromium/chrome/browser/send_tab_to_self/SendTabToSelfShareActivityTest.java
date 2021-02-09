@@ -114,7 +114,8 @@ public class SendTabToSelfShareActivityTest {
         SendTabToSelfShareActivity shareActivity = new SendTabToSelfShareActivity();
         SendTabToSelfCoordinator.setBottomSheetContentForTesting(mBottomSheetContent);
         SendTabToSelfShareActivity.setBottomSheetControllerForTesting(mBottomSheetController);
-        shareActivity.handleAction(mChromeActivity);
+        shareActivity.handleAction(/* triggeringActivity= */ mChromeActivity,
+                /* menuOrKeyboardActionController= */ mChromeActivity);
         verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
     }
 }

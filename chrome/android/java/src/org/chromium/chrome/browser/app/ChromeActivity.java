@@ -2173,6 +2173,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.print_id) {
+            // TODO(crbug.com/1155789): Move this logic to PrintShareActivity once the current tab
+            // is available as UnownedUserData.
             PrintingController printingController = PrintingControllerImpl.getInstance();
             if (printingController != null && !printingController.isBusy()
                     && UserPrefs.get(Profile.getLastUsedRegularProfile())
