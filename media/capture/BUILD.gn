@@ -523,6 +523,8 @@ test("capture_unittests") {
 
   if (is_win) {
     sources += [
+      "video/win/d3d_capture_test_utils.cc",
+      "video/win/d3d_capture_test_utils.h",
       "video/win/gpu_memory_buffer_tracker_unittest.cc",
       "video/win/video_capture_device_factory_win_unittest.cc",
       "video/win/video_capture_device_mf_win_unittest.cc",

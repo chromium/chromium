@@ -72,8 +72,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
                        SetPhotoOptionsCallback callback) override;
 
   // Captured new video data.
-  void OnIncomingCapturedData(const uint8_t* data,
-                              int length,
+  void OnIncomingCapturedData(IMFMediaBuffer* buffer,
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp);
   void OnFrameDropped(VideoCaptureFrameDropReason reason);
@@ -132,6 +131,14 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
                const char* message);
   void SendOnStartedIfNotYetSent();
   HRESULT WaitOnCaptureEvent(GUID capture_event_guid);
+  HRESULT DeliverTextureToClient(ID3D11Texture2D* texture,
+                                 base::TimeTicks reference_time,
+                                 base::TimeDelta timestamp);
+  void OnIncomingCapturedDataInternal(
+      IMFMediaBuffer* buffer,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      VideoCaptureFrameDropReason& frame_drop_reason);
 
   VideoFacingMode facing_mode_;
   CreateMFPhotoCallbackCB create_mf_photo_callback_;

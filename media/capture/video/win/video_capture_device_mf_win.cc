@@ -4,6 +4,7 @@
 
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 
+#include <d3d11_4.h>
 #include <mfapi.h>
 #include <mferror.h>
 #include <stddef.h>
@@ -464,6 +465,88 @@ mojom::RangePtr RetrieveControlRangeAndCurrent(
       },
       supported_modes, current_mode, value_converter, step_converter);
 }
+
+HRESULT GetTextureFromMFBuffer(IMFMediaBuffer* mf_buffer,
+                               ID3D11Texture2D** texture_out) {
+  Microsoft::WRL::ComPtr<IMFDXGIBuffer> dxgi_buffer;
+  HRESULT hr = mf_buffer->QueryInterface(IID_PPV_ARGS(&dxgi_buffer));
+  DLOG_IF_FAILED_WITH_HRESULT("Failed to retrieve IMFDXGIBuffer", hr);
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d_texture;
+  if (SUCCEEDED(hr)) {
+    hr = dxgi_buffer->GetResource(IID_PPV_ARGS(&d3d_texture));
+    DLOG_IF_FAILED_WITH_HRESULT("Failed to retrieve ID3D11Texture2D", hr);
+  }
+
+  *texture_out = d3d_texture.Detach();
+  if (SUCCEEDED(hr)) {
+    CHECK(*texture_out);
+  }
+  return hr;
+}
+
+void GetTextureSizeAndFormat(ID3D11Texture2D* texture,
+                             gfx::Size& size,
+                             VideoPixelFormat& format) {
+  D3D11_TEXTURE2D_DESC desc;
+  texture->GetDesc(&desc);
+  size.set_width(desc.Width);
+  size.set_height(desc.Height);
+
+  switch (desc.Format) {
+    // Only support NV12
+    case DXGI_FORMAT_NV12:
+      format = PIXEL_FORMAT_NV12;
+      break;
+    default:
+      DLOG(ERROR) << "Unsupported camera DXGI texture format: " << desc.Format;
+      format = PIXEL_FORMAT_UNKNOWN;
+      break;
+  }
+}
+
+HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
+                                     gfx::GpuMemoryBufferHandle gmb_handle) {
+  Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
+  texture->GetDevice(&texture_device);
+
+  Microsoft::WRL::ComPtr<ID3D11Device1> device1;
+  HRESULT hr = texture_device.As(&device1);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get ID3D11Device1: "
+                << logging::SystemErrorCodeToString(hr);
+    return hr;
+  }
+
+  // Open shared resource from GpuMemoryBuffer on source texture D3D11 device
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> target_texture;
+  hr = device1->OpenSharedResource1(gmb_handle.dxgi_handle.Get(),
+                                    IID_PPV_ARGS(&target_texture));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to open shared camera target texture: "
+                << logging::SystemErrorCodeToString(hr);
+    return hr;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+  texture_device->GetImmediateContext(&device_context);
+
+  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+  hr = target_texture.As(&keyed_mutex);
+  CHECK(SUCCEEDED(hr));
+
+  keyed_mutex->AcquireSync(0, INFINITE);
+  device_context->CopySubresourceRegion(target_texture.Get(), 0, 0, 0, 0,
+                                        texture, 0, nullptr);
+  keyed_mutex->ReleaseSync(0);
+
+  // Need to flush context to ensure that other devices receive updated contents
+  // of shared resource
+  device_context->Flush();
+
+  return S_OK;
+}
+
 }  // namespace
 
 class MFVideoCallback final
@@ -534,16 +617,8 @@ class MFVideoCallback final
       ComPtr<IMFMediaBuffer> buffer;
       sample->GetBufferByIndex(i, &buffer);
       if (buffer) {
-        ScopedBufferLock locked_buffer(buffer);
-        if (locked_buffer.data()) {
-          observer_->OnIncomingCapturedData(locked_buffer.data(),
-                                            locked_buffer.length(),
-                                            reference_time, timestamp);
-        } else {
-          observer_->OnFrameDropped(
-              VideoCaptureFrameDropReason::
-                  kWinMediaFoundationLockingBufferDelieveredNullptr);
-        }
+        observer_->OnIncomingCapturedData(buffer.Get(), reference_time,
+                                          timestamp);
       } else {
         observer_->OnFrameDropped(
             VideoCaptureFrameDropReason::
@@ -1365,16 +1440,104 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
 
   std::move(callback).Run(true);
 }
-
 void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
-    const uint8_t* data,
-    int length,
+    IMFMediaBuffer* buffer,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp) {
+  VideoCaptureFrameDropReason frame_drop_reason =
+      VideoCaptureFrameDropReason::kNone;
+  OnIncomingCapturedDataInternal(buffer, reference_time, timestamp,
+                                 frame_drop_reason);
+  if (frame_drop_reason != VideoCaptureFrameDropReason::kNone) {
+    OnFrameDropped(frame_drop_reason);
+  }
+}
+
+HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
+    ID3D11Texture2D* texture,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp) {
+  // Check for device loss
+  Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
+  texture->GetDevice(&texture_device);
+
+  HRESULT hr = texture_device->GetDeviceRemovedReason();
+
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Camera texture device lost.";
+    DCHECK(dxgi_device_manager_->ResetDevice());
+    return hr;
+  }
+
+  gfx::Size texture_size;
+  VideoPixelFormat pixel_format;
+  GetTextureSizeAndFormat(texture, texture_size, pixel_format);
+
+  if (pixel_format != PIXEL_FORMAT_NV12) {
+    return MF_E_UNSUPPORTED_FORMAT;
+  }
+
+  VideoCaptureDevice::Client::Buffer capture_buffer;
+  constexpr int kDummyFrameFeedbackId = 0;
+  auto result = client_->ReserveOutputBuffer(
+      texture_size, pixel_format, kDummyFrameFeedbackId, &capture_buffer);
+  if (result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
+    DLOG(ERROR) << "Failed to reserve output capture buffer: " << (int)result;
+    return MF_E_UNEXPECTED;
+  }
+
+  hr = CopyTextureToGpuMemoryBuffer(
+      texture, capture_buffer.handle_provider->GetGpuMemoryBufferHandle());
+
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to copy camera device texture to output texture: "
+                << logging::SystemErrorCodeToString(hr);
+    return hr;
+  }
+
+  VideoRotation frame_rotation = VIDEO_ROTATION_0;
+  DCHECK(camera_rotation_.has_value());
+  switch (camera_rotation_.value()) {
+    case 0:
+      frame_rotation = VIDEO_ROTATION_0;
+      break;
+    case 90:
+      frame_rotation = VIDEO_ROTATION_90;
+      break;
+    case 180:
+      frame_rotation = VIDEO_ROTATION_180;
+      break;
+    case 270:
+      frame_rotation = VIDEO_ROTATION_270;
+      break;
+    default:
+      break;
+  }
+
+  VideoFrameMetadata frame_metadata;
+  frame_metadata.transformation = VideoTransformation(frame_rotation);
+
+  client_->OnIncomingCapturedBufferExt(
+      std::move(capture_buffer),
+      VideoCaptureFormat(
+          texture_size, selected_video_capability_->supported_format.frame_rate,
+          pixel_format),
+      gfx::ColorSpace(), reference_time, timestamp, gfx::Rect(texture_size),
+      frame_metadata);
+
+  return hr;
+}
+
+void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal(
+    IMFMediaBuffer* buffer,
+    base::TimeTicks reference_time,
+    base::TimeDelta timestamp,
+    VideoCaptureFrameDropReason& frame_drop_reason) {
   base::AutoLock lock(lock_);
-  DCHECK(data);
 
   SendOnStartedIfNotYetSent();
+
+  bool delivered_texture = false;
 
   if (client_.get()) {
     if (!has_sent_on_started_to_client_) {
@@ -1387,13 +1550,38 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
     if (!camera_rotation_.has_value() || IsAutoRotationEnabled())
       camera_rotation_ = GetCameraRotation(facing_mode_);
 
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+    if (dxgi_device_manager_ &&
+        SUCCEEDED(GetTextureFromMFBuffer(buffer, &texture))) {
+      HRESULT hr =
+          DeliverTextureToClient(texture.Get(), reference_time, timestamp);
+      DLOG_IF_FAILED_WITH_HRESULT("Failed to deliver D3D11 texture to client.",
+                                  hr);
+      delivered_texture = SUCCEEDED(hr);
+    }
+  }
+
+  if (delivered_texture && video_stream_take_photo_callbacks_.empty()) {
+    return;
+  }
+
+  ScopedBufferLock locked_buffer(buffer);
+  if (!locked_buffer.data()) {
+    DLOG(ERROR) << "Locked buffer delivered nullptr";
+    frame_drop_reason = VideoCaptureFrameDropReason::
+        kWinMediaFoundationLockingBufferDelieveredNullptr;
+    return;
+  }
+
+  if (!delivered_texture && client_.get()) {
     // TODO(julien.isorce): retrieve the color space information using Media
     // Foundation api, MFGetAttributeSize/MF_MT_VIDEO_PRIMARIES,in order to
     // build a gfx::ColorSpace. See http://crbug.com/959988.
     client_->OnIncomingCapturedData(
-        data, length, selected_video_capability_->supported_format,
-        gfx::ColorSpace(), camera_rotation_.value(), false /* flip_y */,
-        reference_time, timestamp);
+        locked_buffer.data(), locked_buffer.length(),
+        selected_video_capability_->supported_format, gfx::ColorSpace(),
+        camera_rotation_.value(), false /* flip_y */, reference_time,
+        timestamp);
   }
 
   while (!video_stream_take_photo_callbacks_.empty()) {
@@ -1401,8 +1589,9 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
         std::move(video_stream_take_photo_callbacks_.front());
     video_stream_take_photo_callbacks_.pop();
 
-    mojom::BlobPtr blob = RotateAndBlobify(
-        data, length, selected_video_capability_->supported_format, 0);
+    mojom::BlobPtr blob =
+        RotateAndBlobify(locked_buffer.data(), locked_buffer.length(),
+                         selected_video_capability_->supported_format, 0);
     if (!blob) {
       LogWindowsImageCaptureOutcome(
           VideoCaptureWinBackend::kMediaFoundation,
