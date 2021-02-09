@@ -19,7 +19,6 @@
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_auth.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/battery_monitor.mojom.h"
 
 namespace chromeos {
 class PowerManagerClient;
@@ -35,7 +34,6 @@ class PlatformApiImpl : public CrosPlatformApi {
       AssistantMediaSession* media_session,
       chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       PowerManagerClient* power_manager_client,
-      mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> background_task_runner);
   ~PlatformApiImpl() override;

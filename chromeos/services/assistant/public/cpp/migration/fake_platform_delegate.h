@@ -27,6 +27,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
       mojo::PendingReceiver<
           ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
       override {}
+  void BindBatteryMonitor(
+      mojo::PendingReceiver<::device::mojom::BatteryMonitor> receiver) override;
   void BindNetworkConfig(mojo::PendingReceiver<
                          ::chromeos::network_config::mojom::CrosNetworkConfig>
                              receiver) override {}
@@ -43,8 +45,16 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
     return std::move(stream_factory_receiver_);
   }
 
+  // Return the pending receiver passed to the last BindBatteryMonitor call.
+  mojo::PendingReceiver<::device::mojom::BatteryMonitor>
+  battery_monitor_receiver() {
+    return std::move(battery_monitor_receiver_);
+  }
+
  private:
   mojo::PendingReceiver<::audio::mojom::StreamFactory> stream_factory_receiver_;
+  mojo::PendingReceiver<::device::mojom::BatteryMonitor>
+      battery_monitor_receiver_;
 };
 
 }  // namespace assistant

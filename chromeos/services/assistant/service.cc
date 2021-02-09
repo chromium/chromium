@@ -53,7 +53,6 @@
 #include "chromeos/services/assistant/assistant_manager_service_impl.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
 #include "chromeos/services/assistant/utils.h"
-#include "services/device/public/mojom/battery_monitor.mojom.h"
 #endif
 
 namespace chromeos {
@@ -547,12 +546,8 @@ Service::CreateAndReturnAssistantManagerService() {
     return std::move(assistant_manager_service_for_testing_);
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor;
-  AssistantClient::Get()->RequestBatteryMonitor(
-      battery_monitor.InitWithNewPipeAndPassReceiver());
-
-  auto delegate = std::make_unique<AssistantManagerServiceDelegateImpl>(
-      std::move(battery_monitor), context());
+  auto delegate =
+      std::make_unique<AssistantManagerServiceDelegateImpl>(context());
 
   // |assistant_manager_service_| is only created once.
   DCHECK(pending_url_loader_factory_);

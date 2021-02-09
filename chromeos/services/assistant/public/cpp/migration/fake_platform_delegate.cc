@@ -15,5 +15,10 @@ void FakePlatformDelegate::BindAudioStreamFactory(
   stream_factory_receiver_ = std::move(receiver);
 }
 
+void FakePlatformDelegate::BindBatteryMonitor(
+    mojo::PendingReceiver<::device::mojom::BatteryMonitor> receiver) {
+  battery_monitor_receiver_ = std::move(receiver);
+}
+
 }  // namespace assistant
 }  // namespace chromeos

@@ -20,9 +20,8 @@ namespace chromeos {
 namespace assistant {
 
 AssistantManagerServiceDelegateImpl::AssistantManagerServiceDelegateImpl(
-    mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
     ServiceContext* context)
-    : battery_monitor_(std::move(battery_monitor)), context_(context) {}
+    : context_(context) {}
 
 AssistantManagerServiceDelegateImpl::~AssistantManagerServiceDelegateImpl() =
     default;
@@ -44,8 +43,7 @@ AssistantManagerServiceDelegateImpl::CreatePlatformApi(
     scoped_refptr<base::SingleThreadTaskRunner> background_thread_task_runner) {
   return std::make_unique<PlatformApiImpl>(
       media_session, platform_delegate, context_->power_manager_client(),
-      std::move(battery_monitor_), context_->main_task_runner(),
-      background_thread_task_runner);
+      context_->main_task_runner(), background_thread_task_runner);
 }
 
 std::unique_ptr<assistant_client::AssistantManager>

@@ -8,6 +8,7 @@ import "ash/public/mojom/assistant_volume_control.mojom";
 import "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom";
 import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
 import "services/audio/public/mojom/stream_factory.mojom";
+import "services/device/public/mojom/battery_monitor.mojom";
 import "services/device/public/mojom/wake_lock_provider.mojom";
 
 // Delegate that exposes methods to bind platform related functionality.
@@ -25,6 +26,9 @@ interface PlatformDelegate {
   // Requests Ash's AssistantVolumeControl interface from the browser.
   BindAssistantVolumeControl(pending_receiver<ash.mojom.AssistantVolumeControl>
     receiver);
+
+  // Requests a BatteryMonitor from the browser.
+  BindBatteryMonitor(pending_receiver<device.mojom.BatteryMonitor> receiver);
 
   // Requests a connection to the CrosNetworkConfig service interface via the
   // browser.

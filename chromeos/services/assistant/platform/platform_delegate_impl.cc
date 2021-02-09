@@ -27,6 +27,11 @@ void PlatformDelegateImpl::BindAudioDecoderFactory(
   AssistantClient::Get()->RequestAudioDecoderFactory(std::move(receiver));
 }
 
+void PlatformDelegateImpl::BindBatteryMonitor(
+    mojo::PendingReceiver<::device::mojom::BatteryMonitor> receiver) {
+  AssistantClient::Get()->RequestBatteryMonitor(std::move(receiver));
+}
+
 void PlatformDelegateImpl::BindNetworkConfig(
     mojo::PendingReceiver<::chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {

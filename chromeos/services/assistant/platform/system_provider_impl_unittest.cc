@@ -19,10 +19,11 @@ namespace assistant {
 
 class FakeBatteryMonitor : device::mojom::BatteryMonitor {
  public:
-  FakeBatteryMonitor() {}
+  FakeBatteryMonitor() = default;
 
-  mojo::PendingRemote<device::mojom::BatteryMonitor> CreateRemoteAndBind() {
-    return receiver_.BindNewPipeAndPassRemote();
+  void Bind(
+      mojo::PendingReceiver<::device::mojom::BatteryMonitor> pending_receiver) {
+    receiver_.Bind(std::move(pending_receiver));
   }
 
   void QueryNextStatus(QueryNextStatusCallback callback) override {
@@ -65,8 +66,9 @@ class AssistantSystemProviderImplTest : public testing::Test {
 
     system_provider_impl_ = std::make_unique<SystemProviderImpl>(
         std::make_unique<PowerManagerProviderImpl>(
-            task_environment_.GetMainThreadTaskRunner(), &platform_delegate),
-        battery_monitor_.CreateRemoteAndBind());
+            task_environment_.GetMainThreadTaskRunner(), &platform_delegate_),
+        &platform_delegate_);
+    battery_monitor_.Bind(platform_delegate_.battery_monitor_receiver());
     FlushForTesting();
   }
 
@@ -79,7 +81,7 @@ class AssistantSystemProviderImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   FakeBatteryMonitor battery_monitor_;
-  FakePlatformDelegate platform_delegate;
+  FakePlatformDelegate platform_delegate_;
   std::unique_ptr<SystemProviderImpl> system_provider_impl_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantSystemProviderImplTest);

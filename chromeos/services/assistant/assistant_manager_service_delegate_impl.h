@@ -9,8 +9,6 @@
 #include <string>
 
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/battery_monitor.mojom.h"
 
 namespace chromeos {
 namespace assistant {
@@ -20,9 +18,7 @@ class ServiceContext;
 class AssistantManagerServiceDelegateImpl
     : public AssistantManagerServiceDelegate {
  public:
-  AssistantManagerServiceDelegateImpl(
-      mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
-      ServiceContext* context);
+  explicit AssistantManagerServiceDelegateImpl(ServiceContext* context);
   ~AssistantManagerServiceDelegateImpl() override;
 
   // AssistantManagerServiceDelegate implementation:
@@ -41,7 +37,6 @@ class AssistantManagerServiceDelegateImpl
       assistant_client::AssistantManager* assistant_manager) override;
 
  private:
-  mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor_;
   // Owned by the parent |Service| which will destroy |this| before |context_|.
   ServiceContext* context_;
 

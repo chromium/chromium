@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "libassistant/shared/public/platform_system.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,7 +29,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) SystemProviderImpl
   // platform power manager provider is available.
   SystemProviderImpl(
       std::unique_ptr<PowerManagerProviderImpl> power_manager_provider,
-      mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor);
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
   ~SystemProviderImpl() override;
 
   // assistant_client::SystemProvider implementation:

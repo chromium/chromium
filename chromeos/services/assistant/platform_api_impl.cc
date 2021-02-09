@@ -36,7 +36,6 @@ PlatformApiImpl::PlatformApiImpl(
     AssistantMediaSession* media_session,
     chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     PowerManagerClient* power_manager_client,
-    mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor,
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> background_task_runner)
     : audio_output_provider_(media_session,
@@ -50,8 +49,8 @@ PlatformApiImpl::PlatformApiImpl(
     provider = std::make_unique<PowerManagerProviderImpl>(
         std::move(main_thread_task_runner), platform_delegate);
   }
-  system_provider_ = std::make_unique<SystemProviderImpl>(
-      std::move(provider), std::move(battery_monitor));
+  system_provider_ = std::make_unique<SystemProviderImpl>(std::move(provider),
+                                                          platform_delegate);
 }
 
 PlatformApiImpl::~PlatformApiImpl() = default;
