@@ -80,7 +80,7 @@ public class ContinuousSearchTabHelperTest {
             new Handler().postDelayed(() -> {
                 mListener.onResult(new SearchResultMetadata(
                         mSearchUrl, mQuery, 0, new ArrayList<SearchResultGroup>()));
-            }, 100);
+            }, 250);
         }
 
         @Override
@@ -218,7 +218,9 @@ public class ContinuousSearchTabHelperTest {
         loadUrl(tab,
                 new LoadUrlParams(
                         mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog")));
-        observer.mOnUpdateCallbackHelper.waitForFirst(5000, TimeUnit.MILLISECONDS);
+        observer.mOnUpdateCallbackHelper.waitForFirst(
+                "Timed out waiting for SearchResultUserDataObserver#onUpdate", 5000,
+                TimeUnit.MILLISECONDS);
 
         // Check the retuned data.
         Assert.assertEquals("cat dog", observer.mMetadata.getQuery());
@@ -232,6 +234,8 @@ public class ContinuousSearchTabHelperTest {
 
         // Invalidate the data.
         loadUrl(tab, new LoadUrlParams(UrlConstants.ABOUT_URL));
-        observer.mInvalidateCallbackHelper.waitForFirst(5000, TimeUnit.MILLISECONDS);
+        observer.mInvalidateCallbackHelper.waitForFirst(
+                "Timed out waiting for SearchResultUserDataObserver#onError", 5000,
+                TimeUnit.MILLISECONDS);
     }
 }
