@@ -110,7 +110,7 @@ export function appTestSuite() {
    * @return {!CrButtonElement}
    */
   function getSessionLogButton() {
-    return /** @type {!CrButtonElement} */ (page.$$('.session-log-button'));
+    return /** @type {!CrButtonElement} */ (page.$$('#sessionLogButton'));
   }
 
   /**
@@ -152,7 +152,7 @@ export function appTestSuite() {
           assertTrue(!!batteryStatus);
 
           // Verify the session log button is in the page.
-          const sessionLog = page.$$('.session-log-button');
+          const sessionLog = page.$$('#sessionLogButton');
           assertTrue(!!sessionLog);
         });
   });

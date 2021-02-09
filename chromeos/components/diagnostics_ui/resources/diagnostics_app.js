@@ -4,10 +4,13 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './battery_status_card.js';
 import './cpu_card.js';
 import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
+import './icons.js';
 import './memory_card.js';
 import './overview_card.js';
 import './strings.m.js';
