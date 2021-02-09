@@ -37,6 +37,7 @@ component("full_restore") {
     "//components/sessions:session_id",
     "//extensions/common:common_constants",
     "//ui/aura",
+    "//ui/views",
   ]
 }
 

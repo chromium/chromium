@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "ui/base/class_property.h"
+#include "ui/views/widget/widget.h"
 
 class AccountId;
 
@@ -55,6 +56,17 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 // Returns true if we should restore apps and pages based on the restore setting
 // and the user's choice from the notification. Otherwise, returns false.
 COMPONENT_EXPORT(FULL_RESTORE) bool ShouldRestore(const AccountId& account_id);
+
+// Returns true if there is a window info for |restore_window_id| from the full
+// restore file. Otherwise, returns false.
+COMPONENT_EXPORT(FULL_RESTORE)
+bool HasWindowInfo(int32_t restore_window_id);
+
+// Modifies |out_params| based on the window info associated with
+// |restore_window_id|.
+COMPONENT_EXPORT(FULL_RESTORE)
+void ModifyWidgetParams(int32_t restore_window_id,
+                        views::Widget::InitParams* out_params);
 
 }  // namespace full_restore
 

@@ -144,10 +144,11 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
   params.context = ash::Shell::GetPrimaryRootWindow();
 
   Browser* browser = browser_view_->browser();
+  const int32_t restore_id = browser->create_params().restore_id;
   params.init_properties_container.SetProperty(full_restore::kWindowIdKey,
                                                browser->session_id().id());
   params.init_properties_container.SetProperty(
-      full_restore::kRestoreWindowIdKey, browser->create_params().restore_id);
+      full_restore::kRestoreWindowIdKey, restore_id);
 
   // This is only needed for ash. For lacros, Exo tags the associated
   // ShellSurface as being of AppType::LACROS.
@@ -155,6 +156,8 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
       aura::client::kAppType,
       static_cast<int>(browser->deprecated_is_app() ? ash::AppType::CHROME_APP
                                                     : ash::AppType::BROWSER));
+
+  full_restore::ModifyWidgetParams(restore_id, &params);
   return params;
 }
 
@@ -168,6 +171,14 @@ bool BrowserFrameAsh::UsesNativeSystemMenu() const {
 
 int BrowserFrameAsh::GetMinimizeButtonOffset() const {
   return 0;
+}
+
+bool BrowserFrameAsh::ShouldRestorePreviousBrowserWidgetState() const {
+  // If there is no window info from full restore, maybe use the session
+  // restore.
+  const int32_t restore_id =
+      browser_view_->browser()->create_params().restore_id;
+  return !full_restore::HasWindowInfo(restore_id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

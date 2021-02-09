@@ -47,6 +47,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
       const content::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) override;
+  bool ShouldRestorePreviousBrowserWidgetState() const override;
 
  protected:
   ~BrowserFrameMac() override;

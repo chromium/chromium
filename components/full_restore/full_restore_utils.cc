@@ -12,6 +12,7 @@
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/window_info.h"
+#include "ui/aura/client/aura_constants.h"
 
 namespace full_restore {
 
@@ -52,6 +53,42 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
 
 bool ShouldRestore(const AccountId& account_id) {
   return FullRestoreInfo::GetInstance()->ShouldRestore(account_id);
+}
+
+bool HasWindowInfo(int32_t restore_window_id) {
+  if (!ash::features::IsFullRestoreEnabled())
+    return false;
+
+  std::unique_ptr<WindowInfo> window_info = GetWindowInfo(restore_window_id);
+  return !!window_info;
+}
+
+void ModifyWidgetParams(int32_t restore_window_id,
+                        views::Widget::InitParams* out_params) {
+  DCHECK(out_params);
+
+  if (!ash::features::IsFullRestoreEnabled())
+    return;
+
+  std::unique_ptr<WindowInfo> window_info = GetWindowInfo(restore_window_id);
+  if (!window_info)
+    return;
+
+  if (window_info->desk_id)
+    out_params->workspace = base::NumberToString(*window_info->desk_id);
+  if (window_info->current_bounds)
+    out_params->bounds = *window_info->current_bounds;
+  if (window_info->restore_bounds) {
+    out_params->init_properties_container.SetProperty(
+        aura::client::kRestoreBoundsKey, *window_info->restore_bounds);
+  }
+  if (window_info->window_state_type) {
+    // ToWindowShowState will make us lose some ash-specific types (left/right
+    // snap). Ash is responsible for restoring these states by checking
+    // GetWindowInfo.
+    out_params->show_state =
+        chromeos::ToWindowShowState(*window_info->window_state_type);
+  }
 }
 
 }  // namespace full_restore

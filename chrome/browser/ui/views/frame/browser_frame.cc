@@ -84,27 +84,29 @@ void BrowserFrame::InitBrowserFrame() {
   params.name = "BrowserFrame";
   params.delegate = browser_view_;
 
-  Browser* browser = browser_view_->browser();
-  if (browser->is_type_normal() || browser->is_type_devtools() ||
-      browser->is_type_app()) {
-    // Typed panel/popup can only return a size once the widget has been
-    // created.
-    // DevTools counts as a popup, but DevToolsWindow::CreateDevToolsBrowser
-    // ensures there is always a size available. Without this, the tools
-    // launch on the wrong display and can have sizing issues when
-    // repositioned to the saved bounds in Widget::SetInitialBounds.
-    chrome::GetSavedWindowBoundsAndShowState(browser, &params.bounds,
-                                             &params.show_state);
+  if (native_browser_frame_->ShouldRestorePreviousBrowserWidgetState()) {
+    Browser* browser = browser_view_->browser();
+    if (browser->is_type_normal() || browser->is_type_devtools() ||
+        browser->is_type_app()) {
+      // Typed panel/popup can only return a size once the widget has been
+      // created.
+      // DevTools counts as a popup, but DevToolsWindow::CreateDevToolsBrowser
+      // ensures there is always a size available. Without this, the tools
+      // launch on the wrong display and can have sizing issues when
+      // repositioned to the saved bounds in Widget::SetInitialBounds.
+      chrome::GetSavedWindowBoundsAndShowState(browser, &params.bounds,
+                                               &params.show_state);
 
-    params.workspace = browser->initial_workspace();
-    params.visible_on_all_workspaces =
-        browser->initial_visible_on_all_workspaces_state();
-    const base::CommandLine& parsed_command_line =
-        *base::CommandLine::ForCurrentProcess();
+      params.workspace = browser->initial_workspace();
+      params.visible_on_all_workspaces =
+          browser->initial_visible_on_all_workspaces_state();
+      const base::CommandLine& parsed_command_line =
+          *base::CommandLine::ForCurrentProcess();
 
-    if (parsed_command_line.HasSwitch(switches::kWindowWorkspace)) {
-      params.workspace =
-          parsed_command_line.GetSwitchValueASCII(switches::kWindowWorkspace);
+      if (parsed_command_line.HasSwitch(switches::kWindowWorkspace)) {
+        params.workspace =
+            parsed_command_line.GetSwitchValueASCII(switches::kWindowWorkspace);
+      }
     }
   }
 

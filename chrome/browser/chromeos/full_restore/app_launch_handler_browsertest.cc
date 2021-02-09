@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
 
+#include <memory>
+
 #include "ash/public/cpp/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
@@ -22,9 +24,11 @@
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
+#include "components/full_restore/window_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
@@ -34,8 +38,36 @@ namespace full_restore {
 
 namespace {
 
-const char kAppId[] = "mldnpnnoiloahfhddhobgjeophloidmo";
-const int32_t kId = 100;
+constexpr char kAppId[] = "mldnpnnoiloahfhddhobgjeophloidmo";
+constexpr int32_t kId = 100;
+
+// Test values for a test WindowInfo object.
+constexpr int kDeskId = 5;
+constexpr gfx::Rect kRestoreBounds(100, 100);
+constexpr gfx::Rect kCurrentBounds(200, 200);
+constexpr chromeos::WindowStateType kWindowStateType =
+    chromeos::WindowStateType::kLeftSnapped;
+
+// Creates a WindowInfo object and then saves it.
+void CreateAndSaveWindowInfo(int desk_id,
+                             const gfx::Rect& restore_bounds,
+                             const gfx::Rect& current_bounds,
+                             chromeos::WindowStateType window_state_type) {
+  // A window is needed for SaveWindowInfo, but all it needs is a layer and
+  // kWindowIdKey to be set. |window| needs to be alive when save is called for
+  // SaveWindowInfo to work.
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  window->SetProperty(::full_restore::kWindowIdKey, kId);
+
+  ::full_restore::WindowInfo window_info;
+  window_info.window = window.get();
+  window_info.desk_id = desk_id;
+  window_info.restore_bounds = restore_bounds;
+  window_info.current_bounds = current_bounds;
+  window_info.window_state_type = window_state_type;
+  ::full_restore::SaveWindowInfo(window_info);
+}
 
 }  // namespace
 
@@ -295,6 +327,35 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   // Verify there is new browser launched.
   EXPECT_EQ(count + 2, BrowserList::GetInstance()->size());
   EXPECT_TRUE(FindWebAppWindow());
+}
+
+// Tests that the window properties on the browser window match the ones we set
+// in the window info.
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, WindowProperties) {
+  size_t count = BrowserList::GetInstance()->size();
+
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+                                extension_misc::kChromeAppId, kId));
+
+  CreateAndSaveWindowInfo(kDeskId, kRestoreBounds, kCurrentBounds,
+                          kWindowStateType);
+  WaitForAppLaunchInfoSaved();
+
+  // Launch the browser.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  app_launch_handler->LaunchBrowserWhenReady();
+  app_launch_handler->SetShouldRestore();
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_EQ(count + 1u, BrowserList::GetInstance()->size());
+
+  // TODO(sammiequon): Check the values from the actual browser window.
+  auto stored_window_info = ::full_restore::GetWindowInfo(kId);
+  EXPECT_EQ(kDeskId, *stored_window_info->desk_id);
+  EXPECT_EQ(kRestoreBounds, *stored_window_info->restore_bounds);
+  EXPECT_EQ(kCurrentBounds, *stored_window_info->current_bounds);
+  EXPECT_EQ(kWindowStateType, *stored_window_info->window_state_type);
 }
 
 class AppLaunchHandlerNoBrowserBrowserTest

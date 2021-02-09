@@ -114,3 +114,7 @@ bool DesktopBrowserFrameAura::HandleKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
   return false;
 }
+
+bool DesktopBrowserFrameAura::ShouldRestorePreviousBrowserWidgetState() const {
+  return true;
+}

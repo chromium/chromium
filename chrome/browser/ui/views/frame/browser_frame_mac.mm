@@ -431,3 +431,7 @@ bool BrowserFrameMac::HandleKeyboardEvent(
   // CommandDispatcher the opportunity to finish passing the event to consumers.
   return GetNSWindowHost()->RedispatchKeyEvent(event.os_event);
 }
+
+bool BrowserFrameMac::ShouldRestorePreviousBrowserWidgetState() const {
+  return true;
+}
