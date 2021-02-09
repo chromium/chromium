@@ -424,11 +424,21 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kNativeNotifications;
 #endif
 
+#if defined(OS_MAC)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kNewMacNotificationAPI;
+#endif
+
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kNoReferrers;
 
 #if defined(OS_WIN)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kNotificationDurationLongForRequireInteraction;
+#endif
+
+#if defined(OS_MAC)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kNotificationsViaHelperApp;
 #endif
 
 #if defined(OS_POSIX)

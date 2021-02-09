@@ -643,6 +643,12 @@ const base::Feature kNativeNotifications{"NativeNotifications",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
 
+#if defined(OS_MAC)
+// Enables the usage of Apple's new Notification API on macOS 10.14+
+const base::Feature kNewMacNotificationAPI{"NewMacNotificationAPI",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // OS_MAC
+
 // When kNoReferrers is enabled, most HTTP requests will provide empty
 // referrers instead of their ordinary behavior.
 const base::Feature kNoReferrers{"NoReferrers",
@@ -655,6 +661,12 @@ const base::Feature kNotificationDurationLongForRequireInteraction{
     "NotificationDurationLongForRequireInteraction",
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // OS_WIN
+
+#if defined(OS_MAC)
+// Shows alert notifications via a helper app in a utility process.
+const base::Feature kNotificationsViaHelperApp{
+    "NotificationsViaHelperApp", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // OS_MAC
 
 #if defined(OS_POSIX)
 // Enables NTLMv2, which implicitly disables NTLMv1.

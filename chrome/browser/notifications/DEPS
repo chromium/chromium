@@ -1,4 +1,5 @@
 include_rules = [
+  "+chrome/services/mac_notifications/public",
   "+dbus",
   "+ui/message_center",
 ]

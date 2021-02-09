@@ -1,0 +1,41 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("mac_notifications") {
+  sources = [
+    "mac_notification_provider_impl.h",
+    "mac_notification_provider_impl.mm",
+    "mac_notification_service_un.h",
+    "mac_notification_service_un.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:chrome_features",
+  ]
+
+  public_deps = [
+    "//chrome/services/mac_notifications/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+  weak_frameworks = [
+    "UserNotifications.framework",  # macOS 10.14
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "mac_notification_service_un_unittest.mm" ]
+
+  deps = [
+    ":mac_notifications",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

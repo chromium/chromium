@@ -34,10 +34,6 @@ extern const base::Feature kMuteNotificationsDuringScreenShare;
 extern const base::Feature kShutdownSupportForKeepalive;
 #endif
 
-#if defined(OS_MAC)
-extern const base::Feature kNewMacNotificationAPI;
-#endif
-
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const base::Feature kUserDataSnapshot;
 #endif

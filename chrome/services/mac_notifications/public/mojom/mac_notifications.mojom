@@ -1,0 +1,39 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module notifications.mojom;
+
+// Represents a notification and the action taken on it by the user.
+struct NotificationActionInfo {
+  // TODO(knollr): Fill struct.
+};
+
+// Interface to control notifications shown by the helper app. Implemented by
+// the helper app and called from the browser process.
+interface MacNotificationService {
+  // TODO(knollr): Add remaining methods to show / query notifications.
+
+  // Closes all notifications shown by the helper app in the system notification
+  // center for all profiles.
+  CloseAllNotifications();
+};
+
+// Handles notification actions such as click or close. Implemented in the
+// browser process and called from the helper app.
+interface MacNotificationActionHandler {
+  // Called when there has been an action on a notification. An example is a
+  // user clicking on a notification or when a notification got closed.
+  OnNotificationAction(NotificationActionInfo info);
+};
+
+// Main entrypoint for the system notification service. Implemented in a helper
+// app so we can set a custom alert style different from the main app. This
+// allows us to show both banner and alert style notifications on macOS.
+interface MacNotificationProvider {
+  // Called from the browser process to connect to the helper app. Further calls
+  // are made on the |service| interface and actions will be handled by the
+  // passed |handler|.
+  BindNotificationService(pending_receiver<MacNotificationService> service,
+                          pending_remote<MacNotificationActionHandler> handler);
+};

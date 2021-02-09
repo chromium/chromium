@@ -3953,6 +3953,7 @@ test("unit_tests") {
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
       "../browser/mac/exception_processor_unittest.mm",
       "../browser/mac/keystone_glue_unittest.mm",
+      "../browser/notifications/notification_alert_service_bridge_unittest.mm",
       "../browser/notifications/notification_platform_bridge_mac_unittest.mm",
       "../browser/notifications/notification_platform_bridge_mac_unnotification_unittest.mm",
       "../browser/notifications/notification_platform_bridge_mac_utils_unittest.mm",
@@ -4269,6 +4270,7 @@ test("unit_tests") {
 
   if (is_mac) {
     data_deps += [ "//chrome:chrome_framework" ]
+    deps += [ "//chrome/services/mac_notifications:unit_tests" ]
   }
 
   if (is_win) {

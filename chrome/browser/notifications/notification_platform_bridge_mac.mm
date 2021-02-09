@@ -22,8 +22,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_features.h"
-#include "chrome/browser/notifications/alert_dispatcher_xpc.h"
+#import "chrome/browser/notifications/alert_dispatcher_mojo.h"
+#import "chrome/browser/notifications/alert_dispatcher_xpc.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/cocoa/notifications/notification_builder_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #import "chrome/browser/ui/cocoa/notifications/notification_response_builder_mac.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -85,9 +86,10 @@ NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
 // static
 std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
-  // TODO(crbug.com/1170731): Use a helper app to display alerts.
   base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher(
-      [[AlertDispatcherXPC alloc] init]);
+      base::FeatureList::IsEnabled(features::kNotificationsViaHelperApp)
+          ? [[AlertDispatcherMojo alloc] init]
+          : [[AlertDispatcherXPC alloc] init]);
 
   if (@available(macOS 10.14, *)) {
     if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {

@@ -44,6 +44,10 @@
 #include "media/mojo/services/media_service_factory.h"       // nogncheck
 #endif  // defined(OS_WIN)
 
+#if defined(OS_MAC)
+#include "chrome/services/mac_notifications/mac_notification_provider_impl.h"
+#endif  // defined(OS_MAC)
+
 #if !defined(OS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/services/speech/speech_recognition_service_impl.h"
@@ -164,6 +168,14 @@ auto RunWindowsIconReader(
   return std::make_unique<UtilReadIcon>(std::move(receiver));
 }
 #endif  // defined(OS_WIN)
+
+#if defined(OS_MAC)
+auto RunMacNotificationService(
+    mojo::PendingReceiver<notifications::mojom::MacNotificationProvider>
+        receiver) {
+  return std::make_unique<MacNotificationProviderImpl>(std::move(receiver));
+}
+#endif  // defined(OS_MAC)
 
 #if !defined(OS_ANDROID)
 auto RunProxyResolver(
@@ -337,6 +349,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunCupsIppParser);
 #endif
+
+#if defined(OS_MAC)
+  services.Add(RunMacNotificationService);
+#endif  // defined(OS_MAC)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunFileUtil);

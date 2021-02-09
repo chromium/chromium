@@ -1,0 +1,99 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "chrome/browser/notifications/notification_alert_service_bridge.h"
+#include "base/mac/scoped_nsobject.h"
+#include "base/run_loop.h"
+#include "base/test/mock_callback.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gtest_mac.h"
+
+namespace {
+
+class MockNotificationService
+    : public notifications::mojom::MacNotificationService {
+ public:
+  MOCK_METHOD(void, CloseAllNotifications, (), (override));
+};
+
+class MockNotificationProvider
+    : public notifications::mojom::MacNotificationProvider {
+ public:
+  MOCK_METHOD(
+      void,
+      BindNotificationService,
+      (mojo::PendingReceiver<notifications::mojom::MacNotificationService>,
+       mojo::PendingRemote<notifications::mojom::MacNotificationActionHandler>),
+      (override));
+};
+
+}  // namespace
+
+class NotificationAlertServiceBridgeTest : public testing::Test {
+ public:
+  NotificationAlertServiceBridgeTest() {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_provider_, BindNotificationService)
+        .WillOnce([&](mojo::PendingReceiver<
+                          notifications::mojom::MacNotificationService>
+                          service_receiver,
+                      mojo::PendingRemote<
+                          notifications::mojom::MacNotificationActionHandler>
+                          handler_remote) {
+          service_receiver_.Bind(std::move(service_receiver));
+          handler_remote_.Bind(std::move(handler_remote));
+          run_loop.Quit();
+        });
+    bridge_.reset([[NotificationAlertServiceBridge alloc]
+        initWithDisconnectHandler:on_disconnect_.Get()
+                         provider:provider_receiver_
+                                      .BindNewPipeAndPassRemote()]);
+    run_loop.Run();
+  }
+
+  ~NotificationAlertServiceBridgeTest() override = default;
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  base::MockOnceClosure on_disconnect_;
+  MockNotificationService mock_service_;
+  mojo::Receiver<notifications::mojom::MacNotificationService>
+      service_receiver_{&mock_service_};
+  mojo::Remote<notifications::mojom::MacNotificationActionHandler>
+      handler_remote_;
+  MockNotificationProvider mock_provider_;
+  mojo::Receiver<notifications::mojom::MacNotificationProvider>
+      provider_receiver_{&mock_provider_};
+  base::scoped_nsobject<NotificationAlertServiceBridge> bridge_;
+};
+
+TEST_F(NotificationAlertServiceBridgeTest, DisconnectHandler) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(on_disconnect_, Run).WillOnce([&]() { run_loop.Quit(); });
+  provider_receiver_.reset();
+  run_loop.Run();
+}
+
+TEST_F(NotificationAlertServiceBridgeTest, CloseAllNotifications) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_service_, CloseAllNotifications).WillOnce([&]() {
+    run_loop.Quit();
+  });
+  [bridge_ closeAllNotifications];
+  run_loop.Run();
+}
+
+TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
+  // TODO(knollr): pass and verify expected notification action data.
+  handler_remote_->OnNotificationAction(
+      notifications::mojom::NotificationActionInfo::New());
+  // Wait until the action has been handled.
+  task_environment_.RunUntilIdle();
+}

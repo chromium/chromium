@@ -4,6 +4,7 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/common/chrome_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -251,9 +253,10 @@ bool MacOSSupportsXPCAlerts() {
 }
 
 bool IsAlertNotificationMac(const message_center::Notification& notification) {
-  // We show alerts via an XPC service, check if that's possible.
-  // TODO(crbug.com/1127306): Don't check this once we use the helper app.
-  if (!MacOSSupportsXPCAlerts())
+  // If we show alerts via an XPC service, check if that's possible.
+  bool should_use_xpc =
+      !base::FeatureList::IsEnabled(features::kNotificationsViaHelperApp);
+  if (should_use_xpc && !MacOSSupportsXPCAlerts())
     return false;
 
   // Check if the |notification| should be shown as alert.
