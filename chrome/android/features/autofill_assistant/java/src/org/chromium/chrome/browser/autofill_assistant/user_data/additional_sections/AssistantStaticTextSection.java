@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 
 /** A section which displays a simple static text message. */
 public class AssistantStaticTextSection implements AssistantAdditionalSection {
@@ -40,7 +41,7 @@ public class AssistantStaticTextSection implements AssistantAdditionalSection {
         mTitleToContentPadding = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_payment_request_title_padding);
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutUtils.createInflater(context);
         mRootLayout = (LinearLayout) inflater.inflate(
                 R.layout.autofill_assistant_static_text_section, null);
 

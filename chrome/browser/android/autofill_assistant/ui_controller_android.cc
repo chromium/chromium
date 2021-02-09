@@ -537,6 +537,10 @@ void UiControllerAndroid::OnFeedbackButtonClicked() {
                                              ui_delegate_->GetDebugContext()));
 }
 
+void UiControllerAndroid::OnFeedbackFormRequested() {
+  OnFeedbackButtonClicked();
+}
+
 void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
   ui_delegate_->DispatchEvent(key);
 }
@@ -745,6 +749,15 @@ void UiControllerAndroid::UpdateActions(
             !action.enabled(), chip.sticky, chip.visible);
         break;
 
+      case FEEDBACK_ACTION:
+        // A "Send feedback" button which will show the feedback form before
+        // executing the action.
+        jchip = Java_AutofillAssistantUiController_createFeedbackButton(
+            env, java_object_, chip.icon,
+            base::android::ConvertUTF8ToJavaString(env, chip.text), i,
+            !action.enabled(), chip.sticky, chip.visible);
+        break;
+
       case CANCEL_ACTION:
         // A Cancel button sneaks in an UNDO snackbar before executing the
         // action, while a close button behaves like a normal button.
@@ -839,6 +852,23 @@ void UiControllerAndroid::OnCloseButtonClicked(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   DestroySelf();
+}
+
+void UiControllerAndroid::OnFeedbackButtonClicked(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jint index) {
+  // Show the feedback form then directly run the associated action.
+  // Unfortunately there is no way to associate a callback to run after the user
+  // actually sent (or close) the form, so we have to continue directly after
+  // showing it. It should be good enough, given that in most use cases we will
+  // directly stop.
+  Java_AutofillAssistantUiController_showFeedback(
+      env, java_object_,
+      base::android::ConvertUTF8ToJavaString(env,
+                                             ui_delegate_->GetDebugContext()));
+
+  OnUserActionSelected(env, jcaller, index);
 }
 
 void UiControllerAndroid::OnKeyboardVisibilityChanged(
@@ -1809,6 +1839,7 @@ void UiControllerAndroid::OnFatalError(
     return;
   ui_delegate_->OnFatalError(
       base::android::ConvertJavaStringToUTF8(env, jmessage),
+      /*show_feedback_chip=*/false,
       static_cast<Metrics::DropOutReason>(jreason));
 }
 

@@ -16,8 +16,21 @@ const base::Feature kAutofillAssistant{"AutofillAssistant",
 const base::Feature kAutofillAssistantChromeEntry{
     "AutofillAssistantChromeEntry", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to enable dialog onboarding for Autofill Assistant
+const base::Feature kAutofillAssistantDialogOnboarding{
+    "AutofillAssistantDialogOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kAutofillAssistantDirectActions{
     "AutofillAssistantDirectActions", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether to disable onboarding flow for Autofill Assistant
+const base::Feature kAutofillAssistantDisableOnboardingFlow{
+    "AutofillAssistantDisableOnboardingFlow",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether to show the "Send feedback" chip while in an error state.
+const base::Feature kAutofillAssistantFeedbackChip{
+    "AutofillAssistantFeedbackChip", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAutofillAssistantProactiveHelp{
     "AutofillAssistantProactiveHelp", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -33,6 +46,13 @@ const base::Feature kAutofillAssistantWithTabHelper{
 // base64-injected trigger scripts can be shown even in the absence of MSBB.
 const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
     "AutofillAssistantDisableProactiveHelpTiedToMSBB",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Whether autofill assistant should load the DFM for trigger scripts when
+// necessary. Without this feature, trigger scripts will exit if the DFM is not
+// available.
+const base::Feature kAutofillAssistantLoadDFMForTriggerScripts{
+    "AutofillAssistantLoadDFMForTriggerScripts",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

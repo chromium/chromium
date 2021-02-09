@@ -82,12 +82,12 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
     public void performOnboarding(
             String experimentIds, Bundle arguments, Callback<Boolean> callback) {
         Map<String, String> parameters = toArgumentMap(arguments);
-        AssistantOnboardingCoordinator coordinator =
-                new AssistantOnboardingCoordinator(experimentIds, parameters, mContext,
+        BottomSheetOnboardingCoordinator coordinator =
+                new BottomSheetOnboardingCoordinator(experimentIds, parameters, mContext,
                         mBottomSheetController, mBrowserControls, mCompositorViewHolder, mScrim);
-        coordinator.show(accepted -> {
+        coordinator.show(result -> {
             coordinator.hide();
-            callback.onResult(accepted);
+            callback.onResult(result == AssistantOnboardingResult.ACCEPTED);
         });
     }
 
@@ -101,17 +101,17 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         }
 
         Map<String, String> argumentMap = toArgumentMap(arguments);
-        Callback<AssistantOnboardingCoordinator> afterOnboarding = (onboardingCoordinator) -> {
+        Callback<BottomSheetOnboardingCoordinator> afterOnboarding = (onboardingCoordinator) -> {
             callback.onResult(client.performDirectAction(
                     name, experimentIds, argumentMap, onboardingCoordinator));
         };
 
         if (!AutofillAssistantPreferencesUtil.isAutofillOnboardingAccepted()) {
-            AssistantOnboardingCoordinator coordinator = new AssistantOnboardingCoordinator(
+            BottomSheetOnboardingCoordinator coordinator = new BottomSheetOnboardingCoordinator(
                     experimentIds, argumentMap, mContext, mBottomSheetController, mBrowserControls,
                     mCompositorViewHolder, mScrim);
-            coordinator.show(accepted -> {
-                if (!accepted) {
+            coordinator.show(result -> {
+                if (result != AssistantOnboardingResult.ACCEPTED) {
                     coordinator.hide();
                     callback.onResult(false);
                     return;

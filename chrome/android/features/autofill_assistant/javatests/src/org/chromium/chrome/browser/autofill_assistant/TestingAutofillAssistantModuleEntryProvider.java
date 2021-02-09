@@ -72,7 +72,8 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 ApplicationViewportInsetSupplier bottomInsetProvider,
                 ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
                 @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-                @Nullable String callerAccount, @Nullable String userName) {}
+                @Nullable String callerAccount, @Nullable String userName,
+                @Nullable String originalDeeplink) {}
 
         @Override
         public AutofillAssistantActionHandler createActionHandler(Context context,
@@ -110,12 +111,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     }
 
     @Override
-    public void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback) {
+    public void getModuleEntry(
+            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
         if (mCannotInstall) {
             callback.onResult(null);
             return;
         }
         mNotInstalled = false;
-        super.getModuleEntry(tab, callback);
+        super.getModuleEntry(tab, callback, showUi);
     }
 }

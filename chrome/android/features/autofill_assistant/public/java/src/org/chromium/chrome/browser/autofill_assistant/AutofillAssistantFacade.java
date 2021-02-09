@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.FieldTrialList;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
@@ -30,6 +31,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 
 /** Facade for starting Autofill Assistant on a custom tab. */
 public class AutofillAssistantFacade {
+    /** Used for logging. */
+    private static final String TAG = "AutofillAssistant";
+
     /**
      * Synthetic field trial names and group names should match those specified in
      * google3/analysis/uma/dashboards/
@@ -107,8 +111,7 @@ public class AutofillAssistantFacade {
         // Have an "attempted starts" baseline for the drop out histogram.
         AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START);
         waitForTabWithWebContents(activity, tab -> {
-            if (arguments.containsTriggerScript() || arguments.requestsTriggerScript()
-                    || arguments.containsBase64TriggerScripts()) {
+            if (arguments.containsTriggerScript()) {
                 // Create a field trial and assign experiment arm based on script parameter. This
                 // is needed to tag UKM data to allow for A/B experiment comparisons.
                 FieldTrialList.createFieldTrial(LITE_SCRIPT_EXPERIMENT_TRIAL,
@@ -122,46 +125,60 @@ public class AutofillAssistantFacade {
                 // Legacy, remove as soon as possible. Trigger scripts before M-88 were tied to the
                 // regular autofill assistant Chrome setting. Since M-88, they also respect the new
                 // proactive help setting.
-                if (arguments.containsTriggerScript()
-                        && (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()
-                                || !AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn())) {
+                if (arguments.containsLegacyTriggerScripts()
+                        && (!AutofillAssistantPreferencesUtil.isProactiveHelpOn())) {
                     if (AutofillAssistantPreferencesUtil
                                     .isAutofillAssistantLiteScriptCancelThresholdReached()) {
                         AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
                                 LiteScriptStarted.LITE_SCRIPT_CANCELED_TWO_TIMES);
                     }
+                    Log.v(TAG, "TriggerScript stopping: proactive help setting is turned off");
                     return;
                 }
 
                 if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled()
-                        == null) {
-                    // Opt-out users who don't have DFM installed.
-                    AutofillAssistantMetrics.recordLiteScriptStarted(
-                            tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);
+                                == null
+                        && arguments.containsTriggerScript()
+                        && !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ASSISTANT_LOAD_DFM_FOR_TRIGGER_SCRIPTS)) {
+                    Log.v(TAG,
+                            "TriggerScript stopping: DFM module not available and on-demand"
+                                    + " installation is disabled.");
                     return;
                 }
             }
 
-            AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(
-                    tab, (moduleEntry) -> {
-                        if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
-                            AutofillAssistantMetrics.recordDropOut(
-                                    DropOutReason.DFM_INSTALL_FAILED);
-                            return;
+            if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled() == null) {
+                AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(tab, (moduleEntry) -> {
+                    if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
+                        AutofillAssistantMetrics.recordDropOut(DropOutReason.DFM_INSTALL_FAILED);
+                        if (arguments.containsTriggerScript()) {
+                            AutofillAssistantMetrics.recordLiteScriptFinished(tab.getWebContents(),
+                                    LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);
+                            Log.v(TAG, "TriggerScript stopping: failed to install DFM");
                         }
-
-                        moduleEntry.start(
-                                BottomSheetControllerProvider.from(activity.getWindowAndroid()),
-                                activity.getBrowserControlsManager(),
-                                activity.getCompositorViewHolder(), activity, tab.getWebContents(),
-                                activity.getWindowAndroid().getKeyboardDelegate(),
-                                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                                activity.getActivityTabProvider(),
-                                activity instanceof CustomTabActivity, arguments.getInitialUrl(),
-                                arguments.getParameters(), arguments.getExperimentIds(),
-                                arguments.getCallerAccount(), arguments.getUserName());
-                    });
+                        return;
+                    }
+                    start(activity, arguments, moduleEntry);
+                }, /* showUi = */ !arguments.containsTriggerScript());
+            } else {
+                start(activity, arguments,
+                        AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled());
+            }
         });
+    }
+
+    private static void start(ChromeActivity activity, AutofillAssistantArguments arguments,
+            AutofillAssistantModuleEntry module) {
+        module.start(BottomSheetControllerProvider.from(activity.getWindowAndroid()),
+                activity.getBrowserControlsManager(), activity.getCompositorViewHolder(), activity,
+                activity.getCurrentWebContents(), activity.getWindowAndroid().getKeyboardDelegate(),
+                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
+                activity.getActivityTabProvider(), activity instanceof CustomTabActivity,
+                arguments.getInitialUrl(), arguments.getParameters(), arguments.getExperimentIds(),
+                arguments.getCallerAccount(), arguments.getUserName(),
+                arguments.getOriginalDeeplink());
     }
 
     /**

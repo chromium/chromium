@@ -6,7 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantOnboardingCoordinator_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers/BaseOnboardingCoordinator_jni.h"
 #include "chrome/browser/android/autofill_assistant/onboarding_fetcher_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill_assistant/browser/autofill_assistant_onboarding_fetcher.h"
@@ -21,27 +21,27 @@ void UpdateView(
   for (const auto& it : string_map) {
     DCHECK(!it.first.empty());
     DCHECK(!it.second.empty());
-    Java_AssistantOnboardingCoordinator_addEntryToStringMap(
+    Java_BaseOnboardingCoordinator_addEntryToStringMap(
         env, jonboarding_coordinator,
         base::android::ConvertUTF8ToJavaString(env, it.first),
         base::android::ConvertUTF8ToJavaString(env, it.second));
   }
-  Java_AssistantOnboardingCoordinator_updateAndShowView(
-      env, jonboarding_coordinator);
+  Java_BaseOnboardingCoordinator_updateAndShowView(env,
+                                                   jonboarding_coordinator);
 }
 
 }  // namespace
 
 // static
-void JNI_AssistantOnboardingCoordinator_FetchOnboardingDefinition(
+void JNI_BaseOnboardingCoordinator_FetchOnboardingDefinition(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jonboarding_coordinator,
     const base::android::JavaParamRef<jstring>& jintent,
     const base::android::JavaParamRef<jstring>& jlocale,
     jint timeout_ms) {
   if (!jonboarding_coordinator || !jintent || !jlocale || !timeout_ms) {
-    Java_AssistantOnboardingCoordinator_updateAndShowView(
-        env, jonboarding_coordinator);
+    Java_BaseOnboardingCoordinator_updateAndShowView(env,
+                                                     jonboarding_coordinator);
     return;
   }
 

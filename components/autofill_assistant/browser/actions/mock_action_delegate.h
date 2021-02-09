@@ -258,7 +258,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(WaitForNavigation,
                bool(base::OnceCallback<void(bool)> callback));
   MOCK_METHOD1(LoadURL, void(const GURL& url));
-  MOCK_METHOD0(Shutdown, void());
+  MOCK_METHOD1(Shutdown, void(bool show_feedback_chip));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD0(Restart, void());
   MOCK_CONST_METHOD0(GetUserData, UserData*());

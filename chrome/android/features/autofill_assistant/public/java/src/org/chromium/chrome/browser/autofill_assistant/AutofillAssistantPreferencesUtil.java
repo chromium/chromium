@@ -26,8 +26,17 @@ public class AutofillAssistantPreferencesUtil {
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, true);
     }
 
-    /** Checks whether the proactive help switch preference in settings is on. */
-    public static boolean isProactiveHelpSwitchOn() {
+    /** Checks whether proactive help is enabled. */
+    public static boolean isProactiveHelpOn() {
+        return isProactiveHelpSwitchOn() && isAutofillAssistantSwitchOn();
+    }
+
+    /**
+     * Checks whether the proactive help switch preference in settings is on.
+     * Warning: even if the switch is on, it can appear disabled if the Autofill Assistant switch is
+     * off. Use {@link #isProactiveHelpOn()} to determine whether to trigger proactive help.
+     */
+    private static boolean isProactiveHelpSwitchOn() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)) {
             return false;
         }
@@ -43,7 +52,7 @@ public class AutofillAssistantPreferencesUtil {
     }
 
     /** Returns whether the user has seen a lite script before or not. */
-    static boolean isAutofillAssistantFirstTimeLiteScriptUser() {
+    public static boolean isAutofillAssistantFirstTimeLiteScriptUser() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, true);
     }
@@ -99,7 +108,11 @@ public class AutofillAssistantPreferencesUtil {
     }
 
     /** Checks whether the Autofill Assistant onboarding screen should be shown. */
-    static boolean getShowOnboarding() {
+    public static boolean getShowOnboarding() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW)) {
+            return false;
+        }
         return !isAutofillAssistantSwitchOn() || !isAutofillOnboardingAccepted();
     }
 

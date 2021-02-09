@@ -746,11 +746,12 @@ void ScriptExecutor::LoadURL(const GURL& url) {
   delegate_->GetWebController()->LoadURL(url);
 }
 
-void ScriptExecutor::Shutdown() {
+void ScriptExecutor::Shutdown(bool show_feedback_chip) {
   // The following handles the case where scripts end with tell + stop
   // differently from just stop. TODO(b/806868): Make that difference explicit:
   // add an optional message to stop and update the scripts to use that.
   if (previous_action_type_ == ActionProto::kTell) {
+    delegate_->SetShowFeedbackChip(show_feedback_chip);
     at_end_ = SHUTDOWN_GRACEFULLY;
   } else {
     at_end_ = SHUTDOWN;

@@ -62,6 +62,7 @@ class MockControllerObserver : public ControllerObserver {
   MOCK_METHOD1(OnGenericUserInterfaceChanged,
                void(const GenericUserInterfaceProto* generic_ui));
   MOCK_METHOD1(OnShouldShowOverlayChanged, void(bool should_show));
+  MOCK_METHOD0(OnFeedbackFormRequested, void());
 };
 
 }  // namespace autofill_assistant

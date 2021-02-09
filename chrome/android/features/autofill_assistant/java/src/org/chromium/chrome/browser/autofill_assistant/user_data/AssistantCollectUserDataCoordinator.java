@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import android.app.Activity;
 import android.os.Build;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -15,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -167,7 +167,7 @@ public class AssistantCollectUserDataCoordinator {
     }
 
     private void createSeparator(ViewGroup parent) {
-        View divider = LayoutInflater.from(mActivity).inflate(
+        View divider = LayoutUtils.createInflater(mActivity).inflate(
                 R.layout.autofill_assistant_payment_request_section_divider, parent, false);
         divider.setTag(DIVIDER_TAG);
         parent.addView(divider);

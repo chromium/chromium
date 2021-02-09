@@ -441,6 +441,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChip(
     case NORMAL_ACTION:
     case CANCEL_ACTION:
     case CLOSE_ACTION:
+    case FEEDBACK_ACTION:
       return Java_AssistantChip_createHairlineAssistantChip(
           env, chip.icon(),
           base::android::ConvertUTF8ToJavaString(env, chip.text()),

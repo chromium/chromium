@@ -10,6 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <LinearLayout
+        android:id="@+id/onboarding_layout_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="18dp"
@@ -104,39 +105,6 @@
                 android:textAppearance="@style/TextAppearance.AssistantBlackCaption"
                 android:text="@string/autofill_assistant_google_terms_description" />
         </LinearLayout>
-
-        <!-- Layout for the buttons -->
         <Space android:layout_width="0dp" android:layout_height="18dp"/>
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom|center"
-        android:orientation="horizontal">
-
-        <!-- 'No' button -->
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/button_init_not_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:gravity="center"
-            android:text="@string/cancel"
-            style="@style/TextButton" />
-
-        <Space
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"/>
-
-        <!-- 'Yes' button -->
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/button_init_ok"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:gravity="center"
-            android:text="@string/init_ok"
-            style="FilledButton.Flat" />
-        </LinearLayout>
     </LinearLayout>
 </ScrollView>

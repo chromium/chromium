@@ -246,4 +246,6 @@ void FakeScriptExecutorDelegate::SetOverlayBehavior(
 
 void FakeScriptExecutorDelegate::SetBrowseModeInvisible(bool invisible) {}
 
+void FakeScriptExecutorDelegate::SetShowFeedbackChip(bool show_feedback_chip) {}
+
 }  // namespace autofill_assistant

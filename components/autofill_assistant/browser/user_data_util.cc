@@ -156,6 +156,15 @@ bool IsCompleteAddress(const autofill::AutofillProfile* profile,
 
 }  // namespace
 
+std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
+    const autofill::AutofillProfile& profile) {
+  auto unique_profile = std::make_unique<autofill::AutofillProfile>(profile);
+  // Temporary workaround so that fields like first/last name a properly
+  // populated.
+  unique_profile->FinalizeAfterImport();
+  return unique_profile;
+}
+
 std::vector<int> SortContactsByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {

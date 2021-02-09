@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceList;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ class AssistantFormSelectionInput extends AssistantFormInput {
 
     @Override
     public View createView(Context context, ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutUtils.createInflater(context);
         ViewGroup root = (ViewGroup) inflater.inflate(
                 R.layout.autofill_assistant_form_selection_input, parent,
                 /* attachToRoot= */ false);

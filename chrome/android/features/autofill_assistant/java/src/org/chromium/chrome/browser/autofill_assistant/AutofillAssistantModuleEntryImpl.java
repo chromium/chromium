@@ -18,8 +18,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptOnboarding;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
@@ -41,6 +43,9 @@ import java.util.Map;
  */
 @UsedByReflection("AutofillAssistantModuleEntryProvider.java")
 public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModuleEntry {
+    /** Used for logging. */
+    private static final String TAG = "AutofillAssistant";
+
     @Override
     public void start(BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
@@ -49,12 +54,14 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             ApplicationViewportInsetSupplier bottomInsetProvider,
             ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-            @Nullable String callerAccount, @Nullable String userName) {
+            @Nullable String callerAccount, @Nullable String userName,
+            @Nullable String originalDeeplink) {
         if (shouldStartTriggerScript(parameters)) {
-            if (!AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn()) {
+            if (!AutofillAssistantPreferencesUtil.isProactiveHelpOn()) {
                 // Opt-out users who have disabled the proactive help Chrome setting.
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         webContents, LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
+                Log.v(TAG, "TriggerScript stopping: proactive help setting is turned off");
                 return;
             }
             if ((!TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_FIRST_TIME_USER))
@@ -66,6 +73,10 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 // off. The proactive help setting will appear disabled to the user.
                 AutofillAssistantMetrics.recordLiteScriptStarted(
                         webContents, LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
+                Log.v(TAG,
+                        "TriggerScript stopping: MSBB is turned off, but required by at least one"
+                                + " script parameter (REQUEST_TRIGGER_SCRIPT, "
+                                + "TRIGGER_FIRST_TIME_USER, TRIGGER_RETURNING_USER)");
                 return;
             }
 
@@ -80,20 +91,21 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                     || !TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_SCRIPTS_BASE64))) {
                 AssistantTriggerScriptBridge triggerScriptBridge =
                         new AssistantTriggerScriptBridge();
-                triggerScriptBridge.start(bottomSheetController, context,
-                        keyboardVisibilityDelegate, bottomInsetProvider, activityTabProvider,
-                        webContents, initialUrl, parameters, experimentIds,
-                        new AssistantTriggerScriptBridge.Delegate() {
+                triggerScriptBridge.start(bottomSheetController, browserControls,
+                        compositorViewHolder, context, keyboardVisibilityDelegate,
+                        bottomInsetProvider, activityTabProvider, webContents,
+                        originalDeeplink != null ? originalDeeplink : initialUrl, parameters,
+                        experimentIds, new AssistantTriggerScriptBridge.Delegate() {
                             @Override
                             public void onTriggerScriptFinished(
                                     @LiteScriptFinishedState int finishedState) {
                                 if (finishedState
                                         == LiteScriptFinishedState.LITE_SCRIPT_PROMPT_SUCCEEDED) {
                                     parameters.put(PARAMETER_STARTED_WITH_TRIGGER_SCRIPT, "true");
-                                    startAutofillAssistantRegular(bottomSheetController,
-                                            browserControls, compositorViewHolder, context,
-                                            webContents, isChromeCustomTab, initialUrl, parameters,
-                                            experimentIds, callerAccount, userName);
+                                    AutofillAssistantClient.fromWebContents(webContents)
+                                            .start(initialUrl, parameters, experimentIds,
+                                                    callerAccount, userName, isChromeCustomTab,
+                                                    triggerScriptBridge.getOnboardingCoordinator());
                                 }
                             }
                         });
@@ -162,29 +174,41 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NOT_SHOWN);
             AutofillAssistantClient.fromWebContents(webContents)
                     .start(initialUrl, parameters, experimentIds, callerAccount, userName,
-                            isChromeCustomTab,
-                            /* onboardingCoordinator= */ null);
+                            isChromeCustomTab, /* onboardingCoordinator= */ null);
             return;
         }
 
-        AssistantOnboardingCoordinator onboardingCoordinator = new AssistantOnboardingCoordinator(
-                experimentIds, parameters, context, bottomSheetController, browserControls,
-                compositorViewHolder, bottomSheetController.getScrimCoordinator());
-        onboardingCoordinator.show(accepted -> {
-            if (parameters.containsKey(PARAMETER_TRIGGER_SCRIPT_USED)
-                    || parameters.containsKey(PARAMETER_STARTED_WITH_TRIGGER_SCRIPT)) {
-                AutofillAssistantMetrics.recordLiteScriptOnboarding(webContents,
-                        accepted ? LiteScriptOnboarding.LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED
-                                 : LiteScriptOnboarding.LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED);
+        BottomSheetOnboardingCoordinator onboardingCoordinator =
+                new BottomSheetOnboardingCoordinator(experimentIds, parameters, context,
+                        bottomSheetController, browserControls, compositorViewHolder,
+                        bottomSheetController.getScrimCoordinator());
+
+        onboardingCoordinator.show(result -> {
+            switch (result) {
+                case AssistantOnboardingResult.DISMISSED:
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NO_ANSWER);
+                    AutofillAssistantMetrics.recordDropOut(
+                            DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
+                    break;
+                case AssistantOnboardingResult.REJECTED:
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_CANCELLED);
+                    AutofillAssistantMetrics.recordDropOut(DropOutReason.DECLINED);
+                    break;
+                case AssistantOnboardingResult.NAVIGATION:
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NO_ANSWER);
+                    AutofillAssistantMetrics.recordDropOut(DropOutReason.ONBOARDING_NAVIGATION);
+                    break;
+                case AssistantOnboardingResult.ACCEPTED:
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_ACCEPTED);
+                    break;
             }
-            if (!accepted) {
+            if (result != AssistantOnboardingResult.ACCEPTED) {
                 return;
             }
-
             AutofillAssistantClient.fromWebContents(webContents)
                     .start(initialUrl, parameters, experimentIds, callerAccount, userName,
                             isChromeCustomTab, onboardingCoordinator);
-        });
+        }, webContents, initialUrl);
     }
 
     @Override

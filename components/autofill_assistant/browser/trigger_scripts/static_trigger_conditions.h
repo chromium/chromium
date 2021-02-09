@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
 #include "url/gurl.h"
@@ -24,13 +23,15 @@ class StaticTriggerConditions {
   StaticTriggerConditions();
   virtual ~StaticTriggerConditions();
 
-  // Initializes the field values according to |url| and the current state of
-  // |client|. Invokes |callback| when done. |client| and |trigger_context| must
-  // outlive this instance.
-  virtual void Init(Client* client,
-                    const GURL& url,
-                    TriggerContext* trigger_context,
-                    base::OnceCallback<void(void)> callback);
+  // Initializes the field values using |website_login_manager| and
+  // |is_first_time_user_callback|. Invokes |callback| when done. All parameters
+  // must outlive this call.
+  virtual void Init(
+      WebsiteLoginManager* website_login_manager,
+      base::RepeatingCallback<bool(void)> is_first_time_user_callback,
+      const GURL& url,
+      TriggerContext* trigger_context,
+      base::OnceCallback<void(void)> callback);
   virtual void set_is_first_time_user(bool first_time_user);
   virtual bool is_first_time_user() const;
   virtual bool has_stored_login_credentials() const;

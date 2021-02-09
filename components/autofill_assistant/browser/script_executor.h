@@ -75,7 +75,7 @@ class ScriptExecutor : public ActionDelegate,
     // Shut down Autofill Assistant.
     SHUTDOWN,
 
-    // Shut down Autofill Assistant after a delay.
+    // Stop Autofill Assistant but keep showing the UI.
     SHUTDOWN_GRACEFULLY,
 
     // Shut down Autofill Assistant and CCT.
@@ -253,7 +253,7 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
 
   void LoadURL(const GURL& url) override;
-  void Shutdown() override;
+  void Shutdown(bool show_feedback_chip) override;
   void Close() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   WebsiteLoginManager* GetWebsiteLoginManager() override;

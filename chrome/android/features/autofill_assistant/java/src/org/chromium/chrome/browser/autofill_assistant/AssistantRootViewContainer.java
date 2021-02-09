@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -11,6 +12,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -29,8 +31,9 @@ public class AssistantRootViewContainer
 
     public AssistantRootViewContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        assert context instanceof ChromeActivity;
-        mActivity = (ChromeActivity) context;
+        Activity activity = ContextUtils.activityFromContext(context);
+        assert activity instanceof ChromeActivity;
+        mActivity = (ChromeActivity) activity;
         mBrowserControlsStateProvider = mActivity.getBrowserControlsManager();
         mBrowserControlsStateProvider.addObserver(this);
     }

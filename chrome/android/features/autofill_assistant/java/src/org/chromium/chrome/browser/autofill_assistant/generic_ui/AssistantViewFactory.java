@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AssistantAccessibil
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -23,6 +22,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorTextField;
 import org.chromium.chrome.browser.autofill_assistant.AssistantChevronStyle;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpander;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpanderAccordion;
 import org.chromium.ui.widget.ChromeImageView;
@@ -116,7 +116,7 @@ public class AssistantViewFactory {
     /** Creates a divider widget as used in the {@code AssistantCollectUserData} action. */
     @CalledByNative
     public static View createDividerView(Context context, String identifier) {
-        View divider = LayoutInflater.from(context).inflate(
+        View divider = LayoutUtils.createInflater(context).inflate(
                 org.chromium.chrome.autofill_assistant.R.layout
                         .autofill_assistant_payment_request_section_divider,
                 null, false);

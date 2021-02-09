@@ -92,17 +92,14 @@ public class AutofillAssistantOverlayUiTest {
     private AssistantOverlayCoordinator createCoordinator(
             AssistantOverlayModel model, @Nullable Bitmap overlayImage) throws ExecutionException {
         ChromeActivity activity = mTestRule.getActivity();
-        return runOnUiThreadBlocking(
-                ()
-                        -> new AssistantOverlayCoordinator(activity,
-                                activity.getBrowserControlsManager(),
-                                activity.getCompositorViewHolder(),
-                                mTestRule.getActivity()
-                                        .getRootUiCoordinatorForTesting()
-                                        .getScrimCoordinator(),
-                                model,
-                                new AutofillAssistantUiTestUtil.MockImageFetcher(
-                                        overlayImage, null)));
+        return runOnUiThreadBlocking(()
+                                             -> new AssistantOverlayCoordinator(activity,
+                                                     activity.getBrowserControlsManager(),
+                                                     activity.getCompositorViewHolder(),
+                                                     mTestRule.getActivity()
+                                                             .getRootUiCoordinatorForTesting()
+                                                             .getScrimCoordinator(),
+                                                     model));
     }
 
     /** Tests assumptions about the initial state of the infobox. */

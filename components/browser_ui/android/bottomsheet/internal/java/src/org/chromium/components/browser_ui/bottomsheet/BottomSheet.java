@@ -180,6 +180,12 @@ class BottomSheet extends FrameLayout
      */
     private int mScrollableHeight;
 
+    /**
+     * The instance passed to the current content that is allowed to
+     * change the sheet offset.
+     */
+    private Callback<Integer> mOffsetController;
+
     @Override
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
         // If the sheet is scrolling off-screen or in the process of hiding, gestures should not
@@ -530,6 +536,10 @@ class BottomSheet extends FrameLayout
         if (mSheetContent != null) {
             mSheetContent.setContentSizeListener(null);
             mSheetContent.getContentView().removeOnLayoutChangeListener(this);
+            if (mOffsetController != null) {
+                mSheetContent.setOffsetController(null);
+                mOffsetController = null;
+            }
         }
 
         if (content != null && getParent() == null) {
@@ -671,8 +681,21 @@ class BottomSheet extends FrameLayout
     /**
      * Sets the sheet's offset relative to the bottom of the screen.
      * @param offset The offset that the sheet should be.
+     * @param reason The reason for the sheet offset to change to report to listeners.
      */
     void setSheetOffsetFromBottom(float offset, @StateChangeReason int reason) {
+        setSheetOffsetFromBottom(offset, reason, /* reportOpenClosed= */ true);
+    }
+
+    /**
+     * Sets the sheet's offset relative to the bottom of the screen.
+     * @param offset The offset that the sheet should be.
+     * @param reason The reason for the sheet offset to change to report to listeners.
+     * @param reportOpenClosed {@code true} to allow reporting the sheet opened or closed as a
+     *         result of this change. {@code reason} is never used when this is {@code false}.
+     */
+    void setSheetOffsetFromBottom(
+            float offset, @StateChangeReason int reason, boolean reportOpenClosed) {
         mCurrentOffsetPx = offset;
 
         // The browser controls offset is added here so that the sheet's toolbar behaves like the
@@ -683,28 +706,32 @@ class BottomSheet extends FrameLayout
 
         setTranslationY(translationY);
 
-        // Do open/close computation based on the minimum allowed state by the sheet's content.
-        // Note that when transitioning from hidden to peek, even dismissable sheets may want
-        // to have a peek state.
-        @SheetState
-        int minSwipableState = getMinSwipableSheetState();
-        if (isPeekStateEnabled() && (!isSheetOpen() || mTargetState == SheetState.PEEK)) {
-            minSwipableState = SheetState.PEEK;
-        }
+        if (reportOpenClosed) {
+            // Do open/close computation based on the minimum allowed state by the sheet's content.
+            // Note that when transitioning from hidden to peek, even dismissable sheets may want
+            // to have a peek state.
+            @SheetState
+            int minSwipableState = getMinSwipableSheetState();
+            if (isPeekStateEnabled() && (!isSheetOpen() || mTargetState == SheetState.PEEK)) {
+                minSwipableState = SheetState.PEEK;
+            }
 
-        float minScrollableHeight = getSheetHeightForState(minSwipableState);
-        boolean isAtMinHeight = MathUtils.areFloatsEqual(getCurrentOffsetPx(), minScrollableHeight);
-        boolean heightLessThanPeek = getCurrentOffsetPx() < minScrollableHeight;
-        // Trigger the onSheetClosed event when the sheet is moving toward the hidden state if peek
-        // is disabled. This should be fine since touch is disabled when the sheet's target is
-        // hidden.
-        boolean triggerCloseWithHidden = !isPeekStateEnabled() && mTargetState == SheetState.HIDDEN;
+            float minScrollableHeight = getSheetHeightForState(minSwipableState);
+            boolean isAtMinHeight =
+                    MathUtils.areFloatsEqual(getCurrentOffsetPx(), minScrollableHeight);
+            boolean heightLessThanPeek = getCurrentOffsetPx() < minScrollableHeight;
+            // Trigger the onSheetClosed event when the sheet is moving toward the hidden state if
+            // peek is disabled. This should be fine since touch is disabled when the sheet's target
+            // is hidden.
+            boolean triggerCloseWithHidden =
+                    !isPeekStateEnabled() && mTargetState == SheetState.HIDDEN;
 
-        if (isSheetOpen() && (heightLessThanPeek || isAtMinHeight || triggerCloseWithHidden)) {
-            onSheetClosed(reason);
-        } else if (!isSheetOpen() && mTargetState != SheetState.HIDDEN
-                && getCurrentOffsetPx() > minScrollableHeight) {
-            onSheetOpened(reason);
+            if (isSheetOpen() && (heightLessThanPeek || isAtMinHeight || triggerCloseWithHidden)) {
+                onSheetClosed(reason);
+            } else if (!isSheetOpen() && mTargetState != SheetState.HIDDEN
+                    && getCurrentOffsetPx() > minScrollableHeight) {
+                onSheetOpened(reason);
+            }
         }
 
         sendOffsetChangeEvents();
@@ -1232,18 +1259,34 @@ class BottomSheet extends FrameLayout
     protected void onSheetContentChanged(@Nullable final BottomSheetContent content) {
         mSheetContent = content;
 
-        if (content != null && isFullHeightWrapContent()) {
-            // Listen for layout/size changes.
-            if (!content.setContentSizeListener(this::onContentSizeChanged)) {
-                content.getContentView().addOnLayoutChangeListener(this);
+        if (content != null) {
+            if (isFullHeightWrapContent()) {
+                // Listen for layout/size changes.
+                if (!content.setContentSizeListener(this::onContentSizeChanged)) {
+                    content.getContentView().addOnLayoutChangeListener(this);
+                }
+
+                invalidateContentDesiredHeight();
+                ensureContentIsWrapped(/* animate= */ true);
+
+                // HALF state is forbidden when wrapping the content.
+                if (mCurrentState == SheetState.HALF) {
+                    setSheetState(SheetState.FULL, /* animate= */ true);
+                }
             }
+            if (content.contentControlsOffset()) {
+                mOffsetController = new Callback<Integer>() {
+                    @Override
+                    public void onResult(Integer offsetPx) {
+                        if (this != mOffsetController) return;
 
-            invalidateContentDesiredHeight();
-            ensureContentIsWrapped(/* animate= */ true);
-
-            // HALF state is forbidden when wrapping the content.
-            if (mCurrentState == SheetState.HALF) {
-                setSheetState(SheetState.FULL, /* animate= */ true);
+                        cancelAnimation();
+                        setSheetOffsetFromBottom(
+                                MathUtils.clamp(offsetPx, 0, (int) getMaxOffsetPx()),
+                                StateChangeReason.NONE, /* reportOpenClosed=*/false);
+                    }
+                };
+                content.setOffsetController(mOffsetController);
             }
         }
 
@@ -1271,6 +1314,12 @@ class BottomSheet extends FrameLayout
      */
     private void onContentSizeChanged(int width, int height, int oldWidth, int oldHeight) {
         boolean heightChanged = mContentDesiredHeight != height;
+        boolean widthChanged = mContentWidth != width;
+
+        // onContentSizeChanged() is sometimes called when there's no size change, because of
+        // animations running in the content. Ignore these calls.
+        if (!heightChanged && !widthChanged) return;
+
         mContentDesiredHeight = height;
 
         if (heightChanged && mCurrentState == SheetState.SCROLLING) {

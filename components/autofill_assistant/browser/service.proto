@@ -574,6 +574,13 @@ message TriggerScriptUIProto {
   // Whether the visual viewport should be resized to allow scrolling to the
   // bottom of the page while the trigger script is being displayed.
   optional bool resize_visual_viewport = 8;
+  // Whether the bottom sheet should temporarily disappear when scrolling down
+  // the website, to move out of the way.
+  //
+  // The value of resize_visual_viewport is ignored when scroll_to_hide is true.
+  // This allows the backend setting both to true and letting chrome choose
+  // scroll_to_hide if it is supported.
+  optional bool scroll_to_hide = 9;
 }
 
 enum KeyboardValueFillStrategy {
@@ -2236,6 +2243,13 @@ message StopProto {
   // If true, close the Chrome Custom Tab, in addition to shutting down Autofill
   // Assistant.
   optional bool close_cct = 2;
+
+  // Whether to show the feedback chip once Autofill Assistant has stopped.
+  // Note that this is only relevant if the UI is still being shown after the
+  // stop, which happens only if:
+  // - close_cct is false.
+  // - The action preceding this one is a Tell action.
+  optional bool show_feedback_chip = 3;
 
   reserved 1;  // stop_action_type
 }

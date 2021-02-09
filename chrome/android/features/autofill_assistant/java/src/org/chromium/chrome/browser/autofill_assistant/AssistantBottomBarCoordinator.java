@@ -9,7 +9,6 @@ import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -30,6 +29,7 @@ import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantGeneri
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxCoordinator;
+import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -54,6 +54,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     private static final int CHANGE_BOUNDS_TRANSITION_TIME_MS = 250;
 
     private final AssistantModel mModel;
+    private final AssistantOverlayCoordinator mOverlayCoordinator;
     private final BottomSheetController mBottomSheetController;
     private final TabObscuringHandler mTabObscuringHandler;
     private final AssistantBottomSheetContent mContent;
@@ -100,10 +101,11 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     private int mShadowHeight;
 
     AssistantBottomBarCoordinator(Activity activity, AssistantModel model,
-            BottomSheetController controller,
+            AssistantOverlayCoordinator overlayCoordinator, BottomSheetController controller,
             ApplicationViewportInsetSupplier applicationViewportInsetSupplier,
             TabObscuringHandler tabObscuringHandler) {
         mModel = model;
+        mOverlayCoordinator = overlayCoordinator;
         mBottomSheetController = controller;
         mTabObscuringHandler = tabObscuringHandler;
 
@@ -122,8 +124,9 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         }
 
         // Replace or set the content to the actual Autofill Assistant views.
-        mRootViewContainer = (AssistantRootViewContainer) LayoutInflater.from(activity).inflate(
-                R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
+        mRootViewContainer =
+                (AssistantRootViewContainer) LayoutUtils.createInflater(activity).inflate(
+                        R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
         mScrollableContent = mRootViewContainer.findViewById(R.id.scrollable_content);
         ViewGroup scrollableContentContainer =
                 mScrollableContent.findViewById(R.id.scrollable_content_container);
@@ -205,6 +208,14 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 // BottomSheet assertion.
                 if (newState != BottomSheetController.SheetState.SCROLLING) {
                     maybeShowHeaderChips();
+                }
+
+                if (newState == SheetState.HIDDEN) {
+                    mOverlayCoordinator.suppress();
+                }
+                if (newState == SheetState.PEEK || newState == SheetState.HALF
+                        || newState == SheetState.FULL) {
+                    mOverlayCoordinator.restore();
                 }
             }
 

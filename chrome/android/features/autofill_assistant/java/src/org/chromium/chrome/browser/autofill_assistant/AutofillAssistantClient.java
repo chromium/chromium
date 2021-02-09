@@ -109,7 +109,7 @@ public class AutofillAssistantClient {
      */
     boolean start(String initialUrl, Map<String, String> parameters, String experimentIds,
             @Nullable String callerAccount, @Nullable String userName, boolean isChromeCustomTab,
-            @Nullable AssistantOnboardingCoordinator onboardingCoordinator) {
+            @Nullable BaseOnboardingCoordinator onboardingCoordinator) {
         if (mNativeClientAndroid == 0) return false;
 
         checkNativeClientIsAliveOrThrow();
@@ -213,7 +213,7 @@ public class AutofillAssistantClient {
      */
     public boolean performDirectAction(String actionId, String experimentIds,
             Map<String, String> arguments,
-            @Nullable AssistantOnboardingCoordinator onboardingCoordinator) {
+            @Nullable BaseOnboardingCoordinator onboardingCoordinator) {
         if (mNativeClientAndroid == 0) return false;
 
         // Note that only fetchWebsiteActions can start AA, so only it needs
@@ -382,12 +382,6 @@ public class AutofillAssistantClient {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
 
-    /** Returns whether the user has seen a trigger script before or not. */
-    @CalledByNative
-    private static boolean isFirstTimeTriggerScriptUser() {
-        return AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
-    }
-
     /** Adds a dynamic action to the given reporter. */
     @CalledByNative
     private void onFetchWebsiteActions(Callback<Boolean> callback, boolean success) {
@@ -405,8 +399,8 @@ public class AutofillAssistantClient {
         boolean start(long nativeClientAndroid, AutofillAssistantClient caller, String initialUrl,
                 String experimentIds, String callerAccount, String[] parameterNames,
                 String[] parameterValues, boolean isChromeCustomTab,
-                @Nullable AssistantOnboardingCoordinator onboardingCoordinator,
-                boolean onboardingShown, long nativeService);
+                @Nullable BaseOnboardingCoordinator onboardingCoordinator, boolean onboardingShown,
+                long nativeService);
         void startTriggerScript(long nativeClientAndroid, AutofillAssistantClient caller,
                 AssistantTriggerScriptBridge delegate, String initialUrl, String experimentIds,
                 String[] parameterNames, String[] parameterValues, long nativeServiceRequestSender);
@@ -426,7 +420,6 @@ public class AutofillAssistantClient {
 
         boolean performDirectAction(long nativeClientAndroid, AutofillAssistantClient caller,
                 String actionId, String experimentId, String[] argumentNames,
-                String[] argumentValues,
-                @Nullable AssistantOnboardingCoordinator onboardingCoordinator);
+                String[] argumentValues, @Nullable BaseOnboardingCoordinator onboardingCoordinator);
     }
 }

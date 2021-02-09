@@ -14,6 +14,9 @@
 
 namespace autofill_assistant {
 
+std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
+    const autofill::AutofillProfile& profile);
+
 // Sorts the given autofill profiles based on completeness, and returns a
 // vector of profile indices in sorted order. Full profiles will be ordered
 // before empty ones, and for equally complete profiles, this falls back to

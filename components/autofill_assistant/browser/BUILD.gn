@@ -136,6 +136,7 @@ static_library("browser") {
     "info_box.h",
     "metrics.cc",
     "metrics.h",
+    "onboarding_result.h",
     "overlay_state.h",
     "protocol_utils.cc",
     "protocol_utils.h",
@@ -431,6 +432,7 @@ if (is_android) {
     sources = [
       "generic_ui_java_generated_enums.h",
       "metrics.h",
+      "onboarding_result.h",
       "overlay_state.h",
       "trigger_scripts/trigger_script_action.h",
       "user_data.h",

@@ -4559,6 +4559,8 @@ others/histograms.xml -->
   <int value="23" label="User clicked back button during onboarding"/>
   <int value="24" label="User navigation in RUNNING state"/>
   <int value="25" label="The UI was closed unexpectedly"/>
+  <int value="26" label="User navigated during onboarding"/>
+  <int value="27" label="User dismissed the onboarding dialog"/>
 </enum>
 
 <enum name="AutofillAssistantFeatureModuleInstallation">
@@ -4597,12 +4599,15 @@ others/histograms.xml -->
   <int value="22" label="Failed to show"/>
   <int value="23" label="Disabled proactive help setting"/>
   <int value="24" label="Base64 decoding error"/>
+  <int value="25" label="The user rejected the bottom sheet onboarding"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptOnboarding">
   <int value="0" label="Seen and accepted"/>
   <int value="1" label="Seen and rejected"/>
   <int value="2" label="Already accepted"/>
+  <int value="3" label="Seen and dismissed"/>
+  <int value="4" label="Interrupted by navigation"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptShownToUser">

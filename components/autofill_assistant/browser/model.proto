@@ -258,6 +258,12 @@ enum ChipType {
   // HIGHLIGHTED_ACTION.
   DONE_ACTION = 6;
 
+  // A "Send feedback" chip, which will show the feedback form when clicked.
+  //
+  // Note that when this is used inside a script, we will continue the script
+  // normally once the user has clicked the chip.
+  FEEDBACK_ACTION = 7;
+
   reserved 2;
 }
 

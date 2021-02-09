@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
@@ -45,6 +46,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheetProto.PeekMode;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.StopProto;
@@ -488,7 +490,6 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1131835")
     public void interactingWithLocationBarHidesAutofillAssistant() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()
@@ -507,6 +508,8 @@ public class AutofillAssistantChromeTabIntegrationTest {
         startAutofillAssistantOnTab(TEST_PAGE_A);
 
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(is(mScrimCoordinator.getViewForTesting()),
+                withEffectiveVisibility(Visibility.VISIBLE));
 
         // Clicking location bar hides UI and shows the keyboard.
         onView(withId(org.chromium.chrome.R.id.url_bar)).perform(click());
@@ -516,11 +519,63 @@ public class AutofillAssistantChromeTabIntegrationTest {
         // Closing keyboard brings it back.
         Espresso.pressBack();
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(is(mScrimCoordinator.getViewForTesting()),
+                withEffectiveVisibility(Visibility.VISIBLE));
 
         // Committing URL shows error.
         onView(withId(org.chromium.chrome.R.id.url_bar))
                 .perform(click(), typeText(getURL(TEST_PAGE_B)), pressImeActionButton());
         waitUntilViewMatchesCondition(withText(containsString("Sorry")), isCompletelyDisplayed());
+    }
+
+    @Test
+    @MediumTest
+    public void interactingWithLocationBarDoesNotShowHiddenScrim() {
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Browse")
+                                            .setBrowseMode(true)
+                                            .addChoices(PromptProto.Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath(TEST_PAGE_A)
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Done")))
+                        .build(),
+                list);
+        setupScripts(script);
+        startAutofillAssistantOnTab(TEST_PAGE_A);
+
+        // Browse mode hides the Scrim.
+        waitUntilViewMatchesCondition(withText("Browse"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(is(mScrimCoordinator.getViewForTesting()),
+                not(withEffectiveVisibility(Visibility.VISIBLE)));
+
+        // Clicking location bar hides UI and shows the keyboard.
+        onView(withId(org.chromium.chrome.R.id.url_bar)).perform(click());
+        waitUntilViewMatchesCondition(withText("Browse"), not(isDisplayed()));
+        waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ true);
+
+        // Closing keyboard brings back the UI but does not restore the Scrim.
+        Espresso.pressBack();
+        waitUntilViewMatchesCondition(withText("Browse"), isCompletelyDisplayed());
+        waitUntil(() -> mScrimCoordinator.getViewForTesting() == null);
+
+        // Running the next action brings back the Scrim.
+        onView(withText("Continue")).perform(click());
+        waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(is(mScrimCoordinator.getViewForTesting()),
+                withEffectiveVisibility(Visibility.VISIBLE));
     }
 
     @Test
@@ -552,5 +607,61 @@ public class AutofillAssistantChromeTabIntegrationTest {
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mTestRule.getActivity());
         waitUntilViewMatchesCondition(withText("Shutdown"), isCompletelyDisplayed());
+    }
+
+    @Test
+    @MediumTest
+    // Restricted to phones due to https://crbug.com/429671
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void newTabButtonHidesAndRecoversOnboarding() {
+        // Onboarding has not been accepted.
+        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+        startAutofillAssistantOnTab(TEST_PAGE_A);
+
+        waitUntil(
+                ()
+                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
+                                   .getSpec()
+                                   .equals(getURL(TEST_PAGE_A)));
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+        onView(is(mScrimCoordinator.getViewForTesting()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+
+        onView(withId(org.chromium.chrome.R.id.tab_switcher_button)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), not(isDisplayed()));
+        onView(is(mScrimCoordinator.getViewForTesting())).check(doesNotExist());
+
+        Espresso.pressBack();
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+        onView(is(mScrimCoordinator.getViewForTesting()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+    }
+
+    @Test
+    @MediumTest
+    public void interactingWithLocationBarHidesOnboarding() {
+        // Onboarding has not been accepted.
+        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+        startAutofillAssistantOnTab(TEST_PAGE_A);
+
+        waitUntil(
+                ()
+                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
+                                   .getSpec()
+                                   .equals(getURL(TEST_PAGE_A)));
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+        onView(is(mScrimCoordinator.getViewForTesting()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
+
+        // Clicking location bar hides UI and shows the keyboard.
+        onView(withId(org.chromium.chrome.R.id.url_bar)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), not(isDisplayed()));
+        waitUntilKeyboardMatchesCondition(mTestRule, /* isShowing= */ true);
+
+        // Closing keyboard brings it back.
+        Espresso.pressBack();
+        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+        onView(is(mScrimCoordinator.getViewForTesting()))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     }
 }

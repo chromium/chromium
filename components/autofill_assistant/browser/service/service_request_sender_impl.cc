@@ -48,6 +48,8 @@ void OnURLLoaderComplete(
   if (loader->ResponseInfo() && loader->ResponseInfo()->headers) {
     response_code = loader->ResponseInfo()->headers->response_code();
   }
+  VLOG(3) << "Received response: status=" << response_code << ", "
+          << response_str.length() << " bytes";
   std::move(callback).Run(response_code, response_str);
 }
 

@@ -139,6 +139,13 @@ public class AutofillAssistantArguments {
      */
     private static final String PARAMETER_EXPERIMENT_IDS = "EXPERIMENT_IDS";
 
+    /**
+     * The original deeplink as indicated by the caller. Use this parameter instead of the
+     * initial URL when available to avoid issues where the initial URL points to a redirect
+     * rather than the actual deeplink.
+     */
+    private static final String PARAMETER_ORIGINAL_DEEPLINK = "ORIGINAL_DEEPLINK";
+
     private Map<String, Object> mAutofillAssistantParameters;
     private Map<String, Object> mIntentExtras;
     private StringBuilder mExperimentIds;
@@ -215,8 +222,7 @@ public class AutofillAssistantArguments {
             return false;
         }
         if (!getBooleanParameter(PARAMETER_START_IMMEDIATELY)) {
-            return requestsTriggerScript() || containsBase64TriggerScripts()
-                    || containsTriggerScript();
+            return containsTriggerScript();
         }
         return true;
     }
@@ -267,6 +273,10 @@ public class AutofillAssistantArguments {
         return mInitialUrl;
     }
 
+    public String getOriginalDeeplink() {
+        return getStringParameter(PARAMETER_ORIGINAL_DEEPLINK);
+    }
+
     /** Whether the caller requests the client to fetch trigger scripts from a remote endpoint. */
     public boolean requestsTriggerScript() {
         return getBooleanParameter(PARAMETER_REQUEST_TRIGGER_SCRIPT);
@@ -278,8 +288,14 @@ public class AutofillAssistantArguments {
     }
 
     /** Deprecated. Whether the caller provides script paths for lite scripts to execute. */
-    public boolean containsTriggerScript() {
+    public boolean containsLegacyTriggerScripts() {
         return !TextUtils.isEmpty(getStringParameter(PARAMETER_TRIGGER_FIRST_TIME_USER))
                 && !TextUtils.isEmpty(getStringParameter(PARAMETER_TRIGGER_RETURNING_TIME_USER));
+    }
+
+    /** Whether the caller requested a trigger script to start in any of the supported ways. */
+    public boolean containsTriggerScript() {
+        return requestsTriggerScript() || containsBase64TriggerScripts()
+                || containsLegacyTriggerScripts();
     }
 }

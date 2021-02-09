@@ -9,6 +9,8 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -205,4 +207,23 @@ public interface BottomSheetContent {
      *         typically the name of your feature followed by 'closed'.
      */
     int getSheetClosedAccessibilityStringId();
+
+    /**
+     * Return {@code true} if the content expects {@link #setOffsetController} to be called.
+     *
+     * This is an experimental feature. Use it at your own risks. TODO(b/177037825): Remove or
+     * cleanup.
+     */
+    default boolean contentControlsOffset() {
+        return false;
+    }
+
+    /**
+     * Set or reset the set offset callback.
+     *
+     * The active content can use this callback to move the sheet to the given offset.
+     *
+     * Only called if {@link #contentControlsOffset} returns {@code true}.
+     */
+    default void setOffsetController(@Nullable Callback<Integer> setOffset) {}
 }

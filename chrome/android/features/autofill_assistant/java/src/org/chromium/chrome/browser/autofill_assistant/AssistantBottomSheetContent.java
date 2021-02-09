@@ -5,16 +5,17 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * The {@link BottomSheetContent} for the Autofill Assistant. It supports notifying the
@@ -28,10 +29,13 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
     private ScrollView mContentScrollableView;
     private Supplier<AssistantBottomBarDelegate> mBottomBarDelegateSupplier;
     private boolean mPeekModeDisabled;
+    private BottomSheetController mController;
+    @Nullable
+    private Callback<Integer> mOffsetController;
 
     public AssistantBottomSheetContent(
             Context context, Supplier<AssistantBottomBarDelegate> supplier) {
-        mToolbarView = LayoutInflater.from(context).inflate(
+        mToolbarView = LayoutUtils.createInflater(context).inflate(
                 R.layout.autofill_assistant_bottom_sheet_toolbar, /* root= */ null);
         mContentView = new SizeListenableLinearLayout(context);
         mContentView.setLayoutParams(new ViewGroup.LayoutParams(
@@ -151,5 +155,19 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
         }
 
         return bottomBarDelegate.onBackButtonPressed();
+    }
+
+    @Override
+    public boolean contentControlsOffset() {
+        return true;
+    }
+
+    @Override
+    public void setOffsetController(Callback<Integer> offsetController) {
+        mOffsetController = offsetController;
+    }
+
+    public Callback<Integer> getOffsetController() {
+        return mOffsetController;
     }
 }

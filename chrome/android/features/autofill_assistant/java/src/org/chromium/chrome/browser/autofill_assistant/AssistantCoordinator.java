@@ -45,9 +45,10 @@ public class AssistantCoordinator {
                     controller.getScrimCoordinator(), mModel.getOverlayModel());
         }
 
-        mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel, controller,
-                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                tabObscuringHandler);
+        mBottomBarCoordinator =
+                new AssistantBottomBarCoordinator(activity, mModel, mOverlayCoordinator, controller,
+                        activity.getWindowAndroid().getApplicationBottomInsetProvider(),
+                        tabObscuringHandler);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity,
                 activity.getWindowAndroid().getKeyboardDelegate(),
                 activity.getCompositorViewHolder(), mModel, keyboardCoordinatorDelegate,
@@ -57,9 +58,9 @@ public class AssistantCoordinator {
     /** Detaches and destroys the view. */
     public void destroy() {
         mModel.setVisible(false);
-        mOverlayCoordinator.destroy();
         mBottomBarCoordinator.destroy();
         mBottomBarCoordinator = null;
+        mOverlayCoordinator.destroy();
     }
 
     /**

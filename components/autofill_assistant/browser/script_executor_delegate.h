@@ -115,6 +115,7 @@ class ScriptExecutorDelegate {
       base::OnceCallback<void(const ClientStatus&)> cancel_callback) = 0;
   virtual UserModel* GetUserModel() = 0;
   virtual EventHandler* GetEventHandler() = 0;
+  virtual void SetShowFeedbackChip(bool show_feedback_chip) = 0;
 
   // Makes no area of the screen touchable.
   void ClearTouchableElementArea() {

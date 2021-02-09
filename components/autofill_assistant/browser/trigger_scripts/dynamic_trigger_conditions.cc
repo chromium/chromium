@@ -91,7 +91,7 @@ void DynamicTriggerConditions::Update(WebController* web_controller,
   callback_ = std::move(callback);
   for (const auto& selector : selectors_) {
     web_controller->FindElement(
-        selector, /* strict = */ true,
+        selector, /* strict = */ false,
         base::BindOnce(&DynamicTriggerConditions::OnFindElement,
                        weak_ptr_factory_.GetWeakPtr(), selector));
   }
