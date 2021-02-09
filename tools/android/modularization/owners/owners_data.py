@@ -9,14 +9,22 @@ from typing import List, Optional
 
 
 @dataclasses.dataclass
+class DirMetadata:
+  '''A synthetic representation of a DIR_METADATA file.'''
+  component: Optional[str] = None
+  team: Optional[str] = None
+  os: Optional[str] = None
+
+  def copy(self):
+    return dataclasses.replace(self)
+
+
+@dataclasses.dataclass
 class Owners:
   '''A synthetic representation of an OWNERS file.'''
   owners_file: str  # Path to OWNERS file
   file_inherited: Optional[str] = None  # Referenced OWNERS file
   owners: List[str] = dataclasses.field(default_factory=list)  # owners' emails
-  component: Optional[str] = None
-  team: Optional[str] = None
-  os: Optional[str] = None
 
 
 @dataclasses.dataclass
@@ -58,3 +66,4 @@ class PathData:
   '''Path to be searched for.'''
   owner: Owners
   git_data: GitData
+  dir_metadata: DirMetadata
