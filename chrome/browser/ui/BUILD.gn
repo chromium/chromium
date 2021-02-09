@@ -3102,8 +3102,6 @@ static_library("ui") {
       "cocoa/main_menu_item.h",
       "cocoa/native_window_tracker_cocoa.h",
       "cocoa/native_window_tracker_cocoa.mm",
-      "cocoa/nsmenuitem_additions.h",
-      "cocoa/nsmenuitem_additions.mm",
       "cocoa/profiles/profile_menu_controller.h",
       "cocoa/profiles/profile_menu_controller.mm",
       "cocoa/renderer_context_menu/render_view_context_menu_mac.h",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/ui/cocoa/nsmenuitem_additions.h"
+#import "ui/base/cocoa/nsmenuitem_additions.h"
 
 #include <Carbon/Carbon.h>
 
@@ -12,6 +12,18 @@
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
+
+std::ostream& operator<<(std::ostream& out, NSObject* obj) {
+  return out << base::SysNSStringToUTF8([obj description]);
+}
+
+std::ostream& operator<<(std::ostream& out, NSMenuItem* item) {
+  return out << "NSMenuItem " << base::SysNSStringToUTF8([item keyEquivalent]);
+}
+
+namespace ui {
+namespace cocoa {
+namespace {
 
 NSEvent* KeyEvent(const NSUInteger modifierFlags,
                   NSString* chars,
@@ -38,14 +50,6 @@ NSMenuItem* MenuItem(NSString* equiv, NSUInteger mask) {
   return item;
 }
 
-std::ostream& operator<<(std::ostream& out, NSObject* obj) {
-  return out << base::SysNSStringToUTF8([obj description]);
-}
-
-std::ostream& operator<<(std::ostream& out, NSMenuItem* item) {
-  return out << "NSMenuItem " << base::SysNSStringToUTF8([item keyEquivalent]);
-}
-
 // Returns whether a keyboard layout is one of the "commandless" cyrillic
 // layouts introduced in 10.15: these layouts do not ever fire key equivalents
 // (in any app, not just Chrome) and appear not to be intended for full-time
@@ -55,8 +59,10 @@ bool IsCommandlessCyrillicLayout(NSString* layoutId) {
          [layoutId isEqualToString:@"com.apple.keylayout.Mongolian-Cyrillic"];
 }
 
-void ExpectKeyFiresItemEq(bool result, NSEvent* key, NSMenuItem* item,
-    bool compareCocoa) {
+void ExpectKeyFiresItemEq(bool result,
+                          NSEvent* key,
+                          NSMenuItem* item,
+                          bool compareCocoa) {
   EXPECT_EQ(result, [item cr_firesForKeyEvent:key]) << key << '\n' << item;
 
   // Make sure that Cocoa does in fact agree with our expectations. However,
@@ -74,13 +80,15 @@ void ExpectKeyFiresItemEq(bool result, NSEvent* key, NSMenuItem* item,
   }
 }
 
-void ExpectKeyFiresItem(
-    NSEvent* key, NSMenuItem* item, bool compareCocoa = true) {
+void ExpectKeyFiresItem(NSEvent* key,
+                        NSMenuItem* item,
+                        bool compareCocoa = true) {
   ExpectKeyFiresItemEq(true, key, item, compareCocoa);
 }
 
-void ExpectKeyDoesntFireItem(
-    NSEvent* key, NSMenuItem* item, bool compareCocoa = true) {
+void ExpectKeyDoesntFireItem(NSEvent* key,
+                             NSMenuItem* item,
+                             bool compareCocoa = true) {
   ExpectKeyFiresItemEq(false, key, item, compareCocoa);
 }
 
@@ -183,13 +191,13 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   // Turns out this doesn't fire.
   key = KeyEvent(0x100, @"\e", @"\e", 0x35);
   item = MenuItem(@"\e", 0);
-  ExpectKeyDoesntFireItem(key,item, false);
+  ExpectKeyDoesntFireItem(key, item, false);
 
   // shift-esc
   // Turns out this doesn't fire.
   key = KeyEvent(0x20102, @"\e", @"\e", 0x35);
   item = MenuItem(@"\e", 0x20000);
-  ExpectKeyDoesntFireItem(key,item, false);
+  ExpectKeyDoesntFireItem(key, item, false);
 
   // cmd-esc
   key = KeyEvent(0x100108, @"\e", @"\e", 0x35);
@@ -243,7 +251,7 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   // a menu item that has "a" as key equiv.
   key = KeyEvent(0x100, @"\u0444", @"\u0444", 0);
   item = MenuItem(@"a", 0);
-  ExpectKeyDoesntFireItem(key,item);
+  ExpectKeyDoesntFireItem(key, item);
 
   // cmd-a on a russion layout -- fires for a menu item with cmd-a as key equiv.
   key = KeyEvent(0x100108, @"a", @"\u0444", 0);
@@ -259,7 +267,7 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   // fire).
   key = KeyEvent(0x100108, @"y", @"y", 6);
   item = MenuItem(@"z", 0x100000);
-  ExpectKeyDoesntFireItem(key,item);
+  ExpectKeyDoesntFireItem(key, item);
 
   // cmd-z on german layout
   key = KeyEvent(0x100108, @"z", @"z", 0x10);
@@ -269,7 +277,7 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   // fn-return (== enter)
   key = KeyEvent(0x800100, @"\x3", @"\x3", 0x4c);
   item = MenuItem(@"\r", 0);
-  ExpectKeyDoesntFireItem(key,item);
+  ExpectKeyDoesntFireItem(key, item);
 
   // cmd-z on dvorak layout (so that the key produces ';')
   key = KeyEvent(0x100108, @";", @";", 6);
@@ -391,21 +399,21 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
   NSMenuItem* item = MenuItem(@"m", 0x100000);
 
   NSDictionary* filter = [NSDictionary
-    dictionaryWithObject:(NSString*)kTISTypeKeyboardLayout
-                  forKey:(NSString*)kTISPropertyInputSourceType];
+      dictionaryWithObject:(NSString*)kTISTypeKeyboardLayout
+                    forKey:(NSString*)kTISPropertyInputSourceType];
 
   // Docs say that including all layouts instead of just the active ones is
   // slow, but there's no way around that.
-  NSArray* list = (NSArray*)TISCreateInputSourceList(
-      (CFDictionaryRef)filter, true);
+  NSArray* list =
+      (NSArray*)TISCreateInputSourceList((CFDictionaryRef)filter, true);
   for (id layout in list) {
     TISInputSourceRef ref = (TISInputSourceRef)layout;
 
     NSUInteger keyCode = 0x2e;  // "m" on a US layout and most other layouts.
 
     // On a few layouts, "m" has a different key code.
-    NSString* layoutId = (NSString*)TISGetInputSourceProperty(
-        ref, kTISPropertyInputSourceID);
+    NSString* layoutId =
+        (NSString*)TISGetInputSourceProperty(ref, kTISPropertyInputSourceID);
     if ([layoutId isEqualToString:@"com.apple.keylayout.Belgian"] ||
         [layoutId isEqualToString:@"com.apple.keylayout.Italian"] ||
         [layoutId isEqualToString:@"com.apple.keylayout.ABC-AZERTY"] ||
@@ -457,3 +465,7 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
   }
   CFRelease(list);
 }
+
+}  // namespace
+}  // namespace cocoa
+}  // namespace ui

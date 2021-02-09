@@ -15,10 +15,10 @@
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
-#import "chrome/browser/ui/cocoa/nsmenuitem_additions.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
+#import "ui/base/cocoa/nsmenuitem_additions.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 

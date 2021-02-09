@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/ui/cocoa/nsmenuitem_additions.h"
+#import "ui/base/cocoa/nsmenuitem_additions.h"
 
 #include <Carbon/Carbon.h>
 
 #include "base/check.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
+
+namespace ui {
+namespace cocoa {
 
 namespace {
 bool g_is_input_source_command_qwerty = false;
@@ -22,6 +25,9 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   return [layout_id isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"] ||
          [layout_id isEqualToString:@"com.apple.keylayout.Dhivehi-QWERTY"];
 }
+
+}  // namespace cocoa
+}  // namespace ui
 
 @interface KeyboardInputSourceListener : NSObject
 @end
@@ -50,7 +56,8 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
       TISCopyCurrentKeyboardInputSource());
   NSString* layoutId = (NSString*)TISGetInputSourceProperty(
       inputSource.get(), kTISPropertyInputSourceID);
-  g_is_input_source_command_qwerty = IsKeyboardLayoutCommandQwerty(layoutId);
+  ui::cocoa::g_is_input_source_command_qwerty =
+      ui::cocoa::IsKeyboardLayoutCommandQwerty(layoutId);
 }
 
 - (void)inputSourceDidChange:(NSNotification*)notification {
@@ -59,7 +66,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
 
 @end
 
-@implementation NSMenuItem(ChromeAdditions)
+@implementation NSMenuItem (ChromeAdditions)
 
 - (BOOL)cr_firesForKeyEvent:(NSEvent*)event {
   if (![self isEnabled])
@@ -114,8 +121,8 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   // NSText.h as 0x08) and for the Forward Delete key, use NSDeleteCharacter
   // (defined in NSText.h as 0x7F). Note that these are not the same characters
   // you get from an NSEvent key-down event when pressing those keys.
-  if ([[self keyEquivalent] characterAtIndex:0] == NSBackspaceCharacter
-      && [eventString characterAtIndex:0] == NSDeleteCharacter) {
+  if ([[self keyEquivalent] characterAtIndex:0] == NSBackspaceCharacter &&
+      [eventString characterAtIndex:0] == NSDeleteCharacter) {
     unichar chr = NSBackspaceCharacter;
     eventString = [NSString stringWithCharacters:&chr length:1];
 
@@ -140,7 +147,7 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   // (such as DVORAK-QWERTY) which use QWERTY-style shortcuts when the Command
   // key is held down. In this case, we want to use the keycode of the event
   // rather than looking at the characters.
-  if (g_is_input_source_command_qwerty) {
+  if (ui::cocoa::g_is_input_source_command_qwerty) {
     ui::KeyboardCode windows_keycode =
         ui::KeyboardCodeFromKeyCode(event.keyCode);
     unichar shifted_character, character;
@@ -180,13 +187,11 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   }
 
   // Clear all non-interesting modifiers
-  eventModifiers &= NSCommandKeyMask |
-                    NSControlKeyMask |
-                    NSAlternateKeyMask |
-                    NSShiftKeyMask;
+  eventModifiers &=
+      NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask | NSShiftKeyMask;
 
-  return [eventString isEqualToString:[self keyEquivalent]]
-      && eventModifiers == [self keyEquivalentModifierMask];
+  return [eventString isEqualToString:[self keyEquivalent]] &&
+         eventModifiers == [self keyEquivalentModifierMask];
 }
 
 @end

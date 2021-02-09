@@ -275,6 +275,8 @@ component("base") {
       "cocoa/focus_window_set.mm",
       "cocoa/menu_controller.h",
       "cocoa/menu_controller.mm",
+      "cocoa/nsmenuitem_additions.h",
+      "cocoa/nsmenuitem_additions.mm",
       "cocoa/permissions_utils.h",
       "cocoa/permissions_utils.mm",
       "cocoa/quartz_util.h",
@@ -898,7 +900,10 @@ test("ui_base_unittests") {
     "webui/i18n_source_stream_unittest.cc",
   ]
   if (is_mac) {
-    sources += [ "l10n/l10n_util_mac_unittest.mm" ]
+    sources += [
+      "cocoa/nsmenuitem_additions_unittest.mm",
+      "l10n/l10n_util_mac_unittest.mm",
+    ]
   }
   if (!is_ios) {
     sources += [ "user_activity/user_activity_detector_unittest.cc" ]
