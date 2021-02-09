@@ -62,9 +62,8 @@ namespace web_app {
 class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
  public:
   ExternalWebAppMigrationBrowserTest() {
-    ExternalWebAppManager::SkipStartupForTesting();
     ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
-    disable_scope_ =
+    disable_extensions_updates_scope_ =
         extensions::ExtensionService::DisableExternalUpdatesForTesting();
   }
   ~ExternalWebAppMigrationBrowserTest() override = default;
@@ -152,7 +151,7 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
             extensions::Manifest::EXTERNAL_PREF_DOWNLOAD,
             extensions::Extension::NO_FLAGS));
 
-    disable_scope_.reset();
+    disable_extensions_updates_scope_.reset();
   }
 
   void SyncExternalExtensions() {
@@ -219,8 +218,11 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
         kExtensionId, extensions::ExtensionRegistry::EVERYTHING);
   }
 
+ protected:
+  ScopedTestingPreinstalledAppData preintalled_apps_;
+
  private:
-  base::Optional<base::AutoReset<bool>> disable_scope_;
+  base::Optional<base::AutoReset<bool>> disable_extensions_updates_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
@@ -447,7 +449,6 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
 // by the preinstalled apps (rather than an external config).
 IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
                        MigrateToPreinstalledWebApp) {
-  ScopedTestingPreinstalledAppData preinstalled_apps;
   ExternalInstallOptions options(GetWebAppUrl(), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalDefault);
   options.gate_on_feature = kMigrationFlag;
@@ -460,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
     info->title = base::UTF8ToUTF16("Test app");
     return info;
   });
-  preinstalled_apps.apps.push_back(std::move(options));
+  preintalled_apps_.apps.push_back(std::move(options));
   EXPECT_EQ(1u, GetPreinstalledWebApps().size());
   // Set up pre-migration state.
   {

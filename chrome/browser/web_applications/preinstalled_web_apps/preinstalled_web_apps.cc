@@ -4,14 +4,12 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/common/chrome_switches.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/web_applications/preinstalled_web_apps/gmail.h"
@@ -33,19 +31,11 @@ namespace {
 std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
     nullptr;
 
-bool g_force_use_preinstalled_web_apps_for_testing = false;
-
 }  // namespace
 
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
   if (g_preinstalled_app_data_for_testing)
     return *g_preinstalled_app_data_for_testing;
-
-  if (!g_force_use_preinstalled_web_apps_for_testing &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kDisableDefaultApps)) {
-    return {};
-  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(crbug.com/1104692): Replace these C++ configs with JSON configs like
@@ -73,10 +63,6 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   return {};
-}
-
-void ForceUsePreinstalledWebAppsForTesting() {
-  g_force_use_preinstalled_web_apps_for_testing = true;
 }
 
 ScopedTestingPreinstalledAppData::ScopedTestingPreinstalledAppData() {

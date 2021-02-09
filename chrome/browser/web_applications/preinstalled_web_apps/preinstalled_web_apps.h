@@ -14,11 +14,6 @@ namespace web_app {
 // Returns the list of web apps that should be pre-installed on new profiles.
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps();
 
-// Preinstalled app configs are disabled in tests by default (having web apps
-// install during start up adds a lot of noise). This allows tests to opt into
-// having them install.
-void ForceUsePreinstalledWebAppsForTesting();
-
 // A scoped helper to provide a testing set of preinstalled app data. This will
 // replace the default set.
 struct ScopedTestingPreinstalledAppData {

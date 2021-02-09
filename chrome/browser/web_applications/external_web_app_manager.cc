@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -66,7 +68,6 @@ const base::FilePath::CharType kWebAppsSubDirectory[] =
     FILE_PATH_LITERAL("web_apps");
 #endif
 
-bool g_skip_startup_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 const base::FilePath* g_config_dir_for_testing = nullptr;
 const std::vector<base::Value>* g_configs_for_testing = nullptr;
@@ -232,10 +233,6 @@ void ExternalWebAppManager::RegisterProfilePrefs(
                                "");
 }
 
-void ExternalWebAppManager::SkipStartupForTesting() {
-  g_skip_startup_for_testing_ = true;
-}
-
 void ExternalWebAppManager::BypassOfflineManifestRequirementForTesting() {
   g_bypass_offline_manifest_requirement_for_testing_ = true;
 }
@@ -270,7 +267,15 @@ void ExternalWebAppManager::SetSubsystems(
 }
 
 void ExternalWebAppManager::Start() {
-  if (!g_skip_startup_for_testing_) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool is_regular_profile =
+      chromeos::ProfileHelper::IsRegularProfile(profile_);
+#else
+  const bool is_regular_profile = true;
+#endif
+
+  if (is_regular_profile && !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                ::switches::kDisableDefaultApps)) {
     LoadAndSynchronize(
         base::BindOnce(&ExternalWebAppManager::OnStartUpTaskCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -466,23 +471,21 @@ base::FilePath ExternalWebAppManager::GetConfigDir() {
   // As of mid 2018, only Chrome OS has default/external web apps, and
   // chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS is only defined for OS_LINUX,
   // which includes OS_CHROMEOS.
-  if (chromeos::ProfileHelper::IsRegularProfile(profile_)) {
-    if (g_config_dir_for_testing) {
-      dir = *g_config_dir_for_testing;
+  if (g_config_dir_for_testing) {
+    dir = *g_config_dir_for_testing;
+  } else {
+    // For manual testing, you can change s/STANDALONE/USER/, as writing to
+    // "$HOME/.config/chromium/test-user/.config/chromium/External
+    // Extensions/web_apps" does not require root ACLs, unlike
+    // "/usr/share/chromium/extensions/web_apps".
+    if (!base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
+                                &dir)) {
+      LOG(ERROR) << "base::PathService::Get failed";
     } else {
-      // For manual testing, you can change s/STANDALONE/USER/, as writing to
-      // "$HOME/.config/chromium/test-user/.config/chromium/External
-      // Extensions/web_apps" does not require root ACLs, unlike
-      // "/usr/share/chromium/extensions/web_apps".
-      if (!base::PathService::Get(chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS,
-                                  &dir)) {
-        LOG(ERROR) << "base::PathService::Get failed";
-      } else {
-        dir = dir.Append(kWebAppsSubDirectory);
-      }
+      dir = dir.Append(kWebAppsSubDirectory);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return dir;
 }

@@ -31,9 +31,7 @@ namespace web_app {
 class ExternalWebAppManagerBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  ExternalWebAppManagerBrowserTest() {
-    ExternalWebAppManager::SkipStartupForTesting();
-  }
+  ExternalWebAppManagerBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
