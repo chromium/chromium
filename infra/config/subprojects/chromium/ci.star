@@ -3456,6 +3456,7 @@ ci.fyi_builder(
     ),
     goma_backend = None,
     reclient_instance = "goma-rbe-chromium",
+    reclient_rewrapper_env = {"RBE_cache_silo": "Linux TSan Builder (reclient)"},
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
