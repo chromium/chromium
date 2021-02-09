@@ -35,6 +35,8 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
         std::make_unique<SafeBrowsingMetricsCollector>(&pref_service_);
   }
 
+  void TearDown() override { metrics_collector_->Shutdown(); }
+
  protected:
   void SetSafeBrowsingMetricsLastLogTime(base::Time time) {
     pref_service_.SetInt64(prefs::kSafeBrowsingMetricsLastLogTime,
@@ -62,6 +64,12 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
                             return util::ValueToInt64(ts_a).value_or(0) <
                                    util::ValueToInt64(ts_b).value_or(0);
                           });
+  }
+
+  void FastForwardAndAddEvent(base::TimeDelta time_delta,
+                              EventType event_type) {
+    task_environment_->FastForwardBy(time_delta);
+    metrics_collector_->AddSafeBrowsingEventToPref(event_type);
   }
 
   std::unique_ptr<SafeBrowsingMetricsCollector> metrics_collector_;
@@ -216,6 +224,54 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   EXPECT_EQ(timestamps->GetList()[0], timestamps->GetList()[1]);
   // The newest timestamp should be added as the last element.
   EXPECT_NE(timestamps->GetList()[28], timestamps->GetList()[29]);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_GetLastBypassEventType) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::DATABASE_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::CSD_INTERSITITAL_BYPASS);
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::DATABASE_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::CSD_INTERSITITAL_BYPASS);
+
+  // Changing enhanced protection to standard protection should log the metric.
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  histograms.ExpectUniqueSample("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                                /* sample */ EventType::CSD_INTERSITITAL_BYPASS,
+                                /* expected_count */ 1);
+
+  // Changing standard protection to enhanced protection shouldn't log the
+  // metric.
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  histograms.ExpectUniqueSample("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                                /* sample */ EventType::CSD_INTERSITITAL_BYPASS,
+                                /* expected_count */ 1);
+
+  // Changing enhanced protection to no protection should log the metric.
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::REAL_TIME_INTERSTITIAL_BYPASS);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 2);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.EsbDisabled.LastBypassEventType",
+      /* sample */ EventType::REAL_TIME_INTERSTITIAL_BYPASS,
+      /* expected_count */ 1);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_NotLoggedIfNoEvent) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 0);
 }
 
 }  // namespace safe_browsing

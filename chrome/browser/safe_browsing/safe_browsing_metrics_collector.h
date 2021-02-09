@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -23,7 +24,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // Enum representing different types of Safe Browsing events for measuring
   // user friction. They are used as keys of the SafeBrowsingEventTimestamps
   // pref. They are used for logging histograms, entries must not be removed or
-  // reordered.
+  // reordered. Please update the enums.xml file if new values are added.
   enum EventType {
     // The user state is disabled.
     USER_STATE_DISABLED = 0,
@@ -61,11 +62,26 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // Add |event_type| and the current timestamp to pref.
   void AddSafeBrowsingEventToPref(EventType event_type);
 
+  // KeyedService:
+  // Called before the actual deletion of the object.
+  void Shutdown() override;
+
  private:
+  struct Event {
+    Event(EventType type, base::Time timestamp);
+    EventType type;
+    base::Time timestamp;
+  };
+  static bool IsBypassEventType(const EventType& type);
+
   void LogMetricsAndScheduleNextLogging();
   void ScheduleNextLoggingAfterInterval(base::TimeDelta interval);
 
+  void OnEnhancedProtectionPrefChanged();
+  void LogEnhancedProtectionDisabledMetrics();
+
   PrefService* pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
   base::OneShotTimer metrics_collector_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingMetricsCollector);

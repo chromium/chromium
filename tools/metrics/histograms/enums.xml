@@ -67444,6 +67444,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="SKIPPED_VERSION_CHECK_EQUAL"/>
 </enum>
 
+<enum name="SBMetricsCollectorEventType">
+  <int value="0" label="USER_STATE_DISABLED"/>
+  <int value="1" label="USER_STATE_ENABLED"/>
+  <int value="2" label="DATABASE_INTERSTITIAL_BYPASS"/>
+  <int value="3" label="CSD_INTERSITITAL_BYPASS"/>
+  <int value="4" label="REAL_TIME_INTERSTITIAL_BYPASS"/>
+</enum>
+
 <enum name="SBPhishingClassifierEvent">
   <int value="0" label="Phishing detection was requested to start"/>
   <int value="1" label="Page text was captured"/>

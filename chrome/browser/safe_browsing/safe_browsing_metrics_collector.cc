@@ -22,7 +22,7 @@ const int kMetricsLoggingIntervalDay = 1;
 
 const int kTimestampsMaxLength = 30;
 
-std::string EventTypeToPrefKey(const EventType type) {
+std::string EventTypeToPrefKey(const EventType& type) {
   return base::NumberToString(static_cast<int>(type));
 }
 
@@ -45,13 +45,29 @@ base::Value TimeToPrefValue(const base::Time& time) {
   return util::Int64ToValue(time.ToDeltaSinceWindowsEpoch().InSeconds());
 }
 
+base::Time PrefValueToTime(const base::Value& value) {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromSeconds(util::ValueToInt64(value).value_or(0)));
+}
+
 }  // namespace
 
 namespace safe_browsing {
 
 SafeBrowsingMetricsCollector::SafeBrowsingMetricsCollector(
     PrefService* pref_service)
-    : pref_service_(pref_service) {}
+    : pref_service_(pref_service) {
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kSafeBrowsingEnhanced,
+      base::BindRepeating(
+          &SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged,
+          base::Unretained(this)));
+}
+
+void SafeBrowsingMetricsCollector::Shutdown() {
+  pref_change_registrar_.RemoveAll();
+}
 
 void SafeBrowsingMetricsCollector::StartLogging() {
   base::TimeDelta log_interval =
@@ -122,5 +138,63 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
 
   timestamps->Append(TimeToPrefValue(base::Time::Now()));
 }
+
+void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
+  if (safe_browsing::GetSafeBrowsingState(*pref_service_) !=
+      SafeBrowsingState::ENHANCED_PROTECTION) {
+    LogEnhancedProtectionDisabledMetrics();
+  }
+}
+
+void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
+  const base::DictionaryValue* state_dict =
+      pref_service_->GetDictionary(prefs::kSafeBrowsingEventTimestamps);
+  const base::Value* event_dict = state_dict->FindDictKey(
+      SafeBrowsingStateToPrefKey(SafeBrowsingState::ENHANCED_PROTECTION));
+  if (!event_dict) {
+    return;
+  }
+
+  std::vector<Event> bypass_events;
+  for (int event_type_int = 0; event_type_int < EventType::kMaxValue + 1;
+       event_type_int += 1) {
+    EventType event_type = static_cast<EventType>(event_type_int);
+    if (!IsBypassEventType(event_type)) {
+      continue;
+    }
+    const base::Value* timestamps =
+        event_dict->FindListKey(EventTypeToPrefKey(event_type));
+
+    // Get the latest timestamp for this bypass event type.
+    if (timestamps && timestamps->GetList().size() > 0) {
+      base::Time time = PrefValueToTime(timestamps->GetList().back());
+      bypass_events.emplace_back(Event(event_type, time));
+    }
+  }
+
+  const auto latest_event = std::max_element(
+      bypass_events.begin(), bypass_events.end(),
+      [](const Event& a, const Event& b) { return a.timestamp < b.timestamp; });
+
+  if (latest_event != bypass_events.end()) {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.EsbDisabled.LastBypassEventType", latest_event->type);
+  }
+}
+
+bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
+  switch (type) {
+    case EventType::USER_STATE_DISABLED:
+    case EventType::USER_STATE_ENABLED:
+      return false;
+    case EventType::DATABASE_INTERSTITIAL_BYPASS:
+    case EventType::CSD_INTERSITITAL_BYPASS:
+    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
+      return true;
+  }
+}
+
+SafeBrowsingMetricsCollector::Event::Event(EventType type, base::Time timestamp)
+    : type(type), timestamp(timestamp) {}
 
 }  // namespace safe_browsing
