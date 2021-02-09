@@ -178,10 +178,9 @@ ShortcutsDatabase::Shortcut ShortcutsDatabaseTest::ShortcutFromTestInfo(
       info.guid, ASCIIToUTF16(info.text),
       ShortcutsDatabase::Shortcut::MatchCore(
           ASCIIToUTF16(info.fill_into_edit), GURL(info.destination_url),
-          static_cast<int>(info.document_type), ASCIIToUTF16(info.contents),
-          info.contents_class, ASCIIToUTF16(info.description),
-          info.description_class, info.transition, info.type,
-          ASCIIToUTF16(info.keyword)),
+          info.document_type, ASCIIToUTF16(info.contents), info.contents_class,
+          ASCIIToUTF16(info.description), info.description_class,
+          info.transition, info.type, ASCIIToUTF16(info.keyword)),
       base::Time::Now() - base::TimeDelta::FromDays(info.days_from_now),
       info.number_of_hits);
 }

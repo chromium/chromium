@@ -81,6 +81,12 @@ struct AutocompleteMatchType {
   // Converts |type| to a string representation. Used in logging.
   static std::string ToString(AutocompleteMatchType::Type type);
 
+  // Use this function to convert integers to AutocompleteMatchType enum values.
+  // If you're sure it will be valid, you can call CHECK on the return value.
+  // Returns true if |value| was successfully converted to a valid enum value.
+  // The valid enum value will be written into |result|.
+  static bool FromInteger(int value, Type* result);
+
   // Returns the accessibility label for an AutocompleteMatch |match|
   // whose text is |match_text| The accessibility label describes the
   // match for use in a screenreader or other assistive technology.

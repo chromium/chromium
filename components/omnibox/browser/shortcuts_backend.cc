@@ -178,8 +178,7 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
 
   return ShortcutsDatabase::Shortcut::MatchCore(
       normalized_match->fill_into_edit, normalized_match->destination_url,
-      static_cast<int>(normalized_match->document_type),
-      normalized_match->contents,
+      normalized_match->document_type, normalized_match->contents,
       StripMatchMarkers(normalized_match->contents_class), description,
       StripMatchMarkers(description_class), normalized_match->transition,
       match_type, normalized_match->keyword);

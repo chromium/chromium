@@ -57,6 +57,18 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
   return strings[type];
 }
 
+// static
+bool AutocompleteMatchType::FromInteger(int value, Type* result) {
+  DCHECK(result);
+
+  if (value < Type::URL_WHAT_YOU_TYPED || value >= Type::NUM_TYPES) {
+    return false;
+  }
+
+  *result = static_cast<Type>(value);
+  return true;
+}
+
 static const wchar_t kAccessibilityLabelPrefixEndSentinal[] =
     L"\uFFFC";  // Embedded object character.
 

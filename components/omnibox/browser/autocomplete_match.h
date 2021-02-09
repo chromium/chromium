@@ -178,6 +178,12 @@ struct AutocompleteMatch {
   // Return a string version of the core type values.
   static const char* DocumentTypeString(DocumentType type);
 
+  // Use this function to convert integers to DocumentType enum values.
+  // If you're sure it will be valid, you can call CHECK on the return value.
+  // Returns true if |value| was successfully converted to a valid enum value.
+  // The valid enum value will be written into |result|.
+  static bool DocumentTypeFromInteger(int value, DocumentType* result);
+
   AutocompleteMatch();
   AutocompleteMatch(AutocompleteProvider* provider,
                     int relevance,

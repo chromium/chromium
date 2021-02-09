@@ -57,10 +57,10 @@ void PopulateShortcutsBackendWithTestData(
         cur.guid, base::ASCIIToUTF16(cur.text),
         ShortcutsDatabase::Shortcut::MatchCore(
             base::ASCIIToUTF16(cur.fill_into_edit), GURL(cur.destination_url),
-            static_cast<int>(cur.document_type),
-            base::ASCIIToUTF16(cur.contents), cur.contents_class,
-            base::ASCIIToUTF16(cur.description), cur.description_class,
-            cur.transition, cur.type, base::ASCIIToUTF16(cur.keyword)),
+            cur.document_type, base::ASCIIToUTF16(cur.contents),
+            cur.contents_class, base::ASCIIToUTF16(cur.description),
+            cur.description_class, cur.transition, cur.type,
+            base::ASCIIToUTF16(cur.keyword)),
         base::Time::Now() - base::TimeDelta::FromDays(cur.days_from_now),
         cur.number_of_hits);
     backend->AddShortcut(shortcut);

@@ -460,10 +460,10 @@ TEST_F(ShortcutsProviderTest, CalculateScore) {
       std::string(), ASCIIToUTF16("test"),
       ShortcutsDatabase::Shortcut::MatchCore(
           ASCIIToUTF16("www.test.com"), GURL("http://www.test.com"),
-          static_cast<int>(AutocompleteMatch::DocumentType::NONE),
-          ASCIIToUTF16("www.test.com"), "0,1,4,3,8,1", ASCIIToUTF16("A test"),
-          "0,0,2,2", ui::PAGE_TRANSITION_TYPED,
-          AutocompleteMatchType::HISTORY_URL, base::string16()),
+          AutocompleteMatch::DocumentType::NONE, ASCIIToUTF16("www.test.com"),
+          "0,1,4,3,8,1", ASCIIToUTF16("A test"), "0,0,2,2",
+          ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL,
+          base::string16()),
       base::Time::Now(), 1);
 
   // Maximal score.

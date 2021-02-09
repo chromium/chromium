@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
@@ -118,6 +119,22 @@ static_assert(
 // static
 const char* AutocompleteMatch::DocumentTypeString(DocumentType type) {
   return kDocumentTypeStrings[static_cast<int>(type)];
+}
+
+// static
+bool AutocompleteMatch::DocumentTypeFromInteger(int value,
+                                                DocumentType* result) {
+  DCHECK(result);
+
+  // The resulting value may still be invalid after the static_cast.
+  DocumentType document_type = static_cast<DocumentType>(value);
+  if (document_type >= DocumentType::NONE &&
+      document_type < DocumentType::DOCUMENT_TYPE_SIZE) {
+    *result = document_type;
+    return true;
+  }
+
+  return false;
 }
 
 // static
@@ -260,6 +277,11 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark) const {
+  // TODO(https://crbug.com/1024114): Remove crash logging once fixed.
+  SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "type", type);
+  SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "provider_type",
+                          provider ? provider->type() : -1);
+
   if (is_bookmark)
     return omnibox::kBookmarkIcon;
   switch (type) {

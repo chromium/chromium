@@ -67,7 +67,7 @@ struct ShortcutMatch {
         stripped_destination_url(stripped_destination_url),
         shortcut(shortcut),
         contents(shortcut->match_core.contents),
-        type(static_cast<AutocompleteMatch::Type>(shortcut->match_core.type)) {}
+        type(shortcut->match_core.type) {}
 
   int relevance;
   // To satisfy |CompareWithDemoteByType<>::operator()|.
@@ -253,16 +253,15 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   match.fill_into_edit = shortcut.match_core.fill_into_edit;
   match.destination_url = shortcut.match_core.destination_url;
   DCHECK(match.destination_url.is_valid());
-  match.document_type = static_cast<AutocompleteMatch::DocumentType>(
-      shortcut.match_core.document_type);
+  match.document_type = shortcut.match_core.document_type;
   match.contents = shortcut.match_core.contents;
   match.contents_class = AutocompleteMatch::ClassificationsFromString(
       shortcut.match_core.contents_class);
   match.description = shortcut.match_core.description;
   match.description_class = AutocompleteMatch::ClassificationsFromString(
       shortcut.match_core.description_class);
-  match.transition = ui::PageTransitionFromInt(shortcut.match_core.transition);
-  match.type = static_cast<AutocompleteMatch::Type>(shortcut.match_core.type);
+  match.transition = shortcut.match_core.transition;
+  match.type = shortcut.match_core.type;
   match.keyword = shortcut.match_core.keyword;
   match.RecordAdditionalInfo("number of hits", shortcut.number_of_hits);
   match.RecordAdditionalInfo("last access time", shortcut.last_access_time);
