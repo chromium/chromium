@@ -14,29 +14,6 @@
 namespace chromeos {
 namespace libassistant {
 
-namespace {
-
-assistant::AndroidAppInfo ToAndroidAppInfo(
-    const mojom::AndroidAppInfoPtr& app) {
-  assistant::AndroidAppInfo result;
-  result.package_name = app->package_name;
-  result.version = app->version;
-  result.localized_app_name = app->localized_app_name;
-  return result;
-}
-
-std::vector<assistant::AndroidAppInfo> ToAndroidAppInfoList(
-    const std::vector<mojom::AndroidAppInfoPtr>& apps) {
-  std::vector<assistant::AndroidAppInfo> result;
-
-  for (const auto& app : apps)
-    result.push_back(ToAndroidAppInfo(app));
-
-  return result;
-}
-
-}  // namespace
-
 class DisplayController::EventObserver : public DisplayConnectionObserver {
  public:
   explicit EventObserver(DisplayController* parent) : parent_(parent) {}
@@ -85,8 +62,8 @@ void DisplayController::SetRelatedInfoEnabled(bool enabled) {
 }
 
 void DisplayController::SetAndroidAppList(
-    std::vector<mojom::AndroidAppInfoPtr> apps) {
-  display_connection_->OnAndroidAppListRefreshed(ToAndroidAppInfoList(apps));
+    const std::vector<::chromeos::assistant::AndroidAppInfo>& apps) {
+  display_connection_->OnAndroidAppListRefreshed(apps);
 }
 
 void DisplayController::OnAssistantManagerCreated(

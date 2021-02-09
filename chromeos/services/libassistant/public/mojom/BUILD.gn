@@ -27,4 +27,23 @@ mojom("mojom") {
     "//services/device/public/mojom",
     "//services/network/public/mojom",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.libassistant.mojom.AndroidAppInfo"
+          cpp = "::chromeos::assistant::AndroidAppInfo"
+        },
+        {
+          mojom = "chromeos.libassistant.mojom.AndroidAppStatus"
+          cpp = "::chromeos::assistant::AppStatus"
+        },
+      ]
+
+      traits_headers = [ "mojom_traits.h" ]
+      traits_sources = [ "mojom_traits.cc" ]
+      traits_public_deps = [ "//chromeos/services/assistant/public/shared" ]
+    },
+  ]
 }

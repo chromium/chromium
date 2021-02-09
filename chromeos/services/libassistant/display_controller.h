@@ -38,7 +38,8 @@ class DisplayController : public mojom::DisplayController,
   void SetArcPlayStoreEnabled(bool enabled) override;
   void SetDeviceAppsEnabled(bool enabled) override;
   void SetRelatedInfoEnabled(bool enabled) override;
-  void SetAndroidAppList(std::vector<mojom::AndroidAppInfoPtr> apps) override;
+  void SetAndroidAppList(
+      const std::vector<::chromeos::assistant::AndroidAppInfo>& apps) override;
 
   // AssistantManagerObserver implementation:
   void OnAssistantManagerCreated(

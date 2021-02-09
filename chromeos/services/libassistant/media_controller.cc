@@ -115,7 +115,7 @@ std::string GetAndroidIntentUrlFromMediaArgs(
   return std::string();
 }
 
-mojom::AndroidAppInfoPtr GetAppInfoFromMediaArgs(
+base::Optional<AndroidAppInfo> GetAppInfoFromMediaArgs(
     const std::string& play_media_args_proto) {
   PlayMediaArgs play_media_args;
   if (play_media_args.ParseFromString(play_media_args_proto)) {
@@ -123,17 +123,16 @@ mojom::AndroidAppInfoPtr GetAppInfoFromMediaArgs(
       if (media_item.has_provider() &&
           media_item.provider().has_android_app_info()) {
         auto& app_info = media_item.provider().android_app_info();
-        auto android_app_info_ptr = mojom::AndroidAppInfo::New();
-        android_app_info_ptr->package_name = app_info.package_name();
-        android_app_info_ptr->version = app_info.app_version();
-        android_app_info_ptr->localized_app_name =
-            app_info.localized_app_name();
-        android_app_info_ptr->intent = app_info.android_intent();
-        return android_app_info_ptr;
+        AndroidAppInfo result;
+        result.package_name = app_info.package_name();
+        result.version = app_info.app_version();
+        result.localized_app_name = app_info.localized_app_name();
+        result.intent = app_info.android_intent();
+        return result;
       }
     }
   }
-  return nullptr;
+  return base::nullopt;
 }
 
 std::string GetWebUrlFromMediaArgs(const std::string& play_media_args_proto) {
@@ -215,10 +214,11 @@ class MediaController::LibassistantMediaHandler {
   }
 
   void OnPlayMedia(const std::string& play_media_args_proto) {
-    mojom::AndroidAppInfoPtr app_info =
+    base::Optional<AndroidAppInfo> app_info =
         GetAppInfoFromMediaArgs(play_media_args_proto);
     if (app_info) {
-      OnOpenMediaAndroidIntent(play_media_args_proto, std::move(app_info));
+      OnOpenMediaAndroidIntent(play_media_args_proto,
+                               std::move(app_info.value()));
     } else {
       OnOpenUrl(play_media_args_proto);
     }
@@ -226,12 +226,12 @@ class MediaController::LibassistantMediaHandler {
 
   // Handle android media playback intent.
   void OnOpenMediaAndroidIntent(const std::string& play_media_args_proto,
-                                mojom::AndroidAppInfoPtr app_info) {
-    app_info->action = kIntentActionView;
-    if (app_info->intent.empty()) {
+                                AndroidAppInfo app_info) {
+    app_info.action = kIntentActionView;
+    if (app_info.intent.empty()) {
       std::string url = GetAndroidIntentUrlFromMediaArgs(play_media_args_proto);
       if (!url.empty())
-        app_info->intent = url;
+        app_info.intent = url;
     }
     VLOG(1) << "Playing android media";
     delegate().PlayAndroidMedia(std::move(app_info));

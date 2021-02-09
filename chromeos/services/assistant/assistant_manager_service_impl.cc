@@ -152,35 +152,6 @@ bool ShouldPutLogsInHomeDirectory() {
   return !redirect_logging;
 }
 
-libassistant::mojom::AndroidAppStatus ToMojomEnum(const AppStatus& app_status) {
-  switch (app_status) {
-    case AppStatus::kAvailable:
-      return libassistant::mojom::AndroidAppStatus::kAvailable;
-    case AppStatus::kUnavailable:
-      return libassistant::mojom::AndroidAppStatus::kUnavailable;
-    case AppStatus::kDisabled:
-      return libassistant::mojom::AndroidAppStatus::kDisabled;
-    case AppStatus::kUnknown:
-      return libassistant::mojom::AndroidAppStatus::kUnknown;
-    case AppStatus::kVersionMismatch:
-      return libassistant::mojom::AndroidAppStatus::kVersionMismatch;
-  }
-}
-
-libassistant::mojom::AndroidAppInfoPtr ToAndroidAppInfoPtr(
-    const AndroidAppInfo& app_info) {
-  auto result = libassistant::mojom::AndroidAppInfo::New();
-
-  result->package_name = app_info.package_name;
-  result->version = app_info.version;
-  result->localized_app_name = app_info.localized_app_name;
-  result->intent = app_info.intent;
-  result->status = ToMojomEnum(app_info.status);
-  result->action = app_info.action;
-
-  return result;
-}
-
 }  // namespace
 
 // Observer that will receive all speech recognition related events,
@@ -1005,13 +976,13 @@ void AssistantManagerServiceImpl::OnServiceRunning() {
 
 void AssistantManagerServiceImpl::OnAndroidAppListRefreshed(
     const std::vector<AndroidAppInfo>& apps_info) {
-  std::vector<libassistant::mojom::AndroidAppInfoPtr> filtered_apps_info;
+  std::vector<AndroidAppInfo> filtered_apps_info;
   for (const auto& app_info : apps_info) {
     // TODO(b/146355799): Remove the special handling for Android settings app.
     if (app_info.package_name == kAndroidSettingsAppPackage)
       continue;
 
-    filtered_apps_info.emplace_back(ToAndroidAppInfoPtr(app_info));
+    filtered_apps_info.push_back(app_info);
   }
   display_controller().SetAndroidAppList(std::move(filtered_apps_info));
 }

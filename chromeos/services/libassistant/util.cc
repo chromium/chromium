@@ -31,6 +31,8 @@ namespace libassistant {
 
 namespace {
 
+using AppStatus = ::chromeos::assistant::AppStatus;
+
 void CreateUserAgent(std::string* user_agent) {
   DCHECK(user_agent->empty());
   base::StringAppendF(user_agent,
@@ -56,17 +58,17 @@ base::FilePath GetRootPath() {
 }
 
 ProviderVerificationResult::VerificationStatus GetProviderVerificationStatus(
-    libassistant::mojom::AndroidAppStatus status) {
+    AppStatus status) {
   switch (status) {
-    case libassistant::mojom::AndroidAppStatus::kUnknown:
+    case AppStatus::kUnknown:
       return ProviderVerificationResult::UNKNOWN;
-    case libassistant::mojom::AndroidAppStatus::kAvailable:
+    case AppStatus::kAvailable:
       return ProviderVerificationResult::AVAILABLE;
-    case libassistant::mojom::AndroidAppStatus::kUnavailable:
+    case AppStatus::kUnavailable:
       return ProviderVerificationResult::UNAVAILABLE;
-    case libassistant::mojom::AndroidAppStatus::kVersionMismatch:
+    case AppStatus::kVersionMismatch:
       return ProviderVerificationResult::VERSION_MISMATCH;
-    case libassistant::mojom::AndroidAppStatus::kDisabled:
+    case AppStatus::kDisabled:
       return ProviderVerificationResult::DISABLED;
   }
 }
@@ -278,8 +280,7 @@ std::string CreateVerifyProviderResponseInteraction(
     app_info->set_localized_app_name(android_app_info->localized_app_name);
     app_info->set_android_intent(android_app_info->intent);
 
-    if (android_app_info->status ==
-        libassistant::mojom::AndroidAppStatus::kAvailable)
+    if (android_app_info->status == AppStatus::kAvailable)
       any_provider_available = true;
   }
 

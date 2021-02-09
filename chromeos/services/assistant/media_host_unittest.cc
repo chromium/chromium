@@ -501,11 +501,13 @@ TEST_F(MediaHostTest, ShouldForwardLibassistantOpenAndroidMediaUpdates) {
 
   EXPECT_CALL(mock, OnOpenAppResponse(MatchesAndroidAppInfo(output_app_info)));
 
-  auto input_app_info = libassistant::mojom::AndroidAppInfo::New(
-      "the package name",
-      /*version=*/111, "the localized name", "the intent",
-      /*status=*/libassistant::mojom::AndroidAppStatus::kUnknown,
-      /*action=*/kPlayAndroidMediaAction);
+  AndroidAppInfo input_app_info;
+  input_app_info.package_name = "the package name";
+  input_app_info.version = 111;
+  input_app_info.localized_app_name = "the localized name";
+  input_app_info.intent = "the intent";
+  input_app_info.status = chromeos::assistant::AppStatus::kUnknown;
+  input_app_info.action = kPlayAndroidMediaAction;
 
   libassistant_media_delegate().PlayAndroidMedia(std::move(input_app_info));
 

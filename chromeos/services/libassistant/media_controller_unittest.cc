@@ -20,7 +20,8 @@ namespace libassistant {
 namespace {
 
 using LibassistantPlaybackState = assistant_client::MediaStatus::PlaybackState;
-using chromeos::assistant::shared::AndroidAppInfo;
+using ProtoAndroidAppInfo = chromeos::assistant::shared::AndroidAppInfo;
+using AndroidAppInfo = chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::shared::PlayMediaArgs;
 using mojom::PlaybackState;
 
@@ -65,9 +66,7 @@ class MediaDelegateMock : public mojom::MediaDelegate {
 
   // mojom::MediaDelegate implementation:
   MOCK_METHOD(void, OnPlaybackStateChanged, (mojom::MediaStatePtr new_state));
-  MOCK_METHOD(void,
-              PlayAndroidMedia,
-              (::chromeos::libassistant::mojom::AndroidAppInfoPtr app_info));
+  MOCK_METHOD(void, PlayAndroidMedia, (const AndroidAppInfo& app_info));
   MOCK_METHOD(void, PlayWebMedia, (const std::string& url));
   MOCK_METHOD(void, NextTrack, ());
   MOCK_METHOD(void, PreviousTrack, ());
@@ -307,27 +306,27 @@ TEST_F(AssistantMediaControllerTest, ShouldSupportStop) {
 TEST_F(AssistantMediaControllerTest, ShouldSupportPlayAndroidMedia) {
   PlayMediaArgs play_media_args;
   PlayMediaArgs::MediaItem* media_item = play_media_args.add_media_item();
-  AndroidAppInfo* android_app_info =
+  ProtoAndroidAppInfo* android_app_info =
       media_item->mutable_provider()->mutable_android_app_info();
   android_app_info->set_package_name("package");
   android_app_info->set_localized_app_name("app name");
   android_app_info->set_app_version(111);
   media_item->set_uri("http://the/uri");
 
-  mojom::AndroidAppInfoPtr actual;
+  base::Optional<AndroidAppInfo> actual;
   EXPECT_CALL(delegate(), PlayAndroidMedia)
-      .WillOnce([&](mojom::AndroidAppInfoPtr ptr) { actual = std::move(ptr); });
+      .WillOnce([&](const AndroidAppInfo& a) { actual = a; });
 
   CallFallbackMediaHandler("media.PLAY_MEDIA",
                            play_media_args.SerializeAsString());
   FlushMojomPipes();
 
-  ASSERT_FALSE(actual.is_null());
-  EXPECT_EQ(actual->package_name, "package");
-  EXPECT_EQ(actual->localized_app_name, "app name");
-  EXPECT_EQ(actual->version, 111);
-  EXPECT_EQ(actual->action, "android.intent.action.VIEW");
-  EXPECT_EQ(actual->intent, "http://the/uri");
+  ASSERT_TRUE(actual.has_value());
+  EXPECT_EQ(actual.value().package_name, "package");
+  EXPECT_EQ(actual.value().localized_app_name, "app name");
+  EXPECT_EQ(actual.value().version, 111);
+  EXPECT_EQ(actual.value().action, "android.intent.action.VIEW");
+  EXPECT_EQ(actual.value().intent, "http://the/uri");
 }
 
 TEST_F(AssistantMediaControllerTest, ShouldSupportPlayWebMedia) {

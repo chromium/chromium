@@ -23,36 +23,6 @@ using media_session::mojom::MediaSessionInfoPtr;
 
 constexpr char kIntentActionView[] = "android.intent.action.VIEW";
 
-AppStatus ToAppStatus(libassistant::mojom::AndroidAppStatus status) {
-  using libassistant::mojom::AndroidAppStatus;
-  switch (status) {
-    case AndroidAppStatus::kUnknown:
-      return AppStatus::kUnknown;
-    case AndroidAppStatus::kAvailable:
-      return AppStatus::kAvailable;
-    case AndroidAppStatus::kUnavailable:
-      return AppStatus::kUnavailable;
-    case AndroidAppStatus::kVersionMismatch:
-      return AppStatus::kVersionMismatch;
-    case AndroidAppStatus::kDisabled:
-      return AppStatus::kDisabled;
-  }
-}
-
-AndroidAppInfo ToAndroidAppInfo(
-    const libassistant::mojom::AndroidAppInfoPtr& app_info) {
-  AndroidAppInfo result;
-
-  result.package_name = app_info->package_name;
-  result.version = app_info->version;
-  result.localized_app_name = app_info->localized_app_name;
-  result.action = app_info->action;
-  result.intent = app_info->intent;
-  result.status = ToAppStatus(app_info->status);
-
-  return result;
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -187,15 +157,11 @@ class MediaHost::LibassistantMediaDelegate
     parent_->media_session_->NotifyMediaSessionMetadataChanged(*new_state);
   }
 
-  void PlayAndroidMedia(
-      libassistant::mojom::AndroidAppInfoPtr app_info_ptr) override {
+  void PlayAndroidMedia(const AndroidAppInfo& app_info) override {
     // This is the only action that can be executed when we play android media.
-    DCHECK_EQ(app_info_ptr->action, kIntentActionView);
+    DCHECK_EQ(app_info.action, kIntentActionView);
     // Status is meaningless when playing android media.
-    DCHECK_EQ(app_info_ptr->status,
-              libassistant::mojom::AndroidAppStatus::kUnknown);
-
-    AndroidAppInfo app_info = ToAndroidAppInfo(app_info_ptr);
+    DCHECK_EQ(app_info.status, AppStatus::kUnknown);
 
     for (auto& subscriber : interaction_subscribers())
       subscriber.OnOpenAppResponse(app_info);
