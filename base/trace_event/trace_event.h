@@ -27,6 +27,7 @@
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_category.h"
 #include "base/trace_event/trace_log.h"
+#include "base/trace_event/traced_value_support.h"
 #include "base/tracing_buildflags.h"
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

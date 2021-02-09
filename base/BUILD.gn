@@ -2238,6 +2238,7 @@ component("base") {
       "trace_event/trace_log_constants.cc",
       "trace_event/traced_value.cc",
       "trace_event/traced_value.h",
+      "trace_event/traced_value_support.h",
       "trace_event/tracing_agent.cc",
       "trace_event/tracing_agent.h",
       "trace_event/typed_macros.h",
