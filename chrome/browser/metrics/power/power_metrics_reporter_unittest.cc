@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 
+#include <memory>
+
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -18,12 +20,42 @@ namespace {
 
 using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 
-class TestPowerMonitor : public performance_monitor::ProcessMonitor {
+class PowerMetricsReporterAccess : public PowerMetricsReporter {
  public:
-  TestPowerMonitor() = default;
-  TestPowerMonitor(const TestPowerMonitor& rhs) = delete;
-  TestPowerMonitor& operator=(const TestPowerMonitor& rhs) = delete;
-  ~TestPowerMonitor() override = default;
+  using PowerMetricsReporter::kBatteryStateChangedValue;
+  using PowerMetricsReporter::kInvalidDischargeRateValue;
+  using PowerMetricsReporter::kNoBatteryValue;
+  using PowerMetricsReporter::kPluggedInDischargeRateValue;
+};
+
+// TODO(sebmarchand|etiennep): Move this to a test util file.
+class FakeBatteryLevelProvider : public BatteryLevelProvider {
+ public:
+  explicit FakeBatteryLevelProvider(
+      std::queue<BatteryLevelProvider::BatteryState>* battery_states)
+      : battery_states_(battery_states) {}
+
+  BatteryState GetBatteryState() override {
+    DCHECK(!battery_states_->empty());
+    BatteryLevelProvider::BatteryState state = battery_states_->front();
+    battery_states_->pop();
+    return state;
+  }
+
+ private:
+  std::vector<BatteryInterface> GetBatteryInterfaceList() override {
+    return {};
+  }
+
+  std::queue<BatteryLevelProvider::BatteryState>* battery_states_;
+};
+
+class TestProcessMonitor : public performance_monitor::ProcessMonitor {
+ public:
+  TestProcessMonitor() = default;
+  TestProcessMonitor(const TestProcessMonitor& rhs) = delete;
+  TestProcessMonitor& operator=(const TestProcessMonitor& rhs) = delete;
+  ~TestProcessMonitor() override = default;
 
   // Call OnAggregatedMetricsSampled for all the observers with |metrics| as an
   // argument.
@@ -55,15 +87,32 @@ class TestUsageScenarioDataStoreImpl : public UsageScenarioDataStoreImpl {
 // and this conflicts with it.
 class PowerMetricsReporterUnitTest : public testing::Test {
  public:
-  PowerMetricsReporterUnitTest()
-      : power_metrics_reporter_(data_store_.GetWeakPtr()) {}
+  PowerMetricsReporterUnitTest() = default;
+  PowerMetricsReporterUnitTest(const PowerMetricsReporterUnitTest& rhs) =
+      delete;
+  PowerMetricsReporterUnitTest& operator=(
+      const PowerMetricsReporterUnitTest& rhs) = delete;
+  ~PowerMetricsReporterUnitTest() override = default;
+
+  void SetUp() override {
+    // Start with a full battery.
+    battery_states_.push(BatteryLevelProvider::BatteryState{
+        1, 1, 1.0, true, base::TimeTicks::Now()});
+    std::unique_ptr<BatteryLevelProvider> battery_provider =
+        std::make_unique<FakeBatteryLevelProvider>(&battery_states_);
+    battery_provider_ = battery_provider.get();
+    power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
+        data_store_.GetWeakPtr(), std::move(battery_provider));
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestPowerMonitor power_monitor_;
+  TestProcessMonitor process_monitor_;
   TestUsageScenarioDataStoreImpl data_store_;
-  PowerMetricsReporter power_metrics_reporter_;
+  std::queue<BatteryLevelProvider::BatteryState> battery_states_;
+  std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
+  BatteryLevelProvider* battery_provider_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };
 
@@ -88,9 +137,13 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   fake_interval_data.source_id_for_longest_visible_origin_duration =
       base::TimeDelta::FromSeconds(++fake_value);
 
-  const int kExpectedIntervalLengthSeconds = ++fake_value;
+  const int kExpectedIntervalLengthSeconds = 120;
   task_environment_.FastForwardBy(
       base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  // Pretend that the battery has dropped by 50% in 2 minutes, for a rate of
+  // 25% per minute.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.50, true, base::TimeTicks::Now()});
 
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
@@ -102,7 +155,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   fake_metrics.energy_impact = ++fake_value;
 #endif
 
-  power_monitor_.NotifyObserversForOnAggregatedMetricsSampled(fake_metrics);
+  process_monitor_.NotifyObserversForOnAggregatedMetricsSampled(fake_metrics);
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -112,9 +165,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       entries[0], UkmEntry::kUptimeSecondsName,
       ukm::GetExponentialBucketMinForUserTiming(
           fake_interval_data.uptime_at_interval_end.InSeconds()));
-  // TODO(sebmarchand): Update once the proper value is recorded.
-  test_ukm_recorder_.ExpectEntryMetric(entries[0],
-                                       UkmEntry::kBatteryDischargeRateName, 0);
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName, 2500);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kCPUTimeMsName,
       kExpectedIntervalLengthSeconds * 1000 * fake_metrics.cpu_usage);
@@ -158,4 +210,119 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   test_ukm_recorder_.ExpectEntryMetric(entries[0],
                                        UkmEntry::kIntervalDurationSecondsName,
                                        kExpectedIntervalLengthSeconds);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
+  // Update the latest reported battery state to pretend that the system isn't
+  // running on battery.
+  power_metrics_reporter_->battery_state_for_testing().on_battery = false;
+
+  const int kExpectedIntervalLengthSeconds = 120;
+  task_environment_.FastForwardBy(
+      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  // Push a battery state that indicates that the system is still not running
+  // on battery.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 1.0, /* on_battery - */ false, base::TimeTicks::Now()});
+
+  UsageScenarioDataStore::IntervalData fake_interval_data;
+  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  process_monitor_.NotifyObserversForOnAggregatedMetricsSampled({});
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName,
+      PowerMetricsReporterAccess::kPluggedInDischargeRateValue);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
+  const int kExpectedIntervalLengthSeconds = 120;
+  task_environment_.FastForwardBy(
+      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  // The initial battery state indicates that the system is running on battery,
+  // pretends that this has changed.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 1.0, /* on_battery - */ false, base::TimeTicks::Now()});
+
+  UsageScenarioDataStore::IntervalData fake_interval_data;
+  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  process_monitor_.NotifyObserversForOnAggregatedMetricsSampled({});
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName,
+      PowerMetricsReporterAccess::kBatteryStateChangedValue);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateUnavailable) {
+  const int kExpectedIntervalLengthSeconds = 120;
+  task_environment_.FastForwardBy(
+      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  // A nullopt battery value indicates that the battery level is unavailable.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, base::nullopt, true, base::TimeTicks::Now()});
+
+  UsageScenarioDataStore::IntervalData fake_interval_data;
+  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  process_monitor_.NotifyObserversForOnAggregatedMetricsSampled({});
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName,
+      PowerMetricsReporterAccess::kInvalidDischargeRateValue);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
+  const int kExpectedIntervalLengthSeconds = 120;
+  task_environment_.FastForwardBy(
+      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  // Indicates that the system has no battery interface.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      0, 0, 1.0, false, base::TimeTicks::Now()});
+
+  UsageScenarioDataStore::IntervalData fake_interval_data;
+  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  process_monitor_.NotifyObserversForOnAggregatedMetricsSampled({});
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName,
+      PowerMetricsReporterAccess::kNoBatteryValue);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
+  // Set the initial battery level at 50%.
+  power_metrics_reporter_->battery_state_for_testing().charge_level = 0.5;
+
+  const int kExpectedIntervalLengthSeconds = 120;
+  task_environment_.FastForwardBy(
+      base::TimeDelta::FromSeconds(kExpectedIntervalLengthSeconds));
+  // Set the new battery state at 100%.
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 1.0, true, base::TimeTicks::Now()});
+
+  UsageScenarioDataStore::IntervalData fake_interval_data;
+  fake_interval_data.source_id_for_longest_visible_origin = 42;
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  process_monitor_.NotifyObserversForOnAggregatedMetricsSampled({});
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  // An increase in charge level is reported as an invalid discharge rate.
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kBatteryDischargeRateName,
+      PowerMetricsReporterAccess::kInvalidDischargeRateValue);
 }

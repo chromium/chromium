@@ -12067,6 +12067,11 @@ be describing additional metrics about the same event.
       of the interval: 3900 mAh; - Battery charge at the end of the interval:
       3700 mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported
       value: 500.
+
+      There's a few special values: -1 if the device is on AC power during the
+      entirety of the interval, -2 if the device gets plugged or unplugged
+      during the interval, -3 if the battery metrics can't be retrieved or -4 if
+      the system has no battery.
     </summary>
   </metric>
   <metric name="CPUTimeMs">

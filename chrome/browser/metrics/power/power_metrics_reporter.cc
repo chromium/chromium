@@ -12,10 +12,13 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 PowerMetricsReporter::PowerMetricsReporter(
-    const base::WeakPtr<UsageScenarioDataStore>& data_store)
-    : data_store_(data_store) {
+    const base::WeakPtr<UsageScenarioDataStore>& data_store,
+    std::unique_ptr<BatteryLevelProvider> battery_level_provider)
+    : data_store_(data_store),
+      battery_level_provider_(std::move(battery_level_provider)) {
   DCHECK(performance_monitor::ProcessMonitor::Get());
   performance_monitor::ProcessMonitor::Get()->AddObserver(this);
+  battery_state_ = battery_level_provider_->GetBatteryState();
 }
 
 PowerMetricsReporter::~PowerMetricsReporter() {
@@ -29,13 +32,19 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto now = base::TimeTicks::Now();
-  ReportUKMs(metrics, now - interval_begin_);
+  base::TimeDelta interval_duration = now - interval_begin_;
   interval_begin_ = now;
+
+  auto discharge_rate =
+      GetBatteryDischargeRataDuringInterval(interval_duration);
+
+  ReportUKMs(metrics, interval_duration, discharge_rate);
 }
 
 void PowerMetricsReporter::ReportUKMs(
     const performance_monitor::ProcessMonitor::Metrics& metrics,
-    base::TimeDelta interval_duration) const {
+    base::TimeDelta interval_duration,
+    int64_t discharge_rate_during_interval) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(data_store_.MaybeValid());
 
@@ -60,8 +69,7 @@ void PowerMetricsReporter::ReportUKMs(
   builder.SetIntervalDurationSeconds(interval_duration.InSeconds());
   builder.SetUptimeSeconds(ukm::GetExponentialBucketMinForUserTiming(
       usage_metrics.uptime_at_interval_end.InSeconds()));
-  // TODO(sebmarchand): Record the battery discharge rate.
-  builder.SetBatteryDischargeRate(0);
+  builder.SetBatteryDischargeRate(discharge_rate_during_interval);
   builder.SetCPUTimeMs(metrics.cpu_usage * interval_duration.InMilliseconds());
 #if defined(OS_MAC)
   builder.SetIdleWakeUps(metrics.idle_wakeups);
@@ -89,4 +97,35 @@ void PowerMetricsReporter::ReportUKMs(
           usage_metrics.time_with_open_webrtc_connection.InSeconds()));
 
   builder.Record(ukm_recorder);
+}
+
+int64_t PowerMetricsReporter::GetBatteryDischargeRataDuringInterval(
+    base::TimeDelta interval_duration) {
+  auto previous_battery_state =
+      std::exchange(battery_state_, battery_level_provider_->GetBatteryState());
+
+  if (previous_battery_state.battery_count == 0 ||
+      battery_state_.battery_count == 0) {
+    return kNoBatteryValue;
+  }
+  if (!previous_battery_state.on_battery && !battery_state_.on_battery) {
+    return kPluggedInDischargeRateValue;
+  }
+  if (previous_battery_state.on_battery != battery_state_.on_battery) {
+    return kBatteryStateChangedValue;
+  }
+  if (!previous_battery_state.charge_level.has_value() ||
+      !battery_state_.charge_level.has_value()) {
+    return kInvalidDischargeRateValue;
+  }
+
+  // The battery discharge rate is reported per minute with 1/10000 of full
+  // charge resolution.
+  static const int64_t kDischargeRateFactor =
+      10000 * base::TimeDelta::FromMinutes(1).InSecondsF();
+
+  auto discharge_rate = (previous_battery_state.charge_level.value() -
+                         battery_state_.charge_level.value()) *
+                        kDischargeRateFactor / interval_duration.InSeconds();
+  return discharge_rate >= 0 ? discharge_rate : kInvalidDischargeRateValue;
 }
