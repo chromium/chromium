@@ -4,11 +4,14 @@
 
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector.h"
 #include <memory>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/util/values/values_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -16,6 +19,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+using EventType = SafeBrowsingMetricsCollector::EventType;
+using UserState = SafeBrowsingMetricsCollector::UserState;
 
 class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
  public:
@@ -35,6 +41,29 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
                            time.ToDeltaSinceWindowsEpoch().InSeconds());
   }
 
+  const base::Value* GetTsFromUserStateAndEventType(UserState state,
+                                                    EventType event_type) {
+    const base::DictionaryValue* state_dict =
+        pref_service_.GetDictionary(prefs::kSafeBrowsingEventTimestamps);
+    const base::Value* event_dict =
+        state_dict->FindDictKey(base::NumberToString(static_cast<int>(state)));
+    DCHECK(event_dict);
+    DCHECK(event_dict->is_dict());
+    const base::Value* timestamps = event_dict->FindListKey(
+        base::NumberToString(static_cast<int>(event_type)));
+    DCHECK(timestamps);
+    DCHECK(timestamps->is_list());
+    return timestamps;
+  }
+
+  bool IsSortedInChronologicalOrder(const base::Value* ts) {
+    return std::is_sorted(ts->GetList().begin(), ts->GetList().end(),
+                          [](const base::Value& ts_a, const base::Value& ts_b) {
+                            return util::ValueToInt64(ts_a).value_or(0) <
+                                   util::ValueToInt64(ts_b).value_or(0);
+                          });
+  }
+
   std::unique_ptr<SafeBrowsingMetricsCollector> metrics_collector_;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   TestingPrefServiceSimple pref_service_;
@@ -49,11 +78,13 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
                                                   false);
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingScoutReportingEnabled, false);
+    pref_service_.registry()->RegisterDictionaryPref(
+        prefs::kSafeBrowsingEventTimestamps);
   }
 };
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
-       TestLastLoggingIntervalLongerThanScheduleInterval) {
+       StartLogging_LastLoggingIntervalLongerThanScheduleInterval) {
   base::HistogramTester histograms;
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now() -
                                     base::TimeDelta::FromHours(25));
@@ -121,7 +152,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
-       TestLastLoggingIntervalShorterThanScheduleInterval) {
+       StartLogging_LastLoggingIntervalShorterThanScheduleInterval) {
   base::HistogramTester histograms;
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now() -
                                     base::TimeDelta::FromHours(1));
@@ -139,7 +170,8 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
                                /* sample */ 1, /* expected_count */ 2);
 }
 
-TEST_F(SafeBrowsingMetricsCollectorTest, TestPrefChangeBetweenLogging) {
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       StartLogging_PrefChangeBetweenLogging) {
   base::HistogramTester histograms;
   SetSafeBrowsingMetricsLastLogTime(base::Time::Now() -
                                     base::TimeDelta::FromHours(25));
@@ -156,4 +188,34 @@ TEST_F(SafeBrowsingMetricsCollectorTest, TestPrefChangeBetweenLogging) {
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 0, /* expected_count */ 1);
 }
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       AddSafeBrowsingEventToPref_OldestTsRemoved) {
+  SetSafeBrowsingState(&pref_service_, ENHANCED_PROTECTION);
+  metrics_collector_->AddSafeBrowsingEventToPref(
+      EventType::DATABASE_INTERSTITIAL_BYPASS);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
+  for (int i = 0; i < 29; i++) {
+    metrics_collector_->AddSafeBrowsingEventToPref(
+        EventType::DATABASE_INTERSTITIAL_BYPASS);
+  }
+
+  const base::Value* timestamps = GetTsFromUserStateAndEventType(
+      UserState::ENHANCED_PROTECTION, EventType::DATABASE_INTERSTITIAL_BYPASS);
+  EXPECT_EQ(30u, timestamps->GetList().size());
+  EXPECT_TRUE(IsSortedInChronologicalOrder(timestamps));
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
+  metrics_collector_->AddSafeBrowsingEventToPref(
+      EventType::DATABASE_INTERSTITIAL_BYPASS);
+
+  EXPECT_EQ(30u, timestamps->GetList().size());
+  EXPECT_TRUE(IsSortedInChronologicalOrder(timestamps));
+  // The oldest timestamp should be removed.
+  EXPECT_EQ(timestamps->GetList()[0], timestamps->GetList()[1]);
+  // The newest timestamp should be added as the last element.
+  EXPECT_NE(timestamps->GetList()[28], timestamps->GetList()[29]);
+}
+
 }  // namespace safe_browsing

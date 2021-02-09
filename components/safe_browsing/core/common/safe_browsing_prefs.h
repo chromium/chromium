@@ -107,6 +107,10 @@ extern const char kAdvancedProtectionAllowed[];
 // Browsing metrics.
 extern const char kSafeBrowsingMetricsLastLogTime[];
 
+// A dictionary of Safe Browsing events and their corresponding timestamps.
+// Used for logging metrics. Structure: go/sb-event-ts-pref-struct.
+extern const char kSafeBrowsingEventTimestamps[];
+
 }  // namespace prefs
 
 namespace safe_browsing {

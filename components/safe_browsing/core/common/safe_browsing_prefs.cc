@@ -104,6 +104,7 @@ const char kAdvancedProtectionAllowed[] =
     "safebrowsing.advanced_protection_allowed";
 const char kSafeBrowsingMetricsLastLogTime[] =
     "safebrowsing.metrics_last_log_time";
+const char kSafeBrowsingEventTimestamps[] = "safebrowsing.event_timestamps";
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -221,6 +222,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 0);
   registry->RegisterInt64Pref(prefs::kSafeBrowsingMetricsLastLogTime, 0);
+  registry->RegisterDictionaryPref(prefs::kSafeBrowsingEventTimestamps);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
