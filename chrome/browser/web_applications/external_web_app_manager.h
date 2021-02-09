@@ -106,6 +106,7 @@ class ExternalWebAppManager {
                    std::vector<ExternalInstallOptions>);
   void OnExternalWebAppsSynchronized(
       PendingAppManager::SynchronizeCallback callback,
+      std::map<GURL, std::vector<AppId>> desired_uninstall_and_replaces,
       std::map<GURL, PendingAppManager::InstallResult> install_results,
       std::map<GURL, bool> uninstall_results);
   void OnStartUpTaskCompleted(
@@ -131,7 +132,6 @@ class ExternalWebAppManager {
   std::unique_ptr<DebugInfo> debug_info_;
 
   base::WeakPtrFactory<ExternalWebAppManager> weak_ptr_factory_{this};
-
 };
 
 }  // namespace web_app

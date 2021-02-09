@@ -12,7 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/apps/user_type_filter.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -526,6 +529,31 @@ bool IsReinstallPastMilestoneNeeded(
   return last_preinstall_synchronize_milestone <
              force_reinstall_for_milestone &&
          current_milestone >= force_reinstall_for_milestone;
+}
+
+bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
+  const base::ListValue* migrated_apps =
+      profile->GetPrefs()->GetList(prefs::kWebAppsMigratedDefaultApps);
+  if (!migrated_apps)
+    return false;
+
+  for (const auto& val : migrated_apps->GetList()) {
+    if (val.is_string() && val.GetString() == app_id)
+      return true;
+  }
+
+  return false;
+}
+
+void MarkAppAsMigratedToWebApp(Profile* profile,
+                               const std::string& app_id,
+                               bool was_migrated) {
+  ListPrefUpdate update(profile->GetPrefs(),
+                        prefs::kWebAppsMigratedDefaultApps);
+  if (was_migrated)
+    update->Append(app_id);
+  else
+    update->EraseListValue(base::Value(app_id));
 }
 
 }  // namespace web_app

@@ -1980,6 +1980,9 @@ const char kWebAppsAppAgnosticIphState[] = "web_apps.app_agnostic_iph_state";
 const char kWebAppsLastPreinstallSynchronizeVersion[] =
     "web_apps.last_preinstall_synchronize_version";
 
+// A list of all apps that have been migrated to web apps.
+const char kWebAppsMigratedDefaultApps[] = "web_apps.migrated_default_apps";
+
 // Dictionary that maps web app ID to a dictionary of various preferences.
 // Used only in the new web applications system to store app preferences which
 // outlive the app installation and uninstallation.

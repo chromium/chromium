@@ -45,53 +45,89 @@ class DefaultAppsTest : public testing::Test {
 // Chrome OS has different way of installing default apps.
 // Android does not currently support installing apps via Chrome.
 TEST_F(DefaultAppsTest, Install) {
-  std::unique_ptr<TestingProfile> profile(new TestingProfile());
-  ExternalLoader* loader = new MockExternalLoader();
+  TestingProfile profile;
+  scoped_refptr<ExternalLoader> loader =
+      base::MakeRefCounted<MockExternalLoader>();
 
-  Provider provider(profile.get(), NULL, loader, Manifest::INTERNAL,
-                    Manifest::INTERNAL, Extension::NO_FLAGS);
+  auto get_install_state = [](Profile* profile) {
+    return profile->GetPrefs()->GetInteger(prefs::kDefaultAppsInstallState);
+  };
+  auto set_install_state = [](Profile* profile,
+                              default_apps::InstallState state) {
+    return profile->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
+                                           state);
+  };
 
-  // The default apps should be installed if kDefaultAppsInstallState
-  // is unknown.
-  EXPECT_TRUE(provider.ShouldInstallInProfile());
-  int state = profile->GetPrefs()->GetInteger(prefs::kDefaultAppsInstallState);
-  EXPECT_TRUE(state == default_apps::kAlreadyInstalledDefaultApps);
+  EXPECT_EQ(default_apps::kUnknown, get_install_state(&profile));
 
-  // The default apps should only be installed once.
-  EXPECT_FALSE(provider.ShouldInstallInProfile());
-  state = profile->GetPrefs()->GetInteger(prefs::kDefaultAppsInstallState);
-  EXPECT_TRUE(state == default_apps::kAlreadyInstalledDefaultApps);
+  {
+    // The default apps should be installed if kDefaultAppsInstallState
+    // is unknown.
+    Provider provider(&profile, nullptr, loader, Manifest::INTERNAL,
+                      Manifest::INTERNAL, Extension::NO_FLAGS);
+    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_FALSE(provider.is_migration());
+    EXPECT_TRUE(provider.perform_new_installation());
+    EXPECT_EQ(default_apps::kAlreadyInstalledDefaultApps,
+              get_install_state(&profile));
+  }
 
-  // The default apps should not be installed if the state is
-  // kNeverProvideDefaultApps
-  profile->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
-      default_apps::kNeverInstallDefaultApps);
-  EXPECT_FALSE(provider.ShouldInstallInProfile());
-  state = profile->GetPrefs()->GetInteger(prefs::kDefaultAppsInstallState);
-  EXPECT_TRUE(state == default_apps::kNeverInstallDefaultApps);
+  {
+    // The default apps should only be installed once.
+    Provider provider(&profile, nullptr, loader, Manifest::INTERNAL,
+                      Manifest::INTERNAL, Extension::NO_FLAGS);
+    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_FALSE(provider.is_migration());
+    EXPECT_FALSE(provider.perform_new_installation());
+    EXPECT_EQ(default_apps::kAlreadyInstalledDefaultApps,
+              get_install_state(&profile));
+  }
 
-  // The old default apps with kAlwaysInstallDefaultAppss should be migrated.
-  profile->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
-      default_apps::kProvideLegacyDefaultApps);
-  EXPECT_TRUE(provider.ShouldInstallInProfile());
-  state = profile->GetPrefs()->GetInteger(prefs::kDefaultAppsInstallState);
-  EXPECT_TRUE(state == default_apps::kAlreadyInstalledDefaultApps);
+  {
+    // The default apps should not be installed if the state is
+    // kNeverProvideDefaultApps
+    set_install_state(&profile, default_apps::kNeverInstallDefaultApps);
+    Provider provider(&profile, nullptr, loader, Manifest::INTERNAL,
+                      Manifest::INTERNAL, Extension::NO_FLAGS);
+    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_FALSE(provider.is_migration());
+    EXPECT_FALSE(provider.perform_new_installation());
+    EXPECT_EQ(default_apps::kNeverInstallDefaultApps,
+              get_install_state(&profile));
+  }
+
+  {
+    // The old default apps with kAlwaysInstallDefaultApps should be migrated.
+    set_install_state(&profile, default_apps::kProvideLegacyDefaultApps);
+    Provider provider(&profile, nullptr, loader, Manifest::INTERNAL,
+                      Manifest::INTERNAL, Extension::NO_FLAGS);
+    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_TRUE(provider.is_migration());
+    EXPECT_FALSE(provider.perform_new_installation());
+    EXPECT_EQ(default_apps::kAlreadyInstalledDefaultApps,
+              get_install_state(&profile));
+  }
 
   class DefaultTestingProfile : public TestingProfile {
     bool WasCreatedByVersionOrLater(const std::string& version) override {
       return false;
     }
   };
-  profile.reset(new DefaultTestingProfile);
-  Provider provider2(profile.get(), NULL, loader, Manifest::INTERNAL,
-                     Manifest::INTERNAL, Extension::NO_FLAGS);
-  // The old default apps with kProvideLegacyDefaultApps should be migrated
-  // even if the profile version is older than Chrome version.
-  profile->GetPrefs()->SetInteger(prefs::kDefaultAppsInstallState,
-      default_apps::kProvideLegacyDefaultApps);
-  EXPECT_TRUE(provider2.ShouldInstallInProfile());
-  state = profile->GetPrefs()->GetInteger(prefs::kDefaultAppsInstallState);
-  EXPECT_TRUE(state == default_apps::kAlreadyInstalledDefaultApps);
+  {
+    DefaultTestingProfile default_testing_profile;
+    // The old default apps with kProvideLegacyDefaultApps should be migrated
+    // even if the profile version is older than Chrome version.
+    set_install_state(&default_testing_profile,
+                      default_apps::kProvideLegacyDefaultApps);
+    Provider provider(&default_testing_profile, nullptr, loader,
+                      Manifest::INTERNAL, Manifest::INTERNAL,
+                      Extension::NO_FLAGS);
+    EXPECT_TRUE(provider.default_apps_enabled());
+    EXPECT_TRUE(provider.is_migration());
+    EXPECT_FALSE(provider.perform_new_installation());
+    EXPECT_EQ(default_apps::kAlreadyInstalledDefaultApps,
+              get_install_state(&default_testing_profile));
+  }
 }
 #endif
 

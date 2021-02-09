@@ -664,6 +664,7 @@ extern const char kWebAppsDailyMetricsDate[];
 extern const char kWebAppsExtensionIDs[];
 extern const char kWebAppsAppAgnosticIphState[];
 extern const char kWebAppsLastPreinstallSynchronizeVersion[];
+extern const char kWebAppsMigratedDefaultApps[];
 extern const char kWebAppsPreferences[];
 
 #if defined(OS_WIN) || defined(OS_MAC) || \

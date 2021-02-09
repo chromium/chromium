@@ -231,6 +231,7 @@ void ExternalWebAppManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kWebAppsLastPreinstallSynchronizeVersion,
                                "");
+  registry->RegisterListPref(prefs::kWebAppsMigratedDefaultApps);
 }
 
 void ExternalWebAppManager::BypassOfflineManifestRequirementForTesting() {
@@ -421,15 +422,23 @@ void ExternalWebAppManager::Synchronize(
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(pending_app_manager_);
 
+  std::map<GURL, std::vector<AppId>> desired_uninstalls;
+  for (const auto& entry : desired_apps_install_options) {
+    if (!entry.uninstall_and_replace.empty())
+      desired_uninstalls.emplace(entry.install_url,
+                                 entry.uninstall_and_replace);
+  }
   pending_app_manager_->SynchronizeInstalledApps(
       std::move(desired_apps_install_options),
       ExternalInstallSource::kExternalDefault,
       base::BindOnce(&ExternalWebAppManager::OnExternalWebAppsSynchronized,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(desired_uninstalls)));
 }
 
 void ExternalWebAppManager::OnExternalWebAppsSynchronized(
     PendingAppManager::SynchronizeCallback callback,
+    std::map<GURL, std::vector<AppId>> desired_uninstalls,
     std::map<GURL, PendingAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
   // Note that we are storing the Chrome version (milestone number) instead of a
@@ -442,8 +451,14 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
   for (const auto& url_and_result : install_results) {
     UMA_HISTOGRAM_ENUMERATION(kHistogramInstallResult,
                               url_and_result.second.code);
-    if (url_and_result.second.did_uninstall_and_replace)
+    if (url_and_result.second.did_uninstall_and_replace) {
       ++uninstall_and_replace_count;
+      auto iter = desired_uninstalls.find(url_and_result.first);
+      DCHECK(iter != desired_uninstalls.end());
+      for (const auto& uninstalled_id : iter->second) {
+        MarkAppAsMigratedToWebApp(profile_, uninstalled_id, true);
+      }
+    }
   }
   UMA_HISTOGRAM_COUNTS_100(kHistogramUninstallAndReplaceCount,
                            uninstall_and_replace_count);
