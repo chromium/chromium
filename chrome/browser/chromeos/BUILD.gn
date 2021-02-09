@@ -3009,6 +3009,8 @@ source_set("chromeos") {
     "extensions/file_manager/file_stream_md5_digester.h",
     "extensions/file_manager/file_stream_string_converter.cc",
     "extensions/file_manager/file_stream_string_converter.h",
+    "extensions/file_manager/files_extension_function.cc",
+    "extensions/file_manager/files_extension_function.h",
     "extensions/file_manager/private_api_base.cc",
     "extensions/file_manager/private_api_base.h",
     "extensions/file_manager/private_api_dialog.cc",
