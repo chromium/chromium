@@ -289,7 +289,8 @@ js_library("oobe_i18n_dropdown") {
 
 js_library("oobe_network") {
   deps = [
-    "components/oobe_dialog:oobe_dialog",
+    ":network_select_login",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
