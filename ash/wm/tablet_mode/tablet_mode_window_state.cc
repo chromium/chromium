@@ -256,7 +256,6 @@ void TabletModeWindowState::CycleTabletSnap(
   // If |window| can snap in split view, then snap |window| in |snap_position|.
   if (split_view_controller->CanSnapWindow(window)) {
     split_view_controller->SnapWindow(window, snap_position);
-    Shell::Get()->overview_controller()->StartOverview();
     return;
   }
   // Otherwise, show the cannot snap toast.

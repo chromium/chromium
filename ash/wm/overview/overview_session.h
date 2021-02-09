@@ -264,6 +264,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   bool CanProcessEvent() const;
   bool CanProcessEvent(OverviewItem* sender, bool from_touch_gesture) const;
 
+  // Returns true if |window| is not nullptr and equals
+  // |active_window_before_overview_|.
+  bool IsWindowActiveWindowBeforeOverview(aura::Window* window) const;
+
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& display) override;
   void OnDisplayMetricsChanged(const display::Display& display,

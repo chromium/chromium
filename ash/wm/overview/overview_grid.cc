@@ -945,13 +945,6 @@ void OverviewGrid::OnSplitViewStateChanged(
       split_view_controller->end_reason() ==
           SplitViewController::EndReason::kUnsnappableWindowActivated;
 
-  // Restore focus unless either a window was just snapped (and activated) or
-  // split view mode was ended by activating an unsnappable window.
-  if (state != SplitViewController::State::kNoSnap ||
-      unsnappable_window_activated) {
-    overview_session_->RestoreWindowActivation(false);
-  }
-
   // If two windows were snapped to both sides of the screen or an unsnappable
   // window was just activated, or we're in single split mode in clamshell mode
   // and there is no window in overview, end overview mode and bail out.
@@ -959,6 +952,7 @@ void OverviewGrid::OnSplitViewStateChanged(
       unsnappable_window_activated ||
       (split_view_controller->InClamshellSplitViewMode() &&
        overview_session_->IsEmpty())) {
+    overview_session_->RestoreWindowActivation(false);
     overview_controller->EndOverview();
     return;
   }

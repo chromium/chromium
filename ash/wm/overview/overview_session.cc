@@ -752,6 +752,7 @@ void OverviewSession::OnWindowActivating(
       SplitViewController::Get(gained_active);
   if (split_view_controller->left_window() ||
       split_view_controller->right_window()) {
+    RestoreWindowActivation(false);
     return;
   }
 
@@ -888,6 +889,12 @@ bool OverviewSession::CanProcessEvent(OverviewItem* sender,
   }
 
   return false;
+}
+
+bool OverviewSession::IsWindowActiveWindowBeforeOverview(
+    aura::Window* window) const {
+  DCHECK(window);
+  return window == active_window_before_overview_;
 }
 
 void OverviewSession::OnDisplayAdded(const display::Display& display) {

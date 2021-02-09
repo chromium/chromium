@@ -2164,8 +2164,13 @@ TEST_F(SplitViewControllerTest, ShadowDisappearsWhenSnapped) {
   // Snap |window1| to the left. Its shadow should disappear.
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
   EXPECT_FALSE(shadow_controller->IsShadowVisibleForWindow(window1.get()));
-  EXPECT_TRUE(shadow_controller->IsShadowVisibleForWindow(window2.get()));
-  EXPECT_TRUE(shadow_controller->IsShadowVisibleForWindow(window3.get()));
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  auto* overview_session = overview_controller->overview_session();
+  EXPECT_TRUE(overview_session->IsWindowInOverview(window2.get()));
+  EXPECT_TRUE(overview_session->IsWindowInOverview(window3.get()));
+  EXPECT_FALSE(shadow_controller->IsShadowVisibleForWindow(window2.get()));
+  EXPECT_FALSE(shadow_controller->IsShadowVisibleForWindow(window3.get()));
 
   // Snap |window2| to the right. Its shadow should also disappear.
   split_view_controller()->SnapWindow(window2.get(),
@@ -2221,12 +2226,11 @@ TEST_F(SplitViewControllerTest, OverviewExitAnimationTest) {
 
   // 3) If overview is ended because of snapping a window:
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
+  WaitForOverviewEnterAnimation();
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   // Reset the observer as we'll need the OverviewStatesObserver to be added to
   // to ShellObserver list after SplitViewController.
   overview_observer.reset(new OverviewStatesObserver(window1->GetRootWindow()));
-  ToggleOverview();  // Start overview.
-  WaitForOverviewEnterAnimation();
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   // Test |overview_animate_when_exiting_| has been properly reset.
   EXPECT_TRUE(overview_observer->overview_animate_when_exiting());
   CheckOverviewEnterExitHistogram("EnterInSplitView", {2, 1}, {2, 0});
@@ -2287,7 +2291,6 @@ TEST_F(SplitViewControllerTest, ActivateNonSnappableWindow) {
   std::unique_ptr<aura::Window> window3(CreateNonSnappableWindow(bounds));
 
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  ToggleOverview();
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
@@ -4540,7 +4543,6 @@ TEST_F(SplitViewTabDraggingTest, DragActiveWindow) {
       CreateWindowWithType(bounds, AppType::BROWSER));
 
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  ToggleOverview();
   EXPECT_EQ(split_view_controller()->InSplitViewMode(), true);
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kLeftSnapped);
@@ -5110,6 +5112,7 @@ TEST_F(SplitViewAppDraggingTest, FlingWhenSplitViewIsActive) {
 TEST_F(SplitViewAppDraggingTest, BackdropBoundsDuringDrag) {
   InitializeWindow();
   std::unique_ptr<aura::Window> window2 = CreateTestWindowWithWidget(true);
+  ToggleOverview();
   split_view_controller()->SnapWindow(window(), SplitViewController::LEFT);
   split_view_controller()->SnapWindow(window2.get(),
                                       SplitViewController::RIGHT);

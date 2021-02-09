@@ -630,10 +630,14 @@ void SplitViewController::SnapWindow(aura::Window* window,
   UpdateSnappingWindowTransformedBounds(window);
 
   OverviewSession* overview_session = GetOverviewSession();
+  if (overview_session &&
+      overview_session->IsWindowActiveWindowBeforeOverview(window)) {
+    to_be_activated_window_ = window;
+  }
+  RemoveSnappingWindowFromOverviewIfApplicable(overview_session, window);
   // We can straightforwardly remove |window| from overview and then move it to
   // |root_window_|, whereas if we move |window| to |root_window_| first, we
   // will run into problems because |window| will be on the wrong overview grid.
-  RemoveSnappingWindowFromOverviewIfApplicable(overview_session, window);
   if (root_window_ != window->GetRootWindow()) {
     window_util::MoveWindowToDisplay(window,
                                      display::Screen::GetScreen()
@@ -1246,6 +1250,8 @@ void SplitViewController::OnWindowDestroyed(aura::Window* window) {
   if (iter != snapping_window_transformed_bounds_map_.end())
     snapping_window_transformed_bounds_map_.erase(iter);
   OnSnappedWindowDetached(window, WindowDetachedReason::kWindowDestroyed);
+  if (to_be_activated_window_ == window)
+    to_be_activated_window_ = nullptr;
 }
 
 void SplitViewController::OnResizeLoopStarted(aura::Window* window) {
@@ -1800,6 +1806,23 @@ void SplitViewController::OnWindowSnapped(aura::Window* window) {
   RestoreTransformIfApplicable(window);
   UpdateStateAndNotifyObservers();
   UpdateWindowStackingAfterSnap(window);
+
+  // If the snapped window was removed from overview and was the active window
+  // before entering overview, it should be the active window after snapping in
+  // splitview.
+  if (to_be_activated_window_ == window) {
+    to_be_activated_window_ = nullptr;
+    wm::ActivateWindow(window);
+  }
+
+  // If in tablet split view, make sure overview is opened on the other side of
+  // the split if there is only one snapped window in split screen.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  if (!overview_controller->InOverviewSession() &&
+      split_view_type_ == SplitViewType::kTabletType &&
+      (state_ == State::kLeftSnapped || state_ == State::kRightSnapped)) {
+    overview_controller->StartOverview(OverviewEnterExitType::kNormal);
+  }
 }
 
 void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
@@ -2124,19 +2147,15 @@ void SplitViewController::EndWindowDragImpl(
     SnapWindow(window, desired_snap_position);
     wm::ActivateWindow(window);
 
-    if (!was_splitview_active) {
+    if (!was_splitview_active && initiator_window &&
+        initiator_window != window) {
       // If splitview mode was not active before snapping the dragged
       // window, snap the initiator window to the other side of the screen
       // if it's not the same window as the dragged window.
-      if (initiator_window && initiator_window != window) {
-        SnapWindow(initiator_window,
-                   (desired_snap_position == SplitViewController::LEFT)
-                       ? SplitViewController::RIGHT
-                       : SplitViewController::LEFT);
-      } else {
-        // If overview is not active, open overview.
-        Shell::Get()->overview_controller()->StartOverview();
-      }
+      SnapWindow(initiator_window,
+                 (desired_snap_position == SplitViewController::LEFT)
+                     ? SplitViewController::RIGHT
+                     : SplitViewController::LEFT);
     }
   }
 }

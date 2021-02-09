@@ -512,6 +512,13 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Observes windows and performs auto snapping if needed.
   std::unique_ptr<AutoSnapController> auto_snap_controller_;
 
+  // A pointer to the to-be-snapped window that's from overview and is about to
+  // snap in split view. If not nullptr then this window should be the active
+  // window after it's snapped in split screen as well.
+  // TODO(xdai): Remove this variable. This is meant to be temporary. Removed it
+  // after we introduce a callback function in SnapWindow().
+  aura::Window* to_be_activated_window_ = nullptr;
+
   DISALLOW_COPY_AND_ASSIGN(SplitViewController);
 };
 

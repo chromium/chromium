@@ -40,6 +40,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/rounded_label_widget.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
@@ -1827,11 +1828,28 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   // and is the second child in the container. Its bounds should be the same
   // as the snapped window's bounds.
   split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
-  EXPECT_EQ(2U, default_container()->children().size());
-  for (auto* child : default_container()->children())
-    EXPECT_TRUE(child->IsVisible());
-  EXPECT_EQ(window1.get(), default_container()->children()[1]);
-  EXPECT_EQ(window1->bounds(), default_container()->children()[0]->bounds());
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  // One of the windows in the default container is the overview
+  // no_windows_widget window. Exclude it.
+  aura::Window::Windows children = default_container()->children();
+  children.erase(std::remove_if(children.begin(), children.end(),
+                                [](aura::Window* window) {
+                                  return window ==
+                                         Shell::Get()
+                                             ->overview_controller()
+                                             ->overview_session()
+                                             ->no_windows_widget_for_testing()
+                                             ->GetNativeWindow();
+                                }),
+                 children.end());
+  EXPECT_EQ(2U, children.size());
+
+  // Backdrop is hidden in overview mode. So test the window and backdrop
+  // separately.
+  EXPECT_FALSE(children[0]->IsVisible());
+  EXPECT_TRUE(children[1]->IsVisible());
+  EXPECT_EQ(window1.get(), children[1]);
+  EXPECT_EQ(window1->bounds(), children[0]->bounds());
 
   // Now snap another window to right. Test that the backdrop window is still
   // visible but is now the third window in the container. Its bounds should
@@ -1998,7 +2016,6 @@ TEST_F(WorkspaceLayoutManagerSystemUiAreaTest,
   EXPECT_GE(test_state()->num_system_ui_area_changes(), 1);
 }
 
-
 TEST_F(WorkspaceLayoutManagerBackdropTest,
        BackdropWindowIsNotReparentedFromAlwaysOnTopContainer) {
   WorkspaceController* wc = ShellTestApi().workspace_controller();
@@ -2016,7 +2033,7 @@ TEST_F(WorkspaceLayoutManagerBackdropTest,
       ->SetBackdropMode(WindowBackdrop::BackdropMode::kEnabled);
 
   aura::Window* always_on_top_container =
-  always_on_top_controller->GetContainer(always_on_top_window.get());
+      always_on_top_controller->GetContainer(always_on_top_window.get());
   // AlwaysOnTopContainer has |always_on_top_window| and a backdrop window
   // at this moment.
   ASSERT_EQ(always_on_top_container->children().size(), 2U);

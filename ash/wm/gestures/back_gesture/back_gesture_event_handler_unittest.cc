@@ -357,6 +357,10 @@ TEST_F(BackGestureEventHandlerTest, BackInSplitViewMode) {
 
   std::unique_ptr<aura::Window> left_window = CreateTestWindow();
   std::unique_ptr<aura::Window> right_window = CreateTestWindow();
+
+  // Start overview first and then snap window in splitview to make sure
+  // window activation order remains the same.
+  Shell::Get()->overview_controller()->StartOverview();
   auto* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   split_view_controller->SnapWindow(left_window.get(),
