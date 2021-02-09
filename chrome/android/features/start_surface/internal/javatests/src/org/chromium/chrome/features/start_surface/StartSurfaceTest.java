@@ -1399,7 +1399,7 @@ public class StartSurfaceTest {
 
         if (isInstantReturn()
                 && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.P)) {
+                        && Build.VERSION.SDK_INT <= Build.VERSION_CODES.P)) {
             // Fix the issue that failed to perform a single click on the back button.
             return;
         }
