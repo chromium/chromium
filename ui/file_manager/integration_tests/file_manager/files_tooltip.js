@@ -53,40 +53,61 @@
   }
 
   /**
+   * Waits until the element by |id| is the document.activeElement.
+   *
+   * @param {string} appId The Files app windowId.
+   * @param {string} id The element id.
+   * @return {!Promise}
+   */
+  function getActiveElementById(appId, id) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const element =
+          await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+      if (!element || element.attributes['id'] !== id) {
+        return pending(caller, 'Waiting for active element by id #%s.', id);
+      }
+    });
+  }
+
+  /**
    * Tests that tooltip is displayed when focusing an element with tooltip.
    */
   testcase.filesTooltipFocus = async () => {
     const appId = await setupAndWaitUntilReady(
         RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    // Focus a button with tooltip.
-    let tooltip = await remoteCall.waitForElement(appId, tooltipQueryHidden);
+    // Check: initially the tooltip should be hidden.
+    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+
+    // Focus a button with a tooltip: the search button.
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('focus', appId, [searchButton]));
+    await getActiveElementById(appId, 'search-button');
 
-    // The tooltip should be visible.
+    // Check: the search button tooltip should be visible.
     let expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
-    tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     let label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
     chrome.test.assertEq(expectedLabelText, label.text);
 
-    // Focus another button with tooltip.
+    // Focus another button that has a tooltip: the view button.
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('focus', appId, [viewButton]));
+    await getActiveElementById(appId, 'view-button');
 
-    // The tooltip should be visible.
-    tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
+    // Check: the view button tooltip should be visible.
     label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
     chrome.test.assertEq('Switch to thumbnail view', label.text);
 
-    // Focus an element without tooltip.
+    // Focus an element that has no tooltip: the file-list.
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('focus', appId, [fileList]));
+    await getActiveElementById(appId, 'file-list');
 
-    // The tooltip should be hidden.
-    tooltip = await remoteCall.waitForElement(appId, tooltipQueryHidden);
+    // Check: the tooltip should hide.
+    await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
     // Select all the files to enable the cancel selection button.
     const ctrlA = ['#file-list', 'a', true, false, false];
@@ -95,11 +116,11 @@
     // Focus the cancel selection button.
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('focus', appId, [cancelButton]));
+    await getActiveElementById(appId, 'cancel-selection-button');
 
-    // The tooltip should be visible.
+    // Check: the cancel selection button tooltip should be visible.
     expectedLabelText =
         await getExpectedLabelText('CANCEL_SELECTION_BUTTON_LABEL');
-    tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
     chrome.test.assertEq(expectedLabelText, label.text);
