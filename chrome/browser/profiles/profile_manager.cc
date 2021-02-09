@@ -1952,8 +1952,10 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
       storage.GetProfileAttributesWithPath(profile->GetPath());
   DCHECK(entry);
 
-  if (profile->IsEphemeralGuestProfile())
+  if (profile->IsEphemeralGuestProfile()) {
     entry->SetIsGuest(true);
+    entry->SetIsOmitted(true);
+  }
 
   if (IsEphemeral(profile))
     entry->SetIsEphemeral(true);

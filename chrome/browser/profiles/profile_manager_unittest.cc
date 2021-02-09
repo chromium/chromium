@@ -628,15 +628,17 @@ TEST_P(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
   ASSERT_TRUE(profile);
   if (IsEphemeral()) {
     EXPECT_TRUE(profile->IsEphemeralGuestProfile());
+    EXPECT_FALSE(profile->IsGuestSession());
     EXPECT_FALSE(profile->IsOffTheRecord());
   } else {
     EXPECT_TRUE(profile->IsGuestSession());
+    EXPECT_FALSE(profile->IsEphemeralGuestProfile());
     EXPECT_TRUE(profile->IsOffTheRecord());
   }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_P(ProfileManagerGuestTest, GuestProfileIngonito) {
+TEST_P(ProfileManagerGuestTest, GuestProfileIncognito) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   EXPECT_TRUE(primary_profile->IsOffTheRecord());
 
@@ -664,6 +666,22 @@ TEST_P(ProfileManagerGuestTest, GetGuestProfilePath) {
   expected_path = expected_path.Append(kExpectedGuestProfileName);
 #endif
   EXPECT_EQ(expected_path, guest_path);
+}
+
+TEST_P(ProfileManagerGuestTest, GuestProfileAttributes) {
+  // In these tests, the primary profile is a guest one.
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(primary_profile->GetPath());
+  if (IsEphemeral()) {
+    ASSERT_NE(entry, nullptr);
+    EXPECT_TRUE(entry->IsEphemeral());
+    EXPECT_TRUE(entry->IsOmitted());
+  } else {
+    EXPECT_EQ(entry, nullptr);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

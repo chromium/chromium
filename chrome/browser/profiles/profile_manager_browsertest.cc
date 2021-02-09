@@ -880,6 +880,7 @@ IN_PROC_BROWSER_TEST_P(EphemeralGuestProfilePolicyTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->IsGuest());
   EXPECT_TRUE(entry->IsEphemeral());
+  EXPECT_TRUE(entry->IsOmitted());
 }
 
 INSTANTIATE_TEST_SUITE_P(AllGuestProfileTypes,
