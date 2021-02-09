@@ -23,6 +23,11 @@ namespace base {
 class Value;
 }
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+class MobileActivatorTest;
+}
+
 namespace chromeos {
 
 // Simple class to provide network state information about a network service.
@@ -275,7 +280,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   constexpr static const int kSignalStrengthChangeThreshold = 5;
 
  private:
-  friend class MobileActivatorTest;
+  // TODO(https://crbug.com/1164001): remove namespace declaration for ash
+  // when moved to ash.
+  friend class ::ash::MobileActivatorTest;
   friend class NetworkStateHandler;
 
   // Updates |name_| from the 'WiFi.HexSSID' entry in |properties|, which must
@@ -376,5 +383,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::NetworkState;
+}
 
 #endif  // CHROMEOS_NETWORK_NETWORK_STATE_H_

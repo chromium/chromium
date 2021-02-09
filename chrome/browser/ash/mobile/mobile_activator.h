@@ -16,15 +16,17 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_handler_callbacks.h"
+// TODO(https://crbug.com/1164001): restore network_state.h as forward
+// declaration after it is moved to ash.
+#include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler_observer.h"
 
 namespace base {
 class DictionaryValue;
 }
 
-namespace chromeos {
+namespace ash {
 
-class NetworkState;
 class TestMobileActivator;
 
 // This class performs mobile plan activation process.
@@ -258,6 +260,6 @@ class MobileActivator : public NetworkStateHandlerObserver {
   DISALLOW_COPY_AND_ASSIGN(MobileActivator);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_MOBILE_MOBILE_ACTIVATOR_H_

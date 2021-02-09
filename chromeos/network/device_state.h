@@ -139,4 +139,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash
+namespace ash {
+using ::chromeos::DeviceState;
+}
+
 #endif  // CHROMEOS_NETWORK_DEVICE_STATE_H_

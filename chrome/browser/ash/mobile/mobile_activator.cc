@@ -29,7 +29,6 @@
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler_callbacks.h"
-#include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -37,7 +36,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -886,4 +885,4 @@ bool MobileActivator::HasRecentCellularPlanPayment() const {
          kRecentPlanPaymentHours;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -235,4 +235,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ConnectCallbackMode;
+}
+
 #endif  // CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_H_

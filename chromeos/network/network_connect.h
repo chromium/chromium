@@ -115,4 +115,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash
+namespace ash {
+using ::chromeos::NetworkConnect;
+}
+
 #endif  // CHROMEOS_NETWORK_NETWORK_CONNECT_H_

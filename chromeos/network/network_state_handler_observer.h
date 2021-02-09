@@ -85,4 +85,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::NetworkStateHandlerObserver;
+}
+
 #endif  // CHROMEOS_NETWORK_NETWORK_STATE_HANDLER_OBSERVER_H_

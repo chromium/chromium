@@ -149,7 +149,7 @@ void NetworkPortalNotificationController::OnPortalDetectionCompleted(
   }
 
   // Don't do anything if we're currently activating the device.
-  if (MobileActivator::GetInstance()->RunningActivation())
+  if (ash::MobileActivator::GetInstance()->RunningActivation())
     return;
 
   // Don't do anything if notification for |network| already was

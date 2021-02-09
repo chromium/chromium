@@ -35,7 +35,7 @@ namespace {
 const char kTestServicePath[] = "/a/service/path";
 
 }  // namespace
-namespace chromeos {
+namespace ash {
 
 class TestMobileActivator : public MobileActivator {
  public:
@@ -285,4 +285,4 @@ TEST_F(MobileActivatorTest, ReconnectOnDisconnectFromPaymentPortal) {
             mobile_activator_.InvokePickNextState(&cellular_network_));
 }
 
-}  // namespace chromeos
+}  // namespace ash

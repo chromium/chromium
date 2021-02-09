@@ -84,7 +84,8 @@ void MobileSetupDialog::OnCloseContents(content::WebContents* source,
   // crash. Note: IsTryingToQuit can be cancelled on other platforms by the
   // onbeforeunload handler, except on ChromeOS. So IsTryingToQuit is the
   // appropriate check to use here.
-  bool running_activation = MobileActivator::GetInstance()->RunningActivation();
+  bool running_activation =
+      ash::MobileActivator::GetInstance()->RunningActivation();
   NET_LOG(EVENT) << "Closing MobileSetupDialog. Activation running = "
                  << running_activation;
   if (!dialog_window() || !running_activation ||
