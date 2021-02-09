@@ -16,6 +16,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
@@ -33,6 +34,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   namespace = "signin"
   sources = [
+    "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",

@@ -23,6 +23,8 @@ import java.lang.annotation.RetentionPolicy;
  * Android wrapper of AccountTrackerService which provides access from the java layer.
  * It offers the capability of fetching and seeding system accounts into AccountTrackerService in
  * C++ layer, and notifies observers when it is complete.
+ *
+ * TODO(crbug/1176136): Move this class to components/signin/internal
  */
 public class AccountTrackerService {
     private static final String TAG = "AccountService";
