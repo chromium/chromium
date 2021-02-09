@@ -5,6 +5,9 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -315,8 +318,10 @@ void PrivacySandboxSettings::MaybeReconcilePrivacySandboxPref() {
     return;
 
   // No need to reconcile preferences if it has already happened.
-  if (pref_service_->GetBoolean(prefs::kPrivacySandboxPreferencesReconciled))
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxPreferencesReconciled)) {
+    LogPrivacySandboxState();
     return;
+  }
 
   // If all or 3P cookies are disabled by policy, this will be reflected
   // directly in the Privacy Sandbox preference at the policy level. No attempt
@@ -330,6 +335,7 @@ void PrivacySandboxSettings::MaybeReconcilePrivacySandboxPref() {
     if (!policy_service_observed_) {
       policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
       policy_service_observed_ = true;
+      LogPrivacySandboxState();
     }
     return;
   }
@@ -401,6 +407,7 @@ void PrivacySandboxSettings::ReconcilePrivacySandboxPref() {
   // If observers were setup they are no longer required after reconciliation
   // has occurred.
   StopObserving();
+  LogPrivacySandboxState();
 }
 
 void PrivacySandboxSettings::StopObserving() {
@@ -410,5 +417,76 @@ void PrivacySandboxSettings::StopObserving() {
   if (policy_service_observed_) {
     policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
     policy_service_observed_ = false;
+  }
+}
+
+void PrivacySandboxSettings::RecordPrivacySandboxHistogram(
+    PrivacySandboxSettings::SettingsPrivacySandboxEnabled state) {
+  base::UmaHistogramEnumeration("Settings.PrivacySandbox.Enabled", state);
+}
+
+void PrivacySandboxSettings::LogPrivacySandboxState() {
+  // Check policy status first.
+  std::string default_cookie_setting_provider;
+  auto default_cookie_setting = cookie_settings_->GetDefaultCookieSetting(
+      &default_cookie_setting_provider);
+  auto default_cookie_setting_source =
+      HostContentSettingsMap::GetSettingSourceFromProviderName(
+          default_cookie_setting_provider);
+
+  if (default_cookie_setting_source ==
+          content_settings::SettingSource::SETTING_SOURCE_POLICY &&
+      default_cookie_setting == ContentSetting::CONTENT_SETTING_BLOCK) {
+    RecordPrivacySandboxHistogram(
+        PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+            kPSDisabledPolicyBlockAll);
+    return;
+  }
+
+  auto* cookie_controls_mode_pref =
+      pref_service_->FindPreference(prefs::kCookieControlsMode);
+  auto cookie_controls_mode_value =
+      static_cast<content_settings::CookieControlsMode>(
+          cookie_controls_mode_pref->GetValue()->GetInt());
+
+  if (cookie_controls_mode_pref->IsManaged() &&
+      cookie_controls_mode_value ==
+          content_settings::CookieControlsMode::kBlockThirdParty) {
+    RecordPrivacySandboxHistogram(
+        PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+            kPSDisabledPolicyBlock3P);
+    return;
+  }
+
+  if (pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled)) {
+    if (default_cookie_setting == ContentSetting::CONTENT_SETTING_BLOCK) {
+      RecordPrivacySandboxHistogram(
+          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+              kPSEnabledBlockAll);
+    } else if (cookie_controls_mode_value ==
+               content_settings::CookieControlsMode::kBlockThirdParty) {
+      RecordPrivacySandboxHistogram(
+          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+              kPSEnabledBlock3P);
+    } else {
+      RecordPrivacySandboxHistogram(
+          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+              kPSEnabledAllowAll);
+    }
+  } else {
+    if (default_cookie_setting == ContentSetting::CONTENT_SETTING_BLOCK) {
+      RecordPrivacySandboxHistogram(
+          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+              kPSDisabledBlockAll);
+    } else if (cookie_controls_mode_value ==
+               content_settings::CookieControlsMode::kBlockThirdParty) {
+      RecordPrivacySandboxHistogram(
+          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+              kPSDisabledBlock3P);
+    } else {
+      RecordPrivacySandboxHistogram(
+          PrivacySandboxSettings::SettingsPrivacySandboxEnabled::
+              kPSDisabledAllowAll);
+    }
   }
 }

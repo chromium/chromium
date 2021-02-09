@@ -154,6 +154,31 @@ class PrivacySandboxSettings : public KeyedService,
                            NoReconciliationAlreadyRun);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
                            NoReconciliationSandboxSettingsDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxSettingsTest,
+                           MetricsLoggingOccursCorrectly);
+
+  /**
+   * Contains all possible privacy sandbox states, recorded on startup.
+   *
+   * These values are persisted to logs. Entries should not be renumbered and
+   * numeric values should never be reused.
+   *
+   * Must be kept in sync with the SettingsPrivacySandboxEnabled enum in
+   * histograms/enums.xml and privacy_sandbox_settings_unittest.cc.
+   */
+  enum class SettingsPrivacySandboxEnabled {
+    kPSEnabledAllowAll = 0,
+    kPSEnabledBlock3P = 1,
+    kPSEnabledBlockAll = 2,
+    kPSDisabledAllowAll = 3,
+    kPSDisabledBlock3P = 4,
+    kPSDisabledBlockAll = 5,
+    kPSDisabledPolicyBlock3P = 6,
+    kPSDisabledPolicyBlockAll = 7,
+    // Add values above this line with a corresponding label in
+    // tools/metrics/histograms/enums.xml
+    kMaxValue = kPSDisabledPolicyBlockAll,
+  };
 
   // Determines based on the current features, preferences and provided
   // |cookie_settings| whether Privacy Sandbox APIs are generally allowable for
@@ -179,6 +204,14 @@ class PrivacySandboxSettings : public KeyedService,
 
   // Stops any observation of services being performed by this class.
   void StopObserving();
+
+  // Helper function to actually make the metrics call for
+  // LogPrivacySandboxState.
+  void RecordPrivacySandboxHistogram(SettingsPrivacySandboxEnabled state);
+
+  // Logs the state of the privacy sandbox and cookie settings. Called once per
+  // profile startup.
+  void LogPrivacySandboxState();
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
