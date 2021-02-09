@@ -436,6 +436,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   }
 
   locale_resources_data_ = std::move(data_pack);
+  loaded_locale_ = pref_locale;
   return app_locale;
 }
 #endif  // defined(OS_ANDROID)

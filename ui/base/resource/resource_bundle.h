@@ -365,6 +365,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     mangle_localized_strings_ = mangle;
   }
 
+  std::string GetLoadedLocaleForTesting() { return loaded_locale_; }
 #if DCHECK_IS_ON()
   // Gets whether overriding locale strings is supported.
   bool get_can_override_locale_string_resources_for_test() {
@@ -524,6 +525,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
 
   bool is_test_resources_ = false;
   bool mangle_localized_strings_ = false;
+
+  // This is currently just used by the testing infrastructure to make sure
+  // the loaded locale_ is en-US at the start of each unit_test.
+  std::string loaded_locale_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
