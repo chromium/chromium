@@ -166,4 +166,122 @@ TEST_F(JavaScriptFeatureTest, MessageHandlerInIsolatedWorld) {
             base::SysNSStringToUTF8(feature.last_received_message().body));
 }
 
+// Tests that a JavaScriptFeature with
+// ReinjectionBehavior::kReinjectOnDocumentRecreation re-injects JavaScript in
+// the page content world.
+TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorPageContentWorld) {
+  FakeJavaScriptFeature feature(
+      JavaScriptFeature::ContentWorld::kPageContentWorld);
+
+  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+      ->ConfigureFeatures({&feature});
+
+  LoadHtml(kPageHTML);
+
+  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_message());
+
+  __block bool count_received = false;
+  feature.GetErrorCount(GetMainFrame(web_state()),
+                        base::BindOnce(^void(const base::Value* count) {
+                          ASSERT_TRUE(count);
+                          ASSERT_TRUE(count->is_double());
+                          ASSERT_EQ(0ul, count->GetDouble());
+                          count_received = true;
+                        }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return count_received;
+  }));
+
+  ExecuteJavaScript(@"invalidFunction();");
+
+  count_received = false;
+  feature.GetErrorCount(GetMainFrame(web_state()),
+                        base::BindOnce(^void(const base::Value* count) {
+                          ASSERT_TRUE(count);
+                          ASSERT_TRUE(count->is_double());
+                          ASSERT_EQ(1ul, count->GetDouble());
+                          count_received = true;
+                        }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return count_received;
+  }));
+
+  ASSERT_TRUE(ExecuteJavaScript(
+      @"document.open(); document.write('<p></p>'); document.close(); true;"));
+
+  ExecuteJavaScript(@"invalidFunction();");
+
+  count_received = false;
+  feature.GetErrorCount(GetMainFrame(web_state()),
+                        base::BindOnce(^void(const base::Value* count) {
+                          ASSERT_TRUE(count);
+                          ASSERT_TRUE(count->is_double());
+                          EXPECT_EQ(2ul, count->GetDouble());
+                          count_received = true;
+                        }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return count_received;
+  }));
+}
+
+// Tests that a JavaScriptFeature with
+// ReinjectionBehavior::kReinjectOnDocumentRecreation re-injects JavaScript in
+// an isolated world.
+TEST_F(JavaScriptFeatureTest, ReinjectionBehaviorIsolatedWorld) {
+  FakeJavaScriptFeature feature(
+      JavaScriptFeature::ContentWorld::kAnyContentWorld);
+
+  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+      ->ConfigureFeatures({&feature});
+
+  LoadHtml(kPageHTML);
+
+  ASSERT_FALSE(feature.last_received_browser_state());
+  ASSERT_FALSE(feature.last_received_message());
+
+  __block bool count_received = false;
+  feature.GetErrorCount(GetMainFrame(web_state()),
+                        base::BindOnce(^void(const base::Value* count) {
+                          ASSERT_TRUE(count);
+                          ASSERT_TRUE(count->is_double());
+                          ASSERT_EQ(0ul, count->GetDouble());
+                          count_received = true;
+                        }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return count_received;
+  }));
+
+  ExecuteJavaScript(@"invalidFunction();");
+
+  count_received = false;
+  feature.GetErrorCount(GetMainFrame(web_state()),
+                        base::BindOnce(^void(const base::Value* count) {
+                          ASSERT_TRUE(count);
+                          ASSERT_TRUE(count->is_double());
+                          ASSERT_EQ(1ul, count->GetDouble());
+                          count_received = true;
+                        }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return count_received;
+  }));
+
+  ASSERT_TRUE(ExecuteJavaScript(
+      @"document.open(); document.write('<p></p>'); document.close(); true;"));
+
+  ExecuteJavaScript(@"invalidFunction();");
+
+  count_received = false;
+  feature.GetErrorCount(GetMainFrame(web_state()),
+                        base::BindOnce(^void(const base::Value* count) {
+                          ASSERT_TRUE(count);
+                          ASSERT_TRUE(count->is_double());
+                          EXPECT_EQ(2ul, count->GetDouble());
+                          count_received = true;
+                        }));
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return count_received;
+  }));
+}
+
 }  // namespace web

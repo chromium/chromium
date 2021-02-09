@@ -62,7 +62,7 @@ TEST_F(JavaScriptFeatureManagerTest, AllFramesStartFeature) {
 
   std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "java_script_feature_test_js",
+          "java_script_feature_test_inject_once_js",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
           web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)};
 
@@ -94,7 +94,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeature) {
 
   std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "java_script_feature_test_js",
+          "java_script_feature_test_inject_once_js",
           web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
           web::JavaScriptFeature::FeatureScript::TargetFrames::kMainFrame)};
 
