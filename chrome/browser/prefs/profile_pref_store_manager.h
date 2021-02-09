@@ -71,7 +71,7 @@ class ProfilePrefStoreManager {
   // storing and validating tracked preference MACs. Callers are responsible
   // for ensuring that the key is deleted on shutdown. For testing only.
   static void SetPreferenceValidationRegistryPathForTesting(
-      const base::string16* path);
+      const std::wstring* path);
 #endif
 
   // Creates a PersistentPrefStore providing access to the user preferences of

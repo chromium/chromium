@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/guid.h"
@@ -141,7 +142,7 @@ bool MetricsStateManager::instance_exists_ = false;
 MetricsStateManager::MetricsStateManager(
     PrefService* local_state,
     EnabledStateProvider* enabled_state_provider,
-    const base::string16& backup_registry_key,
+    const std::wstring& backup_registry_key,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info)
     : local_state_(local_state),
@@ -328,7 +329,7 @@ MetricsStateManager::CreateLowEntropyProvider() {
 std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     PrefService* local_state,
     EnabledStateProvider* enabled_state_provider,
-    const base::string16& backup_registry_key,
+    const std::wstring& backup_registry_key,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info) {
   std::unique_ptr<MetricsStateManager> result;

@@ -257,7 +257,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       continue;
     }
 
-    base::FilePath::StringType external_crx;
+    std::string external_crx;
     const base::Value* external_version_value = nullptr;
     std::string external_version;
     std::string external_update_url;
@@ -414,7 +414,9 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
                      << "extensions from crx files.";
         continue;
       }
-      if (external_crx.find(base::FilePath::kParentDirectory) !=
+
+      base::FilePath path = base::FilePath::FromUTF8Unsafe(external_crx);
+      if (path.value().find(base::FilePath::kParentDirectory) !=
           base::StringPiece::npos) {
         install_stage_tracker->ReportFailure(
             extension_id, InstallStageTracker::FailureReason::
@@ -426,7 +428,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
 
       // If the path is relative, and the provider has a base path,
       // build the absolute path to the crx file.
-      base::FilePath path(external_crx);
+
       if (!path.IsAbsolute()) {
         base::FilePath base_path = loader_->GetBaseCrxFilePath();
         if (base_path.empty()) {
@@ -437,7 +439,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
                        << " is relative.  An absolute path is required.";
           continue;
         }
-        path = base_path.Append(external_crx);
+        path = base_path.Append(path);
       }
 
       base::Version version(external_version);

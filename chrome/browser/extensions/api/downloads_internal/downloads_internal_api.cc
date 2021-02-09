@@ -24,12 +24,12 @@ DownloadsInternalDetermineFilenameFunction::Run() {
   std::unique_ptr<DetermineFilenameParams> params(
       DetermineFilenameParams::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  base::FilePath::StringType filename;
+  std::string filename;
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filename));
   std::string error;
   bool result = ExtensionDownloadsEventRouter::DetermineFilename(
       browser_context(), include_incognito_information(), extension()->id(),
-      params->download_id, base::FilePath(filename),
+      params->download_id, base::FilePath::FromUTF8Unsafe(filename),
       extensions::api::downloads::ParseFilenameConflictAction(
           params->conflict_action),
       &error);

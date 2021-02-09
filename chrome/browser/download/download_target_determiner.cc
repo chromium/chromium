@@ -937,23 +937,18 @@ DownloadTargetDeterminer::Result
 
   // Dangerous downloads receive a random intermediate name that looks like:
   // 'Unconfirmed <random>.crdownload'.
-  const base::FilePath::CharType kUnconfirmedFormatSuffix[] =
-      FILE_PATH_LITERAL(" %d.crdownload");
+  const char kUnconfirmedFormatSuffix[] = " %d.crdownload";
   // Range of the <random> uniquifier.
   const int kUnconfirmedUniquifierRange = 1000000;
-#if defined(OS_WIN)
-  base::string16 unconfirmed_format =
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_UNCONFIRMED_PREFIX);
-#else
   std::string unconfirmed_format =
       l10n_util::GetStringUTF8(IDS_DOWNLOAD_UNCONFIRMED_PREFIX);
-#endif
   unconfirmed_format.append(kUnconfirmedFormatSuffix);
 
-  base::FilePath::StringType file_name = base::StringPrintf(
-      unconfirmed_format.c_str(),
-      base::RandInt(0, kUnconfirmedUniquifierRange));
-  intermediate_path_ = local_path_.DirName().Append(file_name);
+  std::string file_name =
+      base::StringPrintf(unconfirmed_format.c_str(),
+                         base::RandInt(0, kUnconfirmedUniquifierRange));
+  intermediate_path_ =
+      local_path_.DirName().Append(base::FilePath::FromUTF8Unsafe(file_name));
   return COMPLETE;
 }
 

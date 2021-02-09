@@ -167,7 +167,7 @@ base::string16 UninstallView::GetItemAt(int index) const {
   DCHECK_LT(index, static_cast<int>(browsers_->size()));
   BrowsersMap::const_iterator i = browsers_->begin();
   std::advance(i, index);
-  return i->first;
+  return base::WideToUTF16(i->first);
 }
 
 BEGIN_METADATA(UninstallView, views::DialogDelegateView)

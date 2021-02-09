@@ -70,7 +70,7 @@ enum AllowedBuckets {
 };
 
 #if defined(OS_WIN)
-base::string16 GetRegistryPathForTestProfile() {
+std::wstring GetRegistryPathForTestProfile() {
   // Cleanup follow-up to http://crbug.com/721245 for the previous location of
   // this test key which had similar problems (to a lesser extent). It's
   // redundant but harmless to have multiple callers hit this on the same
@@ -312,7 +312,7 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
 #if defined(OS_WIN)
     // When done, delete the Registry key to avoid polluting the registry.
     if (!content::IsPreTest()) {
-      base::string16 registry_key = GetRegistryPathForTestProfile();
+      std::wstring registry_key = GetRegistryPathForTestProfile();
       base::win::RegKey key;
       if (key.Open(HKEY_CURRENT_USER, registry_key.c_str(),
                    KEY_SET_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
@@ -428,7 +428,7 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
   int num_tracked_prefs_;
 
 #if defined(OS_WIN)
-  base::string16 registry_key_for_external_validation_;
+  std::wstring registry_key_for_external_validation_;
 #endif
 };
 
@@ -1116,7 +1116,7 @@ class PrefHashBrowserTestRegistryValidationFailure
   void AttackPreferencesOnDisk(
       base::DictionaryValue* unprotected_preferences,
       base::DictionaryValue* protected_preferences) override {
-    base::string16 registry_key =
+    std::wstring registry_key =
         GetRegistryPathForTestProfile() + L"\\PreferenceMACs\\Default";
     base::win::RegKey key;
     ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, registry_key.c_str(),

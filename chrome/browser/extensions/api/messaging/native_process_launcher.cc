@@ -23,6 +23,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -267,7 +268,11 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
 #endif
     base::Value args(base::Value::Type::LIST);
     for (const auto& arg : reconnect_command_line.argv()) {
+#if defined(OS_WIN)
+      args.Append(base::WideToUTF8(arg));
+#else
       args.Append(arg);
+#endif
     }
     std::string encoded_reconnect_command;
     bool success =

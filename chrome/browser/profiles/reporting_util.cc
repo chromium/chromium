@@ -126,7 +126,8 @@ base::Value GetContext(Profile* profile) {
     context.SetStringPath("profile.gaiaEmail", entry->GetUserName());
   }
 
-  context.SetStringPath("profile.profilePath", profile->GetPath().value());
+  context.SetStringPath("profile.profilePath",
+                        profile->GetPath().AsUTF8Unsafe());
 
   const enterprise_management::PolicyData* policy = GetPolicyData(profile);
 

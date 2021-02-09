@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 
 #include <memory>
+#include <string>
 
 #import <Foundation/Foundation.h>
 
@@ -151,7 +152,7 @@ TEST_P(MobileSessionShutdownMetricsProviderTest, ProvideStabilityMetrics) {
                           was_last_shutdown_clean);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -188,7 +189,7 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCleanShutdown) {
   local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, true);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -224,7 +225,7 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricUte) {
   local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -260,7 +261,7 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricCrashWithLog) {
   local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -298,7 +299,7 @@ TEST_F(MobileSessionShutdownMetricsProviderTest, TabCountMetricFreeze) {
   local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));
@@ -338,7 +339,7 @@ TEST_F(MobileSessionShutdownMetricsProviderTest,
   local_state_.SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
   metrics_state_ = metrics::MetricsStateManager::Create(
       &local_state_, new metrics::TestEnabledStateProvider(false, false),
-      base::string16(), metrics::MetricsStateManager::StoreClientInfoCallback(),
+      std::wstring(), metrics::MetricsStateManager::StoreClientInfoCallback(),
       metrics::MetricsStateManager::LoadClientInfoCallback());
   metrics_service_.reset(new metrics::MetricsService(
       metrics_state_.get(), &metrics_client_, &local_state_));

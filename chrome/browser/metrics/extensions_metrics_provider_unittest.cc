@@ -132,7 +132,7 @@ TEST(ExtensionsMetricsProvider, SystemProtoEncoding) {
   metrics::MetricsService::RegisterPrefs(local_state.registry());
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager(
       metrics::MetricsStateManager::Create(
-          &local_state, &enabled_state_provider, base::string16(),
+          &local_state, &enabled_state_provider, std::wstring(),
           base::BindRepeating(&StoreNoClientInfoBackup),
           base::BindRepeating(&ReturnNoBackup)));
   TestExtensionsMetricsProvider extension_metrics(metrics_state_manager.get());

@@ -31,8 +31,7 @@ namespace {
 #if defined(OS_WIN)
 // Forces a different registry key to be used for storing preference validation
 // MACs. See |SetPreferenceValidationRegistryPathForTesting|.
-const base::string16* g_preference_validation_registry_path_for_testing =
-    nullptr;
+const std::wstring* g_preference_validation_registry_path_for_testing = nullptr;
 #endif  // OS_WIN
 
 }  // namespace
@@ -75,7 +74,7 @@ void ProfilePrefStoreManager::ClearResetTime(PrefService* pref_service) {
 #if defined(OS_WIN)
 // static
 void ProfilePrefStoreManager::SetPreferenceValidationRegistryPathForTesting(
-    const base::string16* path) {
+    const std::wstring* path) {
   DCHECK(!path->empty());
   g_preference_validation_registry_path_for_testing = path;
 }

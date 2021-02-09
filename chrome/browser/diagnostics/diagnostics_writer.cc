@@ -75,7 +75,7 @@ class WinConsole : public SimpleConsole {
 
   bool Init() override { return SetIOHandles(); }
 
-  bool Write(const base::string16& txt) override {
+  bool Write(const std::wstring& txt) override {
     DWORD sz = txt.size();
     return (TRUE == ::WriteConsoleW(std_out_, txt.c_str(), sz, &sz, NULL));
   }

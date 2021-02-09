@@ -49,10 +49,10 @@ bool GetBrand(std::string* brand) {
   // Omnibox.CharTypedToRepaintLatency.
   static const base::NoDestructor<base::Optional<std::string>> brand_code(
       []() -> base::Optional<std::string> {
-        base::string16 brand16;
-        if (!GoogleUpdateSettings::GetBrand(&brand16))
+        std::wstring brandw;
+        if (!GoogleUpdateSettings::GetBrand(&brandw))
           return base::nullopt;
-        return base::UTF16ToASCII(brand16);
+        return base::WideToASCII(brandw);
       }());
   if (!brand_code->has_value())
     return false;
@@ -61,10 +61,10 @@ bool GetBrand(std::string* brand) {
 }
 
 bool GetReactivationBrand(std::string* brand) {
-  base::string16 brand16;
-  bool ret = GoogleUpdateSettings::GetReactivationBrand(&brand16);
+  std::wstring brandw;
+  bool ret = GoogleUpdateSettings::GetReactivationBrand(&brandw);
   if (ret)
-    brand->assign(base::UTF16ToASCII(brand16));
+    brand->assign(base::WideToASCII(brandw));
   return ret;
 }
 

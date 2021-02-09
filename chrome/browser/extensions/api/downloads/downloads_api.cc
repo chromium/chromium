@@ -1042,14 +1042,8 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
   base::FilePath creator_suggested_filename;
   if (options.filename.get()) {
 #if defined(OS_WIN)
-    // Can't get filename16 from options.ToValue() because that converts it from
-    // std::string.
-    base::DictionaryValue* options_value = NULL;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetDictionary(0, &options_value));
-    base::string16 filename16;
-    EXTENSION_FUNCTION_VALIDATE(options_value->GetString(
-        kFilenameKey, &filename16));
-    creator_suggested_filename = base::FilePath(filename16);
+    creator_suggested_filename =
+        base::FilePath::FromUTF8Unsafe(*options.filename);
 #elif defined(OS_POSIX)
     creator_suggested_filename = base::FilePath(*options.filename);
 #endif

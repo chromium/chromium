@@ -23,8 +23,8 @@ namespace {
 bool LoadUserDataDirPolicyFromRegistry(HKEY hive,
                                        const char* key_name_str,
                                        base::FilePath* dir) {
-  base::string16 value;
-  base::string16 key_name(base::ASCIIToUTF16(key_name_str));
+  std::wstring value;
+  std::wstring key_name(base::ASCIIToWide(key_name_str));
   base::win::RegKey key(hive, policy::kRegistryChromePolicyKey, KEY_READ);
   if (key.ReadValue(key_name.c_str(), &value) == ERROR_SUCCESS) {
     *dir = base::FilePath(policy::path_parser::ExpandPathVariables(value));

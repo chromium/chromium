@@ -43,8 +43,9 @@ std::unique_ptr<base::ListValue> GetFilesAsListStorage(
   auto value = std::make_unique<base::ListValue>();
   for (const base::FilePath& path : files) {
     auto item = std::make_unique<base::DictionaryValue>();
-    item->SetString("dirname", path.DirName().AsEndingWithSeparator().value());
-    item->SetString("basename", path.BaseName().value());
+    item->SetString("dirname",
+                    path.DirName().AsEndingWithSeparator().AsUTF8Unsafe());
+    item->SetString("basename", path.BaseName().AsUTF8Unsafe());
     value->Append(std::move(item));
   }
   return value;

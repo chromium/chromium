@@ -170,8 +170,8 @@ std::string NotificationLaunchId::Serialize() const {
 
 // static
 std::string NotificationLaunchId::GetProfileIdFromLaunchId(
-    const base::string16& launch_id_str) {
-  NotificationLaunchId launch_id(base::UTF16ToUTF8(launch_id_str));
+    const std::wstring& launch_id_str) {
+  NotificationLaunchId launch_id(base::WideToUTF8(launch_id_str));
 
   // The launch_id_invalid failure is logged via HandleActivation(). We don't
   // re-log it here, which would skew the UMA failure metrics.

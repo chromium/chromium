@@ -302,7 +302,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
                                                            mhtml_path_);
 
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("mhtmlFilePath", mhtml_path_.value());
+  dict->SetString("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());
   dict->SetInteger("mhtmlFileLength", file_size);
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 

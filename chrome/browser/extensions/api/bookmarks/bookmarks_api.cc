@@ -75,21 +75,17 @@ base::FilePath GetDefaultFilepathForBookmarkExport() {
   base::Time time = base::Time::Now();
 
   // Concatenate a date stamp to the filename.
-#if defined(OS_POSIX)
-  base::FilePath::StringType filename =
+  std::string filename =
       l10n_util::GetStringFUTF8(IDS_EXPORT_BOOKMARKS_DEFAULT_FILENAME,
                                 base::TimeFormatShortDateNumeric(time));
-#elif defined(OS_WIN)
-  base::FilePath::StringType filename =
-      l10n_util::GetStringFUTF16(IDS_EXPORT_BOOKMARKS_DEFAULT_FILENAME,
-                                 base::TimeFormatShortDateNumeric(time));
-#endif
-
-  base::i18n::ReplaceIllegalCharactersInPath(&filename, '_');
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(filename);
+  base::FilePath::StringType path_str = path.value();
+  base::i18n::ReplaceIllegalCharactersInPath(&path_str, '_');
+  path = base::FilePath(path_str);
 
   base::FilePath default_path;
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &default_path);
-  return default_path.Append(filename);
+  return default_path.Append(path);
 }
 
 }  // namespace

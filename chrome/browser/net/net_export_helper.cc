@@ -19,6 +19,7 @@
 #endif
 
 #if defined(OS_WIN)
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/net/service_providers_win.h"
 #endif
 
@@ -79,7 +80,8 @@ std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders() {
     service_dict->SetInteger("socket_type", layered_providers[i].socket_type);
     service_dict->SetInteger("socket_protocol",
                              layered_providers[i].socket_protocol);
-    service_dict->SetString("path", layered_providers[i].path);
+    service_dict->SetString("path",
+                            base::WideToUTF8(layered_providers[i].path));
 
     layered_provider_list->Append(std::move(service_dict));
   }

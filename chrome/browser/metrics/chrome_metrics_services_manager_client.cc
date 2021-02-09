@@ -110,11 +110,11 @@ void OnCrosMetricsReportingSettingChange() {
 
 // Returns the name of a key under HKEY_CURRENT_USER that can be used to store
 // backups of metrics data. Unused except on Windows.
-base::string16 GetRegistryBackupKey() {
+std::wstring GetRegistryBackupKey() {
 #if defined(OS_WIN)
   return install_static::GetRegistryPath().append(L"\\StabilityMetrics");
 #else
-  return base::string16();
+  return std::wstring();
 #endif
 }
 

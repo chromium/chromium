@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <cstdint>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -244,7 +245,7 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
   pref_service_ = pref_service;
 
   metrics_state_manager_ =
-      MetricsStateManager::Create(pref_service_, this, base::string16(),
+      MetricsStateManager::Create(pref_service_, this, std::wstring(),
                                   base::BindRepeating(&StoreClientInfo),
                                   base::BindRepeating(&LoadClientInfo));
 

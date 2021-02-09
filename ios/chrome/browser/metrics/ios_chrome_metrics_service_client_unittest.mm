@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 
+#include <string>
+
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/metrics/client_info.h"
@@ -39,7 +41,7 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
     PlatformTest::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &prefs_, &enabled_state_provider_, base::string16(),
+        &prefs_, &enabled_state_provider_, std::wstring(),
         base::BindRepeating(
             &IOSChromeMetricsServiceClientTest::FakeStoreClientInfoBackup,
             base::Unretained(this)),

@@ -93,7 +93,7 @@ HRESULT StatusTrayStateChangerWin::Notify(ULONG event,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(notify_item);
   if (notify_item->hwnd != window_ || notify_item->id != icon_id_ ||
-      base::string16(notify_item->exe_name) != file_name_) {
+      std::wstring(notify_item->exe_name) != file_name_) {
     return S_OK;
   }
 

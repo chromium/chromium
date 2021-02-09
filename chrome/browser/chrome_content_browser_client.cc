@@ -3775,15 +3775,13 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
   // TODO(wfh): Add support for more process types here. crbug.com/499523
   switch (sandbox_type) {
     case sandbox::policy::SandboxType::kRenderer:
-      return base::string16(install_static::GetSandboxSidPrefix()) +
-             L"129201922";
+      return std::wstring(install_static::GetSandboxSidPrefix()) + L"129201922";
     case sandbox::policy::SandboxType::kUtility:
-      return base::string16();
+      return std::wstring();
     case sandbox::policy::SandboxType::kGpu:
-      return base::string16();
+      return std::wstring();
     case sandbox::policy::SandboxType::kPpapi:
-      return base::string16(install_static::GetSandboxSidPrefix()) +
-             L"129201925";
+      return std::wstring(install_static::GetSandboxSidPrefix()) + L"129201925";
     case sandbox::policy::SandboxType::kNoSandbox:
     case sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges:
     case sandbox::policy::SandboxType::kXrCompositing:

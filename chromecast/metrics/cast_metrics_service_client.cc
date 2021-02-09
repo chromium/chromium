@@ -4,6 +4,8 @@
 
 #include "chromecast/metrics/cast_metrics_service_client.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -294,7 +296,7 @@ void CastMetricsServiceClient::SetForceClientId(const std::string& client_id) {
 void CastMetricsServiceClient::InitializeMetricsService() {
   DCHECK(!metrics_state_manager_);
   metrics_state_manager_ = ::metrics::MetricsStateManager::Create(
-      pref_service_, this, base::string16(),
+      pref_service_, this, std::wstring(),
       base::BindRepeating(&CastMetricsServiceClient::StoreClientInfo,
                           base::Unretained(this)),
       base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,

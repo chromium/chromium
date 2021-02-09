@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_UNINSTALL_VIEW_H_
 
 #include <map>
+#include <string>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -39,7 +39,7 @@ class UninstallView : public views::DialogDelegateView,
   base::string16 GetItemAt(int index) const override;
 
  private:
-  typedef std::map<base::string16, base::string16> BrowsersMap;
+  typedef std::map<std::wstring, std::wstring> BrowsersMap;
 
   // Initializes the controls on the dialog.
   void SetupControls();

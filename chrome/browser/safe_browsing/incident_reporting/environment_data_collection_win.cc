@@ -69,7 +69,7 @@ std::wstring ExpandEnvironmentVariables(const std::wstring& path) {
 }
 
 // Helper function to convert HKEYs to strings.
-base::string16 HKEYToString(HKEY key) {
+std::wstring HKEYToString(HKEY key) {
   DCHECK_EQ(HKEY_CURRENT_USER, key);
   return L"HKEY_CURRENT_USER";
 }
@@ -196,7 +196,7 @@ bool CollectDlls(ClientIncidentReport_EnvironmentData_Process* process) {
 
     ClientIncidentReport_EnvironmentData_Process_Dll* dll = process->add_dll();
     dll->set_path(
-        base::WideToUTF8(base::i18n::ToLower(sanitized_path.value())));
+        base::UTF16ToUTF8(base::i18n::ToLower(sanitized_path.AsUTF16Unsafe())));
     dll->set_base_address(module.base_address);
     dll->set_length(module.size);
     // TODO(grt): Consider skipping this for valid system modules.
@@ -222,7 +222,8 @@ void RecordLspFeature(ClientIncidentReport_EnvironmentData_Process* process) {
   for (size_t i = 0; i < lsp_list.size(); ++i) {
     base::FilePath lsp_path(ExpandEnvironmentVariables(lsp_list[i].path));
     path_sanitizer.StripHomeDirectory(&lsp_path);
-    lsp_paths.insert(base::i18n::ToLower(lsp_path.value()));
+    lsp_paths.insert(
+        base::UTF16ToWide(base::i18n::ToLower(lsp_path.AsUTF16Unsafe())));
   }
 
   // Look for a match between LSPs and loaded dlls.

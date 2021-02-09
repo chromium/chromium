@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -315,7 +316,7 @@ class VariationsServiceTest : public ::testing::Test {
     // stability state from prefs after tests have a chance to initialize it.
     if (!metrics_state_manager_) {
       metrics_state_manager_ = metrics::MetricsStateManager::Create(
-          &prefs_, enabled_state_provider_.get(), base::string16(),
+          &prefs_, enabled_state_provider_.get(), std::wstring(),
           base::BindRepeating(&StubStoreClientInfo),
           base::BindRepeating(&StubLoadClientInfo));
     }

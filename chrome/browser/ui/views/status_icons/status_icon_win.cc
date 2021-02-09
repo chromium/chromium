@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/status_icons/status_tray_win.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
@@ -107,7 +108,7 @@ void StatusIconWin::SetToolTip(const base::string16& tool_tip) {
   NOTIFYICONDATA icon_data;
   InitIconData(&icon_data);
   icon_data.uFlags = NIF_TIP;
-  wcscpy_s(icon_data.szTip, tool_tip.c_str());
+  wcscpy_s(icon_data.szTip, base::as_wcstr(tool_tip));
   BOOL result = Shell_NotifyIcon(NIM_MODIFY, &icon_data);
   if (!result)
     LOG(WARNING) << "Unable to set tooltip for status tray icon";
@@ -122,8 +123,8 @@ void StatusIconWin::DisplayBalloon(
   InitIconData(&icon_data);
   icon_data.uFlags = NIF_INFO;
   icon_data.dwInfoFlags = NIIF_INFO;
-  wcscpy_s(icon_data.szInfoTitle, title.c_str());
-  wcscpy_s(icon_data.szInfo, contents.c_str());
+  wcscpy_s(icon_data.szInfoTitle, base::as_wcstr(title));
+  wcscpy_s(icon_data.szInfo, base::as_wcstr(contents));
   icon_data.uTimeout = 0;
 
   if (!icon.isNull()) {

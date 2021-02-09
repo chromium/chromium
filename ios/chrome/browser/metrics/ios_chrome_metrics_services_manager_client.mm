@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_services_manager_client.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -89,7 +91,7 @@ IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!metrics_state_manager_) {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        local_state_, enabled_state_provider_.get(), base::string16(),
+        local_state_, enabled_state_provider_.get(), std::wstring(),
         base::BindRepeating(&PostStoreMetricsClientInfo),
         base::BindRepeating(&LoadMetricsClientInfo));
   }

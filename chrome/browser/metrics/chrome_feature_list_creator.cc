@@ -131,10 +131,10 @@ void ChromeFeatureListCreator::CreatePrefService() {
     // language the user selected when downloading the installer. This
     // becomes our default language in the prefs.
     // Other platforms obey the system locale.
-    base::string16 install_lang;
+    std::wstring install_lang;
     if (GoogleUpdateSettings::GetLanguage(&install_lang)) {
       local_state_->SetString(language::prefs::kApplicationLocale,
-                              base::UTF16ToASCII(install_lang));
+                              base::WideToASCII(install_lang));
     }
   }
 #endif  // defined(OS_WIN)

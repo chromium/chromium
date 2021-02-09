@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/process/process_handle.h"
@@ -49,7 +51,7 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     testing::Test::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        &prefs_, &enabled_state_provider_, base::string16(),
+        &prefs_, &enabled_state_provider_, std::wstring(),
         base::BindRepeating(
             &ChromeMetricsServiceClientTest::FakeStoreClientInfoBackup,
             base::Unretained(this)),

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/version/version_util_win.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "chrome/install_static/install_details.h"
 #include "components/strings/grit/components_strings.h"
@@ -74,11 +75,11 @@ std::string GetFullWindowsVersion() {
 }
 
 base::string16 GetCohortVersionInfo() {
-  base::string16 update_cohort_name =
+  std::wstring update_cohort_name =
       install_static::InstallDetails::Get().update_cohort_name();
   if (!update_cohort_name.empty()) {
     return l10n_util::GetStringFUTF16(IDS_VERSION_UI_COHORT_NAME,
-                                      update_cohort_name);
+                                      base::WideToUTF16(update_cohort_name));
   }
 
   return base::string16();

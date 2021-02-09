@@ -861,7 +861,7 @@ base::FilePath ProfileManager::GetGuestProfilePath() {
       profile_name.append(base::NumberToString(next_directory));
       base::FilePath new_path = profile_manager->user_data_dir();
 #if defined(OS_WIN)
-      new_path = new_path.Append(base::ASCIIToUTF16(profile_name));
+      new_path = new_path.Append(base::ASCIIToWide(profile_name));
 #else
       new_path = new_path.Append(profile_name);
 #endif
@@ -899,7 +899,7 @@ base::FilePath ProfileManager::GenerateNextProfileDirectoryPath() {
   profile_name.append(base::NumberToString(next_directory));
   base::FilePath new_path = user_data_dir_;
 #if defined(OS_WIN)
-  new_path = new_path.Append(base::ASCIIToUTF16(profile_name));
+  new_path = new_path.Append(base::ASCIIToWide(profile_name));
 #else
   new_path = new_path.Append(profile_name);
 #endif

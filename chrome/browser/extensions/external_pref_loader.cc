@@ -414,7 +414,7 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
 
     const std::string id =
 #if defined(OS_WIN)
-        base::UTF16ToASCII(
+        base::WideToASCII(
             extension_candidate_path.RemoveExtension().BaseName().value());
 #elif defined(OS_POSIX)
         extension_candidate_path.RemoveExtension().BaseName().value();

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NET_SERVICE_PROVIDERS_WIN_H_
 #define CHROME_BROWSER_NET_SERVICE_PROVIDERS_WIN_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"
@@ -23,7 +24,7 @@ struct WinsockLayeredServiceProvider {
   ~WinsockLayeredServiceProvider();
 
   base::string16 name;
-  base::string16 path;
+  std::wstring path;
   int version;
   int chain_length;
   int socket_type;

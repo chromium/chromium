@@ -146,7 +146,7 @@ class MetricsServiceTest : public testing::Test {
     // stability state from prefs after tests have a chance to initialize it.
     if (!metrics_state_manager_) {
       metrics_state_manager_ = MetricsStateManager::Create(
-          GetLocalState(), enabled_state_provider_.get(), base::string16(),
+          GetLocalState(), enabled_state_provider_.get(), std::wstring(),
           base::BindRepeating(&StoreNoClientInfoBackup),
           base::BindRepeating(&ReturnNoBackup));
     }

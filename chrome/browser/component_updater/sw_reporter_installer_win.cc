@@ -208,7 +208,7 @@ bool ExtractInvocationSequenceFromManifest(
       return false;
     }
 
-    std::vector<base::string16> argv = {exe_path.value()};
+    std::vector<std::wstring> argv = {exe_path.value()};
     for (const auto& value : *arguments) {
       base::string16 argument;
       if (!value.GetAsString(&argument)) {
@@ -216,7 +216,7 @@ bool ExtractInvocationSequenceFromManifest(
         return false;
       }
       if (!argument.empty())
-        argv.push_back(argument);
+        argv.push_back(base::UTF16ToWide(argument));
     }
 
     base::CommandLine command_line(argv);
@@ -416,7 +416,7 @@ void RegisterProfilePrefsForSwReporter(
 }
 
 void ReportUMAForLastCleanerRun() {
-  base::string16 cleaner_key_name =
+  std::wstring cleaner_key_name =
       chrome_cleaner::kSoftwareRemovalToolRegistryKey;
   cleaner_key_name.append(1, L'\\').append(chrome_cleaner::kCleanerSubKey);
   base::win::RegKey cleaner_key(HKEY_CURRENT_USER, cleaner_key_name.c_str(),
@@ -467,10 +467,10 @@ void ReportUMAForLastCleanerRun() {
       }
 
       if (cleaner_key.HasValue(chrome_cleaner::kUploadResultsValueName)) {
-        base::string16 upload_results;
+        std::wstring upload_results;
         cleaner_key.ReadValue(chrome_cleaner::kUploadResultsValueName,
                               &upload_results);
-        ReportUploadsWithUma(upload_results);
+        ReportUploadsWithUma(base::WideToUTF16(upload_results));
       }
     } else {
       if (cleaner_key.HasValue(chrome_cleaner::kEndTimeValueName)) {

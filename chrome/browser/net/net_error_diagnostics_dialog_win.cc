@@ -64,7 +64,7 @@ class NetErrorDiagnosticsDialog : public ui::BaseShellDialogImpl {
  private:
   void ShowDialogOnPrivateThread(HWND parent, const std::string& failed_url) {
     NDFHANDLE incident_handle;
-    base::string16 failed_url_wide = base::UTF8ToUTF16(failed_url);
+    std::wstring failed_url_wide = base::UTF8ToWide(failed_url);
     if (!SUCCEEDED(NdfCreateWebIncident(failed_url_wide.c_str(),
                                         &incident_handle))) {
       return;
