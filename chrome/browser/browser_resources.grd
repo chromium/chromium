@@ -380,17 +380,6 @@
         <include name="IDR_IDENTITY_INTERNALS_CSS" file="resources\identity_internals\identity_internals.css" type="BINDATA" />
         <include name="IDR_IDENTITY_INTERNALS_JS" file="resources\identity_internals\identity_internals.js" type="BINDATA" />
       </if>
-      <if expr="chromeos">
-        <include name="IDR_NETWORK_UI_PAGE_HTML" file="resources\chromeos\network_ui\network.html" type="BINDATA" />
-        <include name="IDR_NETWORK_UI_BROWSER_PROXY_HTML" file="resources\chromeos\network_ui\network_ui_browser_proxy.html" type="BINDATA" />
-        <include name="IDR_NETWORK_UI_BROWSER_PROXY_JS" file="resources\chromeos\network_ui\network_ui_browser_proxy.js" type="BINDATA" />
-        <include name="IDR_NETWORK_UI_HTML" file="resources\chromeos\network_ui\network_ui.html" type="BINDATA" />
-        <include name="IDR_NETWORK_UI_JS" file="resources\chromeos\network_ui\network_ui.js" type="BINDATA" />
-        <include name="IDR_NETWORK_STATE_UI_HTML" file="resources\chromeos\network_ui\network_state_ui.html" type="BINDATA" />
-        <include name="IDR_NETWORK_STATE_UI_JS" file="resources\chromeos\network_ui\network_state_ui.js" type="BINDATA" />
-        <include name="IDR_NETWORK_LOGS_UI_HTML" file="resources\chromeos\network_ui\network_logs_ui.html" type="BINDATA" />
-        <include name="IDR_NETWORK_LOGS_UI_JS" file="resources\chromeos\network_ui\network_logs_ui.js" type="BINDATA" />
-      </if>
       <if expr="_google_chrome">
         <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings_internal\pref_hash_seed.bin" type="BINDATA" />
         <include name="IDR_ADDITIONAL_MODULE_IDS" file="${additional_modules_list_file}" use_base_dir="false" type="BINDATA" />

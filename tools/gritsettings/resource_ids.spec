@@ -251,6 +251,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2050],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/network_ui/network_ui_resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2065],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/gaia_auth_host/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2080],

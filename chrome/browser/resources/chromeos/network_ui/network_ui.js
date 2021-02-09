@@ -2,6 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/chromeos/network/network_select.m.js';
+import 'chrome://resources/cr_components/chromeos/network_health/network_diagnostics.m.js';
+import 'chrome://resources/cr_components/chromeos/network_health/network_health_summary.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.m.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
+import './strings.m.js';
+import './network_state_ui.js';
+import './network_logs_ui.js';
+
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_browser_proxy.js';
+
+
 /**
  * @fileoverview
  * Polymer element network debugging UI.
@@ -9,6 +29,8 @@
 
 Polymer({
   is: 'network-ui',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [I18nBehavior],
 
@@ -49,8 +71,8 @@ Polymer({
   /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
-  /** @type {!network_ui.NetworkUIBrowserProxy} */
-  browserProxy_: network_ui.NetworkUIBrowserProxyImpl.getInstance(),
+  /** @type {!NetworkUIBrowserProxy} */
+  browserProxy_: NetworkUIBrowserProxyImpl.getInstance(),
 
   /** @override */
   attached() {

@@ -12,7 +12,12 @@ suite('NetworkSelectTest', function() {
   /** @type {!NetworkSelect|undefined} */
   let networkSelect;
 
-  setup(function() {
+  setup(async function() {
+    // The OOBE host uses polyfill which requires the test to wait until HTML
+    // imports have finished loading before initiating any tests. The Polymer 3
+    // version of the test does not use the OOBE host so this line should not
+    // execute.
+    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
     networkSelect = document.createElement('network-select');
     document.body.appendChild(networkSelect);
     Polymer.dom.flush();

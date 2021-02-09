@@ -448,6 +448,7 @@ js_library("network_list.m") {
   deps = [
     ":network_list_item.m",
     ":network_list_types.m",
+    ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
@@ -459,8 +460,10 @@ js_library("network_list.m") {
 js_library("network_list_item.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_list_item.m.js" ]
   deps = [
+    ":cr_policy_network_behavior_mojo.m",
     ":mojo_interface_provider.m",
     ":network_list_types.m",
+    ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js/cr/ui:focus_row_behavior.m",
@@ -470,6 +473,7 @@ js_library("network_list_item.m") {
 
 js_library("network_list_types.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_list_types.m.js" ]
+  deps = [ ":onc_mojo.m" ]
   extra_deps = [ ":modulize" ]
 }
 

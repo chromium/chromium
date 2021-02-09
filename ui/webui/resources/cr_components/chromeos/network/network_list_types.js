@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {OncMojo} from './onc_mojo.m.js';
+// clang-format on
+
 /**
  * @fileoverview
  * This file contains typedefs properties for NetworkList, shared by

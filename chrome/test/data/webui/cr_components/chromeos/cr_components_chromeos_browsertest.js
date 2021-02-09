@@ -56,13 +56,11 @@ GEN('#include "content/public/test/browser_test.h"');
   ['NetworkSiminfo', 'network/network_siminfo_test.js', []],
 ].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
 
+// The only remaining host that uses the Polymer 2 version of <network-select>
+// is oobe/login.
 [
   ['NetworkSelect', 'network/network_select_test.js', []],
-].forEach(test => registerTest('NetworkComponents', 'network', ...test));
-
-[
-  ['RoutineGroup', 'network_health/routine_group_test.js', []],
-].forEach(test => registerTest('NetworkHealth', 'network', ...test));
+].forEach(test => registerTest('NetworkComponents', 'oobe/login', ...test));
 
 [
   // TODO(https://crbug.com/1173345): Reenable flaky test suite.
@@ -106,6 +104,9 @@ function registerTest(componentName, webuiHost, testName, module, deps) {
   this[className] = class extends Polymer2DeprecatedTest {
     /** @override */
     get browsePreload() {
+      if (webuiHost.includes('/')) {
+        return `chrome://${webuiHost}`;
+      }
       return `chrome://${webuiHost}/`;
     }
 
