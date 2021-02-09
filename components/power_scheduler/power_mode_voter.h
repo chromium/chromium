@@ -27,8 +27,14 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
                                        base::TimeDelta timeout) = 0;
   };
 
+  // Consider an initial response to a single input to last 100ms.
   static constexpr base::TimeDelta kResponseTimeout =
       base::TimeDelta::FromMilliseconds(100);
+
+  // Avoid getting stuck in loading stage forever. More than 99.9% of
+  // navigations load (to largest contentful paint) in less than a minute.
+  static constexpr base::TimeDelta kLoadingTimeout =
+      base::TimeDelta::FromSeconds(60);
 
   ~PowerModeVoter();
 

@@ -12,6 +12,8 @@ PowerModeVoter::PowerModeVoter(Delegate* delegate) : delegate_(delegate) {}
 
 // static
 constexpr base::TimeDelta PowerModeVoter::kResponseTimeout;
+// static
+constexpr base::TimeDelta PowerModeVoter::kLoadingTimeout;
 
 PowerModeVoter::~PowerModeVoter() {
   delegate_->OnVoterDestroyed(this);

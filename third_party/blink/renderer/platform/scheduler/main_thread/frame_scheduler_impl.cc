@@ -14,6 +14,9 @@
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/time/time.h"
 #include "base/trace_event/blame_context.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/platform/blame_context.h"
@@ -190,7 +193,10 @@ FrameSchedulerImpl::FrameSchedulerImpl(
       waiting_for_meaningful_paint_(true,
                                     "FrameScheduler.WaitingForMeaningfulPaint",
                                     &tracing_controller_,
-                                    YesNoStateToString) {
+                                    YesNoStateToString),
+      loading_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Loading")) {
   frame_task_queue_controller_.reset(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
 }
@@ -611,9 +617,14 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
   bool is_same_document = navigation_type == NavigationType::kSameDocument;
 
   if (!is_same_document) {
+    loading_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kLoading);
+    loading_power_mode_voter_->ResetVoteAfterTimeout(
+        power_scheduler::PowerModeVoter::kLoadingTimeout);
+
     waiting_for_contentful_paint_ = true;
     waiting_for_meaningful_paint_ = true;
   }
+
   if (is_main_frame && !is_same_document) {
     task_time_ = base::TimeDelta();
     // Ignore result here, based on the assumption that
@@ -941,6 +952,8 @@ void FrameSchedulerImpl::OnLoad() {
     // update.
     main_thread_scheduler_->OnMainFrameLoad(*this);
   }
+
+  loading_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kIdle);
 }
 
 bool FrameSchedulerImpl::IsWaitingForContentfulPaint() const {

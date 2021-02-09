@@ -18,6 +18,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/trace_event/trace_event.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "net/base/request_priority.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -371,6 +372,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
       waiting_for_contentful_paint_;
   TraceableState<bool, TracingCategoryName::kInfo>
       waiting_for_meaningful_paint_;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> loading_power_mode_voter_;
 
   // TODO(altimin): Remove after we have have 1:1 relationship between frames
   // and documents.
