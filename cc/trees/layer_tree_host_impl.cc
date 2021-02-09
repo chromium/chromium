@@ -3004,7 +3004,7 @@ void LayerTreeHostImpl::DidLoseLayerTreeFrameSink() {
   client_->DidLoseLayerTreeFrameSinkOnImplThread();
   lag_tracking_manager_.Clear();
 
-  dropped_frame_counter_.ResetFrameSorter();
+  dropped_frame_counter_.ResetPendingFrames(base::TimeTicks::Now());
 }
 
 bool LayerTreeHostImpl::OnlyExpandTopControlsAtPageTop() const {
@@ -3271,10 +3271,14 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
   if (visible_ == visible)
     return;
   visible_ = visible;
-  if (visible_)
-    total_frame_counter_.OnShow(base::TimeTicks::Now());
-  else
-    total_frame_counter_.OnHide(base::TimeTicks::Now());
+  if (visible_) {
+    auto now = base::TimeTicks::Now();
+    total_frame_counter_.OnShow(now);
+  } else {
+    auto now = base::TimeTicks::Now();
+    total_frame_counter_.OnHide(now);
+    dropped_frame_counter_.ResetPendingFrames(now);
+  }
   DidVisibilityChange(this, visible_);
   UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
 
