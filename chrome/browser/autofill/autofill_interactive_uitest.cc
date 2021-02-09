@@ -2767,14 +2767,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
 
 // This test verifies that credit card (payment card list) popup works when the
 // form is inside an OOPIF.
+// TODO(crbug.com/1176012): This now flakes on MacOS AND Linux, so it is
+// disabled until fixed.
+// Previous flakes:
 // Flaky on Windows http://crbug.com/728488
 // Flaky on ChromeOS http://crbug.com/1175735
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
-#define MAYBE_CrossSitePaymentForms DISABLED_CrossSitePaymentForms
-#else
-#define MAYBE_CrossSitePaymentForms CrossSitePaymentForms
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_CrossSitePaymentForms) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
+                       DISABLED_CrossSitePaymentForms) {
   CreateTestCreditCart();
   // Main frame is on a.com, iframe is on b.com.
   GURL url = embedded_test_server()->GetURL(
