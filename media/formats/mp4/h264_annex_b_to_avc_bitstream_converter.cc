@@ -78,7 +78,7 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
       }
 
       case H264NALU::kSPSExt: {
-        NOTREACHED() << "SPS extensions are not supported yet.";
+        // SPS extensions are not supported yet.
         break;
       }
 
