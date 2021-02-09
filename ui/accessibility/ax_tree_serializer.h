@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ctime>
 #include <ostream>
 #include <unordered_map>
 #include <unordered_set>
