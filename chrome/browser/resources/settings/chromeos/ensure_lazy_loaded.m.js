@@ -17,7 +17,6 @@ export function ensureLazyLoaded() {
       'os-settings-files-page',
       'settings-smb-shares-page',
       'os-printing-page',
-      'settings-crostini-page',
     ];
     if (!loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled')) {
       lazyLoadPages.push('os-settings-privacy-page');
