@@ -380,6 +380,7 @@ def CopyLibstdcpp(args, build_dir):
   # The two fuzzer tests are weird in that they copy the fuzzer binary from bin/
   # into the test tree under a different name. To make the relative rpath in
   # them work, copy libstdc++ to the copied location for now.
+  # There is also a compiler-rt test that copies llvm-symbolizer out of bin/.
   # TODO(thakis): Instead, make the upstream lit.local.cfg.py for these 2 tests
   # check if the binary contains an rpath and if so disable the tests.
   for d in ['lib',
@@ -387,6 +388,16 @@ def CopyLibstdcpp(args, build_dir):
             'test/tools/llvm-opt-fuzzer/lib']:
     EnsureDirExists(os.path.join(build_dir, d))
     CopyFile(libstdcpp, os.path.join(build_dir, d))
+
+  sanitizer_common_tests = os.path.join(build_dir,
+                                 'projects/compiler-rt/test/sanitizer_common')
+  if os.path.exists(sanitizer_common_tests):
+    for d in ['asan-i386-Linux', 'asan-x86_64-Linux', 'lsan-i386-Linux',
+              'lsan-x86_64-Linux', 'msan-x86_64-Linux', 'tsan-x86_64-Linux',
+              'ubsan-i386-Linux', 'ubsan-x86_64-Linux']:
+      EnsureDirExists(os.path.join(sanitizer_common_tests, d))
+      CopyFile(libstdcpp, os.path.join(sanitizer_common_tests, d))
+
 
 def gn_arg(v):
   if v == 'True':
