@@ -200,6 +200,8 @@ void WebGPUImplementation::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
   ImplementationBase::VerifySyncTokens(sync_tokens, count);
 }
 void WebGPUImplementation::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
+  // Flush any commands before this, so we don't block more than necessary.
+  FlushCommands();
   ImplementationBase::WaitSyncToken(sync_token);
 }
 

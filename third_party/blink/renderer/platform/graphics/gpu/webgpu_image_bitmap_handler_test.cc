@@ -406,9 +406,9 @@ TEST_F(WebGPUMailboxTextureTest, VerifyAccessTexture) {
                                WGPUTextureUsage_CopySrc, _))
       .WillOnce(testing::SaveArg<5>(&mailbox_bytes));
 
-  scoped_refptr<WebGPUMailboxTexture> mailbox_texture = base::AdoptRef(
-      new WebGPUMailboxTexture(dawn_control_client_, fake_device_, bitmap.get(),
-                               WGPUTextureUsage_CopySrc));
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      WebGPUMailboxTexture::FromStaticBitmapImage(
+          dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap);
 
   gpu::Mailbox mailbox = gpu::Mailbox::FromVolatile(
       *reinterpret_cast<const volatile gpu::Mailbox*>(mailbox_bytes));

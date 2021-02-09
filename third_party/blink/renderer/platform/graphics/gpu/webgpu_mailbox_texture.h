@@ -8,23 +8,32 @@
 #include <dawn/webgpu.h>
 
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
 
+class CanvasResource;
 class DawnControlClientHolder;
 class StaticBitmapImage;
 
 class PLATFORM_EXPORT WebGPUMailboxTexture
     : public RefCounted<WebGPUMailboxTexture> {
  public:
-  WebGPUMailboxTexture(
+  static scoped_refptr<WebGPUMailboxTexture> FromStaticBitmapImage(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       WGPUDevice device,
-      StaticBitmapImage* image,
-      WGPUTextureUsage usage);
+      WGPUTextureUsage usage,
+      scoped_refptr<StaticBitmapImage> image);
+
+  static scoped_refptr<WebGPUMailboxTexture> FromCanvasResource(
+      scoped_refptr<DawnControlClientHolder> dawn_control_client,
+      WGPUDevice device,
+      WGPUTextureUsage usage,
+      scoped_refptr<CanvasResource> canvas_resource);
+
   ~WebGPUMailboxTexture();
 
   WGPUTexture GetTexture() { return texture_; }
@@ -33,9 +42,17 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   WGPUDevice GetDeviceForTest() { return device_; }
 
  private:
+  WebGPUMailboxTexture(
+      scoped_refptr<DawnControlClientHolder> dawn_control_client,
+      WGPUDevice device,
+      WGPUTextureUsage usage,
+      const gpu::Mailbox& mailbox,
+      const gpu::SyncToken& sync_token,
+      base::OnceCallback<void(const gpu::SyncToken&)> destroy_callback);
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  gpu::Mailbox mailbox_;
   WGPUDevice device_;
+  base::OnceCallback<void(const gpu::SyncToken&)> destroy_callback_;
   WGPUTexture texture_;
   uint32_t wire_texture_id_ = 0;
   uint32_t wire_texture_generation_ = 0;
