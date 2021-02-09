@@ -462,6 +462,12 @@ class IdentityManager : public KeyedService,
 
   base::android::ScopedJavaLocalRef<jobjectArray> GetAccountsWithRefreshTokens(
       JNIEnv* env) const;
+
+  // Forces refreshing extended account info with image for the given
+  // core account id.
+  void ForceRefreshOfExtendedAccountInfo(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_core_account_id);
 #endif
 
  private:

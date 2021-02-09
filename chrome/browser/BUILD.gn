@@ -3160,7 +3160,6 @@ static_library("browser") {
       "previews/android/previews_android_bridge.h",
       "privacy/secure_dns_bridge.cc",
       "privacy_sandbox/android/privacy_sandbox_bridge.cc",
-      "profiles/android/profile_downloader_android.cc",
       "profiles/android/profile_manager_utils.cc",
       "profiles/incognito_utils_android.cc",
       "profiles/profile_android.cc",

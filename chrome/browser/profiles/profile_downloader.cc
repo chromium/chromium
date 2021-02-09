@@ -115,11 +115,6 @@ void ProfileDownloader::StartFetchingImage() {
   if (maybe_account_info.has_value())
     account_info_ = maybe_account_info.value();
 
-#if defined(OS_ANDROID)
-  if (delegate_->IsPreSignin())
-    identity_manager_->ForceRefreshOfExtendedAccountInfo(account_id_);
-#endif
-
   if (account_info_.IsValid()) {
     // FetchImageData might call the delegate's OnProfileDownloadSuccess
     // synchronously, causing |this| to be deleted so there should not be more

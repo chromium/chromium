@@ -14,6 +14,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
@@ -165,6 +166,19 @@ public class IdentityManager {
     }
 
     /**
+     * Forces refreshing extended {@link AccountInfo} with image for the given
+     * {@link CoreAccountId}.
+     *
+     * This method should only be invoked by {@link ProfileDownloader} to fetch account information
+     * while users are signed out.
+     */
+    public void forceRefreshOfExtendedAccountInfo(CoreAccountId coreAccountId) {
+        assert coreAccountId != null : "coreAccountId shouldn't be null!";
+        IdentityManagerJni.get().forceRefreshOfExtendedAccountInfo(
+                mNativeIdentityManager, coreAccountId);
+    }
+
+    /**
      * Call this method to retrieve an OAuth2 access token for the given account and scope. Please
      * note that this method expects a scope with 'oauth2:' prefix.
      * @param account the account to get the access token for.
@@ -198,5 +212,7 @@ public class IdentityManager {
         AccountInfo findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                 long nativeIdentityManager, String email);
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
+        void forceRefreshOfExtendedAccountInfo(
+                long nativeIdentityManager, CoreAccountId coreAccountId);
     }
 }

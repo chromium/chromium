@@ -151,7 +151,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
 
         for (String accountEmail : accountEmails) {
             if (!mCachedProfileData.containsKey(accountEmail)) {
-                ProfileDownloader.get().startFetchingAccountInfoFor(accountEmail, mImageSize);
+                ProfileDownloader.get().startFetchingAccountInfoFor(accountEmail);
             }
         }
     }

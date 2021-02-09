@@ -4,23 +4,18 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import android.graphics.Bitmap;
-
 import androidx.annotation.GuardedBy;
 import androidx.annotation.MainThread;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
 
@@ -92,11 +87,9 @@ class ProfileDownloader {
         private static PendingProfileDownloads sPendingProfileDownloads;
 
         private final ArrayList<String> mAccountEmails;
-        private final ArrayList<Integer> mImageSizes;
 
         private PendingProfileDownloads() {
             mAccountEmails = new ArrayList<>();
-            mImageSizes = new ArrayList<>();
         }
 
         static PendingProfileDownloads get() {
@@ -110,78 +103,57 @@ class ProfileDownloader {
             return sPendingProfileDownloads;
         }
 
-        void pendProfileDownload(String accountEmail, int imageSize) {
+        void pendProfileDownload(String accountEmail) {
             mAccountEmails.add(accountEmail);
-            mImageSizes.add(imageSize);
         }
 
         @Override
         public void onSystemAccountsSeedingComplete() {
-            int numberOfPendingRequests = mAccountEmails.size();
-            while (numberOfPendingRequests > 0) {
-                // Pending requests here must be pre-signin request since SigninManager will wait
-                // system accounts been seeded into AccountTrackerService before finishing sign in.
-                fetchAccountInfo(mAccountEmails.get(0), mImageSizes.get(0));
-                mAccountEmails.remove(0);
-                mImageSizes.remove(0);
-                numberOfPendingRequests--;
+            for (String accountEmail : mAccountEmails) {
+                fetchAccountInfo(accountEmail);
             }
+            mAccountEmails.clear();
         }
 
         @Override
         public void onSystemAccountsChanged() {
             mAccountEmails.clear();
-            mImageSizes.clear();
         }
     }
 
     /**
      * Starts fetching the account information for a given account.
      * @param accountEmail Account email to fetch the information for
-     * @param imageSize Request image side size (in pixels)
      */
-    public void startFetchingAccountInfoFor(String accountEmail, @Px int imageSize) {
+    public void startFetchingAccountInfoFor(String accountEmail) {
         ThreadUtils.assertOnUiThread();
         final Profile profile = Profile.getLastUsedRegularProfile();
         if (IdentityServicesProvider.get()
                         .getAccountTrackerService(profile)
                         .checkAndSeedSystemAccounts()) {
-            fetchAccountInfo(accountEmail, imageSize);
+            fetchAccountInfo(accountEmail);
         } else {
-            PendingProfileDownloads.get().pendProfileDownload(accountEmail, imageSize);
+            PendingProfileDownloads.get().pendProfileDownload(accountEmail);
         }
-    }
-
-    @VisibleForTesting
-    @CalledByNative
-    static void onProfileDownloadSuccess(
-            String accountEmail, String fullName, String givenName, Bitmap avatar) {
-        ThreadUtils.assertOnUiThread();
-        ProfileDownloader.get().notifyObservers(
-                new ProfileDataSource.ProfileData(accountEmail, avatar, fullName, givenName));
     }
 
     @MainThread
-    private static void fetchAccountInfo(String accountEmail, @Px int imageSize) {
-        final Profile profile = Profile.getLastUsedRegularProfile();
+    private static void fetchAccountInfo(String accountEmail) {
+        final IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                Profile.getLastUsedRegularProfile());
         final AccountInfo accountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(profile)
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                accountEmail);
+                identityManager.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                        accountEmail);
         if (accountInfo == null) {
             Log.i(TAG, "No AccountInfo available for email:" + accountEmail);
         } else if (accountInfo.getAccountImage() != null) {
-            onProfileDownloadSuccess(accountEmail, accountInfo.getFullName(),
-                    accountInfo.getGivenName(), accountInfo.getAccountImage());
+            ProfileDownloader.get().notifyObservers(
+                    new ProfileDataSource.ProfileData(accountEmail, accountInfo.getAccountImage(),
+                            accountInfo.getFullName(), accountInfo.getGivenName()));
         } else {
-            ProfileDownloaderJni.get().startFetchingAccountInfoFor(profile, accountInfo, imageSize);
+            // Downloads the extended account information(full name, account image, etc) and saves
+            // it on disk for the given Id.
+            identityManager.forceRefreshOfExtendedAccountInfo(accountInfo.getId());
         }
-    }
-
-    @NativeMethods
-    interface Natives {
-        void startFetchingAccountInfoFor(
-                Profile profile, CoreAccountInfo coreAccountInfo, int imageSize);
     }
 }

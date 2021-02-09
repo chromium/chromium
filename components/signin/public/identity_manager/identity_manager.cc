@@ -391,6 +391,13 @@ void IdentityManager::ForceRefreshOfExtendedAccountInfo(
   account_fetcher_service_->ForceRefreshOfAccountInfo(account_id);
 }
 
+void IdentityManager::ForceRefreshOfExtendedAccountInfo(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_core_account_id) {
+  ForceRefreshOfExtendedAccountInfo(
+      ConvertFromJavaCoreAccountId(env, j_core_account_id));
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 IdentityManager::GetPrimaryAccountInfo(JNIEnv* env, jint consent_level) const {
   CoreAccountInfo account_info =
