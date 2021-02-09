@@ -809,6 +809,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CANCELLED_TEST_TEXT" desc="The text that displays the test that was cancelled.">
         <ph name="TEST_NAME">$1<ex>Stress</ex></ph> Test has been cancelled
       </message>
+      <message name="IDS_DIAGNOSTICS_SESSION_LOG_TOAST_TEXT_SUCCESS" desc="The text shown when the session log is successfully saved to the users' device.">
+        Download complete
+      </message>
+      <message name="IDS_DIAGNOSTICS_SESSION_LOG_TOAST_TEXT_FAILURE" desc="The text shown when the session log download fails.">
+        Download failed
+      </message>
 
       <!-- Quick Answers -->
       <message name="IDS_QUICK_ANSWERS_DEFINITION_TITLE_TEXT" desc="The title text format string used for Quick Answers definition result card. The first placeholder contains the source query text and the second placeholder contains the phonetics.">

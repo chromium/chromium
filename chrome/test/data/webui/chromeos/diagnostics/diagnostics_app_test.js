@@ -4,16 +4,19 @@
 
 import 'chrome://diagnostics/diagnostics_app.js';
 
+import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeSystemInfo, fakeSystemInfoWithoutBattery} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
+import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
 /**
  * @param {Array<?T>} cards
@@ -50,9 +53,15 @@ export function appTestSuite() {
   /** @type {?FakeSystemDataProvider} */
   let provider = null;
 
+  /** @type {?TestDiagnosticsBrowserProxy} */
+  let DiagnosticsBrowserProxy = null;
+
   suiteSetup(() => {
     provider = new FakeSystemDataProvider();
     setSystemDataProviderForTesting(provider);
+
+    DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
+    DiagnosticsBrowserProxyImpl.instance_ = DiagnosticsBrowserProxy;
   });
 
   setup(() => {
@@ -95,6 +104,32 @@ export function appTestSuite() {
     document.body.appendChild(page);
     return flushTasks();
   }
+
+  /**
+   * Get the session log button.
+   * @return {!CrButtonElement}
+   */
+  function getSessionLogButton() {
+    return /** @type {!CrButtonElement} */ (page.$$('.session-log-button'));
+  }
+
+  /**
+   * Clicks the session log button.
+   * @return {!Promise}
+   */
+  function clickSessionLogButton() {
+    getSessionLogButton().click();
+    return flushTasks();
+  }
+
+  /**
+   * Returns whether the toast is visible or not.
+   * @return {boolean}
+   */
+  function isToastVisible() {
+    return page.$$('cr-toast').open;
+  }
+
   test('LandingPageLoaded', () => {
     return initializeDiagnosticsApp(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
@@ -156,5 +191,35 @@ export function appTestSuite() {
           return flushTasks();
         })
         .then(() => assertRunTestButtonsEnabled(cards));
+  });
+
+  test('SaveSessionLogSuccessShowsToast', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          DiagnosticsBrowserProxy.setSuccess(true);
+          clickSessionLogButton().then(() => {
+            assertTrue(isToastVisible());
+            dx_utils.assertElementContainsText(
+                page.$$('#toast'),
+                loadTimeData.getString('sessionLogToastTextSuccess'));
+          });
+        });
+  });
+
+  test('SaveSessionLogFailure', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          DiagnosticsBrowserProxy.setSuccess(false);
+          clickSessionLogButton().then(() => {
+            assertTrue(isToastVisible());
+            dx_utils.assertElementContainsText(
+                page.$$('#toast'),
+                loadTimeData.getString('sessionLogToastTextFailure'));
+          });
+        });
   });
 }

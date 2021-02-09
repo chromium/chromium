@@ -32,6 +32,7 @@ js_type_check("closure_compile") {
     ":routine_result_entry_test",
     ":routine_result_list_test",
     ":routine_section_test",
+    ":test_diagnostics_browser_proxy",
     ":text_badge_test",
   ]
 }
@@ -72,6 +73,7 @@ js_library("data_point_test") {
 
 js_library("diagnostics_app_test") {
   deps = [
+    ":test_diagnostics_browser_proxy",
     "../..:chai_assert",
     "../..:test_util.m",
     "//chromeos/components/diagnostics_ui/resources:diagnostics_app",
@@ -243,6 +245,13 @@ js_library("routine_section_test") {
     "//chromeos/components/diagnostics_ui/resources:text_badge",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}
+
+js_library("test_diagnostics_browser_proxy") {
+  deps = [
+    "../..:test_browser_proxy.m",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_browser_proxy",
   ]
 }
 
