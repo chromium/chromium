@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -142,3 +143,6 @@ int ExtensionToolbarMenuView::GetEndPadding() const {
   return menu_config.arrow_to_edge_padding -
          container_->toolbar_actions_bar()->platform_settings().item_spacing;
 }
+
+BEGIN_METADATA(ExtensionToolbarMenuView, views::ScrollView)
+END_METADATA

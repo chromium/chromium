@@ -10,12 +10,16 @@
 #include "base/macros.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace payments {
 
 class ValidatingTextfield : public views::Textfield {
  public:
+  METADATA_HEADER(ValidatingTextfield);
   explicit ValidatingTextfield(std::unique_ptr<ValidationDelegate> delegate);
+  ValidatingTextfield(const ValidatingTextfield&) = delete;
+  ValidatingTextfield& operator=(const ValidatingTextfield&) = delete;
   ~ValidatingTextfield() override;
 
   // Textfield:
@@ -39,8 +43,6 @@ class ValidatingTextfield : public views::Textfield {
   std::unique_ptr<ValidationDelegate> delegate_;
   bool was_blurred_ = false;
   bool being_removed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ValidatingTextfield);
 };
 
 }  // namespace payments

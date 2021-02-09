@@ -10,6 +10,7 @@
 
 #include "base/optional.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class MediaNotificationContainerImplView;
 class OverlayMediaNotification;
@@ -18,6 +19,7 @@ class OverlayMediaNotification;
 // sessions.
 class MediaNotificationListView : public views::ScrollView {
  public:
+  METADATA_HEADER(MediaNotificationListView);
   struct SeparatorStyle {
     SeparatorStyle(SkColor separator_color, int separator_thickness);
 
@@ -28,6 +30,9 @@ class MediaNotificationListView : public views::ScrollView {
   explicit MediaNotificationListView(
       const base::Optional<SeparatorStyle>& separator_style);
   MediaNotificationListView();
+  MediaNotificationListView(const MediaNotificationListView&) = delete;
+  MediaNotificationListView& operator=(const MediaNotificationListView&) =
+      delete;
   ~MediaNotificationListView() override;
 
   // Adds the given notification into the list.
@@ -58,8 +63,6 @@ class MediaNotificationListView : public views::ScrollView {
       notifications_;
 
   base::Optional<SeparatorStyle> separator_style_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationListView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_LIST_VIEW_H_

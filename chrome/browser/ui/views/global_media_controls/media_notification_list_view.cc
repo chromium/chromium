@@ -10,6 +10,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -122,3 +123,6 @@ MediaNotificationListView::RemoveNotification(const std::string& id) {
 
   return notification;
 }
+
+BEGIN_METADATA(MediaNotificationListView, views::ScrollView)
+END_METADATA

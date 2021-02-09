@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class AppMenu;
 class Browser;
@@ -30,6 +31,7 @@ class ExtensionToolbarMenuView : public AppMenuButtonObserver,
                                  public views::ScrollView,
                                  public ToolbarActionsBarObserver {
  public:
+  METADATA_HEADER(ExtensionToolbarMenuView);
   ExtensionToolbarMenuView(Browser* browser, views::MenuItemView* menu_item);
   ExtensionToolbarMenuView(const ExtensionToolbarMenuView&) = delete;
   ExtensionToolbarMenuView& operator=(const ExtensionToolbarMenuView&) = delete;

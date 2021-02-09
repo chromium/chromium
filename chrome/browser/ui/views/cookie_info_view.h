@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class GridLayout;
@@ -30,7 +31,10 @@ class CanonicalCookie;
 //  Responsible for displaying a tabular grid of Cookie information.
 class CookieInfoView : public views::ScrollView {
  public:
+  METADATA_HEADER(CookieInfoView);
   CookieInfoView();
+  CookieInfoView(const CookieInfoView&) = delete;
+  CookieInfoView& operator=(const CookieInfoView&) = delete;
   ~CookieInfoView() override;
 
   // Update the display from the specified CookieNode.
@@ -65,8 +69,6 @@ class CookieInfoView : public views::ScrollView {
   void SetTextfieldColors();
 
   std::unordered_map<CookieProperty, views::Textfield*> property_textfields_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieInfoView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COOKIE_INFO_VIEW_H_

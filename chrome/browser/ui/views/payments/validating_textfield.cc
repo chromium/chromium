@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 #include <utility>
 
@@ -51,5 +52,8 @@ void ValidatingTextfield::Validate() {
   // TextfieldValueChanged may have side-effects, such as displaying errors.
   SetInvalid(!delegate_->TextfieldValueChanged(this, was_blurred_));
 }
+
+BEGIN_METADATA(ValidatingTextfield, views::Textfield)
+END_METADATA
 
 }  // namespace payments
