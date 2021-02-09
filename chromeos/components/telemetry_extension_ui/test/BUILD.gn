@@ -84,7 +84,7 @@ js_library("untrusted_browsertest") {
     "untrusted_browsertest.js",
     "untrusted_test_handlers.js",
   ]
-  deps = [ "//chromeos/components/telemetry_extension_ui/resources:untrusted" ]
+  deps = [ "//chromeos/components/telemetry_extension_ui/resources/dpsl" ]
   externs_list = [
     "$externs_path/pending.js",
     "//chromeos/components/web_applications/js2gtest_support.externs.js",

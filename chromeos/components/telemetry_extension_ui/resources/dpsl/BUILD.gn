@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,22 +10,21 @@ assert(!is_official_build,
        "Telemetry Extension is only built for unofficial builds")
 
 group("closure_compile") {
-  deps = [
-    ":trusted_closure_compile",
-    "dpsl:dpsl_closure_compile",
-  ]
+  deps = [ ":dpsl_closure_compile" ]
 }
 
-js_type_check("trusted_closure_compile") {
+js_type_check("dpsl_closure_compile") {
   closure_flags = system_app_closure_flags_strict
-  deps = [ ":trusted" ]
+  deps = [ ":dpsl" ]
 }
 
-js_library("trusted") {
-  sources = [ "trusted.js" ]
+js_library("dpsl") {
+  sources = [ "api.js" ]
   deps = [
-    "../mojom:mojom_js_library_for_compile",
-    "dpsl:types",
+    ":types",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
+}
+
+js_library("types") {
 }
