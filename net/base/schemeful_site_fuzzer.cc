@@ -36,7 +36,5 @@ DEFINE_PROTO_FUZZER(const url_proto::Url& url_message) {
     if (scheme == "http" || scheme == "https") {
       CHECK_NE(site.registrable_domain_or_host_for_testing().front(), '.');
     }
-  } else {
-    CHECK(!site.has_registrable_domain_or_host());
   }
 }
