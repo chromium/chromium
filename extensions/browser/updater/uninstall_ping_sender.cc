@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/uninstall_ping_sender.h"
+#include "extensions/browser/updater/uninstall_ping_sender.h"
 
 #include "base/version.h"
 #include "extensions/browser/updater/update_service.h"
@@ -12,7 +12,7 @@ namespace extensions {
 UninstallPingSender::UninstallPingSender(ExtensionRegistry* registry,
                                          Filter filter)
     : filter_(std::move(filter)) {
-  observer_.Add(registry);
+  observer_.Observe(registry);
 }
 
 UninstallPingSender::~UninstallPingSender() {}

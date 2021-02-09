@@ -37,6 +37,7 @@ source_set("browser_context_keyed_service_factories") {
     "//extensions/browser:browser_sources",
     "//extensions/browser/api",
     "//extensions/browser/api:api_implementations",
+    "//extensions/browser/updater",
   ]
 }
 
@@ -352,8 +353,6 @@ source_set("browser_sources") {
     "task_queue_util.h",
     "ui_util.cc",
     "ui_util.h",
-    "uninstall_ping_sender.cc",
-    "uninstall_ping_sender.h",
     "uninstall_reason.h",
     "unloaded_extension_reason.h",
     "update_observer.h",
@@ -430,7 +429,6 @@ source_set("browser_sources") {
     "//content/public/common",
     "//extensions/browser/install",
     "//extensions/browser/kiosk",
-    "//extensions/browser/updater",
     "//extensions/browser/value_store",
     "//ipc",
   ]

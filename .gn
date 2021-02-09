@@ -103,7 +103,6 @@ no_check_targets = [
   "//extensions/browser/api/usb:*",  # 12 errors
   "//extensions/browser/api/web_request:*",  # 37 errors
   "//extensions/browser/api:*",  # 7 errors
-  "//extensions/browser/updater:*",  # 31 errors
   "//extensions/browser:*",  # 20 errors
   "//extensions:*",  # 75 errors
   "//headless:*",  # 167 errors

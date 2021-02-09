@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_UNINSTALL_PING_SENDER_H_
-#define EXTENSIONS_BROWSER_UNINSTALL_PING_SENDER_H_
+#ifndef EXTENSIONS_BROWSER_UPDATER_UNINSTALL_PING_SENDER_H_
+#define EXTENSIONS_BROWSER_UPDATER_UNINSTALL_PING_SENDER_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -43,11 +43,12 @@ class UninstallPingSender : public ExtensionRegistryObserver {
   // Callback for determining whether to send uninstall pings.
   Filter filter_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver> observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UninstallPingSender);
 };
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_UNINSTALL_PING_SENDER_H_
+#endif  // EXTENSIONS_BROWSER_UPDATER_UNINSTALL_PING_SENDER_H_

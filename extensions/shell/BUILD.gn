@@ -62,6 +62,7 @@ source_set("app_shell_lib") {
     "//extensions/browser:core_api_provider",
     "//extensions/browser/api/messaging",
     "//extensions/browser/kiosk",
+    "//extensions/browser/updater",
     "//extensions/common",
     "//extensions/common:core_api_provider",
     "//extensions/common/api",

@@ -445,6 +445,7 @@ cast_source_set("browser_base") {
       "//extensions/browser",
       "//extensions/browser:core_api_provider",
       "//extensions/browser/api/messaging",
+      "//extensions/browser/updater",
       "//extensions/common",
       "//extensions/common/api",
       "//google_apis:google_apis",

@@ -57,7 +57,7 @@
 #include "extensions/browser/runtime_data.h"
 #include "extensions/browser/service_worker_manager.h"
 #include "extensions/browser/state_store.h"
-#include "extensions/browser/uninstall_ping_sender.h"
+#include "extensions/browser/updater/uninstall_ping_sender.h"
 #include "extensions/browser/value_store/value_store_factory_impl.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature_channel.h"
