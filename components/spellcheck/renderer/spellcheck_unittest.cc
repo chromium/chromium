@@ -476,9 +476,16 @@ TEST_F(SpellCheckTest, SpellCheckSuggestions_EN_US) {
   }
 }
 
+// TODO(crbug.com/1175933): Fix the uninitialized memory and re-enable the test.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SpellCheckText DISABLED_SpellCheckText
+#else
+#define MAYBE_SpellCheckText SpellCheckText
+#endif
+
 // This test verifies our spellchecker can split a text into words and check
 // the spelling of each word in the text.
-TEST_F(SpellCheckTest, SpellCheckText) {
+TEST_F(SpellCheckTest, MAYBE_SpellCheckText) {
   static const struct {
     const char* language;
     const wchar_t* input;

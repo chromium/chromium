@@ -19,7 +19,8 @@ _LINUX_SI_FILE_ALLOWLIST = {
         'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
         'atomicops_internals_x86.cc',  # TODO(crbug.com/973551): Remove.
         'debugallocation_shim.cc',  # TODO(crbug.com/973552): Remove.
-        'iostream.cpp',  # TODO(crbug.com/973554): Remove.
+        'iostream.cpp:',  # TODO(crbug.com/973554): Remove.
+        '000101',   # libc++ uses init_priority 101 for iostreams.
         'spinlock.cc',  # TODO(crbug.com/973556): Remove.
     ],
     'nacl_helper_bootstrap': [],
@@ -34,7 +35,8 @@ _CROS_SI_FILE_ALLOWLIST = {
         'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
         'atomicops_internals_x86.cc',  # TODO(crbug.com/973551): Remove.
         'debugallocation_shim.cc',  # TODO(crbug.com/973552): Remove.
-        'iostream.cpp',  # TODO(crbug.com/973554): Remove.
+        'iostream.cpp:',  # TODO(crbug.com/973554): Remove.
+        '000101',   # libc++ uses init_priority 101 for iostreams.
         'spinlock.cc',  # TODO(crbug.com/973556): Remove.
         'rpc.pb.cc',  # TODO(crbug.com/537099): Remove.
     ],
@@ -48,14 +50,16 @@ _MAC_SI_FILE_ALLOWLIST = [
     'InstrProfilingRuntime.cpp', # Only in coverage builds, not in production.
     'sysinfo.cc', # Only in coverage builds, not in production.
     'iostream.cpp', # Used to setup std::cin/cout/cerr.
+    '000101', # Used to setup std::cin/cout/cerr
 ]
 
-# A static initializer is needed on Mac for libc++ to set up std::cin/cout/cerr
-# before main() runs. Only iostream.cpp needs to be counted here.
-FALLBACK_EXPECTED_MAC_SI_COUNT = 1
+# Two static initializers are needed on Mac for libc++ to set up
+# std::cin/cout/cerr before main() runs. Only iostream.cpp needs to be counted
+# here.
+FALLBACK_EXPECTED_MAC_SI_COUNT = 2
 
 # For coverage builds, also allow 'IntrProfilingRuntime.cpp'
-COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT = 2;
+COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT = 3
 
 
 def run_process(command):

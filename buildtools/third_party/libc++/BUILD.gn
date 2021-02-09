@@ -54,6 +54,8 @@ target(_libcxx_target_type, "libc++") {
   sources = [
     "trunk/src/algorithm.cpp",
     "trunk/src/any.cpp",
+    "trunk/src/atomic.cpp",
+    "trunk/src/barrier.cpp",
     "trunk/src/bind.cpp",
     "trunk/src/charconv.cpp",
     "trunk/src/chrono.cpp",
@@ -65,6 +67,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/future.cpp",
     "trunk/src/hash.cpp",
     "trunk/src/ios.cpp",
+    "trunk/src/ios.instantiations.cpp",
     "trunk/src/iostream.cpp",
     "trunk/src/locale.cpp",
     "trunk/src/memory.cpp",
@@ -73,6 +76,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/new.cpp",
     "trunk/src/optional.cpp",
     "trunk/src/random.cpp",
+    "trunk/src/random_shuffle.cpp",
     "trunk/src/regex.cpp",
     "trunk/src/shared_mutex.cpp",
     "trunk/src/stdexcept.cpp",
@@ -128,13 +132,7 @@ target(_libcxx_target_type, "libc++") {
   }
 
   defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
-  if (!is_clang && libcxx_is_shared) {
-    # This is a temporary workaround to get libc++ builds working with
-    # gcc.  It can be removed with either
-    # https://reviews.llvm.org/D35326 or
-    # https://reviews.llvm.org/D35388 lands.
-    defines += [ "_LIBCPP_EXTERN_TEMPLATE_TYPE_VIS=__attribute__((__visibility__(\"default\")))" ]
-  }
+
   if (!libcxx_is_shared) {
     # TODO(https://crbug.com/946629): Remove use_xcode_clang condition once
     # XCode clang is updated to support -fvisibility-global-new-delete-hidden.

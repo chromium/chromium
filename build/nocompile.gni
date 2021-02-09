@@ -107,6 +107,9 @@ if (enable_nocompile_tests) {
 
         # TODO(https://crbug.com/989932): Track build/config/compiler/BUILD.gn
         "-Wno-implicit-int-float-conversion",
+
+        # TODO(crbug.com/1166707): libc++ now requires this macro to be defined.
+        "-D_LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS",
       ]
 
       if (is_apple && host_os != "mac") {
