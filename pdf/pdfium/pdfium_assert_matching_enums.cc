@@ -330,3 +330,10 @@ STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextDirection::kBottomToTop,
                    PP_PRIVATEDIRECTION_BTT);
 STATIC_ASSERT_ENUM(chrome_pdf::AccessibilityTextDirection::kMaxValue,
                    PP_PRIVATEDIRECTION_LAST);
+
+STATIC_ASSERT_ENUM(chrome_pdf::ChoiceFieldType::kListBox,
+                   PP_PRIVATECHOICEFIELD_LISTBOX);
+STATIC_ASSERT_ENUM(chrome_pdf::ChoiceFieldType::kComboBox,
+                   PP_PRIVATECHOICEFIELD_COMBOBOX);
+STATIC_ASSERT_ENUM(chrome_pdf::ChoiceFieldType::kMaxValue,
+                   PP_PRIVATECHOICEFIELD_LAST);

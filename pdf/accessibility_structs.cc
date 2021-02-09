@@ -117,4 +117,31 @@ AccessibilityTextFieldInfo::AccessibilityTextFieldInfo(
 
 AccessibilityTextFieldInfo::~AccessibilityTextFieldInfo() = default;
 
+AccessibilityChoiceFieldInfo::AccessibilityChoiceFieldInfo() = default;
+
+AccessibilityChoiceFieldInfo::AccessibilityChoiceFieldInfo(
+    const std::string& name,
+    const std::vector<AccessibilityChoiceFieldOptionInfo>& options,
+    ChoiceFieldType type,
+    bool is_read_only,
+    bool is_multi_select,
+    bool has_editable_text_box,
+    uint32_t index_in_page,
+    uint32_t text_run_index,
+    const gfx::RectF& bounds)
+    : name(name),
+      options(options),
+      type(type),
+      is_read_only(is_read_only),
+      is_multi_select(is_multi_select),
+      has_editable_text_box(has_editable_text_box),
+      index_in_page(index_in_page),
+      text_run_index(text_run_index),
+      bounds(bounds) {}
+
+AccessibilityChoiceFieldInfo::AccessibilityChoiceFieldInfo(
+    const AccessibilityChoiceFieldInfo& other) = default;
+
+AccessibilityChoiceFieldInfo::~AccessibilityChoiceFieldInfo() = default;
+
 }  // namespace chrome_pdf

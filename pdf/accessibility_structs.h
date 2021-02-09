@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -191,6 +192,63 @@ struct AccessibilityTextFieldInfo {
   // before which the text field should be inserted in the accessibility tree.
   uint32_t text_run_index = 0;
   // Bounding box of the text field.
+  gfx::RectF bounds;
+};
+
+struct AccessibilityChoiceFieldOptionInfo {
+  // Represents the name property of choice field option.
+  std::string name;
+  // Represents if a choice field option is selected or not.
+  bool is_selected = false;
+  // Bounding box of the choice field option.
+  gfx::RectF bounds;
+};
+
+// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
+// from Pepper.
+// Explicitly set all enum values to match enum values in
+// PP_PrivateChoiceFieldType.
+enum class ChoiceFieldType {
+  kListBox = 0,
+  kComboBox = 1,
+  kMaxValue = kComboBox,
+};
+
+struct AccessibilityChoiceFieldInfo {
+  AccessibilityChoiceFieldInfo();
+  AccessibilityChoiceFieldInfo(
+      const std::string& name,
+      const std::vector<AccessibilityChoiceFieldOptionInfo>& options,
+      ChoiceFieldType type,
+      bool is_read_only,
+      bool is_multi_select,
+      bool has_editable_text_box,
+      uint32_t index_in_page,
+      uint32_t text_run_index,
+      const gfx::RectF& bounds);
+  AccessibilityChoiceFieldInfo(const AccessibilityChoiceFieldInfo& other);
+  ~AccessibilityChoiceFieldInfo();
+
+  // Represents the name property of choice field, if present.
+  std::string name;
+  // Represents list of options in choice field, if present.
+  std::vector<AccessibilityChoiceFieldOptionInfo> options;
+  // Represents type of choice field.
+  ChoiceFieldType type;
+  // Represents if the choice field is non-editable.
+  bool is_read_only = false;
+  // Represents if the choice field is multi-selectable.
+  bool is_multi_select = false;
+  // Represents if the choice field includes an editable text box.
+  bool has_editable_text_box = false;
+  // Index of this choice field in the collection of choice fields in the
+  // page.
+  uint32_t index_in_page = 0;
+  // We anchor the choice field to a text run index, this denotes the text run
+  // before which the choice field should be inserted in the accessibility
+  // tree.
+  uint32_t text_run_index = 0;
+  // Bounding box of the choice field.
   gfx::RectF bounds;
 };
 
