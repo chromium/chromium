@@ -80,6 +80,21 @@ NSUserActivity* ActivityToMoveTab(NSString* tab_id) {
   return activity;
 }
 
+NSUserActivity* AdaptUserActivityToIncognito(NSUserActivity* activity_to_adapt,
+                                             bool incognito) {
+  if (([activity_to_adapt.activityType
+           isEqualToString:kLoadIncognitoURLActivityType] &&
+       !incognito) ||
+      ([activity_to_adapt.activityType isEqualToString:kLoadURLActivityType] &&
+       incognito)) {
+    NSUserActivity* activity = BaseActivityForURLOpening(incognito);
+    [activity addUserInfoEntriesFromDictionary:activity_to_adapt.userInfo];
+    return activity;
+  }
+
+  return activity_to_adapt;
+}
+
 bool ActivityIsURLLoad(NSUserActivity* activity) {
   return [activity.activityType isEqualToString:kLoadURLActivityType] ||
          [activity.activityType isEqualToString:kLoadIncognitoURLActivityType];

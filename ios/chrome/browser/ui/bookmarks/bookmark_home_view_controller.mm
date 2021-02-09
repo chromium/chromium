@@ -1788,6 +1788,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                            BookmarkHomeViewController* strongSelf = weakSelf;
                            if (!strongSelf)
                              return;
+                           if ([strongSelf isIncognitoForced])
+                             return;
                            auto nodes = [strongSelf editNodes];
                            [strongSelf openAllURLs:GetUrlsToOpen(nodes)
                                        inIncognito:NO
@@ -1801,6 +1803,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                          action:^{
                            BookmarkHomeViewController* strongSelf = weakSelf;
                            if (!strongSelf)
+                             return;
+                           if (![strongSelf isIncognitoAvailable])
                              return;
                            auto nodes = [strongSelf editNodes];
                            [strongSelf openAllURLs:GetUrlsToOpen(nodes)
@@ -1864,6 +1868,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
   [coordinator addItemWithTitle:titleString
                          action:^{
+                           if ([weakSelf isIncognitoForced])
+                             return;
                            [weakSelf openAllURLs:{nodeURL}
                                      inIncognito:NO
                                           newTab:YES];
@@ -1882,13 +1888,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     };
     [coordinator addItemWithTitle:titleString
                            action:action
-                            style:UIAlertActionStyleDefault
-                          enabled:![self isIncognitoForced]];
+                            style:UIAlertActionStyleDefault];
   }
 
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB);
   [coordinator addItemWithTitle:titleString
                          action:^{
+                           if (![weakSelf isIncognitoAvailable])
+                             return;
                            [weakSelf openAllURLs:{nodeURL}
                                      inIncognito:YES
                                           newTab:YES];
@@ -2355,6 +2362,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
           [[NSMutableArray alloc] init];
 
       UIAction* openAction = [actionFactory actionToOpenInNewTabWithBlock:^{
+        if ([weakSelf isIncognitoForced])
+          return;
         [weakSelf openAllURLs:{nodeURL} inIncognito:NO newTab:YES];
       }];
       if ([self isIncognitoForced]) {
@@ -2364,6 +2373,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
       UIAction* openInIncognito =
           [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+            if (![weakSelf isIncognitoAvailable])
+              return;
             [weakSelf openAllURLs:{nodeURL} inIncognito:YES newTab:YES];
           }];
       if (![self isIncognitoAvailable]) {
@@ -2372,13 +2383,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [menuElements addObject:openInIncognito];
 
       if (base::ios::IsMultipleScenesSupported()) {
-        UIAction* openInWindow = [actionFactory
-            actionToOpenInNewWindowWithURL:nodeURL
-                            activityOrigin:WindowActivityBookmarksOrigin];
-        if ([self isIncognitoForced]) {
-          openInWindow.attributes = UIMenuElementAttributesDisabled;
-        }
-        [menuElements addObject:openInWindow];
+        [menuElements
+            addObject:[actionFactory
+                          actionToOpenInNewWindowWithURL:nodeURL
+                                          activityOrigin:
+                                              WindowActivityBookmarksOrigin]];
       }
 
       [menuElements addObject:[actionFactory actionToCopyURL:nodeURL]];

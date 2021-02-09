@@ -1395,6 +1395,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         [[UISceneActivationRequestOptions alloc] init];
     options.requestingScene = self.sceneState.scene;
 
+    if (self.mainInterface) {
+      PrefService* prefs = self.mainInterface.browserState->GetPrefs();
+      if (IsIncognitoModeForced(prefs)) {
+        userActivity = AdaptUserActivityToIncognito(userActivity, true);
+      } else if (IsIncognitoModeDisabled(prefs)) {
+        userActivity = AdaptUserActivityToIncognito(userActivity, false);
+      }
+    }
+
     [UIApplication.sharedApplication
         requestSceneSessionActivation:nil /* make a new scene */
                          userActivity:userActivity
