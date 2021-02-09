@@ -333,9 +333,8 @@ void MediaStreamUIProxy::ProcessAccessRequestResponse(
 
 void MediaStreamUIProxy::ProcessStopRequestFromUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!stop_callback_.is_null());
-
-  std::move(stop_callback_).Run();
+  if (stop_callback_)
+    std::move(stop_callback_).Run();
 }
 
 void MediaStreamUIProxy::ProcessChangeSourceRequestFromUI(
