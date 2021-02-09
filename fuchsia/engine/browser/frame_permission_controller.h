@@ -15,13 +15,18 @@
 
 namespace url {
 class Origin;
-}
+}  // namespace url
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // FramePermissionController is responsible for web permissions state for a
 // fuchsia.web.Frame instance.
 class FramePermissionController {
  public:
-  FramePermissionController();
+  // |web_contents| must outlive FramePermissionController.
+  explicit FramePermissionController(content::WebContents* web_contents);
   ~FramePermissionController();
 
   FramePermissionController(FramePermissionController&) = delete;
@@ -41,10 +46,10 @@ class FramePermissionController {
                                  blink::mojom::PermissionStatus state);
 
   // Returns current permission state of the specified |permission| and
-  // |origin|.
+  // |requesting_origin|.
   blink::mojom::PermissionStatus GetPermissionState(
       content::PermissionType permission,
-      const url::Origin& origin);
+      const url::Origin& requesting_origin);
 
   // Requests permission state for the specified |permissions|. When the request
   // is resolved, the |callback| is called with a list of status values, one for
@@ -55,7 +60,7 @@ class FramePermissionController {
   // fuchsia.web.PermissionManager protocol and use it to request permissions.
   void RequestPermissions(
       const std::vector<content::PermissionType>& permissions,
-      const url::Origin& origin,
+      const url::Origin& requesting_origin,
       bool user_gesture,
       base::OnceCallback<
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback);
@@ -79,6 +84,8 @@ class FramePermissionController {
   // currently possible to set a default of GRANTED/DENIED, and to override that
   // to ASK for specific origins.
   PermissionSet GetEffectivePermissionsForOrigin(const url::Origin& origin);
+
+  content::WebContents* const web_contents_;
 
   base::flat_map<url::Origin, PermissionSet> per_origin_permissions_;
   PermissionSet default_permissions_{blink::mojom::PermissionStatus::DENIED};

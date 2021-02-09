@@ -5,6 +5,7 @@
 #include "fuchsia/engine/browser/frame_permission_controller.h"
 
 #include "base/check_op.h"
+#include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 using PermissionStatus = blink::mojom::PermissionStatus;
@@ -19,6 +20,22 @@ size_t GetPermissionIndex(PermissionType type) {
 }
 
 constexpr PermissionStatus kDefaultPerOriginStatus = PermissionStatus::ASK;
+
+// Converts from |url|'s actual origin to the "canonical origin" that should
+// be used for the purpose of requesting permissions.
+const url::Origin& GetCanonicalOrigin(PermissionType permission,
+                                      const url::Origin& requesting_origin,
+                                      const url::Origin& embedding_origin) {
+  // Logic in this function should match the logic in
+  // permissions::PermissionManager::GetCanonicalOrigin(). Currently it always
+  // returns embedding origin, which is correct for all permissions supported by
+  // WebEngine (AUDIO_CAPTURE, VIDEO_CAPTURE, PROTECTED_MEDIA_IDENTIFIER,
+  // DURABLE_STORAGE).
+  //
+  // TODO(crbug.com/1063094): Update this function when other permissions are
+  // added.
+  return embedding_origin;
+}
 
 }  // namespace
 
@@ -36,12 +53,26 @@ FramePermissionController::PermissionSet&
 FramePermissionController::PermissionSet::operator=(
     const PermissionSet& other) = default;
 
-FramePermissionController::FramePermissionController() = default;
+FramePermissionController::FramePermissionController(
+    content::WebContents* web_contents)
+    : web_contents_(web_contents) {}
+
 FramePermissionController::~FramePermissionController() = default;
 
 void FramePermissionController::SetPermissionState(PermissionType permission,
                                                    const url::Origin& origin,
                                                    PermissionStatus state) {
+  // Currently only the following permissions are supported by WebEngine. Others
+  // may not be handled correctly by this class.
+  //
+  // TODO(crbug.com/1063094): This check is necessary mainly because
+  // GetCanonicalOrigin() may not work correctly for other permission. See
+  // comemnts in GetCanonicalOrigin(). Remove it once that issue is resolved.
+  DCHECK(permission == content::PermissionType::AUDIO_CAPTURE ||
+         permission == content::PermissionType::VIDEO_CAPTURE ||
+         permission == content::PermissionType::PROTECTED_MEDIA_IDENTIFIER ||
+         permission == content::PermissionType::DURABLE_STORAGE);
+
   auto it = per_origin_permissions_.find(origin);
   if (it == per_origin_permissions_.end()) {
     // Don't create a PermissionSet for |origin| if |state| is set to the
@@ -68,23 +99,26 @@ void FramePermissionController::SetDefaultPermissionState(
 
 PermissionStatus FramePermissionController::GetPermissionState(
     PermissionType permission,
-    const url::Origin& origin) {
-  PermissionSet effective = GetEffectivePermissionsForOrigin(origin);
+    const url::Origin& requesting_origin) {
+  url::Origin embedding_origin =
+      url::Origin::Create(web_contents_->GetLastCommittedURL());
+  const url::Origin& canonical_origin =
+      GetCanonicalOrigin(permission, requesting_origin, embedding_origin);
+
+  PermissionSet effective = GetEffectivePermissionsForOrigin(canonical_origin);
   return effective.permission_states[GetPermissionIndex(permission)];
 }
 
 void FramePermissionController::RequestPermissions(
     const std::vector<PermissionType>& permissions,
-    const url::Origin& origin,
+    const url::Origin& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
   std::vector<PermissionStatus> result;
   result.reserve(permissions.size());
 
-  PermissionSet effective = GetEffectivePermissionsForOrigin(origin);
   for (auto& permission : permissions) {
-    result.push_back(
-        effective.permission_states[GetPermissionIndex(permission)]);
+    result.push_back(GetPermissionState(permission, requesting_origin));
   }
 
   std::move(callback).Run(result);

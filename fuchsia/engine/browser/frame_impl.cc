@@ -254,6 +254,7 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
       navigation_controller_(web_contents_.get()),
       log_level_(kLogSeverityUnreachable),
       url_request_rewrite_rules_manager_(web_contents_.get()),
+      permission_controller_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
       media_blocker_(web_contents_.get()),
       theme_manager_(web_contents_.get()) {
