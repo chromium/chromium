@@ -196,7 +196,7 @@
     async function onSearch() {
       var matches = consoleView.element
         .childTextNodes()
-        .filter(node => node.parentElement.classList.contains('highlighted-search-result'))
+        .filter(node => node.parentElement && node.parentElement.classList.contains('highlighted-search-result'))
         .map(node => node.parentElement);
       TestRunner.addResult('Highlighted ' + matches.length + ' matches');
 
