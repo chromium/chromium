@@ -251,8 +251,7 @@ bool FromProto(
   bool result = false;
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{struct_type}}>::Serialize(
-    input, mojolpm_message.payload_buffer(), &mojolpm_writer,
-    &mojolpm_message);
+    input, &mojolpm_writer, &mojolpm_message);
   result = ::mojo::internal::Serializer<{{dataview_type}}, {{mojom_type}}>::Deserialize(
     mojolpm_writer.data(), &output, &mojolpm_message);
 
@@ -328,8 +327,7 @@ bool FromProto(
   {{data_type}}::BufferWriter mojolpm_writer;
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{union_type}}>::Serialize(
-    input, mojolpm_message.payload_buffer(), &mojolpm_writer, false,
-    &mojolpm_message);
+    input, &mojolpm_writer, false, &mojolpm_message);
   return ::mojo::internal::Serializer<{{dataview_type}}, {{mojom_type}}>::Deserialize(
     mojolpm_writer.data(), &output, &mojolpm_message);
 {%-   else %}

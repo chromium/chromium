@@ -36,8 +36,7 @@ size_t SerializeStruct(InputType& input,
   *message = mojo::Message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message->payload_buffer()->cursor();
   typename DataType::BufferWriter writer;
-  mojo::internal::Serialize<DataViewType>(input, message->payload_buffer(),
-                                          &writer, message);
+  mojo::internal::Serialize<DataViewType>(input, &writer, message);
   *out_data = writer.is_null() ? nullptr : writer.data();
   return message->payload_buffer()->cursor() - payload_start;
 }
@@ -51,8 +50,7 @@ size_t SerializeUnion(InputType& input,
   *message = mojo::Message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message->payload_buffer()->cursor();
   typename DataType::BufferWriter writer;
-  mojo::internal::Serialize<DataViewType>(input, message->payload_buffer(),
-                                          &writer, false, message);
+  mojo::internal::Serialize<DataViewType>(input, &writer, false, message);
   *out_data = writer.is_null() ? nullptr : writer.data();
   return message->payload_buffer()->cursor() - payload_start;
 }
@@ -67,8 +65,8 @@ size_t SerializeArray(InputType& input,
   typename DataViewType::Data_::BufferWriter writer;
   mojo::internal::ContainerValidateParams validate_params(0, nullable_elements,
                                                           nullptr);
-  mojo::internal::Serialize<DataViewType>(input, message->payload_buffer(),
-                                          &writer, &validate_params, message);
+  mojo::internal::Serialize<DataViewType>(input, &writer, &validate_params,
+                                          message);
   *out_data = writer.is_null() ? nullptr : writer.data();
   return message->payload_buffer()->cursor() - payload_start;
 }
@@ -293,8 +291,7 @@ TEST(UnionTest, SerializeIsNullInlined) {
   mojo::internal::FixedBufferForTesting buffer(16);
   internal::PodUnion_Data::BufferWriter writer;
   writer.Allocate(&buffer);
-  mojo::internal::Serialize<PodUnionDataView>(pod, &buffer, &writer, true,
-                                              &message);
+  mojo::internal::Serialize<PodUnionDataView>(pod, &writer, true, &message);
   EXPECT_TRUE(writer.data()->is_null());
   EXPECT_EQ(16U, buffer.cursor());
 
@@ -702,8 +699,8 @@ TEST(UnionTest, PodUnionInMapSerialization) {
   mojo::internal::ContainerValidateParams validate_params(
       new mojo::internal::ContainerValidateParams(0, false, nullptr),
       new mojo::internal::ContainerValidateParams(0, false, nullptr));
-  mojo::internal::Serialize<MojomType>(map, message.payload_buffer(), &writer,
-                                       &validate_params, &message);
+  mojo::internal::Serialize<MojomType>(map, &writer, &validate_params,
+                                       &message);
   EXPECT_EQ(120U, message.payload_buffer()->cursor() - payload_start);
 
   base::flat_map<std::string, PodUnionPtr> map2;
@@ -730,8 +727,8 @@ TEST(UnionTest, PodUnionInMapSerializationWithNull) {
   mojo::internal::ContainerValidateParams validate_params(
       new mojo::internal::ContainerValidateParams(0, false, nullptr),
       new mojo::internal::ContainerValidateParams(0, true, nullptr));
-  mojo::internal::Serialize<MojomType>(map, message.payload_buffer(), &writer,
-                                       &validate_params, &message);
+  mojo::internal::Serialize<MojomType>(map, &writer, &validate_params,
+                                       &message);
   EXPECT_EQ(120U, message.payload_buffer()->cursor() - payload_start);
 
   base::flat_map<std::string, PodUnionPtr> map2;

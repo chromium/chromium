@@ -126,7 +126,6 @@ struct ArraySerializer<
       "Incorrect array serializer");
 
   static void SerializeElements(UserTypeIterator* input,
-                                Buffer* buf,
                                 BufferWriter* writer,
                                 const ContainerValidateParams* validate_params,
                                 Message* message) {
@@ -189,7 +188,6 @@ struct ArraySerializer<
                 "Incorrect array serializer");
 
   static void SerializeElements(UserTypeIterator* input,
-                                Buffer* buf,
                                 BufferWriter* writer,
                                 const ContainerValidateParams* validate_params,
                                 Message* message) {
@@ -237,7 +235,6 @@ struct ArraySerializer<MojomType,
                 "Incorrect array serializer");
 
   static void SerializeElements(UserTypeIterator* input,
-                                Buffer* buf,
                                 BufferWriter* writer,
                                 const ContainerValidateParams* validate_params,
                                 Message* message) {
@@ -284,7 +281,6 @@ struct ArraySerializer<
   using BufferWriter = typename Data::BufferWriter;
 
   static void SerializeElements(UserTypeIterator* input,
-                                Buffer* buf,
                                 BufferWriter* writer,
                                 const ContainerValidateParams* validate_params,
                                 Message* message) {
@@ -349,7 +345,6 @@ struct ArraySerializer<MojomType,
   using BufferWriter = typename Data::BufferWriter;
 
   static void SerializeElements(UserTypeIterator* input,
-                                Buffer* buf,
                                 BufferWriter* writer,
                                 const ContainerValidateParams* validate_params,
                                 Message* message) {
@@ -357,7 +352,7 @@ struct ArraySerializer<MojomType,
     for (size_t i = 0; i < size; ++i) {
       DataElementWriter data_writer;
       typename UserTypeIterator::GetNextResult next = input->GetNext();
-      SerializeCaller<Element>::Run(next, buf, &data_writer,
+      SerializeCaller<Element>::Run(next, &data_writer,
                                     validate_params->element_validate_params,
                                     message);
       writer->data()->at(i).Set(data_writer.is_null() ? nullptr
@@ -391,11 +386,10 @@ struct ArraySerializer<MojomType,
   struct SerializeCaller {
     template <typename InputElementType>
     static void Run(InputElementType&& input,
-                    Buffer* buf,
                     DataElementWriter* writer,
                     const ContainerValidateParams* validate_params,
                     Message* message) {
-      Serialize<T>(std::forward<InputElementType>(input), buf, writer, message);
+      Serialize<T>(std::forward<InputElementType>(input), writer, message);
     }
   };
 
@@ -403,11 +397,10 @@ struct ArraySerializer<MojomType,
   struct SerializeCaller<T, true> {
     template <typename InputElementType>
     static void Run(InputElementType&& input,
-                    Buffer* buf,
                     DataElementWriter* writer,
                     const ContainerValidateParams* validate_params,
                     Message* message) {
-      Serialize<T>(std::forward<InputElementType>(input), buf, writer,
+      Serialize<T>(std::forward<InputElementType>(input), writer,
                    validate_params, message);
     }
   };
@@ -431,16 +424,16 @@ struct ArraySerializer<MojomType,
   using BufferWriter = typename Data::BufferWriter;
 
   static void SerializeElements(UserTypeIterator* input,
-                                Buffer* buf,
                                 BufferWriter* writer,
                                 const ContainerValidateParams* validate_params,
                                 Message* message) {
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
       ElementWriter result;
-      result.AllocateInline(buf, writer->data()->storage() + i);
+      result.AllocateInline(message->payload_buffer(),
+                            writer->data()->storage() + i);
       typename UserTypeIterator::GetNextResult next = input->GetNext();
-      Serialize<Element>(next, buf, &result, true, message);
+      Serialize<Element>(next, &result, true, message);
       MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
           !validate_params->element_is_nullable &&
               writer->data()->at(i).is_null(),
@@ -475,7 +468,6 @@ struct Serializer<ArrayDataView<Element>, MaybeConstUserType> {
   using BufferWriter = typename Data::BufferWriter;
 
   static void Serialize(MaybeConstUserType& input,
-                        Buffer* buf,
                         BufferWriter* writer,
                         const ContainerValidateParams* validate_params,
                         Message* message) {
@@ -490,9 +482,9 @@ struct Serializer<ArrayDataView<Element>, MaybeConstUserType> {
         internal::MakeMessageWithExpectedArraySize(
             "fixed-size array has wrong number of elements", size,
             validate_params->expected_num_elements));
-    writer->Allocate(size, buf);
+    writer->Allocate(size, message->payload_buffer());
     ArrayIterator<Traits, MaybeConstUserType> iterator(input);
-    Impl::SerializeElements(&iterator, buf, writer, validate_params, message);
+    Impl::SerializeElements(&iterator, writer, validate_params, message);
   }
 
   static bool Deserialize(Data* input, UserType* output, Message* message) {

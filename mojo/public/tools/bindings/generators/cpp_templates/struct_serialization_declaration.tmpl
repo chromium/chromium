@@ -12,7 +12,6 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
   using Traits = StructTraits<{{data_view}}, UserType>;
 
   static void Serialize(MaybeConstUserType& input,
-                        Buffer* buffer,
                         {{data_type}}::BufferWriter* output,
                         Message* message) {
     if (CallIsNullIfExists<Traits>(input))
@@ -20,7 +19,7 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
     {{struct_macros.serialize(
           struct, struct.name ~ " struct",
           "Traits::%s(input)", "(*output)",
-          "buffer", "message", True)|indent(2)}}
+          "message", True)|indent(2)}}
   }
 
   static bool Deserialize({{data_type}}* input,

@@ -96,7 +96,6 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
                       MapValueReader<MaybeConstUserType>>;
 
   static void Serialize(MaybeConstUserType& input,
-                        Buffer* buf,
                         typename Data::BufferWriter* writer,
                         const ContainerValidateParams* validate_params,
                         Message* message) {
@@ -105,23 +104,23 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
     if (CallIsNullIfExists<Traits>(input))
       return;
 
-    writer->Allocate(buf);
+    writer->Allocate(message->payload_buffer());
     typename MojomTypeTraits<ArrayDataView<Key>>::Data::BufferWriter
         keys_writer;
-    keys_writer.Allocate(Traits::GetSize(input), buf);
+    keys_writer.Allocate(Traits::GetSize(input), message->payload_buffer());
     MapKeyReader<MaybeConstUserType> key_reader(input);
-    KeyArraySerializer::SerializeElements(&key_reader, buf, &keys_writer,
+    KeyArraySerializer::SerializeElements(&key_reader, &keys_writer,
                                           validate_params->key_validate_params,
                                           message);
     (*writer)->keys.Set(keys_writer.data());
 
     typename MojomTypeTraits<ArrayDataView<Value>>::Data::BufferWriter
         values_writer;
-    values_writer.Allocate(Traits::GetSize(input), buf);
+    values_writer.Allocate(Traits::GetSize(input), message->payload_buffer());
     MapValueReader<MaybeConstUserType> value_reader(input);
     ValueArraySerializer::SerializeElements(
-        &value_reader, buf, &values_writer,
-        validate_params->element_validate_params, message);
+        &value_reader, &values_writer, validate_params->element_validate_params,
+        message);
     (*writer)->values.Set(values_writer.data());
   }
 

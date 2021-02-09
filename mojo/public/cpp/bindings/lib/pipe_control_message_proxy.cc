@@ -25,7 +25,7 @@ Message ConstructRunOrClosePipeMessage(
   Message message(pipe_control::kRunOrClosePipeMessageId, 0, 0, 0, nullptr);
   pipe_control::internal::RunOrClosePipeMessageParams_Data::BufferWriter writer;
   internal::Serialize<pipe_control::RunOrClosePipeMessageParamsDataView>(
-      params_ptr, message.payload_buffer(), &writer, &message);
+      params_ptr, &writer, &message);
   message.set_interface_id(kInvalidInterfaceId);
   message.set_heap_profiler_tag(kMessageTag);
   message.SerializeHandles(/*group_controller=*/nullptr);

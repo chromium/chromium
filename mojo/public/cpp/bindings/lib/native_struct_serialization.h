@@ -32,7 +32,6 @@ namespace internal {
 struct COMPONENT_EXPORT(MOJO_CPP_BINDINGS) UnmappedNativeStructSerializerImpl {
   static void Serialize(
       const native::NativeStructPtr& input,
-      Buffer* buffer,
       native::internal::NativeStruct_Data::BufferWriter* writer,
       Message* message);
 
@@ -42,7 +41,6 @@ struct COMPONENT_EXPORT(MOJO_CPP_BINDINGS) UnmappedNativeStructSerializerImpl {
 
   static void SerializeMessageContents(
       IPC::Message* ipc_message,
-      Buffer* buffer,
       native::internal::NativeStruct_Data::BufferWriter* writer,
       Message* message);
 
@@ -59,13 +57,12 @@ struct NativeStructSerializerImpl {
 
   static void Serialize(
       MaybeConstUserType& value,
-      Buffer* buffer,
       native::internal::NativeStruct_Data::BufferWriter* writer,
       Message* message) {
     IPC::Message ipc_message;
     Traits::Write(&ipc_message, value);
     UnmappedNativeStructSerializerImpl::SerializeMessageContents(
-        &ipc_message, buffer, writer, message);
+        &ipc_message, writer, message);
   }
 
   static bool Deserialize(native::internal::NativeStruct_Data* data,

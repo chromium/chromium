@@ -49,8 +49,7 @@ size_t SerializeStruct(InputType& input,
   *message = mojo::Message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message->payload_buffer()->cursor();
   typename DataType::BufferWriter writer;
-  mojo::internal::Serialize<DataViewType>(input, message->payload_buffer(),
-                                          &writer, message);
+  mojo::internal::Serialize<DataViewType>(input, &writer, message);
   *out_data = writer.is_null() ? nullptr : writer.data();
   return message->payload_buffer()->cursor() - payload_start;
 }

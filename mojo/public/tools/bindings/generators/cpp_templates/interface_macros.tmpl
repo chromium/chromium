@@ -108,11 +108,10 @@ base::OnceCallback<void(
   mojo::Message {{message_object_name}}(
       {{message_name}}, {{flags_text}}, 0, 0, nullptr);
 {%-   endif %}
-  auto* buffer = {{message_object_name}}.payload_buffer();
   {{params_struct|get_qualified_name_for_kind(internal=True)}}::BufferWriter
       params;
   {{struct_macros.serialize(
-      params_struct, params_description, param_name_prefix, "params", "buffer",
+      params_struct, params_description, param_name_prefix, "params",
       "&" + message_object_name)}}
 {%- endmacro %}
 
@@ -258,12 +257,11 @@ class {{message_typename}}
 
  private:
   // mojo::internal::UnserializedMessageContext:
-  void Serialize(mojo::Message& message,
-                 mojo::internal::Buffer& buffer) override {
+  void Serialize(mojo::Message& message) override {
     {{params_struct|get_qualified_name_for_kind(internal=True)}}::BufferWriter
         params;
     {{struct_macros.serialize(params_struct, params_description, "param_%s_",
-                              "params", "&buffer", "&message")}}
+                              "params", "&message")}}
   }
 
 {%-     for param in parameters %}

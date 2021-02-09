@@ -63,12 +63,11 @@ template <typename MojomType,
           typename std::enable_if<
               IsOptionalWrapper<InputUserType>::value>::type* = nullptr>
 void Serialize(InputUserType&& input,
-               Buffer* buffer,
                BufferWriterType* writer,
                Args&&... args) {
   if (!input)
     return;
-  Serialize<MojomType>(*input, buffer, writer, std::forward<Args>(args)...);
+  Serialize<MojomType>(*input, writer, std::forward<Args>(args)...);
 }
 
 template <typename MojomType,

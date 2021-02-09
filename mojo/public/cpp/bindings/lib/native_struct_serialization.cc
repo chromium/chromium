@@ -16,19 +16,18 @@ namespace internal {
 // static
 void UnmappedNativeStructSerializerImpl::Serialize(
     const native::NativeStructPtr& input,
-    Buffer* buffer,
     native::internal::NativeStruct_Data::BufferWriter* writer,
     Message* message) {
   if (!input)
     return;
 
-  writer->Allocate(buffer);
+  writer->Allocate(message->payload_buffer());
 
   Array_Data<uint8_t>::BufferWriter data_writer;
   const mojo::internal::ContainerValidateParams data_validate_params(0, false,
                                                                      nullptr);
   mojo::internal::Serialize<ArrayDataView<uint8_t>>(
-      input->data, buffer, &data_writer, &data_validate_params, message);
+      input->data, &data_writer, &data_validate_params, message);
   writer->data()->data.Set(data_writer.data());
 
   mojo::internal::Array_Data<mojo::internal::Pointer<
@@ -37,8 +36,7 @@ void UnmappedNativeStructSerializerImpl::Serialize(
       0, false, nullptr);
   mojo::internal::Serialize<
       mojo::ArrayDataView<::mojo::native::SerializedHandleDataView>>(
-      input->handles, buffer, &handles_writer, &handles_validate_params,
-      message);
+      input->handles, &handles_writer, &handles_validate_params, message);
   writer->data()->handles.Set(handles_writer.is_null() ? nullptr
                                                        : handles_writer.data());
 }
@@ -61,14 +59,13 @@ bool UnmappedNativeStructSerializerImpl::Deserialize(
 // static
 void UnmappedNativeStructSerializerImpl::SerializeMessageContents(
     IPC::Message* ipc_message,
-    Buffer* buffer,
     native::internal::NativeStruct_Data::BufferWriter* writer,
     Message* message) {
-  writer->Allocate(buffer);
+  writer->Allocate(message->payload_buffer());
 
   // Allocate a uint8 array, initialize its header, and copy the Pickle in.
   Array_Data<uint8_t>::BufferWriter data_writer;
-  data_writer.Allocate(ipc_message->payload_size(), buffer);
+  data_writer.Allocate(ipc_message->payload_size(), message->payload_buffer());
   memcpy(data_writer->storage(), ipc_message->payload(),
          ipc_message->payload_size());
   writer->data()->data.Set(data_writer.data());
@@ -81,10 +78,10 @@ void UnmappedNativeStructSerializerImpl::SerializeMessageContents(
   mojo::internal::Array_Data<mojo::internal::Pointer<
       native::internal::SerializedHandle_Data>>::BufferWriter handles_writer;
   auto* attachments = ipc_message->attachment_set();
-  handles_writer.Allocate(attachments->size(), buffer);
+  handles_writer.Allocate(attachments->size(), message->payload_buffer());
   for (unsigned i = 0; i < attachments->size(); ++i) {
     native::internal::SerializedHandle_Data::BufferWriter handle_writer;
-    handle_writer.Allocate(buffer);
+    handle_writer.Allocate(message->payload_buffer());
 
     auto attachment = attachments->GetAttachmentAt(i);
     ScopedHandle handle = attachment->TakeMojoHandle();

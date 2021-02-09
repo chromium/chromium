@@ -81,8 +81,8 @@ void SendRunMessage(InterfaceEndpointClient* endpoint,
                   Message::kFlagExpectsResponse, 0, 0, nullptr);
   message.set_heap_profiler_tag(kMessageTag);
   interface_control::internal::RunMessageParams_Data::BufferWriter writer;
-  Serialize<interface_control::RunMessageParamsDataView>(
-      params_ptr, message.payload_buffer(), &writer, &message);
+  Serialize<interface_control::RunMessageParamsDataView>(params_ptr, &writer,
+                                                         &message);
   std::unique_ptr<MessageReceiver> responder =
       std::make_unique<RunResponseForwardToCallback>(std::move(callback));
   endpoint->SendControlMessageWithResponder(&message, std::move(responder));
@@ -98,7 +98,7 @@ Message ConstructRunOrClosePipeMessage(
   interface_control::internal::RunOrClosePipeMessageParams_Data::BufferWriter
       writer;
   Serialize<interface_control::RunOrClosePipeMessageParamsDataView>(
-      params_ptr, message.payload_buffer(), &writer, &message);
+      params_ptr, &writer, &message);
   return message;
 }
 

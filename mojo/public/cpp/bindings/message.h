@@ -78,6 +78,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
           size_t payload_interface_id_count,
           std::vector<ScopedHandle>* handles);
 
+  // Constructs a new Message object from an existing message handle. Used
+  // exclusively for serializing an existing unserialized message.
+  explicit Message(ScopedMessageHandle handle,
+                   const internal::MessageHeaderV1& header);
+
   // Constructs a new serialized Message object from a fully populated message
   // payload (including a well-formed message header) and an optional set of
   // handle attachments. This Message may not be extended with additional

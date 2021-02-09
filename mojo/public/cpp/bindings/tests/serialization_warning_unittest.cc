@@ -53,8 +53,7 @@ class SerializationWarningTest : public testing::Test {
     mojo::Message message(0, 0, 0, 0, nullptr);
     typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
         writer;
-    mojo::internal::Serialize<MojomType>(obj, message.payload_buffer(), &writer,
-                                         &message);
+    mojo::internal::Serialize<MojomType>(obj, &writer, &message);
     EXPECT_EQ(expected_warning, warning_observer_.last_warning());
   }
 
@@ -67,8 +66,8 @@ class SerializationWarningTest : public testing::Test {
     mojo::Message message(0, 0, 0, 0, nullptr);
     typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
         writer;
-    mojo::internal::Serialize<MojomType>(obj, message.payload_buffer(), &writer,
-                                         validate_params, &message);
+    mojo::internal::Serialize<MojomType>(obj, &writer, validate_params,
+                                         &message);
     EXPECT_EQ(expected_warning, warning_observer_.last_warning());
   }
 
@@ -82,8 +81,7 @@ class SerializationWarningTest : public testing::Test {
     mojo::Message message(0, 0, 0, 0, nullptr);
     typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
         writer;
-    mojo::internal::Serialize<MojomType>(obj, message.payload_buffer(), &writer,
-                                         false, &message);
+    mojo::internal::Serialize<MojomType>(obj, &writer, false, &message);
 
     EXPECT_EQ(expected_warning, warning_observer_.last_warning());
   }

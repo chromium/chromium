@@ -122,8 +122,7 @@ bool ControlMessageHandler::Run(
   interface_control::internal::RunResponseMessageParams_Data::BufferWriter
       response_writer;
   Serialize<interface_control::RunResponseMessageParamsDataView>(
-      response_params_ptr, response_message.payload_buffer(), &response_writer,
-      &response_message);
+      response_params_ptr, &response_writer, &response_message);
   ignore_result(responder->Accept(&response_message));
   return true;
 }

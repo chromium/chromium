@@ -8,8 +8,7 @@
     placeholder, for example, "input->%s", "p_%s". The placeholder will be
     substituted with struct field names to refer to the input fields.
     |writer| is the name of the BufferWriter to use for allocation and writing.
-    |buffer| is the name of the Buffer instance used.
-    |context| is the name of the serialization context.
+    |message| is the name of the Message object we're serializing into.
     |input_may_be_temp|: please see the comments of get_serialized_size.
     This macro is expanded to do serialization for both:
     - user-defined structs: the input is an instance of the corresponding struct
@@ -17,8 +16,8 @@
     - method parameters/response parameters: the input is a list of
       arguments. #}
 {%- macro serialize(struct, struct_display_name, input_field_pattern, writer,
-                    buffer, context, input_may_be_temp=False) -%}
-  {{writer}}.Allocate({{buffer}});
+                    message, input_may_be_temp=False) -%}
+  {{writer}}.Allocate(({{message}})->payload_buffer());
 {%- for pf in struct.packed.packed_fields_in_ordinal_order %}
 {%-   set input_field = input_field_pattern|format(pf.field.name) %}
 {%-   set name = pf.field.name %}
@@ -41,20 +40,21 @@
   const mojo::internal::ContainerValidateParams {{name}}_validate_params(
       {{kind|get_container_validate_params_ctor_args|indent(10)}});
   mojo::internal::Serialize<{{serializer_type}}>(
-      {{input_field}}, {{buffer}}, &{{name}}_writer, &{{name}}_validate_params,
-      {{context}});
+      {{input_field}}, &{{name}}_writer, &{{name}}_validate_params,
+      {{message}});
   {{writer}}->{{name}}.Set(
       {{name}}_writer.is_null() ? nullptr : {{name}}_writer.data());
 {%-     elif kind|is_union_kind %}
   typename decltype({{writer}}->{{name}})::BufferWriter {{name}}_writer;
-  {{name}}_writer.AllocateInline({{buffer}}, &{{writer}}->{{name}});
+  {{name}}_writer.AllocateInline(({{message}})->payload_buffer(),
+                                 &{{writer}}->{{name}});
   mojo::internal::Serialize<{{serializer_type}}>(
-      {{input_field}}, {{buffer}}, &{{name}}_writer, true, {{context}});
+      {{input_field}}, &{{name}}_writer, true, {{message}});
 {%-     else %}
   typename decltype({{writer}}->{{name}})::BaseType::BufferWriter
       {{name}}_writer;
   mojo::internal::Serialize<{{serializer_type}}>(
-      {{input_field}}, {{buffer}}, &{{name}}_writer, {{context}});
+      {{input_field}}, &{{name}}_writer, {{message}});
   {{writer}}->{{name}}.Set(
       {{name}}_writer.is_null() ? nullptr : {{name}}_writer.data());
 {%-     endif %}
@@ -67,7 +67,7 @@
 
 {%-   elif kind|is_any_handle_or_interface_kind %}
   mojo::internal::Serialize<{{serializer_type}}>(
-      {{input_field}}, &{{writer}}->{{name}}, {{context}});
+      {{input_field}}, &{{writer}}->{{name}}, {{message}});
 {%-     if not kind|is_nullable_kind %}
   MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
       !mojo::internal::IsHandleOrInterfaceValid({{writer}}->{{name}}),
@@ -96,7 +96,7 @@
     |output_field_pattern| should be a pattern that contains one string
     placeholder, for example, "result->%s", "p_%s". The placeholder will be
     substituted with struct field names to refer to the output fields.
-    |context| is the name of the serialization context.
+    |message| is the name of the Message object we're deserializing.
     |success| is the name of a bool variable to track success of the operation.
     This macro is expanded to do deserialization for both:
     - user-defined structs: the output is an instance of the corresponding

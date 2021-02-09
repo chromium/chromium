@@ -118,8 +118,8 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorToWTFVector) {
       writer;
   mojo::internal::ContainerValidateParams validate_params(
       0, true, new mojo::internal::ContainerValidateParams(0, false, nullptr));
-  mojo::internal::Serialize<MojomType>(cloned_strs, message.payload_buffer(),
-                                       &writer, &validate_params, &message);
+  mojo::internal::Serialize<MojomType>(cloned_strs, &writer, &validate_params,
+                                       &message);
 
   WTF::Vector<WTF::String> strs2;
   mojo::internal::Deserialize<MojomType>(writer.data(), &strs2, &message);
@@ -143,8 +143,8 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorInlineCapacity) {
       writer;
   mojo::internal::ContainerValidateParams validate_params(
       0, true, new mojo::internal::ContainerValidateParams(0, false, nullptr));
-  mojo::internal::Serialize<MojomType>(cloned_strs, message.payload_buffer(),
-                                       &writer, &validate_params, &message);
+  mojo::internal::Serialize<MojomType>(cloned_strs, &writer, &validate_params,
+                                       &message);
 
   WTF::Vector<WTF::String, 1> strs2;
   mojo::internal::Deserialize<MojomType>(writer.data(), &strs2, &message);
@@ -163,8 +163,8 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorToStlVector) {
       writer;
   mojo::internal::ContainerValidateParams validate_params(
       0, true, new mojo::internal::ContainerValidateParams(0, false, nullptr));
-  mojo::internal::Serialize<MojomType>(cloned_strs, message.payload_buffer(),
-                                       &writer, &validate_params, &message);
+  mojo::internal::Serialize<MojomType>(cloned_strs, &writer, &validate_params,
+                                       &message);
 
   std::vector<base::Optional<std::string>> strs2;
   mojo::internal::Deserialize<MojomType>(writer.data(), &strs2, &message);

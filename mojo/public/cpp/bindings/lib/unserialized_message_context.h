@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) UnserializedMessageContext {
 
   MessageHeaderV1* header() { return &header_; }
 
-  virtual void Serialize(Message& message, Buffer& buffer) = 0;
+  virtual void Serialize(Message& message) = 0;
 
  private:
   // The |tag_| is used for run-time type identification of specific

@@ -134,47 +134,19 @@ void SerializeUnserializedContext(MojoMessageHandle message,
                                   uintptr_t context_value) {
   auto* context =
       reinterpret_cast<internal::UnserializedMessageContext*>(context_value);
-  uint32_t trace_id =
-      static_cast<uint32_t>(base::trace_event::GetNextGlobalTraceId());
 
-  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "mojo::Message Send", trace_id,
-                         TRACE_EVENT_FLAG_FLOW_OUT);
-
-  void* buffer;
-  uint32_t buffer_size;
-  MojoResult attach_result = MojoAppendMessageData(
-      message, 0, nullptr, 0, nullptr, &buffer, &buffer_size);
-  if (attach_result != MOJO_RESULT_OK)
-    return;
-
-  internal::Buffer payload_buffer(MessageHandle(message), 0, buffer,
-                                  buffer_size);
-  WriteMessageHeader(context->message_name(), context->message_flags(),
-                     trace_id, 0 /* payload_interface_id_count */,
-                     &payload_buffer);
-
-  // We need to copy additional header data which may have been set after
-  // message construction, as this codepath may be reached at some arbitrary
-  // time between message send and message dispatch.
-  static_cast<internal::MessageHeader*>(buffer)->interface_id =
-      context->header()->interface_id;
-  if (context->header()->flags &
-      (Message::kFlagExpectsResponse | Message::kFlagIsResponse)) {
-    DCHECK_GE(context->header()->version, 1u);
-    static_cast<internal::MessageHeaderV1*>(buffer)->request_id =
-        context->header()->request_id;
-  }
-
-  Message handle_storage;
-  context->Serialize(handle_storage, payload_buffer);
+  // Note that `message` is merely borrowed here. Ownership is released below.
+  Message new_message(ScopedMessageHandle(MessageHandle(message)),
+                      *context->header());
+  context->Serialize(new_message);
 
   // TODO(crbug.com/753433): Support lazy serialization of associated endpoint
-  // handles. See corresponding TODO in the bindings generator for proof that
-  // this DCHECK is indeed valid.
-  DCHECK(handle_storage.associated_endpoint_handles()->empty());
-  if (!handle_storage.handles()->empty())
-    payload_buffer.AttachHandles(handle_storage.mutable_handles());
-  payload_buffer.Seal();
+  // handles.
+  new_message.SerializeHandles(/*group_controller=*/nullptr);
+
+  // Finalize the serialized message state and release ownership back to the
+  // caller.
+  ignore_result(new_message.TakeMojoMessage().release());
 }
 
 void DestroyUnserializedContext(uintptr_t context) {
@@ -248,6 +220,38 @@ Message::Message(uint32_t name,
               payload_interface_id_count,
               MOJO_CREATE_MESSAGE_FLAG_NONE,
               handles) {}
+
+Message::Message(ScopedMessageHandle handle,
+                 const internal::MessageHeaderV1& header)
+    : handle_(std::move(handle)), transferable_(true) {
+  const uint32_t trace_id =
+      static_cast<uint32_t>(base::trace_event::GetNextGlobalTraceId());
+  TRACE_EVENT_WITH_FLOW0("toplevel.flow", "mojo::Message Send", trace_id,
+                         TRACE_EVENT_FLAG_FLOW_OUT);
+
+  void* buffer;
+  uint32_t buffer_size;
+  MojoResult attach_result = MojoAppendMessageData(
+      handle_.get().value(), 0, nullptr, 0, nullptr, &buffer, &buffer_size);
+  if (attach_result != MOJO_RESULT_OK)
+    return;
+
+  payload_buffer_ = internal::Buffer(handle_.get(), 0, buffer, buffer_size);
+  WriteMessageHeader(header.name, header.flags, trace_id,
+                     /*payload_interface_id_count=*/0, &payload_buffer_);
+
+  // We need to copy additional header data which may have been set after
+  // original message construction, as this codepath may be reached at some
+  // arbitrary time between message send and message dispatch.
+  static_cast<internal::MessageHeader*>(buffer)->interface_id =
+      header.interface_id;
+  if (header.flags &
+      (Message::kFlagExpectsResponse | Message::kFlagIsResponse)) {
+    DCHECK_GE(header.version, 1u);
+    static_cast<internal::MessageHeaderV1*>(buffer)->request_id =
+        header.request_id;
+  }
+}
 
 Message::Message(base::span<const uint8_t> payload,
                  base::span<ScopedHandle> handles) {

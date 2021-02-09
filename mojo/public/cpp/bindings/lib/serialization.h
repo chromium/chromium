@@ -38,10 +38,9 @@ struct MojomSerializationImplTraits<
         BelongsTo<MojomType, MojomTypeCategory::kStruct>::value>::type> {
   template <typename MaybeConstUserType, typename WriterType>
   static void Serialize(MaybeConstUserType& input,
-                        Buffer* buffer,
                         WriterType* writer,
                         Message* message) {
-    mojo::internal::Serialize<MojomType>(input, buffer, writer, message);
+    mojo::internal::Serialize<MojomType>(input, writer, message);
   }
 };
 
@@ -52,11 +51,10 @@ struct MojomSerializationImplTraits<
         BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>::type> {
   template <typename MaybeConstUserType, typename WriterType>
   static void Serialize(MaybeConstUserType& input,
-                        Buffer* buffer,
                         WriterType* writer,
                         Message* message) {
-    mojo::internal::Serialize<MojomType>(input, buffer, writer,
-                                         false /* inline */, message);
+    mojo::internal::Serialize<MojomType>(input, writer, false /* inline */,
+                                         message);
   }
 };
 
@@ -68,8 +66,7 @@ mojo::Message SerializeAsMessageImpl(UserType* input) {
   mojo::Message message(0, 0, 0, 0, MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE,
                         nullptr);
   typename MojomTypeTraits<MojomType>::Data::BufferWriter writer;
-  MojomSerializationImplTraits<MojomType>::Serialize(
-      *input, message.payload_buffer(), &writer, &message);
+  MojomSerializationImplTraits<MojomType>::Serialize(*input, &writer, &message);
   message.SerializeHandles(/*group_controller=*/nullptr);
   return message;
 }
