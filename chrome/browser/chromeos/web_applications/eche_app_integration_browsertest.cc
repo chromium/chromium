@@ -7,6 +7,7 @@
 #include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chromeos/components/eche_app_ui/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -52,6 +53,17 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, HiddenInLauncherAndSearch) {
   // Check system_web_app_manager has the correct attributes for Eche App.
   EXPECT_FALSE(GetManager().ShouldShowInLauncher(web_app::SystemAppType::ECHE));
   EXPECT_FALSE(GetManager().ShouldShowInSearch(web_app::SystemAppType::ECHE));
+}
+
+IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
+                       WindowNonResizeableAndNonMaximizable) {
+  WaitForTestSystemAppInstall();
+  Browser* browser;
+  LaunchApp(web_app::SystemAppType::ECHE, &browser);
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  EXPECT_FALSE(browser_view->CanResize());
+  EXPECT_FALSE(browser_view->CanMaximize());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

@@ -273,8 +273,13 @@ class Browser : public TabStripModelObserver,
     // User-set title of this browser window, if there is one.
     std::string user_title;
 
-    // True if the browser is resizeable.
+    // Only applied when not in forced app mode. True if the browser is
+    // resizeable.
     bool can_resize = true;
+
+    // Only applied when not in forced app mode. True if the browser can be
+    // maximizable.
+    bool can_maximize = true;
 
    private:
     friend class Browser;
@@ -669,9 +674,6 @@ class Browser : public TabStripModelObserver,
     return type_ == TYPE_APP || type_ == TYPE_DEVTOOLS ||
            type_ == TYPE_APP_POPUP;
   }
-
-  // True if the browser is resizeable.
-  bool can_resize() const { return create_params_.can_resize; }
 
   // True when the mouse cursor is locked.
   bool IsMouseLocked() const;

@@ -233,6 +233,8 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::ECHE).capture_navigations = true;
     infos.at(SystemAppType::ECHE).show_in_launcher = false;
     infos.at(SystemAppType::ECHE).show_in_search = false;
+    infos.at(SystemAppType::ECHE).is_resizeable = false;
+    infos.at(SystemAppType::ECHE).is_maximizable = false;
   }
 
 #if !defined(OFFICIAL_BUILD)
@@ -629,6 +631,13 @@ bool SystemWebAppManager::IsResizeableWindow(SystemAppType type) const {
     return false;
 
   return it->second.is_resizeable;
+}
+bool SystemWebAppManager::IsMaximizableWindow(SystemAppType type) const {
+  auto it = system_app_infos_.find(type);
+  if (it == system_app_infos_.end())
+    return false;
+
+  return it->second.is_maximizable;
 }
 
 base::Optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(

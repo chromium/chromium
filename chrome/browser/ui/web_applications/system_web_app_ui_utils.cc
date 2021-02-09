@@ -268,10 +268,13 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   bool can_resize =
       provider->system_web_app_manager().IsResizeableWindow(app_type);
 
+  bool can_maximize =
+      provider->system_web_app_manager().IsMaximizableWindow(app_type);
+
   if (!browser) {
     browser =
         CreateWebApplicationWindow(profile, params.app_id, params.disposition,
-                                   params.restore_id, can_resize);
+                                   params.restore_id, can_resize, can_maximize);
   }
 
   // Navigate application window to application's |url| if necessary.

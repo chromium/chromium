@@ -469,17 +469,18 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
-class SystemWebAppManagerNonResizeableWindowTest
+class SystemWebAppManagerWindowSizeControlsTest
     : public SystemWebAppManagerBrowserTest {
  public:
-  SystemWebAppManagerNonResizeableWindowTest()
+  SystemWebAppManagerWindowSizeControlsTest()
       : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
-    maybe_installation_ = TestSystemWebAppInstallation::SetUpNonResizeableApp();
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpNonResizeableAndNonMaximizableApp();
   }
-  ~SystemWebAppManagerNonResizeableWindowTest() override = default;
+  ~SystemWebAppManagerWindowSizeControlsTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNonResizeableWindowTest,
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
                        NonResizeableWindow) {
   WaitForTestSystemAppInstall();
 
@@ -488,7 +489,19 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNonResizeableWindowTest,
   Browser* app_browser;
   LaunchApp(maybe_installation_->GetType(), &app_browser);
 
-  EXPECT_FALSE(app_browser->can_resize());
+  EXPECT_FALSE(app_browser->create_params().can_resize);
+}
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
+                       NonMaximizableWindow) {
+  WaitForTestSystemAppInstall();
+
+  content::TestNavigationObserver observer(maybe_installation_->GetAppUrl());
+  observer.StartWatchingNewWebContents();
+  Browser* app_browser;
+  LaunchApp(maybe_installation_->GetType(), &app_browser);
+
+  EXPECT_FALSE(app_browser->create_params().can_maximize);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -801,7 +814,7 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
 #endif
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    SystemWebAppManagerNonResizeableWindowTest);
+    SystemWebAppManagerWindowSizeControlsTest);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(

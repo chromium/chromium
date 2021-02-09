@@ -106,7 +106,8 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                                     const std::string& app_id,
                                     WindowOpenDisposition disposition,
                                     int32_t restore_id,
-                                    bool can_resize) {
+                                    bool can_resize,
+                                    bool can_maximize) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
   gfx::Rect initial_bounds;
   Browser::CreateParams browser_params =
@@ -122,6 +123,7 @@ Browser* CreateWebApplicationWindow(Profile* profile,
   browser_params.restore_id = restore_id;
 #endif
   browser_params.can_resize = can_resize;
+  browser_params.can_maximize = can_maximize;
   return Browser::Create(browser_params);
 }
 

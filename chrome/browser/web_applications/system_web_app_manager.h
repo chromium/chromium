@@ -106,6 +106,9 @@ struct SystemAppInfo {
   // If set to false, the app will non-resizeable.
   bool is_resizeable = true;
 
+  // If set to false, the surface of app will can be non-maximizable.
+  bool is_maximizable = true;
+
   WebApplicationInfoFactory app_info_factory;
 };
 
@@ -192,6 +195,9 @@ class SystemWebAppManager {
 
   // Returns whether the app should be resizeable.
   bool IsResizeableWindow(SystemAppType type) const;
+
+  // Returns whether the surface of app can be maximizable.
+  bool IsMaximizableWindow(SystemAppType type) const;
 
   // Returns the SystemAppType that should capture the navigation to |url|.
   base::Optional<SystemAppType> GetCapturingSystemAppForURL(

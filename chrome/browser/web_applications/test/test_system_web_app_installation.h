@@ -59,7 +59,8 @@ class TestSystemWebAppInstallation {
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpChromeUntrustedApp();
 
-  static std::unique_ptr<TestSystemWebAppInstallation> SetUpNonResizeableApp();
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpNonResizeableAndNonMaximizableApp();
 
   ~TestSystemWebAppInstallation();
 
