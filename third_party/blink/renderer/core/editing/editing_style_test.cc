@@ -35,4 +35,30 @@ TEST_F(EditingStyleTest, mergeInlineStyleOfElement) {
       << "Keep unresolved value on merging style";
 }
 
+// http://crbug.com/957952
+TEST_F(EditingStyleTest, RemoveStyleFromRulesAndContext_TextAlignEffective) {
+  // Note: <div>'s "text-align" is "start".
+  // For <p> with "text-align:start", it equivalents to "text-align:right"
+  SetBodyContent("<div><p dir=rtl id=target>");
+  Element& target = *GetElementById("target");
+  EditingStyle& style = *MakeGarbageCollected<EditingStyle>(
+      CSSPropertyID::kTextAlign, "left", SecureContextMode::kInsecureContext);
+  style.RemoveStyleFromRulesAndContext(&target, target.parentNode());
+
+  EXPECT_EQ(CSSValueID::kLeft, style.GetProperty(CSSPropertyID::kTextAlign));
+}
+
+// http://crbug.com/957952
+TEST_F(EditingStyleTest, RemoveStyleFromRulesAndContext_TextAlignRedundant) {
+  // Note: <div>'s "text-align" is "start".
+  // For <p> with "text-align:start", it equivalents to "text-align:right"
+  SetBodyContent("<div><p dir=rtl id=target>");
+  Element& target = *GetElementById("target");
+  EditingStyle& style = *MakeGarbageCollected<EditingStyle>(
+      CSSPropertyID::kTextAlign, "right", SecureContextMode::kInsecureContext);
+  style.RemoveStyleFromRulesAndContext(&target, target.parentNode());
+
+  EXPECT_EQ(CSSValueID::kInvalid, style.GetProperty(CSSPropertyID::kTextAlign));
+}
+
 }  // namespace blink

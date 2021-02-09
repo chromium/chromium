@@ -1,0 +1,93 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// <div dir="ltr">
+selection_test(
+    '<div contenteditable dir="ltr">|</div>',
+    'insertHTML <p dir="ltr" style="text-align:left"></p>',
+    '<div contenteditable dir="ltr">|<p dir="ltr"></p></div>',
+    'ltr:start ltr:left, text-align of <p> is redundant');
+selection_test(
+    '<div contenteditable dir="ltr">|</div>',
+    'insertHTML <p dir="ltr" style="text-align:right"></p>',
+    '<div contenteditable dir="ltr">|<p dir="ltr" style="text-align:right"></p></div>',
+    'ltr:start ltr:right');
+selection_test(
+    '<div contenteditable dir="ltr">|</div>',
+    'insertHTML <p dir="rtl" style="text-align:left"></p>',
+    '<div contenteditable dir="ltr">|<p dir="rtl" style="text-align:left"></p></div>',
+    'ltr:start rtl:left');
+selection_test(
+    '<div contenteditable dir="ltr">|</div>',
+    'insertHTML <p dir="rtl" style="text-align:right"></p>',
+    '<div contenteditable dir="ltr">|<p dir="rtl"></p></div>',
+    'ltr:start rtl:right');
+
+// <div dir="rtl">
+selection_test(
+    '<div contenteditable dir="rtl">|</div>',
+    'insertHTML <p dir="ltr" style="text-align:left"></p>',
+    '<div contenteditable dir="rtl">|<p dir="ltr"></p></div>',
+    'rtl:start ltr:left, text-align of <p> is redundant');
+selection_test(
+    '<div contenteditable dir="rtl">|</div>',
+    'insertHTML <p dir="ltr" style="text-align:right"></p>',
+    '<div contenteditable dir="rtl">|<p dir="ltr" style="text-align:right"></p></div>',
+    'rtl:start ltr:right');
+selection_test(
+    '<div contenteditable dir="rtl">|</div>',
+    'insertHTML <p dir="rtl" style="text-align:left"></p>',
+    '<div contenteditable dir="rtl">|<p dir="rtl" style="text-align:left"></p></div>',
+    'rtl:start rtl:left');
+selection_test(
+    '<div contenteditable dir="rtl">|</div>',
+    'insertHTML <p dir="rtl" style="text-align:right"></p>',
+    '<div contenteditable dir="rtl">|<p dir="rtl"></p></div>',
+    'rtl:start rtl:right');
+
+// <div dir="ltr>", <p style="text-align:start">
+selection_test(
+    '<div contenteditable dir="ltr" style="text-align:left">|</div>',
+    'insertHTML <p dir="ltr" style="text-align:start"></p>',
+    '<div contenteditable dir="ltr" style="text-align:left">|<p dir="ltr"></p></div>',
+    'ltr:left ltr:start, text-align of <p> is redundant');
+selection_test(
+    '<div contenteditable dir="ltr" style="text-align:left">|</div>',
+    'insertHTML <p dir="rtl" style="text-align:start"></p>',
+    '<div contenteditable dir="ltr" style="text-align:left">|<p dir="rtl" style="text-align:start"></p></div>',
+    'ltr:left rtl:start');
+selection_test(
+    '<div contenteditable dir="ltr" style="text-align:right">|</div>',
+    'insertHTML <p dir="ltr" style="text-align:start"></p>',
+    '<div contenteditable dir="ltr" style="text-align:right">|<p dir="ltr" style="text-align:start"></p></div>',
+    'ltr:right ltr:start');
+selection_test(
+    '<div contenteditable dir="ltr" style="text-align:right">|</div>',
+    'insertHTML <p dir="rtl" style="text-align:start"></p>',
+    '<div contenteditable dir="ltr" style="text-align:right">|<p dir="rtl"></p></div>',
+    'ltr:right rtl:start, text-align of <p> is redundant');
+
+// <div dir="rtl>", <p style="text-align:start">
+selection_test(
+    '<div contenteditable dir="rtl" style="text-align:left">|</div>',
+    'insertHTML <p dir="ltr" style="text-align:start"></p>',
+    '<div contenteditable dir="rtl" style="text-align:left">|<p dir="ltr"></p></div>',
+    'rtl:left ltr:start, text-align of <p> is redundant');
+selection_test(
+    '<div contenteditable dir="rtl" style="text-align:left">|</div>',
+    'insertHTML <p dir="rtl" style="text-align:start"></p>',
+    '<div contenteditable dir="rtl" style="text-align:left">|<p dir="rtl" style="text-align:start"></p></div>',
+    'rtl:left rtl:start');
+selection_test(
+    '<div contenteditable dir="rtl" style="text-align:right">|</div>',
+    'insertHTML <p dir="ltr" style="text-align:start"></p>',
+    '<div contenteditable dir="rtl" style="text-align:right">|<p dir="ltr" style="text-align:start"></p></div>',
+    'rtl:right ltr:start');
+selection_test(
+    '<div contenteditable dir="rtl" style="text-align:right">|</div>',
+    'insertHTML <p dir="rtl" style="text-align:start"></p>',
+    '<div contenteditable dir="rtl" style="text-align:right">|<p dir="rtl"></p></div>',
+    'rtl:right rtl:start, text-align of <p> is redundant');
+</script>
