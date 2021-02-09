@@ -4684,6 +4684,10 @@ crbug.com/978966 [ Mac ] paint/markers/ellipsis-mixed-text-in-ltr-flow-with-mark
 crbug.com/979243 [ Mac ] editing/selection/inline-closest-leaf-child.html [ Pass Failure ]
 crbug.com/979336 [ Mac ] fast/dynamic/anonymous-block-orphaned-lines.html [ Pass Failure ]
 
+# Sheriff 2019-06-28
+crbug.com/979593 [ Linux ] external/wpt/service-workers/service-worker/registration-schedule-job.https.html [ Pass Failure ]
+crbug.com/979593 [ Win ] external/wpt/service-workers/service-worker/registration-schedule-job.https.html [ Pass Failure ]
+
 # Sheriff 2019-07-04
 crbug.com/981267 http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Pass Failure Timeout ]
 # TODO(crbug.com/980588): reenable once WPT is fixed

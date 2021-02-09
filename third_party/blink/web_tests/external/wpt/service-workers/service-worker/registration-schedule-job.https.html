@@ -31,33 +31,13 @@ promise_test(async t => {
       navigator.serviceWorker.register(script1, {scope});
   assert_equals(registration.updateViaCache, 'imports');
 
-  // Schedule several register jobs in the same scope.
-  // None of the changes should have been coalesced.
-
-  // This resolves without changing anything.
-  const p1 = navigator.serviceWorker.register(script1, {scope});
-  // This changes the script URL so going with installing a new worker without
-  // byte-for-byte update check.
-  const p2 = navigator.serviceWorker.register(script2, {scope});
-  // This changes the updateViaCache option but the script URL is the same. That
-  // results in updating the updateViaCache flag but no worker is going to be
-  // stored.
-  const p3 = navigator.serviceWorker.register(script2,
+  // Schedule several register jobs.
+  navigator.serviceWorker.register(script1, {scope});
+  navigator.serviceWorker.register(script2, {scope});
+  await navigator.serviceWorker.register(script2,
                                          {scope, updateViaCache: 'none'});
 
-  // The first call of register() doesn't change anything.
-  await p1;
-  assert_equals(registration.installing, null);
-
-  // The scriptURL must be updated when `p2` resolves. At that point, a new
-  // worker must be in the installing state because changing scriptURL is
-  // treated as the same as there's an update in the script.
-  await p2;
-  assert_equals(registration.installing.scriptURL, absolute_url(script2));
-  assert_equals(registration.updateViaCache, 'imports');
-
-  // The updateViaCache must be updated when `p3` resolves.
-  await p3;
+  // None of the changes should have been coalesced.
   assert_equals(registration.installing.scriptURL, absolute_url(script2));
   assert_equals(registration.updateViaCache, 'none');
 }, 'different scriptURL and updateViaCache');
@@ -75,35 +55,12 @@ promise_test(async t => {
       navigator.serviceWorker.register(script1, {scope});
   assert_equals(registration.installing.type, 'classic');
 
-  // Schedule several register jobs in the same scope.
+  // Schedule several register jobs.
+  navigator.serviceWorker.register(script1, {scope});
+  navigator.serviceWorker.register(script2, {scope});
+  await navigator.serviceWorker.register(script2, {scope, type: 'module'});
+
   // None of the changes should have been coalesced.
-
-  // This resolves without changing anything.
-  const p1 = navigator.serviceWorker.register(script1, {scope});
-
-  // This changes the script URL so going with installing a new worker without
-  // byte-for-byte update check.
-  const p2 = navigator.serviceWorker.register(script2, {scope});
-
-  // This changes the worker type, and that goes to the same path with updating
-  // the worker script or the script URL.
-  const p3 = navigator.serviceWorker.register(script2, {scope, type: 'module'});
-
-  // The first call of register() doesn't change anything.
-  await p1;
-  assert_equals(registration.installing, null);
-
-  // The scriptURL must be updated when `p2` resolves. At this point, a new
-  // worker must be in the installing state because changing scriptURL is
-  // treated as the same as there's an update in the script.
-  await p2;
-  assert_equals(registration.installing.scriptURL, absolute_url(script2));
-  assert_equals(registration.installing.type, 'classic');
-
-  // The script type must be updated when `p3` resolves. At this point, a new
-  // worker must be in the installing state because changing script type is also
-  // treated as the same as there's an update in the script.
-  await p3;
   assert_equals(registration.installing.scriptURL, absolute_url(script2));
   assert_equals(registration.installing.type, 'module');
 }, 'different type');
