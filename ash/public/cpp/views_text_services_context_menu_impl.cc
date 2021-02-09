@@ -94,9 +94,10 @@ void ViewsTextServicesContextMenuImpl::AddClipboardHistoryMenuOption(
   const int target_index = index_of_paste + 1;
   menu->InsertItemAt(target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
                      l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
-  menu->SetIsNewFeatureAt(
-      target_index,
-      chromeos::features::IsClipboardHistoryContextMenuNudgeEnabled());
+  if (ClipboardHistoryController::Get()->ShouldShowNewFeatureBadge()) {
+    menu->SetIsNewFeatureAt(target_index, true);
+    ClipboardHistoryController::Get()->MarkNewFeatureBadgeShown();
+  }
 }
 
 }  // namespace ash

@@ -81,6 +81,11 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
                         ui::MenuSourceType source_type,
                         ShowSource show_source) = 0;
 
+  // Whether 'new' feature badge should be applied to clipboard menu.
+  virtual bool ShouldShowNewFeatureBadge() const = 0;
+  // Increment the 'new' feature badge shown count.
+  virtual void MarkNewFeatureBadgeShown() = 0;
+
   // Creates a ScopedClipboardHistoryPause, which pauses ClipboardHistory for
   // its lifetime.
   virtual std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() = 0;

@@ -94,6 +94,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void ShowMenu(const gfx::Rect& anchor_rect,
                 ui::MenuSourceType source_type,
                 ShowSource show_source) override;
+  bool ShouldShowNewFeatureBadge() const override;
+  void MarkNewFeatureBadgeShown() override;
   std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
   base::Value GetHistoryValues(
       const std::set<std::string>& item_id_filter) const override;

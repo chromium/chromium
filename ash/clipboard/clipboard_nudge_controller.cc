@@ -29,6 +29,7 @@ namespace {
 // Keys for tooltip sub-preferences for shown count and last time shown.
 constexpr char kShownCount[] = "shown_count";
 constexpr char kLastTimeShown[] = "last_time_shown";
+constexpr char kNewFeatureBadgeCount[] = "new_feature_shown_count";
 
 // The maximum number of 1 second buckets used to record the time between
 // showing the nudge and recording the feature being opened/used.
@@ -110,6 +111,22 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
   }
 }
 
+void ClipboardNudgeController::MarkNewFeatureBadgeShown() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  const int shown_count = GetNewFeatureBadgeShownCount(prefs);
+  DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
+  update->SetIntPath(kNewFeatureBadgeCount, shown_count + 1);
+}
+
+bool ClipboardNudgeController::ShouldShowNewFeatureBadge() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  int badge_shown_count = GetNewFeatureBadgeShownCount(prefs);
+  // We should not show more nudges after hitting the limit.
+  return badge_shown_count < kContextMenuBadgeShowLimit;
+}
+
 void ClipboardNudgeController::OnClipboardDataRead() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -149,6 +166,7 @@ void ClipboardNudgeController::OnActiveUserPrefServiceChanged(
   DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kShownCount, 0);
   update->SetPath(kLastTimeShown, util::TimeToValue(base::Time()));
+  update->SetIntPath(kNewFeatureBadgeCount, 0);
 }
 
 void ClipboardNudgeController::ShowNudge() {
@@ -264,6 +282,14 @@ int ClipboardNudgeController::GetShownCount(PrefService* prefs) {
   if (!dictionary)
     return 0;
   return dictionary->FindIntPath(kShownCount).value_or(0);
+}
+
+int ClipboardNudgeController::GetNewFeatureBadgeShownCount(PrefService* prefs) {
+  const base::DictionaryValue* dictionary =
+      prefs->GetDictionary(prefs::kMultipasteNudges);
+  if (!dictionary)
+    return 0;
+  return dictionary->FindIntPath(kNewFeatureBadgeCount).value_or(0);
 }
 
 base::Time ClipboardNudgeController::GetLastShownTime(PrefService* prefs) {

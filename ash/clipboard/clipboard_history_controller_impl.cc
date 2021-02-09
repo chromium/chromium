@@ -12,6 +12,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
@@ -275,6 +276,15 @@ void ClipboardHistoryControllerImpl::ShowMenu(const gfx::Rect& anchor_rect,
 
   for (auto& observer : observers_)
     observer.OnClipboardHistoryMenuShown();
+}
+
+bool ClipboardHistoryControllerImpl::ShouldShowNewFeatureBadge() const {
+  return chromeos::features::IsClipboardHistoryContextMenuNudgeEnabled() &&
+         nudge_controller_->ShouldShowNewFeatureBadge();
+}
+
+void ClipboardHistoryControllerImpl::MarkNewFeatureBadgeShown() {
+  nudge_controller_->MarkNewFeatureBadgeShown();
 }
 
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {

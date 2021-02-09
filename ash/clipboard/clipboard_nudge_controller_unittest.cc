@@ -31,8 +31,10 @@ class ClipboardNudgeControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kClipboardHistory);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kClipboardHistory,
+         chromeos::features::kClipboardHistoryContextMenuNudge},
+        {});
     AshTestBase::SetUp();
     nudge_controller_ =
         Shell::Get()->clipboard_history_controller()->nudge_controller();
@@ -185,6 +187,23 @@ TEST_F(ClipboardNudgeControllerTest, AdminWriteDoesNotAdvanceState) {
       std::move(data));
   EXPECT_EQ(ClipboardState::kFirstPaste,
             nudge_controller_->GetClipboardStateForTesting());
+}
+
+// Verifies that the context menu new feature badge for the clipboard option
+// only shows |kContextMenuBadgeShowLimit| times.
+TEST_F(ClipboardNudgeControllerTest, ShowNewFeatureNudge) {
+  ASSERT_TRUE(nudge_controller_->ShouldShowNewFeatureBadge());
+
+  // Mark the badge shown |kContextMenuBadgeShowLimit| - 1 times.
+  // Should expect to keep showing the badge
+  for (int i = 0; i < kContextMenuBadgeShowLimit - 1; ++i) {
+    nudge_controller_->MarkNewFeatureBadgeShown();
+    EXPECT_TRUE(nudge_controller_->ShouldShowNewFeatureBadge());
+  }
+  // Marking the badge as shown |kContextMenuBadgeShowLimit| times should not
+  // expect to show the badge the next time.
+  nudge_controller_->MarkNewFeatureBadgeShown();
+  EXPECT_FALSE(nudge_controller_->ShouldShowNewFeatureBadge());
 }
 
 }  // namespace ash

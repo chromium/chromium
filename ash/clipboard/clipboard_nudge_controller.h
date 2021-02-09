@@ -62,6 +62,12 @@ class ASH_EXPORT ClipboardNudgeController
   // Resets nudge state and show nudge timer.
   void HandleNudgeShown();
 
+  // Checks whether we should show the context menu 'new' badge.
+  bool ShouldShowNewFeatureBadge();
+
+  // Increment the 'new' feature badge shown count.
+  void MarkNewFeatureBadgeShown();
+
   // ClipboardHistoryControllerImpl:
   void OnClipboardHistoryMenuShown() override;
   void OnClipboardHistoryPasted() override;
@@ -78,6 +84,8 @@ class ASH_EXPORT ClipboardNudgeController
   int GetShownCount(PrefService* prefs);
   // Gets the last time the nudge was shown.
   base::Time GetLastShownTime(PrefService* prefs);
+  // Gets the number of times the context menu 'new' badge has been shown.
+  int GetNewFeatureBadgeShownCount(PrefService* prefs);
   // Checks whether another nudge can be shown.
   bool ShouldShowNudge(PrefService* prefs);
   // Gets the current time. Can be overridden for testing.
