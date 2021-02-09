@@ -411,6 +411,7 @@ void PerFrameTranslateAgent::CancelPendingTranslation() {
 
 void PerFrameTranslateAgent::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::TranslateAgent> receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 

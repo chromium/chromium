@@ -117,6 +117,7 @@ void JsCommunication::RunScriptsAtDocumentStart() {
 
 void JsCommunication::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::JsCommunication> pending_receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(pending_receiver),
                  render_frame()->GetTaskRunner(
                      blink::TaskType::kInternalNavigationAssociated));

@@ -159,6 +159,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // be called on an unbound AssociatedReceiver.
   PendingAssociatedRemote<Interface> BindNewEndpointAndPassRemote()
       WARN_UNUSED_RESULT {
+    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
     return BindNewEndpointAndPassRemote(nullptr);
   }
 
@@ -214,6 +215,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // calls and disconnection notifications on the default SequencedTaskRunner
   // (i.e. base::SequencedTaskRunnerHandle::Get() at the time of this call).
   void Bind(PendingAssociatedReceiver<Interface> pending_receiver) {
+    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
     Bind(std::move(pending_receiver), nullptr);
   }
 
@@ -224,6 +226,7 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // sequence that owns this AssociatedReceiver.
   void Bind(PendingAssociatedReceiver<Interface> pending_receiver,
             scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
     if (pending_receiver) {
       BindImpl(pending_receiver.PassHandle(), &stub_,
                base::WrapUnique(new typename Interface::RequestValidator_()),

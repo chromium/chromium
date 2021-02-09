@@ -5138,6 +5138,9 @@ void RenderFrameHostImpl::BindDomOperationControllerHostReceiver(
     mojo::PendingAssociatedReceiver<mojom::DomAutomationControllerHost>
         receiver) {
   DCHECK(receiver.is_valid());
+  // DOM automation controller is reinstalled after a cross-document navigation,
+  // which can reuse the frame.
+  dom_automation_controller_receiver_.reset();
   dom_automation_controller_receiver_.Bind(std::move(receiver));
   dom_automation_controller_receiver_.SetFilter(
       CreateMessageFilterForAssociatedReceiver(
@@ -7056,6 +7059,7 @@ void RenderFrameHostImpl::InvalidateMojoConnection() {
   frame_.reset();
   frame_bindings_control_.reset();
   frame_host_associated_receiver_.reset();
+  back_forward_cache_controller_host_associated_receiver_.reset();
   local_frame_.reset();
   local_main_frame_.reset();
   high_priority_local_frame_.reset();

@@ -3030,6 +3030,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool has_committed_any_navigation_ = false;
   bool must_be_replaced_ = false;
 
+  // Receivers must be reset in InvalidateMojoConnection().
   mojo::AssociatedReceiver<mojom::FrameHost> frame_host_associated_receiver_{
       this};
   mojo::AssociatedReceiver<blink::mojom::BackForwardCacheControllerHost>
@@ -3038,9 +3039,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::AssociatedRemote<mojom::FrameBindingsControl> frame_bindings_control_;
   mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>
       local_frame_host_receiver_{this};
-
-  // This receiver should only be valid when the frame is a swapped in main
-  // frame.
+  // Should only be bound when the frame is a swapped in main frame.
   mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>
       local_main_frame_host_receiver_{this};
 

@@ -76,6 +76,7 @@ ResourceLoadingHintsAgent::~ResourceLoadingHintsAgent() = default;
 void ResourceLoadingHintsAgent::SetReceiver(
     mojo::PendingAssociatedReceiver<
         previews::mojom::PreviewsResourceLoadingHintsReceiver> receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 

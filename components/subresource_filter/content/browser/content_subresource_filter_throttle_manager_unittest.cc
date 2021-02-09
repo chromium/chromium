@@ -71,6 +71,7 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
 
   void OnSubresourceFilterAgentReceiver(
       mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.reset();
     receiver_.Bind(
         mojo::PendingAssociatedReceiver<mojom::SubresourceFilterAgent>(
             std::move(handle)));

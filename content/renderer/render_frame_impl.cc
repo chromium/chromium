@@ -2217,6 +2217,7 @@ void RenderFrameImpl::SetUpSharedMemoryForSmoothness(
 void RenderFrameImpl::BindAutoplayConfiguration(
     mojo::PendingAssociatedReceiver<blink::mojom::AutoplayConfigurationClient>
         receiver) {
+  autoplay_configuration_receiver_.reset();
   autoplay_configuration_receiver_.Bind(
       std::move(receiver),
       GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
@@ -5940,6 +5941,7 @@ media::MediaPermission* RenderFrameImpl::GetMediaPermission() {
 }
 
 void RenderFrameImpl::RegisterMojoInterfaces() {
+  // TODO(dcheng): Fold this interface into mojom::Frame.
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
       &RenderFrameImpl::BindAutoplayConfiguration, weak_factory_.GetWeakPtr()));
 
@@ -5949,6 +5951,7 @@ void RenderFrameImpl::RegisterMojoInterfaces() {
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
       &RenderFrameImpl::BindNavigationClient, weak_factory_.GetWeakPtr()));
 
+  // TODO(dcheng): Fold this interface into mojom::Frame.
   GetAssociatedInterfaceRegistry()->AddInterface(base::BindRepeating(
       &RenderFrameImpl::BindMhtmlFileWriter, base::Unretained(this)));
 
@@ -5959,6 +5962,7 @@ void RenderFrameImpl::RegisterMojoInterfaces() {
 
 void RenderFrameImpl::BindMhtmlFileWriter(
     mojo::PendingAssociatedReceiver<mojom::MhtmlFileWriter> receiver) {
+  mhtml_file_writer_receiver_.reset();
   mhtml_file_writer_receiver_.Bind(
       std::move(receiver), GetTaskRunner(blink::TaskType::kInternalDefault));
 }

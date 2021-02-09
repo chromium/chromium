@@ -330,15 +330,22 @@ AgentSchedulingGroupHost& RenderFrameProxyHost::GetAgentSchedulingGroup() {
 void RenderFrameProxyHost::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
+  // A RenderFrameProxyHost is reused after a crash, so allow reuse of the
+  // receivers by resetting them before binding.
+  // TODO(dcheng): Maybe there should be an equivalent to RenderFrameHostImpl's
+  // InvalidateMojoConnection()?
   if (interface_name == mojom::RenderFrameProxyHost::Name_) {
+    frame_proxy_host_associated_receiver_.reset();
     frame_proxy_host_associated_receiver_.Bind(
         mojo::PendingAssociatedReceiver<mojom::RenderFrameProxyHost>(
             std::move(handle)));
   } else if (interface_name == blink::mojom::RemoteFrameHost::Name_) {
+    remote_frame_host_receiver_.reset();
     remote_frame_host_receiver_.Bind(
         mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>(
             std::move(handle)));
   } else if (interface_name == blink::mojom::RemoteMainFrameHost::Name_) {
+    remote_main_frame_host_receiver_.reset();
     remote_main_frame_host_receiver_.Bind(
         mojo::PendingAssociatedReceiver<blink::mojom::RemoteMainFrameHost>(
             std::move(handle)));

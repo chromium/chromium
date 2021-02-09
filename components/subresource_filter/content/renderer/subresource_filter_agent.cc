@@ -229,6 +229,7 @@ SubresourceFilterAgent::GetSubresourceFilterHost() {
 
 void SubresourceFilterAgent::OnSubresourceFilterAgentRequest(
     mojo::PendingAssociatedReceiver<mojom::SubresourceFilterAgent> receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 

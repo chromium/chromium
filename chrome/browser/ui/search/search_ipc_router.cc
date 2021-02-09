@@ -86,6 +86,7 @@ void EmbeddedSearchClientFactoryImpl::Connect(
   if (!IsInInstantProcess(frame) || !is_main_frame) {
     return;
   }
+  client_receiver_->reset();
   client_receiver_->Bind(std::move(receiver));
   embedded_search_client_.reset();
   embedded_search_client_.Bind(std::move(client));

@@ -53,6 +53,7 @@ class FakeFileHandlingExpiryService
   }
 
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.reset();
     receiver_.Bind(
         mojo::PendingAssociatedReceiver<blink::mojom::FileHandlingExpiry>(
             std::move(handle)));

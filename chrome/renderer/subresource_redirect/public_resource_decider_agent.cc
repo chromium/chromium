@@ -45,6 +45,7 @@ void PublicResourceDeciderAgent::NotifyCompressedResourceFetchFailed(
 void PublicResourceDeciderAgent::BindHintsReceiver(
     mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectHintsReceiver>
         receiver) {
+  subresource_redirect_hints_receiver_.reset();
   subresource_redirect_hints_receiver_.Bind(std::move(receiver));
 }
 

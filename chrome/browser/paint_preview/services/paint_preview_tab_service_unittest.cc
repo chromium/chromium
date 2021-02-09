@@ -46,6 +46,7 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
   void SetResponse(mojom::PaintPreviewStatus status) { status_ = status; }
 
   void BindRequest(mojo::ScopedInterfaceEndpointHandle handle) {
+    binding_.reset();
     binding_.Bind(mojo::PendingAssociatedReceiver<mojom::PaintPreviewRecorder>(
         std::move(handle)));
   }

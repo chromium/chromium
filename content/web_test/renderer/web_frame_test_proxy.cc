@@ -768,6 +768,7 @@ void WebFrameTestProxy::SetTestConfiguration(
 
 void WebFrameTestProxy::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::WebTestRenderFrame> receiver) {
+  web_test_render_frame_receiver_.reset();
   web_test_render_frame_receiver_.Bind(
       std::move(receiver),
       GetWebFrame()->GetTaskRunner(blink::TaskType::kInternalTest));
