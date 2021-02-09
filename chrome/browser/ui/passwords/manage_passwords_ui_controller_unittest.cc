@@ -487,8 +487,6 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSaved) {
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordSavedWithManualFallback", false, 1);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
@@ -1016,8 +1014,6 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordUpdated) {
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.PasswordSavedWithManualFallback", false, 1);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
 }
@@ -1110,8 +1106,6 @@ TEST_F(ManagePasswordsUIControllerTest, ManualFallbackForSaving_UseFallback) {
     auto* entry = entries[0];
     EXPECT_EQ(source_id, entry->source_id);
 
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.PasswordSavedWithManualFallback", true, 1);
     test_ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kUser_Action_TriggeredManualFallbackForSavingName, 1u);
   }

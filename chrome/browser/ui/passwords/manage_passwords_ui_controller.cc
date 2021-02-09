@@ -499,8 +499,6 @@ void ManagePasswordsUIController::SavePassword(const base::string16& username,
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
 
-  UMA_HISTOGRAM_BOOLEAN("PasswordManager.PasswordSavedWithManualFallback",
-                        BubbleIsManualFallbackForSaving());
   if (GetPasswordFormMetricsRecorder() && BubbleIsManualFallbackForSaving()) {
     GetPasswordFormMetricsRecorder()->RecordDetailedUserAction(
         password_manager::PasswordFormMetricsRecorder::DetailedUserAction::

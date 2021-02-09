@@ -1794,6 +1794,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.PasswordSavedWithManualFallback"
     enum="BooleanPasswordSavedWithFallback" expires_after="2020-05-24">
+  <obsolete>
+    Obsolete since M90.
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <summary>
     Measures whether users save passwords with automatic prompt or manual
