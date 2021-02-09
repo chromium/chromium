@@ -91,8 +91,8 @@ suite('CommanderWebUIBrowserTest', () => {
     assertEquals(titles.length, optionElements.length);
 
     const actualTitles = Array.from(optionElements).map(el => {
-      return Array.from(el.shadowRoot.querySelectorAll('span'))
-          .map(span => span.innerText)
+      return Array.from(el.shadowRoot.querySelectorAll('.title-piece'))
+          .map(piece => piece.innerText)
           .join('');
     });
     assertDeepEquals(titles, actualTitles);

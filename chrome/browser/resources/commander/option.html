@@ -22,7 +22,12 @@
     margin-inline-start: auto;
   }
 
-  span {
+  .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .title-piece {
     white-space: pre;
   }
 
@@ -32,14 +37,18 @@
   }
 
   iron-icon {
+    flex-shrink: 0;
     margin-inline-end: .5em;
     --iron-icon-fill-color: --google-grey-800;
   }
 </style>
 <iron-icon icon="[[computeIcon_(model.entity)]]"></iron-icon>
+<span class="title">
 <template is="dom-repeat"
     items="[[computeMatchSpans_(model.title, model.matchedRanges)]]"
     as="span">
-  <span class$="[[getClassForMatch(span.isMatch)]]">[[span.text]]</span>
+  <span class$="title-piece
+      [[getClassForMatch(span.isMatch)]]">[[span.text]]</span>
 </template>
+</span>
 <span class="annotation">[[model.annotation]]</span>
