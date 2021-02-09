@@ -269,7 +269,9 @@ export class Viewport {
     const height = dimensions.height;
     const width = dimensions.width;
 
-    const matrix = new DOMMatrix();
+    // TODO(dpapad): Use the no-arg constructor when
+    // https://github.com/google/closure-compiler/issues/3768 is fixed.
+    const matrix = new DOMMatrix([1, 0, 0, 1, 0, 0]);
 
     const rotation = this.getClockwiseRotations() * 90;
     // Set origin for rotation.
@@ -288,10 +290,8 @@ export class Viewport {
     matrix.scaleSelf(1, -1);
 
     const pointsToPixels = 96 / 72;
-    const result = matrix.transformPoint({
-      x: point.x * pointsToPixels,
-      y: point.y * pointsToPixels,
-    });
+    const result = matrix.transformPoint(
+        new DOMPoint(point.x * pointsToPixels, point.y * pointsToPixels));
     return {
       x: result.x + PAGE_SHADOW.left,
       y: result.y + PAGE_SHADOW.top,

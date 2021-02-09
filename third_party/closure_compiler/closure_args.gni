@@ -26,6 +26,7 @@ strict_error_checking_closure_args = [
 # Additional closure args for performing full checks.
 default_closure_args = strict_error_checking_closure_args + [
                          "compilation_level=SIMPLE_OPTIMIZATIONS",
+                         "generate_exports=false",
 
                          "extra_annotation_name=attribute",
                          "extra_annotation_name=demo",

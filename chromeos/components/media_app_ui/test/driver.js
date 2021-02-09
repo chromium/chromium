@@ -81,7 +81,7 @@ class FakeWritableFileSink {
       return;
     }
     const dataSize = data.size === undefined ? data.length : data.size;
-    this.writes.push({position, size: dataSize});
+    this.writes.push({position, size: /** @type {number} */ (dataSize)});
     this.data = new Blob([
       this.data.slice(0, position),
       data,
@@ -261,6 +261,11 @@ class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
     const fileHandleIndex = this.files.findIndex(f => f.name === name);
     // Store the file removed for spying in tests.
     this.lastDeleted = this.files.splice(fileHandleIndex, 1)[0];
+  }
+
+  /** @override */
+  resolve() {
+    return Promise.resolve(null);
   }
 }
 
