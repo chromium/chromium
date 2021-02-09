@@ -14,9 +14,6 @@ DFMs have the following limitations:
 
 * **WebView:** We don't support DFMs for WebView. If your feature is used by
   WebView you cannot put it into a DFM.
-* **Android K:** DFMs are based on split APKs, a feature introduced in Android
-  L. Therefore, we don't support DFMs on Android K. As a workaround
-  you can add your feature to the Android K APK build. See below for details.
 
 ## Getting started
 
@@ -27,6 +24,13 @@ to the Chrome bundles.
 **Note:** To make your own module you'll essentially have to replace every
 instance of `foo`/`Foo`/`FOO` with `your_feature_name`/`YourFeatureName`/
 `YOUR_FEATURE_NAME`.
+***
+
+*** note
+**Note:** Chrome's bundles use the [android:isolatedSplits](https://developer.android.com/reference/android/R.attr#isolatedSplits)
+attribute. For more details and advice on when to create a DFM, see
+[go/isolated-splits-dev-guide](http://go/isolated-splits-dev-guide)
+**(Googlers only)**.
 ***
 
 ### Reference DFM
