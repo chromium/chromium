@@ -265,12 +265,12 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
                      fidl::InterfaceRequest<fuchsia::web::Frame> frame_request)
     : web_contents_(std::move(web_contents)),
       context_(context),
-      console_log_tag_(params.has_debug_name()
-                           ? params.debug_name()
-                           : std::string()),
+      console_log_tag_(params.has_debug_name() ? params.debug_name()
+                                               : std::string()),
       params_for_popups_(std::move(params)),
       navigation_controller_(web_contents_.get()),
       url_request_rewrite_rules_manager_(web_contents_.get()),
+      permission_controller_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
       media_blocker_(web_contents_.get()),
       theme_manager_(web_contents_.get()) {
