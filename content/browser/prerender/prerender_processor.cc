@@ -48,6 +48,14 @@ void PrerenderProcessor::Start(
       return;
   }
 
+  // Abort cross-origin prerendering.
+  // TODO(https://crbug.com/1176054): This is a tentative behavior. We plan to
+  // support it cross-origin prerendering later.
+  // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch to avoid
+  // performance degradation.
+  if (!initiator_origin_.IsSameOriginWith(url::Origin::Create(attributes->url)))
+    return;
+
   // TODO(https://crbug.com/1132746): Validate the origin, etc and send
   // mojo::ReportBadMessage() if necessary like the legacy prerender
   // `prerender::PrerenderProcessorImpl::Start()`.

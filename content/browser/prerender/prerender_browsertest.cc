@@ -333,6 +333,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginRedirection) {
 
   // The prerender host should be registered for the initial request URL, not
   // the redirected URL.
+  // TODO(https://crbug.com/1132746): Disallow cross-origin redirection on
+  // prerendering navigation for the initial milestone.
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   EXPECT_TRUE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
   EXPECT_FALSE(registry.FindHostByUrlForTesting(kRedirectedUrl));
