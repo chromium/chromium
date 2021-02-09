@@ -140,6 +140,7 @@ ClipboardBubbleView::ClipboardBubbleView(const base::string16& text) {
   label_->SizeToFit(kBubbleWidth - 2 * kBubblePadding - kManagedIconSize -
                     kIconLabelSpacing);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  label_->SetAutoColorReadabilityEnabled(false);
 
   // Bubble borders
   border_ = AddChildView(std::make_unique<views::ImageView>());
