@@ -991,8 +991,7 @@ GoogleServiceAuthError GaiaAuthFetcher::GenerateAuthError(
     if (net_error == net::ERR_ABORTED) {
       return GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED);
     }
-    DLOG(WARNING) << "Could not reach Google Accounts servers: errno "
-                  << net_error;
+    DVLOG(1) << "Could not reach Google Accounts servers: errno " << net_error;
     return GoogleServiceAuthError::FromConnectionError(net_error);
   }
 
