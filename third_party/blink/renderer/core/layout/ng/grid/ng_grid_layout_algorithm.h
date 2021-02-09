@@ -215,16 +215,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
       const LayoutUnit available_size) const;
 
-  // Lays out and computes inline and block offsets for grid items.
-  void PlaceItems(
-      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
-      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-      Vector<GridItemData>* grid_items,
-      Vector<GridItemData>* out_of_flow_items,
-      NGGridPlacement* grid_placement,
-      LayoutUnit* intrinsic_block_size,
-      LayoutUnit* block_size);
-
   // Gets the row or column gap of the grid.
   LayoutUnit GridGap(GridTrackSizingDirection track_direction,
                      LayoutUnit available_size = kIndefiniteSize) const;

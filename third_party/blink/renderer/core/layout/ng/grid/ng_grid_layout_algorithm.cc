@@ -58,12 +58,58 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   ComputeUsedTrackSizes(SizingConstraint::kLayout, &row_track_collection,
                         &grid_items, &reordered_item_indices);
 
-  // Place grid and out of flow items.
-  LayoutUnit intrinsic_block_size;
-  LayoutUnit block_size;
-  PlaceItems(column_track_collection, row_track_collection, &grid_items,
-             &out_of_flow_items, &grid_placement, &intrinsic_block_size,
-             &block_size);
+  // Determine the final (used) set geometry.
+  const SetGeometry column_set_geometry = ComputeSetGeometry(
+      column_track_collection, ChildAvailableSize().inline_size);
+  SetGeometry row_set_geometry =
+      ComputeSetGeometry(row_track_collection, ChildAvailableSize().block_size);
+
+  // Intrinsic block size is based on the final row offset.
+  // Because gutters are included in row offsets, subtract out the final gutter.
+  LayoutUnit intrinsic_block_size =
+      row_set_geometry.offsets.back() -
+      (row_set_geometry.offsets.size() == 1 ? LayoutUnit()
+                                            : row_set_geometry.gutter_size) +
+      BorderScrollbarPadding().block_end;
+
+  intrinsic_block_size =
+      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
+                              BorderScrollbarPadding(), intrinsic_block_size);
+
+  LayoutUnit block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      border_box_size_.inline_size);
+
+  // If we had an indefinite available block-size, we now need to re-calculate
+  // our grid-gap, and alignment using our new block-size.
+  if (ChildAvailableSize().block_size == kIndefiniteSize) {
+    const LayoutUnit resolved_available_block_size =
+        (block_size - BorderScrollbarPadding().BlockSum())
+            .ClampNegativeToZero();
+
+    row_set_geometry =
+        ComputeSetGeometry(row_track_collection, resolved_available_block_size);
+  }
+
+  // Cache set indices for grid items, as all of them will be used.
+  for (GridItemData& grid_item : grid_items) {
+    grid_item.SetIndices(column_track_collection);
+    grid_item.SetIndices(row_track_collection);
+  }
+
+  PlaceGridItems(grid_items, column_set_geometry, row_set_geometry, block_size);
+
+  PlaceOutOfFlowDescendants(column_track_collection, row_track_collection,
+                            column_set_geometry, row_set_geometry,
+                            grid_placement, block_size);
+
+  for (GridItemData& out_of_flow_item : out_of_flow_items) {
+    out_of_flow_item.SetIndices(column_track_collection, &grid_placement);
+    out_of_flow_item.SetIndices(row_track_collection, &grid_placement);
+  }
+
+  PlaceOutOfFlowItems(out_of_flow_items, column_set_geometry, row_set_geometry,
+                      block_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
@@ -1779,73 +1825,6 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::ComputeSetGeometry(
     offsets.push_back(set_offset);
   }
   return {offsets, track_alignment_geometry.gutter_size};
-}
-
-void NGGridLayoutAlgorithm::PlaceItems(
-    const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
-    const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-    Vector<GridItemData>* grid_items,
-    Vector<GridItemData>* out_of_flow_items,
-    NGGridPlacement* grid_placement,
-    LayoutUnit* intrinsic_block_size,
-    LayoutUnit* block_size) {
-  DCHECK(grid_items);
-  DCHECK(out_of_flow_items);
-  DCHECK(grid_placement);
-  DCHECK(intrinsic_block_size);
-  DCHECK(block_size);
-  const SetGeometry column_set_geometry = ComputeSetGeometry(
-      column_track_collection, ChildAvailableSize().inline_size);
-  SetGeometry row_set_geometry =
-      ComputeSetGeometry(row_track_collection, ChildAvailableSize().block_size);
-
-  // Intrinsic block size is based on the final row offset.
-  // Because gaps are included in row offsets, subtract out the final gap.
-  *intrinsic_block_size =
-      row_set_geometry.offsets.back() -
-      (row_set_geometry.offsets.size() == 1 ? LayoutUnit()
-                                            : row_set_geometry.gutter_size) +
-      BorderScrollbarPadding().block_end;
-
-  *intrinsic_block_size =
-      ClampIntrinsicBlockSize(ConstraintSpace(), Node(),
-                              BorderScrollbarPadding(), *intrinsic_block_size);
-
-  *block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), *intrinsic_block_size,
-      border_box_size_.inline_size);
-
-  // If we had an indefinite available block-size, we now need to re-calculate
-  // our grid-gap, and alignment using our new block-size.
-  if (ChildAvailableSize().block_size == kIndefiniteSize) {
-    const LayoutUnit resolved_available_block_size =
-        (*block_size - BorderScrollbarPadding().BlockSum())
-            .ClampNegativeToZero();
-
-    row_set_geometry =
-        ComputeSetGeometry(row_track_collection, resolved_available_block_size);
-  }
-
-  // Cache set indices for grid items, as all of them will be used.
-  for (GridItemData& grid_item : *grid_items) {
-    grid_item.SetIndices(column_track_collection);
-    grid_item.SetIndices(row_track_collection);
-  }
-
-  PlaceGridItems(*grid_items, column_set_geometry, row_set_geometry,
-                 *block_size);
-
-  PlaceOutOfFlowDescendants(column_track_collection, row_track_collection,
-                            column_set_geometry, row_set_geometry,
-                            *grid_placement, *block_size);
-
-  for (GridItemData& out_of_flow_item : *out_of_flow_items) {
-    out_of_flow_item.SetIndices(column_track_collection, grid_placement);
-    out_of_flow_item.SetIndices(row_track_collection, grid_placement);
-  }
-
-  PlaceOutOfFlowItems(*out_of_flow_items, column_set_geometry, row_set_geometry,
-                      *block_size);
 }
 
 LayoutUnit NGGridLayoutAlgorithm::GridGap(
