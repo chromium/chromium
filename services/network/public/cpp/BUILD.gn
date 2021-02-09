@@ -186,6 +186,23 @@ component("cookies_mojom_support") {
   defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
 }
 
+component("network_param_mojom_support") {
+  sources = [
+    "net_ipc_param_traits.cc",
+    "net_ipc_param_traits.h",
+    "network_param_mojom_traits.cc",
+    "network_param_mojom_traits.h",
+  ]
+  deps = [
+    "//ipc",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//net",
+    "//services/network/public/mojom:mojom_network_param_shared",
+    "//url/ipc:url_ipc",
+  ]
+  defines = [ "IS_NETWORK_CPP_BASE_IMPL" ]
+}
+
 # This component is separate from cpp_base as it is a dependency of
 # //services/network/public/mojom:url_loader_base.
 component("cross_origin_embedder_policy") {
@@ -240,8 +257,6 @@ component("cpp_base") {
     "isolation_info_mojom_traits.h",
     "mutable_network_traffic_annotation_tag_mojom_traits.h",
     "mutable_partial_network_traffic_annotation_tag_mojom_traits.h",
-    "net_ipc_param_traits.cc",
-    "net_ipc_param_traits.h",
     "network_interface_mojom_traits.cc",
     "network_interface_mojom_traits.h",
     "network_ipc_param_traits.cc",
@@ -279,6 +294,7 @@ component("cpp_base") {
     ":crash_keys",
     ":cross_origin_embedder_policy",
     ":ip_address_mojom_support",
+    ":network_param_mojom_support",
     ":schemeful_site_mojom_support",
     "//services/network/public/mojom:url_loader_base",
     "//third_party/webrtc_overrides:webrtc_component",

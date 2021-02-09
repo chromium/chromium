@@ -39,13 +39,6 @@ class PrefetchProxyNetworkContextClient
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>
           cert_responder) override;
-  void OnSSLCertificateError(int32_t process_id,
-                             int32_t routing_id,
-                             const GURL& url,
-                             int net_error,
-                             const net::SSLInfo& ssl_info,
-                             bool fatal,
-                             OnSSLCertificateErrorCallback response) override;
   void OnFileUploadRequested(int32_t process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,

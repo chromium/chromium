@@ -47,6 +47,18 @@ void TestStoragePartition::CreateHasTrustTokensAnswerer(
   NOTREACHED() << "Not implemented.";
 }
 
+mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+TestStoragePartition::CreateAuthAndCertObserverForFrame(int process_id,
+                                                        int routing_id) {
+  return mojo::NullRemote();
+}
+
+mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+TestStoragePartition::CreateAuthAndCertObserverForNavigationRequest(
+    int frame_tree_id) {
+  return mojo::NullRemote();
+}
+
 storage::QuotaManager* TestStoragePartition::GetQuotaManager() {
   return quota_manager_;
 }

@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/auth_and_certificate_observer.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
@@ -74,6 +75,11 @@ struct TrustedUrlRequestParams {
   // a cookie. If this is set to non-null, the observer passed to
   // URLLoaderFactory will be ignored.
   pending_remote<CookieAccessObserver>? cookie_observer;
+
+  // Observer which should be notified when this URLRequest has authentication
+  // and certificate events. If this is set to non-null, the observer passed to
+  // URLLoaderFactory will be ignored.
+  pending_remote<AuthenticationAndCertificateObserver>? auth_cert_observer;
 
   // Specifies the security state of the client, for cases when the
   // URLLoaderFactory is shared among multiple clients.

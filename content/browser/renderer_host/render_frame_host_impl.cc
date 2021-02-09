@@ -10419,6 +10419,13 @@ void RenderFrameHostImpl::BindReportingObserver(
   GetAssociatedLocalFrame()->BindReportingObserver(std::move(receiver));
 }
 
+mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+RenderFrameHostImpl::CreateAuthAndCertObserver() {
+  return static_cast<StoragePartitionImpl*>(GetStoragePartition())
+      ->CreateAuthAndCertObserverForFrame(GetProcess()->GetID(),
+                                          GetRoutingID());
+}
+
 mojo::PendingRemote<network::mojom::CookieAccessObserver>
 RenderFrameHostImpl::CreateCookieAccessObserver() {
   mojo::PendingRemote<network::mojom::CookieAccessObserver> remote;

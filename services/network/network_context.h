@@ -313,12 +313,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
-      int32_t render_frame_id,
       const url::Origin& origin,
       uint32_t options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-      mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
+      mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
+          auth_cert_observer,
+      mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) override;
   void CreateQuicTransport(
       const GURL& url,

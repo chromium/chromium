@@ -103,12 +103,13 @@ FidoTunnelDevice::FidoTunnelDevice(
   network_context->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::IsolationInfo(), /*additional_headers=*/{},
-      network::mojom::kBrowserProcessId,
-      /*render_frame_id=*/0, url::Origin::Create(url),
+      network::mojom::kBrowserProcessId, url::Origin::Create(url),
       network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
-      websocket_client_->BindNewHandshakeClientPipe(), mojo::NullRemote(),
-      mojo::NullRemote());
+      websocket_client_->BindNewHandshakeClientPipe(),
+      /*auth_cert_observer=*/mojo::NullRemote(),
+      /*auth_handler=*/mojo::NullRemote(),
+      /*header_client=*/mojo::NullRemote());
 }
 
 FidoTunnelDevice::FidoTunnelDevice(
@@ -148,12 +149,13 @@ FidoTunnelDevice::FidoTunnelDevice(
   network_context->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::IsolationInfo(), std::move(headers),
-      network::mojom::kBrowserProcessId,
-      /*render_frame_id=*/0, url::Origin::Create(url),
+      network::mojom::kBrowserProcessId, url::Origin::Create(url),
       network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
-      websocket_client_->BindNewHandshakeClientPipe(), mojo::NullRemote(),
-      mojo::NullRemote());
+      websocket_client_->BindNewHandshakeClientPipe(),
+      /*auth_cert_observer=*/mojo::NullRemote(),
+      /*auth_handler=*/mojo::NullRemote(),
+      /*header_client=*/mojo::NullRemote());
 }
 
 FidoTunnelDevice::~FidoTunnelDevice() {

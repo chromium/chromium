@@ -78,7 +78,8 @@ URLLoaderFactory::URLLoaderFactory(
       header_client_(std::move(params_->header_client)),
       coep_reporter_(std::move(params_->coep_reporter)),
       cors_url_loader_factory_(cors_url_loader_factory),
-      cookie_observer_(std::move(params_->cookie_observer)) {
+      cookie_observer_(std::move(params_->cookie_observer)),
+      auth_cert_observer_(std::move(params_->auth_cert_observer)) {
   DCHECK(context);
   DCHECK_NE(mojom::kInvalidProcessId, params_->process_id);
   DCHECK(!params_->factory_override);
@@ -268,6 +269,18 @@ void URLLoaderFactory::CreateLoaderAndStart(
   } else if (cookie_observer_) {
     cookie_observer_->Clone(cookie_observer.InitWithNewPipeAndPassReceiver());
   }
+  mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
+      auth_cert_observer;
+  if (url_request.trusted_params &&
+      url_request.trusted_params->auth_cert_observer) {
+    auth_cert_observer = std::move(
+        const_cast<
+            mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>&>(
+            url_request.trusted_params->auth_cert_observer));
+  } else if (auth_cert_observer_) {
+    auth_cert_observer_->Clone(
+        auth_cert_observer.InitWithNewPipeAndPassReceiver());
+  }
 
   if (url_request.destination ==
       network::mojom::RequestDestination::kWebBundle) {
@@ -294,7 +307,8 @@ void URLLoaderFactory::CreateLoaderAndStart(
       std::move(network_usage_accumulator),
       header_client_.is_bound() ? header_client_.get() : nullptr,
       context_->origin_policy_manager(), std::move(trust_token_factory),
-      context_->cors_origin_access_list(), std::move(cookie_observer));
+      context_->cors_origin_access_list(), std::move(cookie_observer),
+      std::move(auth_cert_observer));
 
   cors_url_loader_factory_->OnLoaderCreated(std::move(loader));
 }

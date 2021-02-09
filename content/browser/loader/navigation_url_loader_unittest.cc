@@ -76,6 +76,9 @@ class NavigationURLLoaderTest : public testing::Test {
     common_params->url = url;
     common_params->initiator_origin = url::Origin::Create(url);
 
+    StoragePartition* storage_partition =
+        BrowserContext::GetDefaultStoragePartition(browser_context_.get());
+
     url::Origin origin = url::Origin::Create(url);
     std::unique_ptr<NavigationRequestInfo> request_info(
         new NavigationRequestInfo(
@@ -93,10 +96,11 @@ class NavigationURLLoaderTest : public testing::Test {
             false /* obey_origin_policy */, {} /* cors_exempt_headers */,
             nullptr /* client_security_state */));
     return NavigationURLLoader::Create(
-        browser_context_.get(),
-        BrowserContext::GetDefaultStoragePartition(browser_context_.get()),
-        std::move(request_info), nullptr, nullptr, nullptr, nullptr, delegate,
-        NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote());
+        browser_context_.get(), storage_partition, std::move(request_info),
+        nullptr, nullptr, nullptr, nullptr, delegate,
+        NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote(),
+        storage_partition->CreateAuthAndCertObserverForNavigationRequest(
+            -1 /* frame_tree_node_id */));
   }
 
  protected:

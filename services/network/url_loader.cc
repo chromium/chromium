@@ -465,7 +465,9 @@ URLLoader::URLLoader(
     mojom::OriginPolicyManager* origin_policy_manager,
     std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory,
     const cors::OriginAccessList& origin_access_list,
-    mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer)
+    mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
+    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
+        auth_cert_observer)
     : url_request_context_(url_request_context),
       network_service_client_(network_service_client),
       network_context_client_(network_context_client),
@@ -506,6 +508,7 @@ URLLoader::URLLoader(
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       origin_access_list_(origin_access_list),
       cookie_observer_(std::move(cookie_observer)),
+      auth_cert_observer_(std::move(auth_cert_observer)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
           request.request_body &&
@@ -1238,13 +1241,12 @@ void URLLoader::OnSSLCertificateError(net::URLRequest* request,
                                       int net_error,
                                       const net::SSLInfo& ssl_info,
                                       bool fatal) {
-  if (!network_context_client_) {
+  if (!auth_cert_observer_) {
     OnSSLCertificateErrorResponse(ssl_info, net::ERR_INSECURE_RESPONSE);
     return;
   }
-  network_context_client_->OnSSLCertificateError(
-      factory_params_->process_id, render_frame_id_, url_request_->url(),
-      net_error, ssl_info, fatal,
+  auth_cert_observer_->OnSSLCertificateError(
+      url_request_->url(), net_error, ssl_info, fatal,
       base::BindOnce(&URLLoader::OnSSLCertificateErrorResponse,
                      weak_ptr_factory_.GetWeakPtr(), ssl_info));
 }

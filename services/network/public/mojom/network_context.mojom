@@ -11,6 +11,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/auth_and_certificate_observer.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
@@ -681,6 +682,9 @@ struct URLLoaderFactoryParams {
   // Used to notify clients about cookie reads or writes.
   pending_remote<CookieAccessObserver>? cookie_observer;
 
+  // Used to notify clients about authentication and certificate events.
+  pending_remote<AuthenticationAndCertificateObserver>? auth_cert_observer;
+
   // If this equals kForbid, the context to which this loader is bound does not
   // allow any Trust Tokens (https://github.com/wicg/trust-token-api)
   // redemption or signing operations.
@@ -802,16 +806,6 @@ interface NetworkContextClient {
       uint32 request_id,
       network.mojom.SSLCertRequestInfo cert_info,
       pending_remote<ClientCertificateResponder> cert_responder);
-
-  // Called when an SSL certificate is encountered.
-  // The callback argument is a net::ERROR value. If it's net::OK, then the
-  // request is resumed. Otherwise it's cancelled with the given error.
-  OnSSLCertificateError(int32 process_id,
-                        int32 routing_id,
-                        url.mojom.Url url,
-                        int32 net_error,
-                        SSLInfo ssl_info,
-                        bool fatal) => (int32 net_error);
 
   // Called when file uploading was requested.
   // If the process that requested the uploads has permission to read all of
@@ -1234,19 +1228,19 @@ interface NetworkContext {
   // the connection is established, and due to message ordering uncertainty we
   // cannot know what happened.
   CreateWebSocket(
-        url.mojom.Url url,
-        array<string> requested_protocols,
-        SiteForCookies site_for_cookies,
-        IsolationInfo isolation_info,
-        array<HttpHeader> additional_headers,
-        int32 process_id,
-        int32 render_frame_id,
-        url.mojom.Origin origin,
-        uint32 options,
-        MutableNetworkTrafficAnnotationTag traffic_annotation,
-        pending_remote<WebSocketHandshakeClient> handshake_client,
-        pending_remote<AuthenticationHandler>? auth_handler,
-        pending_remote<TrustedHeaderClient>? header_client);
+      url.mojom.Url url,
+      array<string> requested_protocols,
+      SiteForCookies site_for_cookies,
+      IsolationInfo isolation_info,
+      array<HttpHeader> additional_headers,
+      int32 process_id,
+      url.mojom.Origin origin,
+      uint32 options,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
+      pending_remote<WebSocketHandshakeClient> handshake_client,
+      pending_remote<AuthenticationAndCertificateObserver>? auth_cert_observer,
+      pending_remote<WebSocketAuthenticationHandler>? auth_handler,
+      pending_remote<TrustedHeaderClient>? header_client);
 
   // Creates a QuicTransport connection to |url|. |origin| is used for the
   // client indication - see

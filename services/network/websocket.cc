@@ -353,11 +353,16 @@ void WebSocket::WebSocketEventHandler::OnSSLCertificateError(
   DVLOG(3) << "WebSocketEventHandler::OnSSLCertificateError"
            << reinterpret_cast<void*>(this) << " url=" << url.spec()
            << " cert_status=" << ssl_info.cert_status << " fatal=" << fatal;
-  impl_->factory_->OnSSLCertificateError(
+  if (!impl_->auth_cert_observer_) {
+    impl_->OnSSLCertificateErrorResponse(std::move(callbacks), ssl_info,
+                                         net::ERR_INSECURE_RESPONSE);
+    return;
+  }
+  impl_->auth_cert_observer_->OnSSLCertificateError(
+      url, net_error, ssl_info, fatal,
       base::BindOnce(&WebSocket::OnSSLCertificateErrorResponse,
                      impl_->weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callbacks), ssl_info),
-      url, impl_->child_id_, impl_->frame_id_, net_error, ssl_info, fatal);
+                     std::move(callbacks), ssl_info));
 }
 
 int WebSocket::WebSocketEventHandler::OnAuthRequired(
@@ -396,20 +401,21 @@ WebSocket::WebSocket(
     const net::SiteForCookies& site_for_cookies,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
-    int32_t child_id,
-    int32_t frame_id,
     const url::Origin& origin,
     uint32_t options,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     HasRawHeadersAccess has_raw_headers_access,
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-    mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
+    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
+        auth_cert_observer,
+    mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
     base::Optional<WebSocketThrottler::PendingConnection>
         pending_connection_tracker,
     DataPipeUseTracker data_pipe_use_tracker,
     base::TimeDelta delay)
     : factory_(factory),
+      auth_cert_observer_(std::move(auth_cert_observer)),
       handshake_client_(std::move(handshake_client)),
       auth_handler_(std::move(auth_handler)),
       header_client_(std::move(header_client)),
@@ -417,8 +423,6 @@ WebSocket::WebSocket(
       delay_(delay),
       options_(options),
       traffic_annotation_(traffic_annotation),
-      child_id_(child_id),
-      frame_id_(frame_id),
       origin_(std::move(origin)),
       site_for_cookies_(site_for_cookies),
       has_raw_headers_access_(has_raw_headers_access),

@@ -156,6 +156,7 @@ mojom("mojom_network_isolation_key") {
 mojom("url_loader_base") {
   generate_java = true
   sources = [
+    "auth_and_certificate_observer.mojom",
     "chunked_data_pipe_getter.mojom",
     "client_security_state.mojom",
     "cross_origin_embedder_policy.mojom",
@@ -169,6 +170,7 @@ mojom("url_loader_base") {
   ]
 
   public_deps = [
+    ":mojom_network_param",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
@@ -251,21 +253,11 @@ mojom("mojom_schemeful_site") {
   ]
 }
 
-# This target is split from "mojom" target as the lazy serialization may
-# cause problems. See https://crbug.com/822732.
-mojom("websocket_mojom") {
+mojom("mojom_network_param") {
   generate_java = true
-  sources = [
-    "network_param.mojom",
-    "websocket.mojom",
-  ]
+  sources = [ "network_param.mojom" ]
 
-  public_deps = [
-    ":mojom_ip_address",
-    "//mojo/public/mojom/base",
-    "//url/mojom:url_mojom_gurl",
-    "//url/mojom:url_mojom_origin",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 
   if (!is_ios) {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
@@ -324,14 +316,30 @@ mojom("websocket_mojom") {
         "//services/network/public/cpp/net_ipc_param_traits.h",
         "//services/network/public/cpp/network_param_mojom_traits.h",
       ]
-      traits_sources =
-          [ "//services/network/public/cpp/network_param_mojom_traits.cc" ]
-      traits_public_deps = [
-        "//ipc",
-        "//net",
-        "//services/network/public/cpp:cpp_base",
-      ]
+      traits_public_deps =
+          [ "//services/network/public/cpp:network_param_mojom_support" ]
     },
+  ]
+}
+
+# This target is split from "mojom" target as the lazy serialization may
+# cause problems. See https://crbug.com/822732.
+mojom("websocket_mojom") {
+  generate_java = true
+  sources = [ "websocket.mojom" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  public_deps = [
+    ":mojom_ip_address",
+    ":mojom_network_param",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
   ]
 }
 
@@ -522,6 +530,7 @@ mojom("mojom") {
     ":cookies_mojom",
     ":mojom_ip_address",
     ":mojom_network_isolation_key",
+    ":mojom_network_param",
     ":mojom_schemeful_site",
     ":url_loader_base",
     ":websocket_mojom",

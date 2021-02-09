@@ -45,7 +45,7 @@ struct WebSocketHandshakeResponse {
 };
 
 // This interface is for HTTP Authentication.
-interface AuthenticationHandler {
+interface WebSocketAuthenticationHandler {
   // Returns null credentials when it wants to cancel authentication, and
   // returns a non-null credentials when it wants to use the credentials for
   // authentication.

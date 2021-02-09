@@ -447,6 +447,8 @@ source_set("test_support") {
     "mojo_socket_test_util.h",
     "test/fake_test_cert_verifier_params_factory.cc",
     "test/fake_test_cert_verifier_params_factory.h",
+    "test/test_auth_cert_observer.cc",
+    "test/test_auth_cert_observer.h",
     "test/test_cookie_manager.cc",
     "test/test_cookie_manager.h",
     "test/test_data_pipe_getter.cc",

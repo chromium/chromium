@@ -20,6 +20,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/auth_and_certificate_observer.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -55,6 +56,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     bool disable_secure_dns = false;
     bool has_user_activation = false;
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
+    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
+        auth_cert_observer;
     mojom::ClientSecurityStatePtr client_security_state;
   };
 

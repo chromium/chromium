@@ -5,14 +5,16 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_PARAM_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_PARAM_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/http/http_version.h"
-#include "services/network/public/mojom/network_param.mojom.h"
+#include "services/network/public/mojom/network_param.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-class StructTraits<network::mojom::HttpVersionDataView, net::HttpVersion> {
+class COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::HttpVersionDataView, net::HttpVersion> {
  public:
   static int16_t major_value(net::HttpVersion version) {
     return version.major_value();

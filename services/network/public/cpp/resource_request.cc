@@ -24,6 +24,19 @@ mojo::PendingRemote<mojom::CookieAccessObserver> Clone(
   return new_remote;
 }
 
+mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver> Clone(
+    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>*
+        observer) {
+  if (!*observer)
+    return mojo::NullRemote();
+  mojo::Remote<mojom::AuthenticationAndCertificateObserver> remote(
+      std::move(*observer));
+  mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver> new_remote;
+  remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
+  *observer = remote.Unbind();
+  return new_remote;
+}
+
 // Returns true iff either holds true:
 //
 //  - both |lhs| and |rhs| are nullopt, or
@@ -59,6 +72,10 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   cookie_observer =
       Clone(&const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
           other.cookie_observer));
+  auth_cert_observer =
+      Clone(&const_cast<
+            mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>&>(
+          other.auth_cert_observer));
   client_security_state = other.client_security_state.Clone();
   return *this;
 }

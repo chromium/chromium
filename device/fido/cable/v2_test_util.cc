@@ -48,13 +48,15 @@ class TestNetworkContext : public network::TestNetworkContext {
       const net::IsolationInfo& isolation_info,
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
-      int32_t render_frame_id,
       const url::Origin& origin,
       uint32_t options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
-      mojo::PendingRemote<network::mojom::AuthenticationHandler> auth_handler,
+      mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+          auth_cert_observer,
+      mojo::PendingRemote<network::mojom::WebSocketAuthenticationHandler>
+          auth_handler,
       mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client)
       override {
     CHECK(url.has_path());

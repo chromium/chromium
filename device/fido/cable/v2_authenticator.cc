@@ -290,12 +290,14 @@ class TunnelTransport : public Transport {
 
     network_context_->CreateWebSocket(
         target_, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
-        net::IsolationInfo(), /*headers=*/{}, network::mojom::kBrowserProcessId,
-        /*render_frame_id=*/0, url::Origin::Create(target_),
+        net::IsolationInfo(), /*additional_headers=*/{},
+        network::mojom::kBrowserProcessId, url::Origin::Create(target_),
         network::mojom::kWebSocketOptionBlockAllCookies,
         net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
-        websocket_client_->BindNewHandshakeClientPipe(), mojo::NullRemote(),
-        mojo::NullRemote());
+        websocket_client_->BindNewHandshakeClientPipe(),
+        /*auth_cert_observer=*/mojo::NullRemote(),
+        /*auth_handler=*/mojo::NullRemote(),
+        /*header_client=*/mojo::NullRemote());
     FIDO_LOG(DEBUG) << "Creating WebSocket to " << target_.spec();
   }
 

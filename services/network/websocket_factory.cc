@@ -34,12 +34,13 @@ void WebSocketFactory::CreateWebSocket(
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     int32_t process_id,
-    int32_t render_frame_id,
     const url::Origin& origin,
     uint32_t options,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-    mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
+    mojo::PendingRemote<mojom::AuthenticationAndCertificateObserver>
+        auth_cert_observer,
+    mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) {
   if (isolation_info.request_type() !=
       net::IsolationInfo::RequestType::kOther) {
@@ -67,9 +68,9 @@ void WebSocketFactory::CreateWebSocket(
           process_id, net::ChangeWebSocketSchemeToHttpScheme(url)));
   connections_.insert(std::make_unique<WebSocket>(
       this, url, requested_protocols, site_for_cookies, isolation_info,
-      std::move(additional_headers), process_id, render_frame_id, origin,
-      options, traffic_annotation, has_raw_headers_access,
-      std::move(handshake_client), std::move(auth_handler),
+      std::move(additional_headers), origin, options, traffic_annotation,
+      has_raw_headers_access, std::move(handshake_client),
+      std::move(auth_cert_observer), std::move(auth_handler),
       std::move(header_client),
       throttler_.IssuePendingConnectionTracker(process_id),
       DataPipeUseTracker(context_->network_service(), DataPipeUser::kWebSocket),
@@ -78,19 +79,6 @@ void WebSocketFactory::CreateWebSocket(
 
 net::URLRequestContext* WebSocketFactory::GetURLRequestContext() {
   return context_->url_request_context();
-}
-
-void WebSocketFactory::OnSSLCertificateError(
-    base::OnceCallback<void(int)> callback,
-    const GURL& url,
-    int process_id,
-    int render_frame_id,
-    int net_error,
-    const net::SSLInfo& ssl_info,
-    bool fatal) {
-  context_->client()->OnSSLCertificateError(process_id, render_frame_id, url,
-                                            net_error, ssl_info, fatal,
-                                            std::move(callback));
 }
 
 void WebSocketFactory::Remove(WebSocket* impl) {

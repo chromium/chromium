@@ -92,7 +92,8 @@ class QuotaContext;
 class CONTENT_EXPORT StoragePartitionImpl
     : public StoragePartition,
       public blink::mojom::DomStorage,
-      public network::mojom::NetworkContextClient {
+      public network::mojom::NetworkContextClient,
+      public network::mojom::AuthenticationAndCertificateObserver {
  public:
   // It is guaranteed that storage partitions are destructed before the
   // browser context starts shutting down its corresponding IO thread residents
@@ -142,6 +143,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   void CreateHasTrustTokensAnswerer(
       mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
       const url::Origin& top_frame_origin) override;
+  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+  CreateAuthAndCertObserverForFrame(int process_id, int routing_id) override;
+  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+  CreateAuthAndCertObserverForNavigationRequest(int frame_tree_id) override;
   storage::QuotaManager* GetQuotaManager() override;
   ChromeAppCacheService* GetAppCacheService() override;
   BackgroundSyncContextImpl* GetBackgroundSyncContext() override;
@@ -256,13 +261,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>
           cert_responder) override;
-  void OnSSLCertificateError(int32_t process_id,
-                             int32_t routing_id,
-                             const GURL& url,
-                             int net_error,
-                             const net::SSLInfo& ssl_info,
-                             bool fatal,
-                             OnSSLCertificateErrorCallback response) override;
   void OnFileUploadRequested(int32_t process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
@@ -293,6 +291,16 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OnTrustTokenIssuanceDivertedToSystem(
       network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
       OnTrustTokenIssuanceDivertedToSystemCallback callback) override;
+
+  // network::mojom::AuthenticationAndCertificateObserver interface.
+  void OnSSLCertificateError(const GURL& url,
+                             int net_error,
+                             const net::SSLInfo& ssl_info,
+                             bool fatal,
+                             OnSSLCertificateErrorCallback response) override;
+  void Clone(mojo::PendingReceiver<
+             network::mojom::AuthenticationAndCertificateObserver> listener)
+      override;
 
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter() {
     return url_loader_factory_getter_;
@@ -617,6 +625,14 @@ class CONTENT_EXPORT StoragePartitionImpl
   // about cookie reads and writes made by a service worker in this process.
   mojo::UniqueReceiverSet<network::mojom::CookieAccessObserver>
       service_worker_cookie_observers_;
+
+  struct AuthAndCertContext {
+    int process_id;
+    int routing_id;
+  };
+  mojo::ReceiverSet<network::mojom::AuthenticationAndCertificateObserver,
+                    AuthAndCertContext>
+      auth_cert_observers_;
 
   // |local_trust_token_fulfiller_| provides responses to certain Trust Tokens
   // operations, for instance via the content embedder calling into a system

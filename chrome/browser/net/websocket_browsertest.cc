@@ -115,10 +115,14 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
 
     process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
         url, requested_protocols, site_for_cookies, isolation_info,
-        std::move(additional_headers), process->GetID(), frame->GetRoutingID(),
-        origin, network::mojom::kWebSocketOptionNone,
+        std::move(additional_headers), process->GetID(), origin,
+        network::mojom::kWebSocketOptionNone,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        std::move(handshake_client), mojo::NullRemote(), mojo::NullRemote());
+        std::move(handshake_client),
+        process->GetStoragePartition()->CreateAuthAndCertObserverForFrame(
+            process->GetID(), frame->GetRoutingID()),
+        /*auth_handler=*/mojo::NullRemote(),
+        /*header_client=*/mojo::NullRemote());
   }
 
   net::SpawnedTestServer ws_server_;

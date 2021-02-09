@@ -667,8 +667,8 @@ void OnCertificateRequestedContinuation(
 class SSLErrorDelegate : public SSLErrorHandler::Delegate {
  public:
   explicit SSLErrorDelegate(
-      network::mojom::NetworkContextClient::OnSSLCertificateErrorCallback
-          response)
+      network::mojom::AuthenticationAndCertificateObserver::
+          OnSSLCertificateErrorCallback response)
       : response_(std::move(response)) {}
   ~SSLErrorDelegate() override = default;
   void CancelSSLRequest(int error, const net::SSLInfo* ssl_info) override {
@@ -684,7 +684,8 @@ class SSLErrorDelegate : public SSLErrorHandler::Delegate {
   }
 
  private:
-  network::mojom::NetworkContextClient::OnSSLCertificateErrorCallback response_;
+  network::mojom::AuthenticationAndCertificateObserver::
+      OnSSLCertificateErrorCallback response_;
   base::WeakPtrFactory<SSLErrorDelegate> weak_factory_{this};
 };
 
@@ -1757,19 +1758,47 @@ void StoragePartitionImpl::OnCertificateRequested(
 }
 
 void StoragePartitionImpl::OnSSLCertificateError(
-    int32_t process_id,
-    int32_t routing_id,
     const GURL& url,
     int net_error,
     const net::SSLInfo& ssl_info,
     bool fatal,
     OnSSLCertificateErrorCallback response) {
+  int process_id = auth_cert_observers_.current_context().process_id;
+  int routing_id = auth_cert_observers_.current_context().routing_id;
+
   SSLErrorDelegate* delegate =
       new SSLErrorDelegate(std::move(response));  // deletes self
   bool is_main_frame_request = IsMainFrameRequest(process_id, routing_id);
   SSLManager::OnSSLCertificateError(
       delegate->GetWeakPtr(), is_main_frame_request, url,
       GetWebContents(process_id, routing_id), net_error, ssl_info, fatal);
+}
+
+void StoragePartitionImpl::Clone(
+    mojo::PendingReceiver<network::mojom::AuthenticationAndCertificateObserver>
+        observer) {
+  auth_cert_observers_.Add(this, std::move(observer),
+                           auth_cert_observers_.current_context());
+}
+
+mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+StoragePartitionImpl::CreateAuthAndCertObserverForFrame(int process_id,
+                                                        int routing_id) {
+  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+      remote;
+  auth_cert_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver(),
+                           {process_id, routing_id});
+  return remote;
+}
+
+mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+StoragePartitionImpl::CreateAuthAndCertObserverForNavigationRequest(
+    int frame_tree_id) {
+  mojo::PendingRemote<network::mojom::AuthenticationAndCertificateObserver>
+      remote;
+  auth_cert_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver(),
+                           {network::mojom::kBrowserProcessId, frame_tree_id});
+  return remote;
 }
 
 void StoragePartitionImpl::OnFileUploadRequested(

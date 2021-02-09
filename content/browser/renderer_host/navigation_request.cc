@@ -3047,7 +3047,11 @@ void NavigationRequest::OnStartChecksComplete(
           std::move(cors_exempt_headers), std::move(client_security_state)),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       appcache_handle_.get(), std::move(prefetched_signed_exchange_cache_),
-      this, loader_type, CreateCookieAccessObserver(), std::move(interceptor));
+      this, loader_type, CreateCookieAccessObserver(),
+      static_cast<StoragePartitionImpl*>(partition)
+          ->CreateAuthAndCertObserverForNavigationRequest(
+              frame_tree_node_->frame_tree_node_id()),
+      std::move(interceptor));
 
   DCHECK(!render_frame_host_);
 }

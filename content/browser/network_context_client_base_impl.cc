@@ -111,17 +111,6 @@ void NetworkContextClientBase::OnCertificateRequested(
   cert_responder->CancelRequest();
 }
 
-void NetworkContextClientBase::OnSSLCertificateError(
-    int32_t process_id,
-    int32_t routing_id,
-    const GURL& url,
-    int net_error,
-    const net::SSLInfo& ssl_info,
-    bool fatal,
-    OnSSLCertificateErrorCallback response) {
-  std::move(response).Run(net::ERR_ABORTED);
-}
-
 void NetworkContextClientBase::OnFileUploadRequested(
     int32_t process_id,
     bool async,

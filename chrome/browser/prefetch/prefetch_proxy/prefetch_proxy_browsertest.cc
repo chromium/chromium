@@ -2139,9 +2139,9 @@ IN_PROC_BROWSER_TEST_F(
   GURL eligible_link = https_expired_server.GetURL("b.test", "/simple.html");
 
   TestTabHelperObserver tab_helper_observer(tab_helper);
-  // |ERR_ABORTED| is set by the PrefetchProxyNetworkContextClient.
+  // |ERR_INSECURE_RESPONSE| is set by the URLLoader.
   tab_helper_observer.SetExpectedPrefetchErrors(
-      {{eligible_link, net::ERR_ABORTED}});
+      {{eligible_link, net::ERR_INSECURE_RESPONSE}});
 
   base::RunLoop prefetch_run_loop;
   tab_helper_observer.SetOnPrefetchErrorClosure(

@@ -79,6 +79,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   cors::CorsURLLoaderFactory* cors_url_loader_factory_;
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
+  mojo::Remote<mojom::AuthenticationAndCertificateObserver> auth_cert_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderFactory);
 };
