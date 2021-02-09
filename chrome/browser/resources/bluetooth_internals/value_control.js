@@ -7,414 +7,413 @@
  */
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {connectToDevice} from './device_broker.js';
 import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
+
+import {connectToDevice} from './device_broker.js';
 import {Snackbar, SnackbarType} from './snackbar.js';
 
+/**
+ * @typedef {{
+ *    deviceAddress: string,
+ *    serviceId: string,
+ *    characteristicId: string,
+ *    descriptorId: (string|undefined),
+ *    properties: (number|undefined),
+ *  }}
+ */
+let ValueLoadOptions;
+
+/** @enum {string}  */
+export const ValueDataType = {
+  HEXADECIMAL: 'Hexadecimal',
+  UTF8: 'UTF-8',
+  DECIMAL: 'Decimal',
+};
+
+/**
+ * A container for an array value that needs to be converted to multiple
+ * display formats. Internally, the value is stored as an array and converted
+ * to the needed display type at runtime.
+ */
+export class Value {
+  /** @param {!Array<number>} initialValue */
+  constructor(initialValue) {
+    /** @private {!Array<number>} */
+    this.value_ = initialValue;
+  }
+
   /**
-   * @typedef {{
-   *    deviceAddress: string,
-   *    serviceId: string,
-   *    characteristicId: string,
-   *    descriptorId: (string|undefined),
-   *    properties: (number|undefined),
-   *  }}
+   * Gets the backing array value.
+   * @return {!Array<number>}
    */
-  let ValueLoadOptions;
-
-  /** @enum {string}  */
-  export const ValueDataType = {
-    HEXADECIMAL: 'Hexadecimal',
-    UTF8: 'UTF-8',
-    DECIMAL: 'Decimal',
-  };
+  getArray() {
+    return this.value_;
+  }
 
   /**
-   * A container for an array value that needs to be converted to multiple
-   * display formats. Internally, the value is stored as an array and converted
-   * to the needed display type at runtime.
+   * Sets the backing array value.
+   * @param {!Array<number>} newValue
    */
-  export class Value {
-    /** @param {!Array<number>} initialValue */
-    constructor(initialValue) {
-      /** @private {!Array<number>} */
-      this.value_ = initialValue;
-    }
+  setArray(newValue) {
+    this.value_ = newValue;
+  }
 
-    /**
-     * Gets the backing array value.
-     * @return {!Array<number>}
-     */
-    getArray() {
-      return this.value_;
-    }
+  /**
+   * Sets the value by converting the |newValue| string using the formatting
+   * specified by |valueDataType|.
+   * @param {!ValueDataType} valueDataType
+   * @param {string} newValue
+   */
+  setAs(valueDataType, newValue) {
+    switch (valueDataType) {
+      case ValueDataType.HEXADECIMAL:
+        this.setValueFromHex_(newValue);
+        break;
 
-    /**
-     * Sets the backing array value.
-     * @param {!Array<number>} newValue
-     */
-    setArray(newValue) {
-      this.value_ = newValue;
-    }
+      case ValueDataType.UTF8:
+        this.setValueFromUTF8_(newValue);
+        break;
 
-    /**
-     * Sets the value by converting the |newValue| string using the formatting
-     * specified by |valueDataType|.
-     * @param {!ValueDataType} valueDataType
-     * @param {string} newValue
-     */
-    setAs(valueDataType, newValue) {
-      switch (valueDataType) {
-        case ValueDataType.HEXADECIMAL:
-          this.setValueFromHex_(newValue);
-          break;
-
-        case ValueDataType.UTF8:
-          this.setValueFromUTF8_(newValue);
-          break;
-
-        case ValueDataType.DECIMAL:
-          this.setValueFromDecimal_(newValue);
-          break;
-      }
-    }
-
-    /**
-     * Gets the value as a string representing the given |valueDataType|.
-     * @param {!ValueDataType} valueDataType
-     * @return {string}
-     */
-    getAs(valueDataType) {
-      switch (valueDataType) {
-        case ValueDataType.HEXADECIMAL:
-          return this.toHex_();
-
-        case ValueDataType.UTF8:
-          return this.toUTF8_();
-
-        case ValueDataType.DECIMAL:
-          return this.toDecimal_();
-      }
-      assertNotReached();
-      return '';
-    }
-
-    /**
-     * Converts the value to a hex string.
-     * @return {string}
-     * @private
-     */
-    toHex_() {
-      if (this.value_.length == 0) {
-        return '';
-      }
-
-      return this.value_.reduce(function(result, value, index) {
-        return result + ('0' + value.toString(16)).substr(-2);
-      }, '0x');
-    }
-
-    /**
-     * Sets the value from a hex string.
-     * @param {string} newValue
-     * @private
-     */
-    setValueFromHex_(newValue) {
-      if (!newValue) {
-        this.value_ = [];
-        return;
-      }
-
-      if (!newValue.startsWith('0x')) {
-        throw new Error('Expected new value to start with "0x".');
-      }
-
-      const result = [];
-      for (let i = 2; i < newValue.length; i += 2) {
-        result.push(parseInt(newValue.substr(i, 2), 16));
-      }
-
-      this.value_ = result;
-    }
-
-    /**
-     * Converts the value to a UTF-8 encoded text string.
-     * @return {string}
-     * @private
-     */
-    toUTF8_() {
-      return this.value_.reduce(function(result, value) {
-        return result + String.fromCharCode(value);
-      }, '');
-    }
-
-    /**
-     * Sets the value from a UTF-8 encoded text string.
-     * @param {string} newValue
-     * @private
-     */
-    setValueFromUTF8_(newValue) {
-      if (!newValue) {
-        this.value_ = [];
-        return;
-      }
-
-      this.value_ = Array.from(newValue).map(function(char) {
-        return char.charCodeAt(0);
-      });
-    }
-
-    /**
-     * Converts the value to a decimal string with numbers delimited by '-'.
-     * @return {string}
-     * @private
-     */
-    toDecimal_() {
-      return this.value_.join('-');
-    }
-
-    /**
-     * Sets the value from a decimal string delimited by '-'.
-     * @param {string} newValue
-     * @private
-     */
-    setValueFromDecimal_(newValue) {
-      if (!newValue) {
-        this.value_ = [];
-        return;
-      }
-
-      if (!/^[0-9\-]*$/.test(newValue)) {
-        throw new Error('New value can only contain numbers and hyphens.');
-      }
-
-      this.value_ = newValue.split('-').map(function(val) {
-        return parseInt(val, 10);
-      });
+      case ValueDataType.DECIMAL:
+        this.setValueFromDecimal_(newValue);
+        break;
     }
   }
 
   /**
-   * A set of inputs that allow a user to request reads and writes of values.
-   * This control allows the value to be displayed in multiple forms
-   * as defined by the |ValueDataType| array. Values must be written
-   * in these formats. Read and write capability is controlled by a
-   * 'properties' bitfield provided by the characteristic.
-   * @constructor
-   * @extends {HTMLDivElement}
+   * Gets the value as a string representing the given |valueDataType|.
+   * @param {!ValueDataType} valueDataType
+   * @return {string}
    */
-  export const ValueControl = crUiDefine('div');
+  getAs(valueDataType) {
+    switch (valueDataType) {
+      case ValueDataType.HEXADECIMAL:
+        return this.toHex_();
 
-  ValueControl.prototype = {
-    __proto__: HTMLDivElement.prototype,
+      case ValueDataType.UTF8:
+        return this.toUTF8_();
 
-    /**
-     * Decorates the element as a ValueControl. Creates the layout for the value
-     * control by creating a text input, select element, and two buttons for
-     * read/write requests. Event handlers are attached and references to these
-     * elements are stored for later use.
-     */
-    decorate() {
-      this.classList.add('value-control');
+      case ValueDataType.DECIMAL:
+        return this.toDecimal_();
+    }
+    assertNotReached();
+    return '';
+  }
 
-      /** @private {!Value} */
-      this.value_ = new Value([]);
-      /** @private {?string} */
-      this.deviceAddress_ = null;
-      /** @private {?string} */
-      this.serviceId_ = null;
-      /** @private {?string} */
-      this.characteristicId_ = null;
-      /** @private {?string|undefined} */
-      this.descriptorId_ = null;
-      /** @private {number} */
-      this.properties_ = Number.MAX_SAFE_INTEGER;
+  /**
+   * Converts the value to a hex string.
+   * @return {string}
+   * @private
+   */
+  toHex_() {
+    if (this.value_.length == 0) {
+      return '';
+    }
 
-      this.unavailableMessage_ = document.createElement('h3');
-      this.unavailableMessage_.textContent = 'Value cannot be read or written.';
+    return this.value_.reduce(function(result, value, index) {
+      return result + ('0' + value.toString(16)).substr(-2);
+    }, '0x');
+  }
 
-      this.valueInput_ = document.createElement('input');
-      this.valueInput_.addEventListener('change', function() {
-        try {
-          this.value_.setAs(this.typeSelect_.value, this.valueInput_.value);
-        } catch (e) {
-          Snackbar.show(e.message, SnackbarType.ERROR);
-        }
-      }.bind(this));
+  /**
+   * Sets the value from a hex string.
+   * @param {string} newValue
+   * @private
+   */
+  setValueFromHex_(newValue) {
+    if (!newValue) {
+      this.value_ = [];
+      return;
+    }
 
-      this.typeSelect_ = document.createElement('select');
+    if (!newValue.startsWith('0x')) {
+      throw new Error('Expected new value to start with "0x".');
+    }
 
-      Object.keys(ValueDataType).forEach(function(key) {
-        const type = ValueDataType[key];
-        const option = document.createElement('option');
-        option.value = type;
-        option.text = type;
-        this.typeSelect_.add(option);
-      }, this);
+    const result = [];
+    for (let i = 2; i < newValue.length; i += 2) {
+      result.push(parseInt(newValue.substr(i, 2), 16));
+    }
 
-      this.typeSelect_.addEventListener('change', this.redraw.bind(this));
+    this.value_ = result;
+  }
 
-      const inputDiv = document.createElement('div');
-      inputDiv.appendChild(this.valueInput_);
-      inputDiv.appendChild(this.typeSelect_);
+  /**
+   * Converts the value to a UTF-8 encoded text string.
+   * @return {string}
+   * @private
+   */
+  toUTF8_() {
+    return this.value_.reduce(function(result, value) {
+      return result + String.fromCharCode(value);
+    }, '');
+  }
 
-      this.readBtn_ = document.createElement('button');
-      this.readBtn_.textContent = 'Read';
-      this.readBtn_.addEventListener('click', this.readValue_.bind(this));
+  /**
+   * Sets the value from a UTF-8 encoded text string.
+   * @param {string} newValue
+   * @private
+   */
+  setValueFromUTF8_(newValue) {
+    if (!newValue) {
+      this.value_ = [];
+      return;
+    }
 
-      this.writeBtn_ = document.createElement('button');
-      this.writeBtn_.textContent = 'Write';
-      this.writeBtn_.addEventListener('click', this.writeValue_.bind(this));
+    this.value_ = Array.from(newValue).map(function(char) {
+      return char.charCodeAt(0);
+    });
+  }
 
-      const buttonsDiv = document.createElement('div');
-      buttonsDiv.appendChild(this.readBtn_);
-      buttonsDiv.appendChild(this.writeBtn_);
+  /**
+   * Converts the value to a decimal string with numbers delimited by '-'.
+   * @return {string}
+   * @private
+   */
+  toDecimal_() {
+    return this.value_.join('-');
+  }
 
-      this.appendChild(this.unavailableMessage_);
-      this.appendChild(inputDiv);
-      this.appendChild(buttonsDiv);
-    },
+  /**
+   * Sets the value from a decimal string delimited by '-'.
+   * @param {string} newValue
+   * @private
+   */
+  setValueFromDecimal_(newValue) {
+    if (!newValue) {
+      this.value_ = [];
+      return;
+    }
 
-    /**
-     * Sets the settings used by the value control and redraws the control to
-     * match the read/write settings in |options.properties|. If properties
-     * are not provided, no restrictions on reading/writing are applied.
-     * @param {!ValueLoadOptions} options
-     */
-    load(options) {
-      this.deviceAddress_ = options.deviceAddress;
-      this.serviceId_ = options.serviceId;
-      this.characteristicId_ = options.characteristicId;
-      this.descriptorId_ = options.descriptorId;
+    if (!/^[0-9\-]*$/.test(newValue)) {
+      throw new Error('New value can only contain numbers and hyphens.');
+    }
 
-      if (options.properties) {
-        this.properties_ = options.properties;
+    this.value_ = newValue.split('-').map(function(val) {
+      return parseInt(val, 10);
+    });
+  }
+}
+
+/**
+ * A set of inputs that allow a user to request reads and writes of values.
+ * This control allows the value to be displayed in multiple forms
+ * as defined by the |ValueDataType| array. Values must be written
+ * in these formats. Read and write capability is controlled by a
+ * 'properties' bitfield provided by the characteristic.
+ * @constructor
+ * @extends {HTMLDivElement}
+ */
+export const ValueControl = crUiDefine('div');
+
+ValueControl.prototype = {
+  __proto__: HTMLDivElement.prototype,
+
+  /**
+   * Decorates the element as a ValueControl. Creates the layout for the value
+   * control by creating a text input, select element, and two buttons for
+   * read/write requests. Event handlers are attached and references to these
+   * elements are stored for later use.
+   */
+  decorate() {
+    this.classList.add('value-control');
+
+    /** @private {!Value} */
+    this.value_ = new Value([]);
+    /** @private {?string} */
+    this.deviceAddress_ = null;
+    /** @private {?string} */
+    this.serviceId_ = null;
+    /** @private {?string} */
+    this.characteristicId_ = null;
+    /** @private {?string|undefined} */
+    this.descriptorId_ = null;
+    /** @private {number} */
+    this.properties_ = Number.MAX_SAFE_INTEGER;
+
+    this.unavailableMessage_ = document.createElement('h3');
+    this.unavailableMessage_.textContent = 'Value cannot be read or written.';
+
+    this.valueInput_ = document.createElement('input');
+    this.valueInput_.addEventListener('change', function() {
+      try {
+        this.value_.setAs(this.typeSelect_.value, this.valueInput_.value);
+      } catch (e) {
+        Snackbar.show(e.message, SnackbarType.ERROR);
       }
+    }.bind(this));
 
-      this.redraw();
-    },
+    this.typeSelect_ = document.createElement('select');
 
-    /**
-     * Redraws the value control with updated layout depending on the
-     * availability of reads and writes and the current cached value.
-     */
-    redraw() {
-      this.readBtn_.hidden =
-          (this.properties_ & bluetooth.mojom.Property.READ) === 0;
-      this.writeBtn_.hidden =
-          (this.properties_ & bluetooth.mojom.Property.WRITE) === 0 &&
-          (this.properties_ &
-           bluetooth.mojom.Property.WRITE_WITHOUT_RESPONSE) === 0;
+    Object.keys(ValueDataType).forEach(function(key) {
+      const type = ValueDataType[key];
+      const option = document.createElement('option');
+      option.value = type;
+      option.text = type;
+      this.typeSelect_.add(option);
+    }, this);
 
-      const isAvailable = !this.readBtn_.hidden || !this.writeBtn_.hidden;
-      this.unavailableMessage_.hidden = isAvailable;
-      this.valueInput_.hidden = !isAvailable;
-      this.typeSelect_.hidden = !isAvailable;
+    this.typeSelect_.addEventListener('change', this.redraw.bind(this));
 
-      if (!isAvailable) {
-        return;
-      }
+    const inputDiv = document.createElement('div');
+    inputDiv.appendChild(this.valueInput_);
+    inputDiv.appendChild(this.typeSelect_);
 
-      this.valueInput_.value = this.value_.getAs(this.typeSelect_.value);
-    },
+    this.readBtn_ = document.createElement('button');
+    this.readBtn_.textContent = 'Read';
+    this.readBtn_.addEventListener('click', this.readValue_.bind(this));
 
-    /**
-     * Sets the value of the control.
-     * @param {!Array<number>} value
-     */
-    setValue(value) {
-      this.value_.setArray(value);
-      this.redraw();
-    },
+    this.writeBtn_ = document.createElement('button');
+    this.writeBtn_.textContent = 'Write';
+    this.writeBtn_.addEventListener('click', this.writeValue_.bind(this));
 
-    /**
-     * Gets an error string describing the given |result| code.
-     * @param {!bluetooth.mojom.GattResult} result
-     * @private
-     */
-    getErrorString_(result) {
-      // TODO(crbug.com/663394): Replace with more descriptive error
-      // messages.
-      const GattResult = bluetooth.mojom.GattResult;
-      return Object.keys(GattResult).find(function(key) {
-        return GattResult[key] === result;
-      });
-    },
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.appendChild(this.readBtn_);
+    buttonsDiv.appendChild(this.writeBtn_);
 
-    /**
-     * Called when the read button is pressed. Connects to the device and
-     * retrieves the current value of the characteristic in the |service_id|
-     * with id |characteristic_id|. If |descriptor_id| is defined,  the
-     * descriptor value with |descriptor_id| is read instead.
-     * @private
-     */
-    readValue_() {
-      this.readBtn_.disabled = true;
+    this.appendChild(this.unavailableMessage_);
+    this.appendChild(inputDiv);
+    this.appendChild(buttonsDiv);
+  },
 
-      connectToDevice(assert(this.deviceAddress_))
-          .then(function(device) {
-            if (this.descriptorId_) {
-              return device.readValueForDescriptor(
-                  this.serviceId_, this.characteristicId_, this.descriptorId_);
-            }
+  /**
+   * Sets the settings used by the value control and redraws the control to
+   * match the read/write settings in |options.properties|. If properties
+   * are not provided, no restrictions on reading/writing are applied.
+   * @param {!ValueLoadOptions} options
+   */
+  load(options) {
+    this.deviceAddress_ = options.deviceAddress;
+    this.serviceId_ = options.serviceId;
+    this.characteristicId_ = options.characteristicId;
+    this.descriptorId_ = options.descriptorId;
 
-            return device.readValueForCharacteristic(
-                this.serviceId_, this.characteristicId_);
-          }.bind(this))
-          .then(function(response) {
-            this.readBtn_.disabled = false;
+    if (options.properties) {
+      this.properties_ = options.properties;
+    }
 
-            if (response.result === bluetooth.mojom.GattResult.SUCCESS) {
-              this.setValue(response.value);
-              Snackbar.show(
-                  this.deviceAddress_ + ': Read succeeded',
-                  SnackbarType.SUCCESS);
-              return;
-            }
+    this.redraw();
+  },
 
-            const errorString = this.getErrorString_(response.result);
+  /**
+   * Redraws the value control with updated layout depending on the
+   * availability of reads and writes and the current cached value.
+   */
+  redraw() {
+    this.readBtn_.hidden =
+        (this.properties_ & bluetooth.mojom.Property.READ) === 0;
+    this.writeBtn_.hidden =
+        (this.properties_ & bluetooth.mojom.Property.WRITE) === 0 &&
+        (this.properties_ & bluetooth.mojom.Property.WRITE_WITHOUT_RESPONSE) ===
+            0;
+
+    const isAvailable = !this.readBtn_.hidden || !this.writeBtn_.hidden;
+    this.unavailableMessage_.hidden = isAvailable;
+    this.valueInput_.hidden = !isAvailable;
+    this.typeSelect_.hidden = !isAvailable;
+
+    if (!isAvailable) {
+      return;
+    }
+
+    this.valueInput_.value = this.value_.getAs(this.typeSelect_.value);
+  },
+
+  /**
+   * Sets the value of the control.
+   * @param {!Array<number>} value
+   */
+  setValue(value) {
+    this.value_.setArray(value);
+    this.redraw();
+  },
+
+  /**
+   * Gets an error string describing the given |result| code.
+   * @param {!bluetooth.mojom.GattResult} result
+   * @private
+   */
+  getErrorString_(result) {
+    // TODO(crbug.com/663394): Replace with more descriptive error
+    // messages.
+    const GattResult = bluetooth.mojom.GattResult;
+    return Object.keys(GattResult).find(function(key) {
+      return GattResult[key] === result;
+    });
+  },
+
+  /**
+   * Called when the read button is pressed. Connects to the device and
+   * retrieves the current value of the characteristic in the |service_id|
+   * with id |characteristic_id|. If |descriptor_id| is defined,  the
+   * descriptor value with |descriptor_id| is read instead.
+   * @private
+   */
+  readValue_() {
+    this.readBtn_.disabled = true;
+
+    connectToDevice(assert(this.deviceAddress_))
+        .then(function(device) {
+          if (this.descriptorId_) {
+            return device.readValueForDescriptor(
+                this.serviceId_, this.characteristicId_, this.descriptorId_);
+          }
+
+          return device.readValueForCharacteristic(
+              this.serviceId_, this.characteristicId_);
+        }.bind(this))
+        .then(function(response) {
+          this.readBtn_.disabled = false;
+
+          if (response.result === bluetooth.mojom.GattResult.SUCCESS) {
+            this.setValue(response.value);
             Snackbar.show(
-                this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
-                'Retry', this.readValue_.bind(this));
-          }.bind(this));
-    },
+                this.deviceAddress_ + ': Read succeeded', SnackbarType.SUCCESS);
+            return;
+          }
 
-    /**
-     * Called when the write button is pressed. Connects to the device and
-     * retrieves the current value of the characteristic in the
-     * |service_id| with id |characteristic_id|. If |descriptor_id| is defined,
-     * the descriptor value with |descriptor_id| is written instead.
-     * @private
-     */
-    writeValue_() {
-      this.writeBtn_.disabled = true;
+          const errorString = this.getErrorString_(response.result);
+          Snackbar.show(
+              this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
+              'Retry', this.readValue_.bind(this));
+        }.bind(this));
+  },
 
-      connectToDevice(assert(this.deviceAddress_))
-          .then(function(device) {
-            if (this.descriptorId_) {
-              return device.writeValueForDescriptor(
-                  this.serviceId_, this.characteristicId_, this.descriptorId_,
-                  this.value_.getArray());
-            }
+  /**
+   * Called when the write button is pressed. Connects to the device and
+   * retrieves the current value of the characteristic in the
+   * |service_id| with id |characteristic_id|. If |descriptor_id| is defined,
+   * the descriptor value with |descriptor_id| is written instead.
+   * @private
+   */
+  writeValue_() {
+    this.writeBtn_.disabled = true;
 
-            return device.writeValueForCharacteristic(
-                this.serviceId_, this.characteristicId_,
+    connectToDevice(assert(this.deviceAddress_))
+        .then(function(device) {
+          if (this.descriptorId_) {
+            return device.writeValueForDescriptor(
+                this.serviceId_, this.characteristicId_, this.descriptorId_,
                 this.value_.getArray());
-          }.bind(this))
-          .then(function(response) {
-            this.writeBtn_.disabled = false;
+          }
 
-            if (response.result === bluetooth.mojom.GattResult.SUCCESS) {
-              Snackbar.show(
-                  this.deviceAddress_ + ': Write succeeded',
-                  SnackbarType.SUCCESS);
-              return;
-            }
+          return device.writeValueForCharacteristic(
+              this.serviceId_, this.characteristicId_, this.value_.getArray());
+        }.bind(this))
+        .then(function(response) {
+          this.writeBtn_.disabled = false;
 
-            const errorString = this.getErrorString_(response.result);
+          if (response.result === bluetooth.mojom.GattResult.SUCCESS) {
             Snackbar.show(
-                this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
-                'Retry', this.writeValue_.bind(this));
-          }.bind(this));
-    },
-  };
+                this.deviceAddress_ + ': Write succeeded',
+                SnackbarType.SUCCESS);
+            return;
+          }
+
+          const errorString = this.getErrorString_(response.result);
+          Snackbar.show(
+              this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
+              'Retry', this.writeValue_.bind(this));
+        }.bind(this));
+  },
+};
