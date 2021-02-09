@@ -8,13 +8,16 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/web_apps_base.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -36,7 +39,8 @@ namespace apps {
 // An app publisher (in the App Service sense) of Web Apps.
 class WebAppsChromeOs : public WebAppsBase,
                         public ArcAppListPrefs::Observer,
-                        public NotificationDisplayService::Observer {
+                        public NotificationDisplayService::Observer,
+                        public MediaCaptureDevicesDispatcher::Observer {
  public:
   WebAppsChromeOs(const mojo::Remote<apps::mojom::AppService>& app_service,
                   Profile* profile,
@@ -104,6 +108,12 @@ class WebAppsChromeOs : public WebAppsBase,
   void OnPackageListInitialRefreshed() override;
   void OnArcAppListPrefsDestroyed() override;
 
+  // MediaCaptureDevicesDispatcher::Observer:
+  void OnRequestUpdate(int render_process_id,
+                       int render_frame_id,
+                       blink::mojom::MediaStreamType stream_type,
+                       const content::MediaRequestState state) override;
+
   // NotificationDisplayService::Observer overrides.
   void OnNotificationDisplayed(
       const message_center::Notification& notification,
@@ -160,6 +170,12 @@ class WebAppsChromeOs : public WebAppsBase,
   PausedApps paused_apps_;
 
   ArcAppListPrefs* arc_prefs_ = nullptr;
+
+  base::ScopedObservation<MediaCaptureDevicesDispatcher,
+                          MediaCaptureDevicesDispatcher::Observer>
+      media_dispatcher_{this};
+
+  MediaRequests media_requests_;
 
   ScopedObserver<NotificationDisplayService,
                  NotificationDisplayService::Observer>

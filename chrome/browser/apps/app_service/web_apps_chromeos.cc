@@ -94,13 +94,6 @@ WebAppsChromeOs::WebAppsChromeOs(
     : WebAppsBase(app_service, profile), instance_registry_(instance_registry) {
   DCHECK(instance_registry_);
   Initialize();
-  badge_manager_ = badging::BadgeManagerFactory::GetForProfile(profile);
-  // badge_manager_ is nullptr in guest and incognito profiles.
-  if (badge_manager_) {
-    badge_manager_->SetDelegate(
-        std::make_unique<apps::WebAppsChromeOs::BadgeManagerDelegate>(
-            weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 WebAppsChromeOs::~WebAppsChromeOs() {
@@ -140,8 +133,18 @@ void WebAppsChromeOs::Initialize() {
     return;
   }
 
+  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
+
   notification_display_service_.Add(
       NotificationDisplayServiceFactory::GetForProfile(profile()));
+
+  badge_manager_ = badging::BadgeManagerFactory::GetForProfile(profile());
+  // badge_manager_ is nullptr in guest and incognito profiles.
+  if (badge_manager_) {
+    badge_manager_->SetDelegate(
+        std::make_unique<apps::WebAppsChromeOs::BadgeManagerDelegate>(
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void WebAppsChromeOs::LaunchAppWithIntent(
@@ -393,6 +396,10 @@ void WebAppsChromeOs::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
   app_notifications_.RemoveNotificationsForApp(app_id);
   paused_apps_.MaybeRemoveApp(app_id);
 
+  auto result = media_requests_.RemoveRequests(app_id);
+  ModifyCapabilityAccess(subscribers(), app_id, result.camera,
+                         result.microphone);
+
   WebAppsBase::OnWebAppWillBeUninstalled(app_id);
 }
 
@@ -437,6 +444,36 @@ void WebAppsChromeOs::OnPackageListInitialRefreshed() {
 
 void WebAppsChromeOs::OnArcAppListPrefsDestroyed() {
   arc_prefs_ = nullptr;
+}
+
+void WebAppsChromeOs::OnRequestUpdate(int render_process_id,
+                                      int render_frame_id,
+                                      blink::mojom::MediaStreamType stream_type,
+                                      const content::MediaRequestState state) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
+
+  if (!web_contents) {
+    return;
+  }
+
+  base::Optional<web_app::AppId> app_id =
+      web_app::FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
+                                              /*window_only=*/false);
+  if (!app_id.has_value()) {
+    return;
+  }
+
+  const web_app::WebApp* web_app = GetWebApp(app_id.value());
+  if (!web_app || !Accepts(app_id.value())) {
+    return;
+  }
+
+  auto result = media_requests_.UpdateRequests(app_id.value(), web_contents,
+                                               stream_type, state);
+  ModifyCapabilityAccess(subscribers(), app_id.value(), result.camera,
+                         result.microphone);
 }
 
 void WebAppsChromeOs::OnNotificationDisplayed(
