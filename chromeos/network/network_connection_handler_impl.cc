@@ -556,6 +556,13 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     NET_LOG(DEBUG) << "Client cert type for: " << NetworkPathId(service_path)
                    << ": " << client_cert_type;
 
+    if (!network_cert_loader_ ||
+        !network_cert_loader_->can_have_client_certificates()) {
+      // There can be no certificates in this device state.
+      ErrorCallbackForPendingRequest(service_path, kErrorCertificateRequired);
+      return;
+    }
+
     // If certificates have not been loaded yet, queue the connect request.
     if (!certificates_loaded_) {
       NET_LOG(EVENT) << "Certificates not loaded for: "

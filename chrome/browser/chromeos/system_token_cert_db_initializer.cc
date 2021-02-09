@@ -270,6 +270,7 @@ void SystemTokenCertDBInitializer::MaybeStartInitializingDatabase() {
   started_initializing_ = true;
   VLOG(1)
       << "SystemTokenCertDBInitializer: TPM is ready, loading system token.";
+  NetworkCertLoader::Get()->MarkSystemNSSDBWillBeInitialized();
   TPMTokenLoader::Get()->EnsureStarted();
   base::RepeatingCallback<void(crypto::ScopedPK11Slot)> callback =
       base::BindRepeating(&SystemTokenCertDBInitializer::InitializeDatabase,
