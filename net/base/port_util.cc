@@ -18,7 +18,7 @@ namespace net {
 namespace {
 
 // The general list of blocked ports. Will be blocked unless a specific
-// protocol overrides it. (Ex: ftp can use ports 20 and 21)
+// protocol overrides it. (Ex: ftp can use port 21)
 const int kRestrictedPorts[] = {
     1,     // tcpmux
     7,     // echo
@@ -98,11 +98,6 @@ const int kRestrictedPorts[] = {
     6697,  // IRC + TLS
 };
 
-// FTP overrides the following restricted port.
-const int kAllowedFtpPorts[] = {
-    21,  // ftp data
-};
-
 base::LazyInstance<std::multiset<int>>::Leaky g_explicitly_allowed_ports =
     LAZY_INSTANCE_INITIALIZER;
 
@@ -125,12 +120,9 @@ bool IsPortAllowedForScheme(int port, base::StringPiece url_scheme) {
   if (g_explicitly_allowed_ports.Get().count(port) > 0)
     return true;
 
-  // FTP requests have an extra set of allowed schemes.
-  if (base::LowerCaseEqualsASCII(url_scheme, url::kFtpScheme)) {
-    for (int allowed_ftp_port : kAllowedFtpPorts) {
-      if (allowed_ftp_port == port)
-        return true;
-    }
+  // FTP requests are permitted to use port 21.
+  if (base::LowerCaseEqualsASCII(url_scheme, url::kFtpScheme) && port == 21) {
+    return true;
   }
 
   // Finally check against the generic list of restricted ports for all
