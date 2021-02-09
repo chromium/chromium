@@ -96,6 +96,166 @@ std::pair<SkColorType, GrGLenum> GetSkiaAndGlColorTypesForPlane(
   return {kUnknown_SkColorType, 0};
 }
 
+scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySyncGLES(
+    const VideoFrame& txt_frame,
+    gpu::raster::RasterInterface* ri,
+    GrDirectContext* gr_context,
+    VideoFramePool* pool) {
+  DCHECK(gr_context);
+
+  if (txt_frame.NumTextures() > 2 || txt_frame.NumTextures() < 1) {
+    DLOG(ERROR) << "Readback is not possible for this frame: "
+                << txt_frame.AsHumanReadableString();
+    return nullptr;
+  }
+
+  VideoPixelFormat result_format = txt_frame.format();
+  if (txt_frame.NumTextures() == 1 && result_format == PIXEL_FORMAT_NV12) {
+    // Even though |txt_frame| format is NV12 and it is NV12 in GPU memory,
+    // the texture is a RGB view that is produced by a shader on the fly.
+    // So we currently we currently can only read it back as RGB.
+    result_format = PIXEL_FORMAT_ARGB;
+  }
+
+  scoped_refptr<VideoFrame> result =
+      pool
+          ? pool->CreateFrame(result_format, txt_frame.coded_size(),
+                              txt_frame.visible_rect(),
+                              txt_frame.natural_size(), txt_frame.timestamp())
+          : VideoFrame::CreateFrame(
+                result_format, txt_frame.coded_size(), txt_frame.visible_rect(),
+                txt_frame.natural_size(), txt_frame.timestamp());
+  result->set_color_space(txt_frame.ColorSpace());
+  result->metadata().MergeMetadataFrom(txt_frame.metadata());
+
+  size_t planes = VideoFrame::NumPlanes(result->format());
+  for (size_t plane = 0; plane < planes; plane++) {
+    const gpu::MailboxHolder& holder = txt_frame.mailbox_holder(plane);
+    if (holder.mailbox.IsZero())
+      return nullptr;
+    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+
+    int width = VideoFrame::Columns(plane, result->format(),
+                                    result->coded_size().width());
+    int height = result->rows(plane);
+
+    auto texture_id = ri->CreateAndConsumeForGpuRaster(holder.mailbox);
+    if (holder.mailbox.IsSharedImage()) {
+      ri->BeginSharedImageAccessDirectCHROMIUM(
+          texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+    }
+
+    auto cleanup_fn = [](GLuint texture_id, bool shared,
+                         gpu::raster::RasterInterface* ri) {
+      if (shared)
+        ri->EndSharedImageAccessDirectCHROMIUM(texture_id);
+      ri->DeleteGpuRasterTexture(texture_id);
+    };
+    base::ScopedClosureRunner cleanup(base::BindOnce(
+        cleanup_fn, texture_id, holder.mailbox.IsSharedImage(), ri));
+
+    GrGLenum texture_format;
+    SkColorType sk_color_type;
+    std::tie(sk_color_type, texture_format) =
+        GetSkiaAndGlColorTypesForPlane(result->format(), plane);
+    GrGLTextureInfo gl_texture_info;
+    gl_texture_info.fID = texture_id;
+    gl_texture_info.fTarget = holder.texture_target;
+    gl_texture_info.fFormat = texture_format;
+
+    GrBackendTexture texture(width, height, GrMipMapped::kNo, gl_texture_info);
+    auto image = SkImage::MakeFromTexture(
+        gr_context, texture, kTopLeft_GrSurfaceOrigin, sk_color_type,
+        kOpaque_SkAlphaType, nullptr /* colorSpace */);
+
+    if (!image) {
+      DLOG(ERROR) << "Can't create SkImage from texture!"
+                  << " plane:" << plane;
+      return nullptr;
+    }
+
+    auto info =
+        SkImageInfo::Make(width, height, sk_color_type, kOpaque_SkAlphaType);
+    SkPixmap pixmap(info, result->data(plane), result->row_bytes(plane));
+    if (!image->readPixels(gr_context, pixmap, 0, 0,
+                           SkImage::kDisallow_CachingHint)) {
+      DLOG(ERROR) << "Plane readback failed."
+                  << " plane:" << plane << " width: " << width
+                  << " height: " << height
+                  << " minRowBytes: " << info.minRowBytes();
+      return nullptr;
+    }
+  }
+
+  return result;
+}
+
+scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySyncOOP(
+    const VideoFrame& txt_frame,
+    gpu::raster::RasterInterface* ri,
+    VideoFramePool* pool) {
+  if (txt_frame.NumTextures() > 2 || txt_frame.NumTextures() < 1) {
+    DLOG(ERROR) << "Readback is not possible for this frame: "
+                << txt_frame.AsHumanReadableString();
+    return nullptr;
+  }
+
+  VideoPixelFormat result_format = txt_frame.format();
+  if (txt_frame.NumTextures() == 1 && result_format == PIXEL_FORMAT_NV12) {
+    // Even though |txt_frame| format is NV12 and it is NV12 in GPU memory,
+    // the texture is a RGB view that is produced by a shader on the fly.
+    // So we currently we currently can only read it back as RGB.
+    result_format = PIXEL_FORMAT_ARGB;
+  }
+
+  scoped_refptr<VideoFrame> result =
+      pool
+          ? pool->CreateFrame(result_format, txt_frame.coded_size(),
+                              txt_frame.visible_rect(),
+                              txt_frame.natural_size(), txt_frame.timestamp())
+          : VideoFrame::CreateFrame(
+                result_format, txt_frame.coded_size(), txt_frame.visible_rect(),
+                txt_frame.natural_size(), txt_frame.timestamp());
+  result->set_color_space(txt_frame.ColorSpace());
+  result->metadata().MergeMetadataFrom(txt_frame.metadata());
+
+  size_t planes = VideoFrame::NumPlanes(result->format());
+  for (size_t plane = 0; plane < planes; plane++) {
+    const gpu::MailboxHolder& holder = txt_frame.mailbox_holder(plane);
+    if (holder.mailbox.IsZero()) {
+      DLOG(ERROR) << "Can't readback video frame with Zero texture on plane "
+                  << plane;
+      return nullptr;
+    }
+    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+
+    int width = VideoFrame::Columns(plane, result->format(),
+                                    result->coded_size().width());
+    int height = result->rows(plane);
+
+    GrGLenum texture_format;
+    SkColorType sk_color_type;
+    std::tie(sk_color_type, texture_format) =
+        GetSkiaAndGlColorTypesForPlane(result->format(), plane);
+
+    auto info =
+        SkImageInfo::Make(width, height, sk_color_type, kOpaque_SkAlphaType);
+
+    ri->ReadbackImagePixels(holder.mailbox, info, info.minRowBytes(), 0, 0,
+                            result->data(plane));
+    if (ri->GetError() != GL_NO_ERROR) {
+      DLOG(ERROR) << "Plane readback failed."
+                  << " plane:" << plane << " width: " << width
+                  << " height: " << height
+                  << " minRowBytes: " << info.minRowBytes()
+                  << " error: " << ri->GetError();
+      return nullptr;
+    }
+  }
+
+  return result;
+}
+
 }  // namespace
 
 double GetPixelAspectRatio(const gfx::Rect& visible_rect,
@@ -551,93 +711,12 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     GrDirectContext* gr_context,
     VideoFramePool* pool) {
   DCHECK(ri);
-  DCHECK(gr_context);
 
-  if (txt_frame.NumTextures() > 2 || txt_frame.NumTextures() < 1) {
-    DLOG(ERROR) << "Readback is not possible for this frame: "
-                << txt_frame.AsHumanReadableString();
-    return nullptr;
+  if (gr_context) {
+    return ReadbackTextureBackedFrameToMemorySyncGLES(txt_frame, ri, gr_context,
+                                                      pool);
   }
-
-  VideoPixelFormat result_format = txt_frame.format();
-  if (txt_frame.NumTextures() == 1 && result_format == PIXEL_FORMAT_NV12) {
-    // Even though |txt_frame| format is NV12 and it is NV12 in GPU memory,
-    // the texture is a RGB view that is produced by a shader on the fly.
-    // So we currently we currently can only read it back as RGB.
-    result_format = PIXEL_FORMAT_ARGB;
-  }
-
-  scoped_refptr<VideoFrame> result =
-      pool
-          ? pool->CreateFrame(result_format, txt_frame.coded_size(),
-                              txt_frame.visible_rect(),
-                              txt_frame.natural_size(), txt_frame.timestamp())
-          : VideoFrame::CreateFrame(
-                result_format, txt_frame.coded_size(), txt_frame.visible_rect(),
-                txt_frame.natural_size(), txt_frame.timestamp());
-  result->set_color_space(txt_frame.ColorSpace());
-  result->metadata().MergeMetadataFrom(txt_frame.metadata());
-
-  size_t planes = VideoFrame::NumPlanes(result->format());
-  for (size_t plane = 0; plane < planes; plane++) {
-    const gpu::MailboxHolder& holder = txt_frame.mailbox_holder(plane);
-    if (holder.mailbox.IsZero())
-      return nullptr;
-    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
-
-    int width = VideoFrame::Columns(plane, result->format(),
-                                    result->coded_size().width());
-    int height = result->rows(plane);
-
-    auto texture_id = ri->CreateAndConsumeForGpuRaster(holder.mailbox);
-    if (holder.mailbox.IsSharedImage()) {
-      ri->BeginSharedImageAccessDirectCHROMIUM(
-          texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-    }
-
-    auto cleanup_fn = [](GLuint texture_id, bool shared,
-                         gpu::raster::RasterInterface* ri) {
-      if (shared)
-        ri->EndSharedImageAccessDirectCHROMIUM(texture_id);
-      ri->DeleteGpuRasterTexture(texture_id);
-    };
-    base::ScopedClosureRunner cleanup(base::BindOnce(
-        cleanup_fn, texture_id, holder.mailbox.IsSharedImage(), ri));
-
-    GrGLenum texture_format;
-    SkColorType sk_color_type;
-    std::tie(sk_color_type, texture_format) =
-        GetSkiaAndGlColorTypesForPlane(result->format(), plane);
-    GrGLTextureInfo gl_texture_info;
-    gl_texture_info.fID = texture_id;
-    gl_texture_info.fTarget = holder.texture_target;
-    gl_texture_info.fFormat = texture_format;
-
-    GrBackendTexture texture(width, height, GrMipMapped::kNo, gl_texture_info);
-    auto image = SkImage::MakeFromTexture(
-        gr_context, texture, kTopLeft_GrSurfaceOrigin, sk_color_type,
-        kOpaque_SkAlphaType, nullptr /* colorSpace */);
-
-    if (!image) {
-      DLOG(ERROR) << "Can't create SkImage from texture!"
-                  << " plane:" << plane;
-      return nullptr;
-    }
-
-    auto info =
-        SkImageInfo::Make(width, height, sk_color_type, kOpaque_SkAlphaType);
-    SkPixmap pixmap(info, result->data(plane), result->row_bytes(plane));
-    if (!image->readPixels(gr_context, pixmap, 0, 0,
-                           SkImage::kDisallow_CachingHint)) {
-      DLOG(ERROR) << "Plane readback failed."
-                  << " plane:" << plane << " width: " << width
-                  << " height: " << height
-                  << " minRowBytes: " << info.minRowBytes();
-      return nullptr;
-    }
-  }
-
-  return result;
+  return ReadbackTextureBackedFrameToMemorySyncOOP(txt_frame, ri, pool);
 }
 
 Status ConvertAndScaleFrame(const VideoFrame& src_frame,

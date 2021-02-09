@@ -437,7 +437,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
   auto* ri = scoped_context.RasterInterface();
   auto* gr_context = raster_context_provider->GrContext();
 
-  if (!ri || !gr_context) {
+  if (!ri) {
     return nullptr;
   }
 

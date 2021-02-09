@@ -64,8 +64,8 @@ promise_test(async t => {
   // Uses Helper.js GetVideoSignal to query |destVideo| pixel value at a certain position.
   const pixelValue = getVideoSignal(destVideo);
 
-  // Expected value computed by test runs.
-  assert_approx_equals(pixelValue, 50, 2);
+  // Anything non-black means that capture works.
+  assert_not_equals(pixelValue, 0);
   }, "Capturing a video element and sending it via PeerConnection");
 </script>
 </body>
