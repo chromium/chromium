@@ -40,8 +40,7 @@ class AudioMediaDataSource : public mojom::AssistantMediaDataSource {
 
  private:
   // Called on main thread.
-  void OnFillBuffer(mojom::AssistantMediaDataSource::ReadCallback callback,
-                    int bytes_filled);
+  void OnFillBuffer(int bytes_filled);
 
   mojo::Receiver<mojom::AssistantMediaDataSource> receiver_;
 
@@ -50,6 +49,8 @@ class AudioMediaDataSource : public mojom::AssistantMediaDataSource {
   assistant_client::AudioOutput::Delegate* delegate_ = nullptr;
 
   std::vector<uint8_t> source_buffer_;
+
+  mojom::AssistantMediaDataSource::ReadCallback read_callback_;
 
   base::WeakPtrFactory<AudioMediaDataSource> weak_factory_;
 

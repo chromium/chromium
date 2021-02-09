@@ -28,42 +28,50 @@ AudioMediaDataSource::AudioMediaDataSource(
       task_runner_(task_runner),
       weak_factory_(this) {}
 
-AudioMediaDataSource::~AudioMediaDataSource() = default;
+AudioMediaDataSource::~AudioMediaDataSource() {
+  if (read_callback_) {
+    // During shutdown, it is possible we received a call to |Read()| but have
+    // not received the data from Libassistant yet. In that case we must still
+    // call the |read_callback_| to satisfy the mojom API contract.
+    std::move(read_callback_).Run({});
+  }
+}
 
 void AudioMediaDataSource::Read(
     uint32_t size,
     mojom::AssistantMediaDataSource::ReadCallback callback) {
+  // Note: mojom calls are sequenced, so we should not receive a second call to
+  // Read() before we consumed the previous |read_callback_|.
+  DCHECK(!read_callback_);
+  read_callback_ = std::move(callback);
+
   if (!delegate_) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AudioMediaDataSource::OnFillBuffer,
-                       weak_factory_.GetWeakPtr(), std::move(callback), 0));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&AudioMediaDataSource::OnFillBuffer,
+                                          weak_factory_.GetWeakPtr(), 0));
     return;
   }
 
   size = std::min(size, kMaxBytesToDecode);
   source_buffer_.resize(size);
+
   delegate_->FillBuffer(
       source_buffer_.data(), source_buffer_.size(),
       // TODO(wutao): This should be a future time that these buffers would be
       // played.
-      base::TimeTicks::Now().since_origin().InMicroseconds(), [
-        task_runner = task_runner_, weak_ptr = weak_factory_.GetWeakPtr(),
-        repeating_callback =
-            base::AdaptCallbackForRepeating(std::move(callback))
-      ](int bytes_available) {
+      base::TimeTicks::Now().since_origin().InMicroseconds(),
+      [task_runner = task_runner_,
+       weak_ptr = weak_factory_.GetWeakPtr()](int bytes_available) {
         task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(&AudioMediaDataSource::OnFillBuffer, weak_ptr,
-                           std::move(repeating_callback), bytes_available));
+            FROM_HERE, base::BindOnce(&AudioMediaDataSource::OnFillBuffer,
+                                      weak_ptr, bytes_available));
       });
 }
 
-void AudioMediaDataSource::OnFillBuffer(
-    mojom::AssistantMediaDataSource::ReadCallback callback,
-    int bytes_filled) {
+void AudioMediaDataSource::OnFillBuffer(int bytes_filled) {
+  DCHECK(read_callback_);
   source_buffer_.resize(bytes_filled);
-  std::move(callback).Run(source_buffer_);
+  std::move(read_callback_).Run(source_buffer_);
 }
 
 }  // namespace assistant
