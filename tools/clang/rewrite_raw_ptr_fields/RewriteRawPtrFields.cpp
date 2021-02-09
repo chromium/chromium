@@ -962,9 +962,11 @@ int main(int argc, const char* argv[]) {
   llvm::cl::opt<std::string> exclude_paths_param(
       kExcludePathsParamName, llvm::cl::value_desc("filepath"),
       llvm::cl::desc("file listing paths to be blocked (not rewritten)"));
-  clang::tooling::CommonOptionsParser options(argc, argv, category);
-  clang::tooling::ClangTool tool(options.getCompilations(),
-                                 options.getSourcePathList());
+  llvm::Expected<clang::tooling::CommonOptionsParser> options =
+      clang::tooling::CommonOptionsParser::create(argc, argv, category);
+  assert(static_cast<bool>(options));  // Should not return an error.
+  clang::tooling::ClangTool tool(options->getCompilations(),
+                                 options->getSourcePathList());
 
   MatchFinder match_finder;
   OutputHelper output_helper;
