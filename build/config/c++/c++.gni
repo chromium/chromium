@@ -43,7 +43,7 @@ declare_args() {
 }
 
 use_custom_libcxx =
-    use_custom_libcxx || (use_custom_libcxx_for_host && current_cpu == host_cpu)
+    use_custom_libcxx || (use_custom_libcxx_for_host && !is_a_target_toolchain)
 use_custom_libcxx = use_custom_libcxx && !is_nacl
 
 declare_args() {
