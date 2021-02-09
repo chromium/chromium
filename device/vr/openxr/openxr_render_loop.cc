@@ -9,6 +9,7 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
+#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/stage_utils.h"
 #include "device/vr/util/transform_utils.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -287,13 +288,7 @@ bool OpenXrRenderLoop::UpdateEye(const XrView& view_head,
                                  mojom::VREyeParametersPtr* eye) const {
   bool changed = false;
 
-  // TODO(crbug.com/999573): Query eye-to-head transform from the device and use
-  // that instead of just building a transformation matrix from the translation
-  // component.
-  gfx::Transform head_from_eye = vr_utils::MakeTranslationTransform(
-      view_head.pose.position.x, view_head.pose.position.y,
-      view_head.pose.position.z);
-
+  gfx::Transform head_from_eye = XrPoseToGfxTransform(view_head.pose);
   if ((*eye)->head_from_eye != head_from_eye) {
     (*eye)->head_from_eye = head_from_eye;
     changed = true;
