@@ -299,8 +299,13 @@ void SandboxBPF::DisableIBSpec() {
   }
 
   if (!(rv & PR_SPEC_PRCTL)) {
+// TODO(crbug.com/1171027): Revert https://crrev.com/c/2677242 to re-enable this
+// DCHECK on CrOS. See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for
+// more details.
+#if !(defined(OS_CHROMEOS) && DCHECK_IS_ON())
     DLOG(INFO) << "Indirect branch speculation can not be controled by prctl."
                << rv;
+#endif
     return;
   }
 
