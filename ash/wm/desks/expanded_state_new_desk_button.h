@@ -16,11 +16,6 @@ namespace ash {
 class DeskButtonBase;
 class DesksBarView;
 
-// TODO(minch): Build the base class DeskMiniViewBase, and let both the
-// ExpandedStateNewDeskButton and DeskMiniView inherit from it. Then the
-// expanded state new desk button can be treated the same as |mini_views_| in
-// DesksBarView. It then can share the same animation and layout as other mini
-// views.
 // The new desk button view in the expanded desks bar in Bento. It includes the
 // InnerNewDeskButton and a name label below, which has the same style as a
 // DeskMiniVIew. But the name label is not changeable and not focusable.
