@@ -252,6 +252,61 @@ struct AccessibilityChoiceFieldInfo {
   gfx::RectF bounds;
 };
 
+// TODO(crbug.com/702993): Remove next line comment after PDF migrates away
+// from Pepper.
+// Explicitly set all enum values to match enum values in PP_PrivateButtonType.
+enum class ButtonType {
+  kPushButton = 1,
+  kCheckBox = 2,
+  kRadioButton = 3,
+  kMaxValue = kRadioButton,
+};
+
+struct AccessibilityButtonInfo {
+  AccessibilityButtonInfo();
+  AccessibilityButtonInfo(const std::string& name,
+                          const std::string& value,
+                          ButtonType type,
+                          bool is_read_only,
+                          bool is_checked,
+                          uint32_t control_count,
+                          uint32_t control_index,
+                          uint32_t index_in_page,
+                          uint32_t text_run_index,
+                          const gfx::RectF& bounds);
+  AccessibilityButtonInfo(const AccessibilityButtonInfo& other);
+  ~AccessibilityButtonInfo();
+
+  // Represents the name property of button, if present.
+  std::string name;
+  // Represents the value property of button, if present.
+  std::string value;
+  // Represents the button type.
+  ButtonType type;
+  // Represents if the button is non-editable.
+  bool is_read_only = false;
+  // Represents if the radio button or check box is checked or not.
+  bool is_checked = false;
+  // Represents count of controls in the control group. A group of interactive
+  // form annotations is collectively called a form control group. Here, an
+  // interactive form annotation, should be either a radio button or a
+  // checkbox. Value of |control_count| is >= 1.
+  uint32_t control_count = 0;
+  // Represents index of the control in the control group. A group of
+  // interactive form annotations is collectively called a form control group.
+  // Here, an interactive form annotation, should be either a radio button or
+  // a checkbox. Value of |control_index| should always be less than
+  // |control_count|.
+  uint32_t control_index = 0;
+  // Index of this button in the collection of buttons in the page.
+  uint32_t index_in_page = 0;
+  // We anchor the button to a text run index, this denotes the text run
+  // before which the button should be inserted in the accessibility tree.
+  uint32_t text_run_index = 0;
+  // Bounding box of the button.
+  gfx::RectF bounds;
+};
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_ACCESSIBILITY_STRUCTS_H_

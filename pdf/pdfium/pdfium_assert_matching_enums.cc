@@ -337,3 +337,12 @@ STATIC_ASSERT_ENUM(chrome_pdf::ChoiceFieldType::kComboBox,
                    PP_PRIVATECHOICEFIELD_COMBOBOX);
 STATIC_ASSERT_ENUM(chrome_pdf::ChoiceFieldType::kMaxValue,
                    PP_PRIVATECHOICEFIELD_LAST);
+
+STATIC_ASSERT_ENUM(chrome_pdf::ButtonType::kPushButton,
+                   PP_PRIVATEBUTTON_PUSHBUTTON);
+STATIC_ASSERT_ENUM(chrome_pdf::ButtonType::kPushButton, PP_PRIVATEBUTTON_FIRST);
+STATIC_ASSERT_ENUM(chrome_pdf::ButtonType::kCheckBox,
+                   PP_PRIVATEBUTTON_CHECKBOX);
+STATIC_ASSERT_ENUM(chrome_pdf::ButtonType::kRadioButton,
+                   PP_PRIVATEBUTTON_RADIOBUTTON);
+STATIC_ASSERT_ENUM(chrome_pdf::ButtonType::kMaxValue, PP_PRIVATEBUTTON_LAST);
