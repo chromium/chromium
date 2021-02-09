@@ -5,7 +5,7 @@
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/chromeos/assistant/assistant_util.h"
+#include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
