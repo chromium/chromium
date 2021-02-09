@@ -29,6 +29,7 @@ void CachedTextInputInfo::ClearIfNeeded(const LayoutObject& layout_object) {
   text_ = g_empty_string;
   composition_.Clear();
   selection_.Clear();
+  offset_map_.clear();
 }
 
 void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
