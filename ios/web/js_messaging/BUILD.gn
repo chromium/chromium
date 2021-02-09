@@ -85,6 +85,7 @@ source_set("java_script_feature_util") {
     "//base",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_features/window_error",
+    "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
 

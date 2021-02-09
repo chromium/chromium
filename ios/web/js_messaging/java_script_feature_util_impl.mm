@@ -11,6 +11,7 @@
 #include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,9 +21,20 @@ namespace {
 const char kBaseScriptName[] = "base_js";
 const char kCommonScriptName[] = "common_js";
 const char kMessageScriptName[] = "message_js";
+const char kPluginPlaceholderScriptName[] = "plugin_placeholder_js";
 
 const char kMainFrameDescription[] = "Main frame";
 const char kIframeDescription[] = "Iframe";
+
+// Returns a string with \ and ' escaped.
+// This is used instead of GetQuotedJSONString because that will convert
+// UTF-16 to UTF-8, which can cause problems when injecting scripts depending
+// on the page encoding (see crbug.com/302741).
+NSString* EscapedQuotedString(NSString* string) {
+  string = [string stringByReplacingOccurrencesOfString:@"\\"
+                                             withString:@"\\\\"];
+  return [string stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+}
 
 web::WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
   // Static storage is ok for |window_error_feature| as it holds no state.
@@ -53,6 +65,32 @@ web::WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
   return window_error_feature.get();
 }
 
+web::JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
+  // Static storage is ok for |plugin_placeholder_feature| as it holds no state.
+  static std::unique_ptr<web::JavaScriptFeature> plugin_placeholder_feature =
+      nullptr;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    std::map<std::string, NSString*> replacement_map{
+        {"$(PLUGIN_NOT_SUPPORTED_TEXT)",
+         EscapedQuotedString(base::SysUTF16ToNSString(
+             web::GetWebClient()->GetPluginNotSupportedText()))}};
+    std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
+        web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+            kPluginPlaceholderScriptName,
+            web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
+            web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
+            web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+                kReinjectOnDocumentRecreation,
+            replacement_map)};
+
+    plugin_placeholder_feature = std::make_unique<web::JavaScriptFeature>(
+        web::JavaScriptFeature::ContentWorld::kAnyContentWorld,
+        feature_scripts);
+  });
+  return plugin_placeholder_feature.get();
+}
+
 }  // namespace
 
 namespace web {
@@ -61,6 +99,7 @@ namespace java_script_features {
 std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
   return {ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
+          GetPluginPlaceholderJavaScriptFeature(),
           GetWindowErrorJavaScriptFeature()};
 }
 

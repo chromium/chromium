@@ -45,20 +45,27 @@ JavaScriptFeature::FeatureScript::CreateWithFilename(
     const std::string& filename,
     InjectionTime injection_time,
     TargetFrames target_frames,
-    ReinjectionBehavior reinjection_behavior) {
+    ReinjectionBehavior reinjection_behavior,
+    std::map<std::string, NSString*> replacements) {
   return JavaScriptFeature::FeatureScript(filename, injection_time,
-                                          target_frames, reinjection_behavior);
+                                          target_frames, reinjection_behavior,
+                                          replacements);
 }
 
 JavaScriptFeature::FeatureScript::FeatureScript(
     const std::string& filename,
     InjectionTime injection_time,
     TargetFrames target_frames,
-    ReinjectionBehavior reinjection_behavior)
+    ReinjectionBehavior reinjection_behavior,
+    std::map<std::string, NSString*> replacements)
     : script_filename_(filename),
       injection_time_(injection_time),
       target_frames_(target_frames),
-      reinjection_behavior_(reinjection_behavior) {}
+      reinjection_behavior_(reinjection_behavior),
+      replacements_(replacements) {}
+
+JavaScriptFeature::FeatureScript::FeatureScript(const FeatureScript& other) =
+    default;
 
 JavaScriptFeature::FeatureScript::~FeatureScript() = default;
 
@@ -66,14 +73,25 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
   NSString* script_filename = base::SysUTF8ToNSString(script_filename_);
   if (reinjection_behavior_ ==
       ReinjectionBehavior::kReinjectOnDocumentRecreation) {
-    return GetPageScript(script_filename);
+    return ReplacePlaceholders(GetPageScript(script_filename));
   }
   // WKUserScript instances will automatically be re-injected by WebKit when the
   // document is re-created, even though the JavaScript context will not be
   // re-created. So the script needs to be wrapped in |MakeScriptInjectableOnce|
   // so that is is not re-injected.
-  return MakeScriptInjectableOnce(InjectionTokenForScript(script_filename),
-                                  GetPageScript(script_filename));
+  return MakeScriptInjectableOnce(
+      InjectionTokenForScript(script_filename),
+      ReplacePlaceholders(GetPageScript(script_filename)));
+}
+
+NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
+    NSString* script) const {
+  for (auto item : replacements_) {
+    script = [script
+        stringByReplacingOccurrencesOfString:base::SysUTF8ToNSString(item.first)
+                                  withString:item.second];
+  }
+  return script;
 }
 
 #pragma mark - JavaScriptFeature

@@ -16,20 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Returns a string with \ and ' escaped.
-// This is used instead of GetQuotedJSONString because that will convert
-// UTF-16 to UTF-8, which can cause problems when injecting scripts depending
-// on the page encoding (see crbug.com/302741).
-NSString* EscapedQuotedString(NSString* string) {
-  string = [string stringByReplacingOccurrencesOfString:@"\\"
-                                             withString:@"\\\\"];
-  return [string stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
-}
-
-}  // namespace
-
 namespace web {
 
 NSString* GetPageScript(NSString* script_file_name) {
@@ -107,15 +93,8 @@ NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state) {
 }
 
 NSString* GetDocumentEndScriptForAllFrames(BrowserState* browser_state) {
-  NSString* plugin_not_supported_text =
-      base::SysUTF16ToNSString(GetWebClient()->GetPluginNotSupportedText());
-
-  NSString* script = [GetPageScript(@"all_frames_document_end_web_bundle")
-      stringByReplacingOccurrencesOfString:@"$(PLUGIN_NOT_SUPPORTED_TEXT)"
-                                withString:EscapedQuotedString(
-                                               plugin_not_supported_text)];
-
-  return MakeScriptInjectableOnce(@"end_all_frames", script);
+  return MakeScriptInjectableOnce(
+      @"end_all_frames", GetPageScript(@"all_frames_document_end_web_bundle"));
 }
 
 }  // namespace web

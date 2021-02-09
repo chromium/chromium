@@ -76,13 +76,18 @@ class JavaScriptFeature {
 
     // Creates a FeatureScript with the script file from the application bundle
     // with |filename| to be injected at |injection_time| into |target_frames|
-    // using |reinjection_behavior|.
+    // using |reinjection_behavior|. If |replacements| is provided, it will be
+    // used to replace placeholder with the corresponding string values.
     static FeatureScript CreateWithFilename(
         const std::string& filename,
         InjectionTime injection_time,
         TargetFrames target_frames,
         ReinjectionBehavior reinjection_behavior =
-            ReinjectionBehavior::kInjectOncePerWindow);
+            ReinjectionBehavior::kInjectOncePerWindow,
+        std::map<std::string, NSString*> replacements =
+            std::map<std::string, NSString*>());
+
+    FeatureScript(const FeatureScript& other);
 
     // Returns the JavaScript string of the script with |script_filename_|.
     NSString* GetScriptString() const;
@@ -96,12 +101,18 @@ class JavaScriptFeature {
     FeatureScript(const std::string& filename,
                   InjectionTime injection_time,
                   TargetFrames target_frames,
-                  ReinjectionBehavior reinjection_behavior);
+                  ReinjectionBehavior reinjection_behavior,
+                  std::map<std::string, NSString*> replacements);
+
+    // Returns the given |script| string after swapping the placeholders from
+    // |replacements_| with their values.
+    NSString* ReplacePlaceholders(NSString* script) const;
 
     std::string script_filename_;
     InjectionTime injection_time_;
     TargetFrames target_frames_;
     ReinjectionBehavior reinjection_behavior_;
+    std::map<std::string, NSString*> replacements_;
   };
 
   JavaScriptFeature(ContentWorld supported_world,

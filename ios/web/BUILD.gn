@@ -38,6 +38,7 @@ source_set("web") {
     ":js_resources",
     ":message_js",
     ":navigation_resources",
+    ":plugin_placeholder_js",
     ":resources",
     ":threads",
     "//base",
@@ -647,7 +648,6 @@ js_compile_bundle("all_frames_document_end_web_bundle") {
   sources = [
     "js_messaging/resources/setup_frame.js",
     "web_state/js/resources/all_frames_document_end_web_bundle.js",
-    "web_state/js/resources/plugin_placeholder.js",
   ]
 }
 
@@ -659,6 +659,13 @@ js_compile_bundle("main_frame_document_end_web_bundle") {
     "favicon/resources/favicon.js",
     "web_state/js/resources/main_frame_document_end_web_bundle.js",
   ]
+}
+
+js_compile_bundle("plugin_placeholder_js") {
+  visibility = [ ":web" ]
+  closure_entry_point = "__crWeb.pluginPlaceholder"
+
+  sources = [ "web_state/js/resources/plugin_placeholder.js" ]
 }
 
 js_compile_bundle("base_js") {
