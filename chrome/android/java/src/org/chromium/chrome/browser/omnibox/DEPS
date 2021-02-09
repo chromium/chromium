@@ -1,6 +1,5 @@
 include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser",
-  "+chrome/android/java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/TabWindowManagerSingleton.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantPreferenceFragment.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",

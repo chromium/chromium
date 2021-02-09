@@ -19,7 +19,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
@@ -36,6 +35,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -98,8 +98,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param actionModeCallback The default callback for text editing action bar to use.
      * @param windowDelegate {@link WindowDelegate} that will provide {@link Window} related info.
      * @param windowAndroid {@link WindowAndroid} that is used by the owning {@link Activity}.
-     * @param activityTabProvider An {@link ActivityTabProvider} to access the activity's current
-     *         tab.
+     * @param activityTabSupplier A Supplier to access the activity's current tab.
      * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} object.
      * @param shareDelegateSupplier A supplier for {@link ShareDelegate} object.
      * @param incognitoStateProvider An {@link IncognitoStateProvider} to access the current
@@ -113,7 +112,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             ObservableSupplier<Profile> profileObservableSupplier,
             LocationBarDataProvider locationBarDataProvider, ActionMode.Callback actionModeCallback,
             WindowDelegate windowDelegate, WindowAndroid windowAndroid,
-            ActivityTabProvider activityTabProvider,
+            @NonNull Supplier<Tab> activityTabSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider,
@@ -141,7 +140,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                         mLocationBarMediator, windowAndroid.getKeyboardDelegate());
         mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
                 mUrlCoordinator, activityLifecycleDispatcher, modalDialogManagerSupplier,
-                activityTabProvider, shareDelegateSupplier, locationBarDataProvider);
+                activityTabSupplier, shareDelegateSupplier, locationBarDataProvider);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,
@@ -488,9 +487,9 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     }
 
     // Tablet-specific methods.
-                                                       
+
     /**
-     * Returns an animator to run for the given view when hiding buttons in the unfocused location 
+     * Returns an animator to run for the given view when hiding buttons in the unfocused location
      * bar. This should also be used to create animators for hiding toolbar buttons.
      *
      * @param button The {@link View} of the button to hide.
@@ -501,7 +500,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     }
 
     /**
-     * Returns an animator to run for the given view when showing buttons in the unfocused location 
+     * Returns an animator to run for the given view when showing buttons in the unfocused location
      * bar. This should also be used to create animators for showing toolbar buttons.
      *
      * @param button The {@link View} of the button to show.

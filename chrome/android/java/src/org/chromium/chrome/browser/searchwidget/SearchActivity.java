@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -170,19 +171,19 @@ public class SearchActivity extends AsyncInitializationActivity
         mSearchBox = (SearchActivityLocationBarLayout) mContentView.findViewById(
                 R.id.search_location_bar);
         View anchorView = mContentView.findViewById(R.id.toolbar);
+        OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
+                (String url, @PageTransition int transition, String postDataType, byte[] postData,
+                        boolean incognito) -> {
+            loadUrl(url, transition, postDataType, postData);
+            return true;
+        };
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, anchorView,
                 mProfileSupplier, mSearchBoxDataProvider, null, new WindowDelegate(getWindow()),
                 getWindowAndroid(),
-                /*activityTabProvider=*/null, /*modalDialogManagerSupplier=*/
+                /*activityTabSupplier=*/() -> null, /*modalDialogManagerSupplier=*/
                 getModalDialogManagerSupplier(),
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
-                getLifecycleDispatcher(), /*overrideUrlLoadingDelegate=*/
-                (String url, @PageTransition int transition, String postDataType, byte[] postData,
-                        boolean incognito)
-                        -> {
-                    loadUrl(url, transition, postDataType, postData);
-                    return true;
-                },
+                getLifecycleDispatcher(), overrideUrlLoadingDelegate,
                 /*backKeyBehavior=*/this, SearchEngineLogoUtils.getInstance());
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);

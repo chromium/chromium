@@ -83,7 +83,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
         when(mMockHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
-        mBuilder = new DropdownItemViewInfoListBuilder(mAutocompleteController);
+        mBuilder = new DropdownItemViewInfoListBuilder(mAutocompleteController, () -> null);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
     }

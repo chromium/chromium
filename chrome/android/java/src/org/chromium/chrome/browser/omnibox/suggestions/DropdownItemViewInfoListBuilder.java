@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
@@ -56,10 +55,10 @@ class DropdownItemViewInfoListBuilder {
     private static final int DEFAULT_SIZE_OF_VISIBLE_GROUP = 5;
 
     private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
+    private final @NonNull Supplier<Tab> mActivityTabSupplier;
     private @NonNull AutocompleteController mAutocompleteController;
 
     private @Nullable HeaderProcessor mHeaderProcessor;
-    private @Nullable ActivityTabProvider mActivityTabProvider;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable ImageFetcher mImageFetcher;
     private @Nullable LargeIconBridge mIconBridge;
@@ -69,10 +68,12 @@ class DropdownItemViewInfoListBuilder {
     private boolean mEnableAdaptiveSuggestionsCount;
     private boolean mBuiltListHasFullyConcealedElements;
 
-    DropdownItemViewInfoListBuilder(AutocompleteController controller) {
+    DropdownItemViewInfoListBuilder(
+            AutocompleteController controller, @NonNull Supplier<Tab> tabSupplier) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mAutocompleteController = controller;
+        mActivityTabSupplier = tabSupplier;
     }
 
     /**
@@ -91,15 +92,13 @@ class DropdownItemViewInfoListBuilder {
 
         final Supplier<ImageFetcher> imageFetcherSupplier = () -> mImageFetcher;
         final Supplier<LargeIconBridge> iconBridgeSupplier = () -> mIconBridge;
-        final Supplier<Tab> tabSupplier =
-                () -> mActivityTabProvider == null ? null : mActivityTabProvider.get();
         final Supplier<ShareDelegate> shareSupplier =
                 () -> mShareDelegateSupplier == null ? null : mShareDelegateSupplier.get();
         final Supplier<BookmarkBridge> bookmarkSupplier = () -> mBookmarkBridge;
 
         mHeaderProcessor = new HeaderProcessor(context, host, delegate);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
-                context, host, delegate, iconBridgeSupplier, tabSupplier, shareSupplier));
+                context, host, delegate, iconBridgeSupplier, mActivityTabSupplier, shareSupplier));
         registerSuggestionProcessor(
                 new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
         registerSuggestionProcessor(
@@ -181,15 +180,6 @@ class DropdownItemViewInfoListBuilder {
      */
     void setShareDelegateSupplier(Supplier<ShareDelegate> shareDelegateSupplier) {
         mShareDelegateSupplier = shareDelegateSupplier;
-    }
-
-    /**
-     * Specify new Activity tab provider.
-     *
-     * @param provider Tab provider.
-     */
-    void setActivityTabProvider(ActivityTabProvider provider) {
-        mActivityTabProvider = provider;
     }
 
     /**

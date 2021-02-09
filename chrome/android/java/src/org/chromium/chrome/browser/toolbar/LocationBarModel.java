@@ -221,6 +221,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
     }
 
+    public void notifyZeroSuggestRefresh() {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.hintZeroSuggestRefresh();
+        }
+    }
+
     @Override
     public NewTabPageDelegate getNewTabPageDelegate() {
         return mNtpDelegate;

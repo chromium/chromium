@@ -1100,6 +1100,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         updateButtonVisibility();
     }
 
+    @Override
+    public void hintZeroSuggestRefresh() {
+        mAutocompleteCoordinator.prefetchZeroSuggestResults();
+    }
+
     // FakeboxDelegate implementation.
 
     @Override

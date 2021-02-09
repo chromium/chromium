@@ -43,6 +43,8 @@ public interface LocationBarDataProvider {
 
         default void onTitleChanged(){};
         default void onUrlChanged(){};
+
+        default void hintZeroSuggestRefresh(){};
     }
 
     /** Adds an observer of changes to LocationBarDataProvider's data. */

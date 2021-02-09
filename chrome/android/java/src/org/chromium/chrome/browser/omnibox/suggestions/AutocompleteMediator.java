@@ -27,8 +27,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -49,7 +47,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.query_tiles.QueryTile;
@@ -148,7 +145,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @NonNull
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private ActivityTabTabObserver mTabObserver;
     private final DropdownItemViewInfoListBuilder mDropdownViewInfoListBuilder;
     private final DropdownItemViewInfoListManager mDropdownViewInfoListManager;
 
@@ -158,7 +154,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             @NonNull PropertyModel listPropertyModel, @NonNull Handler handler,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable ActivityTabProvider activityTabProvider,
+            @NonNull Supplier<Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull LocationBarDataProvider locationBarDataProvider) {
         mContext = context;
@@ -174,36 +170,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mDataProvider = locationBarDataProvider;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mAutocompleteResult = new AutocompleteResult(null, null);
-        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(mAutocomplete);
+        mDropdownViewInfoListBuilder =
+                new DropdownItemViewInfoListBuilder(mAutocomplete, activityTabSupplier);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
-
-        if (activityTabProvider != null) {
-            mDropdownViewInfoListBuilder.setActivityTabProvider(activityTabProvider);
-            mTabObserver = new ActivityTabTabObserver(activityTabProvider) {
-                @Override
-                public void onPageLoadFinished(Tab tab, GURL url) {
-                    maybeTriggerCacheRefresh(url);
-                }
-
-                @Override
-                protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                    if (tab == null) return;
-                    maybeTriggerCacheRefresh(tab.getUrl());
-                }
-
-                /**
-                 * Trigger ZeroSuggest cache refresh in case user is accessing a new tab page.
-                 * Avoid issuing multiple concurrent server requests for the same event to
-                 * reduce server pressure.
-                 */
-                private void maybeTriggerCacheRefresh(GURL url) {
-                    if (url == null) return;
-                    if (!UrlUtilities.isNTPUrl(url)) return;
-                    AutocompleteControllerJni.get().prefetchZeroSuggestResults();
-                }
-            };
-        }
     }
 
     /**
@@ -228,9 +198,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             mAutocomplete.destroy();
         }
         mDropdownViewInfoListBuilder.destroy();
-        if (mTabObserver != null) {
-            mTabObserver.destroy();
-        }
         if (mLifecycleDispatcher != null) {
             mLifecycleDispatcher.unregister(this);
         }
