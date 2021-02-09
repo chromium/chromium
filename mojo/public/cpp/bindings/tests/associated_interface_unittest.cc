@@ -1108,6 +1108,64 @@ TEST_F(AssociatedInterfaceTest, AssociatedReceiverReportBadMessage) {
   SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
+TEST_F(AssociatedInterfaceTest, AssociatedReceiverDedicatedPipe) {
+  PendingAssociatedRemote<IntegerSender> pending_remote;
+  PendingAssociatedReceiver<IntegerSender> pending_receiver =
+      pending_remote.InitWithNewEndpointAndPassReceiver();
+  pending_receiver.EnableUnassociatedUsage();
+  IntegerSenderImpl impl(std::move(pending_receiver));
+  AssociatedRemote<IntegerSender> remote(std::move(pending_remote));
+
+  {
+    base::RunLoop run_loop;
+    impl.set_notify_send_method_called(
+        base::BindLambdaForTesting([&](int32_t x) {
+          EXPECT_EQ(88, x);
+          run_loop.Quit();
+        }));
+
+    remote->Send(88);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    remote->Echo(888, base::BindLambdaForTesting([&](int32_t x) {
+                   EXPECT_EQ(888, x);
+                   run_loop.Quit();
+                 }));
+  }
+}
+
+TEST_F(AssociatedInterfaceTest, AssociatedRemoteDedicatedPipe) {
+  PendingAssociatedRemote<IntegerSender> pending_remote;
+  PendingAssociatedReceiver<IntegerSender> pending_receiver =
+      pending_remote.InitWithNewEndpointAndPassReceiver();
+  IntegerSenderImpl impl(std::move(pending_receiver));
+  pending_remote.EnableUnassociatedUsage();
+  AssociatedRemote<IntegerSender> remote(std::move(pending_remote));
+
+  {
+    base::RunLoop run_loop;
+    impl.set_notify_send_method_called(
+        base::BindLambdaForTesting([&](int32_t x) {
+          EXPECT_EQ(88, x);
+          run_loop.Quit();
+        }));
+
+    remote->Send(88);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    remote->Echo(888, base::BindLambdaForTesting([&](int32_t x) {
+                   EXPECT_EQ(888, x);
+                   run_loop.Quit();
+                 }));
+  }
+}
+
 }  // namespace
 }  // namespace test
 }  // namespace mojo

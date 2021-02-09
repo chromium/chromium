@@ -12,7 +12,9 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_interface_request.h"
+#include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
 
@@ -83,6 +85,31 @@ class PendingAssociatedReceiver {
   // endpoint wants details about why this endpoint hung up.
   void ResetWithReason(uint32_t custom_reason, const std::string& description) {
     handle_.ResetWithReason(custom_reason, description);
+  }
+
+  // Associates this endpoint with a dedicated message pipe. This allows the
+  // entangled AssociatedReceiver/AssociatedRemote endpoints to be used without
+  // ever being associated with any other mojom interfaces.
+  //
+  // Needless to say, messages sent between the two entangled endpoints will not
+  // be ordered with respect to any other mojom interfaces. This is generally
+  // useful for ignoring calls on an associated remote or for binding associated
+  // endpoints in tests.
+  void EnableUnassociatedUsage() {
+    DCHECK(is_valid());
+
+    MessagePipe pipe;
+    scoped_refptr<internal::MultiplexRouter> router0 =
+        new internal::MultiplexRouter(
+            std::move(pipe.handle0), internal::MultiplexRouter::MULTI_INTERFACE,
+            false, base::SequencedTaskRunnerHandle::Get());
+    scoped_refptr<internal::MultiplexRouter> router1 =
+        new internal::MultiplexRouter(
+            std::move(pipe.handle1), internal::MultiplexRouter::MULTI_INTERFACE,
+            true, base::SequencedTaskRunnerHandle::Get());
+
+    InterfaceId id = router1->AssociateInterface(PassHandle());
+    set_handle(router0->CreateLocalEndpointHandle(id));
   }
 
  private:
