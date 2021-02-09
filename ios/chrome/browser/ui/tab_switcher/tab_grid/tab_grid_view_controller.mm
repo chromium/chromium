@@ -1360,6 +1360,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Creates and shows a new regular tab.
 - (void)openNewRegularTabForKeyboardCommand {
+  [self.handler dismissModalDialogs];
   [self openNewTabInPage:TabGridPageRegularTabs focusOmnibox:YES];
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCreateRegularTabKeyboard"));
@@ -1367,6 +1368,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Creates and shows a new incognito tab.
 - (void)openNewIncognitoTabForKeyboardCommand {
+  [self.handler dismissModalDialogs];
   [self openNewTabInPage:TabGridPageIncognitoTabs focusOmnibox:YES];
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCreateIncognitoTabKeyboard"));
