@@ -173,7 +173,7 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
 
   // Setup Data Leak Prevention restriction.
   policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::DlpContentManager::SetDlpContentManagerForTesting(
+  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(media_id))
       .Times(1)
@@ -185,8 +185,6 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
   EXPECT_EQ(0u, devices.size());
-
-  policy::DlpContentManager::ResetDlpContentManagerForTesting();
 }
 #endif
 

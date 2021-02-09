@@ -94,6 +94,8 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // The caller (test) should manage |dlp_content_manager| lifetime.
   // Reset doesn't delete the object.
+  // Please use ScopedDlpContentManagerForTesting instead of these methods,
+  // if possible.
   static void SetDlpContentManagerForTesting(
       DlpContentManager* dlp_content_manager);
   static void ResetDlpContentManagerForTesting();
@@ -211,6 +213,17 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
   // List of the currently running screen captures.
   std::vector<ScreenCaptureInfo> running_screen_captures_;
+};
+
+// Helper class to call SetDlpContentManagerForTesting and
+// ResetDlpContentManagerForTesting automically.
+// The caller (test) should manage `test_dlp_content_manager` lifetime.
+// This class does not own it.
+class ScopedDlpContentManagerForTesting {
+ public:
+  explicit ScopedDlpContentManagerForTesting(
+      DlpContentManager* test_dlp_content_manager);
+  ~ScopedDlpContentManagerForTesting();
 };
 
 }  // namespace policy

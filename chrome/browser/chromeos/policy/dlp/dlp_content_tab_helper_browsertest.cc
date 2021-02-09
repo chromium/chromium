@@ -30,19 +30,21 @@ const DlpContentRestrictionSet kScreenshotRestrictionSet(
 
 class DlpContentTabHelperBrowserTest
     : public extensions::PlatformAppBrowserTest {
+ public:
+  DlpContentTabHelperBrowserTest()
+      : scoped_dlp_content_manager_(&mock_dlp_content_manager_) {}
+
  protected:
   void SetUp() override {
-    DlpContentManager::SetDlpContentManagerForTesting(
-        &mock_dlp_content_manager_);
     extensions::PlatformAppBrowserTest::SetUp();
   }
 
   void TearDown() override {
-    DlpContentManager::ResetDlpContentManagerForTesting();
     extensions::PlatformAppBrowserTest::TearDown();
   }
 
   MockDlpContentManager mock_dlp_content_manager_;
+  ScopedDlpContentManagerForTesting scoped_dlp_content_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {

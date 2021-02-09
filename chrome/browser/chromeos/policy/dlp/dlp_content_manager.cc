@@ -472,4 +472,14 @@ base::TimeDelta DlpContentManager::GetPrivacyScreenOffDelayForTesting() {
   return kPrivacyScreenOffDelay;
 }
 
+// ScopedDlpContentManagerForTesting
+ScopedDlpContentManagerForTesting::ScopedDlpContentManagerForTesting(
+    DlpContentManager* test_dlp_content_manager) {
+  DlpContentManager::SetDlpContentManagerForTesting(test_dlp_content_manager);
+}
+
+ScopedDlpContentManagerForTesting::~ScopedDlpContentManagerForTesting() {
+  DlpContentManager::ResetDlpContentManagerForTesting();
+}
+
 }  // namespace policy

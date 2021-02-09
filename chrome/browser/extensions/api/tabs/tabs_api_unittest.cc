@@ -1074,7 +1074,7 @@ TEST_F(TabsApiUnitTest, ScreenshotsRestricted) {
 
   // Setup Data Leak Prevention restriction.
   policy::MockDlpContentManager mock_dlp_content_manager;
-  policy::DlpContentManager::SetDlpContentManagerForTesting(
+  policy::ScopedDlpContentManagerForTesting scoped_dlp_content_manager_(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, IsScreenshotRestricted(testing::_))
       .Times(1)
@@ -1087,7 +1087,6 @@ TEST_F(TabsApiUnitTest, ScreenshotsRestricted) {
 
   // Clean up.
   browser()->tab_strip_model()->CloseAllTabs();
-  policy::DlpContentManager::ResetDlpContentManagerForTesting();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
