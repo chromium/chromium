@@ -304,5 +304,5 @@ TEST_F(ProfileProviderRealCollectionTest, OnJankStopped) {
 
 int main(int argc, char* argv[]) {
   base::CommandLine::Init(argc, argv);
-  base::RunUnitTestsUsingBaseTestSuite(argc, argv);
+  return base::RunUnitTestsUsingBaseTestSuite(argc, argv);
 }
