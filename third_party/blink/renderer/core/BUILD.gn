@@ -1224,6 +1224,7 @@ source_set("unit_tests") {
     "exported/web_selector_test.cc",
     "exported/web_view_test.cc",
     "feature_policy/document_policy_parser_test.cc",
+    "feature_policy/document_policy_sim_test.cc",
     "feature_policy/feature_policy_devtools_support_test.cc",
     "feature_policy/feature_policy_test.cc",
     "feature_policy/policy_test.cc",
