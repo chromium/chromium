@@ -81,7 +81,8 @@ class KeyDataTest : public testing::Test {
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("keys"); }
 
   void MakeKeyData() {
-    key_data_ = std::make_unique<KeyData>(GetPath(), base::DoNothing());
+    key_data_ = std::make_unique<KeyData>(
+        GetPath(), base::TimeDelta::FromSeconds(0), base::DoNothing());
     Wait();
   }
 

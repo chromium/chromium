@@ -72619,6 +72619,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="Failed key parse error"/>
   <int value="7" label="Failed key write error"/>
   <int value="8" label="Failed key serialization"/>
+  <int value="9" label="Failed event read error"/>
+  <int value="10" label="Failed event parse error"/>
+  <int value="11" label="Failed event write error"/>
+  <int value="12" label="Failed event serialization"/>
 </enum>
 
 <enum name="StructuredMetricsKeyValidationState">

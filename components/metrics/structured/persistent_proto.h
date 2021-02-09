@@ -88,6 +88,12 @@ class PersistentProto {
   // Write the backing proto to disk 'now'.
   void StartWrite();
 
+  // Safely clear this proto from memory and disk. This is preferred to clearing
+  // the proto, because it ensures the proto is wiped even if called before the
+  // backing file is read from disk. In this case, the file is overwritten after
+  // it has been read.
+  void Wipe();
+
  private:
   void OnReadComplete(std::pair<ReadStatus, std::unique_ptr<T>> result);
   void OnWriteComplete(WriteStatus status);
@@ -101,6 +107,9 @@ class PersistentProto {
 
   // Whether or not a write is currently scheduled.
   bool write_is_queued_ = false;
+
+  // Whether we should immediately clear the proto after reading it.
+  bool wipe_after_reading_ = false;
 
   // Run when the cache finishes reading from disk, if provided.
   ReadCallback on_read_;

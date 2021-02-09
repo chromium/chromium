@@ -19,8 +19,6 @@
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "components/metrics/structured/structured_events.h"
-#include "components/prefs/json_pref_store.h"
-#include "components/prefs/persistent_pref_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -43,7 +41,7 @@ namespace {
 // The name hash of "TestProjectOne".
 constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
 // The name hash of "TestProjectTwo".
-constexpr uint64_t kProjectTwoHash = UINT64_C(15619026293081468407);
+constexpr uint64_t kProjectTwoHash = UINT64_C(5876808001962504629);
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
 constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
@@ -78,7 +76,6 @@ class StructuredMetricsProviderTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    storage_ = new JsonPrefStore(temp_dir_.GetPath().Append("storage.json"));
     Recorder::GetInstance()->SetUiTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
   }
@@ -124,7 +121,10 @@ class StructuredMetricsProviderTest : public testing::Test {
     Wait();
   }
 
-  bool is_initialized() { return provider_->initialized_; }
+  bool is_initialized() {
+    return provider_->init_state_ ==
+           StructuredMetricsProvider::InitState::kInitialized;
+  }
   bool is_recording_enabled() { return provider_->recording_enabled_; }
 
   void OnRecordingEnabled() { provider_->OnRecordingEnabled(); }
@@ -135,26 +135,29 @@ class StructuredMetricsProviderTest : public testing::Test {
     provider_->OnProfileAdded(path);
   }
 
-  void CommitPendingWrite() {
-    provider_->CommitPendingWriteForTest();
+  void WriteNow() {
+    provider_->WriteNowForTest();
     Wait();
   }
 
-  StructuredDataProto GetStructuredData() {
+  StructuredDataProto GetSessionData() {
     ChromeUserMetricsExtension uma_proto;
     provider_->ProvideCurrentSessionData(&uma_proto);
     return uma_proto.structured_data();
   }
 
-  // Most tests start without an existing structured_metrics.json storage file
-  // on-disk, and so will trigger a single PREF_READ_ERROR_NO_FILE metric.
-  // Expect that, and no other errors.
-  void ExpectOnlyFileReadError() {
+  StructuredDataProto GetIndependentMetrics() {
+    CHECK(provider_->HasIndependentMetrics());
+    ChromeUserMetricsExtension uma_proto;
+    provider_->ProvideIndependentMetrics(
+        base::BindOnce([](bool success) { CHECK(success); }), &uma_proto,
+        nullptr);
+    return uma_proto.structured_data();
+  }
+
+  void ExpectNoErrors() {
     histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError",
                                        0);
-    histogram_tester_.ExpectUniqueSample(
-        "UMA.StructuredMetrics.PrefReadError",
-        PersistentPrefStore::PREF_READ_ERROR_NO_FILE, 1);
   }
 
  protected:
@@ -166,7 +169,6 @@ class StructuredMetricsProviderTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   base::ScopedTempDir temp_dir_;
-  scoped_refptr<JsonPrefStore> storage_;
 };
 
 // Simple test to ensure initialization works correctly in the case of a
@@ -175,7 +177,7 @@ TEST_F(StructuredMetricsProviderTest, ProviderInitializesFromBlankSlate) {
   Init();
   EXPECT_TRUE(is_initialized());
   EXPECT_TRUE(is_recording_enabled());
-  ExpectOnlyFileReadError();
+  ExpectNoErrors();
 }
 
 // Ensure a call to OnRecordingDisabled prevents reporting.
@@ -183,8 +185,8 @@ TEST_F(StructuredMetricsProviderTest, EventsNotReportedWhenRecordingDisabled) {
   Init();
   OnRecordingDisabled();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  EXPECT_EQ(GetStructuredData().events_size(), 0);
-  ExpectOnlyFileReadError();
+  EXPECT_EQ(GetSessionData().events_size(), 0);
+  ExpectNoErrors();
 }
 
 // Ensure that, if recording is disabled part-way through initialization, the
@@ -202,7 +204,7 @@ TEST_F(StructuredMetricsProviderTest, RecordingDisabledDuringInitialization) {
   EXPECT_TRUE(is_initialized());
   EXPECT_FALSE(is_recording_enabled());
 
-  ExpectOnlyFileReadError();
+  ExpectNoErrors();
 }
 
 // Ensure that recording is disabled until explicitly enabled with a call to
@@ -218,10 +220,10 @@ TEST_F(StructuredMetricsProviderTest, RecordingDisabledByDefault) {
   OnRecordingEnabled();
   EXPECT_TRUE(is_recording_enabled());
 
-  ExpectOnlyFileReadError();
+  ExpectNoErrors();
 }
 
-TEST_F(StructuredMetricsProviderTest, DISABLED_RecordedEventAppearsInReport) {
+TEST_F(StructuredMetricsProviderTest, RecordedEventAppearsInReport) {
   Init();
 
   events::test_project_one::TestEventOne()
@@ -237,11 +239,11 @@ TEST_F(StructuredMetricsProviderTest, DISABLED_RecordedEventAppearsInReport) {
       .SetTestMetricTwo(12345)
       .Record();
 
-  EXPECT_EQ(GetStructuredData().events_size(), 3);
-  ExpectOnlyFileReadError();
+  EXPECT_EQ(GetSessionData().events_size(), 3);
+  ExpectNoErrors();
 }
 
-TEST_F(StructuredMetricsProviderTest, DISABLED_EventsReportedCorrectly) {
+TEST_F(StructuredMetricsProviderTest, EventsReportedCorrectly) {
   WriteTestingKeys();
   Init();
 
@@ -253,7 +255,7 @@ TEST_F(StructuredMetricsProviderTest, DISABLED_EventsReportedCorrectly) {
       .SetTestMetricThree(kValueTwo)
       .Record();
 
-  const auto data = GetStructuredData();
+  const auto data = GetSessionData();
   ASSERT_EQ(data.events_size(), 2);
 
   {  // First event
@@ -298,8 +300,7 @@ TEST_F(StructuredMetricsProviderTest, DISABLED_EventsReportedCorrectly) {
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.PrefReadError", 0);
 }
 
-TEST_F(StructuredMetricsProviderTest,
-       DISABLED_EventsWithinProjectReportedWithSameID) {
+TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
   WriteTestingKeys();
   Init();
 
@@ -307,7 +308,7 @@ TEST_F(StructuredMetricsProviderTest,
   events::test_project_two::TestEventTwo().Record();
   events::test_project_two::TestEventThree().Record();
 
-  const auto data = GetStructuredData();
+  const auto data = GetSessionData();
   ASSERT_EQ(data.events_size(), 3);
 
   const auto& event_one = data.events(0);
@@ -331,44 +332,43 @@ TEST_F(StructuredMetricsProviderTest,
 
 // Test that a call to ProvideCurrentSessionData clears the provided events from
 // the cache, and a subsequent call does not return those events again.
-TEST_F(StructuredMetricsProviderTest, DISABLED_EventsClearedAfterReport) {
+TEST_F(StructuredMetricsProviderTest, EventsClearedAfterReport) {
   Init();
 
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   events::test_project_one::TestEventOne().SetTestMetricTwo(2).Record();
   // Should provide both the previous events.
-  EXPECT_EQ(GetStructuredData().events_size(), 2);
+  EXPECT_EQ(GetSessionData().events_size(), 2);
 
   // But the previous events shouldn't appear in the second report.
-  EXPECT_EQ(GetStructuredData().events_size(), 0);
+  EXPECT_EQ(GetSessionData().events_size(), 0);
 
   events::test_project_one::TestEventOne().SetTestMetricTwo(3).Record();
   // The third request should only contain the third event.
-  EXPECT_EQ(GetStructuredData().events_size(), 1);
+  EXPECT_EQ(GetSessionData().events_size(), 1);
 
-  ExpectOnlyFileReadError();
+  ExpectNoErrors();
 }
 
 // Test that events recorded in one session are correctly persisted and are
 // uploaded in the first report from a subsequent session.
-TEST_F(StructuredMetricsProviderTest,
-       DISABLED_EventsFromPreviousSessionAreReported) {
+TEST_F(StructuredMetricsProviderTest, EventsFromPreviousSessionAreReported) {
   // Start first session and record one event.
   Init();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1234).Record();
 
   // Write events to disk, then destroy the provider.
-  CommitPendingWrite();
+  WriteNow();
   provider_.reset();
 
   // Start a second session and ensure the event is reported.
   Init();
-  const auto data = GetStructuredData();
+  const auto data = GetSessionData();
   ASSERT_EQ(data.events_size(), 1);
   ASSERT_EQ(data.events(0).metrics_size(), 1);
   EXPECT_EQ(data.events(0).metrics(0).value_int64(), 1234);
 
-  ExpectOnlyFileReadError();
+  ExpectNoErrors();
 }
 
 // Test that events reported at various stages before and during initialization
@@ -386,9 +386,9 @@ TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeInitialization) {
   // done, because the provider hasn't finished loading the keys from disk.
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   Wait();
-  EXPECT_EQ(GetStructuredData().events_size(), 0);
+  EXPECT_EQ(GetSessionData().events_size(), 0);
 
-  ExpectOnlyFileReadError();
+  ExpectNoErrors();
 }
 
 // Ensure a call to OnRecordingDisabled not only prevents the reporting of new
@@ -401,14 +401,14 @@ TEST_F(StructuredMetricsProviderTest,
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingDisabled();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  EXPECT_EQ(GetStructuredData().events_size(), 0);
+  EXPECT_EQ(GetSessionData().events_size(), 0);
 
-  ExpectOnlyFileReadError();
+  ExpectNoErrors();
 }
 
 // Ensure that recording and reporting is re-enabled after recording is disabled
 // and then enabled again.
-TEST_F(StructuredMetricsProviderTest, DISABLED_ReportingResumesWhenEnabled) {
+TEST_F(StructuredMetricsProviderTest, ReportingResumesWhenEnabled) {
   Init();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
@@ -418,9 +418,9 @@ TEST_F(StructuredMetricsProviderTest, DISABLED_ReportingResumesWhenEnabled) {
   OnRecordingEnabled();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   events::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  EXPECT_EQ(GetStructuredData().events_size(), 2);
+  EXPECT_EQ(GetSessionData().events_size(), 2);
 
-  ExpectOnlyFileReadError();
+  ExpectNoErrors();
 }
 
 // Ensure that a call to ProvideCurrentSessionData before initialization
@@ -428,11 +428,11 @@ TEST_F(StructuredMetricsProviderTest, DISABLED_ReportingResumesWhenEnabled) {
 TEST_F(StructuredMetricsProviderTest,
        ReportsNothingBeforeInitializationComplete) {
   provider_ = std::make_unique<StructuredMetricsProvider>();
-  EXPECT_EQ(GetStructuredData().events_size(), 0);
+  EXPECT_EQ(GetSessionData().events_size(), 0);
   OnRecordingEnabled();
-  EXPECT_EQ(GetStructuredData().events_size(), 0);
+  EXPECT_EQ(GetSessionData().events_size(), 0);
   OnProfileAdded(TempDirPath());
-  EXPECT_EQ(GetStructuredData().events_size(), 0);
+  EXPECT_EQ(GetSessionData().events_size(), 0);
 }
 
 }  // namespace structured

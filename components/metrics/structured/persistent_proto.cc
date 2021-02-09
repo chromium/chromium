@@ -99,6 +99,13 @@ void PersistentProto<T>::OnReadComplete(
     QueueWrite();
   }
 
+  if (wipe_after_reading_) {
+    proto_.reset();
+    proto_ = std::make_unique<T>();
+    QueueWrite();
+    wipe_after_reading_ = false;
+  }
+
   std::move(on_read_).Run(result.first);
 }
 
@@ -138,6 +145,17 @@ void PersistentProto<T>::StartWrite() {
 template <class T>
 void PersistentProto<T>::OnWriteComplete(const WriteStatus status) {
   on_write_.Run(status);
+}
+
+template <class T>
+void PersistentProto<T>::Wipe() {
+  if (proto_) {
+    proto_.reset();
+    proto_ = std::make_unique<T>();
+    QueueWrite();
+  } else {
+    wipe_after_reading_ = true;
+  }
 }
 
 // A list of all types that the PersistentProto can be used with.

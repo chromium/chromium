@@ -46,6 +46,7 @@ class KeyDataTest;
 class KeyData {
  public:
   KeyData(const base::FilePath& path,
+          const base::TimeDelta& save_delay,
           base::OnceCallback<void()> on_initialized);
   ~KeyData();
 

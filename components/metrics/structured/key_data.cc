@@ -27,9 +27,6 @@ constexpr size_t kKeySize = 32;
 // The default maximum number of days before rotating keys.
 constexpr int kDefaultRotationPeriod = 90;
 
-// The delay period for the PersistentProto.
-constexpr int kSaveDelayMs = 1000;
-
 // Generates a key, which is the string representation of
 // base::UnguessableToken, and is of size |kKeySize| bytes.
 std::string GenerateKey() {
@@ -45,11 +42,12 @@ std::string HashToHex(const uint64_t hash) {
 }  // namespace
 
 KeyData::KeyData(const base::FilePath& path,
+                 const base::TimeDelta& save_delay,
                  base::OnceCallback<void()> on_initialized)
     : on_initialized_(std::move(on_initialized)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   proto_ = std::make_unique<PersistentProto<KeyDataProto>>(
-      path, base::TimeDelta::FromMilliseconds(kSaveDelayMs),
+      path, save_delay,
       base::BindOnce(&KeyData::OnRead, weak_factory_.GetWeakPtr()),
       base::BindRepeating(&KeyData::OnWrite, weak_factory_.GetWeakPtr()));
 }
@@ -69,6 +67,7 @@ void KeyData::OnRead(const ReadStatus status) {
       LogInternalError(StructuredMetricsError::kKeyParseError);
       break;
   }
+
   std::move(on_initialized_).Run();
 }
 
