@@ -22,25 +22,14 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/notify_watcher_mac.h"
-#include "net/dns/public/dns_protocol.h"
 #include "net/dns/serial_worker.h"
 
 #if defined(OS_MAC)
 #include "net/dns/dns_config_watcher_mac.h"
-#endif
-
-#if defined(OS_ANDROID)
-#include <sys/system_properties.h>
-#include "base/android/build_info.h"
-#include "net/android/network_library.h"
-#include "net/base/address_tracker_linux.h"
-#include "net/base/network_change_notifier.h"
-#include "net/base/network_interfaces.h"
 #endif
 
 namespace net {
@@ -49,13 +38,8 @@ namespace internal {
 
 namespace {
 
-#if defined(OS_ANDROID)
-const base::FilePath::CharType kFilePathHosts[] =
-    FILE_PATH_LITERAL("/system/etc/hosts");
-#else
 const base::FilePath::CharType kFilePathHosts[] =
     FILE_PATH_LITERAL("/etc/hosts");
-#endif
 
 #if defined(OS_IOS)
 // There is no public API to watch the DNS configuration on iOS.
@@ -68,39 +52,11 @@ class DnsConfigWatcher {
   }
 };
 
-#elif defined(OS_ANDROID)
-
-// On Android, assume DNS config may have changed on every network change.
-class DnsConfigWatcher : public NetworkChangeNotifier::NetworkChangeObserver {
- public:
-  DnsConfigWatcher() { NetworkChangeNotifier::AddNetworkChangeObserver(this); }
-
-  ~DnsConfigWatcher() override {
-    NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  }
-
-  using CallbackType = base::RepeatingCallback<void(bool succeeded)>;
-
-  bool Watch(const CallbackType& callback) {
-    callback_ = callback;
-    return true;
-  }
-
-  // NetworkChangeNotifier::NetworkChangeObserver implementation:
-  void OnNetworkChanged(NetworkChangeNotifier::ConnectionType type) override {
-    if (!callback_.is_null() && type != NetworkChangeNotifier::CONNECTION_NONE)
-      callback_.Run(true);
-  }
-
- private:
-  CallbackType callback_;
-};
-
 #elif defined(OS_MAC)
 
 // DnsConfigWatcher for OS_MAC is in dns_config_watcher_mac.{hh,cc}.
 
-#else  // !defined(OS_IOS) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#else  // !defined(OS_IOS) && !defined(OS_MAC)
 
 #ifndef _PATH_RESCONF  // Normally defined in <resolv.h>
 #define _PATH_RESCONF "/etc/resolv.conf"
@@ -131,25 +87,10 @@ class DnsConfigWatcher {
 };
 #endif  // defined(OS_IOS)
 
-#if defined(OS_ANDROID)
-bool IsVpnPresent() {
-  NetworkInterfaceList networks;
-  if (!GetNetworkList(&networks, INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES))
-    return false;
-
-  for (NetworkInterface network : networks) {
-    if (AddressTrackerLinux::IsTunnelInterfaceName(network.name.c_str()))
-      return true;
-  }
-  return false;
-}
-#endif  // defined(OS_ANDROID)
-
 base::Optional<DnsConfig> ReadDnsConfig() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-#if !defined(OS_ANDROID)
   base::Optional<DnsConfig> dns_config;
 // TODO(fuchsia): Use res_ninit() when it's implemented on Fuchsia.
 #if defined(OS_OPENBSD) || defined(OS_FUCHSIA)
@@ -183,53 +124,6 @@ base::Optional<DnsConfig> ReadDnsConfig() {
   // Override |fallback_period| value to match default setting on Windows.
   dns_config->fallback_period = kDnsDefaultFallbackPeriod;
   return dns_config;
-#else  // defined(OS_ANDROID)
-  DnsConfig dns_config;
-
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    if (net::android::GetDnsServers(&dns_config.nameservers,
-                                    &dns_config.dns_over_tls_active,
-                                    &dns_config.dns_over_tls_hostname)) {
-      return dns_config;
-    }
-    return base::nullopt;
-  }
-
-  if (IsVpnPresent()) {
-    dns_config.unhandled_options = true;
-    return dns_config;
-  }
-
-  // NOTE(pauljensen): __system_property_get and the net.dns1/2 properties are
-  // not supported APIs, but they're only read on pre-Marshmallow Android which
-  // was released years ago and isn't changing.
-  char property_value[PROP_VALUE_MAX];
-  __system_property_get("net.dns1", property_value);
-  std::string dns1_string = property_value;
-  __system_property_get("net.dns2", property_value);
-  std::string dns2_string = property_value;
-  if (dns1_string.empty() && dns2_string.empty())
-    return base::nullopt;
-
-  IPAddress dns1_address;
-  IPAddress dns2_address;
-  bool parsed1 = dns1_address.AssignFromIPLiteral(dns1_string);
-  bool parsed2 = dns2_address.AssignFromIPLiteral(dns2_string);
-  if (!parsed1 && !parsed2)
-    return base::nullopt;
-
-  if (parsed1) {
-    IPEndPoint dns1(dns1_address, dns_protocol::kDefaultPort);
-    dns_config.nameservers.push_back(dns1);
-  }
-  if (parsed2) {
-    IPEndPoint dns2(dns2_address, dns_protocol::kDefaultPort);
-    dns_config.nameservers.push_back(dns2);
-  }
-
-  return dns_config;
-#endif  // !defined(OS_ANDROID)
 }
 
 }  // namespace
@@ -249,9 +143,8 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
       LOG(ERROR) << "DNS config watch failed to start.";
       success = false;
     }
-// Hosts file should never change on Android or iOS (and watching it on Android
-// is problematic; see http://crbug.com/600442), so don't watch it there.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+// Hosts file should never change on iOS, so don't watch it there.
+#if !defined(OS_IOS)
     if (!hosts_watcher_.Watch(
             base::FilePath(kFilePathHosts),
             base::FilePathWatcher::Type::kNonRecursive,
@@ -260,21 +153,21 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
       LOG(ERROR) << "DNS hosts watch failed to start.";
       success = false;
     }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_IOS)
     return success;
   }
 
  private:
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_IOS)
   void OnHostsFilePathWatcherChange(const base::FilePath& path, bool error) {
     OnHostsChanged(!error);
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_IOS)
 
   DnsConfigWatcher config_watcher_;
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_IOS)
   base::FilePathWatcher hosts_watcher_;
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_IOS)
 
   DISALLOW_COPY_AND_ASSIGN(Watcher);
 };
@@ -348,7 +241,6 @@ void DnsConfigServicePosix::CreateReader() {
   config_reader_ = base::MakeRefCounted<ConfigReader>(*this);
 }
 
-#if !defined(OS_ANDROID)
 base::Optional<DnsConfig> ConvertResStateToDnsConfig(
     const struct __res_state& res) {
   DnsConfig dns_config;
@@ -452,8 +344,6 @@ base::Optional<DnsConfig> ConvertResStateToDnsConfig(
   }
   return dns_config;
 }
-
-#endif  // !defined(OS_ANDROID)
 
 }  // namespace internal
 

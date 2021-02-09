@@ -40,8 +40,6 @@
 
 namespace net {
 
-#if !defined(OS_ANDROID)
-
 namespace {
 
 // MAXNS is normally 3, but let's test 4 if possible.
@@ -218,55 +216,5 @@ TEST(DnsConfigServicePosixTest, DestroyOnDifferentThread) {
 
 }  // namespace
 
-#else  // OS_ANDROID
-
-namespace internal {
-
-class DnsConfigServicePosixTest : public testing::Test {
- public:
-  DnsConfigServicePosixTest() : seen_config_(false) {}
-  ~DnsConfigServicePosixTest() override {}
-
-  void OnConfigChanged(const DnsConfig& config) {
-    EXPECT_TRUE(config.IsValid());
-    seen_config_ = true;
-    real_config_ = config;
-  }
-
-  void SetUp() override {
-    service_.reset(new DnsConfigServicePosix());
-  }
-
-  void TearDown() override { ASSERT_TRUE(base::DeleteFile(temp_file_)); }
-
-  base::test::TaskEnvironment task_environment_;
-  bool seen_config_;
-  base::FilePath temp_file_;
-  std::unique_ptr<DnsConfigServicePosix> service_;
-  DnsConfig real_config_;
-};
-
-// Regression test for https://crbug.com/704662.
-TEST_F(DnsConfigServicePosixTest, ChangeConfigMultipleTimes) {
-  service_->WatchConfig(base::BindRepeating(
-      &DnsConfigServicePosixTest::OnConfigChanged, base::Unretained(this)));
-  task_environment_.RunUntilIdle();
-
-  for (int i = 0; i < 5; i++) {
-    service_->RefreshConfig();
-    // Wait for config read after the change. OnConfigChanged() will only be
-    // called if the new config is different from the old one, so this can't be
-    // ExpectChange().
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
-    task_environment_.RunUntilIdle();
-  }
-
-  // There should never be more than 4 nameservers in a real config.
-  EXPECT_GT(5u, real_config_.nameservers.size());
-}
-
-}  // namespace internal
-
-#endif  // OS_ANDROID
 
 }  // namespace net

@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/base/ip_endpoint.h"
@@ -95,6 +96,10 @@ NET_EXPORT_PRIVATE base::Optional<int32_t> GetWifiSignalLevel();
 NET_EXPORT_PRIVATE bool GetDnsServers(std::vector<IPEndPoint>* dns_servers,
                                       bool* dns_over_tls_active,
                                       std::string* dns_over_tls_hostname);
+using DnsServerGetter =
+    base::RepeatingCallback<bool(std::vector<IPEndPoint>* dns_servers,
+                                 bool* dns_over_tls_active,
+                                 std::string* dns_over_tls_hostname)>;
 
 // Reports to the framework that the current default network appears to have
 // connectivity issues. This may serve as a signal for the OS to consider
