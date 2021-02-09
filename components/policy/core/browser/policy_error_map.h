@@ -79,6 +79,9 @@ class POLICY_EXPORT PolicyErrorMap {
                 const std::string& error_path,
                 const std::string& message);
 
+  // Returns true if there is any error for |policy|.
+  bool HasError(const std::string& policy);
+
   // Returns all the error messages stored for |policy|, separated by a white
   // space. Returns an empty string if there are no errors for |policy|.
   base::string16 GetErrors(const std::string& policy);

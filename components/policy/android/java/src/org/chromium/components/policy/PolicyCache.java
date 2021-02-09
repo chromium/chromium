@@ -222,4 +222,9 @@ public class PolicyCache {
     static void resetForTesting() {
         sPolicyCache = null;
     }
+
+    @VisibleForTesting
+    public void setReadableForTesting(boolean readable) {
+        mReadable = readable;
+    }
 }

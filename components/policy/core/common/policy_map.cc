@@ -155,10 +155,14 @@ void PolicyMap::Entry::ClearConflicts() {
   ClearMessage(MessageType::kWarning, IDS_POLICY_CONFLICT_DIFF_VALUE);
 }
 
+bool PolicyMap::Entry::HasMessage(MessageType type) const {
+  return message_ids_.find(type) != message_ids_.end();
+}
+
 base::string16 PolicyMap::Entry::GetLocalizedMessages(
     MessageType type,
     L10nLookupFunction lookup) const {
-  if (message_ids_.find(type) == message_ids_.end()) {
+  if (!HasMessage(type)) {
     return base::string16();
   }
   return GetLocalizedString(lookup, message_ids_.at(type));

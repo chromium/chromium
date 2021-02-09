@@ -188,6 +188,18 @@ void PolicyErrorMap::AddError(const std::string& policy,
                                                           message));
 }
 
+bool PolicyErrorMap::HasError(const std::string& policy) {
+  if (IsReady()) {
+    CheckReadyAndConvert();
+    return map_.find(policy) != map_.end();
+  } else {
+    return std::find_if(pending_.begin(), pending_.end(),
+                        [policy](const auto& error) {
+                          return error->policy_name() == policy;
+                        }) != pending_.end();
+  }
+}
+
 base::string16 PolicyErrorMap::GetErrors(const std::string& policy) {
   CheckReadyAndConvert();
   std::pair<const_iterator, const_iterator> range = map_.equal_range(policy);

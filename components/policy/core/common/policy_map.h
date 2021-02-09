@@ -127,6 +127,9 @@ class POLICY_EXPORT PolicyMap {
     typedef base::RepeatingCallback<base::string16(int message_id)>
         L10nLookupFunction;
 
+    // Returns true if there is any message for |type|.
+    bool HasMessage(MessageType type) const;
+
     // Returns localized messages as UTF-16 separated with LF characters. The
     // messages are organized according to message types (Warning, Error, etc).
     base::string16 GetLocalizedMessages(MessageType type,
