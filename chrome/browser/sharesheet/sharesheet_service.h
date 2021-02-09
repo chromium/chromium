@@ -79,8 +79,6 @@ class SharesheetService : public KeyedService {
   Profile* GetProfile();
   const gfx::VectorIcon* GetVectorIcon(const base::string16& display_name);
 
-  static void SetSelectedAppForTesting(const base::string16& target_name);
-
  private:
   using SharesheetServiceIconLoaderCallback =
       base::OnceCallback<void(std::vector<TargetInfo> targets)>;
@@ -89,9 +87,6 @@ class SharesheetService : public KeyedService {
                     std::vector<TargetInfo> targets,
                     size_t index,
                     SharesheetServiceIconLoaderCallback callback);
-
-  void LaunchApp(const base::string16& target_name,
-                 apps::mojom::IntentPtr intent);
 
   void OnIconLoaded(std::vector<apps::IntentLaunchInfo> intent_launch_info,
                     std::vector<TargetInfo> targets,
