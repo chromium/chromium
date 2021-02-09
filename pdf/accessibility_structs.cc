@@ -172,4 +172,19 @@ AccessibilityButtonInfo::AccessibilityButtonInfo(
 
 AccessibilityButtonInfo::~AccessibilityButtonInfo() = default;
 
+AccessibilityFormFieldInfo::AccessibilityFormFieldInfo() = default;
+
+AccessibilityFormFieldInfo::AccessibilityFormFieldInfo(
+    const std::vector<AccessibilityTextFieldInfo>& text_fields,
+    const std::vector<AccessibilityChoiceFieldInfo>& choice_fields,
+    const std::vector<AccessibilityButtonInfo>& buttons)
+    : text_fields(text_fields),
+      choice_fields(choice_fields),
+      buttons(buttons) {}
+
+AccessibilityFormFieldInfo::AccessibilityFormFieldInfo(
+    const AccessibilityFormFieldInfo& other) = default;
+
+AccessibilityFormFieldInfo::~AccessibilityFormFieldInfo() = default;
+
 }  // namespace chrome_pdf

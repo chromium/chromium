@@ -307,6 +307,20 @@ struct AccessibilityButtonInfo {
   gfx::RectF bounds;
 };
 
+struct AccessibilityFormFieldInfo {
+  AccessibilityFormFieldInfo();
+  AccessibilityFormFieldInfo(
+      const std::vector<AccessibilityTextFieldInfo>& text_fields,
+      const std::vector<AccessibilityChoiceFieldInfo>& choice_fields,
+      const std::vector<AccessibilityButtonInfo>& buttons);
+  AccessibilityFormFieldInfo(const AccessibilityFormFieldInfo& other);
+  ~AccessibilityFormFieldInfo();
+
+  std::vector<AccessibilityTextFieldInfo> text_fields;
+  std::vector<AccessibilityChoiceFieldInfo> choice_fields;
+  std::vector<AccessibilityButtonInfo> buttons;
+};
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_ACCESSIBILITY_STRUCTS_H_

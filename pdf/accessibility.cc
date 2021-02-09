@@ -162,29 +162,62 @@ std::vector<AccessibilityTextFieldInfo> GetAccessibilityTextFieldInfo(
   return text_field_infos;
 }
 
-std::vector<pp::PDF::PrivateAccessibilityTextFieldInfo>
-ToPrivateAccessibilityTextFieldInfo(
-    const std::vector<AccessibilityTextFieldInfo>& text_field_infos) {
-  std::vector<pp::PDF::PrivateAccessibilityTextFieldInfo> pp_text_field_infos;
-  pp_text_field_infos.reserve(text_field_infos.size());
-  for (const auto& text_field_info : text_field_infos) {
-    pp_text_field_infos.push_back(
+pp::PDF::PrivateAccessibilityFormFieldInfo ToPrivateAccessibilityFormFieldInfo(
+    const AccessibilityFormFieldInfo& form_field_info) {
+  pp::PDF::PrivateAccessibilityFormFieldInfo pp_form_field_info;
+
+  pp_form_field_info.text_fields.reserve(form_field_info.text_fields.size());
+  for (const auto& text_field_info : form_field_info.text_fields) {
+    pp_form_field_info.text_fields.push_back(
         {text_field_info.name, text_field_info.value,
          text_field_info.is_read_only, text_field_info.is_required,
          text_field_info.is_password, text_field_info.index_in_page,
          text_field_info.text_run_index,
          PPFloatRectFromRectF(text_field_info.bounds)});
   }
-  return pp_text_field_infos;
+
+  pp_form_field_info.choice_fields.reserve(
+      form_field_info.choice_fields.size());
+  for (const auto& choice_field_info : form_field_info.choice_fields) {
+    std::vector<pp::PDF::PrivateAccessibilityChoiceFieldOptionInfo>
+        pp_choice_field_option_infos;
+    pp_choice_field_option_infos.reserve(choice_field_info.options.size());
+    for (const auto& option : choice_field_info.options) {
+      pp_choice_field_option_infos.push_back(
+          {option.name, option.is_selected,
+           PPFloatRectFromRectF(option.bounds)});
+    }
+    pp_form_field_info.choice_fields.push_back(
+        {choice_field_info.name, pp_choice_field_option_infos,
+         static_cast<PP_PrivateChoiceFieldType>(choice_field_info.type),
+         choice_field_info.is_read_only, choice_field_info.is_multi_select,
+         choice_field_info.has_editable_text_box,
+         choice_field_info.index_in_page, choice_field_info.text_run_index,
+         PPFloatRectFromRectF(choice_field_info.bounds)});
+  }
+
+  pp_form_field_info.buttons.reserve(form_field_info.buttons.size());
+  for (const auto& button_info : form_field_info.buttons) {
+    pp_form_field_info.buttons.push_back(
+        {button_info.name, button_info.value,
+         static_cast<PP_PrivateButtonType>(button_info.type),
+         button_info.is_read_only, button_info.is_checked,
+         button_info.control_count, button_info.control_index,
+         button_info.index_in_page, button_info.text_run_index,
+         PPFloatRectFromRectF(button_info.bounds)});
+  }
+
+  return pp_form_field_info;
 }
 
-void GetAccessibilityFormFieldInfo(
+AccessibilityFormFieldInfo GetAccessibilityFormFieldInfo(
     PDFEngine* engine,
     int32_t page_index,
-    uint32_t text_run_count,
-    pp::PDF::PrivateAccessibilityFormFieldInfo* form_fields) {
-  form_fields->text_fields = ToPrivateAccessibilityTextFieldInfo(
-      GetAccessibilityTextFieldInfo(engine, page_index, text_run_count));
+    uint32_t text_run_count) {
+  AccessibilityFormFieldInfo form_field_info;
+  form_field_info.text_fields =
+      GetAccessibilityTextFieldInfo(engine, page_index, text_run_count);
+  return form_field_info;
 }
 
 std::vector<pp::PDF::PrivateAccessibilityLinkInfo>
@@ -314,8 +347,9 @@ bool GetAccessibilityInfo(
       GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count));
   page_objects->highlights = ToPrivateAccessibilityHighlightInfo(
       GetAccessibilityHighlightInfo(engine, page_index, text_runs));
-  GetAccessibilityFormFieldInfo(engine, page_index, page_info.text_run_count,
-                                &page_objects->form_fields);
+  page_objects->form_fields =
+      ToPrivateAccessibilityFormFieldInfo(GetAccessibilityFormFieldInfo(
+          engine, page_index, page_info.text_run_count));
   return true;
 }
 
