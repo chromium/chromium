@@ -8,7 +8,7 @@ cr.define('multidevice_setup', function() {
    * related logic.
    * @interface
    */
-  class MultiDeviceSetupDelegate {
+  /* #export */ class MultiDeviceSetupDelegate {
     /** @return {boolean} */
     isPasswordRequiredToSetHost() {}
 

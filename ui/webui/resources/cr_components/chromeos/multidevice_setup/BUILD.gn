@@ -99,62 +99,79 @@ js_library("ui_page_container_behavior") {
 
 # Polymer 3 files
 
-# TODO: Uncomment as the Polymer3 migration makes progress.
-# js_type_check("closure_compile_module") {
-#   is_polymer3 = true
-#   deps = [
-#     ":button_bar.m",
-#     ":fake_mojo_service.m",
-#     ":mojo_api.m",
-#     ":multidevice_setup.m",
-#     ":multidevice_setup_browser_proxy.m",
-#     ":multidevice_setup_delegate.m",
-#     ":setup_succeeded_page.m",
-#     ":start_setup_page.m",
-#     ":ui_page_container_behavior.m",
-#     "//ui/webui/resources/js:web_ui_listener_behavior.m",
-#   ]
-# }
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":button_bar.m",
+    ":fake_mojo_service.m",
+    ":mojo_api.m",
+    ":multidevice_setup.m",
+    ":multidevice_setup_browser_proxy.m",
+    ":multidevice_setup_delegate.m",
+    ":setup_succeeded_page.m",
+    ":start_setup_page.m",
+    ":ui_page_container_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+}
 
 js_library("button_bar.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/button_bar.m.js" ]
-  deps = []
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
   extra_deps = [ ":button_bar_module" ]
 }
 
 js_library("fake_mojo_service.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/fake_mojo_service.m.js" ]
-  deps = []
+  deps = [
+    "//chromeos/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
 js_library("mojo_api.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/mojo_api.m.js" ]
-  deps = []
+  deps = [
+    "//chromeos/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
 js_library("multidevice_setup.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup.m.js" ]
-  deps = []
+  deps = [
+    ":button_bar.m",
+    ":fake_mojo_service.m",
+    ":mojo_api.m",
+    ":multidevice_setup_delegate.m",
+    ":password_page.m",
+    ":setup_succeeded_page.m",
+    ":start_setup_page.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
   extra_deps = [ ":multidevice_setup_module" ]
 }
 
 js_library("multidevice_setup_browser_proxy.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.m.js" ]
-  deps = []
+  deps = [ "//ui/webui/resources/js:cr.m" ]
   extra_deps = [ ":modulize" ]
 }
 
 js_library("multidevice_setup_delegate.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.m.js" ]
-  deps = []
+  deps = [ "//ui/webui/resources/js:cr.m" ]
   extra_deps = [ ":modulize" ]
 }
 
 js_library("password_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/password_page.m.js" ]
-  deps = []
+  deps = [ ":multidevice_setup_browser_proxy.m" ]
   extra_deps = [ ":password_page_module" ]
   externs_list = chrome_extension_public_externs +
                  [ "$externs_path/quick_unlock_private.js" ]
@@ -163,19 +180,29 @@ js_library("password_page.m") {
 
 js_library("setup_succeeded_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/setup_succeeded_page.m.js" ]
-  deps = []
+  deps = [
+    ":multidevice_setup_browser_proxy.m",
+    ":ui_page_container_behavior.m",
+  ]
   extra_deps = [ ":setup_succeeded_page_module" ]
 }
 
 js_library("start_setup_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/start_setup_page.m.js" ]
-  deps = []
+  deps = [
+    ":multidevice_setup_delegate.m",
+    ":ui_page_container_behavior.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
   extra_deps = [ ":start_setup_page_module" ]
 }
 
 js_library("ui_page_container_behavior.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/ui_page_container_behavior.m.js" ]
-  deps = []
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
