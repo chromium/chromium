@@ -53,6 +53,7 @@ preprocess_if_expr("preprocess_src") {
     "plural_string_proxy.js",
     "promise_resolver.js",
     "test_loader.js",
+    "test_loader_util.js",
     "util.js",
     "webui_resource_test.js",
   ]

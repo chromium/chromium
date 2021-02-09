@@ -29,6 +29,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       customize_themes_factory_receiver_(this) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIProfileCustomizationHost);
+  webui::SetJSModuleDefaults(source);
   source->SetDefaultResource(IDR_PROFILE_CUSTOMIZATION_HTML);
   source->AddResourcePath("profile_customization_app.js",
                           IDR_PROFILE_CUSTOMIZATION_APP_JS);
@@ -38,8 +39,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
 
   // Localized strings.
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"profileCustomizationDoneLabel",
        IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL},
@@ -63,14 +62,6 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
           .GetProfileAttributesWithPath(profile->GetPath());
   source->AddString("profileName",
                     base::UTF16ToUTF8(entry->GetLocalProfileName()));
-
-  // Resources for testing.
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
-  source->DisableTrustedTypesCSP();
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
   content::WebUIDataSource::Add(profile, source);
 }

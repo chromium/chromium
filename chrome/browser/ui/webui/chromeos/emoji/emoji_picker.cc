@@ -37,10 +37,6 @@ EmojiPicker::EmojiPicker(content::WebUI* web_ui)
       base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
       IDR_EMOJI_PICKER_INDEX_HTML);
 
-  html_source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  html_source->AddResourcePath("test_loader.html",
-                               IDR_WEBUI_HTML_TEST_LOADER_HTML);
-
   // Attach message handler to handle emoji click events.
   web_ui->AddMessageHandler(std::make_unique<EmojiHandler>());
 

@@ -3,18 +3,12 @@
 // found in the LICENSE file.
 
 import {initializeViews} from './bluetooth_internals.js';
+import {loadTestModule} from './test_loader_util.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Using a query of "test" provides a hook for the test suite to perform
+  // Using a query of "module" provides a hook for the test suite to perform
   // setup actions.
-  const params = new URLSearchParams(window.location.search);
-  const test = params.get('test');
-  if (test) {
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src = `chrome://test/bluetooth_internals/${test}`;
-    document.body.appendChild(script);
-  } else {
+  if (!loadTestModule()) {
     initializeViews();
   }
 });

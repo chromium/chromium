@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/reauth_util.h"
 #include "chrome/browser/ui/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_reauth_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -62,22 +63,13 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISigninReauthHost);
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
+  webui::SetJSModuleDefaults(source);
   source->SetDefaultResource(IDR_SIGNIN_REAUTH_HTML);
   source->AddResourcePath("signin_reauth_app.js", IDR_SIGNIN_REAUTH_APP_JS);
   source->AddResourcePath("signin_reauth_browser_proxy.js",
                           IDR_SIGNIN_REAUTH_BROWSER_PROXY_JS);
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
-
-  // Resources for testing.
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
-  source->DisableTrustedTypesCSP();
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
   // Resources for the account passwords reauth.
   source->AddResourcePath(

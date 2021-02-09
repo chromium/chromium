@@ -22,10 +22,15 @@ struct ResourcePath {
   int id;
 };
 
-// Performs common setup steps for |source|, assuming it is using Polymer 3,
-// by adding all resources, setting the default resource, setting up i18n,
-// and ensuring that tests work correctly by updating the CSP and adding the
-// test loader files.
+// Performs common setup steps for a |source| using JS modules: enable i18n
+// string replacements, adding test resources, and updating CSP/trusted types to
+// allow tests to work.
+// UIs that don't have a dedicated grd file should generally use this utility.
+void SetJSModuleDefaults(content::WebUIDataSource* source);
+
+// Calls SetJSModuleDefaults(), and additionally adds all resources in the
+// resource map to |source| and sets |default_resource| as the default resource.
+// UIs that have a dedicated grd file should generally use this utility.
 void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const GritResourceMap> resources,
                           int default_resource);

@@ -35,6 +35,7 @@
 #include "services/network/expect_ct_reporter.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 
 using content::BrowserThread;
 
@@ -50,6 +51,8 @@ content::WebUIDataSource* CreateNetInternalsHTMLSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
+  source->AddResourcePath("test_loader_util.js",
+                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->DisableTrustedTypesCSP();
   return source;
 }

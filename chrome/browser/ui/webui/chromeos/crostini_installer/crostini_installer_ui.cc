@@ -139,10 +139,7 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUICrostiniInstallerHost);
   auto* profile = Profile::FromWebUI(web_ui);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
-  source->DisableTrustedTypesCSP();
+  webui::SetJSModuleDefaults(source);
   AddStringResources(source);
   source->AddBoolean(
       "diskResizingEnabled",
@@ -157,13 +154,9 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
                           IDR_CROSTINI_INSTALLER_MOJO_LITE_JS);
   source->AddResourcePath("crostini_types.mojom-lite.js",
                           IDR_CROSTINI_INSTALLER_TYPES_MOJO_LITE_JS);
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("images/linux_illustration.png",
                           IDR_LINUX_ILLUSTRATION);
   source->SetDefaultResource(IDR_CROSTINI_INSTALLER_INDEX_HTML);
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
 
   content::WebUIDataSource::Add(profile, source);
 }

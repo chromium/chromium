@@ -175,11 +175,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   // Set up the chrome://set-time source.
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISetTimeHost);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
-  source->DisableTrustedTypesCSP();
-
+  webui::SetJSModuleDefaults(source);
   static constexpr webui::LocalizedString kStrings[] = {
       {"setTimeTitle", IDS_SET_TIME_TITLE},
       {"prompt", IDS_SET_TIME_PROMPT},
@@ -202,16 +198,11 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   values.SetDouble("buildTime", base::GetBuildTime().ToJsTime());
 
   source->AddLocalizedStrings(values);
-  source->UseStringsJs();
-  source->EnableReplaceI18nInJS();
 
   source->AddResourcePath("set_time_browser_proxy.js",
                           IDR_SET_TIME_BROWSER_PROXY_JS);
   source->AddResourcePath("set_time_dialog.js", IDR_SET_TIME_DIALOG_JS);
   source->SetDefaultResource(IDR_SET_TIME_HTML);
-
-  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -81,13 +82,7 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
       chrome::kChromeUIAccountMigrationWelcomeHost);
-  html_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
-  html_source->DisableTrustedTypesCSP();
-
-  html_source->UseStringsJs();
-  html_source->EnableReplaceI18nInJS();
+  webui::SetJSModuleDefaults(html_source);
 
   // Add localized strings.
   html_source->AddLocalizedString("welcomePageTitle",
@@ -117,9 +112,6 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
   html_source->AddResourcePath("googleg.svg",
                                IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG);
 #endif
-  html_source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
-  html_source->AddResourcePath("test_loader.html",
-                               IDR_WEBUI_HTML_TEST_LOADER_HTML);
   html_source->SetDefaultResource(IDR_ACCOUNT_MIGRATION_WELCOME_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<MigrationMessageHandler>(

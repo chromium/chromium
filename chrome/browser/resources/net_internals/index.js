@@ -3,15 +3,9 @@
 // found in the LICENSE file.
 
 import {MainView} from './main.js';
+import {loadTestModule} from './test_loader_util.js';
 
 document.addEventListener('DOMContentLoaded', function() {
   MainView.getInstance();  // from main.js
-  const params = new URLSearchParams(window.location.search);
-  const test = params.get('test');
-  if (test) {
-    const script = document.createElement('script');
-    script.type = 'module';
-    script.src = `chrome://test/net_internals/${test}`;
-    document.body.appendChild(script);
-  }
+  loadTestModule();
 });

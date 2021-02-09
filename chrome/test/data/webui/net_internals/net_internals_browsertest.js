@@ -57,7 +57,8 @@ function NetInternalsDnsViewTest() {}
 NetInternalsDnsViewTest.prototype = {
   __proto__: NetInternalsBrowserTest.prototype,
 
-  browsePreload: 'chrome://net-internals/index.html?test=dns_view_test.js',
+  browsePreload:
+      'chrome://net-internals/index.html?module=net_internals/dns_view_test.js',
 };
 
 TEST_F('NetInternalsDnsViewTest', 'ClearCache', function() {
@@ -73,7 +74,8 @@ function NetInternalsMainTest() {}
 NetInternalsMainTest.prototype = {
   __proto__: NetInternalsBrowserTest.prototype,
 
-  browsePreload: 'chrome://net-internals/index.html?test=main_test.js',
+  browsePreload:
+      'chrome://net-internals/index.html?module=net_internals/main_test.js',
 };
 
 TEST_F('NetInternalsMainTest', 'TabVisibility', function() {
@@ -85,7 +87,7 @@ NetInternalsDomainSecurityPolicyViewTest.prototype = {
   __proto__: NetInternalsBrowserTest.prototype,
 
   browsePreload:
-      'chrome://net-internals/index.html?test=domain_security_policy_view_test.js',
+      'chrome://net-internals/index.html?module=net_internals/domain_security_policy_view_test.js',
 
   get suiteName() {
     return domain_security_policy_view_test.suiteName;
