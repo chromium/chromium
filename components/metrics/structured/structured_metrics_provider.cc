@@ -87,6 +87,8 @@ int StructuredMetricsProvider::kMaxEventsPerUpload = 100;
 
 char StructuredMetricsProvider::kStorageFileName[] = "structured_metrics.json";
 
+char StructuredMetricsProvider::kStorageDirectory[] = "structured_metrics";
+
 StructuredMetricsProvider::StructuredMetricsProvider() = default;
 
 StructuredMetricsProvider::~StructuredMetricsProvider() {
@@ -182,38 +184,8 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   if (!recording_enabled_ || !initialized_)
     return;
 
-  // Make a list of metrics.
-  base::Value metrics(base::Value::Type::LIST);
-  for (const auto& metric : event.metrics()) {
-    base::Value name_value(base::Value::Type::DICTIONARY);
-    name_value.SetStringKey("name", base::NumberToString(metric.name_hash));
-
-    if (metric.type == EventBase::MetricType::kString) {
-      // Store hashed values as strings, because the JSON parser only retains 53
-      // bits of precision for ints. This would corrupt the hashes.
-      name_value.SetStringKey("value",
-                              base::NumberToString(key_data_->HmacMetric(
-                                  event.project_name_hash(), metric.name_hash,
-                                  metric.string_value)));
-    } else if (metric.type == EventBase::MetricType::kInt) {
-      name_value.SetIntKey("value", metric.int_value);
-    }
-
-    metrics.Append(std::move(name_value));
-  }
-
-  // Create an event value containing the metrics, the event name hash, and the
-  // ID that will eventually be used as the profile_event_id of this event.
-  base::Value event_value(base::Value::Type::DICTIONARY);
-  event_value.SetStringKey("name", base::NumberToString(event.name_hash()));
-  event_value.SetStringKey("id", base::NumberToString(key_data_->UserProjectId(
-                                     event.project_name_hash())));
-  event_value.SetKey("metrics", std::move(metrics));
-
-  // Add the event to |storage_|.
-  // TODO(crbug.com/1016655): Choose the event list based on the identifier type
-  // of the event subclass.
-  GetEventsList(StorageType::kAssociated)->Append(std::move(event_value));
+  // TODO(crbug.com/1148168): Reimplement recording using proto instead of json
+  // storage.
 }
 
 void StructuredMetricsProvider::OnProfileAdded(
@@ -234,7 +206,11 @@ void StructuredMetricsProvider::OnInitializationCompleted(const bool success) {
   if (!success)
     return;
   DCHECK(!storage_->ReadOnly());
-  key_data_ = std::make_unique<internal::KeyData>(storage_.get());
+  // TODO(crbug.com/1148168): Replace storage_directory with a member once we
+  // use it for StructuredMetricsProvider as well as KeyData.
+  const base::FilePath storage_directory(kStorageDirectory);
+  key_data_ = std::make_unique<KeyData>(storage_directory.Append("keys"),
+                                        base::DoNothing());
   initialized_ = true;
 }
 

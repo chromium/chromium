@@ -136,6 +136,10 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // The basename of the file to store key data and unsent logs. A JsonPrefStore
   // is initialized at {profile_path}/{kStorageFileName}.
   static char kStorageFileName[];
+  // TODO(crbug.com/1016655): This is here just for the sake of KeyData. We will
+  // also use it for the provider itself soon. The directory to store keys and
+  // events in. Relative to the user's cryptohome.
+  static char kStorageDirectory[];
 
   // Whether the metrics provider has completed initialization. Initialization
   // occurs across OnProfileAdded and OnInitializationCompleted. No incoming
@@ -173,7 +177,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
 
   // Storage for all event's keys, and hashing logic for values. This stores
   // keys on-disk using the |storage_| JsonPrefStore.
-  std::unique_ptr<internal::KeyData> key_data_;
+  std::unique_ptr<KeyData> key_data_;
 
   base::WeakPtrFactory<StructuredMetricsProvider> weak_factory_{this};
 };

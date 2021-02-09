@@ -23,7 +23,11 @@ enum class StructuredMetricsError {
   kMissingLastRotation = 2,
   kMissingRotationPeriod = 3,
   kFailedUintConversion = 4,
-  kMaxValue = kFailedUintConversion,
+  kKeyReadError = 5,
+  kKeyParseError = 6,
+  kKeyWriteError = 7,
+  kKeySerializationError = 8,
+  kMaxValue = kKeySerializationError,
 };
 
 // Whether a single event was recorded correctly, or otherwise what error state
