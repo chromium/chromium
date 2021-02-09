@@ -4,9 +4,11 @@
 
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +32,16 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sharesheet {
+
+namespace {
+
+base::string16& GetSelectedApp() {
+  static base::NoDestructor<base::string16> selected_app;
+
+  return *selected_app;
+}
+
+}  // namespace
 
 SharesheetService::SharesheetService(Profile* profile)
     : profile_(profile),
@@ -95,14 +107,7 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
     delegate->OnActionLaunched();
     share_action->LaunchAction(delegate, share_action_view, std::move(intent));
   } else if (type == TargetType::kApp) {
-    auto launch_source = apps::mojom::LaunchSource::kFromSharesheet;
-    app_service_proxy_->LaunchAppWithIntent(
-        base::UTF16ToUTF8(target_name),
-        apps::GetEventFlags(
-            apps::mojom::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::NEW_WINDOW,
-            /*prefer_container=*/true),
-        std::move(intent), launch_source, display::kDefaultDisplayId);
+    LaunchApp(target_name, std::move(intent));
     delegate->CloseSharesheet();
   }
 }
@@ -150,6 +155,12 @@ const gfx::VectorIcon* SharesheetService::GetVectorIcon(
   return sharesheet_action_cache_->GetVectorIconFromName(display_name);
 }
 
+// static
+void SharesheetService::SetSelectedAppForTesting(
+    const base::string16& target_name) {
+  GetSelectedApp() = target_name;
+}
+
 void SharesheetService::LoadAppIcons(
     std::vector<apps::IntentLaunchInfo> intent_launch_info,
     std::vector<TargetInfo> targets,
@@ -173,6 +184,17 @@ void SharesheetService::LoadAppIcons(
       base::BindOnce(&SharesheetService::OnIconLoaded,
                      weak_factory_.GetWeakPtr(), std::move(intent_launch_info),
                      std::move(targets), index, std::move(callback)));
+}
+
+void SharesheetService::LaunchApp(const base::string16& target_name,
+                                  apps::mojom::IntentPtr intent) {
+  auto launch_source = apps::mojom::LaunchSource::kFromSharesheet;
+  app_service_proxy_->LaunchAppWithIntent(
+      base::UTF16ToUTF8(target_name),
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                          WindowOpenDisposition::NEW_WINDOW,
+                          /*prefer_container=*/true),
+      std::move(intent), launch_source, display::kDefaultDisplayId);
 }
 
 void SharesheetService::OnIconLoaded(
@@ -200,6 +222,24 @@ void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                                          apps::mojom::IntentPtr intent,
                                          CloseCallback close_callback,
                                          std::vector<TargetInfo> targets) {
+  // If SetSelectedAppForTesting() has been called, immediately launch the app.
+  const base::string16 selected_app = GetSelectedApp();
+  if (!selected_app.empty()) {
+    SharesheetResult result = SharesheetResult::kCancel;
+    auto iter = std::find_if(targets.begin(), targets.end(),
+                             [selected_app](const auto& target) {
+                               return target.type == TargetType::kApp &&
+                                      target.launch_name == selected_app;
+                             });
+    if (iter != targets.end()) {
+      LaunchApp(selected_app, std::move(intent));
+      result = SharesheetResult::kSuccess;
+    }
+
+    std::move(close_callback).Run(result);
+    return;
+  }
+
   delegate->ShowBubble(std::move(targets), std::move(intent),
                        std::move(close_callback));
 }
