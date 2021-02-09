@@ -266,11 +266,8 @@ void HTMLVideoElement::UpdatePictureInPictureAvailability() {
   if (!web_media_player_)
     return;
 
-  for (auto& observer : GetMediaPlayerObserverRemoteSet()) {
-    if (!observer.is_bound())
-      continue;
+  for (auto& observer : GetMediaPlayerObserverRemoteSet())
     observer->OnPictureInPictureAvailabilityChanged(SupportsPictureInPicture());
-  }
 }
 
 // TODO(zqzhang): this callback could be used to hide native controls instead of
@@ -736,6 +733,9 @@ void HTMLVideoElement::SetIsEffectivelyFullscreen(
   is_effectively_fullscreen_ =
       status != blink::WebFullscreenVideoStatus::kNotEffectivelyFullscreen;
   if (GetWebMediaPlayer()) {
+    for (auto& observer : GetMediaPlayerObserverRemoteSet())
+      observer->OnMediaEffectivelyFullscreenChanged(status);
+
     GetWebMediaPlayer()->SetIsEffectivelyFullscreen(status);
     GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
   }

@@ -39,6 +39,7 @@
 #include "media/base/watch_time_keys.h"
 #include "media/media_buildflags.h"
 #include "media/video/supported_video_decoder_config.h"
+#include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/ipc/color/gfx_param_traits_macros.h"
 
@@ -47,6 +48,9 @@
 #endif  // BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
 
 // Enum traits.
+
+IPC_ENUM_TRAITS_MAX_VALUE(blink::WebFullscreenVideoStatus,
+                          blink::WebFullscreenVideoStatus::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodec, media::AudioCodec::kAudioCodecMax)
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodecProfile,

@@ -84,6 +84,11 @@ enum CopyMode {
   kCopyMailboxesOnly,
 };
 
+// see third_party/blink/public/platform/web_fullscreen_video_status.h for
+// descriptions.
+[Native]
+enum FullscreenVideoStatus;
+
 // See media/base/video_transformation.h for descriptions.
 struct VideoTransformation {
   VideoRotation rotation;

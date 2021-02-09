@@ -59,6 +59,12 @@ interface MediaPlayerObserver {
   // and reports the new current position via |media_position|.
   OnMediaPositionStateChanged(media_session.mojom.MediaPosition media_position);
 
+  // Notifies that the player has entered fullscreen.
+  // This does not differentiate native controls fullscreen and custom controls
+  // fullscreen. |status| is used by MediaWebContentsObserver to trigger
+  // automatically Picture-in-Picture for fullscreen videos.
+  OnMediaEffectivelyFullscreenChanged(FullscreenVideoStatus status);
+
   // Notifies that the size of the media player has changed.
   OnMediaSizeChanged(gfx.mojom.Size size);
 

@@ -101,6 +101,15 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "media.mojom.FullscreenVideoStatus"
+          cpp = "::blink::WebFullscreenVideoStatus"
+        },
+      ]
+      traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.MediaContentType"
           cpp = "::media::MediaContentType"
         },

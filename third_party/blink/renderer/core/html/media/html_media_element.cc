@@ -4399,38 +4399,26 @@ void HTMLMediaElement::PausePlayback() {
 }
 
 void HTMLMediaElement::DidPlayerStartPlaying() {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
+  for (auto& observer : media_player_observer_remote_set_)
     observer->OnMediaPlaying();
-  }
 }
 
 void HTMLMediaElement::DidPlayerPaused(bool stream_ended) {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
+  for (auto& observer : media_player_observer_remote_set_)
     observer->OnMediaPaused(stream_ended);
-  }
 }
 
 void HTMLMediaElement::DidPlayerMutedStatusChange(bool muted) {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
+  for (auto& observer : media_player_observer_remote_set_)
     observer->OnMutedStatusChanged(muted);
-  }
 }
 
 void HTMLMediaElement::DidMediaMetadataChange(
     bool has_audio,
     bool has_video,
     media::MediaContentType media_content_type) {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
+  for (auto& observer : media_player_observer_remote_set_)
     observer->OnMediaMetadataChanged(has_audio, has_video, media_content_type);
-  }
 }
 
 void HTMLMediaElement::DidPlayerMediaPositionStateChange(
@@ -4438,8 +4426,6 @@ void HTMLMediaElement::DidPlayerMediaPositionStateChange(
     base::TimeDelta duration,
     base::TimeDelta position) {
   for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
     observer->OnMediaPositionStateChanged(
         media_session::mojom::blink::MediaPosition::New(
             playback_rate, duration, position, base::TimeTicks::Now()));
@@ -4447,27 +4433,18 @@ void HTMLMediaElement::DidPlayerMediaPositionStateChange(
 }
 
 void HTMLMediaElement::DidDisableAudioOutputSinkChanges() {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
+  for (auto& observer : media_player_observer_remote_set_)
     observer->OnAudioOutputSinkChangingDisabled();
-  }
 }
 
 void HTMLMediaElement::DidPlayerSizeChange(const gfx::Size& size) {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
+  for (auto& observer : media_player_observer_remote_set_)
     observer->OnMediaSizeChanged(size);
-  }
 }
 
 void HTMLMediaElement::DidBufferUnderflow() {
-  for (auto& observer : media_player_observer_remote_set_) {
-    if (!observer.is_bound())
-      continue;
+  for (auto& observer : media_player_observer_remote_set_)
     observer->OnBufferUnderflow();
-  }
 }
 
 void HTMLMediaElement::DidSeek() {
@@ -4476,11 +4453,8 @@ void HTMLMediaElement::DidSeek() {
       (base::TimeTicks::Now() - last_seek_update_time_ >=
        base::TimeDelta::FromSeconds(1))) {
     last_seek_update_time_ = base::TimeTicks::Now();
-    for (auto& observer : media_player_observer_remote_set_) {
-      if (!observer.is_bound())
-        continue;
+    for (auto& observer : media_player_observer_remote_set_)
       observer->OnSeek();
-    }
   }
 }
 

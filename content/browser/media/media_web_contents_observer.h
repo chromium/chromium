@@ -199,6 +199,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
         media::MediaContentType media_content_type) override;
     void OnMediaPositionStateChanged(
         const media_session::MediaPosition& media_position) override;
+    void OnMediaEffectivelyFullscreenChanged(
+        blink::WebFullscreenVideoStatus status) override;
     void OnMediaSizeChanged(const ::gfx::Size& size) override;
     void OnPictureInPictureAvailabilityChanged(bool available) override;
     void OnAudioOutputSinkChangingDisabled() override;
@@ -230,8 +232,7 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
                               media::MediaContentType media_content_type);
 
   void OnMediaEffectivelyFullscreenChanged(
-      RenderFrameHost* render_frame_host,
-      int delegate_id,
+      const MediaPlayerId& player_id,
       blink::WebFullscreenVideoStatus fullscreen_status);
   void OnAudioOutputSinkChanged(RenderFrameHost* render_frame_host,
                                 int delegate_id,

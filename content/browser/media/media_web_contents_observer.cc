@@ -259,9 +259,6 @@ bool MediaWebContentsObserver::OnMessageReceived(
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(MediaWebContentsObserver, msg,
                                    render_frame_host)
-    IPC_MESSAGE_HANDLER(
-        MediaPlayerDelegateHostMsg_OnMediaEffectivelyFullscreenChanged,
-        OnMediaEffectivelyFullscreenChanged)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
                         OnAudioOutputSinkChanged);
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -366,6 +363,13 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       ->OnMediaPositionStateChanged(media_player_id_, media_position);
 }
 
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnMediaEffectivelyFullscreenChanged(
+        blink::WebFullscreenVideoStatus status) {
+  media_web_contents_observer_->OnMediaEffectivelyFullscreenChanged(
+      media_player_id_, status);
+}
+
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaSizeChanged(
     const ::gfx::Size& size) {
   media_web_contents_observer_->web_contents_impl()->MediaResized(
@@ -453,23 +457,20 @@ void MediaWebContentsObserver::OnMediaMetadataChanged(
 }
 
 void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(
-    RenderFrameHost* render_frame_host,
-    int delegate_id,
+    const MediaPlayerId& player_id,
     blink::WebFullscreenVideoStatus fullscreen_status) {
-  const MediaPlayerId id(render_frame_host, delegate_id);
-
   switch (fullscreen_status) {
     case blink::WebFullscreenVideoStatus::kFullscreenAndPictureInPictureEnabled:
-      fullscreen_player_ = id;
+      fullscreen_player_ = player_id;
       picture_in_picture_allowed_in_fullscreen_ = true;
       break;
     case blink::WebFullscreenVideoStatus::
         kFullscreenAndPictureInPictureDisabled:
-      fullscreen_player_ = id;
+      fullscreen_player_ = player_id;
       picture_in_picture_allowed_in_fullscreen_ = false;
       break;
     case blink::WebFullscreenVideoStatus::kNotEffectivelyFullscreen:
-      if (!fullscreen_player_ || *fullscreen_player_ != id)
+      if (!fullscreen_player_ || *fullscreen_player_ != player_id)
         return;
 
       picture_in_picture_allowed_in_fullscreen_.reset();

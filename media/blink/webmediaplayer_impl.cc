@@ -668,8 +668,6 @@ void WebMediaPlayerImpl::BecameDominantVisibleContent(bool is_dominant) {
 
 void WebMediaPlayerImpl::SetIsEffectivelyFullscreen(
     blink::WebFullscreenVideoStatus fullscreen_video_status) {
-  delegate_->SetIsEffectivelyFullscreen(delegate_id_, fullscreen_video_status);
-
   if (power_status_helper_) {
     // We don't care about pip, so anything that's "not fullscreen" is good
     // enough for us.

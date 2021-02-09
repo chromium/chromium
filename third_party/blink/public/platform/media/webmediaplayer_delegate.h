@@ -131,14 +131,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
   // called and returned |true|.
   virtual bool IsStale(int player_id) = 0;
 
-  // Notifies the delegate that the player has entered fullscreen. This does not
-  // differentiate native controls fullscreen and custom controls fullscreen.
-  // |fullscreen_video_status| is used by MediaWebContentsObserver to
-  // trigger automatically Picture-in-Picture for fullscreen videos.
-  virtual void SetIsEffectivelyFullscreen(
-      int player_id,
-      blink::WebFullscreenVideoStatus fullscreen_video_status) = 0;
-
  protected:
   WebMediaPlayerDelegate() = default;
   virtual ~WebMediaPlayerDelegate() = default;

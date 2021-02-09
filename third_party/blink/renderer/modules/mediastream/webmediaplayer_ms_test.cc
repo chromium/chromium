@@ -144,12 +144,6 @@ class FakeWebMediaPlayerDelegate
     return false;
   }
 
-  void SetIsEffectivelyFullscreen(
-      int delegate_id,
-      WebFullscreenVideoStatus fullscreen_video_status) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
   bool IsFrameHidden() override { return is_hidden_; }
   bool IsFrameClosed() override { return false; }
 
