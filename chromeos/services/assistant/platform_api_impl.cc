@@ -10,7 +10,6 @@
 
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/platform/audio_devices.h"
-#include "chromeos/services/assistant/platform/power_manager_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/audio_input_host.h"
 #include "chromeos/services/assistant/utils.h"
@@ -23,7 +22,6 @@ using assistant_client::AudioOutputProvider;
 using assistant_client::FileProvider;
 using assistant_client::NetworkProvider;
 using assistant_client::PlatformApi;
-using assistant_client::SystemProvider;
 
 namespace chromeos {
 namespace assistant {
@@ -42,16 +40,7 @@ PlatformApiImpl::PlatformApiImpl(
                              platform_delegate,
                              background_task_runner,
                              media::AudioDeviceDescription::kDefaultDeviceId),
-      network_provider_(platform_delegate) {
-  // Only enable native power features if they are supported by the UI.
-  std::unique_ptr<PowerManagerProviderImpl> provider;
-  if (features::IsPowerManagerEnabled()) {
-    provider = std::make_unique<PowerManagerProviderImpl>(
-        std::move(main_thread_task_runner), platform_delegate);
-  }
-  system_provider_ = std::make_unique<SystemProviderImpl>(std::move(provider),
-                                                          platform_delegate);
-}
+      network_provider_(platform_delegate) {}
 
 PlatformApiImpl::~PlatformApiImpl() = default;
 
@@ -65,10 +54,6 @@ FileProvider& PlatformApiImpl::GetFileProvider() {
 
 NetworkProvider& PlatformApiImpl::GetNetworkProvider() {
   return network_provider_;
-}
-
-SystemProvider& PlatformApiImpl::GetSystemProvider() {
-  return *system_provider_;
 }
 
 }  // namespace assistant

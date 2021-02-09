@@ -55,8 +55,7 @@ LibassistantService::LibassistantService(
         .SetAudioOutputProvider(&platform_api->GetAudioOutputProvider())
         .SetAuthProvider(fake_auth_provider_.get())
         .SetFileProvider(&platform_api->GetFileProvider())
-        .SetNetworkProvider(&platform_api->GetNetworkProvider())
-        .SetSystemProvider(&platform_api->GetSystemProvider());
+        .SetNetworkProvider(&platform_api->GetNetworkProvider());
   }
 }
 
@@ -88,6 +87,8 @@ void LibassistantService::Bind(
   media_controller_->Bind(std::move(media_controller),
                           std::move(media_delegate));
   service_controller_->Bind(std::move(service_controller));
+
+  platform_api_->Initialize(platform_delegate_.get());
 }
 
 void LibassistantService::SetInitializeCallback(InitializeCallback callback) {

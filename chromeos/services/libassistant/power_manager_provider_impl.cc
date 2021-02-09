@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/power_manager_provider_impl.h"
+#include "chromeos/services/libassistant/power_manager_provider_impl.h"
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,7 +14,7 @@
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 namespace {
 
@@ -38,12 +38,14 @@ base::TimeDelta ClockNow(clockid_t clk_id) {
 
 }  // namespace
 
-PowerManagerProviderImpl::PowerManagerProviderImpl(
-    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
-    chromeos::libassistant::mojom::PlatformDelegate* delegate)
-    : main_thread_task_runner_(std::move(main_thread_task_runner)),
-      platform_delegate_(delegate),
+PowerManagerProviderImpl::PowerManagerProviderImpl()
+    : main_thread_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       weak_factory_(this) {}
+
+void PowerManagerProviderImpl::Initialize(
+    chromeos::libassistant::mojom::PlatformDelegate* delegate) {
+  platform_delegate_ = delegate;
+}
 
 PowerManagerProviderImpl::~PowerManagerProviderImpl() = default;
 
@@ -196,5 +198,5 @@ void PowerManagerProviderImpl::OnTimerFiredOnMainThread(AlarmId id) {
   timers_.erase(id);
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

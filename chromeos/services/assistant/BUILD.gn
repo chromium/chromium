@@ -56,9 +56,7 @@ component("lib") {
     "//components/signin/public/identity_manager",
     "//components/user_manager",
     "//media",
-    "//services/device/public/mojom",
     "//services/media_session/public/cpp",
-    "//services/network/public/cpp:cpp",
     "//ui/accessibility:ax_assistant",
   ]
 
@@ -99,10 +97,6 @@ component("lib") {
       "platform/file_provider_impl.h",
       "platform/network_provider_impl.cc",
       "platform/network_provider_impl.h",
-      "platform/power_manager_provider_impl.cc",
-      "platform/power_manager_provider_impl.h",
-      "platform/system_provider_impl.cc",
-      "platform/system_provider_impl.h",
       "platform/volume_control_impl.cc",
       "platform/volume_control_impl.h",
       "platform_api_impl.cc",
@@ -134,9 +128,7 @@ component("lib") {
       "//libassistant/shared/public",
       "//libassistant/shared/public:export",
       "//net",
-      "//services/media_session/public/mojom",
       "//services/network/public/cpp",
-      "//services/network/public/mojom",
       "//ui/base",
       "//url",
     ]
@@ -164,11 +156,10 @@ source_set("tests") {
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",
     "//services/media_session/public/mojom",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -193,8 +184,6 @@ source_set("tests") {
       "assistant_manager_service_impl_unittest.cc",
       "platform/audio_output_provider_impl_unittest.cc",
       "platform/network_provider_impl_unittest.cc",
-      "platform/power_manager_provider_impl_unittest.cc",
-      "platform/system_provider_impl_unittest.cc",
       "test_support/fake_service_context.cc",
       "test_support/fake_service_context.h",
     ]
@@ -205,13 +194,11 @@ source_set("tests") {
       "//chromeos/assistant/internal:tests",
       "//chromeos/assistant/internal/proto/google3",
       "//chromeos/assistant/test_support",
-      "//chromeos/dbus",
       "//chromeos/services/assistant/proxy",
       "//chromeos/services/assistant/public/cpp/migration",
       "//chromeos/services/assistant/public/cpp/migration:test_support",
       "//chromeos/services/network_config/public/mojom",
       "//services/audio/public/cpp:test_support",
-      "//services/device/public/cpp:test_support",
     ]
   }
 }

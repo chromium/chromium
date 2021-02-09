@@ -11,7 +11,6 @@ namespace assistant_client {
 class AudioOutputProvider;
 class FileProvider;
 class NetworkProvider;
-class SystemProvider;
 }  // namespace assistant_client
 
 namespace chromeos {
@@ -34,9 +33,6 @@ class CrosPlatformApi {
 
   // Returns the network provider to be used by libassistant.
   virtual assistant_client::NetworkProvider& GetNetworkProvider() = 0;
-
-  // Returns the system provider to be used by libassistant.
-  virtual assistant_client::SystemProvider& GetSystemProvider() = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CrosPlatformApi);

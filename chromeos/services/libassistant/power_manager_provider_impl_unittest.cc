@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/power_manager_provider_impl.h"
+#include "chromeos/services/libassistant/power_manager_provider_impl.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 namespace {
 
@@ -20,7 +20,7 @@ namespace {
 const uint64_t kAlarmRelativeTimeMs = 1000;
 const uint64_t kAlarmMaxDelayMs = 0;
 
-class FakePlatformDelegateImpl : public FakePlatformDelegate {
+class FakePlatformDelegateImpl : public assistant::FakePlatformDelegate {
  public:
   explicit FakePlatformDelegateImpl(
       device::TestWakeLockProvider* wake_lock_provider)
@@ -50,10 +50,11 @@ class AssistantPowerManagerProviderImplTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
-    power_manager_provider_impl_ = std::make_unique<PowerManagerProviderImpl>(
-        task_environment_.GetMainThreadTaskRunner(), &platform_delegate_);
+    power_manager_provider_impl_ = std::make_unique<PowerManagerProviderImpl>();
     power_manager_provider_impl_->set_tick_clock_for_testing(
         task_environment_.GetMockTickClock());
+
+    power_manager_provider_impl_->Initialize(&platform_delegate_);
   }
 
   void TearDown() override {
@@ -162,5 +163,5 @@ TEST_F(AssistantPowerManagerProviderImplTest, CheckWakeAlarms) {
       CheckAddWakeAlarmAndExpiration(kAlarmRelativeTimeMs, kAlarmMaxDelayMs));
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

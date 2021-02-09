@@ -87,10 +87,5 @@ assistant_client::NetworkProvider& FakePlatformApi::GetNetworkProvider() {
   abort();
 }
 
-assistant_client::SystemProvider& FakePlatformApi::GetSystemProvider() {
-  NOTIMPLEMENTED();
-  abort();
-}
-
 }  // namespace assistant
 }  // namespace chromeos

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/system_provider_impl.h"
+#include "chromeos/services/libassistant/system_provider_impl.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/platform/power_manager_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/migration/fake_platform_delegate.h"
+#include "chromeos/services/libassistant/power_manager_provider_impl.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 class FakeBatteryMonitor : device::mojom::BatteryMonitor {
  public:
@@ -65,9 +65,8 @@ class AssistantSystemProviderImplTest : public testing::Test {
         0 /* level */));
 
     system_provider_impl_ = std::make_unique<SystemProviderImpl>(
-        std::make_unique<PowerManagerProviderImpl>(
-            task_environment_.GetMainThreadTaskRunner(), &platform_delegate_),
-        &platform_delegate_);
+        std::make_unique<PowerManagerProviderImpl>());
+    system_provider_impl_->Initialize(&platform_delegate_);
     battery_monitor_.Bind(platform_delegate_.battery_monitor_receiver());
     FlushForTesting();
   }
@@ -81,7 +80,7 @@ class AssistantSystemProviderImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   FakeBatteryMonitor battery_monitor_;
-  FakePlatformDelegate platform_delegate_;
+  assistant::FakePlatformDelegate platform_delegate_;
   std::unique_ptr<SystemProviderImpl> system_provider_impl_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantSystemProviderImplTest);
@@ -104,5 +103,5 @@ TEST_F(AssistantSystemProviderImplTest, GetBatteryStateReturnsLastState) {
   EXPECT_EQ(state.charge_percentage, 100);
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

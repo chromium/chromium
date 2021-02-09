@@ -4,9 +4,28 @@
 
 #include "chromeos/services/libassistant/platform_api.h"
 #include "base/check.h"
+#include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/power_manager_provider_impl.h"
+#include "chromeos/services/libassistant/system_provider_impl.h"
 
 namespace chromeos {
 namespace libassistant {
+
+PlatformApi::PlatformApi() {
+  // Only enable native power features if they are supported by the UI.
+  std::unique_ptr<PowerManagerProviderImpl> provider;
+  if (assistant::features::IsPowerManagerEnabled()) {
+    provider = std::make_unique<PowerManagerProviderImpl>();
+  }
+  system_provider_ = std::make_unique<SystemProviderImpl>(std::move(provider));
+}
+
+PlatformApi::~PlatformApi() = default;
+
+void PlatformApi::Initialize(
+    chromeos::libassistant::mojom::PlatformDelegate* delegate) {
+  system_provider_->Initialize(delegate);
+}
 
 PlatformApi& PlatformApi::SetAudioInputProvider(
     assistant_client::AudioInputProvider* provider) {
@@ -35,12 +54,6 @@ PlatformApi& PlatformApi::SetFileProvider(
 PlatformApi& PlatformApi::SetNetworkProvider(
     assistant_client::NetworkProvider* provider) {
   network_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetSystemProvider(
-    assistant_client::SystemProvider* provider) {
-  system_provider_ = provider;
   return *this;
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_SYSTEM_PROVIDER_IMPL_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_SYSTEM_PROVIDER_IMPL_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_SYSTEM_PROVIDER_IMPL_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_SYSTEM_PROVIDER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -18,19 +18,20 @@
 #include "services/device/public/mojom/battery_status.mojom.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 class PowerManagerProviderImpl;
 
-class COMPONENT_EXPORT(ASSISTANT_SERVICE) SystemProviderImpl
-    : public assistant_client::SystemProvider {
+class SystemProviderImpl : public assistant_client::SystemProvider {
  public:
   // Acceptable to pass in |nullptr| for |power_manager_provider| when no
   // platform power manager provider is available.
-  SystemProviderImpl(
-      std::unique_ptr<PowerManagerProviderImpl> power_manager_provider,
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
+  explicit SystemProviderImpl(
+      std::unique_ptr<PowerManagerProviderImpl> power_manager_provider);
   ~SystemProviderImpl() override;
+
+  void Initialize(
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::SystemProvider implementation:
   assistant_client::MicMuteState GetMicMuteState() override;
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) SystemProviderImpl
   DISALLOW_COPY_AND_ASSIGN(SystemProviderImpl);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_SYSTEM_PROVIDER_IMPL_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_SYSTEM_PROVIDER_IMPL_H_

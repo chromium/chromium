@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_POWER_MANAGER_PROVIDER_IMPL_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_POWER_MANAGER_PROVIDER_IMPL_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_POWER_MANAGER_PROVIDER_IMPL_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_POWER_MANAGER_PROVIDER_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -20,7 +20,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 // Implementation of power management features for libassistant.
 //
@@ -38,10 +38,10 @@ namespace assistant {
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
     : public assistant_client::PowerManagerProvider {
  public:
-  PowerManagerProviderImpl(
-      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
-      chromeos::libassistant::mojom::PlatformDelegate* delegate);
+  PowerManagerProviderImpl();
   ~PowerManagerProviderImpl() override;
+
+  void Initialize(chromeos::libassistant::mojom::PlatformDelegate* delegate);
 
   // assistant_client::PowerManagerProvider overrides. These are called from
   // libassistant threads.
@@ -105,8 +105,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
   // order to use Chrome APIs safely.
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
-  // Owned by |AssistantManagerServiceImpl|. Used to initialize |wake_lock_|.
-  chromeos::libassistant::mojom::PlatformDelegate* const platform_delegate_;
+  // Owned by |PlatformApi|. Used to initialize |wake_lock_|.
+  chromeos::libassistant::mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
   // Clock to use to calculate time ticks. Set and used only for testing.
   const base::TickClock* tick_clock_ = nullptr;
@@ -116,7 +116,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
   DISALLOW_COPY_AND_ASSIGN(PowerManagerProviderImpl);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_POWER_MANAGER_PROVIDER_IMPL_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_POWER_MANAGER_PROVIDER_IMPL_H_

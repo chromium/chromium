@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/system_provider_impl.h"
+#include "chromeos/services/libassistant/system_provider_impl.h"
 
 #include <utility>
 
@@ -10,22 +10,27 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "chromeos/services/assistant/platform/power_manager_provider_impl.h"
+#include "chromeos/services/libassistant/power_manager_provider_impl.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 SystemProviderImpl::SystemProviderImpl(
-    std::unique_ptr<PowerManagerProviderImpl> power_manager_provider,
-    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate)
-    : power_manager_provider_(std::move(power_manager_provider)) {
+    std::unique_ptr<PowerManagerProviderImpl> power_manager_provider)
+    : power_manager_provider_(std::move(power_manager_provider)) {}
+
+SystemProviderImpl::~SystemProviderImpl() = default;
+
+void SystemProviderImpl::Initialize(
+    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate) {
+  if (power_manager_provider_)
+    power_manager_provider_->Initialize(platform_delegate);
+
   platform_delegate->BindBatteryMonitor(
       battery_monitor_.BindNewPipeAndPassReceiver());
   battery_monitor_->QueryNextStatus(base::BindOnce(
       &SystemProviderImpl::OnBatteryStatus, base::Unretained(this)));
 }
-
-SystemProviderImpl::~SystemProviderImpl() = default;
 
 assistant_client::MicMuteState SystemProviderImpl::GetMicMuteState() {
   // CRAS input is never muted.
@@ -66,8 +71,8 @@ void SystemProviderImpl::OnBatteryStatus(
 }
 
 void SystemProviderImpl::FlushForTesting() {
-  battery_monitor_.FlushForTesting();
+  battery_monitor_.FlushForTesting();  // IN-TEST
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
