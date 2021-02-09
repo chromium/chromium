@@ -290,16 +290,21 @@ class WPTWeblayerAdapter(WPTAndroidAdapter):
 
 class WPTWebviewAdapter(WPTAndroidAdapter):
 
-  SYSTEM_WEBVIEW_SHELL_PKG = 'org.chromium.webview_shell'
+  def __init__(self, device):
+    super(WPTWebviewAdapter, self).__init__(device)
+    if self.options.system_webview_shell is not None:
+      self.system_webview_shell_pkg = apk_helper.GetPackageName(
+          self.options.system_webview_shell)
+    else:
+      self.system_webview_shell_pkg = 'org.chromium.webview_shell'
 
   @contextlib.contextmanager
   def _install_apks(self):
     install_shell_as_needed = maybe_install_user_apk(
         self._device, self.options.system_webview_shell,
-        self.SYSTEM_WEBVIEW_SHELL_PKG)
+        self.system_webview_shell_pkg)
     install_webview_provider_as_needed = maybe_install_webview_provider(
         self._device, self.options.webview_provider)
-
     with install_shell_as_needed, install_webview_provider_as_needed:
       yield
 
@@ -320,6 +325,7 @@ class WPTWebviewAdapter(WPTAndroidAdapter):
   @property
   def rest_args(self):
     args = super(WPTWebviewAdapter, self).rest_args
+    args.extend(['--package-name', self.system_webview_shell_pkg])
     args.append(ANDROID_WEBVIEW)
     return args
 
@@ -387,7 +393,7 @@ def maybe_install_user_apk(device, apk, expected_pkg=None):
     if expected_pkg and pkg != expected_pkg:
       raise ValueError('{} has incorrect package name: {}, expected {}.'.format(
           apk, pkg, expected_pkg))
-    install_as_needed = app_installed(device, apk)
+    install_as_needed = app_installed(device, apk, pkg)
     logger.info('Will install ' + pkg + ' at ' + apk)
   else:
     install_as_needed = no_op()
@@ -395,8 +401,7 @@ def maybe_install_user_apk(device, apk, expected_pkg=None):
 
 
 @contextlib.contextmanager
-def app_installed(device, apk):
-  pkg = apk_helper.GetPackageName(apk)
+def app_installed(device, apk, pkg):
   device.Install(apk)
   try:
     yield
