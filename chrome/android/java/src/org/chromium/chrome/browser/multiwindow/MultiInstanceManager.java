@@ -27,7 +27,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -186,7 +185,6 @@ public class MultiInstanceManager
     @Override
     public void onFinishNativeInitialization() {
         mNativeInitialized = true;
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)) return;
         DisplayManager displayManager =
                 (DisplayManager) mActivity.getSystemService(Context.DISPLAY_SERVICE);
         if (displayManager == null) return;

@@ -28,7 +28,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.ui.display.DisplayAndroidManager;
 
@@ -78,7 +77,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return Whether the system currently supports multiple displays, requiring Android Q+.
      */
     public boolean isInMultiDisplayMode(Activity activity) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)) return false;
         // TODO(crbug.com/824954): Consider supporting more displays.
         return ApiCompatibilityUtils.getTargetableDisplayIds(activity).size() == 2;
     }
@@ -175,9 +173,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The targetable secondary display. {@code Display.INVALID_DISPLAY} if not found.
      */
     public static int getDisplayIdForTargetableSecondaryDisplay(Activity activity) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)) {
-            return Display.INVALID_DISPLAY;
-        }
         List<Integer> displays = ApiCompatibilityUtils.getTargetableDisplayIds(activity);
         Display defaultDisplay = DisplayAndroidManager.getDefaultDisplayForContext(activity);
         if (displays.size() != 0) {

@@ -6457,10 +6457,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidManagedByMenuItemName,
      flag_descriptions::kAndroidManagedByMenuItemDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidManagedByMenuItem)},
-
-    {"android-multiple-display", flag_descriptions::kAndroidMultipleDisplayName,
-     flag_descriptions::kAndroidMultipleDisplayDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidMultipleDisplay)},
 #endif  // defined(OS_ANDROID)
 
     {"app-cache", flag_descriptions::kAppCacheName,

@@ -2651,10 +2651,6 @@ const char kAndroidManagedByMenuItemDescription[] =
     "whether policies have been applied to this browser at the profile or "
     "machine level.";
 
-const char kAndroidMultipleDisplayName[] = "Multiple Display";
-const char kAndroidMultipleDisplayDescription[] =
-    "When enabled, tabs can be moved to the secondary display.";
-
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "

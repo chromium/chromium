@@ -1541,9 +1541,6 @@ extern const char kAndroidLayoutChangeTabReparentingDescription[];
 extern const char kAndroidManagedByMenuItemName[];
 extern const char kAndroidManagedByMenuItemDescription[];
 
-extern const char kAndroidMultipleDisplayName[];
-extern const char kAndroidMultipleDisplayDescription[];
-
 extern const char kAndroidPartnerCustomizationPhenotypeName[];
 extern const char kAndroidPartnerCustomizationPhenotypeDescription[];
 

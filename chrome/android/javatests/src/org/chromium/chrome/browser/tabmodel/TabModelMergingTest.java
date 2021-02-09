@@ -37,7 +37,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
@@ -50,7 +49,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -508,7 +506,6 @@ public class TabModelMergingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
     public void testMergeOnMultiDisplay_CTA_Resumed_CTA2_Not_Resumed() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -549,7 +546,6 @@ public class TabModelMergingTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_MULTIPLE_DISPLAY)
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
     public void testMergeOnMultiDisplay_OnDisplayChanged() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
