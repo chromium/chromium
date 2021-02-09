@@ -37,6 +37,7 @@ hiroshige@chromium.org
 ikilpatrick@chromium.org
 inferno@chromium.org
 japhet@chromium.org
+jarhar@chromium.org
 jbroman@chromium.org
 jfernandez@igalia.com
 jianli@chromium.org
@@ -50,9 +51,6 @@ kouhei@chromium.org
 masonfreed@chromium.org
 mkwst@chromium.org
 mstensho@chromium.org
-# nainar reviews changes in core/css,core/style
-# and related code in core/dom and core/layout.
-nainar@chromium.org
 nhiroki@chromium.org
 obrufau@igalia.com
 # pdr reviews many svg and text autosizing patches.
