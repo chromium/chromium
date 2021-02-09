@@ -275,6 +275,13 @@ LoginDisplay* GetLoginDisplay() {
   return GetLoginDisplayHost()->GetLoginDisplay();
 }
 
+void AllowOfflineLoginOnErrorScreen(bool allowed) {
+  if (!GetLoginDisplayHost()->GetOobeUI())
+    return;
+  GetLoginDisplayHost()->GetOobeUI()->GetErrorScreen()->AllowOfflineLogin(
+      allowed);
+}
+
 void SetLoginExtensionApiLaunchExtensionIdPref(const AccountId& account_id,
                                                const std::string extension_id) {
   const user_manager::User* user =
@@ -474,6 +481,8 @@ void ExistingUserController::UpdateLoginDisplay(
                              &show_users_on_signin);
   user_manager::UserManager* const user_manager =
       user_manager::UserManager::Get();
+  // By default disable offline login from the error screen.
+  AllowOfflineLoginOnErrorScreen(false /* allowed */);
   for (auto* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
@@ -483,6 +492,13 @@ void ExistingUserController::UpdateLoginDisplay(
     // TODO(xiyuan): Clean user profile whose email is not in allowlist.
     if (user->GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED)
       continue;
+    // Allow offline login from the error screen if user of one of these types
+    // has already logged in.
+    if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
+        user->GetType() == user_manager::USER_TYPE_CHILD ||
+        user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
+      AllowOfflineLoginOnErrorScreen(true /* allowed */);
+    }
     const bool meets_allowlist_requirements =
         !user->HasGaiaAccount() || user_manager->IsGaiaUserAllowed(*user);
 

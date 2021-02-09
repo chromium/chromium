@@ -193,13 +193,6 @@ bool IsSigninScreen(const OobeScreenId screen) {
          screen == OobeScreen::SCREEN_ACCOUNT_PICKER;
 }
 
-bool IsSigninScreenError(NetworkError::ErrorState error_state) {
-  return error_state == NetworkError::ERROR_STATE_PORTAL ||
-         error_state == NetworkError::ERROR_STATE_OFFLINE ||
-         error_state == NetworkError::ERROR_STATE_PROXY ||
-         error_state == NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT;
-}
-
 }  // namespace
 
 // SigninScreenHandler implementation ------------------------------------------
@@ -635,66 +628,16 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
   }
 
   if (!is_online || is_gaia_loading_timeout || is_gaia_error) {
-    SetupAndShowOfflineMessage(state, reason);
+    if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
+      error_screen_->SetParentScreen(GaiaView::kScreenId);
+      error_screen_->ShowNetworkErrorMessage(state, reason);
+      histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
+    }
   } else {
     HideOfflineMessage(state, reason);
 
     // Cancel scheduled GAIA reload (if any) to prevent double reloads.
     reload_gaia.CancelScheduledCall();
-  }
-}
-
-void SigninScreenHandler::SetupAndShowOfflineMessage(
-    NetworkStateInformer::State state,
-    NetworkError::ErrorReason reason) {
-  const std::string network_path = network_state_informer_->network_path();
-  const bool is_behind_captive_portal = IsBehindCaptivePortal(state, reason);
-  const bool is_proxy_error = IsProxyError(state, reason, FrameError());
-  const bool is_gaia_loading_timeout =
-      (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT);
-
-  if (is_proxy_error) {
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_PROXY,
-                                 std::string());
-  } else if (is_behind_captive_portal) {
-    // Do not bother a user with obsessive captive portal showing. This
-    // check makes captive portal being shown only once: either when error
-    // screen is shown for the first time or when switching from another
-    // error screen (offline, proxy).
-    if (IsGaiaVisible() ||
-        (error_screen_->GetErrorState() != NetworkError::ERROR_STATE_PORTAL)) {
-      LoginDisplayHost::default_host()->HandleDisplayCaptivePortal();
-    }
-    const std::string network_name =
-        NetworkStateInformer::GetNetworkName(network_path);
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
-                                 network_name);
-  } else if (is_gaia_loading_timeout) {
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT,
-                                 std::string());
-  } else {
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_OFFLINE,
-                                 std::string());
-  }
-
-  bool guest_signin_allowed = false;
-  bool offline_login_allowed = false;
-  if (IsSigninScreenError(error_screen_->GetErrorState())) {
-    guest_signin_allowed =
-        user_manager::UserManager::Get()->IsGuestSessionAllowed();
-    offline_login_allowed =
-        error_screen_->GetErrorState() !=
-            NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT &&
-        !user_manager::UserManager::Get()->GetUsers().empty();
-  }
-  error_screen_->AllowGuestSignin(guest_signin_allowed);
-  error_screen_->AllowOfflineLogin(offline_login_allowed);
-
-  if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
-    error_screen_->SetUIState(NetworkError::UI_STATE_SIGNIN);
-    error_screen_->SetParentScreen(GaiaView::kScreenId);
-    error_screen_->Show(nullptr);
-    histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
   }
 }
 

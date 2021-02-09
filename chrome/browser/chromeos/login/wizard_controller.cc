@@ -1025,13 +1025,10 @@ void WizardController::OnOfflineLoginScreenExit(
                OfflineLoginScreen::GetResultString(result));
   switch (result) {
     case OfflineLoginScreen::Result::BACK:
-      if (wizard_context_->is_user_creation_enabled) {
-        AdvanceToScreen(UserCreationView::kScreenId);
-      } else if (wizard_context_->device_has_users) {
-        LoginDisplayHost::default_host()->HideOobeDialog();
-      } else {
-        NOTREACHED();
-      }
+      // Go back to online login, if still no connection it will trigger
+      // ErrorScreen with fix options. If UserCreationScreen isn't available
+      // it will exit with Result::SKIPPED and open GaiaScreen instead.
+      AdvanceToScreen(UserCreationView::kScreenId);
       break;
     case OfflineLoginScreen::Result::RELOAD_ONLINE_LOGIN:
       AdvanceToScreen(GaiaView::kScreenId);

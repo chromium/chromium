@@ -149,6 +149,9 @@ class ErrorScreen : public BaseScreen,
   // Handle uses action to reboot device.
   void OnRebootButtonClicked();
 
+  // If show is true offline login flow is enabled from the error screen.
+  void ShowOfflineLoginOption(bool show);
+
   // Handles the response of an ownership check and starts the guest session if
   // applicable.
   void StartGuestSessionAfterOwnershipCheck(
@@ -157,6 +160,8 @@ class ErrorScreen : public BaseScreen,
   ErrorScreenView* view_ = nullptr;
 
   std::unique_ptr<LoginPerformer> guest_login_performer_;
+
+  bool offline_login_allowed_ = false;
 
   // Proxy which manages showing of the window for captive portal entering.
   std::unique_ptr<CaptivePortalWindowProxy> captive_portal_window_proxy_;
