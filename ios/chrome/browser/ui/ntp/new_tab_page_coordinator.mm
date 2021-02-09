@@ -311,7 +311,7 @@
 }
 
 - (void)stopScrolling {
-  if (IsRefactoredNTP()) {
+  if ([self isNTPRefactoredAndFeedVisible]) {
     [self.ntpViewController stopScrolling];
   } else {
     [self.contentSuggestionsCoordinator stopScrolling];
