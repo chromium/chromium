@@ -267,8 +267,6 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
 
   int player_id() { return player_id_; }
 
-  MOCK_METHOD2(DidAudioOutputSinkChange, void(int, const std::string&));
-
  private:
   Observer* observer_ = nullptr;
   int player_id_ = 1234;

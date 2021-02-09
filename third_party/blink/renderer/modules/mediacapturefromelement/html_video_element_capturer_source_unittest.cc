@@ -57,8 +57,10 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   void OnRequestPictureInPicture() override {}
   WebTimeRanges Buffered() const override { return WebTimeRanges(); }
   WebTimeRanges Seekable() const override { return WebTimeRanges(); }
-  void SetSinkId(const WebString& sinkId,
-                 WebSetSinkIdCompleteCallback) override {}
+  bool SetSinkId(const WebString& sinkId,
+                 WebSetSinkIdCompleteCallback) override {
+    return false;
+  }
   bool HasVideo() const override { return true; }
   bool HasAudio() const override { return false; }
   gfx::Size NaturalSize() const override { return size_; }

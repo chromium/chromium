@@ -1465,6 +1465,12 @@ bool HTMLMediaElement::PausedWhenVisible() const {
          !GetWebMediaPlayer()->PausedWhenHidden();
 }
 
+void HTMLMediaElement::DidAudioOutputSinkChanged(
+    const String& hashed_device_id) {
+  for (auto& observer : media_player_observer_remote_set_)
+    observer->OnAudioOutputSinkChanged(hashed_device_id);
+}
+
 void HTMLMediaElement::AddMediaPlayerObserverForTesting(
     mojo::PendingRemote<media::mojom::blink::MediaPlayerObserver> observer) {
   AddMediaPlayerObserver(std::move(observer));

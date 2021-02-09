@@ -39,12 +39,4 @@ IPC_MESSAGE_ROUTED2(MediaPlayerDelegateMsg_NotifyPowerExperimentState,
                     int /* delegate_id, distinguishes instances */,
                     bool /* is experiment starting (true) or stopping? */)
 
-// ----------------------------------------------------------------------------
-// Messages from the renderer notifying the browser of playback state changes.
-// ----------------------------------------------------------------------------
-
-IPC_MESSAGE_ROUTED2(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
-                    int /* delegate_id, distinguishes instances */,
-                    std::string /* hashed_device_id */)
-
 #endif  // CONTENT_COMMON_MEDIA_MEDIA_PLAYER_DELEGATE_MESSAGES_H_

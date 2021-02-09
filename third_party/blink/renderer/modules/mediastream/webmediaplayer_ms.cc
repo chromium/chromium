@@ -822,27 +822,28 @@ void WebMediaPlayerMS::OnRequestPictureInPicture() {
   DCHECK(bridge_->GetSurfaceId().is_valid());
 }
 
-void WebMediaPlayerMS::SetSinkId(
+bool WebMediaPlayerMS::SetSinkId(
     const WebString& sink_id,
     WebSetSinkIdCompleteCallback completion_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(
       String::Format("%s({sink_id=%s})", __func__, sink_id.Utf8().c_str()));
+
+  media::OutputDeviceStatusCB callback =
+      ConvertToOutputDeviceStatusCB(std::move(completion_callback));
+
   if (!audio_renderer_) {
     SendLogMessage(String::Format(
         "%s => (WARNING: failed to instantiate audio renderer)", __func__));
-  }
-  media::OutputDeviceStatusCB callback =
-      ConvertToOutputDeviceStatusCB(std::move(completion_callback));
-  if (audio_renderer_) {
-    auto sink_id_utf8 = sink_id.Utf8();
-    audio_renderer_->SwitchOutputDevice(sink_id_utf8, std::move(callback));
-    delegate_->DidAudioOutputSinkChange(delegate_id_, sink_id_utf8);
-  } else {
     std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
     SendLogMessage(String::Format(
         "%s => (ERROR: OUTPUT_DEVICE_STATUS_ERROR_INTERNAL)", __func__));
+    return false;
   }
+
+  auto sink_id_utf8 = sink_id.Utf8();
+  audio_renderer_->SwitchOutputDevice(sink_id_utf8, std::move(callback));
+  return true;
 }
 
 void WebMediaPlayerMS::SetPreload(WebMediaPlayer::Preload preload) {

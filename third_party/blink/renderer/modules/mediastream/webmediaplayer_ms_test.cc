@@ -151,11 +151,6 @@ class FakeWebMediaPlayerDelegate
 
   int delegate_id() { return delegate_id_; }
 
-  void DidAudioOutputSinkChange(int delegate_id,
-                                const std::string& hashed_device_id) override {
-    EXPECT_EQ(delegate_id_, delegate_id);
-  }
-
  private:
   int delegate_id_ = 1234;
   Observer* observer_ = nullptr;

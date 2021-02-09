@@ -203,7 +203,7 @@ class WebMediaPlayer {
   virtual WebTimeRanges Seekable() const = 0;
 
   // Attempts to switch the audio output device.
-  virtual void SetSinkId(const WebString& sing_id,
+  virtual bool SetSinkId(const WebString& sing_id,
                          WebSetSinkIdCompleteCallback) = 0;
 
   // True if the loaded media has a playable video/audio track.

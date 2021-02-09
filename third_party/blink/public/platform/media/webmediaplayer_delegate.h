@@ -98,11 +98,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
   // so that we can do the right thing with media that starts paused.
   virtual void DidPause(int player_id, bool reached_end_of_stream) = 0;
 
-  // Notify that the audio output sink has changed
-  virtual void DidAudioOutputSinkChange(
-      int delegate_id,
-      const std::string& hashed_device_id) = 0;
-
   // Notify that playback is stopped. This will drop wake locks and remove any
   // external controls.
   //

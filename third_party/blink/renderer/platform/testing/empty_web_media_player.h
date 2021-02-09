@@ -40,8 +40,10 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   }
   WebTimeRanges Buffered() const override;
   WebTimeRanges Seekable() const override;
-  void SetSinkId(const WebString& sink_id,
-                 WebSetSinkIdCompleteCallback) override {}
+  bool SetSinkId(const WebString& sink_id,
+                 WebSetSinkIdCompleteCallback) override {
+    return false;
+  }
   bool HasVideo() const override { return false; }
   bool HasAudio() const override { return false; }
   gfx::Size NaturalSize() const override;

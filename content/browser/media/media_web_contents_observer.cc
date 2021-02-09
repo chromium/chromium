@@ -46,8 +46,7 @@ static void SuspendAllMediaPlayersInRenderFrame(
 
 static void OnAudioOutputDeviceIdTranslated(
     base::WeakPtr<MediaWebContentsObserver> observer,
-    RenderFrameHost* render_frame_host,
-    int delegate_id,
+    const MediaPlayerId& player_id,
     const base::Optional<std::string>& raw_device_id) {
   if (!raw_device_id)
     return;
@@ -55,8 +54,7 @@ static void OnAudioOutputDeviceIdTranslated(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaWebContentsObserver::OnReceivedTranslatedDeviceId,
-                     std::move(observer), render_frame_host, delegate_id,
-                     raw_device_id.value()));
+                     std::move(observer), player_id, raw_device_id.value()));
 }
 
 }  // anonymous namespace
@@ -253,19 +251,6 @@ MediaWebContentsObserver::GetFullscreenVideoMediaPlayerId() const {
   return fullscreen_player_;
 }
 
-bool MediaWebContentsObserver::OnMessageReceived(
-    const IPC::Message& msg,
-    RenderFrameHost* render_frame_host) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(MediaWebContentsObserver, msg,
-                                   render_frame_host)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged,
-                        OnAudioOutputSinkChanged);
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
 void MediaWebContentsObserver::MediaPictureInPictureChanged(
     bool is_picture_in_picture) {
   session_controllers_manager_->PictureInPictureStateChanged(
@@ -383,6 +368,12 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnAudioOutputSinkChanged(const std::string& hashed_device_id) {
+  media_web_contents_observer_->session_controllers_manager()
+      ->OnAudioOutputSinkChanged(media_player_id_, hashed_device_id);
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnAudioOutputSinkChangingDisabled() {
   media_web_contents_observer_->session_controllers_manager()
       ->OnAudioOutputSinkChangingDisabled(media_player_id_);
@@ -485,12 +476,11 @@ void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(
 }
 
 void MediaWebContentsObserver::OnAudioOutputSinkChanged(
-    RenderFrameHost* render_frame_host,
-    int delegate_id,
+    const MediaPlayerId& player_id,
     std::string hashed_device_id) {
   auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID());
+      player_id.render_frame_host->GetProcess()->GetID(),
+      player_id.render_frame_host->GetRoutingID());
 
   auto callback_on_io_thread = base::BindOnce(
       [](const std::string& salt, const url::Origin& origin,
@@ -505,19 +495,17 @@ void MediaWebContentsObserver::OnAudioOutputSinkChanged(
       salt_and_origin.device_id_salt, std::move(salt_and_origin.origin),
       hashed_device_id,
       base::BindOnce(&OnAudioOutputDeviceIdTranslated,
-                     weak_ptr_factory_.GetWeakPtr(), render_frame_host,
-                     delegate_id));
+                     weak_ptr_factory_.GetWeakPtr(), player_id));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, std::move(callback_on_io_thread));
 }
 
 void MediaWebContentsObserver::OnReceivedTranslatedDeviceId(
-    RenderFrameHost* render_frame_host,
-    int delegate_id,
+    const MediaPlayerId& player_id,
     const std::string& raw_device_id) {
-  session_controllers_manager_->OnAudioOutputSinkChanged(
-      MediaPlayerId(render_frame_host, delegate_id), raw_device_id);
+  session_controllers_manager_->OnAudioOutputSinkChanged(player_id,
+                                                         raw_device_id);
 }
 
 media::mojom::MediaPlayer* MediaWebContentsObserver::GetMediaPlayerRemote(

@@ -118,7 +118,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void SetPreservesPitch(bool preserves_pitch) override;
   void SetAutoplayInitiated(bool autoplay_initiated) override;
   void OnRequestPictureInPicture() override;
-  void SetSinkId(const WebString& sink_id,
+  bool SetSinkId(const WebString& sink_id,
                  WebSetSinkIdCompleteCallback completion_callback) override;
   void SetPreload(WebMediaPlayer::Preload preload) override;
   WebTimeRanges Buffered() const override;

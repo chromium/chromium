@@ -1063,7 +1063,7 @@ void WebMediaPlayerImpl::OnRequestPictureInPicture() {
   DCHECK(bridge_->GetSurfaceId().is_valid());
 }
 
-void WebMediaPlayerImpl::SetSinkId(
+bool WebMediaPlayerImpl::SetSinkId(
     const blink::WebString& sink_id,
     blink::WebSetSinkIdCompleteCallback completion_callback) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -1075,7 +1075,7 @@ void WebMediaPlayerImpl::SetSinkId(
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SetSinkIdOnMediaThread, audio_source_provider_,
                                 sink_id_utf8, std::move(callback)));
-  delegate_->DidAudioOutputSinkChange(delegate_id_, sink_id_utf8);
+  return true;
 }
 
 STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadNone, MultibufferDataSource::NONE);

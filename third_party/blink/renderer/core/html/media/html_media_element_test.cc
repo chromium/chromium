@@ -155,6 +155,8 @@ class MockMediaPlayerObserverReceiverForTesting
 
   void OnPictureInPictureAvailabilityChanged(bool available) override {}
 
+  void OnAudioOutputSinkChanged(const WTF::String& hashed_device_id) override {}
+
   void OnAudioOutputSinkChangingDisabled() override {}
 
   void OnBufferUnderflow() override {

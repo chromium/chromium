@@ -187,13 +187,6 @@ bool RendererWebMediaPlayerDelegate::IsStale(int player_id) {
   return stale_players_.count(player_id);
 }
 
-void RendererWebMediaPlayerDelegate::DidAudioOutputSinkChange(
-    int delegate_id,
-    const std::string& hashed_device_id) {
-  Send(new MediaPlayerDelegateHostMsg_OnAudioOutputSinkChanged(
-      routing_id(), delegate_id, hashed_device_id));
-}
-
 void RendererWebMediaPlayerDelegate::WasHidden() {
   RecordAction(base::UserMetricsAction("Media.Hidden"));
 

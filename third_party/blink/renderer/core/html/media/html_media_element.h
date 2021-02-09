@@ -352,6 +352,8 @@ class CORE_EXPORT HTMLMediaElement
   // becomes visible again.
   bool PausedWhenVisible() const;
 
+  void DidAudioOutputSinkChanged(const String& hashed_device_id);
+
   void SetCcLayerForTesting(cc::Layer* layer) { SetCcLayer(layer); }
 
   // Required by tests set mock receivers to check that messages are delivered.

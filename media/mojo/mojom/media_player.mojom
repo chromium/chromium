@@ -71,6 +71,9 @@ interface MediaPlayerObserver {
   // Notifies the browser process of PictureinPicture playback's availability.
   OnPictureInPictureAvailabilityChanged(bool available);
 
+  // Notifies that the audio output sink has changed.
+  OnAudioOutputSinkChanged(string hashed_device_id);
+
   // Notifies the browser process that the ability to switch audio output
   // devices for the associated media player has been disabled.
   OnAudioOutputSinkChangingDisabled();

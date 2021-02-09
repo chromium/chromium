@@ -136,7 +136,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   void SetAutoplayInitiated(bool autoplay_initiated) override;
   void OnRequestPictureInPicture() override;
   void OnTimeUpdate() override;
-  void SetSinkId(
+  bool SetSinkId(
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback completion_callback) override;
   void SetPoster(const blink::WebURL& poster) override;

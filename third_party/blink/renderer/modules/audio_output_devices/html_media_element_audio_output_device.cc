@@ -100,8 +100,10 @@ void SetSinkIdResolver::DoSetSinkId() {
       WTF::Bind(&SetSinkIdResolver::OnSetSinkIdComplete, WrapPersistent(this));
   WebMediaPlayer* web_media_player = element_->GetWebMediaPlayer();
   if (web_media_player) {
-    web_media_player->SetSinkId(sink_id_,
-                                std::move(set_sink_id_completion_callback));
+    if (web_media_player->SetSinkId(
+            sink_id_, std::move(set_sink_id_completion_callback))) {
+      element_->DidAudioOutputSinkChanged(sink_id_);
+    }
     return;
   }
 
@@ -197,13 +199,15 @@ ScriptPromise HTMLMediaElementAudioOutputDevice::setSinkId(
 void HTMLMediaElementAudioOutputDevice::SetSinkId(const String& sink_id) {
   // No need to call WebFrameClient::CheckIfAudioSinkExistsAndIsAuthorized as
   // this call is not coming from content and should already be allowed.
-  WebMediaPlayer* web_media_player = GetSupplementable()->GetWebMediaPlayer();
+  HTMLMediaElement* html_media_element = GetSupplementable();
+  WebMediaPlayer* web_media_player = html_media_element->GetWebMediaPlayer();
   if (!web_media_player)
     return;
 
   sink_id_ = sink_id;
 
-  web_media_player->SetSinkId(sink_id_, base::DoNothing());
+  if (web_media_player->SetSinkId(sink_id_, base::DoNothing()))
+    html_media_element->DidAudioOutputSinkChanged(sink_id_);
 }
 
 void HTMLMediaElementAudioOutputDevice::Trace(Visitor* visitor) const {
