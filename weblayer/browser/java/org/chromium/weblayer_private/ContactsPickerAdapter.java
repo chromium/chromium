@@ -72,9 +72,10 @@ public class ContactsPickerAdapter extends PickerAdapter {
         try {
             name = identityCallback.getFullName();
             ValueCallback<Bitmap> onAvatarLoaded = (Bitmap returnedAvatar) -> {
-                if (weakThis.get() == null) return;
+                ContactsPickerAdapter strongThis = weakThis.get();
+                if (strongThis == null) return;
 
-                weakThis.get().updateOwnerInfoWithIcon(returnedAvatar);
+                strongThis.updateOwnerInfoWithIcon(returnedAvatar);
             };
             identityCallback.getAvatar(getIconRawPixelSize(), ObjectWrapper.wrap(onAvatarLoaded));
         } catch (RemoteException e) {
@@ -103,8 +104,13 @@ public class ContactsPickerAdapter extends PickerAdapter {
     }
 
     private void updateOwnerInfoWithIcon(Bitmap icon) {
-        mAvatar = icon;
-        if (mSelfContactSynthesized && mAvatar != null) {
+        if (icon == null) return;
+
+        mAvatar = icon.copy(icon.getConfig(), true);
+        mAvatar.setDensity(
+                mWindowAndroid.getContext().get().getResources().getConfiguration().densityDpi);
+
+        if (mSelfContactSynthesized) {
             getAllContacts().get(0).setSelfIcon(createAvatarDrawable());
             update();
         }

@@ -569,8 +569,11 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 // Simulate a delayed load.
                 final Handler handler = new Handler(Looper.getMainLooper());
                 handler.postDelayed(() -> {
-                    avatarLoadedCallback.onReceiveValue(BitmapFactory.decodeResource(
-                            getApplicationContext().getResources(), R.drawable.avatar_sunglasses));
+                    Bitmap bitmap = BitmapFactory.decodeResource(
+                            getApplicationContext().getResources(), R.drawable.avatar_sunglasses);
+                    // Curveball: set an arbitrary density.
+                    bitmap.setDensity(120);
+                    avatarLoadedCallback.onReceiveValue(bitmap);
                 }, 3000);
             }
         });
