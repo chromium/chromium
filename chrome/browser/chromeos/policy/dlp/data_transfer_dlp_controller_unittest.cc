@@ -278,4 +278,22 @@ TEST_P(DlpControllerVMsTest, Block) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 }
 
+TEST_P(DlpControllerVMsTest, Warn) {
+  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
+  base::Optional<ui::EndpointType> endpoint_type;
+  bool do_notify;
+  std::tie(endpoint_type, do_notify) = GetParam();
+  ASSERT_TRUE(endpoint_type.has_value());
+  ui::DataTransferEndpoint data_dst(endpoint_type.value(), do_notify);
+
+  // IsClipboardReadAllowed
+  EXPECT_CALL(rules_manager_, IsRestrictedComponent)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
+  if (do_notify)
+    EXPECT_CALL(dlp_controller_, WarnOnPaste);
+
+  EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+}
+
 }  // namespace policy

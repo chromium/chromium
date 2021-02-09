@@ -612,6 +612,9 @@ Additional details:
   <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_DISMISS_BUTTON" desc="Dismiss dialog button label for warning before paste.">
     Cancel
   </message>
+  <message name="IDS_POLICY_DLP_CLIPBOARD_WARN_ON_COPY_VM" desc="A toast informing the user that pasting the clipboard data to VMs is not recommended.">
+    Copying and pasting this content to <ph name="VM_NAME">$1<ex>Linux</ex></ph> is not recommended by administrator policy
+  </message>
   <message name="IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE" desc="The title for notification informing the user that printing is blocked.">
     Printing is blocked
   </message>

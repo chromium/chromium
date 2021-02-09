@@ -133,10 +133,19 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
       break;
 
     case DlpRulesManager::Level::kWarn:
-      if (notify_on_paste && !ShouldProceedOnWarn(data_dst)) {
-        SYSLOG(INFO) << "DLP warned on paste from clipboard";
-        WarnOnPaste(data_src, data_dst);
-        is_read_allowed = false;
+      if (notify_on_paste) {
+        // In case the clipboard data is in warning mode, it will be allowed to
+        // be shared with Arc, Crostini, and Plugin VM without waiting for the
+        // user decision.
+        if (data_dst && (data_dst->type() == ui::EndpointType::kArc ||
+                         data_dst->type() == ui::EndpointType::kPluginVm ||
+                         data_dst->type() == ui::EndpointType::kCrostini)) {
+          WarnOnPaste(data_src, data_dst);
+        } else if (!ShouldProceedOnWarn(data_dst)) {
+          SYSLOG(INFO) << "DLP warned on paste from clipboard";
+          WarnOnPaste(data_src, data_dst);
+          is_read_allowed = false;
+        }
       }
       break;
 

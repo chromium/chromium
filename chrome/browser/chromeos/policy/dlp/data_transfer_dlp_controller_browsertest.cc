@@ -283,12 +283,10 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockComponent) {
 
   SetupCrostini();
 
-  const std::string kUrl1 = "https://mail.google.com";
-
   base::Value rules(base::Value::Type::LIST);
 
   base::Value src_urls(base::Value::Type::LIST);
-  src_urls.Append(kUrl1);
+  src_urls.Append(kMailUrl);
   base::Value dst_components(base::Value::Type::LIST);
   dst_components.Append(dlp::kArc);
   dst_components.Append(dlp::kCrostini);
@@ -305,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockComponent) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
                                      std::make_unique<ui::DataTransferEndpoint>(
-                                         url::Origin::Create(GURL(kUrl1))));
+                                         url::Origin::Create(GURL(kMailUrl))));
     writer.WriteText(base::UTF8ToUTF16(kClipboardText1));
   }
   ui::DataTransferEndpoint data_dst1(ui::EndpointType::kDefault);
@@ -471,6 +469,61 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, WarnDestination) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller);
 
   FlushMessageLoop();
+}
+
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, WarnComponent) {
+  SkipToLoginScreen();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+
+  SetupCrostini();
+
+  {
+    ListPrefUpdate update(g_browser_process->local_state(),
+                          policy_prefs::kDlpRulesList);
+    base::Value rule(base::Value::Type::DICTIONARY);
+    base::Value src_urls(base::Value::Type::DICTIONARY);
+    base::Value src_urls_list(base::Value::Type::LIST);
+    src_urls_list.Append(base::Value(kMailUrl));
+    src_urls.SetKey("urls", std::move(src_urls_list));
+    rule.SetKey("sources", std::move(src_urls));
+
+    base::Value dst_components(base::Value::Type::DICTIONARY);
+    base::Value dst_components_list(base::Value::Type::LIST);
+    dst_components_list.Append(base::Value("ARC"));
+    dst_components_list.Append(base::Value("CROSTINI"));
+    dst_components_list.Append(base::Value("PLUGIN_VM"));
+    dst_components.SetKey("components", std::move(dst_components_list));
+    rule.SetKey("destinations", std::move(dst_components));
+
+    base::Value restrictions(base::Value::Type::DICTIONARY);
+    base::Value restrictions_list(base::Value::Type::LIST);
+    base::Value class_level_dict(base::Value::Type::DICTIONARY);
+    class_level_dict.SetKey("class", base::Value("CLIPBOARD"));
+    class_level_dict.SetKey("level", base::Value("WARN"));
+    restrictions_list.Append(std::move(class_level_dict));
+    rule.SetKey("restrictions", std::move(restrictions_list));
+
+    update->Append(std::move(rule));
+  }
+
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
+                                     std::make_unique<ui::DataTransferEndpoint>(
+                                         url::Origin::Create(GURL(kMailUrl))));
+    writer.WriteText(base::UTF8ToUTF16(kClipboardText1));
+  }
+
+  ui::DataTransferEndpoint arc_endpoint(ui::EndpointType::kArc);
+  base::string16 result;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, &arc_endpoint, &result);
+  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
+
+  ui::DataTransferEndpoint crostini_endpoint(ui::EndpointType::kCrostini);
+  result.clear();
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, &crostini_endpoint, &result);
+  EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
 }
 
 }  // namespace policy

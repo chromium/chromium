@@ -435,27 +435,20 @@ void DlpClipboardNotificationHelper::NotifyBlockedPaste(
 
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
-      ShowClipboardBlockToast(
-          kClipboardDlpCrostiniToastId,
-          l10n_util::GetStringFUTF16(
-              IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
-              l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX)));
+      ShowClipboardBlockToast(kClipboardBlockCrostiniToastId, host_name,
+                              l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX));
       return;
     }
     if (data_dst->type() == ui::EndpointType::kPluginVm) {
       ShowClipboardBlockToast(
-          kClipboardDlpPluginVmToastId,
-          l10n_util::GetStringFUTF16(
-              IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
-              l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)));
+          kClipboardBlockPluginVmToastId, host_name,
+          l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME));
       return;
     }
     if (data_dst->type() == ui::EndpointType::kArc) {
       ShowClipboardBlockToast(
-          kClipboardDlpArcToastId,
-          l10n_util::GetStringFUTF16(
-              IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, host_name,
-              l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS)));
+          kClipboardBlockArcToastId, host_name,
+          l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS));
       return;
     }
   }
@@ -473,15 +466,19 @@ void DlpClipboardNotificationHelper::WarnOnPaste(
 
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
-      // TODO(crbug.com/1168104): Support toasts in warning mode.
+      ShowClipboardWarnToast(kClipboardWarnCrostiniToastId,
+                             l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX));
       return;
     }
     if (data_dst->type() == ui::EndpointType::kPluginVm) {
-      // TODO(crbug.com/1168104): Support toasts in warning mode.
+      ShowClipboardWarnToast(kClipboardWarnPluginVmToastId,
+                             l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME));
       return;
     }
     if (data_dst->type() == ui::EndpointType::kArc) {
-      // TODO(crbug.com/1168104): Support toasts in warning mode.
+      ShowClipboardWarnToast(
+          kClipboardWarnArcToastId,
+          l10n_util::GetStringUTF16(IDS_POLICY_DLP_ANDROID_APPS));
       return;
     }
   }
@@ -537,8 +534,11 @@ void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
 
 void DlpClipboardNotificationHelper::ShowClipboardBlockToast(
     const std::string& id,
-    const base::string16& text) {
-  ash::ToastData toast(id, text, kClipboardDlpBlockDurationMs,
+    const base::string16& src_name,
+    const base::string16& dst_name) {
+  const base::string16 text = l10n_util::GetStringFUTF16(
+      IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM, src_name, dst_name);
+  ash::ToastData toast(id, text, kClipboardDlpToastDurationMs,
                        /*dismiss_text=*/base::nullopt);
   toast.is_managed = true;
   ash::ToastManager::Get()->Show(toast);
@@ -562,6 +562,17 @@ void DlpClipboardNotificationHelper::ShowClipboardWarnBubble(
 
   ResizeAndShowWidget(warn_bubble->GetBubbleSize(),
                       kClipboardDlpWarnDurationMs);
+}
+
+void DlpClipboardNotificationHelper::ShowClipboardWarnToast(
+    const std::string& id,
+    const base::string16& dst_name) {
+  const base::string16 text = l10n_util::GetStringFUTF16(
+      IDS_POLICY_DLP_CLIPBOARD_WARN_ON_COPY_VM, dst_name);
+  ash::ToastData toast(id, text, kClipboardDlpToastDurationMs,
+                       /*dismiss_text=*/base::nullopt);
+  toast.is_managed = true;
+  ash::ToastManager::Get()->Show(toast);
 }
 
 void DlpClipboardNotificationHelper::OnWidgetClosing(views::Widget* widget) {

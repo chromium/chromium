@@ -28,14 +28,11 @@ constexpr char kUrl[] = "https://example.com";
 
 struct ToastTest {
   ToastTest(ui::EndpointType dst_type,
-            const std::string& toast_id,
             int dst_name_id)
       : dst_type(dst_type),
-        expected_toast_id(toast_id),
         expected_dst_name_id(dst_name_id) {}
 
   const ui::EndpointType dst_type;
-  const std::string expected_toast_id;
   const int expected_dst_name_id;
 };
 
@@ -45,11 +42,15 @@ class MockDlpClipboardNotificationHelper
     : public DlpClipboardNotificationHelper {
  public:
   MOCK_METHOD1(ShowClipboardBlockBubble, void(const base::string16& text));
-  MOCK_METHOD2(ShowClipboardBlockToast,
-               void(const std::string& id, const base::string16& text));
+  MOCK_METHOD3(ShowClipboardBlockToast,
+               void(const std::string& id,
+                    const base::string16& src_name,
+                    const base::string16& dst_name));
   MOCK_METHOD2(ShowClipboardWarnBubble,
                void(const base::string16& text,
                     const ui::DataTransferEndpoint* const data_dst));
+  MOCK_METHOD2(ShowClipboardWarnToast,
+               void(const std::string& id, const base::string16& dst_name));
   void ProceedOnWarn(views::Widget* widget,
                      const ui::DataTransferEndpoint& data_dst) {
     DlpClipboardNotificationHelper::ProceedOnWarn(widget, data_dst);
@@ -181,23 +182,35 @@ TEST_P(DlpClipboardToastTest, BlockToast) {
       base::UTF8ToUTF16(origin.host()),
       l10n_util::GetStringUTF16(GetParam().expected_dst_name_id));
   EXPECT_CALL(notification_helper,
-              ShowClipboardBlockToast(GetParam().expected_toast_id,
-                                      expected_toast_str));
+              ShowClipboardBlockToast(
+                  testing::_, base::UTF8ToUTF16(origin.host()),
+                  l10n_util::GetStringUTF16(GetParam().expected_dst_name_id)));
 
   notification_helper.NotifyBlockedPaste(&data_src, &data_dst);
+}
+
+TEST_P(DlpClipboardToastTest, WarnToast) {
+  ::testing::StrictMock<MockDlpClipboardNotificationHelper> notification_helper;
+  url::Origin origin = url::Origin::Create(GURL(kUrl));
+  ui::DataTransferEndpoint data_src(origin);
+  ui::DataTransferEndpoint data_dst(GetParam().dst_type);
+
+  EXPECT_CALL(notification_helper,
+              ShowClipboardWarnToast(
+                  testing::_,
+                  l10n_util::GetStringUTF16(GetParam().expected_dst_name_id)));
+
+  notification_helper.WarnOnPaste(&data_src, &data_dst);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     DlpClipboard,
     DlpClipboardToastTest,
     ::testing::Values(ToastTest(ui::EndpointType::kCrostini,
-                                kClipboardDlpCrostiniToastId,
                                 IDS_CROSTINI_LINUX),
                       ToastTest(ui::EndpointType::kPluginVm,
-                                kClipboardDlpPluginVmToastId,
                                 IDS_PLUGIN_VM_APP_NAME),
                       ToastTest(ui::EndpointType::kArc,
-                                kClipboardDlpArcToastId,
                                 IDS_POLICY_DLP_ANDROID_APPS)));
 
 }  // namespace policy
