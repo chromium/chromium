@@ -14,10 +14,6 @@
       padding-bottom: 16px;
     }
 
-    :host-context(html:not([new-layout])) #relatedInfoLottie {
-      display: none;
-    }
-
     :host-context(html:not([new-layout])) #relatedInfoImg {
         max-height: 240px;
       }
@@ -46,7 +42,7 @@
           srcset="assistant_related_info_1x.svg 1x,
           assistant_related_info_2x.svg 2x">
     </div>
-    <div slot="content" hidden$="[[!skipActivityControl_]]">
+    <div slot="content" class="container" hidden$="[[!skipActivityControl_]]">
       <div id="intro-text" class="content">
         [[i18nDynamic(locale, 'assistantRelatedInfoReturnedUserMessage')]]
       </div>

@@ -49,3 +49,9 @@ webview {
 #next-button {
   margin-inline-end: 0;
 }
+
+@media screen and (orientation: landscape) {
+  :host-context(html[new-layout]) .container {
+    padding-top: 72px;
+  }
+}
