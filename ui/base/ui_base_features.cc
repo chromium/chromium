@@ -26,6 +26,11 @@ const base::Feature kCalculateNativeWinOcclusion{
     "CalculateNativeWinOcclusion", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // OW_WIN
 
+// Whether or not filenames are supported on the clipboard.
+// https://crbug.com/1175483
+const base::Feature kClipboardFilenames{"ClipboardFilenames",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Whether or not to delegate color queries to the color provider.
 const base::Feature kColorProviderRedirection = {
     "ColorProviderRedirection", base::FEATURE_DISABLED_BY_DEFAULT};

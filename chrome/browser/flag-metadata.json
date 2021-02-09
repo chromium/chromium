@@ -574,6 +574,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "clipboard-filenames",
+    "owners": [ "joelhockey" ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "collections-card-presentation-style",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 80

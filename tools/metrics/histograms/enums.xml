@@ -44656,6 +44656,7 @@ from previous Chrome versions.
   <int value="-427163069" label="isolation-by-default"/>
   <int value="-426815606" label="HomepageTile:enabled"/>
   <int value="-424701311" label="SignedHTTPExchange:disabled"/>
+  <int value="-424584720" label="ClipboardFilenames:enabled"/>
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
   <int value="-418868128" label="enable-experimental-web-platform-features"/>
@@ -47383,6 +47384,7 @@ from previous Chrome versions.
   <int value="2129929643" label="enable-use-zoom-for-dsf"/>
   <int value="2132595171" label="OmniboxSearchEngineLogo:enabled"/>
   <int value="2133594095" label="CryptAuthV2DeviceActivityStatus:disabled"/>
+  <int value="2133647636" label="ClipboardFilenames:disabled"/>
   <int value="2134480727" label="MediaSessionAccelerators:disabled"/>
   <int value="2135408204" label="OverscrollHistoryNavigation:disabled"/>
   <int value="2137113620"

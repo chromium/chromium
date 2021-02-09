@@ -6543,6 +6543,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kClientStorageAccessContextAuditing)},
 
+    {"clipboard-filenames", flag_descriptions::kClipboardFilenamesName,
+     flag_descriptions::kClipboardFilenamesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kClipboardFilenames)},
+
 #if defined(OS_WIN)
     {"safety-check-chrome-cleaner-child",
      flag_descriptions::kSafetyCheckChromeCleanerChildName,
