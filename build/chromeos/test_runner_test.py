@@ -39,6 +39,19 @@ class TestRunnerTest(unittest.TestCase):
     shutil.rmtree(self._tmp_dir, ignore_errors=True)
     self.mock_rdb.stop()
 
+  def safeAssertItemsEqual(self, list1, list2):
+    """A Py3 safe version of assertItemsEqual.
+
+    See https://bugs.python.org/issue17866.
+    """
+    if six.PY3:
+      self.assertSetEqual(set(list1), set(list2))
+    else:
+      self.assertItemsEqual(list1, list2)
+
+
+class TastTests(TestRunnerTest):
+
   def get_common_tast_args(self, use_vm):
     return [
         'script_name',
@@ -81,80 +94,24 @@ class TestRunnerTest(unittest.TestCase):
       ]
     return expectation
 
-  def safeAssertItemsEqual(self, list1, list2):
-    """A Py3 safe version of assertItemsEqual.
-
-    See https://bugs.python.org/issue17866.
-    """
-    if six.PY3:
-      self.assertSetEqual(set(list1), set(list2))
-    else:
-      self.assertItemsEqual(list1, list2)
-
-  @parameterized.expand([
-      [True],
-      [False],
-  ])
-  def test_gtest(self, use_vm):
-    """Tests running a gtest."""
-    fd_mock = mock.mock_open()
-
-    args = [
-        'script_name',
-        'vm-test',
-        '--test-exe=out_eve/Release/base_unittests',
-        '--board=eve',
-        '--path-to-outdir=out_eve/Release',
-        '--use-vm' if use_vm else '--device=localhost:2222',
-    ]
-    with mock.patch.object(sys, 'argv', args),\
-         mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen,\
-         mock.patch.object(os, 'fdopen', fd_mock),\
-         mock.patch.object(os, 'remove') as mock_remove,\
-         mock.patch.object(tempfile, 'mkstemp',
-            return_value=(3, 'out_eve/Release/device_script.sh')),\
-         mock.patch.object(os, 'fchmod'):
-      mock_popen.return_value.returncode = 0
-
-      test_runner.main()
-      self.assertEqual(1, mock_popen.call_count)
-      expected_cmd = [
-          test_runner.CROS_RUN_TEST_PATH, '--board', 'eve', '--cache-dir',
-          test_runner.DEFAULT_CROS_CACHE, '--as-chronos', '--remote-cmd',
-          '--cwd', 'out_eve/Release', '--files',
-          'out_eve/Release/device_script.sh'
-      ]
-      expected_cmd.extend(['--start', '--copy-on-write']
-                          if use_vm else ['--device', 'localhost:2222'])
-      expected_cmd.extend(['--', './device_script.sh'])
-      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
-
-      fd_mock().write.assert_called_once_with(
-          '#!/bin/sh\nexport HOME=/usr/local/tmp\n'
-          'export TMPDIR=/usr/local/tmp\n'
-          'LD_LIBRARY_PATH=./ ./out_eve/Release/base_unittests '
-          '--test-launcher-shard-index=0 --test-launcher-total-shards=1\n')
-      mock_remove.assert_called_once_with('out_eve/Release/device_script.sh')
-
-  @parameterized.expand([
-      [True],
-      [False],
-  ])
-  def test_tast(self, use_vm):
-    """Tests running a tast tests."""
+  def test_tast_gtest_filter(self):
+    """Tests running tast tests with a gtest-style filter."""
     with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
       json.dump(_TAST_TEST_RESULTS_JSON, f)
 
-    args = self.get_common_tast_args(use_vm) + [
-        '-t=ui.ChromeLogin',
+    args = self.get_common_tast_args(False) + [
+        '--attr-expr=( "group:mainline" && "dep:chrome" && !informational)',
+        '--gtest_filter=ui.ChromeLogin:ui.WindowControl',
     ]
     with mock.patch.object(sys, 'argv', args),\
          mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
       mock_popen.return_value.returncode = 0
 
       test_runner.main()
-      expected_cmd = self.get_common_tast_expectations(use_vm) + [
-          '--tast', 'ui.ChromeLogin'
+      # The gtest filter should cause the Tast expr to be replaced with a list
+      # of the tests in the filter.
+      expected_cmd = self.get_common_tast_expectations(False) + [
+          '--tast=("name:ui.ChromeLogin" || "name:ui.WindowControl")'
       ]
 
       self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
@@ -232,6 +189,77 @@ class TestRunnerTest(unittest.TestCase):
       ]
 
       self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+
+  @parameterized.expand([
+      [True],
+      [False],
+  ])
+  def test_tast(self, use_vm):
+    """Tests running a tast tests."""
+    with open(os.path.join(self._tmp_dir, 'streamed_results.jsonl'), 'w') as f:
+      json.dump(_TAST_TEST_RESULTS_JSON, f)
+
+    args = self.get_common_tast_args(use_vm) + [
+        '-t=ui.ChromeLogin',
+    ]
+    with mock.patch.object(sys, 'argv', args),\
+         mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen:
+      mock_popen.return_value.returncode = 0
+
+      test_runner.main()
+      expected_cmd = self.get_common_tast_expectations(use_vm) + [
+          '--tast', 'ui.ChromeLogin'
+      ]
+
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+
+
+class GTestTest(TestRunnerTest):
+
+  @parameterized.expand([
+      [True],
+      [False],
+  ])
+  def test_gtest(self, use_vm):
+    """Tests running a gtest."""
+    fd_mock = mock.mock_open()
+
+    args = [
+        'script_name',
+        'vm-test',
+        '--test-exe=out_eve/Release/base_unittests',
+        '--board=eve',
+        '--path-to-outdir=out_eve/Release',
+        '--use-vm' if use_vm else '--device=localhost:2222',
+    ]
+    with mock.patch.object(sys, 'argv', args),\
+         mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen,\
+         mock.patch.object(os, 'fdopen', fd_mock),\
+         mock.patch.object(os, 'remove') as mock_remove,\
+         mock.patch.object(tempfile, 'mkstemp',
+            return_value=(3, 'out_eve/Release/device_script.sh')),\
+         mock.patch.object(os, 'fchmod'):
+      mock_popen.return_value.returncode = 0
+
+      test_runner.main()
+      self.assertEqual(1, mock_popen.call_count)
+      expected_cmd = [
+          test_runner.CROS_RUN_TEST_PATH, '--board', 'eve', '--cache-dir',
+          test_runner.DEFAULT_CROS_CACHE, '--as-chronos', '--remote-cmd',
+          '--cwd', 'out_eve/Release', '--files',
+          'out_eve/Release/device_script.sh'
+      ]
+      expected_cmd.extend(['--start', '--copy-on-write']
+                          if use_vm else ['--device', 'localhost:2222'])
+      expected_cmd.extend(['--', './device_script.sh'])
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+
+      fd_mock().write.assert_called_once_with(
+          '#!/bin/sh\nexport HOME=/usr/local/tmp\n'
+          'export TMPDIR=/usr/local/tmp\n'
+          'LD_LIBRARY_PATH=./ ./out_eve/Release/base_unittests '
+          '--test-launcher-shard-index=0 --test-launcher-total-shards=1\n')
+      mock_remove.assert_called_once_with('out_eve/Release/device_script.sh')
 
 
 if __name__ == '__main__':
