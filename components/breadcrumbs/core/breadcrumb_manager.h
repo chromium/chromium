@@ -6,8 +6,8 @@
 #define COMPONENTS_BREADCRUMBS_CORE_BREADCRUMB_MANAGER_H_
 
 #include <list>
-#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -23,6 +23,11 @@ class BreadcrumbManagerObserver;
 // stale data.
 class BreadcrumbManager {
  public:
+  BreadcrumbManager();
+  BreadcrumbManager(const BreadcrumbManager&) = delete;
+  BreadcrumbManager& operator=(const BreadcrumbManager&) = delete;
+  ~BreadcrumbManager();
+
   // Returns the number of collected breadcrumb events which are still relevant.
   // Note: This method may drop old events so the value can change even when no
   // new events have been added, but time has passed.
@@ -45,13 +50,7 @@ class BreadcrumbManager {
   void AddObserver(BreadcrumbManagerObserver* observer);
   void RemoveObserver(BreadcrumbManagerObserver* observer);
 
-  BreadcrumbManager();
-  ~BreadcrumbManager();
-
  private:
-  BreadcrumbManager(const BreadcrumbManager&) = delete;
-  BreadcrumbManager& operator=(const BreadcrumbManager&) = delete;
-
   // Drops events which are considered stale. Note that stale events are not
   // guaranteed to be removed. Explicitly, stale events will be retained while
   // newer events are limited.

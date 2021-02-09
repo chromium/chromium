@@ -5,7 +5,6 @@
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 
