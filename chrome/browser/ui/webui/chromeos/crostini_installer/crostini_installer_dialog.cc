@@ -112,8 +112,8 @@ void CrostiniInstallerDialog::OnCloseContents(content::WebContents* source,
 
 void CrostiniInstallerDialog::OnWebContentsFinishedLoad() {
   DCHECK(dialog_window());
-  dialog_window()->SetTitle(l10n_util::GetStringFUTF16(
-      IDS_CROSTINI_INSTALLER_TITLE, ui::GetChromeOSDeviceName()));
+  dialog_window()->SetTitle(
+      l10n_util::GetStringUTF16(IDS_CROSTINI_INSTALLER_TITLE));
   if (!on_loaded_callback_.is_null()) {
     DCHECK(installer_ui_);
     std::move(on_loaded_callback_).Run(installer_ui_);
