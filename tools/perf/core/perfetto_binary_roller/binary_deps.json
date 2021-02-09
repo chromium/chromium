@@ -10,7 +10,7 @@
         },
         "linux": {
             "hash": "139c8527bd8b2f7b3a9c90f28f6b292cf1cba69e",
-            "remote_path": "perfetto_binaries/trace_processor_shell/linux/b05d9d92a00eb13527779d8f4fb3324ee1a2a2ee/trace_processor_shell"
+            "remote_path": "perfetto_binaries/trace_processor_shell/linux/b3db3ded2c90769dd8c19ec0fb2018691fa9decb/trace_processor_shell"
         }
     },
     "power_profile.sql": {
