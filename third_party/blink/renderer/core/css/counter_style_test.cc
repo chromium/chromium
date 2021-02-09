@@ -574,4 +574,54 @@ TEST_F(CounterStyleTest, KoreanHanjaInformal) {
   }
 }
 
+TEST_F(CounterStyleTest, EthiopicNumeric) {
+  const CounterStyle& style = GetCounterStyle("ethiopic-numeric");
+  EXPECT_EQ(String(u"\u1369"), style.GenerateRepresentation(1));
+  EXPECT_EQ(String(u"\u136A"), style.GenerateRepresentation(2));
+  EXPECT_EQ(String(u"\u136B"), style.GenerateRepresentation(3));
+  EXPECT_EQ(String(u"\u136C"), style.GenerateRepresentation(4));
+  EXPECT_EQ(String(u"\u136D"), style.GenerateRepresentation(5));
+  EXPECT_EQ(String(u"\u136E"), style.GenerateRepresentation(6));
+  EXPECT_EQ(String(u"\u136F"), style.GenerateRepresentation(7));
+  EXPECT_EQ(String(u"\u1370"), style.GenerateRepresentation(8));
+  EXPECT_EQ(String(u"\u1371"), style.GenerateRepresentation(9));
+  EXPECT_EQ(String(u"\u1372"), style.GenerateRepresentation(10));
+  EXPECT_EQ(String(u"\u1372\u1369"), style.GenerateRepresentation(11));
+  EXPECT_EQ(String(u"\u1372\u136A"), style.GenerateRepresentation(12));
+  EXPECT_EQ(String(u"\u1375\u136B"), style.GenerateRepresentation(43));
+  EXPECT_EQ(String(u"\u1378\u136F"), style.GenerateRepresentation(77));
+  EXPECT_EQ(String(u"\u1379"), style.GenerateRepresentation(80));
+  EXPECT_EQ(String(u"\u137A\u1371"), style.GenerateRepresentation(99));
+  EXPECT_EQ(String(u"\u137B"), style.GenerateRepresentation(100));
+  EXPECT_EQ(String(u"\u137B\u1369"), style.GenerateRepresentation(101));
+  EXPECT_EQ(String(u"\u136A\u137B\u1373\u136A"),
+            style.GenerateRepresentation(222));
+  EXPECT_EQ(String(u"\u136D\u137B\u1375"), style.GenerateRepresentation(540));
+  EXPECT_EQ(String(u"\u1371\u137B\u137A\u1371"),
+            style.GenerateRepresentation(999));
+  EXPECT_EQ(String(u"\u1372\u137B"), style.GenerateRepresentation(1000));
+  EXPECT_EQ(String(u"\u1372\u137B\u136D"), style.GenerateRepresentation(1005));
+  EXPECT_EQ(String(u"\u1372\u137B\u1377"), style.GenerateRepresentation(1060));
+  EXPECT_EQ(String(u"\u1372\u137B\u1377\u136D"),
+            style.GenerateRepresentation(1065));
+  EXPECT_EQ(String(u"\u1372\u1370\u137B"), style.GenerateRepresentation(1800));
+  EXPECT_EQ(String(u"\u1372\u1370\u137B\u1377"),
+            style.GenerateRepresentation(1860));
+  EXPECT_EQ(String(u"\u1372\u1370\u137B\u1377\u136D"),
+            style.GenerateRepresentation(1865));
+  EXPECT_EQ(String(u"\u1376\u1370\u137B\u1377\u136D"),
+            style.GenerateRepresentation(5865));
+  EXPECT_EQ(String(u"\u1378\u137B\u136D"), style.GenerateRepresentation(7005));
+  EXPECT_EQ(String(u"\u1378\u1370\u137B"), style.GenerateRepresentation(7800));
+  EXPECT_EQ(String(u"\u1378\u1370\u137B\u1377\u136C"),
+            style.GenerateRepresentation(7864));
+  EXPECT_EQ(String(u"\u137A\u1371\u137B\u137A\u1371"),
+            style.GenerateRepresentation(9999));
+  EXPECT_EQ(String(u"\u137C"), style.GenerateRepresentation(10000));
+  EXPECT_EQ(String(u"\u1378\u1370\u137B\u1369\u137C\u137A\u136A"),
+            style.GenerateRepresentation(78010092));
+  EXPECT_EQ(String(u"\u137B\u137C\u1369"),
+            style.GenerateRepresentation(1000001));
+}
+
 }  // namespace blink

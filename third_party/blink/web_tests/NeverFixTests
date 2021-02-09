@@ -2269,3 +2269,6 @@ external/wpt/css/css-counter-styles/trad-chinese-formal/css3-counter-styles-088.
 external/wpt/css/css-counter-styles/trad-chinese-informal/css3-counter-styles-083.html [ Skip ]
 external/wpt/css/css-counter-styles/lower-armenian/css3-counter-styles-114.html [ Skip ]
 external/wpt/css/css-counter-styles/upper-armenian/css3-counter-styles-109.html [ Skip ]
+
+# Missing Ethiopic font for these tests
+crbug.com/687225 external/wpt/css/css-counter-styles/ethiopic-numeric/* [ Skip ]

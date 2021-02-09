@@ -16,7 +16,7 @@ PASS list marker is 一.
 ethiopic-numeric
 PASS list marker is -1.
 PASS list marker is 0.
-PASS list marker is 1.
+PASS list marker is ፩.
 
 georgian
 PASS list marker is -1.

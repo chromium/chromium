@@ -75,7 +75,8 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenRange& range,
             CSSValueID::kInternalKoreanHanjaInformal,
             CSSValueID::kInternalKoreanHanjaFormal,
             CSSValueID::kInternalLowerArmenian,
-            CSSValueID::kInternalUpperArmenian>(range))
+            CSSValueID::kInternalUpperArmenian,
+            CSSValueID::kInternalEthiopicNumeric>(range))
       return ident;
   }
 

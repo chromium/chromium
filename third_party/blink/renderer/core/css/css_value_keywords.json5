@@ -1485,6 +1485,7 @@
     "-internal-hebrew",
     "-internal-lower-armenian",
     "-internal-upper-armenian",
+    "-internal-ethiopic-numeric",
 
     // @counter-style range
     // infinite,

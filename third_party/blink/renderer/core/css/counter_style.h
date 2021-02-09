@@ -30,6 +30,7 @@ enum class CounterStyleSystem {
   kKoreanHanjaFormal,
   kLowerArmenian,
   kUpperArmenian,
+  kEthiopicNumeric,
   kUnresolvedExtends,
 };
 

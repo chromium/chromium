@@ -764,8 +764,6 @@ crbug.com/687225 fast/css/content-counter-large-negative-cjk.html [ Failure ]
 # Image symbols are not implemented yet
 crbug.com/687225 external/wpt/css/css-counter-styles/counter-style-prefix-suffix-syntax.html [ Failure ]
 crbug.com/687225 external/wpt/css/css-counter-styles/counter-style-symbols-syntax.html [ Failure ]
-# Missing ref files for these tests
-crbug.com/687225 external/wpt/css/css-counter-styles/ethiopic-numeric/* [ Skip ]
 
 # [css-overflow]
 # Incorrect WPT tests.

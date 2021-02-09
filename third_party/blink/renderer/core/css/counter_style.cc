@@ -74,6 +74,8 @@ CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value) {
       return CounterStyleSystem::kLowerArmenian;
     case CSSValueID::kInternalUpperArmenian:
       return CounterStyleSystem::kUpperArmenian;
+    case CSSValueID::kInternalEthiopicNumeric:
+      return CounterStyleSystem::kEthiopicNumeric;
     case CSSValueID::kExtends:
       return CounterStyleSystem::kUnresolvedExtends;
     default:
@@ -102,6 +104,7 @@ bool HasSymbols(CounterStyleSystem system) {
     case CounterStyleSystem::kKoreanHanjaFormal:
     case CounterStyleSystem::kLowerArmenian:
     case CounterStyleSystem::kUpperArmenian:
+    case CounterStyleSystem::kEthiopicNumeric:
       return false;
   }
 }
@@ -133,6 +136,7 @@ bool SymbolsAreValid(const StyleRuleCounterStyle& rule,
     case CounterStyleSystem::kKoreanHanjaFormal:
     case CounterStyleSystem::kLowerArmenian:
     case CounterStyleSystem::kUpperArmenian:
+    case CounterStyleSystem::kEthiopicNumeric:
       return true;
   }
 }
@@ -343,6 +347,49 @@ String UpperArmenianAlgorithm(unsigned value) {
   return list_marker_text::GetText(EListStyleType::kUpperArmenian, value);
 }
 
+// https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
+String EthiopicNumericAlgorithm(unsigned value) {
+  // Ethiopic characters for 1-9
+  static const UChar units[9] = {0x1369, 0x136A, 0x136B, 0x136C, 0x136D,
+                                 0x136E, 0x136F, 0x1370, 0x1371};
+  // Ethiopic characters for 10, 20, ..., 90
+  static const UChar tens[9] = {0x1372, 0x1373, 0x1374, 0x1375, 0x1376,
+                                0x1377, 0x1378, 0x1379, 0x137A};
+  if (!value)
+    return String();
+  if (value < 10u)
+    return String(&units[value - 1], 1);
+
+  // Generate characters in the reversed ordering
+  Vector<UChar> result;
+  for (bool odd_group = false; value; odd_group = !odd_group) {
+    unsigned group_value = value % 100;
+    value /= 100;
+    if (!odd_group) {
+      // This adds an extra character for group 0. We'll remove it in the end.
+      result.push_back(kEthiopicNumberTenThousandCharacter);
+    } else {
+      if (group_value)
+        result.push_back(kEthiopicNumberHundredCharacter);
+    }
+    bool most_significant_group = !value;
+    bool remove_digits = !group_value ||
+                         (group_value == 1 && most_significant_group) ||
+                         (group_value == 1 && odd_group);
+    if (!remove_digits) {
+      if (unsigned unit = group_value % 10)
+        result.push_back(units[unit - 1]);
+      if (unsigned ten = group_value / 10)
+        result.push_back(tens[ten - 1]);
+    }
+  }
+
+  std::reverse(result.begin(), result.end());
+  // Remove the extra character from group 0
+  result.pop_back();
+  return String(result.data(), result.size());
+}
+
 }  // namespace
 
 // static
@@ -498,6 +545,7 @@ bool CounterStyle::RangeContains(int value) const {
       return true;
     case CounterStyleSystem::kSymbolic:
     case CounterStyleSystem::kAlphabetic:
+    case CounterStyleSystem::kEthiopicNumeric:
       return value >= 1;
     case CounterStyleSystem::kAdditive:
       return value >= 0;
@@ -530,6 +578,7 @@ bool CounterStyle::NeedsNegativeSign(int value) const {
     case CounterStyleSystem::kKoreanHanjaFormal:
     case CounterStyleSystem::kLowerArmenian:
     case CounterStyleSystem::kUpperArmenian:
+    case CounterStyleSystem::kEthiopicNumeric:
       return true;
     case CounterStyleSystem::kCyclic:
     case CounterStyleSystem::kFixed:
@@ -626,6 +675,8 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
       return LowerArmenianAlgorithm(abs_value);
     case CounterStyleSystem::kUpperArmenian:
       return UpperArmenianAlgorithm(abs_value);
+    case CounterStyleSystem::kEthiopicNumeric:
+      return EthiopicNumericAlgorithm(abs_value);
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();
       return String();

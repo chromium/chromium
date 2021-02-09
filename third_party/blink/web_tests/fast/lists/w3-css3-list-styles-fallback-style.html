@@ -66,7 +66,7 @@
     <h1>CSS3 Fallback to Decimal List Style</h1>
     <div id="description">
         <p>This tests that we fallback to the decimal list style type when the ordinal is outside the representable range for the list style type as per the <a href="http://www.w3.org/TR/css-counter-styles-3/">CSS3 Counter Styles Level 3 module</a> (CR 3 Februari 2015). This test PASSED if the list item matches its marker for every list item (below).</p>
-        <p>Note, as of 02/01/2021, ethiopic-numeric and syriac are unsupported and hence have expected failure results.</p>
+        <p>Note, as of 02/05/2021, syriac is unsupported and hence have expected failure results.</p>
     </div>
     <hr/>
     <h2>Algorithmic</h2>
@@ -93,12 +93,11 @@
     </div>
     
     <div class="test">
-        <!-- FIXME: We don't currently support this list-style-type. These are expected failure results. -->
         <h2>ethiopic-numeric</h2>
         <ol class="ethiopic-numeric" start="-1">
             <li>-1</li>
             <li>0</li>
-            <li>1</li>
+            <li>&#x1369;</li>
         </ol>
     </div>
     

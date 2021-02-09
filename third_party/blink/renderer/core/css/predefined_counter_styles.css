@@ -385,9 +385,17 @@
   system: extends trad-chinese-informal;
 }
 
+/* https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
+ */
+
+@counter-style ethiopic-numeric {
+  system: -internal-ethiopic-numeric;
+  range: 1 infinite;
+  suffix: "/ ";
+}
+
 /*
  * TODO(crbug.com/687225): Add everything else in:
- * - https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
  * - https://w3c.github.io/predefined-counter-styles/
  */
 
