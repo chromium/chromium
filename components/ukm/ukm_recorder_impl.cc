@@ -73,24 +73,6 @@ void LogEventHashAsUmaHistogram(const std::string& histogram_name,
                            event_hash & 0x7fffffff);
 }
 
-// Artificially inflates counts of some event types reported to UMA histogram.
-// TODO(crbug/1137922): remove this artificial inflation of counts after alerts
-// are tested.
-void MaybeInflateHistogramCount(const std::string& histogram_name,
-                                uint64_t event_hash) {
-  const static std::map<uint64_t, size_t> event_hash_to_multipliers = {
-      {builders::Media_BasicPlayback::kEntryNameHash, 4},
-      {builders::RendererSchedulerTask::kEntryNameHash, 2},
-      {builders::HistoryNavigation::kEntryNameHash, 99},
-  };
-
-  auto iter = event_hash_to_multipliers.find(event_hash);
-  if (iter != event_hash_to_multipliers.end()) {
-    for (size_t i = 0; i < iter->second; ++i)
-      LogEventHashAsUmaHistogram(histogram_name, event_hash);
-  }
-}
-
 enum class DroppedDataReason {
   NOT_DROPPED = 0,
   RECORDING_DISABLED = 1,
@@ -761,8 +743,6 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
   // Log a corresponding entry to UMA so we get a per-metric breakdown of UKM
   // entry counts.
   LogEventHashAsUmaHistogram("UKM.Entries.Recorded.ByEntryHash",
-                             entry->event_hash);
-  MaybeInflateHistogramCount("UKM.Entries.Recorded.ByEntryHash",
                              entry->event_hash);
 
   recordings_.entries.push_back(std::move(entry));
