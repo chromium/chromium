@@ -79,7 +79,7 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"backupCheckboxMessage", IDS_CROSTINI_UPGRADER_BACKUP_CHECKBOX_MESSAGE},
       {"backupChangeLocation", IDS_CROSTINI_UPGRADER_BACKUP_CHANGE_LOCATION},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
   source->AddString("learnMoreUrl",
                     std::string{chrome::kLinuxAppsLearnMoreURL} +
                         "&b=" + base::SysInfo::GetLsbReleaseBoard());

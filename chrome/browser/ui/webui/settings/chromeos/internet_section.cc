@@ -725,7 +725,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"eSimDialogConnectionWarning",
        IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   network_element::AddLocalizedStrings(html_source);
   network_element::AddOncLocalizedStrings(html_source);

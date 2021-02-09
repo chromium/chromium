@@ -46,7 +46,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
       {"signinEmailConfirmationCloseLabel",
        IDS_SIGNIN_EMAIL_CONFIRMATION_CLOSE_BUTTON_LABEL},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   base::DictionaryValue strings;
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),

@@ -83,7 +83,7 @@ WebUIDataSource* CreateVersionUIDataSource() {
     {version_ui::kGmsName, IDS_VERSION_UI_GMS},
 #endif  // OS_ANDROID
   };
-  AddLocalizedStringsBulk(html_source, kStrings);
+  html_source->AddLocalizedStrings(kStrings);
 
   VersionUI::AddVersionDetailStrings(html_source);
 

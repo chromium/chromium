@@ -382,7 +382,7 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       {"accountManagerUnmanagedLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_UNMANAGED_ACCOUNT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("accountManagerLearnMoreUrl",
                          chrome::kAccountManagerLearnMoreURL);
@@ -400,7 +400,7 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
         {"accountListHeaderChild",
          IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_CHILD},
     };
-    AddLocalizedStringsBulk(html_source, kLocalizedStringsV2);
+    html_source->AddLocalizedStrings(kLocalizedStringsV2);
 
     html_source->AddString(
         "accountManagerDescription",
@@ -412,7 +412,7 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
         {"addAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL},
         {"accountListHeader", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER},
     };
-    AddLocalizedStringsBulk(html_source, kLocalizedStringsV1);
+    html_source->AddLocalizedStrings(kLocalizedStringsV1);
   }
 }
 
@@ -467,7 +467,7 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
       {"passwordPromptEnterPasswordLoginLock",
        IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_ENTER_PASSWORD_LOGIN_LOCK},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("quickUnlockEnabled",
                           chromeos::quick_unlock::IsPinEnabled(pref_service));
@@ -492,7 +492,7 @@ void AddFingerprintListStrings(content::WebUIDataSource* html_source) {
       {"lockScreenFingerprintWarning",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_LESS_SECURE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddFingerprintStrings(content::WebUIDataSource* html_source,
@@ -564,7 +564,7 @@ void AddSetupFingerprintDialogStrings(content::WebUIDataSource* html_source) {
       {"configureFingerprintImmobile",
        IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_FINGER_IMMOBILE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddSetupPinDialogStrings(content::WebUIDataSource* html_source) {
@@ -584,7 +584,7 @@ void AddSetupPinDialogStrings(content::WebUIDataSource* html_source) {
       {"pinKeyboardDeleteAccessibleName",
        IDS_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Format numbers to be used on the pin keyboard.
   for (int j = 0; j <= 9; j++) {
@@ -607,7 +607,7 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       {"osSyncTurnOn", IDS_OS_SETTINGS_SYNC_TURN_ON},
       {"osSyncFeatureLabel", IDS_OS_SETTINGS_SYNC_FEATURE_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("splitSettingsSyncEnabled",
                           chromeos::features::IsSplitSettingsSyncEnabled());
@@ -631,7 +631,7 @@ void AddUsersStrings(content::WebUIDataSource* html_source) {
       {"addUsersEmail", IDS_SETTINGS_USERS_ADD_USERS_EMAIL},
       {"userExistsError", IDS_SETTINGS_USER_EXISTS_ERROR},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddParentalControlStrings(content::WebUIDataSource* html_source,
@@ -650,7 +650,7 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
       {"parentalControlsSetUpButtonRole",
        IDS_SETTINGS_PARENTAL_CONTROLS_SET_UP_BUTTON_ROLE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("showParentalControls",
                           are_parental_control_settings_allowed);
@@ -797,7 +797,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
       {"syncDisconnectConfirm", IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile());
   DCHECK(user);
@@ -819,7 +819,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
         {"osPeoplePageTitle", IDS_OS_SETTINGS_PEOPLE},
         {"accountManagerPageTitle", IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE},
     };
-    AddLocalizedStringsBulk(html_source, kAccountManagerStrings);
+    html_source->AddLocalizedStrings(kAccountManagerStrings);
   }
 
   // Toggles the Chrome OS Account Manager submenu in the People section.
@@ -839,13 +839,13 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
         {"syncDisconnectTitle",
          IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE},
     };
-    AddLocalizedStringsBulk(html_source, kTurnOffStrings);
+    html_source->AddLocalizedStrings(kTurnOffStrings);
   } else {
     static constexpr webui::LocalizedString kSignOutStrings[] = {
         {"syncDisconnect", IDS_SETTINGS_PEOPLE_SIGN_OUT},
         {"syncDisconnectTitle", IDS_SETTINGS_SYNC_DISCONNECT_TITLE},
     };
-    AddLocalizedStringsBulk(html_source, kSignOutStrings);
+    html_source->AddLocalizedStrings(kSignOutStrings);
   }
 
   std::string sync_dashboard_url =

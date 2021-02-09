@@ -93,7 +93,7 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
       {"logTypeCameraText", IDS_DEVICE_LOG_TYPE_CAMERA},
       {"logEntryFormat", IDS_DEVICE_LOG_ENTRY},
   };
-  AddLocalizedStringsBulk(html, kStrings);
+  html->AddLocalizedStrings(kStrings);
 
   html->UseStringsJs();
   html->AddResourcePath("device_log_ui.css", IDR_DEVICE_LOG_UI_CSS);

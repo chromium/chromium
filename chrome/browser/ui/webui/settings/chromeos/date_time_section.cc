@@ -115,7 +115,7 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"use24HourClock", IDS_SETTINGS_USE_24_HOUR_CLOCK},
       {"setDateTime", IDS_SETTINGS_SET_DATE_TIME},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString(
       "timeZoneSettingsLearnMoreURL",

@@ -108,7 +108,7 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
 }  //  namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
-  AddLocalizedStringsBulk(html_source, kElementLocalizedStrings);
+  html_source->AddLocalizedStrings(kElementLocalizedStrings);
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
@@ -232,7 +232,7 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"Oncipv4-Netmask", IDS_ONC_IPV4_NETMASK},
       {"Oncipv6-IPAddress", IDS_ONC_IPV6_ADDRESS},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -344,7 +344,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkProxyWpadNone", IDS_SETTINGS_INTERNET_NETWORK_PROXY_WPAD_NONE},
       {"remove", IDS_REMOVE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -366,7 +366,7 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
       {"hidePassword", IDS_SETTINGS_PASSWORD_HIDE},
       {"showPassword", IDS_SETTINGS_PASSWORD_SHOW},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
       "showHiddenNetworkWarning",
@@ -395,7 +395,7 @@ void AddErrorLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkErrorNotHardwareBacked",
        IDS_SETTINGS_INTERNET_NETWORK_REQUIRE_HARDWARE_BACKED},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Include Shill errors.
   const char* const shill_errors[] = {

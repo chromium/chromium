@@ -87,7 +87,7 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
       {"captionsEnableLiveCaptionSubtitle",
        IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("enableLiveCaption",
                           base::FeatureList::IsEnabled(media::kLiveCaption));
@@ -114,7 +114,7 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
     {"driveSuggestPref", IDS_DRIVE_SUGGEST_PREF},
     {"driveSuggestPrefDesc", IDS_DRIVE_SUGGEST_PREF_DESC},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
@@ -135,7 +135,7 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       {"customizeSyncLabel", IDS_SETTINGS_CUSTOMIZE_SYNC},
       {"syncData", IDS_SETTINGS_SYNC_DATA},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
@@ -153,7 +153,7 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
       {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
       {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -165,7 +165,7 @@ void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
       {"passwordPromptPasswordLabel",
        IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 #endif
 
@@ -206,7 +206,7 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
       {"manageSyncedDataTitle",
        IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(
@@ -297,7 +297,7 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareHighVisibilityOff",
        IDS_SETTINGS_NEARBY_SHARE_HIGH_VISIBILITY_OFF}};
 
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
       "nearbySharingFeatureFlag",

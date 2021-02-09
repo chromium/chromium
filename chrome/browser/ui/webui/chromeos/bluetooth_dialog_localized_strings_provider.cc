@@ -63,7 +63,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       {"bluetooth_connect_writeNotPermitted",
        IDS_SETTINGS_BLUETOOTH_CONNECT_WRITE_NOT_PERMITTED},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 }  // namespace bluetooth_dialog

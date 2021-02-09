@@ -53,7 +53,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
-  webui::AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   // loadTimeData.
   Profile* profile = Profile::FromWebUI(web_ui);

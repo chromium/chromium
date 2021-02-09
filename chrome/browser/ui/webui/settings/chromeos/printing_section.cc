@@ -258,7 +258,7 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"printServerConfigurationErrorMessage",
        IDS_SETTINGS_PRINTING_CUPS_PRINT_SERVER_REACHABLE_BUT_CANNOT_ADD},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("printingCUPSPrintLearnMoreUrl",
                          GetHelpUrlWithBoard(chrome::kCupsPrintLearnMoreURL));

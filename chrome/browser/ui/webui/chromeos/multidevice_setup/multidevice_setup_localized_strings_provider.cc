@@ -126,7 +126,7 @@ GetLocalizedStringsWithPlaceholders() {
 }  //  namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
-  AddLocalizedStringsBulk(html_source, kLocalizedStringsWithoutPlaceholders);
+  html_source->AddLocalizedStrings(kLocalizedStringsWithoutPlaceholders);
 
   html_source->AddBoolean(
       "phoneHubEnabled",

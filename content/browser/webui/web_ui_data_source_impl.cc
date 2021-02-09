@@ -145,6 +145,12 @@ void WebUIDataSourceImpl::AddLocalizedString(base::StringPiece name, int ids) {
 }
 
 void WebUIDataSourceImpl::AddLocalizedStrings(
+    base::span<const webui::LocalizedString> strings) {
+  for (const auto& str : strings)
+    AddLocalizedString(str.name, str.id);
+}
+
+void WebUIDataSourceImpl::AddLocalizedStrings(
     const base::DictionaryValue& localized_strings) {
   localized_strings_.MergeDictionary(&localized_strings);
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,

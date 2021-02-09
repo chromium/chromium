@@ -521,7 +521,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT},
       {"keyboardShowInputSettings", IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS},
   };
-  AddLocalizedStringsBulk(html_source, keyboard_strings);
+  html_source->AddLocalizedStrings(keyboard_strings);
 
   html_source->AddLocalizedString("keyboardKeySearch",
                                   ui::DeviceUsesKeyboardLayout2()
@@ -553,7 +553,7 @@ void AddDeviceStylusStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_NONE_AVAILABLE},
       {"stylusNoteTakingAppWaitingForAndroid",
        IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_WAITING_FOR_ANDROID}};
-  AddLocalizedStringsBulk(html_source, kStylusStrings);
+  html_source->AddLocalizedStrings(kStylusStrings);
 
   html_source->AddBoolean("hasInternalStylus",
                           ash::stylus_utils::HasInternalStylus());
@@ -642,7 +642,7 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TITLE},
       {"displayTouchCalibrationText",
        IDS_SETTINGS_DISPLAY_TOUCH_CALIBRATION_TEXT}};
-  AddLocalizedStringsBulk(html_source, kDisplayStrings);
+  html_source->AddLocalizedStrings(kDisplayStrings);
 
   html_source->AddLocalizedString(
       "displayArrangementText",
@@ -712,7 +712,7 @@ void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
       {"storageExternalStorageListHeader",
        IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_LIST_HEADER},
       {"storageOverviewAriaLabel", IDS_SETTINGS_STORAGE_OVERVIEW_ARIA_LABEL}};
-  AddLocalizedStringsBulk(html_source, kStorageStrings);
+  html_source->AddLocalizedStrings(kStorageStrings);
 
   html_source->AddBoolean("androidEnabled", is_external_storage_page_available);
 
@@ -750,7 +750,7 @@ void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
       {"powerLidSignOutLabel", IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL},
       {"powerLidShutDownLabel", IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kPowerStrings);
+  html_source->AddLocalizedStrings(kPowerStrings);
 }
 
 // Mirrors enum of the same name in enums.xml.
@@ -838,7 +838,7 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"devicePageTitle", IDS_SETTINGS_DEVICE_TITLE},
       {"touchPadScrollLabel", IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kDeviceStrings);
+  html_source->AddLocalizedStrings(kDeviceStrings);
 
   html_source->AddBoolean("isDemoSession",
                           chromeos::DemoSession::IsDeviceInDemoMode());
@@ -1205,7 +1205,7 @@ void DeviceSection::AddDevicePointersStrings(
        IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL},
       {"touchpadScrollSpeed", IDS_SETTINGS_TOUCHPAD_SCROLL_SPEED_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kPointersStrings);
+  html_source->AddLocalizedStrings(kPointersStrings);
 
   html_source->AddString("naturalScrollLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kNaturalScrollHelpURL));

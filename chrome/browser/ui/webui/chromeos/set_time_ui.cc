@@ -188,7 +188,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
       {"timeLabel", IDS_SET_TIME_TIME_LABEL},
       {"doneButton", IDS_DONE},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   base::DictionaryValue values;
   // List of list of strings: [[ID, name], [ID, name], ...]

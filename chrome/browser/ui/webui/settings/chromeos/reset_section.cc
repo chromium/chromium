@@ -70,7 +70,7 @@ void ResetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"powerwashButtonRoleDescription",
        IDS_SETTINGS_FACTORY_RESET_BUTTON_ROLE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("allowPowerwash", IsPowerwashAllowed());
 

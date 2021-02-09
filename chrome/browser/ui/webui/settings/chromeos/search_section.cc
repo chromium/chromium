@@ -162,7 +162,7 @@ void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_ASSISTANT_LAUNCH_WITH_MIC_OPEN_DESCRIPTION},
       {"googleAssistantSettings", IDS_SETTINGS_GOOGLE_ASSISTANT_SETTINGS},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("hotwordDspAvailable", IsHotwordDspAvailable());
   html_source->AddBoolean("voiceMatchDisabled", !IsVoiceMatchAllowed());
@@ -203,7 +203,7 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"searchGoogleAssistantOn", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON},
       {"searchGoogleAssistantOff", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);

@@ -12,16 +12,22 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/span.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
 namespace base {
 class DictionaryValue;
 class RefCountedMemory;
 }  // namespace base
+
+namespace webui {
+struct LocalizedString;
+}  // namespace webui
 
 namespace content {
 class BrowserContext;
@@ -56,6 +62,11 @@ class WebUIDataSource {
   // Adds a localized string with resource |ids| keyed to its name to our
   // dictionary.
   virtual void AddLocalizedString(base::StringPiece name, int ids) = 0;
+
+  // Calls AddLocalizedString() in a for-loop for |strings|. Reduces code size
+  // vs. reimplementing the same for-loop.
+  virtual void AddLocalizedStrings(
+      base::span<const webui::LocalizedString> strings) = 0;
 
   // Add strings from |localized_strings| to our dictionary.
   virtual void AddLocalizedStrings(

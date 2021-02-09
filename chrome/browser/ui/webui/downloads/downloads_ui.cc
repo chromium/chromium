@@ -117,7 +117,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
       {"undo", IDS_DOWNLOAD_UNDO},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->AddLocalizedString("dangerDownloadDesc",
                              IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);

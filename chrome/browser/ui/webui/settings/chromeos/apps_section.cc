@@ -132,7 +132,7 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementStoragePermissionLabel", IDS_APP_MANAGEMENT_STORAGE},
       {"appManagementUninstallLabel", IDS_APP_MANAGEMENT_UNINSTALL_APP},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddGuestOsStrings(content::WebUIDataSource* html_source) {
@@ -162,7 +162,7 @@ void AddGuestOsStrings(content::WebUIDataSource* html_source) {
       {"guestOsSharedUsbDevicesReassign",
        IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_REASSIGN},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 bool ShowPluginVm(const Profile* profile, const PrefService& pref_service) {
@@ -210,7 +210,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"appsPageTitle", IDS_SETTINGS_APPS_TITLE},
       {"appManagementTitle", IDS_SETTINGS_APPS_LINK_TEXT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // We have 2 variants of Android apps settings. Default case, when the Play
   // Store app exists we show expandable section that allows as to
@@ -326,7 +326,7 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE},
       {"androidAppsManageAppLinks", IDS_SETTINGS_ANDROID_APPS_MANAGE_APP_LINKS},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("androidAppsPageTitle",
                                   arc::IsPlayStoreAvailable()
                                       ? IDS_SETTINGS_ANDROID_APPS_TITLE
@@ -354,7 +354,7 @@ void AppsSection::AddPluginVmLoadTimeData(
       {"pluginVmPermissionDialogRelaunchButton",
        IDS_SETTINGS_APPS_PLUGIN_VM_PERMISSION_DIALOG_RELAUNCH_BUTTON},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("showPluginVm",
                           ShowPluginVm(profile(), *pref_service_));

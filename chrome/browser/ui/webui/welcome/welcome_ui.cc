@@ -107,7 +107,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"landingNewUser", IDS_WELCOME_LANDING_NEW_USER},
       {"landingExistingUser", IDS_WELCOME_LANDING_EXISTING_USER},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 }  // namespace

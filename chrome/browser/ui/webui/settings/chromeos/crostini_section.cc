@@ -349,7 +349,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CROSTINI_MIC_DIALOG_SHUTDOWN_BUTTON},
       {"crostiniRemove", IDS_SETTINGS_CROSTINI_REMOVE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Should the crostini section in settings be displayed?
   html_source->AddBoolean(

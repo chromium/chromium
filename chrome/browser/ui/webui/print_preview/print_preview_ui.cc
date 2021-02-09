@@ -380,7 +380,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"openingPDFInPreview", IDS_PRINT_PREVIEW_OPENING_PDF_IN_PREVIEW_APP},
 #endif
   };
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddString("gcpCertificateErrorLearnMoreURL",
                     chrome::kCloudPrintCertificateErrorLearnMoreURL);

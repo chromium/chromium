@@ -269,7 +269,7 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
      IDS_EXTENSIONS_KIOSK_DISABLE_BAILOUT_SHORTCUT_WARNING_TITLE},
 #endif
   };
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddString("errorLinesNotShownSingular",
                     l10n_util::GetPluralStringFUTF16(

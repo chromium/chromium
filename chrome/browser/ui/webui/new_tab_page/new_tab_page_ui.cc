@@ -226,7 +226,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesCartCartMenuRemoveMerchantToastMessage",
        IDS_NTP_MODULES_CART_CART_MENU_REMOVE_MERCHANT_TOAST_MESSAGE},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->AddString("modulesTasksInfo1",
                     l10n_util::GetStringFUTF16(

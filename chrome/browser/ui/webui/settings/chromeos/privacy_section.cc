@@ -197,7 +197,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableSuggestedContentDesc",
        IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_DESC},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
       "privacySettingsRedesignEnabled",

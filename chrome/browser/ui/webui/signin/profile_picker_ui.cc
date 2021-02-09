@@ -136,7 +136,7 @@ void AddStrings(content::WebUIDataSource* html_source) {
       {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   ProfilePicker::AvailabilityOnStartup availability_on_startup =
       static_cast<ProfilePicker::AvailabilityOnStartup>(
           g_browser_process->local_state()->GetInteger(

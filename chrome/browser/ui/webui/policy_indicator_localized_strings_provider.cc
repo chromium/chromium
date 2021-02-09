@@ -40,7 +40,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
      IDS_CONTROLLED_SETTING_CHILD_RESTRICTION},
 #endif
   };
-  AddLocalizedStringsBulk(html_source, localized_strings);
+  html_source->AddLocalizedStrings(localized_strings);
 }
 
 }  // namespace policy_indicator

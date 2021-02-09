@@ -118,7 +118,7 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
        IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_ERROR},
       {"nearbyShareErrorTransferInProgressDescription",
        IDS_NEARBY_HIGH_VISIBILITY_TRANSFER_IN_PROGRESS_DESCRIPTION}};
-  webui::AddLocalizedStringsBulk(data_source, kLocalizedStrings);
+  data_source->AddLocalizedStrings(kLocalizedStrings);
 
   data_source->AddString("nearbyShareLearnMoreLink",
                          base::ASCIIToUTF16(chrome::kNearbyShareLearnMoreURL));

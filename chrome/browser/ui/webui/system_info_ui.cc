@@ -61,7 +61,7 @@ content::WebUIDataSource* CreateSystemInfoUIDataSource() {
       {"collapseBtn", IDS_ABOUT_SYS_COLLAPSE},
       {"parseError", IDS_ABOUT_SYS_PARSE_ERROR},
   };
-  AddLocalizedStringsBulk(html_source, kStrings);
+  html_source->AddLocalizedStrings(kStrings);
 
   html_source->AddResourcePath("about_sys.js", IDR_ABOUT_SYS_JS);
   html_source->AddResourcePath("about_sys.css", IDR_ABOUT_SYS_CSS);

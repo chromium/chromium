@@ -75,7 +75,7 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
 #endif
     {"statusUser", IDS_POLICY_STATUS_USER},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->AddResourcePath("policy.css", IDR_POLICY_CSS);
   source->AddResourcePath("policy_base.js", IDR_POLICY_BASE_JS);

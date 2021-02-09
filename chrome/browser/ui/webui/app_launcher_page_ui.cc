@@ -117,7 +117,7 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
       {"page_switcher_same_title", IDS_NEW_TAB_PAGE_SWITCHER_SAME_TITLE},
       {"runonoslogin", IDS_APP_CONTEXT_MENU_RUN_ON_OS_LOGIN},
   };
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   PrefService* prefs = GetProfile()->GetPrefs();
   source->AddString(

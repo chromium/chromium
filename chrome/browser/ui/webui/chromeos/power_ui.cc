@@ -257,7 +257,7 @@ PowerUI::PowerUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       {"frequencyStateOccupancyPercentageHeader",
        IDS_ABOUT_POWER_CPU_FREQ_STATE_OCCUPANCY_PERCENTAGE},
   };
-  AddLocalizedStringsBulk(html, kStrings);
+  html->AddLocalizedStrings(kStrings);
 
   html->UseStringsJs();
 

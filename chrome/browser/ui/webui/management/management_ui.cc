@@ -122,7 +122,7 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
      IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA},
   };
 
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString("managementDeviceLearnMoreUrl",

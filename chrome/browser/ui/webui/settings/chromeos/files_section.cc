@@ -85,7 +85,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"smbShareAddedInvalidSSOURLMessage",
        IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_SSO_URL_MESSAGE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   chromeos::smb_dialog::AddLocalizedStrings(html_source);
 

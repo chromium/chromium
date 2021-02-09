@@ -82,7 +82,7 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       {"unnamedGroupLabel", IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT},
       {"namedGroupLabel", IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT},
   };
-  AddLocalizedStringsBulk(html_source, kStrings);
+  html_source->AddLocalizedStrings(kStrings);
   content::WebUIDataSource::Add(profile, html_source);
 
   content::URLDataSource::Add(

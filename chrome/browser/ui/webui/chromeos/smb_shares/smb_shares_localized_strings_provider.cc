@@ -49,7 +49,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       {"smbShareDiscoveryMessage",
        IDS_SETTINGS_DOWNLOADS_ADD_SHARE_DISCOVERY_MESSAGE},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 }  // namespace smb_dialog

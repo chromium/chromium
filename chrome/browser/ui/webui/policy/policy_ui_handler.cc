@@ -822,7 +822,7 @@ PolicyUIHandler::~PolicyUIHandler() {
 
 void PolicyUIHandler::AddCommonLocalizedStringsToSource(
     content::WebUIDataSource* source) {
-  AddLocalizedStringsBulk(source, policy::kPolicySources);
+  source->AddLocalizedStrings(policy::kPolicySources);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"conflict", IDS_POLICY_LABEL_CONFLICT},
@@ -853,7 +853,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"value", IDS_POLICY_LABEL_VALUE},
       {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   source->UseStringsJs();
 }

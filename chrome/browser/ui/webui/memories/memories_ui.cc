@@ -26,7 +26,7 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource() {
   static constexpr webui::LocalizedString kStrings[] = {
       {"title", IDS_MEMORIES_PAGE_TITLE},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kMemoriesResources, kMemoriesResourcesSize),

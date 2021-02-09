@@ -103,7 +103,7 @@ const std::vector<const NamedBoolean>& GetBooleanValues() {
 }  //  namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
-  AddLocalizedStringsBulk(html_source, kLocalizedStringsWithoutPlaceholders);
+  html_source->AddLocalizedStrings(kLocalizedStringsWithoutPlaceholders);
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {

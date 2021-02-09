@@ -201,7 +201,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
      IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_BODY},
 #endif
   };
-  AddLocalizedStringsBulk(source, kLocalizedStrings);
+  source->AddLocalizedStrings(kLocalizedStrings);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddBoolean("isAccountManagementFlowsV2Enabled",

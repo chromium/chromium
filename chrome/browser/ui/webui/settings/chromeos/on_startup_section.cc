@@ -63,7 +63,7 @@ void OnStartupSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"onStartupDoNotRestore", IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE},
   };
 
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("showStartup", ShouldShowStartup());
 }

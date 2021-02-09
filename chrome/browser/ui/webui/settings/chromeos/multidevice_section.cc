@@ -236,7 +236,7 @@ void AddEasyUnlockStrings(content::WebUIDataSource* html_source) {
       {"easyUnlockUnlockDeviceAndAllowSignin",
        IDS_SETTINGS_EASY_UNLOCK_UNLOCK_DEVICE_AND_ALLOW_SIGNIN},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 bool IsOptedIn(multidevice_setup::mojom::HostStatus host_status) {
@@ -350,7 +350,7 @@ void MultiDeviceSection::AddLoadTimeData(
       {"multideviceForgetDeviceDisconnect",
        IDS_SETTINGS_MULTIDEVICE_FORGET_THIS_DEVICE_DISCONNECT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
       "multideviceAllowedByPolicy",

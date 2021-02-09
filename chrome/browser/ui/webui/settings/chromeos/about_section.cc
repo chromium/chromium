@@ -277,7 +277,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutReleaseNotesOffline", IDS_SETTINGS_ABOUT_PAGE_RELEASE_NOTES},
     {"aboutShowReleaseNotes", IDS_SETTINGS_ABOUT_PAGE_SHOW_RELEASE_NOTES},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("aboutTPMFirmwareUpdateLearnMoreURL",
                          chrome::kTPMFirmwareUpdateLearnMoreURL);

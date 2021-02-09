@@ -196,7 +196,7 @@ void AddSmartInputsStrings(content::WebUIDataSource* html_source,
       {"emojiSuggestionDescription",
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("allowAssistivePersonalInfo",
                           IsAssistivePersonalInfoAllowed());
@@ -254,7 +254,7 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
       {"inputMethodOptionsColemakKeyboard",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_COLEMAK},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
@@ -285,7 +285,7 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
       {"changeDeviceLanguageConfirmButtonLabel",
        IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_CONFIRM_BUTTON_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString(
       "languagesPreferenceDescription",
@@ -342,7 +342,7 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
       {"noDictionaryWordsLabel",
        IDS_OS_SETTINGS_LANGUAGES_NO_DICTIONARY_WORDS_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
 }  // namespace
@@ -414,7 +414,7 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"moveUp", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_UP},
       {"noSearchResults", IDS_SEARCH_NO_RESULTS},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   AddSmartInputsStrings(html_source, IsEmojiSuggestionAllowed());
   AddInputMethodOptionsStrings(html_source);
   AddLanguagesPageStringsV2(html_source);

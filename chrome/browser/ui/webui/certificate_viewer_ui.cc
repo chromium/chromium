@@ -46,7 +46,7 @@ content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
       {"certFields", IDS_CERT_DETAILS_CERTIFICATE_FIELDS_LABEL},
       {"certFieldVal", IDS_CERT_DETAILS_CERTIFICATE_FIELD_VALUE_LABEL},
   };
-  AddLocalizedStringsBulk(html_source, kStrings);
+  html_source->AddLocalizedStrings(kStrings);
 
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,

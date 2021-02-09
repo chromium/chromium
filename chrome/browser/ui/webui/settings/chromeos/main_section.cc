@@ -48,7 +48,7 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
       {"searchResultSelected", IDS_OS_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED},
       {"clearSearch", IDS_CLEAR_SEARCH},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString(
       "searchNoOsResultsHelp",
@@ -157,7 +157,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"large", IDS_SETTINGS_LARGE_FONT},
       {"veryLarge", IDS_SETTINGS_VERY_LARGE_FONT},
   };
-  AddLocalizedStringsBulk(html_source, kLocalizedStrings);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // This handler is for chrome://os-settings.
   html_source->AddBoolean("isOSSettings", true);

@@ -34,6 +34,8 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void AddString(base::StringPiece name, const std::string& value) override;
   void AddLocalizedString(base::StringPiece name, int ids) override;
   void AddLocalizedStrings(
+      base::span<const webui::LocalizedString> strings) override;
+  void AddLocalizedStrings(
       const base::DictionaryValue& localized_strings) override;
   void AddBoolean(base::StringPiece name, bool value) override;
   void AddInteger(base::StringPiece name, int32_t value) override;

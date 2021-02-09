@@ -361,11 +361,11 @@ chrome/browser/ui/webui/webui\_util.\* contains a number of methods to simplify
 common configuration tasks.
 
 <a name="AddLocalizedStringsBulk"></a>
-### webui::AddLocalizedStringsBulk()
+### WebUIDataSource::AddLocalizedStrings()
 
 Many Web UI data sources need to be set up with a large number of localized
 strings. Instead of repeatedly calling <code>AddLocalizedString()</code>, create
-an array of all the strings and use <code>AddLocalizedStringsBulk()</code>:
+an array of all the strings and use <code>AddLocalizedStrings()</code>:
 
 ```c++
   static constexpr webui::LocalizedString kStrings[] = {
@@ -374,7 +374,7 @@ an array of all the strings and use <code>AddLocalizedStringsBulk()</code>:
       {"ariaRoleDescription", IDS_HISTORY_ARIA_ROLE_DESCRIPTION},
       {"bookmarked", IDS_HISTORY_ENTRY_BOOKMARKED},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 ```
 
 <a name="AddResourcePathsBulk"></a>

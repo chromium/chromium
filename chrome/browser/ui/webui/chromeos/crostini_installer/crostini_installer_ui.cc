@@ -90,7 +90,7 @@ void AddStringResources(content::WebUIDataSource* source) {
        IDS_CROSTINI_INSTALLER_USERNAME_NOT_AVAILABLE_ERROR},
       {"customDiskSizeLabel", IDS_CROSTINI_INSTALLER_CUSTOM_DISK_SIZE_LABEL},
   };
-  AddLocalizedStringsBulk(source, kStrings);
+  source->AddLocalizedStrings(kStrings);
 
   base::string16 device_name = ui::GetChromeOSDeviceName();
 
