@@ -2822,10 +2822,16 @@ TEST_P(RenderFrameHostManagerTest, CanCommitOrigin) {
   };
 
   for (const auto& test_case : cases) {
-    auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-        GURL(test_case.url), contents());
+    auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL(test_case.url), main_test_rfh());
     url::Origin origin = url::Origin::Create(GURL(test_case.origin));
-    navigation->set_origin(origin);
+
+    // Manually control what origin will be committed on the "renderer-side" in
+    // cases where we want to force the "renderer-side" to mismatch the correct
+    // origin.
+    if (test_case.mismatch)
+      navigation->set_origin(origin);
+
     if (origin.opaque()) {
       auto response_headers =
           base::MakeRefCounted<net::HttpResponseHeaders>(std::string());

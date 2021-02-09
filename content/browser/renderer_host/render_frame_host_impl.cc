@@ -783,13 +783,15 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   if (renderer_side_origin.opaque() && browser_side_origin.opaque())
     return;
 
-  // Ignore about:blank navigations, because browser-side calculated the origin
-  // based on the initiator of the navigation, but renderer-side takes the
-  // origin from the frame parent or opener.  Example scenario (exercised by
-  // FrameNavigationEntry_RecreatedSubframeToBlank) starts with a.com(data:) and
-  // has the subframe navigate itself to about:blank.
+#if defined(OS_ANDROID)
+  // TODO(lukasza): Investigate why about:blank navigations on Android sometimes
+  // have an opaque, unique `browser_side_origin` that doesn't match a regular,
+  // tuple `renderer_side_origin` - see webview_cts_tests,
+  // android.webkit.cts.WebViewTest#testJavascriptInterfaceForClientPopup on
+  // android-pie-arm64-rel.
   if (navigation_request->GetURL().IsAboutBlank())
     return;
+#endif
 
   DCHECK_EQ(browser_side_origin, renderer_side_origin)
       << "; navigation_request->GetURL() = " << navigation_request->GetURL();
