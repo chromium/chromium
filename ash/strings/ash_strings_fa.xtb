@@ -24,6 +24,7 @@
 <translation id="1165712434476988950">دستگاه باید برای اعمال به‌روزرسانی بازراه‌اندازی شود.</translation>
 <translation id="1175572348579024023">پیمایش</translation>
 <translation id="1178581264944972037">مکث</translation>
+<translation id="1181037720776840403">حذف</translation>
 <translation id="118532027333893379">برای ضبط تمام صفحه، روی هرجایی که می‌خواهید ضربه بزنید</translation>
 <translation id="1190609913194133056">مرکز اعلان</translation>
 <translation id="1195412055398077112">بزرگ‌تر از صفحه</translation>
@@ -111,7 +112,7 @@
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">باز کردن قفل با اثر انگشت</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> از <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز) پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) تغییر کرده است. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
-<translation id="1919743966458266018">کلیدهای میان‌بر باز کردن مدیر فعالیت‌ها تغییر کرده است. لطفاً از <ph name="NEW_SHORTCUT" /> به جای <ph name="OLD_SHORTCUT" /> استفاده کنید.</translation>
+<translation id="1919743966458266018">کلیدهای میان‌بر باز کردن مدیر فعالیت‌ها تغییر کرده است. لطفاً از <ph name="NEW_SHORTCUT" /> به‌جای <ph name="OLD_SHORTCUT" /> استفاده کنید.</translation>
 <translation id="1923539912171292317">کلیک‌های خودکار</translation>
 <translation id="1928739107511554905">‏برای دریافت به‌روزرسانی، از صفحه لمسی برای بازراه‌اندازی Chromebook خود با صفحه‌کلید متصل استفاده کنید.</translation>
 <translation id="1951012854035635156">دستیار</translation>

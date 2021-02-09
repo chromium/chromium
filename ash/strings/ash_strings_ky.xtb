@@ -24,6 +24,7 @@
 <translation id="1165712434476988950">Жаңыртууну иштетүү үчүн түзмөктү өчүрүп күйгүзүү талап кылынат.</translation>
 <translation id="1175572348579024023">Сыдыруу</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
+<translation id="1181037720776840403">Алып салуу</translation>
 <translation id="118532027333893379">Толук экранды cүрөткө тартуу үчүн каалаган жерин басыңыз</translation>
 <translation id="1190609913194133056">Билдирмелер борбору</translation>
 <translation id="1195412055398077112">иштебеген аймак</translation>
@@ -287,7 +288,7 @@
 <translation id="3410336247007142655">Караңгы теманын жөндөөлөрүн көрсөтүү</translation>
 <translation id="3413817803639110246">Азырынча бир да эскертме жок</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> тармагынан ажыратуу</translation>
-<translation id="3430396595145920809">Артка кайтуу үчүн экраныңыздын оң четинен серпип коюңуз</translation>
+<translation id="3430396595145920809">Артка кайтуу үчүн экраныңыздын оң четинен сүрүп коюңуз</translation>
 <translation id="343571671045587506">Эстеткичти түзөтүү</translation>
 <translation id="3435967511775410570">Манжа изи таанылды</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мүн.</translation>
@@ -903,7 +904,7 @@
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Киргизүү ыкмаларынын жөндөөлөрү</translation>
-<translation id="8825863694328519386">Артка кайтуу үчүн, экраныңыздын сол четинен серпип коюңуз</translation>
+<translation id="8825863694328519386">Артка кайтуу үчүн, экраныңыздын сол четинен сүрүп коюңуз</translation>
 <translation id="8828714802988429505">90°</translation>
 <translation id="8841375032071747811">Артка баскычы</translation>
 <translation id="8843682306134542540">Буруу кулпусун өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
