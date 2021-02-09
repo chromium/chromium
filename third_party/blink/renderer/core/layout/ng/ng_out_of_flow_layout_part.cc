@@ -643,20 +643,41 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
 // TODO(almaher): Look into moving this to NGColumnLayoutAlgorithm instead.
 void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   Vector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
+  Vector<NGLink*> mutable_multicol_children;
+
+  NGConstraintSpace multicol_constraint_space =
+      CreateConstraintSpaceForMulticol(multicol);
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(multicol_constraint_space, multicol);
+  NGBoxFragmentBuilder multicol_container_builder =
+      CreateContainerBuilderForMulticol(multicol, multicol_constraint_space,
+                                        fragment_geometry);
 
   // Accumulate all of the pending OOF positioned nodes that are stored inside
   // |multicol|.
   for (auto& multicol_fragment : multicol.GetLayoutBox()->PhysicalFragments()) {
     const NGPhysicalBoxFragment* multicol_box_fragment =
         To<NGPhysicalBoxFragment>(&multicol_fragment);
-    if (!multicol_box_fragment
-             ->HasOutOfFlowPositionedFragmentainerDescendants())
-      continue;
 
     WritingDirectionMode writing_direction =
         multicol_box_fragment->Style().GetWritingDirection();
     const WritingModeConverter converter(writing_direction,
                                          multicol_box_fragment->Size());
+
+    // Collect the children of the multicol fragments.
+    for (auto& child :
+         multicol_box_fragment->GetMutableChildrenForOutOfFlow().Children()) {
+      const auto* fragment = To<NGPhysicalContainerFragment>(child.get());
+      LogicalOffset offset =
+          converter.ToLogical(child.Offset(), fragment->Size());
+
+      multicol_container_builder.AddChild(*fragment, offset);
+      mutable_multicol_children.emplace_back(&child);
+    }
+
+    if (!multicol_box_fragment
+             ->HasOutOfFlowPositionedFragmentainerDescendants())
+      continue;
 
     // Convert the OOF fragmentainer descendants to the logical coordinate space
     // and store the resulting nodes inside |oof_nodes_to_layout|.
@@ -688,14 +709,21 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   }
   DCHECK(!oof_nodes_to_layout.IsEmpty());
 
-  // TODO(almaher): This lays out the OOF nodes in the outer fragmentation
-  // context. We want to lay these out inside the column children of |multicol|
-  // instead.
-  LayoutFragmentainerDescendants(&oof_nodes_to_layout);
+  // Clear out any OOF fragmentainer descendants that had been re-propagated
+  // when setting up |multicol_container_builder|.
+  // TODO(almaher): Avoid adding the descendants again to begin with.
+  multicol_container_builder.ClearOutOfFlowFragmentainerDescendants();
+
+  // Layout the OOF positioned elements inside the inner multicol.
+  NGOutOfFlowLayoutPart(multicol, multicol_constraint_space,
+                        &multicol_container_builder)
+      .LayoutFragmentainerDescendants(&oof_nodes_to_layout,
+                                      &mutable_multicol_children);
 }
 
 void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
-    Vector<NGLogicalOutOfFlowPositionedNode>* descendants) {
+    Vector<NGLogicalOutOfFlowPositionedNode>* descendants,
+    Vector<NGLink*>* mutable_multicol_children) {
   original_column_block_size_ =
       ShrinkLogicalSize(container_builder_->InitialBorderBoxSize(),
                         container_builder_->BorderScrollbarPadding())
@@ -705,6 +733,8 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     for (auto& descendant : *descendants) {
       scoped_refptr<const NGLayoutResult> result =
           LayoutFragmentainerDescendant(descendant);
+      // TODO(almaher): Handle nested OOFs and inner multicols with pending OOFs
+      // in the case of nested fragmentation.
       container_builder_->PropagateOOFPositionedInfo(
           result->PhysicalFragment(), result->OutOfFlowPositionedOffset());
     }
@@ -723,7 +753,7 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     wtf_size_t index = descendant_result.key - 1;
     const Vector<scoped_refptr<const NGLayoutResult>>& results =
         descendant_result.value;
-    AddOOFResultsToFragmentainer(results, index);
+    AddOOFResultsToFragmentainer(results, index, mutable_multicol_children);
   }
 }
 
@@ -1143,7 +1173,8 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
 
 void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
     const Vector<scoped_refptr<const NGLayoutResult>>& results,
-    wtf_size_t index) {
+    wtf_size_t index,
+    Vector<NGLink*>* mutable_multicol_children) {
   wtf_size_t num_children = container_builder_->Children().size();
   bool is_new_fragment = index >= num_children;
 
@@ -1227,12 +1258,27 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
     }
     scoped_refptr<const NGLayoutResult> new_result = algorithm.Layout();
     node.AddColumnResult(new_result);
+    // TODO(almaher): Handle "new" columns for nested fragmentation.
     container_builder_->AddChild(new_result->PhysicalFragment(), offset);
   } else {
     scoped_refptr<const NGLayoutResult> new_result = algorithm.Layout();
     node.ReplaceColumnResult(new_result, fragment);
-    container_builder_->ReplaceChild(index, new_result->PhysicalFragment(),
-                                     fragmentainer.offset);
+    const NGPhysicalContainerFragment* new_fragment =
+        &new_result->PhysicalFragment();
+
+    if (mutable_multicol_children) {
+      // We are in a nested fragmentation context. Replace the column entry
+      // directly in the existing multicol fragment.
+      NGLink* link = (*mutable_multicol_children)[index];
+      link->fragment->Release();
+      new (&link->fragment)
+          scoped_refptr<const NGPhysicalFragment>(std::move(new_fragment));
+    } else {
+      // We are not in a nested context, so replace the column entry in the
+      // builder itself.
+      container_builder_->ReplaceChild(index, *new_fragment,
+                                       fragmentainer.offset);
+    }
   }
 }
 

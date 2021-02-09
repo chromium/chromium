@@ -145,6 +145,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void SwapMulticolsWithPendingOOFs(
       MulticolCollection* multicols_with_pending_oofs);
 
+  void ClearOutOfFlowFragmentainerDescendants();
+
   bool HasOutOfFlowPositionedCandidates() const {
     return !oof_positioned_candidates_.IsEmpty();
   }

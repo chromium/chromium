@@ -26,6 +26,7 @@ class NGBlockNode;
 class NGBoxFragmentBuilder;
 class NGLayoutResult;
 class NGPhysicalContainerFragment;
+struct NGLink;
 struct NGLogicalOutOfFlowPositionedNode;
 
 // Helper class for positioning of out-of-flow blocks.
@@ -104,8 +105,12 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
 
   void LayoutOOFsInMulticol(const NGBlockNode& multicol);
 
+  // Layout the OOF nodes that are descendants of a fragmentation context root.
+  // |mutable_multicol_children| holds the children of an inner multicol if
+  // we are laying out OOF elements inside a nested fragmentation context.
   void LayoutFragmentainerDescendants(
-      Vector<NGLogicalOutOfFlowPositionedNode>* descendants);
+      Vector<NGLogicalOutOfFlowPositionedNode>* descendants,
+      Vector<NGLink*>* mutable_multicol_children = nullptr);
 
   scoped_refptr<const NGLayoutResult> LayoutFragmentainerDescendant(
       const NGLogicalOutOfFlowPositionedNode&);
@@ -133,7 +138,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       bool should_use_fixed_block_size);
   void AddOOFResultsToFragmentainer(
       const Vector<scoped_refptr<const NGLayoutResult>>& results,
-      wtf_size_t index);
+      wtf_size_t index,
+      Vector<NGLink*>* mutable_multicol_children = nullptr);
   const NGConstraintSpace& GetFragmentainerConstraintSpace(wtf_size_t index);
   void AddOOFResultToFragmentainerResults(
       const scoped_refptr<const NGLayoutResult> result,

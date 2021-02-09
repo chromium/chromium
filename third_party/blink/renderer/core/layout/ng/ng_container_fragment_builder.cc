@@ -259,6 +259,12 @@ void NGContainerFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
 }
 
+void NGContainerFragmentBuilder::ClearOutOfFlowFragmentainerDescendants() {
+  if (!HasOutOfFlowFragmentainerDescendants())
+    return;
+  oof_positioned_fragmentainer_descendants_.clear();
+}
+
 void NGContainerFragmentBuilder::
     MoveOutOfFlowDescendantCandidatesToDescendants() {
   DCHECK(oof_positioned_descendants_.IsEmpty());

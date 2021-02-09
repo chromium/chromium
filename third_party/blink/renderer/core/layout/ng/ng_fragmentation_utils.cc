@@ -753,4 +753,30 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
   return space_builder.ToConstraintSpace();
 }
 
+NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
+    const NGBlockNode& multicol,
+    const NGConstraintSpace& space,
+    const NGFragmentGeometry& fragment_geometry) {
+  const ComputedStyle* style = &multicol.Style();
+  NGBoxFragmentBuilder multicol_container_builder(multicol, style, &space,
+                                                  style->GetWritingDirection());
+  multicol_container_builder.SetIsNewFormattingContext(true);
+  multicol_container_builder.SetInitialFragmentGeometry(fragment_geometry);
+  multicol_container_builder.SetIsBlockFragmentationContextRoot();
+
+  return multicol_container_builder;
+}
+
+NGConstraintSpace CreateConstraintSpaceForMulticol(
+    const NGBlockNode& multicol) {
+  WritingDirectionMode writing_direction_mode =
+      multicol.Style().GetWritingDirection();
+  NGConstraintSpaceBuilder space_builder(
+      writing_direction_mode.GetWritingMode(), writing_direction_mode,
+      /* is_new_fc */ true);
+
+  // TODO(almaher): Do we need to set available size, % res size, etc?
+  return space_builder.ToConstraintSpace();
+}
+
 }  // namespace blink

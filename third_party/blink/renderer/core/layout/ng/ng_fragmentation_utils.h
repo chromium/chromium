@@ -266,6 +266,13 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
     bool allow_discard_start_margin,
     bool balance_columns);
 
+// Calculate the container builder and constraint space for a multicol.
+NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
+    const NGBlockNode& multicol,
+    const NGConstraintSpace& space,
+    const NGFragmentGeometry& fragment_geometry);
+NGConstraintSpace CreateConstraintSpaceForMulticol(const NGBlockNode& multicol);
+
 // Return the adjusted child margin to be applied at the end of a fragment.
 // Margins should collapse with the fragmentainer boundary. |bfc_block_offset|
 // is the BFC offset where the margin should be applied (i.e. after the
