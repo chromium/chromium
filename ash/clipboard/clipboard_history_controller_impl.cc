@@ -531,8 +531,9 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
   // If necessary, replace the clipboard's |original_data| temporarily so that
   // we can paste the selected history item.
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
-  if (paste_plain_text ||
-      item.data() != *clipboard->GetClipboardData(&data_dst)) {
+  const auto* current_clipboard_data = clipboard->GetClipboardData(&data_dst);
+  if (paste_plain_text || !current_clipboard_data ||
+      *current_clipboard_data != item.data()) {
     std::unique_ptr<ui::ClipboardData> temp_data;
     if (paste_plain_text) {
       // When the shift key is pressed, we only paste plain text.
