@@ -568,6 +568,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Profile.SyncCustomizationBubbleDelay" units="ms"
+    expires_after="M93">
+  <owner>jkrcal@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The histogram gets recorded for every signed-in profile creation flow where
+    the user enables sync right in the flow. In this case, Chrome needs to check
+    theme sync before showing a profile customization bubble. The recorded value
+    is the delay between the moment sync consent is given and the moment Chrome
+    decides whether to show the customization bubble (if the consent is given in
+    the profile creation flow, the start of the measured interval is actually
+    when a new browser window opens after the consent is given).
+  </summary>
+</histogram>
+
 <histogram name="Profile.SyncCustomize" enum="ProfileSyncCustomize"
     expires_after="M92">
   <owner>msalama@chromium.org</owner>
