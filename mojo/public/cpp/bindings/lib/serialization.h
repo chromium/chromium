@@ -40,8 +40,8 @@ struct MojomSerializationImplTraits<
   static void Serialize(MaybeConstUserType& input,
                         Buffer* buffer,
                         WriterType* writer,
-                        SerializationContext* context) {
-    mojo::internal::Serialize<MojomType>(input, buffer, writer, context);
+                        Message* message) {
+    mojo::internal::Serialize<MojomType>(input, buffer, writer, message);
   }
 };
 
@@ -54,9 +54,9 @@ struct MojomSerializationImplTraits<
   static void Serialize(MaybeConstUserType& input,
                         Buffer* buffer,
                         WriterType* writer,
-                        SerializationContext* context) {
+                        Message* message) {
     mojo::internal::Serialize<MojomType>(input, buffer, writer,
-                                         false /* inline */, context);
+                                         false /* inline */, message);
   }
 };
 
@@ -69,8 +69,7 @@ mojo::Message SerializeAsMessageImpl(UserType* input) {
                         nullptr);
   typename MojomTypeTraits<MojomType>::Data::BufferWriter writer;
   MojomSerializationImplTraits<MojomType>::Serialize(
-      *input, message.payload_buffer(), &writer,
-      &message.serialization_context());
+      *input, message.payload_buffer(), &writer, &message);
   message.SerializeHandles(/*group_controller=*/nullptr);
   return message;
 }
@@ -89,7 +88,7 @@ DataArrayType SerializeImpl(UserType* input) {
 }
 
 template <typename MojomType, typename UserType>
-bool DeserializeImpl(internal::SerializationContext& context,
+bool DeserializeImpl(Message& message,
                      const void* data,
                      size_t data_num_bytes,
                      UserType* output,
@@ -116,12 +115,12 @@ bool DeserializeImpl(internal::SerializationContext& context,
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(data_num_bytes));
   ValidationContext validation_context(input_buffer,
                                        static_cast<uint32_t>(data_num_bytes),
-                                       context.handles()->size(), 0);
+                                       message.handles()->size(), 0);
   bool result = false;
   if (validate_func(input_buffer, &validation_context)) {
     result = Deserialize<MojomType>(
         reinterpret_cast<DataType*>(const_cast<void*>(input_buffer)), output,
-        &context);
+        &message);
   }
 
   if (aligned_input_buffer)

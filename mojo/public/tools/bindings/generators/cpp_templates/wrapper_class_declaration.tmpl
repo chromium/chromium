@@ -99,9 +99,9 @@ class {{export_attribute}} {{struct.name}} {
   static bool Deserialize(const void* data,
                           size_t data_num_bytes,
                           UserType* output) {
-    mojo::internal::SerializationContext context;
+    mojo::Message message;
     return mojo::internal::DeserializeImpl<{{struct.name}}::DataView>(
-        context, data, data_num_bytes, output, Validate);
+        message, data, data_num_bytes, output, Validate);
   }
 
   template <typename UserType>
@@ -123,8 +123,7 @@ class {{export_attribute}} {{struct.name}} {
     }
     input.SerializeIfNecessary();
     return mojo::internal::DeserializeImpl<{{struct.name}}::DataView>(
-        input.serialization_context(), input.payload(),
-        input.payload_num_bytes(), output, Validate);
+        input, input.payload(), input.payload_num_bytes(), output, Validate);
   }
 
 {#--- Struct members #}

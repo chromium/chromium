@@ -19,10 +19,10 @@ struct {{struct.name}}_UnserializedMessageContext
 
  private:
   // mojo::internal::UnserializedMessageContext:
-  void Serialize(mojo::internal::SerializationContext* context,
-                 mojo::internal::Buffer* buffer) override {
+  void Serialize(mojo::Message& message,
+                 mojo::internal::Buffer& buffer) override {
     {{struct.name}}_Data::BufferWriter writer;
-    mojo::internal::Serialize<DataView>(user_data_, buffer, &writer, context);
+    mojo::internal::Serialize<DataView>(user_data_, &buffer, &writer, &message);
   }
 
   UserType user_data_;

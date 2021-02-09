@@ -99,7 +99,7 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
                         Buffer* buf,
                         typename Data::BufferWriter* writer,
                         const ContainerValidateParams* validate_params,
-                        SerializationContext* context) {
+                        Message* message) {
     DCHECK(validate_params->key_validate_params);
     DCHECK(validate_params->element_validate_params);
     if (CallIsNullIfExists<Traits>(input))
@@ -112,7 +112,7 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
     MapKeyReader<MaybeConstUserType> key_reader(input);
     KeyArraySerializer::SerializeElements(&key_reader, buf, &keys_writer,
                                           validate_params->key_validate_params,
-                                          context);
+                                          message);
     (*writer)->keys.Set(keys_writer.data());
 
     typename MojomTypeTraits<ArrayDataView<Value>>::Data::BufferWriter
@@ -121,13 +121,11 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
     MapValueReader<MaybeConstUserType> value_reader(input);
     ValueArraySerializer::SerializeElements(
         &value_reader, buf, &values_writer,
-        validate_params->element_validate_params, context);
+        validate_params->element_validate_params, message);
     (*writer)->values.Set(values_writer.data());
   }
 
-  static bool Deserialize(Data* input,
-                          UserType* output,
-                          SerializationContext* context) {
+  static bool Deserialize(Data* input, UserType* output, Message* message) {
     if (!input)
       return CallSetToNullIfExists<Traits>(output);
 
@@ -135,9 +133,9 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
     std::vector<UserValue> values;
 
     if (!KeyArraySerializer::DeserializeElements(input->keys.Get(), &keys,
-                                                 context) ||
+                                                 message) ||
         !ValueArraySerializer::DeserializeElements(input->values.Get(), &values,
-                                                   context)) {
+                                                   message)) {
       return false;
     }
 

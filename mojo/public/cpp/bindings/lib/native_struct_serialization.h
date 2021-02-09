@@ -34,22 +34,22 @@ struct COMPONENT_EXPORT(MOJO_CPP_BINDINGS) UnmappedNativeStructSerializerImpl {
       const native::NativeStructPtr& input,
       Buffer* buffer,
       native::internal::NativeStruct_Data::BufferWriter* writer,
-      SerializationContext* context);
+      Message* message);
 
   static bool Deserialize(native::internal::NativeStruct_Data* input,
                           native::NativeStructPtr* output,
-                          SerializationContext* context);
+                          Message* message);
 
   static void SerializeMessageContents(
-      IPC::Message* message,
+      IPC::Message* ipc_message,
       Buffer* buffer,
       native::internal::NativeStruct_Data::BufferWriter* writer,
-      SerializationContext* context);
+      Message* message);
 
   static bool DeserializeMessageAttachments(
       native::internal::NativeStruct_Data* data,
-      SerializationContext* context,
-      IPC::Message* message);
+      Message* message,
+      IPC::Message* ipc_message);
 };
 
 template <typename MaybeConstUserType>
@@ -61,16 +61,16 @@ struct NativeStructSerializerImpl {
       MaybeConstUserType& value,
       Buffer* buffer,
       native::internal::NativeStruct_Data::BufferWriter* writer,
-      SerializationContext* context) {
-    IPC::Message message;
-    Traits::Write(&message, value);
+      Message* message) {
+    IPC::Message ipc_message;
+    Traits::Write(&ipc_message, value);
     UnmappedNativeStructSerializerImpl::SerializeMessageContents(
-        &message, buffer, writer, context);
+        &ipc_message, buffer, writer, message);
   }
 
   static bool Deserialize(native::internal::NativeStruct_Data* data,
                           UserType* out,
-                          SerializationContext* context) {
+                          Message* message) {
     if (!data)
       return false;
 
@@ -98,7 +98,7 @@ struct NativeStructSerializerImpl {
                                 header->num_bytes + sizeof(ArrayHeader));
       base::PickleIterator iter(message_view);
       if (!UnmappedNativeStructSerializerImpl::DeserializeMessageAttachments(
-              data, context, &message_view)) {
+              data, message, &message_view)) {
         return false;
       }
 

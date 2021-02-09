@@ -252,9 +252,9 @@ bool FromProto(
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{struct_type}}>::Serialize(
     input, mojolpm_message.payload_buffer(), &mojolpm_writer,
-    &mojolpm_message.serialization_context());
+    &mojolpm_message);
   result = ::mojo::internal::Serializer<{{dataview_type}}, {{mojom_type}}>::Deserialize(
-    mojolpm_writer.data(), &output, &mojolpm_message.serialization_context());
+    mojolpm_writer.data(), &output, &mojolpm_message);
 
   return result;
 
@@ -329,9 +329,9 @@ bool FromProto(
 
   ::mojo::internal::Serializer<{{dataview_type}}, const {{union_type}}>::Serialize(
     input, mojolpm_message.payload_buffer(), &mojolpm_writer, false,
-    &mojolpm_message.serialization_context());
+    &mojolpm_message);
   return ::mojo::internal::Serializer<{{dataview_type}}, {{mojom_type}}>::Deserialize(
-    mojolpm_writer.data(), &output, &mojolpm_message.serialization_context());
+    mojolpm_writer.data(), &output, &mojolpm_message);
 {%-   else %}
   switch (input.union_member_case()) {
 {%-     for field in union.fields %}

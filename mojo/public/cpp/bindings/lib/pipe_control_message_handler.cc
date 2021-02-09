@@ -65,7 +65,7 @@ bool PipeControlMessageHandler::RunOrClosePipe(Message* message) {
           message->mutable_payload());
   pipe_control::RunOrClosePipeMessageParamsPtr params_ptr;
   internal::Deserialize<pipe_control::RunOrClosePipeMessageParamsDataView>(
-      params, &params_ptr, &message->serialization_context());
+      params, &params_ptr, message);
 
   if (params_ptr->input->is_peer_associated_endpoint_closed_event()) {
     const auto& event =

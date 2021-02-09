@@ -12,7 +12,7 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
                         Buffer* buffer,
                         {{data_type}}::BufferWriter* writer,
                         bool inlined,
-                        SerializationContext* context) {
+                        Message* message) {
     if (CallIsNullIfExists<Traits>(input)) {
        if (inlined)
          writer->data()->set_null();
@@ -40,16 +40,16 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
             value_writer;
 {%-     if kind|is_union_kind %}
         mojo::internal::Serialize<{{serializer_type}}>(
-            in_{{name}}, buffer, &value_writer, false, context);
+            in_{{name}}, buffer, &value_writer, false, message);
 {%-     elif kind|is_array_kind or kind|is_map_kind %}
         const ContainerValidateParams {{name}}_validate_params(
             {{kind|get_container_validate_params_ctor_args|indent(16)}});
         mojo::internal::Serialize<{{serializer_type}}>(
             in_{{name}}, buffer, &value_writer, &{{name}}_validate_params,
-            context);
+            message);
  {%-     else %}
         mojo::internal::Serialize<{{serializer_type}}>(
-            in_{{name}}, buffer, &value_writer, context);
+            in_{{name}}, buffer, &value_writer, message);
 {%-     endif %}
 {%-     if not kind|is_nullable_kind %}
         MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
@@ -62,7 +62,7 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
 
 {%-   elif kind|is_any_handle_or_interface_kind %}
         mojo::internal::Serialize<{{serializer_type}}>(
-            in_{{name}}, &result->data.f_{{name}}, context);
+            in_{{name}}, &result->data.f_{{name}}, message);
 {%-     if not kind|is_nullable_kind %}
         MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
             !mojo::internal::IsHandleOrInterfaceValid(result->data.f_{{name}}),
@@ -89,11 +89,11 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
 
   static bool Deserialize({{data_type}}* input,
                           UserType* output,
-                          SerializationContext* context) {
+                          Message* message) {
     if (!input || input->is_null())
       return CallSetToNullIfExists<Traits>(output);
 
-    {{data_view}} data_view(input, context);
+    {{data_view}} data_view(input, message);
     return Traits::Read(data_view, output);
   }
 };

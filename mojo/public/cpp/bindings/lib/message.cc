@@ -165,15 +165,15 @@ void SerializeUnserializedContext(MojoMessageHandle message,
         context->header()->request_id;
   }
 
-  internal::SerializationContext serialization_context;
-  context->Serialize(&serialization_context, &payload_buffer);
+  Message handle_storage;
+  context->Serialize(handle_storage, payload_buffer);
 
   // TODO(crbug.com/753433): Support lazy serialization of associated endpoint
   // handles. See corresponding TODO in the bindings generator for proof that
   // this DCHECK is indeed valid.
-  DCHECK(serialization_context.associated_endpoint_handles()->empty());
-  if (!serialization_context.handles()->empty())
-    payload_buffer.AttachHandles(serialization_context.mutable_handles());
+  DCHECK(handle_storage.associated_endpoint_handles()->empty());
+  if (!handle_storage.handles()->empty())
+    payload_buffer.AttachHandles(handle_storage.mutable_handles());
   payload_buffer.Seal();
 }
 
@@ -204,7 +204,10 @@ Message::Message() = default;
 Message::Message(Message&& other)
     : handle_(std::move(other.handle_)),
       payload_buffer_(std::move(other.payload_buffer_)),
-      serialization_context_(std::move(other.serialization_context_)),
+      handles_(std::move(other.handles_)),
+      associated_endpoint_handles_(
+          std::move(other.associated_endpoint_handles_)),
+      receiver_connection_group_(other.receiver_connection_group_),
       transferable_(other.transferable_),
       serialized_(other.serialized_),
       heap_profiler_tag_(other.heap_profiler_tag_) {
@@ -329,7 +332,9 @@ Message::~Message() = default;
 Message& Message::operator=(Message&& other) {
   handle_ = std::move(other.handle_);
   payload_buffer_ = std::move(other.payload_buffer_);
-  serialization_context_ = std::move(other.serialization_context_);
+  handles_ = std::move(other.handles_);
+  associated_endpoint_handles_ = std::move(other.associated_endpoint_handles_);
+  receiver_connection_group_ = other.receiver_connection_group_;
   transferable_ = other.transferable_;
   other.transferable_ = false;
   serialized_ = other.serialized_;
@@ -345,7 +350,9 @@ Message& Message::operator=(Message&& other) {
 void Message::Reset() {
   handle_.reset();
   payload_buffer_.Reset();
-  serialization_context_ = {};
+  handles_.clear();
+  associated_endpoint_handles_.clear();
+  receiver_connection_group_ = nullptr;
   transferable_ = false;
   serialized_ = false;
   heap_profiler_tag_ = nullptr;

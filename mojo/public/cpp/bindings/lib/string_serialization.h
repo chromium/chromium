@@ -25,7 +25,7 @@ struct Serializer<StringDataView, MaybeConstUserType> {
   static void Serialize(MaybeConstUserType& input,
                         Buffer* buffer,
                         String_Data::BufferWriter* writer,
-                        SerializationContext* context) {
+                        Message* message) {
     if (CallIsNullIfExists<Traits>(input))
       return;
 
@@ -36,10 +36,10 @@ struct Serializer<StringDataView, MaybeConstUserType> {
 
   static bool Deserialize(String_Data* input,
                           UserType* output,
-                          SerializationContext* context) {
+                          Message* message) {
     if (!input)
       return CallSetToNullIfExists<Traits>(output);
-    return Traits::Read(StringDataView(input, context), output);
+    return Traits::Read(StringDataView(input, message), output);
   }
 };
 

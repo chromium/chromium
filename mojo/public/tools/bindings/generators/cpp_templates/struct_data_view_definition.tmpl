@@ -11,7 +11,7 @@ inline void {{struct.name}}DataView::Get{{name|under_to_camel}}DataView(
 {%-     else %}
   auto pointer = &data_->{{name}};
 {%-     endif %}
-  *output = {{kind|cpp_data_view_type}}(pointer, context_);
+  *output = {{kind|cpp_data_view_type}}(pointer, message_);
 }
 
 {%-   elif kind|is_object_kind %}
@@ -23,7 +23,7 @@ inline void {{struct.name}}DataView::Get{{name|under_to_camel}}DataView(
 {%-     else %}
   auto pointer = data_->{{name}}.Get();
 {%-     endif %}
-  *output = {{kind|cpp_data_view_type}}(pointer, context_);
+  *output = {{kind|cpp_data_view_type}}(pointer, message_);
 }
 {%-   endif %}
 {%- endfor %}

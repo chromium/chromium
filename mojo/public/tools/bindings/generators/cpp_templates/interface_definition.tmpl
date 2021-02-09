@@ -12,8 +12,7 @@
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
   {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}}{};
 {%-   endfor %}
-  {{struct.name}}DataView input_data_view(
-      {{params}}, &(({{message}})->serialization_context()));
+  {{struct.name}}DataView input_data_view({{params}}, {{message}});
   {{struct_macros.deserialize(struct, "input_data_view", "p_%s", "success")}}
   if (!success) {
     ReportValidationErrorForMessage(
