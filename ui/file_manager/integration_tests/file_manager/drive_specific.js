@@ -949,3 +949,20 @@ testcase.driveEnableDocsOfflineDialogMultipleWindows = async () => {
   // Check: the last dialog result should be 1 (accept).
   await waitForLastDriveDialogResult('1');
 };
+
+/**
+ * Tests that the Enable Docs Offline dialog disappears when Drive is unmounted.
+ */
+testcase.driveEnableDocsOfflineDialogDisappearsOnUnmount = async () => {
+  // Open Files app on Downloads.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Open the Enable Docs Offline dialog.
+  await openAndWaitForEnableDocsOfflineDialog(appId);
+
+  // Unmount Drive.
+  await sendTestMessage({name: 'unmountDrive'});
+
+  // Check: the Enable Docs Offline dialog should disappear.
+  await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown');
+};

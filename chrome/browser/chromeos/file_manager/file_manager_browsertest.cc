@@ -677,7 +677,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveOfflineInfoBannerWithoutFlag"),
         TestCase("driveEnableDocsOfflineDialog"),
         TestCase("driveEnableDocsOfflineDialogWithoutWindow"),
-        TestCase("driveEnableDocsOfflineDialogMultipleWindows")));
+        TestCase("driveEnableDocsOfflineDialogMultipleWindows"),
+        TestCase("driveEnableDocsOfflineDialogDisappearsOnUnmount")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     HoldingSpace, /* holding_space.js */

@@ -23,6 +23,10 @@
 
     /** @private {boolean} */
     this.open_ = false;
+
+    // Listen to mount events in order to hide the dialog when Drive shuts down.
+    chrome.fileManagerPrivate.onMountCompleted.addListener(
+        this.onMountCompleted_.bind(this));
   }
 
   /**
@@ -62,5 +66,14 @@
     }
     this.dialog_.show(
         message, () => this.onResult_(true), () => this.onResult_(false));
+  }
+
+  onMountCompleted_(event) {
+    if (event.eventType ===
+            chrome.fileManagerPrivate.MountCompletedEventType.UNMOUNT &&
+        event.volumeMetadata.volumeType ===
+            chrome.fileManagerPrivate.VolumeType.DRIVE) {
+      this.dialog_.hide();
+    }
   }
 }
