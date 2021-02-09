@@ -192,11 +192,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Add Done button.
   UIBarButtonItem* doneItem = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_BOOKMARK_EDIT_MODE_EXIT_MOBILE)
-              style:UIBarButtonItemStylePlain
-             target:self
-             action:@selector(saveFolder)];
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(saveFolder)];
   doneItem.accessibilityIdentifier =
       kBookmarkFolderEditNavigationBarDoneButtonIdentifier;
   self.navigationItem.rightBarButtonItem = doneItem;
