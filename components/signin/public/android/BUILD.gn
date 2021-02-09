@@ -47,14 +47,36 @@ generate_jni("jni_headers") {
   ]
 }
 
+android_library("signin_java_test_support") {
+  testonly = true
+  deps = [
+    ":signin_test_resources",
+    "//base:base_java",
+    "//components/signin/core/browser/android:java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+  ]
+  sources = [
+    "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
+    "java/src/org/chromium/components/signin/test/util/FakeAccountManagerDelegate.java",
+    "java/src/org/chromium/components/signin/test/util/FakeAccountManagerFacade.java",
+    "java/src/org/chromium/components/signin/test/util/FakeProfileDataSource.java",
+  ]
+  resources_package = "org.chromium.components.signin.test.util"
+}
+
+android_resources("signin_test_resources") {
+  testonly = true
+  sources = [ "java/res/drawable/test_profile_picture.xml" ]
+}
+
 android_library("javatests") {
   testonly = true
   deps = [
     ":java",
+    ":signin_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/signin/core/browser/android:java",
-    "//components/signin/core/browser/android:signin_java_test_support",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:rules_java",
@@ -78,11 +100,11 @@ java_library("junit") {
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
   ]
   deps = [
+    ":signin_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/signin/core/browser/android:java",
-    "//components/signin/core/browser/android:signin_java_test_support",
     "//testing/android/junit:junit_test_support",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",

@@ -23,9 +23,9 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.core.browser.javatests.R;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
+import org.chromium.components.signin.test.util.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**

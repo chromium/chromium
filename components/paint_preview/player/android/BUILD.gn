@@ -111,7 +111,7 @@ android_library("player_java_test_support") {
     "//base:jni_java",
     "//components/paint_preview/browser/android:java",
     "//components/signin/core/browser/android:java",
-    "//components/signin/core/browser/android:signin_java_test_support",
+    "//components/signin/public/android:signin_java_test_support",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:rules_java",
