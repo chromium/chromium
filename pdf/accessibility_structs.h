@@ -321,6 +321,22 @@ struct AccessibilityFormFieldInfo {
   std::vector<AccessibilityButtonInfo> buttons;
 };
 
+struct AccessibilityPageObjects {
+  AccessibilityPageObjects();
+  AccessibilityPageObjects(
+      const std::vector<AccessibilityLinkInfo>& links,
+      const std::vector<AccessibilityImageInfo>& images,
+      const std::vector<AccessibilityHighlightInfo>& highlights,
+      const AccessibilityFormFieldInfo& form_fields);
+  AccessibilityPageObjects(const AccessibilityPageObjects& other);
+  ~AccessibilityPageObjects();
+
+  std::vector<AccessibilityLinkInfo> links;
+  std::vector<AccessibilityImageInfo> images;
+  std::vector<AccessibilityHighlightInfo> highlights;
+  AccessibilityFormFieldInfo form_fields;
+};
+
 }  // namespace chrome_pdf
 
 #endif  // PDF_ACCESSIBILITY_STRUCTS_H_

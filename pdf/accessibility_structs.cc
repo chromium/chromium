@@ -187,4 +187,21 @@ AccessibilityFormFieldInfo::AccessibilityFormFieldInfo(
 
 AccessibilityFormFieldInfo::~AccessibilityFormFieldInfo() = default;
 
+AccessibilityPageObjects::AccessibilityPageObjects() = default;
+
+AccessibilityPageObjects::AccessibilityPageObjects(
+    const std::vector<AccessibilityLinkInfo>& links,
+    const std::vector<AccessibilityImageInfo>& images,
+    const std::vector<AccessibilityHighlightInfo>& highlights,
+    const AccessibilityFormFieldInfo& form_fields)
+    : links(links),
+      images(images),
+      highlights(highlights),
+      form_fields(form_fields) {}
+
+AccessibilityPageObjects::AccessibilityPageObjects(
+    const AccessibilityPageObjects& other) = default;
+
+AccessibilityPageObjects::~AccessibilityPageObjects() = default;
+
 }  // namespace chrome_pdf

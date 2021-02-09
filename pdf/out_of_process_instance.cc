@@ -512,6 +512,78 @@ PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(
   return pp_text_runs;
 }
 
+pp::PDF::PrivateAccessibilityPageObjects ToPrivateAccessibilityPageObjects(
+    const AccessibilityPageObjects& page_objects) {
+  pp::PDF::PrivateAccessibilityPageObjects pp_page_objects;
+
+  pp_page_objects.links.reserve(page_objects.links.size());
+  for (const auto& link_info : page_objects.links) {
+    pp_page_objects.links.push_back(
+        {link_info.url, link_info.index_in_page, link_info.text_range.index,
+         link_info.text_range.count, PPFloatRectFromRectF(link_info.bounds)});
+  }
+
+  pp_page_objects.images.reserve(page_objects.images.size());
+  for (const auto& image_info : page_objects.images) {
+    pp_page_objects.images.push_back({image_info.alt_text,
+                                      image_info.text_run_index,
+                                      PPFloatRectFromRectF(image_info.bounds)});
+  }
+
+  pp_page_objects.highlights.reserve(page_objects.highlights.size());
+  for (const auto& highlight_info : page_objects.highlights) {
+    pp_page_objects.highlights.push_back(
+        {highlight_info.note_text, highlight_info.index_in_page,
+         highlight_info.text_range.index, highlight_info.text_range.count,
+         PPFloatRectFromRectF(highlight_info.bounds), highlight_info.color});
+  }
+
+  pp_page_objects.form_fields.text_fields.reserve(
+      page_objects.form_fields.text_fields.size());
+  for (const auto& text_field_info : page_objects.form_fields.text_fields) {
+    pp_page_objects.form_fields.text_fields.push_back(
+        {text_field_info.name, text_field_info.value,
+         text_field_info.is_read_only, text_field_info.is_required,
+         text_field_info.is_password, text_field_info.index_in_page,
+         text_field_info.text_run_index,
+         PPFloatRectFromRectF(text_field_info.bounds)});
+  }
+
+  pp_page_objects.form_fields.choice_fields.reserve(
+      page_objects.form_fields.choice_fields.size());
+  for (const auto& choice_field_info : page_objects.form_fields.choice_fields) {
+    std::vector<pp::PDF::PrivateAccessibilityChoiceFieldOptionInfo>
+        pp_choice_field_option_infos;
+    pp_choice_field_option_infos.reserve(choice_field_info.options.size());
+    for (const auto& option : choice_field_info.options) {
+      pp_choice_field_option_infos.push_back(
+          {option.name, option.is_selected,
+           PPFloatRectFromRectF(option.bounds)});
+    }
+    pp_page_objects.form_fields.choice_fields.push_back(
+        {choice_field_info.name, pp_choice_field_option_infos,
+         static_cast<PP_PrivateChoiceFieldType>(choice_field_info.type),
+         choice_field_info.is_read_only, choice_field_info.is_multi_select,
+         choice_field_info.has_editable_text_box,
+         choice_field_info.index_in_page, choice_field_info.text_run_index,
+         PPFloatRectFromRectF(choice_field_info.bounds)});
+  }
+
+  pp_page_objects.form_fields.buttons.reserve(
+      page_objects.form_fields.buttons.size());
+  for (const auto& button_info : page_objects.form_fields.buttons) {
+    pp_page_objects.form_fields.buttons.push_back(
+        {button_info.name, button_info.value,
+         static_cast<PP_PrivateButtonType>(button_info.type),
+         button_info.is_read_only, button_info.is_checked,
+         button_info.control_count, button_info.control_index,
+         button_info.index_in_page, button_info.text_run_index,
+         PPFloatRectFromRectF(button_info.bounds)});
+  }
+
+  return pp_page_objects;
+}
+
 // Converts |version| to a formatted string.
 base::string16 GetFormattedVersion(PdfVersion version) {
   double value = 0;
@@ -883,10 +955,10 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
   AccessibilityPageInfo page_info;
   std::vector<AccessibilityTextRunInfo> text_runs;
   std::vector<AccessibilityCharInfo> chars;
-  pp::PDF::PrivateAccessibilityPageObjects page_objects;
+  AccessibilityPageObjects page_objects;
 
   if (!GetAccessibilityInfo(engine(), page_index, page_info, text_runs, chars,
-                            &page_objects)) {
+                            page_objects)) {
     return;
   }
 
@@ -896,8 +968,10 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
       PrivateAccessibilityCharInfoFromAccessibilityCharInfo(chars);
   std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> pp_text_runs =
       PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(text_runs);
+  pp::PDF::PrivateAccessibilityPageObjects pp_page_objects =
+      ToPrivateAccessibilityPageObjects(page_objects);
   pp::PDF::SetAccessibilityPageInfo(GetPluginInstance(), &pp_page_info,
-                                    pp_text_runs, pp_chars, page_objects);
+                                    pp_text_runs, pp_chars, pp_page_objects);
 
   // Schedule loading the next page.
   ScheduleTaskOnMainThread(
