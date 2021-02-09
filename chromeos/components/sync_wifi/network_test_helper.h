@@ -41,7 +41,8 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
                                    bool has_connected,
                                    bool owned_by_user = true,
                                    bool configured_by_sync = false,
-                                   bool is_from_policy = false);
+                                   bool is_from_policy = false,
+                                   bool is_hidden = false);
 
   NetworkStateTestHelper* network_state_test_helper();
 

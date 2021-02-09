@@ -25,18 +25,21 @@ enum class NetworkEligibilityStatus {
   kNotConfiguredByUser = 5,
   kUnsupportedSecurityType = 6,
   kNoWifiNetworksAvailable = 7,
-  kMaxValue = kNoWifiNetworksAvailable
+  kHiddenSsid = 8,
+  kMaxValue = kHiddenSsid
 };
 
 NetworkEligibilityStatus GetNetworkEligibilityStatus(
     const std::string& guid,
     bool is_connectable,
+    bool is_hidden,
     const network_config::mojom::SecurityType& security_type,
     const network_config::mojom::OncSource& source,
     bool log_result);
 
 bool IsEligibleForSync(const std::string& guid,
                        bool is_connectable,
+                       bool is_hidden,
                        const network_config::mojom::SecurityType& security_type,
                        const network_config::mojom::OncSource& source,
                        bool log_result);
