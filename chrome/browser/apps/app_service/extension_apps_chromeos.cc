@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
@@ -157,6 +158,9 @@ void ExtensionAppsChromeOs::ObserveArc() {
 
 void ExtensionAppsChromeOs::Initialize() {
   app_window_registry_.Add(extensions::AppWindowRegistry::Get(profile()));
+
+  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
+
   notification_display_service_.Add(
       NotificationDisplayServiceFactory::GetForProfile(profile()));
 
@@ -360,6 +364,10 @@ void ExtensionAppsChromeOs::OnExtensionUninstalled(
   app_notifications_.RemoveNotificationsForApp(extension->id());
   paused_apps_.MaybeRemoveApp(extension->id());
 
+  auto result = media_requests_.RemoveRequests(extension->id());
+  ModifyCapabilityAccess(subscribers(), extension->id(), result.camera,
+                         result.microphone);
+
   ExtensionAppsBase::OnExtensionUninstalled(browser_context, extension, reason);
 }
 
@@ -384,6 +392,44 @@ void ExtensionAppsChromeOs::OnPackageListInitialRefreshed() {
 
 void ExtensionAppsChromeOs::OnArcAppListPrefsDestroyed() {
   arc_prefs_ = nullptr;
+}
+
+void ExtensionAppsChromeOs::OnRequestUpdate(
+    int render_process_id,
+    int render_frame_id,
+    blink::mojom::MediaStreamType stream_type,
+    const content::MediaRequestState state) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
+
+  if (!web_contents) {
+    return;
+  }
+
+  base::Optional<web_app::AppId> web_app_id =
+      web_app::FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
+                                              /*window_only=*/false);
+  if (web_app_id.has_value()) {
+    // WebAppsChromeOs is responsible for |app_id|.
+    return;
+  }
+
+  std::string app_id = extension_misc::kChromeAppId;
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile());
+  DCHECK(registry);
+  const extensions::ExtensionSet& extensions = registry->enabled_extensions();
+  const extensions::Extension* extension =
+      extensions.GetAppByURL(web_contents->GetURL());
+  if (extension && Accepts(extension)) {
+    app_id = extension->id();
+  }
+
+  auto result =
+      media_requests_.UpdateRequests(app_id, web_contents, stream_type, state);
+  ModifyCapabilityAccess(subscribers(), app_id, result.camera,
+                         result.microphone);
 }
 
 void ExtensionAppsChromeOs::OnNotificationDisplayed(
