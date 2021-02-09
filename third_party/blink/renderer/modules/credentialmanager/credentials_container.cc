@@ -916,7 +916,7 @@ ScriptPromise CredentialsContainer::get(
   }
 
   if (options->hasPublicKey() || options->hasConditionalPublicKey()) {
-    PublicKeyCredentialRequestOptions* public_key_options;
+    const PublicKeyCredentialRequestOptions* public_key_options;
     bool is_conditional_ui_request;
     if (options->hasPublicKey()) {
       public_key_options = options->publicKey();

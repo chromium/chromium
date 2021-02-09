@@ -291,16 +291,16 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
   auto well_known_starting_directory =
       mojom::blink::WellKnownDirectory::kDefault;
   mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
-  if (options->hasStartInNonNull()) {
-    if (options->startIn().IsWellKnownDirectory()) {
+  if (options->hasStartIn()) {
+    auto& start_in = options->startIn();
+    if (start_in.IsWellKnownDirectory()) {
       well_known_starting_directory = ConvertWellKnownDirectory(
-          options->startIn().GetAsWellKnownDirectory(), exception_state);
+          start_in.GetAsWellKnownDirectory(), exception_state);
       if (exception_state.HadException())
         return ScriptPromise();
     }
-
-    if (options->startIn().IsFileSystemHandle()) {
-      token = options->startIn().GetAsFileSystemHandle()->Transfer();
+    if (start_in.IsFileSystemHandle()) {
+      token = start_in.GetAsFileSystemHandle()->Transfer();
     }
   }
 
@@ -341,16 +341,16 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
   auto well_known_starting_directory =
       mojom::blink::WellKnownDirectory::kDefault;
   mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
-  if (options->hasStartInNonNull()) {
-    if (options->startIn().IsWellKnownDirectory()) {
+  if (options->hasStartIn()) {
+    auto& start_in = options->startIn();
+    if (start_in.IsWellKnownDirectory()) {
       well_known_starting_directory = ConvertWellKnownDirectory(
-          options->startIn().GetAsWellKnownDirectory(), exception_state);
+          start_in.GetAsWellKnownDirectory(), exception_state);
       if (exception_state.HadException())
         return ScriptPromise();
     }
-
-    if (options->startIn().IsFileSystemHandle()) {
-      token = options->startIn().GetAsFileSystemHandle()->Transfer();
+    if (start_in.IsFileSystemHandle()) {
+      token = start_in.GetAsFileSystemHandle()->Transfer();
     }
   }
 
@@ -381,16 +381,16 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
   auto well_known_starting_directory =
       mojom::blink::WellKnownDirectory::kDefault;
   mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken> token;
-  if (options->hasStartInNonNull()) {
-    if (options->startIn().IsWellKnownDirectory()) {
+  if (options->hasStartIn()) {
+    auto& start_in = options->startIn();
+    if (start_in.IsWellKnownDirectory()) {
       well_known_starting_directory = ConvertWellKnownDirectory(
-          options->startIn().GetAsWellKnownDirectory(), exception_state);
+          start_in.GetAsWellKnownDirectory(), exception_state);
       if (exception_state.HadException())
         return ScriptPromise();
     }
-
-    if (options->startIn().IsFileSystemHandle()) {
-      token = options->startIn().GetAsFileSystemHandle()->Transfer();
+    if (start_in.IsFileSystemHandle()) {
+      token = start_in.GetAsFileSystemHandle()->Transfer();
     }
   }
 

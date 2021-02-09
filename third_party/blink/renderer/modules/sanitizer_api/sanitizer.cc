@@ -5,6 +5,7 @@
 #include "sanitizer.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_node_filter.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_parse_from_string_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_document_fragment_or_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_trusted_html_or_document_fragment_or_document.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
-#include "third_party/blink/renderer/core/xml/parse_from_string_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
