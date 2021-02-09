@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
@@ -91,10 +92,19 @@ class DefaultAppsBrowserTest : public ExtensionBrowserTest {
             ->extension_service()
             ->pending_extension_manager();
 
-    // Wait for any pending extension installations to finish.
-    while (pending_manager->HasPendingExtensions()) {
+    // If the test extension is still pending, wait for it to finish.
+    if (pending_manager->IsIdPending(kDefaultInstalledId)) {
       TestExtensionRegistryObserver(registry()).WaitForExtensionInstalled();
     }
+
+    // In Chromium builds, there shouldn't be any other pending extensions.
+    // In Google Chrome, we don't have this assertion, because we bundle a
+    // couple other default extensions (like the Chrome Apps In-Apps Payment
+    // app, or Chrome Media Router). These will never install, since they rely
+    // on being downloaded (which can't happen in browser tests).
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    EXPECT_FALSE(pending_manager->HasPendingExtensions());
+#endif
   }
 
   virtual bool ShouldEnableWebAppMigration() { return false; }
