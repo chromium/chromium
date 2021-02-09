@@ -1309,6 +1309,7 @@
     {
       name: "MediaStreamInsertableStreams",
       status: "experimental",
+      origin_trial_feature_name: "WebCodecs"
     },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
