@@ -16,6 +16,9 @@
 #include "base/base_export.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/tracing_buildflags.h"
+#include "third_party/perfetto/include/perfetto/protozero/scattered_heap_buffer.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/debug_annotation.pbzero.h"
 
 // Trace macro can have one or two optional arguments, each one of them
 // identified by a name (a C string literal) and a value, which can be an
@@ -223,26 +226,7 @@ union BASE_EXPORT TraceValue {
   const void* as_pointer;
   const char* as_string;
   ConvertableToTraceFormat* as_convertable;
-
-  // There is no constructor to keep this structure POD intentionally.
-  // This avoids un-needed initialization when only 0 or 1 arguments are
-  // used to construct a TraceArguments instance. Use Init() instead to
-  // perform explicit initialization from a given C++ value.
-
-  // Initialize TraceValue instance from a C++ trace value.
-  // This relies on the proper specialization of TraceValue::Helper<>
-  // described below. Usage is simply:
-  //
-  //  TraceValue v;
-  //  v.Init(<value>);
-  //
-  // NOTE: For ConvertableToTraceFormat values, see the note above and
-  // the one for TraceValue::Helper for CONVERTABLE_TYPE below.
-  template <typename T>
-  void Init(T&& value) {
-    using ValueType = typename InnerType<T>::type;
-    Helper<ValueType>::SetValue(this, std::forward<T>(value));
-  }
+  protozero::HeapBuffered<perfetto::protos::pbzero::DebugAnnotation>* as_proto;
 
   // Static method to create a new TraceValue instance from a given
   // initialization value. Note that this deduces the TRACE_VALUE_TYPE_XXX
@@ -324,12 +308,42 @@ union BASE_EXPORT TraceValue {
   template <typename T, class = void>
   struct Helper {};
 
+  template <typename T>
+  struct HasHelperSupport {
+   private:
+    using Yes = char[1];
+    using No = char[2];
+
+    template <typename V>
+    static Yes& check(
+        decltype(TraceValue::Helper<typename InnerType<V>::type>::kType,
+                 int()));
+    template <typename V>
+    static No& check(...);
+
+   public:
+    static constexpr bool value = sizeof(Yes) == sizeof(check<T>(0));
+  };
+
   // TraceValue::TypeFor<T>::value returns the TRACE_VALUE_TYPE_XXX
   // corresponding to initialization values of type T.
+  template <typename T, class = void>
+  struct TypeFor;
+
   template <typename T>
-  struct TypeFor {
+  struct TypeFor<T,
+                 typename std::enable_if<HasHelperSupport<
+                     typename InnerType<T>::type>::value>::type> {
     using ValueType = typename InnerType<T>::type;
     static const unsigned char value = Helper<ValueType>::kType;
+  };
+  template <typename T>
+  struct TypeFor<T,
+                 typename std::enable_if<
+                     !HasHelperSupport<typename InnerType<T>::type>::value &&
+                     perfetto::internal::has_traced_value_support<
+                         typename InnerType<T>::type>::value>::type> {
+    static const unsigned char value = TRACE_VALUE_TYPE_PROTO;
   };
 
   // TraceValue::TypeCheck<T>::value is only defined iff T can be used to
@@ -337,11 +351,47 @@ union BASE_EXPORT TraceValue {
   // instantiation to only the appropriate type (see TraceArguments
   // constructors below).
   template <typename T,
-            class = decltype(TraceValue::Helper<
-                             typename TraceValue::InnerType<T>::type>::kType)>
+            class = std::enable_if_t<
+                HasHelperSupport<typename InnerType<T>::type>::value ||
+                perfetto::internal::has_traced_value_support<
+                    typename InnerType<T>::type>::value>>
   struct TypeCheck {
     static const bool value = true;
   };
+
+  // There is no constructor to keep this structure POD intentionally.
+  // This avoids un-needed initialization when only 0 or 1 arguments are
+  // used to construct a TraceArguments instance. Use Init() instead to
+  // perform explicit initialization from a given C++ value.
+
+  // Initialize TraceValue instance from a C++ trace value.
+  // This relies on the proper specialization of TraceValue::Helper<>
+  // described below. Usage is simply:
+  //
+  //  TraceValue v;
+  //  v.Init(<value>);
+  //
+  // NOTE: For ConvertableToTraceFormat values, see the notes above.
+  template <class T>
+  typename std::enable_if<
+      HasHelperSupport<typename InnerType<T>::type>::value>::type
+  Init(T&& value) {
+    using ValueType = typename InnerType<T>::type;
+    Helper<ValueType>::SetValue(this, std::forward<T>(value));
+  }
+
+  template <class T>
+  typename std::enable_if<
+      !HasHelperSupport<typename InnerType<T>::type>::value &&
+      perfetto::internal::has_traced_value_support<
+          typename InnerType<T>::type>::value>::type
+  Init(T&& value) {
+    as_proto = new protozero::HeapBuffered<
+        perfetto::protos::pbzero::DebugAnnotation>();
+    perfetto::WriteIntoTracedValue(
+        perfetto::internal::CreateTracedValueFromProto(as_proto->get()),
+        std::forward<T>(value));
+  }
 };
 
 // TraceValue::Helper for integers and enums.
@@ -639,6 +689,8 @@ class BASE_EXPORT TraceArguments {
     for (size_t n = 0; n < size_; ++n) {
       if (types_[n] == TRACE_VALUE_TYPE_CONVERTABLE)
         delete values_[n].as_convertable;
+      if (types_[n] == TRACE_VALUE_TYPE_PROTO)
+        delete values_[n].as_proto;
     }
   }
 

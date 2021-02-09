@@ -120,6 +120,11 @@ void WriteDebugAnnotations(
         annotation->set_string_value(value.as_string ? value.as_string
                                                      : "NULL");
         break;
+      case TRACE_VALUE_TYPE_PROTO: {
+        auto data = value.as_proto->SerializeAsArray();
+        annotation->AppendRawProtoBytes(data.data(), data.size());
+      } break;
+
       default:
         NOTREACHED() << "Don't know how to serialize this value";
         break;

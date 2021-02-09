@@ -1107,6 +1107,7 @@ ConvertTimestampToTraceTimeNs(const ::base::TimeTicks& ticks);
 #define TRACE_VALUE_TYPE_STRING (static_cast<unsigned char>(6))
 #define TRACE_VALUE_TYPE_COPY_STRING (static_cast<unsigned char>(7))
 #define TRACE_VALUE_TYPE_CONVERTABLE (static_cast<unsigned char>(8))
+#define TRACE_VALUE_TYPE_PROTO (static_cast<unsigned char>(9))
 
 // Enum reflecting the scope of an INSTANT event. Must fit within
 // TRACE_EVENT_FLAG_SCOPE_MASK.

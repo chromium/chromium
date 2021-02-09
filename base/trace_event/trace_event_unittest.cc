@@ -3005,5 +3005,29 @@ TEST_F(TraceEventTestFixture, ClockSyncEventsAreAlwaysAddedToTrace) {
   EXPECT_TRUE(FindNamePhase("clock_sync", "c"));
 }
 
+TEST_F(TraceEventTestFixture, ContextLambda) {
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+
+  TRACE_EVENT1("cat", "Name", "arg", [&](perfetto::TracedValue ctx) {
+    std::move(ctx).WriteString("foobar");
+  });
+  EndTraceAndFlush();
+
+  DictionaryValue* dict = FindNamePhase("Name", "X");
+  ASSERT_TRUE(dict);
+
+  const DictionaryValue* args_dict = nullptr;
+  dict->GetDictionary("args", &args_dict);
+  ASSERT_TRUE(args_dict);
+
+  const Value* value = nullptr;
+  EXPECT_TRUE(args_dict->Get("arg", &value));
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(value->GetString(),
+            "2\x6"
+            "foobar");
+}
+
 }  // namespace trace_event
 }  // namespace base

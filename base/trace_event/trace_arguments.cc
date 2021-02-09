@@ -183,6 +183,12 @@ void TraceValue::Append(unsigned char type,
     case TRACE_VALUE_TYPE_CONVERTABLE:
       this->as_convertable->AppendAsTraceFormat(out);
       break;
+    case TRACE_VALUE_TYPE_PROTO:
+      if (as_json)
+        EscapeJSONString(this->as_proto->SerializeAsString(), true, out);
+      else
+        *out += this->as_proto->SerializeAsString();
+      break;
     default:
       NOTREACHED() << "Don't know how to print this value";
       break;
