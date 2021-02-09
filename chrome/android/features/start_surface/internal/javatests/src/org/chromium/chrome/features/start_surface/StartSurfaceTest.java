@@ -102,6 +102,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -404,7 +405,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/home_button_on_grid_tab_switcher/false"})
     public void testShow_SingleAsHomepage() {
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
@@ -441,6 +442,10 @@ public class StartSurfaceTest {
             fail("Failed to tap 'more tabs' " + e.toString());
         }
         onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        assertEquals(mActivityTestRule.getActivity()
+                             .findViewById(R.id.home_button_on_tab_switcher)
+                             .getVisibility(),
+                View.GONE);
 
         pressBack();
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
@@ -1310,7 +1315,7 @@ public class StartSurfaceTest {
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
-        onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        pressHomePageButton();
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
         try {
@@ -1324,6 +1329,15 @@ public class StartSurfaceTest {
         }
         onViewWaiting(withId(R.id.secondary_tasks_surface_view));
         assertTrue(bottomSheetTestSupport.hasSuppressionTokens());
+    }
+
+    private void pressHomePageButton() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.getActivity()
+                    .getToolbarManager()
+                    .getToolbarTabControllerForTesting()
+                    .openHomepage();
+        });
     }
 
     @Test
@@ -1414,9 +1428,7 @@ public class StartSurfaceTest {
         onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container), isDisplayed()));
         TestThreadUtils.runOnUiThreadBlocking(() -> tilesLayout.getChildAt(0).performClick());
         CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
-        onViewWaiting(allOf(withId(org.chromium.chrome.R.id.home_button), isDisplayed()));
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { cta.findViewById(org.chromium.chrome.R.id.home_button).performClick(); });
+        pressHomePageButton();
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view), isDisplayed()));
         // Verifies a new Tab is created, and can be seen in the Start surface.
@@ -1523,8 +1535,7 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
 
         TabUiTestHelper.mergeAllNormalTabsToAGroup(cta);
-        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.home_button));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        pressHomePageButton();
         CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
 
         onView(allOf(withParent(withId(
@@ -1589,8 +1600,7 @@ public class StartSurfaceTest {
 
         // Goes to the Start surface from tapping home button, and navigate from the Omnibox. The
         // new created Tab shouldn't get focus.
-        waitForView(withId(org.chromium.chrome.tab_ui.R.id.home_button));
-        onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        pressHomePageButton();
         CriteriaHelper.pollUiThread(this::isOverviewVisible);
 
         onView(allOf(withId(R.id.search_box_text), isDisplayed()))
@@ -1647,6 +1657,42 @@ public class StartSurfaceTest {
         pressBack();
         CriteriaHelper.pollUiThread(this::isOverviewVisible);
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/home_button_on_grid_tab_switcher/true"})
+    public void testHomeButtonOnTabSwitcher() {
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+        CriteriaHelper.pollUiThread(this::isOverviewVisible);
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
+
+        // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
+        // percent of the view's area is displayed to the users. However, this view has negative
+        // margin which makes the percentage is less than 90.
+        // TODO(crbug.com/1025296): Investigate whether this would be a problem for real users.
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> mActivityTestRule.getActivity()
+                                       .findViewById(org.chromium.chrome.tab_ui.R.id.more_tabs)
+                                       .performClick());
+        } catch (ExecutionException e) {
+            fail("Failed to tap 'more tabs' " + e.toString());
+        }
+        waitForView(withId(R.id.secondary_tasks_surface_view));
+        onView(withId(org.chromium.chrome.tab_ui.R.id.home_button_on_tab_switcher))
+                .check(matches(isDisplayed()));
+        HomeButton homeButton = mActivityTestRule.getActivity().findViewById(
+                org.chromium.chrome.tab_ui.R.id.home_button_on_tab_switcher);
+        Assert.assertFalse(homeButton.isLongClickable());
+        onView(withId(R.id.home_button_on_tab_switcher)).perform(click());
+
+        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
     }
 
     private boolean isKeyboardShown() {

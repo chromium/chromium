@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOMEPAGE_ENABLED_SUPPLIER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_CLICK_HANDLER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_DESCRIPTION;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_IMAGE;
@@ -67,11 +71,16 @@ class StartSurfaceToolbarMediator {
     private CallbackController mCallbackController = new CallbackController();
     private float mNonIncognitoHomepageTranslationY;
 
+    private boolean mShowHomeButtonOnTabSwitcher;
+
     StartSurfaceToolbarMediator(PropertyModel model, Callback<IPHCommandBuilder> showIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, boolean hideIncognitoSwitchOnHomePage,
-            MenuButtonCoordinator menuButtonCoordinator,
+            boolean showHomeButtonOnTabSwitcher, MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
-            Supplier<ButtonData> identityDiscButtonSupplier) {
+            Supplier<ButtonData> identityDiscButtonSupplier,
+            ObservableSupplier<Boolean> homepageEnabledSupplier,
+            ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
+            View.OnClickListener homeButtonOnClickHandler) {
         mPropertyModel = model;
         mOverviewModeState = StartSurfaceState.NOT_SHOWN;
         mShowIPHCallback = showIPHCallback;
@@ -84,6 +93,14 @@ class StartSurfaceToolbarMediator {
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
             updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         });
+
+        mShowHomeButtonOnTabSwitcher = showHomeButtonOnTabSwitcher;
+        if (mShowHomeButtonOnTabSwitcher) {
+            mPropertyModel.set(HOMEPAGE_ENABLED_SUPPLIER, homepageEnabledSupplier);
+            mPropertyModel.set(
+                    HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER, homepageManagedByPolicySupplier);
+            mPropertyModel.set(HOME_BUTTON_CLICK_HANDLER, homeButtonOnClickHandler);
+        }
     }
 
     void onNativeLibraryReady() {
@@ -123,6 +140,7 @@ class StartSurfaceToolbarMediator {
         setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
         updateIncognitoSwitchVisibility();
         updateNewTabButtonVisibility();
+        updateHomeButtonVisibility();
         updateLogoVisibility(mIsGoogleSearchEngine);
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         updateTranslationY(mNonIncognitoHomepageTranslationY);
@@ -289,6 +307,16 @@ class StartSurfaceToolbarMediator {
         mPropertyModel.set(NEW_TAB_BUTTON_IS_VISIBLE, isShownTabswitcherState);
     }
 
+    private void updateHomeButtonVisibility() {
+        boolean isShownTabswitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER
+                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
+                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
+                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS;
+        mPropertyModel.set(HOME_BUTTON_IS_VISIBLE,
+                isShownTabswitcherState && !mPropertyModel.get(IS_INCOGNITO)
+                        && mShowHomeButtonOnTabSwitcher);
+    }
+
     private void updateTranslationY(float transY) {
         if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
                 && !mPropertyModel.get(IS_INCOGNITO)) {
@@ -306,5 +334,10 @@ class StartSurfaceToolbarMediator {
     @StartSurfaceState
     int getOverviewModeStateForTesting() {
         return mOverviewModeState;
+    }
+
+    @VisibleForTesting
+    void setShowHomeButtonOnTabSwitcherForTesting(boolean showHomeButtonOnTabSwitcher) {
+        mShowHomeButtonOnTabSwitcher = showHomeButtonOnTabSwitcher;
     }
 }

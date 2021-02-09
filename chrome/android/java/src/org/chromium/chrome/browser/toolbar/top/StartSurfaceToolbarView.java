@@ -19,9 +19,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -30,6 +32,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 /** View of the StartSurfaceToolbar */
 class StartSurfaceToolbarView extends RelativeLayout {
     private NewTabButton mNewTabButton;
+    private HomeButton mHomeButton;
     private View mIncognitoSwitch;
     private View mLogo;
     @Nullable
@@ -46,6 +49,10 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private boolean mInStartSurfaceMode;
     private boolean mIsShowing;
 
+    private ObservableSupplier<Boolean> mHomepageEnabledSupplier;
+    private ObservableSupplier<Boolean> mHomepageManagedByPolicySupplier;
+    private boolean mIsHomeButtonInitialized;
+
     public StartSurfaceToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -54,6 +61,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mNewTabButton = findViewById(R.id.new_tab_button);
+        mHomeButton = findViewById(R.id.home_button_on_tab_switcher);
         mIncognitoSwitch = findViewById(R.id.incognito_switch);
         mLogo = findViewById(R.id.logo);
         mIdentityDiscButton = findViewById(R.id.identity_disc_button);
@@ -128,6 +136,54 @@ class StartSurfaceToolbarView extends RelativeLayout {
             // button (UrlBar is invisible to users). Check crbug.com/1081538 for more details.
             mNewTabButton.getParent().requestChildFocus(mNewTabButton, mNewTabButton);
         }
+    }
+
+    /**
+     * @param isVisible Whether the home button is visible.
+     */
+    void setHomeButtonVisibility(boolean isVisible) {
+        mayInitializeHomeButton();
+        mHomeButton.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * @param homepageEnabledSupplier Supplier of whether homepage is enabled.
+     */
+    void setHomepageEnabledSupplier(ObservableSupplier<Boolean> homepageEnabledSupplier) {
+        assert mHomepageEnabledSupplier == null;
+        mHomepageEnabledSupplier = homepageEnabledSupplier;
+    }
+
+    /**
+     * @param homepageManagedByPolicySupplier Supplier of whether the homepage is managed by policy.
+     */
+    void setHomepageManagedByPolicySupplier(
+            ObservableSupplier<Boolean> homepageManagedByPolicySupplier) {
+        assert mHomepageManagedByPolicySupplier == null;
+        mHomepageManagedByPolicySupplier = homepageManagedByPolicySupplier;
+    }
+
+    /**
+     * Initializes the home button if not yet.
+     */
+    private void mayInitializeHomeButton() {
+        if (mIsHomeButtonInitialized || mHomepageEnabledSupplier == null
+                || mHomepageManagedByPolicySupplier == null) {
+            return;
+        }
+
+        // The long click which shows the change homepage settings is disabled when the Start
+        // surface is enabled.
+        mHomeButton.init(mHomepageEnabledSupplier, null, mHomepageManagedByPolicySupplier);
+        mIsHomeButtonInitialized = true;
+    }
+
+    /**
+     * @param homeButtonClickHandler The callback that will be notified when the home button is
+     *                               pressed.
+     */
+    void setHomeButtonClickHandler(OnClickListener homeButtonClickHandler) {
+        mHomeButton.setOnClickListener(homeButtonClickHandler);
     }
 
     /**
