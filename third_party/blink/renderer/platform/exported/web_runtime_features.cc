@@ -50,6 +50,10 @@ void WebRuntimeFeatures::EnableBrowserVerifiedUserActivationMouse(bool enable) {
   RuntimeEnabledFeatures::SetBrowserVerifiedUserActivationMouseEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableCapabilityDelegationPaymentRequest(bool enable) {
+  RuntimeEnabledFeatures::SetCapabilityDelegationPaymentRequestEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableClickPointerEvent(bool enable) {
   RuntimeEnabledFeatures::SetClickPointerEventEnabled(enable);
 }

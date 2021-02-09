@@ -850,6 +850,14 @@ bool LocalFrame::IsTransientAllowFullscreenActive() const {
   return transient_allow_fullscreen_.IsActive();
 }
 
+bool LocalFrame::IsPaymentRequestTokenActive() const {
+  return payment_request_token_.IsActive();
+}
+
+bool LocalFrame::ConsumePaymentRequestToken() {
+  return payment_request_token_.ConsumeIfActive();
+}
+
 void LocalFrame::SetOptimizationGuideHints(
     mojom::blink::BlinkOptimizationGuideHintsPtr hints) {
   DCHECK(hints);
@@ -3344,6 +3352,12 @@ void LocalFrame::PostMessageEvent(
         message.user_activation->has_been_active,
         message.user_activation->was_active);
   }
+
+  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled() &&
+      message.delegate_payment_request) {
+    payment_request_token_.Activate();
+  }
+
   message_event->initMessageEvent(
       "message", false, false, std::move(message.message), source_origin,
       "" /*lastEventId*/, window, ports, user_activation,

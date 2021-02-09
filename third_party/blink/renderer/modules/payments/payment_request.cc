@@ -809,16 +809,21 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   }
 
   LocalFrame* local_frame = DomWindow()->GetFrame();
-  bool is_user_gesture = LocalFrame::HasTransientUserActivation(local_frame);
-  if (!is_user_gesture) {
+
+  bool payment_request_allowed =
+      LocalFrame::HasTransientUserActivation(local_frame);
+  if (!payment_request_allowed) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kPaymentRequestShowWithoutGesture);
   }
-  if (RuntimeEnabledFeatures::PaymentRequestShowConsumesUserActivationEnabled(
+
+  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
           GetExecutionContext())) {
-    if (!is_user_gesture) {
+    payment_request_allowed |= local_frame->IsPaymentRequestTokenActive();
+    if (!payment_request_allowed) {
       String message =
-          "PaymentRequest.show() requires transient user activation";
+          "PaymentRequest.show() requires either transient user activation or "
+          "delegated payment request capability";
       GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
@@ -828,15 +833,15 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
       return ScriptPromise();
     }
     LocalFrame::ConsumeTransientUserActivation(local_frame);
-  }
+    local_frame->ConsumePaymentRequestToken();
 
-  // TODO(crbug.com/825270): Pretend that a user gesture is provided to allow
-  // origins that are part of the Secure Payment Confirmation Origin Trial to
-  // use skip-the-sheet flow as a hack for secure modal window
-  // (crbug.com/1122028). Remove this after user gesture delegation ships.
-  if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
-          GetExecutionContext())) {
-    is_user_gesture = true;
+  } else if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+                 GetExecutionContext())) {
+    // TODO(crbug.com/825270): Pretend that a user gesture is provided to allow
+    // origins that are part of the Secure Payment Confirmation Origin Trial to
+    // use skip-the-sheet flow as a hack for secure modal window
+    // (crbug.com/1122028). Remove this after user gesture delegation ships.
+    payment_request_allowed = true;
   }
 
   // TODO(crbug.com/779126): add support for handling payment requests in
@@ -852,7 +857,7 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestShow);
 
   is_waiting_for_show_promise_to_resolve_ = !details_promise.IsEmpty();
-  payment_provider_->Show(is_user_gesture,
+  payment_provider_->Show(payment_request_allowed,
                           is_waiting_for_show_promise_to_resolve_);
   if (is_waiting_for_show_promise_to_resolve_) {
     // If the website does not calculate the final shopping cart contents within

@@ -1556,10 +1556,6 @@
       name: "PaymentRequestMerchantValidationEvent",
       status: "experimental",
     },
-    // Enables the correct behavior for show(): crbug.com/825270
-    {
-      name: "PaymentRequestShowConsumesUserActivation",
-    },
     {
       name: "PaymentRetry",
       status: "stable",

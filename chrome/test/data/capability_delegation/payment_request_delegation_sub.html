@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payment request delegation child frame</title>
+</head>
+<script>
+  async function tryPaymentRequestAndReport() {
+      const request = new PaymentRequest([{
+          supportedMethods: "basic-card",
+          data: { supportedNetworks: ["visa"] }
+      }], {
+          total: {
+              label: "total",
+              amount: { currency: "CAD", value: "1.00" }
+          }
+      });
+
+      request.show().catch(exception => {
+          parent.postMessage(exception.name, {targetOrigin: "*"});
+      });
+
+      // When show() is not allowed, the Promise above throws a "NotAllowedError"
+      // right away.  Otherwise, the visible dialog is aborted after a short delay
+      // below, which causes the Promise above to throw an "AbortError".
+      window.setTimeout(() => request.abort().catch(()=>{}), 0);
+  }
+
+  window.addEventListener("message", tryPaymentRequestAndReport);
+</script>
+</html>

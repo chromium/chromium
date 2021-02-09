@@ -163,6 +163,9 @@ const base::Feature kClearCrossBrowsingContextGroupMainFrameName{
     "ClearCrossBrowsingContextGroupMainFrameName",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCapabilityDelegationPaymentRequest{
+    "CapabilityDelegationPaymentRequest", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kClickPointerEvent{"ClickPointerEvent",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
