@@ -2285,10 +2285,8 @@ const ComputedStyle& NGLineBreaker::ComputeCurrentStyle(
   }
 
   // Use the style at the beginning of the line if no items are available.
-  if (break_token_) {
-    DCHECK(break_token_->Style());
+  if (break_token_ && break_token_->Style())
     return *break_token_->Style();
-  }
   return line_info->LineStyle();
 }
 
