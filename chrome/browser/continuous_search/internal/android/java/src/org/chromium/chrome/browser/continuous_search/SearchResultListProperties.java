@@ -17,9 +17,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Contains model properties for a single search list item in Continuous Search Navigation.
+ * Contains model properties for the UI component of Continuous Search Navigation.
  */
-class ContinuousSearchListProperties {
+public class SearchResultListProperties {
     @IntDef({ListItemType.GROUP_LABEL, ListItemType.SEARCH_RESULT, ListItemType.AD})
     @Retention(RetentionPolicy.SOURCE)
 

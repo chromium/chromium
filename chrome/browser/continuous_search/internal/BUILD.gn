@@ -20,6 +20,10 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResult.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducer.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultGroup.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListMediator.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListProperties.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListener.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultMetadata.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultProducer.java",
@@ -32,15 +36,19 @@ android_library("java") {
   srcjar_deps = [ "//components/continuous_search/browser:search_result_extractor_client_status_generated_enum" ]
 
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//ui/android:ui_no_recycler_view_java",
+    "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
+    "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.continuous_search"
 }
 
 android_library("junit") {
@@ -65,6 +73,16 @@ android_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "android/java/res/layout/continuous_search_list_ad.xml",
+    "android/java/res/layout/continuous_search_list_group_label.xml",
+    "android/java/res/layout/continuous_search_list_result.xml",
+  ]
+
+  deps = [ "//chrome/android:chrome_app_java_resources" ]
 }
 
 source_set("internal") {
