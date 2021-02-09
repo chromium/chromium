@@ -942,14 +942,27 @@ float HarfBuzzPositionToFloat(hb_position_t value) {
 
 // Checks whether it's safe to break without reshaping before the given glyph.
 bool IsSafeToBreakBefore(const hb_glyph_info_t* glyph_infos,
-                         unsigned i) {
-  // Before the first glyph is safe to break.
-  if (!i)
-    return true;
+                         unsigned i,
+                         unsigned num_glyph,
+                         TextDirection direction) {
+  if (direction == TextDirection::kLtr) {
+    // Before the first glyph is safe to break.
+    if (!i)
+      return true;
 
-  // Not at a cluster boundary.
-  if (glyph_infos[i].cluster == glyph_infos[i - 1].cluster)
-    return false;
+    // Not at a cluster boundary.
+    if (glyph_infos[i].cluster == glyph_infos[i - 1].cluster)
+      return false;
+  } else {
+    DCHECK_EQ(direction, TextDirection::kRtl);
+    // Before the first glyph is safe to break.
+    if (i == num_glyph - 1)
+      return true;
+
+    // Not at a cluster boundary.
+    if (glyph_infos[i].cluster == glyph_infos[i + 1].cluster)
+      return false;
+  }
 
   // The HB_GLYPH_FLAG_UNSAFE_TO_BREAK flag is set for all glyphs in a
   // given cluster so we only need to check the last one.
@@ -1105,7 +1118,8 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
     uint16_t character_index = glyph.cluster - start_cluster;
     DCHECK_LE(character_index, HarfBuzzRunGlyphData::kMaxCharacterIndex);
     run->glyph_data_[i] = {glyph.codepoint, character_index,
-                           IsSafeToBreakBefore(glyph_infos + start_glyph, i),
+                           IsSafeToBreakBefore(glyph_infos + start_glyph, i,
+                                               num_glyphs, Direction()),
                            advance};
     run->glyph_data_.SetOffsetAt(i, offset);
 
