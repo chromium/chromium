@@ -5522,7 +5522,12 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
                  frame_entry->url().spec());
   navigation_entry->SetVirtualURL(url);
 
-  navigation_entry->set_isolation_info(frame->GetIsolationInfoForViewSource());
+  // View source opens the URL in a new tab as a top-level navigation. A
+  // top-level navigation may have a different IsolationInfo than the source
+  // iframe, so preserve the IsolationInfo from the origin frame, to use the
+  // same network shard and increase chances of a cache hit.
+  navigation_entry->set_isolation_info(
+      frame->ComputeIsolationInfoForNavigation(navigation_entry->GetURL()));
 
   // Do not restore scroller position.
   // TODO(creis, lukasza, arthursonzogni): Do not reuse the original PageState,

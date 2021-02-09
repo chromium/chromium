@@ -29,9 +29,11 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/url_loader_monitor.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -415,6 +417,70 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   EXPECT_THAT(title, HasSubstr(original_url.host()));
   EXPECT_THAT(title, HasSubstr(original_url.port()));
   EXPECT_THAT(title, HasSubstr(original_url.path()));
+}
+
+// Test the case where ViewSource() is called on a top-level RenderFrameHost
+// that has never had a commit, so has an empty IsolationInfo. For ViewSource()
+// to do anything, the NavigationController for the tab must have a
+// LastCommittedEntry(). This sounds like a contradiction of requirements, but
+// can happen when a tab is cloned, and possibly other cases as well, like
+// session restore.
+//
+// The main concern here is that the source RenderFrameHost has an empty
+// IsolationInfo, and accessing it would DCHECK, so this path should mint a new
+// one.
+IN_PROC_BROWSER_TEST_F(ViewSourceTest,
+                       ViewSourceWithRenderFrameHostWithoutCommit) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a URL, it doesn't matter which, just need the tab to have a
+  // committed entry other than about:blank or the NTP.
+  GURL url(embedded_test_server()->GetURL(kTestHtml));
+  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  // Duplicate the tab. The newly created tab should be active.
+  chrome::DuplicateTab(browser());
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Check preconditions.
+  EXPECT_TRUE(browser()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->GetController()
+                  .GetLastCommittedEntry());
+  EXPECT_EQ(GURL(), browser()
+                        ->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetMainFrame()
+                        ->GetLastCommittedURL());
+
+  // Open a view source tab, and watch for its main network request.
+  content::URLLoaderMonitor loader_monitor({url});
+  content::WebContentsAddedObserver view_source_contents_observer;
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetMainFrame()
+      ->ViewSource();
+  content::WebContents* view_source_contents =
+      view_source_contents_observer.GetWebContents();
+  EXPECT_TRUE(WaitForLoadStop(view_source_contents));
+  GURL view_source_url(content::kViewSourceScheme + std::string(":") +
+                       url.spec());
+  EXPECT_EQ(view_source_url, view_source_contents->GetLastCommittedURL());
+
+  // Verify the request for the view-source tab had the correct IsolationInfo.
+  base::Optional<network::ResourceRequest> request =
+      loader_monitor.GetRequestInfo(url);
+  ASSERT_TRUE(request);
+  ASSERT_TRUE(request->trusted_params);
+  url::Origin origin = url::Origin::Create(url);
+  EXPECT_TRUE(request->trusted_params->isolation_info.IsEqualForTesting(
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
+                                 origin, origin,
+                                 net::SiteForCookies::FromOrigin(origin),
+                                 std::set<net::SchemefulSite>())));
 }
 
 class ViewSourceWithSplitCacheTest
