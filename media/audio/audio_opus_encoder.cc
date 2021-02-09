@@ -208,10 +208,7 @@ AudioOpusEncoder::AudioOpusEncoder(const AudioParameters& input_params,
       converted_params_.frames_per_buffer()));
 }
 
-AudioOpusEncoder::~AudioOpusEncoder() {
-  DCHECK_EQ(fifo_.queued_frames(), 0)
-      << "Must flush the encoder before destroying to avoid dropping frames.";
-}
+AudioOpusEncoder::~AudioOpusEncoder() = default;
 
 void AudioOpusEncoder::EncodeAudioImpl(const AudioBus& audio_bus,
                                        base::TimeTicks capture_time) {
