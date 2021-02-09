@@ -1292,7 +1292,6 @@ if (!is_android) {
       "../browser/prefs/pref_service_browsertest.cc",
       "../browser/prefs/tracked/pref_hash_browsertest.cc",
       "../browser/previews/defer_all_script_browsertest.cc",
-      "../browser/previews/defer_all_script_priority_browsertest.cc",
       "../browser/previews/lazyload_browsertest.cc",
       "../browser/previews/previews_service_browser_test.cc",
       "../browser/previews/previews_test_util.cc",

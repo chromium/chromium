@@ -243,37 +243,6 @@ ResourceLoadPriority AdjustPriorityWithPriorityHint(
   return new_priority;
 }
 
-ResourceLoadPriority AdjustPriorityWithDeferScriptIntervention(
-    const FetchContext& fetch_context,
-    ResourceLoadPriority priority_so_far,
-    ResourceType type,
-    const ResourceRequestHead& resource_request,
-    FetchParameters::DeferOption defer_option,
-    bool is_link_preload) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kLowerJavaScriptPriorityWhenForceDeferred)) {
-    return priority_so_far;
-  }
-
-  PreviewsState context_previews_state = fetch_context.previews_state();
-
-  if (type != ResourceType::kScript)
-    return priority_so_far;
-
-  // If none of the JavaScript resources are render blocking (due to the
-  // DeferAllScript intervention), then lower their priority so they do not
-  // contend for network resources with higher priority resources that may be
-  // render blocking (e.g., html, css). ResourceLoadPriority::kMedium
-  // corresponds to a network priority of
-  // network::mojom::blink::RequestPriority::kLow which is considered delayable
-  // by the resource scheduler on the browser side.
-  if (RuntimeEnabledFeatures::ForceDeferScriptInterventionEnabled() ||
-      (context_previews_state & PreviewsTypes::kDeferAllScriptOn)) {
-    return std::min(priority_so_far, ResourceLoadPriority::kMedium);
-  }
-  return priority_so_far;
-}
-
 std::unique_ptr<TracedValue> BeginResourceLoadData(
     const blink::ResourceRequest& request) {
   auto value = std::make_unique<TracedValue>();
@@ -523,10 +492,6 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
 
   priority = AdjustPriorityWithPriorityHint(priority, type, resource_request,
                                             defer_option, is_link_preload);
-
-  priority = AdjustPriorityWithDeferScriptIntervention(
-      Context(), priority, type, resource_request, defer_option,
-      is_link_preload);
 
   if (properties_->IsSubframeDeprioritizationEnabled()) {
     if (properties_->IsMainFrame()) {

@@ -466,12 +466,6 @@ const base::Feature kIgnoreCrossOriginWindowWhenNamedAccessOnWindow{
     "IgnoreCrossOriginWindowWhenNamedAccessOnWindow",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, loading priority of JavaScript requests is lowered when they
-// are force deferred by the intervention.
-const base::Feature kLowerJavaScriptPriorityWhenForceDeferred{
-    "LowerJavaScriptPriorityWhenForceDeferred",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, scripts in iframes are not force deferred by the DeferAllScript
 // intervention.
 const base::Feature kDisableForceDeferInChildFrames{
