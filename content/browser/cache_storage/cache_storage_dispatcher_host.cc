@@ -1002,7 +1002,7 @@ CacheStorageHandle CacheStorageDispatcherHost::OpenCacheStorage(
   if (!context_ || !OriginCanAccessCacheStorage(origin))
     return CacheStorageHandle();
 
-  scoped_refptr<CacheStorageManager> manager = context_->CacheManager();
+  scoped_refptr<CacheStorageManager> manager = context_->cache_manager();
   if (!manager)
     return CacheStorageHandle();
 

@@ -36,7 +36,6 @@
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
 #include "content/browser/cache_storage/cache_storage_scheduler.h"
-#include "content/browser/cache_storage/cross_sequence/cross_sequence_cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage_manager.h"
 #include "content/common/background_fetch/background_fetch_types.h"
@@ -70,22 +69,9 @@ using network::mojom::FetchResponseType;
 namespace content {
 namespace cache_storage_manager_unittest {
 
-enum class TestManager {
-  kLegacy,
-  kCrossSequence,
-};
-
 enum class TestStorage {
   kDisk,
   kMemory,
-};
-
-struct Param {
-  Param(TestManager manager, TestStorage storage)
-      : manager_(manager), storage_(storage) {}
-
-  TestManager manager_;
-  TestStorage storage_;
 };
 
 using blink::mojom::StorageType;
@@ -255,40 +241,6 @@ class TestCacheStorageObserver : public storage::mojom::CacheStorageObserver {
   std::unique_ptr<base::RunLoop> loop_;
 };
 
-class TestCacheStorageContext : public CacheStorageContextWithManager {
- public:
-  explicit TestCacheStorageContext(scoped_refptr<CacheStorageManager> manager)
-      : manager_(std::move(manager)) {}
-
-  scoped_refptr<CacheStorageManager> CacheManager() override {
-    return manager_;
-  }
-
-  void AddReceiver(
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter_remote,
-      const url::Origin& origin,
-      storage::mojom::CacheStorageOwner owner,
-      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {
-    NOTREACHED();
-  }
-  void DeleteForOrigin(const url::Origin& origin) override { NOTREACHED(); }
-  void GetAllOriginsInfo(
-      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
-      override {
-    NOTREACHED();
-  }
-  void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
-                       observer) override {
-    NOTREACHED();
-  }
-
- private:
-  ~TestCacheStorageContext() override = default;
-  scoped_refptr<CacheStorageManager> manager_;
-};
-
 class CacheStorageManagerTest : public testing::Test {
  public:
   CacheStorageManagerTest()
@@ -312,7 +264,6 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   virtual bool MemoryOnly() { return false; }
-  virtual TestManager ManagerType() { return TestManager::kLegacy; }
 
   void BoolCallback(base::RunLoop* run_loop, bool value) {
     callback_bool_ = value;
@@ -417,22 +368,10 @@ class CacheStorageManagerTest : public testing::Test {
             mock_quota_manager_.get(),
             base::ThreadTaskRunnerHandle::Get().get());
 
-    auto legacy_manager = LegacyCacheStorageManager::Create(
+    cache_manager_ = LegacyCacheStorageManager::Create(
         temp_dir_path, base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
         blob_storage_context_);
-
-    switch (ManagerType()) {
-      case TestManager::kLegacy:
-        cache_manager_ = std::move(legacy_manager);
-        break;
-      case TestManager::kCrossSequence:
-        auto context = base::MakeRefCounted<TestCacheStorageContext>(
-            std::move(legacy_manager));
-        cache_manager_ = base::MakeRefCounted<CrossSequenceCacheStorageManager>(
-            base::ThreadTaskRunnerHandle::Get(), std::move(context));
-        break;
-    }
   }
 
   void RecreateStorageManager() {
@@ -444,7 +383,6 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   bool FlushCacheStorageIndex(const url::Origin& origin) {
-    DCHECK(ManagerType() == TestManager::kLegacy);
     callback_bool_ = false;
     base::RunLoop loop;
     auto* impl = LegacyCacheStorage::From(CacheStorageForOrigin(origin));
@@ -804,7 +742,6 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   int64_t GetSizeThenCloseAllCaches(const url::Origin& origin) {
-    DCHECK(ManagerType() == TestManager::kLegacy);
     base::RunLoop loop;
     CacheStorageHandle cache_storage = CacheStorageForOrigin(origin);
     LegacyCacheStorage::From(cache_storage)
@@ -816,7 +753,6 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   int64_t Size(const url::Origin& origin) {
-    DCHECK(ManagerType() == TestManager::kLegacy);
     base::RunLoop loop;
     CacheStorageHandle cache_storage = CacheStorageForOrigin(origin);
     LegacyCacheStorage::From(cache_storage)
@@ -881,25 +817,10 @@ class CacheStorageManagerMemoryOnlyTest : public CacheStorageManagerTest {
   bool MemoryOnly() override { return true; }
 };
 
-class CacheStorageManagerTestP : public CacheStorageManagerTest,
-                                 public testing::WithParamInterface<Param> {
- public:
-  bool MemoryOnly() override {
-    return GetParam().storage_ == TestStorage::kMemory;
-  }
-  TestManager ManagerType() override { return GetParam().manager_; }
-};
-
-// Some tests must be run on the LegacyCacheStorageManager.  This could
-// be for a number of reasons:
-//  * The test needs to use internal APIs on the legacy manager.
-//  * The test is checking behavior that is only true for "real" manager's
-//    like that Open() will return the exact same c++ pointer for the
-//    underlying cache.  This assumption is not truee for the cross-sequence
-//    wrapper.
-class CacheStorageManagerLegacyOnlyTestP
+class CacheStorageManagerTestP
     : public CacheStorageManagerTest,
       public testing::WithParamInterface<TestStorage> {
+ public:
   bool MemoryOnly() override { return GetParam() == TestStorage::kMemory; }
 };
 
@@ -939,7 +860,7 @@ TEST_P(CacheStorageManagerTestP, Open2CachesSameNameDiffOrigins) {
   EXPECT_NE(cache_handle.value(), callback_cache_handle_.value());
 }
 
-TEST_P(CacheStorageManagerLegacyOnlyTestP, OpenExistingCache) {
+TEST_P(CacheStorageManagerTestP, OpenExistingCache) {
   EXPECT_TRUE(Open(origin1_, "foo"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
   EXPECT_TRUE(Open(origin1_, "foo"));
@@ -1194,7 +1115,7 @@ TEST_P(CacheStorageManagerTestP, StorageMatchInOneOfMany) {
   EXPECT_TRUE(StorageMatchAll(origin1_, GURL("http://example.com/foo")));
 }
 
-TEST_P(CacheStorageManagerLegacyOnlyTestP, Chinese) {
+TEST_P(CacheStorageManagerTestP, Chinese) {
   EXPECT_TRUE(Open(origin1_, "你好"));
   CacheStorageCacheHandle cache_handle = std::move(callback_cache_handle_);
   EXPECT_TRUE(Open(origin1_, "你好"));
@@ -1623,7 +1544,7 @@ TEST_P(CacheStorageManagerTestP, DeleteBeforeRelease) {
   EXPECT_TRUE(callback_cache_handle_.value());
 }
 
-TEST_P(CacheStorageManagerLegacyOnlyTestP, OpenRunsSerially) {
+TEST_P(CacheStorageManagerTestP, OpenRunsSerially) {
   EXPECT_FALSE(Delete(origin1_, "tmp"));  // Init storage.
   CacheStorageHandle cache_storage = CacheStorageForOrigin(origin1_);
   auto* impl = LegacyCacheStorage::From(cache_storage);
@@ -1924,7 +1845,7 @@ TEST_F(CacheStorageManagerTest, DISABLED_GetOriginSizeWithOldIndex) {
   EXPECT_EQ(cache_size_v2, Size(origin1_));
 }
 
-TEST_P(CacheStorageManagerLegacyOnlyTestP, GetSizeThenCloseAllCaches) {
+TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCaches) {
   EXPECT_TRUE(Open(origin1_, "foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
@@ -1942,7 +1863,7 @@ TEST_P(CacheStorageManagerLegacyOnlyTestP, GetSizeThenCloseAllCaches) {
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/baz")));
 }
 
-TEST_P(CacheStorageManagerLegacyOnlyTestP, GetSizeThenCloseAllCachesTwoOwners) {
+TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesTwoOwners) {
   EXPECT_TRUE(
       Open(origin1_, "foo", storage::mojom::CacheStorageOwner::kCacheAPI));
   CacheStorageCacheHandle public_handle = std::move(callback_cache_handle_);
@@ -1961,8 +1882,7 @@ TEST_P(CacheStorageManagerLegacyOnlyTestP, GetSizeThenCloseAllCachesTwoOwners) {
   EXPECT_FALSE(CachePut(public_handle.value(), GURL("http://example.com/baz")));
 }
 
-TEST_P(CacheStorageManagerLegacyOnlyTestP,
-       GetSizeThenCloseAllCachesAfterDelete) {
+TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesAfterDelete) {
   // Tests that doomed caches are also deleted by GetSizeThenCloseAllCaches.
   EXPECT_TRUE(Open(origin1_, "foo"));
   EXPECT_TRUE(
@@ -2050,14 +1970,14 @@ TEST_P(CacheStorageManagerTestP, MatchAllCachesStorageAccessed) {
   EXPECT_EQ(1, quota_manager_proxy_->notify_storage_accessed_count());
 }
 
-TEST_P(CacheStorageManagerLegacyOnlyTestP, SizeStorageAccessed) {
+TEST_P(CacheStorageManagerTestP, SizeStorageAccessed) {
   EXPECT_EQ(0, Size(origin1_));
   // Size is not part of the web API and should not notify the quota manager of
   // an access.
   EXPECT_EQ(0, quota_manager_proxy_->notify_storage_accessed_count());
 }
 
-TEST_P(CacheStorageManagerLegacyOnlyTestP, SizeThenCloseStorageAccessed) {
+TEST_P(CacheStorageManagerTestP, SizeThenCloseStorageAccessed) {
   EXPECT_EQ(0, GetSizeThenCloseAllCaches(origin1_));
   // GetSizeThenCloseAllCaches is not part of the web API and should not notify
   // the quota manager of an access.
@@ -2499,12 +2419,10 @@ class CacheStorageQuotaClientDiskOnlyTest : public CacheStorageQuotaClientTest {
   bool MemoryOnly() override { return false; }
 };
 
-class CacheStorageQuotaClientTestP : public CacheStorageQuotaClientTest,
-                                     public testing::WithParamInterface<Param> {
-  bool MemoryOnly() override {
-    return GetParam().storage_ == TestStorage::kMemory;
-  }
-  TestManager ManagerType() override { return GetParam().manager_; }
+class CacheStorageQuotaClientTestP
+    : public CacheStorageQuotaClientTest,
+      public testing::WithParamInterface<TestStorage> {
+  bool MemoryOnly() override { return GetParam() == TestStorage::kMemory; }
 };
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaGetOriginUsage) {
@@ -2663,26 +2581,15 @@ TEST_F(CacheStorageManagerTest, UpgradePaddingVersion) {
   EXPECT_EQ(total_usage, (upgraded_size + upgraded_padding));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    CacheStorageManagerTests,
-    CacheStorageManagerTestP,
-    ::testing::Values(Param(TestManager::kLegacy, TestStorage::kMemory),
-                      Param(TestManager::kLegacy, TestStorage::kDisk),
-                      Param(TestManager::kCrossSequence, TestStorage::kMemory),
-                      Param(TestManager::kCrossSequence, TestStorage::kDisk)));
-
 INSTANTIATE_TEST_SUITE_P(CacheStorageManagerTests,
-                         CacheStorageManagerLegacyOnlyTestP,
+                         CacheStorageManagerTestP,
                          ::testing::Values(TestStorage::kMemory,
                                            TestStorage::kDisk));
 
-INSTANTIATE_TEST_SUITE_P(
-    CacheStorageQuotaClientTests,
-    CacheStorageQuotaClientTestP,
-    ::testing::Values(Param(TestManager::kLegacy, TestStorage::kMemory),
-                      Param(TestManager::kLegacy, TestStorage::kDisk),
-                      Param(TestManager::kCrossSequence, TestStorage::kMemory),
-                      Param(TestManager::kCrossSequence, TestStorage::kDisk)));
+INSTANTIATE_TEST_SUITE_P(CacheStorageQuotaClientTests,
+                         CacheStorageQuotaClientTestP,
+                         ::testing::Values(TestStorage::kMemory,
+                                           TestStorage::kDisk));
 
 }  // namespace cache_storage_manager_unittest
 }  // namespace content

@@ -15,7 +15,6 @@
 #include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
-#include "content/browser/cache_storage/cross_sequence/cross_sequence_cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,11 +35,9 @@ scoped_refptr<base::SequencedTaskRunner> CreateSchedulerTaskRunner() {
 
 }  // namespace
 
-CacheStorageContextWithManager::CacheStorageContextWithManager()
-    : CacheStorageContext(GetUIThreadTaskRunner({})) {}
-
 CacheStorageContextImpl::CacheStorageContextImpl()
-    : task_runner_(CreateSchedulerTaskRunner()) {
+    : CacheStorageContext(GetUIThreadTaskRunner({})),
+      task_runner_(CreateSchedulerTaskRunner()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -76,14 +73,6 @@ void CacheStorageContextImpl::Init(
 void CacheStorageContextImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::AutoLock lock(shutdown_lock_);
-
-  // Set an atomic flag indicating shutdown has been entered.  This allows us to
-  // avoid creating CrossSequenceCacheStorageManager objects when there will
-  // no longer be an underlying manager.
-  DCHECK(!shutdown_);
-  shutdown_ = true;
-
   // Break reference cycle with |this|.
   if (dispatcher_host_)
     dispatcher_host_.AsyncCall(&CacheStorageDispatcherHost::Shutdown);
@@ -97,11 +86,6 @@ void CacheStorageContextImpl::Shutdown() {
 void CacheStorageContextImpl::Bind(
     mojo::PendingReceiver<storage::mojom::CacheStorageControl> control) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  {
-    base::AutoLock lock(shutdown_lock_);
-    if (shutdown_)
-      return;
-  }
   receivers_.Add(this, std::move(control));
 }
 
@@ -125,38 +109,16 @@ void CacheStorageContextImpl::AddReceiver(
                 owner, std::move(receiver));
 }
 
-scoped_refptr<CacheStorageManager> CacheStorageContextImpl::CacheManager() {
-  // If we're already on the target sequence, then just return the real manager.
-  //
-  // Note, we can't check for nullptr cache_manager_ here because it is not
-  // threadsafe.  In addition we may be creating a cross-sequence manager
-  // wrapper while the task to set cache_manager_ is waiting to run.  This
-  // should be fine since the cross-sequence wrapper will initialize after the
-  // manager is set.  See the comment in Init().
-  if (task_runner_->RunsTasksInCurrentSequence())
-    return cache_manager_;
-  // Always return nullptr once shutdown has begun if we are on a different
-  // sequence.  This check is necessary to avoid creating
-  // CrossSequenceCacheStorageManager wrappers when there will no longer be an
-  // underlying manager.
-  base::AutoLock lock(shutdown_lock_);
-  if (shutdown_)
-    return nullptr;
-  // Otherwise we have to create a cross-sequence wrapper to provide safe
-  // access.
-  return base::MakeRefCounted<CrossSequenceCacheStorageManager>(task_runner_,
-                                                                this);
-}
-
 void CacheStorageContextImpl::GetAllOriginsInfo(
     storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
-  // Can be called on any sequence.
   callback = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
-         storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback inner,
-         std::vector<storage::mojom::StorageUsageInfoPtr> entries) {
+         storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback
+             callback,
+         std::vector<storage::mojom::StorageUsageInfoPtr> usage_info) {
         reply_task_runner->PostTask(
-            FROM_HERE, base::BindOnce(std::move(inner), std::move(entries)));
+            FROM_HERE,
+            base::BindOnce(std::move(callback), std::move(usage_info)));
       },
       base::SequencedTaskRunnerHandle::Get(), std::move(callback));
 
@@ -167,7 +129,7 @@ void CacheStorageContextImpl::GetAllOriginsInfo(
              storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback
                  callback) {
             scoped_refptr<CacheStorageManager> manager =
-                context->CacheManager();
+                context->cache_manager();
             if (!manager) {
               std::move(callback).Run(
                   std::vector<storage::mojom::StorageUsageInfoPtr>());
@@ -181,14 +143,12 @@ void CacheStorageContextImpl::GetAllOriginsInfo(
 }
 
 void CacheStorageContextImpl::DeleteForOrigin(const url::Origin& origin) {
-  // Can be called on any sequence.
-
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(
                      [](scoped_refptr<CacheStorageContextImpl> context,
                         const url::Origin& origin) {
                        scoped_refptr<CacheStorageManager> manager =
-                           context->CacheManager();
+                           context->cache_manager();
                        if (!manager)
                          return;
                        manager->DeleteOriginData(
@@ -200,16 +160,13 @@ void CacheStorageContextImpl::DeleteForOrigin(const url::Origin& origin) {
 
 void CacheStorageContextImpl::AddObserver(
     mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
-  DCHECK(cache_manager_);
-  // Can be called on any sequence.
-
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<CacheStorageContextImpl> context,
              mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                  observer) {
-            auto manager = context->CacheManager();
+            auto manager = context->cache_manager();
             if (!manager)
               return;
             manager->AddObserver(std::move(observer));
@@ -255,7 +212,6 @@ void CacheStorageContextImpl::CreateCacheStorageManagerOnTaskRunner(
 
 void CacheStorageContextImpl::ShutdownOnTaskRunner() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(shutdown_);
 
   // Delete session-only ("clear on exit") origins.
   if (special_storage_policy_ &&

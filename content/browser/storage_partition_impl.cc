@@ -1493,6 +1493,7 @@ QuotaContext* StoragePartitionImpl::GetQuotaContext() {
 storage::mojom::CacheStorageControl*
 StoragePartitionImpl::GetCacheStorageControl() {
   DCHECK(initialized_);
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   return cache_storage_control_.get();
 }
 
