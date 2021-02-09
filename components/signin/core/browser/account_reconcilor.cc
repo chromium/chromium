@@ -501,6 +501,7 @@ void AccountReconcilor::FinishReconcileWithMultiloginEndpoint(
     std::vector<gaia::ListedAccount>&& gaia_accounts) {
   DCHECK(IsMultiloginEndpointEnabled());
   DCHECK(!set_accounts_in_progress_);
+  DCHECK(!log_out_in_progress_);
   DCHECK_EQ(AccountReconcilorState::ACCOUNT_RECONCILOR_RUNNING, state_);
 
   bool primary_has_error =
@@ -983,7 +984,12 @@ void AccountReconcilor::OnLogOutFromCookieCompleted(
   VLOG(1) << "AccountReconcilor::OnLogOutFromCookieCompleted: "
           << "Error was " << error.ToString();
 
-  if (is_reconcile_started_) {
+  // When switching the primary account, there is a sequence of calls to
+  // DisableReconclie() followed by EnableReconcile(). This starts a logout call
+  // and then starts a reconcile loop without waiting for the initial logout
+  // to end. The initial logout should not be considered as the end of the
+  // reconcile loop. See crbug.com/1175395
+  if (is_reconcile_started_ && log_out_in_progress_) {
     log_out_in_progress_ = false;
     if (error.state() != GoogleServiceAuthError::State::NONE &&
         !error_during_last_reconcile_.IsPersistentError()) {
