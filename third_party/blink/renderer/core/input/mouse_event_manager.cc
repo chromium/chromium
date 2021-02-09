@@ -714,6 +714,12 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
   if (single_click)
     FocusDocumentView();
 
+  // |SelectionController| calls |PositionForPoint()| which requires
+  // |kPrePaintClean|. |FocusDocumentView| above is the last possible
+  // modifications before we call |SelectionController|.
+  if (LocalFrameView* frame_view = frame_->View())
+    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+
   Node* inner_node = event.InnerNode();
 
   mouse_press_node_ = inner_node;
@@ -853,6 +859,11 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
     if (!layout_object || !IsListBox(layout_object))
       return WebInputEventResult::kNotHandled;
   }
+
+  // |SelectionController| calls |PositionForPoint()| which requires
+  // |kPrePaintClean|.
+  if (LocalFrameView* frame_view = frame_->View())
+    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
 
   mouse_down_may_start_drag_ = false;
 

@@ -164,6 +164,9 @@ PositionWithAffinity HitTestResult::GetPosition() const {
   const Node* node = inner_possibly_pseudo_node_;
   if (!node)
     return PositionWithAffinity();
+  // |LayoutObject::PositionForPoint()| requires |kPrePaintClean|.
+  DCHECK_GE(node->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return PositionWithAffinity();
@@ -193,6 +196,9 @@ PositionWithAffinity HitTestResult::GetPositionForInnerNodeOrImageMapImage()
     node = InnerNodeOrImageMapImage();
   if (!node)
     return PositionWithAffinity();
+  // |LayoutObject::PositionForPoint()| requires |kPrePaintClean|.
+  DCHECK_GE(node->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object)
     return PositionWithAffinity();
