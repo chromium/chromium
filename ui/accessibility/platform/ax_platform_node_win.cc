@@ -5293,14 +5293,11 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_LISTITEM;
 
     case ax::mojom::Role::kListMarker:
-      if (!GetDelegate()->GetChildCount()) {
-        // There's only a name attribute when using Legacy layout. With Legacy
-        // layout, list markers have no child and are considered as StaticText.
-        // We consider a list marker as a group in LayoutNG since it has
-        // a text child node.
-        return ROLE_SYSTEM_STATICTEXT;
-      }
-      return ROLE_SYSTEM_GROUPING;
+      // If a name is exposed, it's legacy layout, and this will be a leaf.
+      // Otherwise, it's LayoutNG, and the text will be exposed in children.
+      // In this case use an MSAA role of group, but IA2_ROLE_REDUNDANT_OBJECT
+      // in order to avoid having the object be announced in JAWS/NVDA.
+      return IsNameExposed() ? ROLE_SYSTEM_STATICTEXT : ROLE_SYSTEM_GROUPING;
 
     case ax::mojom::Role::kLog:
       return ROLE_SYSTEM_GROUPING;
@@ -5762,6 +5759,13 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kLabelText:
     case ax::mojom::Role::kLegend:
       ia2_role = IA2_ROLE_LABEL;
+      break;
+    case ax::mojom::Role::kListMarker:
+      if (!IsNameExposed()) {
+        // This role causes JAWS and NVDA to ignore the object.
+        // Otherwise, they speak "group" before each bullet or item number.
+        ia2_role = IA2_ROLE_REDUNDANT_OBJECT;
+      }
       break;
     case ax::mojom::Role::kMain:
       ia2_role = IA2_ROLE_LANDMARK;

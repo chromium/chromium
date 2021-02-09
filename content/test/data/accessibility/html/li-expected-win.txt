@@ -1,14 +1,14 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_LIST READONLY display:block
 ++++ROLE_SYSTEM_LISTITEM READONLY display:list-item
-++++++ROLE_SYSTEM_GROUPING display:inline-block
+++++++IA2_ROLE_REDUNDANT_OBJECT display:inline-block
 ++++++++ROLE_SYSTEM_STATICTEXT name='• '
 ++++++ROLE_SYSTEM_STATICTEXT name='Item 1' display:list-item
 ++++ROLE_SYSTEM_LISTITEM READONLY display:list-item
-++++++ROLE_SYSTEM_GROUPING display:inline-block
+++++++IA2_ROLE_REDUNDANT_OBJECT display:inline-block
 ++++++++ROLE_SYSTEM_STATICTEXT name='• '
 ++++++ROLE_SYSTEM_STATICTEXT name='Item 2' display:list-item
 ++++ROLE_SYSTEM_LISTITEM READONLY display:list-item
-++++++ROLE_SYSTEM_GROUPING display:inline-block
+++++++IA2_ROLE_REDUNDANT_OBJECT display:inline-block
 ++++++++ROLE_SYSTEM_STATICTEXT name='• '
 ++++++ROLE_SYSTEM_STATICTEXT name='Item 3' display:list-item
