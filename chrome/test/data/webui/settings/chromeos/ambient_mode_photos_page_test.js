@@ -164,11 +164,13 @@ suite('AmbientModeHandler', function() {
    * @private
    */
   function assertTextClamped(textWithTooltip, lineCount) {
-    // Line height assumed to be 24, if this changes, modify explicit height
-    // of albumContainer.
     const element = textWithTooltip.$$('#textDiv');
     const height = element.offsetHeight;
-    assertTrue(height / 24 <= lineCount, 'Actual Height: ' + height.toString());
+    const lineHeight = parseInt(getComputedStyle(element).lineHeight);
+    assertTrue(
+        height / lineHeight <= lineCount,
+        'Actual Height: ' + height.toString() + ' Line height:  ' +
+            lineHeight.toString() + ' Content: ' + element.innerHTML);
   }
 
   /**

@@ -369,8 +369,7 @@ var OSSettingsAmbientModePhotosPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-// TODO(https://crbug.com/1173526): Reenable flaky test.
-TEST_F('OSSettingsAmbientModePhotosPageTest', 'DISABLED_AllJsTests', () => {
+TEST_F('OSSettingsAmbientModePhotosPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
