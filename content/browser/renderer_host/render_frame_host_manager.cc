@@ -2886,15 +2886,17 @@ int RenderFrameHostManager::GetReplacementRoutingId(
     CHECK_NE(proxy_routing_id, MSG_ROUTING_NONE);
     return proxy_routing_id;
   } else {
-    // No proxy means that this is a same-SiteInstance subframe navigation. A
-    // subframe navigation to a different SiteInstance would have had a proxy. A
-    // main frame navigation with no proxy would have its RenderFrame init
+    // No proxy means that this is one of:
+    // - a same-SiteInstance subframe navigation
+    // - a cross-SiteInstance navigation from a crashed subframe that will do an
+    //   early commit and the SiteInstance is not already in the frame tree.
+    // A main frame navigation with no proxy would have its RenderFrame init
     // handled by InitRenderView. This will change with RenderDocument for main
     // frames.
     DCHECK(frame_tree_node_->parent());
-    CHECK_EQ(render_frame_host->GetSiteInstance(),
-             current_frame_host()->GetSiteInstance());
     if (current_frame_host()->IsRenderFrameLive()) {
+      CHECK_EQ(render_frame_host->GetSiteInstance(),
+               current_frame_host()->GetSiteInstance());
       // The new frame will replace an existing frame in the renderer. For now
       // this can only be when RenderDocument-subframe is enabled.
       DCHECK(ShouldCreateNewHostForSameSiteSubframe());

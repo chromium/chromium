@@ -9188,6 +9188,42 @@ void RenderFrameHostManagerTest::AssertCanRemoveSubframeInUnload(
   ASSERT_TRUE(ExecJs(shell(), ""));
 }
 
+// From https://crbug.com/1169844. Verify that crashing a cross-site subframe
+// and navigating it to a new site does not cause the browser to crash.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       NavigateCrossSiteSubframeAfterCrash) {
+  StartEmbeddedServer();
+  // Ensure that all 3 pages are isolated from each other (even on
+  // Android, where site-per-process is not the default).
+  IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                           {"a.com", "b.com", "c.com"});
+
+  // Create a page with a subframe and navigate it cross-site.
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Crash the subframe.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* subframe = web_contents->GetMainFrame()->child_at(0);
+  RenderFrameHostImpl* rfh = subframe->current_frame_host();
+  RenderProcessHost* process = rfh->GetProcess();
+  {
+    RenderProcessHostWatcher crash_observer(
+        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process->Shutdown(0);
+    crash_observer.Wait();
+  }
+  ASSERT_FALSE(rfh->IsRenderFrameLive());
+  subframe = web_contents->GetMainFrame()->child_at(0);
+
+  // Navigate the subframe cross-site.
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  ASSERT_TRUE(NavigateFrameToURL(subframe, url_c));
+  ASSERT_TRUE(subframe->current_frame_host()->IsRenderFrameLive());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
