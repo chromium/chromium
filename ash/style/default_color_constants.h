@@ -22,11 +22,6 @@ constexpr SkColor kLoginBackgroundBaseColor = SK_ColorBLACK;
 constexpr SkColor kLoginButtonBackgroundBaseColor =
     SkColorSetA(SK_ColorWHITE, 26);
 
-// Colors for shelf.
-constexpr SkColor kShelfButtonColor = SK_ColorWHITE;
-constexpr SkColor kIndicatorColorActive = SK_ColorWHITE;
-constexpr SkColor kIndicatorColorRunning = SkColorSetA(SK_ColorWHITE, 0x7F);
-
 // Colors for back gesture.
 constexpr SkColor kArrowColorBeforeActivated = gfx::kGoogleBlue600;
 constexpr SkColor kArrowColorAfterActivated = gfx::kGoogleGrey100;
