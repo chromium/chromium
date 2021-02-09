@@ -16,6 +16,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/core/feature_policy/policy_helper.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -262,6 +263,20 @@ TEST_F(DocumentLoaderSimTest, FramePolicyIntegrityOnNavigationCommit) {
   EXPECT_TRUE(child_window->IsFeatureEnabled(
       blink::mojom::blink::FeaturePolicyFeature::kPayment));
 }
+
+class DocumentPolicySimTest : public DocumentLoaderSimTest {
+ public:
+  DocumentPolicySimTest()
+      : scoped_document_policy_(true),
+        scoped_document_policy_negotiation_(true) {
+    ResetAvailableDocumentPolicyFeaturesForTest();
+  }
+
+ private:
+  ScopedDocumentPolicyForTest scoped_document_policy_;
+  ScopedDocumentPolicyNegotiationForTest scoped_document_policy_negotiation_;
+};
+
 // When runtime feature DocumentPolicy is not enabled, specifying
 // Document-Policy, Require-Document-Policy and policy attribute
 // should have no effect, i.e.
@@ -269,12 +284,10 @@ TEST_F(DocumentLoaderSimTest, FramePolicyIntegrityOnNavigationCommit) {
 // policy are incompatible and calling
 // |Document::IsFeatureEnabled(DocumentPolicyFeature...)| should always return
 // true.
-// TODO(crbug.com/1168960): Convert the test into a browsertest so that
-// the initialization of static |GetAvailableDocumentPolicyFeatures| set
-// is not affecting subsequent tests.
-TEST_F(DocumentLoaderSimTest, DISABLED_DocumentPolicyNoEffectWhenFlagNotSet) {
-  blink::ScopedDocumentPolicyForTest sdp(false);
-  blink::ScopedDocumentPolicyNegotiationForTest sdpn(false);
+TEST_F(DocumentPolicySimTest, DocumentPolicyNoEffectWhenFlagNotSet) {
+  ScopedDocumentPolicyForTest sdp(false);
+  ScopedDocumentPolicyNegotiationForTest sdpn(false);
+  ResetAvailableDocumentPolicyFeaturesForTest();
 
   SimRequest::Params main_params;
   main_params.response_http_headers = {
@@ -336,9 +349,9 @@ TEST_F(DocumentLoaderSimTest, DISABLED_DocumentPolicyNoEffectWhenFlagNotSet) {
 // have no effect, i.e. document load should not be blocked even if the required
 // policy and incoming policy are incompatible. Document-Policy header should
 // function as normal.
-TEST_F(DocumentLoaderSimTest, DocumentPolicyNegotiationNoEffectWhenFlagNotSet) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
-  blink::ScopedDocumentPolicyNegotiationForTest sdpn(false);
+TEST_F(DocumentPolicySimTest, DocumentPolicyNegotiationNoEffectWhenFlagNotSet) {
+  ScopedDocumentPolicyNegotiationForTest sdpn(false);
+  ResetAvailableDocumentPolicyFeaturesForTest();
 
   SimRequest::Params main_params;
   main_params.response_http_headers = {
@@ -394,8 +407,7 @@ TEST_F(DocumentLoaderSimTest, DocumentPolicyNegotiationNoEffectWhenFlagNotSet) {
       PolicyValue::CreateDecDouble(1.0)));
 }
 
-TEST_F(DocumentLoaderSimTest, ReportDocumentPolicyHeaderParsingError) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
+TEST_F(DocumentPolicySimTest, ReportDocumentPolicyHeaderParsingError) {
   SimRequest::Params params;
   params.response_http_headers = {{"Document-Policy", "bad-feature-name"}};
   SimRequest main_resource("https://example.com", "text/html", params);
@@ -407,8 +419,7 @@ TEST_F(DocumentLoaderSimTest, ReportDocumentPolicyHeaderParsingError) {
       ConsoleMessages().front().StartsWith("Document-Policy HTTP header:"));
 }
 
-TEST_F(DocumentLoaderSimTest, ReportRequireDocumentPolicyHeaderParsingError) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
+TEST_F(DocumentPolicySimTest, ReportRequireDocumentPolicyHeaderParsingError) {
   SimRequest::Params params;
   params.response_http_headers = {
       {"Require-Document-Policy", "bad-feature-name"}};
@@ -421,9 +432,7 @@ TEST_F(DocumentLoaderSimTest, ReportRequireDocumentPolicyHeaderParsingError) {
       "Require-Document-Policy HTTP header:"));
 }
 
-TEST_F(DocumentLoaderSimTest, ReportErrorWhenDocumentPolicyIncompatible) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
-  blink::ScopedDocumentPolicyNegotiationForTest sdpn(true);
+TEST_F(DocumentPolicySimTest, ReportErrorWhenDocumentPolicyIncompatible) {
   SimRequest::Params params;
   params.response_http_headers = {
       {"Document-Policy", "lossless-images-max-bpp=1.1"}};
@@ -466,10 +475,8 @@ TEST_F(DocumentLoaderSimTest, ReportErrorWhenDocumentPolicyIncompatible) {
 
 // HTTP header Require-Document-Policy should only take effect on subtree of
 // current document, but not on current document.
-TEST_F(DocumentLoaderSimTest,
+TEST_F(DocumentPolicySimTest,
        RequireDocumentPolicyHeaderShouldNotAffectCurrentDocument) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
-  blink::ScopedDocumentPolicyNegotiationForTest sdpn(true);
   SimRequest::Params params;
   params.response_http_headers = {
       {"Require-Document-Policy", "lossless-images-max-bpp=1.0"},
@@ -482,8 +489,7 @@ TEST_F(DocumentLoaderSimTest,
   main_resource.Finish();
 }
 
-TEST_F(DocumentLoaderSimTest, DocumentPolicyHeaderHistogramTest) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
+TEST_F(DocumentPolicySimTest, DocumentPolicyHeaderHistogramTest) {
   HistogramTester histogram_tester;
 
   SimRequest::Params params;
@@ -503,9 +509,7 @@ TEST_F(DocumentLoaderSimTest, DocumentPolicyHeaderHistogramTest) {
                                      2 /* kUnoptimizedLosslessImages */, 1);
 }
 
-TEST_F(DocumentLoaderSimTest, DocumentPolicyPolicyAttributeHistogramTest) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
-  blink::ScopedDocumentPolicyNegotiationForTest sdpn(true);
+TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
   HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com", "text/html");
@@ -531,8 +535,7 @@ TEST_F(DocumentLoaderSimTest, DocumentPolicyPolicyAttributeHistogramTest) {
       2 /* kUnoptimizedLosslessImages */, 1);
 }
 
-TEST_F(DocumentLoaderSimTest, DocumentPolicyEnforcedReportHistogramTest) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
+TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
   HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com", "text/html");
@@ -561,8 +564,7 @@ TEST_F(DocumentLoaderSimTest, DocumentPolicyEnforcedReportHistogramTest) {
                                      1 /* kFontDisplay */, 2);
 }
 
-TEST_F(DocumentLoaderSimTest, DocumentPolicyReportOnlyReportHistogramTest) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
+TEST_F(DocumentPolicySimTest, DocumentPolicyReportOnlyReportHistogramTest) {
   HistogramTester histogram_tester;
 
   SimRequest::Params params;
@@ -595,13 +597,10 @@ TEST_F(DocumentLoaderSimTest, DocumentPolicyReportOnlyReportHistogramTest) {
 }
 
 class DocumentPolicyHeaderUseCounterTest
-    : public DocumentLoaderSimTest,
+    : public DocumentPolicySimTest,
       public testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
 
 TEST_P(DocumentPolicyHeaderUseCounterTest, ShouldObserveUseCounterUpdate) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
-  blink::ScopedDocumentPolicyNegotiationForTest sdpn(true);
-
   bool has_document_policy_header, has_report_only_header, has_require_header;
   std::tie(has_document_policy_header, has_report_only_header,
            has_require_header) = GetParam();
@@ -640,10 +639,8 @@ INSTANTIATE_TEST_SUITE_P(DocumentPolicyHeaderValues,
                                             ::testing::Bool(),
                                             ::testing::Bool()));
 
-TEST_F(DocumentLoaderSimTest,
+TEST_F(DocumentPolicySimTest,
        DocumentPolicyIframePolicyAttributeUseCounterTest) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
-  blink::ScopedDocumentPolicyNegotiationForTest sdpn(true);
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest::Params iframe_params;
   iframe_params.response_http_headers = {
@@ -673,10 +670,7 @@ TEST_F(DocumentLoaderSimTest,
       child_document->IsUseCounted(mojom::WebFeature::kRequiredDocumentPolicy));
 }
 
-TEST_F(DocumentLoaderSimTest, RequiredDocumentPolicyUseCounterTest) {
-  blink::ScopedDocumentPolicyForTest sdp(true);
-  blink::ScopedDocumentPolicyNegotiationForTest sdpn(true);
-
+TEST_F(DocumentPolicySimTest, RequiredDocumentPolicyUseCounterTest) {
   SimRequest::Params main_frame_params;
   main_frame_params.response_http_headers = {
       {"Require-Document-Policy", "lossless-images-max-bpp=1.0"}};

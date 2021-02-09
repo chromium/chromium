@@ -49,8 +49,20 @@ const FeatureNameMap& GetDefaultFeatureNameMap() {
   return default_feature_name_map;
 }
 
-const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
+
+DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeaturesInternal() {
   DEFINE_STATIC_LOCAL(DocumentPolicyFeatureSet, features, ());
+  return features;
+}
+
+
+void ResetAvailableDocumentPolicyFeaturesForTest() {
+  GetAvailableDocumentPolicyFeaturesInternal().clear();
+}
+
+
+const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
+  DocumentPolicyFeatureSet& features = GetAvailableDocumentPolicyFeaturesInternal();
   if (features.IsEmpty()) {
     {% for feature in document_policy_features %}
     {% if not feature.depends_on or feature.name in dp_origin_trial_dependency_map %}

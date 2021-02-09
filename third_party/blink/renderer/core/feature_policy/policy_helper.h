@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -78,6 +79,9 @@ const FeatureNameMap& GetDefaultFeatureNameMap();
 // well as the features which will be recognized by the document or iframe
 // policy object.
 const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures();
+
+// Refresh the set content based on current RuntimeFeatures environment.
+CORE_EXPORT void ResetAvailableDocumentPolicyFeaturesForTest();
 
 // Returns true if this FeaturePolicyFeature is currently disabled by an origin
 // trial (it is origin trial controlled, and the origin trial is not enabled).
