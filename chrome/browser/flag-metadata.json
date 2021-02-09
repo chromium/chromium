@@ -505,13 +505,13 @@
   },
   {
     "name": "chrome-share-highlights-android",
-    "owners": [ "gayane" ],
-    "expiry_milestone": 90
+    "owners": [ "gayane", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "chrome-share-long-screenshot",
-    "owners": [ "tgupta", "kmilka" ],
-    "expiry_milestone": 91
+    "owners": [ "tgupta", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 94
   },
   {
     "name": "chrome-share-qr-code",
@@ -520,18 +520,18 @@
   },
   {
     "name": "chrome-share-screenshot",
-    "owners": [ "jeffreycohen", "kristipark" ],
-    "expiry_milestone": 90
+    "owners": [ "jeffreycohen", "kristipark", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 91
   },
   {
     "name": "chrome-sharing-hub",
-    "owners": [ "kmilka" ],
-    "expiry_milestone": 88
+    "owners": [ "kmilka", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "chrome-sharing-hub-v1-5",
-    "owners": [ "sophey" ],
-    "expiry_milestone": 90
+    "owners": [ "sophey", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "chrome-tips-in-main-menu",
@@ -4524,12 +4524,12 @@
   },
   {
     "name": "share-button-in-top-toolbar",
-    "owners": [ "jeffreycohen" ],
-    "expiry_milestone": 90
+    "owners": [ "jeffreycohen", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "share-by-default-in-cct",
-    "owners": [ "sophey" ],
+    "owners": [ "sophey", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 90
   },
   {
