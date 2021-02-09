@@ -68,6 +68,7 @@ class RTCDtlsTransport;
 class RTCDTMFSender;
 class RTCDataChannel;
 class RTCDataChannelInit;
+class RTCIceCandidateInitOrRTCIceCandidate;
 class RTCIceTransport;
 class RTCOfferOptions;
 class RTCPeerConnectionTest;
@@ -210,10 +211,10 @@ class MODULES_EXPORT RTCPeerConnection final
       ExceptionState&);
 
   ScriptPromise addIceCandidate(ScriptState*,
-                                const RTCIceCandidateInit*,
+                                const RTCIceCandidateInitOrRTCIceCandidate&,
                                 ExceptionState&);
   ScriptPromise addIceCandidate(ScriptState*,
-                                const RTCIceCandidateInit*,
+                                const RTCIceCandidateInitOrRTCIceCandidate&,
                                 V8VoidFunction*,
                                 V8RTCPeerConnectionErrorCallback*,
                                 ExceptionState&);
