@@ -10458,6 +10458,11 @@ void RenderFrameHostImpl::SetEmbeddingToken(
   // or the main frame of an inner web contents (i.e. would need to send it to
   // the RenderFrameProxyHost for the outer web contents owning the inner one).
   PropagateEmbeddingTokenToParentFrame();
+
+  // The accessibility tree for the outermost root frame contains references
+  // to the focused frame via its AXTreeID, so ensure that we update that.
+  if (GetOutermostMainFrame() != this)
+    GetOutermostMainFrame()->UpdateAXTreeData();
 }
 
 bool RenderFrameHostImpl::DocumentUsedWebOTP() {

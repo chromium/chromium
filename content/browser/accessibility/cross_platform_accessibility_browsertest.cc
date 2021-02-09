@@ -161,6 +161,22 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
   int GetIntAttr(const ui::AXNode* node, const ax::mojom::IntAttribute attr);
   bool GetBoolAttr(const ui::AXNode* node, const ax::mojom::BoolAttribute attr);
 
+  void PressTabAndWaitForFocusChange() {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::FOCUS_CHANGED);
+    SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
+                     ui::VKEY_TAB, false, false, false, false);
+    waiter.WaitForNotification();
+  }
+
+  std::string GetNameOfFocusedNode() {
+    ui::AXNodeData focused_node_data =
+        content::GetFocusedAccessibilityNodeInfo(shell()->web_contents());
+    return focused_node_data.GetStringAttribute(
+        ax::mojom::StringAttribute::kName);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -1658,6 +1674,37 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   // The body should no longer be ignored after adding a mouse button listener.
   ASSERT_FALSE(body_node->IsIgnored());
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       NavigateInIframe) {
+  LoadInitialAccessibilityTreeFromHtmlFilePath(
+      "/accessibility/regression/iframe-navigation.html");
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Go to Inner 2");
+
+  // Keep pressing Tab until we get to the "Go to Inner 2" link in the
+  // inner iframe.
+  while (GetNameOfFocusedNode() != "Go to Inner 2") {
+    PressTabAndWaitForFocusChange();
+  }
+
+  // Press enter to activate the link, wait for the second iframe to load.
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::LOAD_COMPLETE);
+    SimulateKeyPress(shell()->web_contents(), ui::DomKey::ENTER,
+                     ui::DomCode::ENTER, ui::VKEY_RETURN, false, false, false,
+                     false);
+    waiter.WaitForNotification();
+  }
+
+  // Press Tab, we should eventually land on the last button within the
+  // second iframe.
+  while (GetNameOfFocusedNode() != "Bottom of Inner 2") {
+    PressTabAndWaitForFocusChange();
+  }
 }
 
 }  // namespace content
