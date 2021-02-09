@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -42,8 +43,8 @@ void NativeAppWindowViews::Init(
   web_view_->SetWebContents(app_window_->web_contents());
 
   SetCanMinimize(!app_window_->show_on_lock_screen());
-  SetCanMaximize(CanMaximizeWindow());
-  SetCanResize(CanResizeWindow());
+  SetCanMaximize(GetCanMaximizeWindow());
+  SetCanResize(GetCanResizeWindow());
 
   widget_ = new views::Widget;
   widget_->AddObserver(this);
@@ -365,8 +366,8 @@ void NativeAppWindowViews::SetContentSizeConstraints(
     const gfx::Size& max_size) {
   size_constraints_.set_minimum_size(min_size);
   size_constraints_.set_maximum_size(max_size);
-  SetCanMaximize(CanMaximizeWindow());
-  SetCanResize(CanResizeWindow());
+  SetCanMaximize(GetCanMaximizeWindow());
+  SetCanResize(GetCanResizeWindow());
   widget_->OnSizeConstraintsChanged();
 }
 
@@ -404,8 +405,8 @@ void NativeAppWindowViews::RemoveObserver(
 }
 
 void NativeAppWindowViews::OnWidgetHasHitTestMaskChanged() {
-  SetCanMaximize(CanMaximizeWindow());
-  SetCanResize(CanResizeWindow());
+  SetCanMaximize(GetCanMaximizeWindow());
+  SetCanResize(GetCanResizeWindow());
 }
 
 void NativeAppWindowViews::OnViewWasResized() {
@@ -413,14 +414,19 @@ void NativeAppWindowViews::OnViewWasResized() {
     observer.OnPositionRequiresUpdate();
 }
 
-bool NativeAppWindowViews::CanResizeWindow() const {
+bool NativeAppWindowViews::GetCanResizeWindow() const {
   return resizable_ && !size_constraints_.HasFixedSize() &&
          !WidgetHasHitTestMask();
 }
 
-bool NativeAppWindowViews::CanMaximizeWindow() const {
+bool NativeAppWindowViews::GetCanMaximizeWindow() const {
   return resizable_ && !size_constraints_.HasMaximumSize() &&
          !WidgetHasHitTestMask();
 }
+
+BEGIN_METADATA(NativeAppWindowViews, views::WidgetDelegateView)
+ADD_READONLY_PROPERTY_METADATA(bool, CanMaximizeWindow)
+ADD_READONLY_PROPERTY_METADATA(bool, CanResizeWindow)
+END_METADATA
 
 }  // namespace native_app_window

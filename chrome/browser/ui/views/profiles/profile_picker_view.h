@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -40,7 +41,12 @@ class ProfilePickerView : public views::WidgetDelegateView,
                           public ChromeWebModalDialogManagerDelegate,
                           public web_modal::WebContentsModalDialogHost {
  public:
+  METADATA_HEADER(ProfilePickerView);
+
   using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
+
+  ProfilePickerView(const ProfilePickerView&) = delete;
+  ProfilePickerView& operator=(const ProfilePickerView&) = delete;
 
   const ui::ThemeProvider* GetThemeProviderForProfileBeingCreated() const;
 
@@ -140,7 +146,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void NavigateBack();
 
   // Checks whether the sign-in flow is in progress.
-  bool IsSigningIn() const;
+  bool GetSigningIn() const;
 
   // Helper functions to deal with the lack of extended account info.
   void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
@@ -184,7 +190,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Getter of the path of profile which is selected in profile picker for force
   // signin.
-  base::FilePath GetForceSigninProfilePath();
+  base::FilePath GetForceSigninProfilePath() const;
 
   ScopedKeepAlive keep_alive_;
   State state_ = State::kNotStarted;
@@ -235,8 +241,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   UserManagerProfileDialogHost dialog_host_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilePickerView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_

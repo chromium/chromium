@@ -15,6 +15,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 class EyeDropperView::ViewPositionHandler {
@@ -257,3 +258,8 @@ void EyeDropperView::OnColorSelected() {
   // Use the last selected color and notify listener.
   listener_->ColorSelected(selected_color_.value());
 }
+
+BEGIN_METADATA(EyeDropperView, views::WidgetDelegateView)
+ADD_READONLY_PROPERTY_METADATA(gfx::Size, Size)
+ADD_READONLY_PROPERTY_METADATA(float, Diameter)
+END_METADATA

@@ -15,6 +15,7 @@
 #include "extensions/browser/app_window/size_constraints.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -34,7 +35,10 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
                              public views::WidgetDelegateView,
                              public views::WidgetObserver {
  public:
+  METADATA_HEADER(NativeAppWindowViews);
   NativeAppWindowViews();
+  NativeAppWindowViews(const NativeAppWindowViews&) = delete;
+  NativeAppWindowViews& operator=(const NativeAppWindowViews&) = delete;
   ~NativeAppWindowViews() override;
   void Init(extensions::AppWindow* app_window,
             const extensions::AppWindow::CreateParams& create_params);
@@ -147,8 +151,8 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   // Informs modal dialogs that they need to update their positions.
   void OnViewWasResized();
 
-  bool CanMaximizeWindow() const;
-  bool CanResizeWindow() const;
+  bool GetCanMaximizeWindow() const;
+  bool GetCanResizeWindow() const;
 
   extensions::AppWindow* app_window_ = nullptr;  // Not owned.
   views::WebView* web_view_ = nullptr;
@@ -164,8 +168,6 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
 
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked
       observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeAppWindowViews);
 };
 
 }  // namespace native_app_window

@@ -15,6 +15,7 @@
 #include "content/public/browser/eye_dropper_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
 // EyeDropperView is used on Aura platforms and on the Mac before 10.15.
@@ -23,6 +24,7 @@
 class EyeDropperView : public content::EyeDropper,
                        public views::WidgetDelegateView {
  public:
+  METADATA_HEADER(EyeDropperView);
   EyeDropperView(content::RenderFrameHost* frame,
                  content::EyeDropperListener* listener);
   EyeDropperView(const EyeDropperView&) = delete;

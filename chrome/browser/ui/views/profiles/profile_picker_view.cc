@@ -70,6 +70,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -683,7 +684,7 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     case IDC_RELOAD_BYPASSING_CACHE:
     case IDC_RELOAD_CLEARING_CACHE: {
       // Sign-in may fail due to connectivity issues, allow reloading.
-      if (IsSigningIn()) {
+      if (GetSigningIn()) {
         new_profile_contents_->GetController().Reload(
             content::ReloadType::BYPASSING_CACHE, true);
       }
@@ -699,7 +700,7 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 void ProfilePickerView::OnThemeChanged() {
   views::WidgetDelegateView::OnThemeChanged();
-  if (!IsSigningIn())
+  if (!GetSigningIn())
     return;
   UpdateToolbarColor();
 }
@@ -742,7 +743,7 @@ void ProfilePickerView::AddNewContents(
 void ProfilePickerView::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
-  if (IsSigningIn() && IsExternalURL(new_profile_contents_->GetVisibleURL()))
+  if (GetSigningIn() && IsExternalURL(new_profile_contents_->GetVisibleURL()))
     FinishSignedInCreationFlowForSAML();
 }
 
@@ -818,11 +819,11 @@ void ProfilePickerView::NavigateBack() {
   // Move from sign-in back to the previous screen of profile creation.
   // Do not load any url because the desired screen is still loaded in
   // `system_profile_contents_`.
-  if (IsSigningIn())
+  if (GetSigningIn())
     ShowScreen(system_profile_contents_.get(), GURL(), /*show_toolbar=*/false);
 }
 
-bool ProfilePickerView::IsSigningIn() const {
+bool ProfilePickerView::GetSigningIn() const {
   return (state_ == kReady || state_ == kFinalizing) && toolbar_->GetVisible();
 }
 
@@ -1086,6 +1087,11 @@ void ProfilePickerView::DisplayErrorMessage() {
   dialog_host_.DisplayErrorMessage();
 }
 
-base::FilePath ProfilePickerView::GetForceSigninProfilePath() {
+base::FilePath ProfilePickerView::GetForceSigninProfilePath() const {
   return dialog_host_.GetForceSigninProfilePath();
 }
+
+BEGIN_METADATA(ProfilePickerView, views::WidgetDelegateView)
+ADD_READONLY_PROPERTY_METADATA(bool, SigningIn)
+ADD_READONLY_PROPERTY_METADATA(base::FilePath, ForceSigninProfilePath)
+END_METADATA

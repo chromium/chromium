@@ -27,6 +27,8 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
@@ -51,6 +53,8 @@ namespace {
 class ShellWindowDelegateView : public views::WidgetDelegateView,
                                 public views::TextfieldController {
  public:
+  METADATA_HEADER(ShellWindowDelegateView);
+
   enum UIControl { BACK_BUTTON, FORWARD_BUTTON, STOP_BUTTON };
 
   explicit ShellWindowDelegateView(Shell* shell) : shell_(shell) {
@@ -58,7 +62,10 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     InitShellWindow();
   }
 
-  ~ShellWindowDelegateView() override {}
+  ShellWindowDelegateView(const ShellWindowDelegateView&) = delete;
+  ShellWindowDelegateView& operator=(const ShellWindowDelegateView&) = delete;
+
+  ~ShellWindowDelegateView() override = default;
 
   // Update the state of UI controls
   void SetAddressBarURL(const GURL& url) {
@@ -281,9 +288,10 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   // Contents view contains the WebBrowser view
   View* contents_view_ = nullptr;
   views::WebView* web_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellWindowDelegateView);
 };
+
+BEGIN_METADATA(ShellWindowDelegateView, views::WidgetDelegateView)
+END_METADATA
 
 }  // namespace
 

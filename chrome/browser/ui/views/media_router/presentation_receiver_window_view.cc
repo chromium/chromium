@@ -41,6 +41,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(OS_MAC)
@@ -412,3 +413,6 @@ void PresentationReceiverWindowView::OnFullscreenChanged() {
   if (fullscreen == (location_bar_view_->height() > 0))
     Layout();
 }
+
+BEGIN_METADATA(PresentationReceiverWindowView, views::WidgetDelegateView)
+END_METADATA

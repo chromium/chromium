@@ -35,8 +35,19 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+
+DEFINE_ENUM_CONVERTERS(chromeos::OobeDialogPaddingMode,
+                       {chromeos::OobeDialogPaddingMode::PADDING_AUTO,
+                        STRING16_LITERAL("PADDING_AUTO")},
+                       {chromeos::OobeDialogPaddingMode::PADDING_WIDE,
+                        STRING16_LITERAL("PADDING_WIDE")},
+                       {chromeos::OobeDialogPaddingMode::PADDING_NARROW,
+                        STRING16_LITERAL("PADDING_NARROW")})
 
 namespace chromeos {
 
@@ -60,10 +71,13 @@ CoreOobeView::DialogPaddingMode ConvertDialogPaddingMode(
 
 class OobeWebDialogView : public views::WebDialogView {
  public:
+  METADATA_HEADER(OobeWebDialogView);
   OobeWebDialogView(content::BrowserContext* context,
                     ui::WebDialogDelegate* delegate,
                     std::unique_ptr<WebContentsHandler> handler)
       : views::WebDialogView(context, delegate, std::move(handler)) {}
+  OobeWebDialogView(const OobeWebDialogView&) = delete;
+  OobeWebDialogView& operator=(const OobeWebDialogView&) = delete;
 
   // content::WebContentsDelegate:
   void RequestMediaAccessPermission(
@@ -96,9 +110,10 @@ class OobeWebDialogView : public views::WebDialogView {
 
  private:
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeWebDialogView);
 };
+
+BEGIN_METADATA(OobeWebDialogView, views::WebDialogView)
+END_METADATA
 
 // View that controls size of OobeUIDialog.
 // Dialog can be shown as a full-screen (in this case it will fit whole screen)
@@ -117,6 +132,7 @@ class OobeWebDialogView : public views::WebDialogView {
 // display.
 class LayoutWidgetDelegateView : public views::WidgetDelegateView {
  public:
+  METADATA_HEADER(LayoutWidgetDelegateView);
   LayoutWidgetDelegateView(OobeUIDialogDelegate* dialog_delegate,
                            OobeWebDialogView* oobe_view)
       : dialog_delegate_(dialog_delegate), oobe_view_(oobe_view) {
@@ -124,21 +140,28 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
     AddChildView(oobe_view_);
   }
 
+  LayoutWidgetDelegateView(const LayoutWidgetDelegateView&) = delete;
+  LayoutWidgetDelegateView& operator=(const LayoutWidgetDelegateView&) = delete;
+
   ~LayoutWidgetDelegateView() override { delete dialog_delegate_; }
 
   void SetFullscreen(bool value) {
     if (fullscreen_ == value)
       return;
     fullscreen_ = value;
-    Layout();
+    OnPropertyChanged(&fullscreen_, views::kPropertyEffectsLayout);
   }
+  bool GetFullscreen() const { return fullscreen_; }
 
   void SetHasShelf(bool value) {
+    if (has_shelf_ == value)
+      return;
     has_shelf_ = value;
-    Layout();
+    OnPropertyChanged(&has_shelf_, views::kPropertyEffectsLayout);
   }
+  bool GetHasShelf() const { return has_shelf_; }
 
-  OobeDialogPaddingMode padding() { return padding_; }
+  OobeDialogPaddingMode GetPadding() const { return padding_; }
 
   // views::WidgetDelegateView:
   ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_WINDOW; }
@@ -181,9 +204,13 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
 
   // Tracks dialog margins after last size calculations.
   OobeDialogPaddingMode padding_ = OobeDialogPaddingMode::PADDING_AUTO;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutWidgetDelegateView);
 };
+
+BEGIN_METADATA(LayoutWidgetDelegateView, views::WidgetDelegateView)
+ADD_PROPERTY_METADATA(bool, Fullscreen)
+ADD_PROPERTY_METADATA(bool, HasShelf)
+ADD_READONLY_PROPERTY_METADATA(OobeDialogPaddingMode, Padding)
+END_METADATA
 
 class CaptivePortalDialogDelegate
     : public ui::WebDialogDelegate,
@@ -509,7 +536,7 @@ void OobeUIDialogDelegate::OnViewBoundsChanged(views::View* observed_view) {
   if (!widget_)
     return;
   GetOobeUI()->GetCoreOobeView()->SetDialogPaddingMode(
-      ConvertDialogPaddingMode(layout_view_->padding()));
+      ConvertDialogPaddingMode(layout_view_->GetPadding()));
   GetOobeUI()->GetCoreOobeView()->UpdateClientAreaSize(
       layout_view_->GetContentsBounds().size());
 }

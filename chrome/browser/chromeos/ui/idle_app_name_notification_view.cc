@@ -30,6 +30,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -100,6 +102,7 @@ class IdleAppNameNotificationDelegateView
     : public views::WidgetDelegateView,
       public ui::ImplicitAnimationObserver {
  public:
+  METADATA_HEADER(IdleAppNameNotificationDelegateView);
   // An idle message which will get shown from the caller and hides itself after
   // a time, calling |owner->CloseMessage| to inform the owner that it got
   // destroyed. The |app_name| is a string which gets used as message and
@@ -127,6 +130,11 @@ class IdleAppNameNotificationDelegateView
         this,
         &IdleAppNameNotificationDelegateView::RemoveMessage);
   }
+
+  IdleAppNameNotificationDelegateView(
+      const IdleAppNameNotificationDelegateView&) = delete;
+  IdleAppNameNotificationDelegateView& operator=(
+      const IdleAppNameNotificationDelegateView&) = delete;
 
   ~IdleAppNameNotificationDelegateView() override {
     // The widget is already closing, but the other cleanup items need to be
@@ -206,8 +214,6 @@ class IdleAppNameNotificationDelegateView
 
   // True if the widget got already closed.
   bool widget_closed_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdleAppNameNotificationDelegateView);
 };
 
 IdleAppNameNotificationView::IdleAppNameNotificationView(
@@ -265,5 +271,8 @@ void IdleAppNameNotificationView::ShowMessage(
       message_visibility_time_in_ms + animation_time_ms);
   CreateAndShowWidget(view_, animation_time_ms);
 }
+
+BEGIN_METADATA(IdleAppNameNotificationDelegateView, views::WidgetDelegateView)
+END_METADATA
 
 }  // namespace chromeos
