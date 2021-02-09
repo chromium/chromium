@@ -138,6 +138,11 @@ Polymer({
 
       resultListElem.initializeTestRun(filteredRoutines);
 
+      // Expand result list by default.
+      if (!this.shouldHideReportList_()) {
+        this.$.collapse.show();
+      }
+
       this.executor_ =
           new RoutineListExecutor(assert(this.systemRoutineController_));
       this.executor_
@@ -205,7 +210,7 @@ Polymer({
 
   /** @protected */
   isResultButtonHidden_() {
-    return this.routines.length < 2 ||
+    return this.shouldHideReportList_() ||
         this.executionStatus_ === ExecutionProgress.kNotStarted;
   },
 
@@ -310,6 +315,14 @@ Polymer({
    */
   isStopTestsButtonHidden_() {
     return this.executionStatus_ !== ExecutionProgress.kRunning;
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  shouldHideReportList_() {
+    return this.routines.length < 2;
   },
 
   /** @override */

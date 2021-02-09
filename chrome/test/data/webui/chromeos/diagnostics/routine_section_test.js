@@ -243,13 +243,7 @@ export function routineSectionTestSuite() {
           return clickRunTestsButton();
         })
         .then(() => {
-          // Report is still hidden by default, but toggle button is visible.
-          assertFalse(isIronCollapseOpen());
-          assertTrue(isVisible(getToggleTestReportButton()));
-          return clickToggleTestReportButton();
-        })
-        .then(() => {
-          // Report is visible when button is clicked.
+          // Report and toggle button are visible.
           assertTrue(isIronCollapseOpen());
           assertTrue(isVisible(getToggleTestReportButton()));
           return clickToggleTestReportButton();
