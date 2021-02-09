@@ -15,7 +15,7 @@
     <style include="multidevice-setup-shared">
       #selector-and-details-container {
         display: flex;
-        margin-top: 20px;
+        flex-direction: column;
         min-height: 246px;
       }
 
@@ -49,14 +49,13 @@
         color: var(--paper-grey-600);
         display: flex;
         flex-direction: column;
+        margin-top: 18px;
       }
 
       #feature-details-container {
-        border-inline-start: 1px solid rgb(218, 220, 224);
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding-inline-start: 24px;
       }
 
       #feature-details-container-header {
@@ -67,7 +66,7 @@
         align-items: center;
         box-sizing: border-box;
         display: flex;
-        padding: 10px 0;
+        min-height: 36px;
       }
 
       .feature-detail iron-icon {
@@ -89,22 +88,14 @@
         display: inline-block;
       }
 
-      /* On devices with small screens, use a single-column layout. */
-      @media screen and (max-width: 767px) {
-        #selector-and-details-container {
-          display: flex;
-          flex-direction: column;
-          margin-top: 32px;
-        }
+      #additional-content-container {
+        display: flex;
+        flex-direction: column;
+      }
 
-        #feature-details-container {
-          border-inline-start: none;
-          margin-top: 32px;
-          padding-inline-start: inherit;
-        }
-
-        .feature-detail {
-          min-height: 45px;
+      @media screen and (orientation: landscape) {
+        #additional-content-container {
+          justify-content: center;
         }
       }
     </style>
@@ -114,36 +105,8 @@
       <span slot="message" id="multidevice-summary-message" inner-h-t-m-l=
           "[[i18nAdvancedDynamic_(locale, 'startSetupPageMessage')]]">
       </span>
-      <div slot="additional-content">
+      <div id="additional-content-container" slot="additional-content">
         <div id="selector-and-details-container">
-          <div id="deviceSelectionContainer" class="flex">
-            [[getDeviceSelectionHeader_(devices)]]
-            <div id="singleDeviceName"
-                hidden$="[[!doesDeviceListHaveOneElement_(devices)]]">
-              [[getFirstDeviceNameInList_(devices)]]
-            </div>
-            <div hidden$="[[!doesDeviceListHaveMultipleElements_(devices)]]">
-              <select id="deviceDropdown"
-                  class="md-select"
-                  on-change="onDeviceDropdownSelectionChanged_">
-                <template is="dom-repeat" items="[[devices]]">
-                  <option
-                      class$="[[getDeviceOptionClass_(item.connectivityStatus)]]"
-                      value$="[[getInstanceIdOrLegacyDeviceId_(item)]]">
-                    [[getDeviceNameWithConnectivityStatus_(item)]]
-                  </option>
-                </template>
-              </select>
-            </div>
-            <div class="flex"></div>
-            <div id="page-icon-container">
-              <div id="page-icon"></div>
-            </div>
-            <div class="flex"></div>
-            <div id="footnote">
-              [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
-            </div>
-          </div>
           <div id="feature-details-container" class="flex">
             <div id="feature-details-container-header">
               [[i18nDynamic(locale, 'startSetupPageFeatureListHeader')]]
@@ -185,6 +148,34 @@
               <span>
                 [[i18nDynamic(locale, 'startSetupPageFeatureListAddFeatures')]]
               </span>
+            </div>
+          </div>
+          <div id="deviceSelectionContainer" class="flex">
+            [[getDeviceSelectionHeader_(devices)]]
+            <div id="singleDeviceName"
+                hidden$="[[!doesDeviceListHaveOneElement_(devices)]]">
+              [[getFirstDeviceNameInList_(devices)]]
+            </div>
+            <div hidden$="[[!doesDeviceListHaveMultipleElements_(devices)]]">
+              <select id="deviceDropdown"
+                  class="md-select"
+                  on-change="onDeviceDropdownSelectionChanged_">
+                <template is="dom-repeat" items="[[devices]]">
+                  <option
+                      class$="[[getDeviceOptionClass_(item.connectivityStatus)]]"
+                      value$="[[getInstanceIdOrLegacyDeviceId_(item)]]">
+                    [[getDeviceNameWithConnectivityStatus_(item)]]
+                  </option>
+                </template>
+              </select>
+            </div>
+            <div class="flex"></div>
+            <div id="page-icon-container">
+              <div id="page-icon"></div>
+            </div>
+            <div class="flex"></div>
+            <div id="footnote">
+              [[i18nAdvancedDynamic_(locale, 'startSetupPageFootnote')]]
             </div>
           </div>
         </div>

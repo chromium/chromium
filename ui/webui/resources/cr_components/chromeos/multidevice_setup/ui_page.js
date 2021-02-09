@@ -22,6 +22,19 @@ Polymer({
      * @type {string}
      */
     iconName: String,
+
+    /**
+     * Whether new OOBE layout is enabled.
+     *
+     * @type {string}
+     */
+    newLayoutEnabled: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('newLayoutEnabled') &&
+            loadTimeData.getBoolean('newLayoutEnabled');
+      }
+    },
   },
 
   /**

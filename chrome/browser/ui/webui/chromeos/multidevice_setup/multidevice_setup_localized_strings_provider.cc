@@ -136,6 +136,9 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       "wifiSyncEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kWifiSyncAndroid));
 
+  html_source->AddBoolean("newLayoutEnabled",
+                          chromeos::features::IsNewOobeLayoutEnabled());
+
   for (const auto& entry : GetLocalizedStringsWithPlaceholders())
     html_source->AddString(entry.name, entry.localized_string);
 }

@@ -77,6 +77,9 @@ Polymer({
     this.style.setProperty('--caption-bar-height', captionBarHeight);
 
     if (oobeDialogHeight && oobeDialogWidth) {
+      // Below code is also used to set the dialog size for display manager and
+      // in-session multidevice setup flow. Please make sure code changes are
+      // applied to all places.
       document.documentElement.style.setProperty(
           '--oobe-oobe-dialog-height-base', oobeDialogHeight + 'px');
       document.documentElement.style.setProperty(

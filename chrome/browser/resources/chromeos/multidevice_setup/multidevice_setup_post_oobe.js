@@ -69,6 +69,27 @@ Polymer({
   behaviors: [I18nBehavior],
 
   /** @override */
+  ready() {
+    var url = new URL(document.URL);
+    var dialogHeight = url.searchParams.get('dialog-height');
+    var dialogWidth = url.searchParams.get('dialog-width');
+    if (dialogHeight && dialogWidth) {
+      // Below code is also used to set the dialog size for display manager and
+      // in-session assistant onboarding flow. Please make sure code changes are
+      // applied to all places.
+      document.documentElement.style.setProperty(
+          '--oobe-oobe-dialog-height-base', dialogHeight + 'px');
+      document.documentElement.style.setProperty(
+          '--oobe-oobe-dialog-width-base', dialogWidth + 'px');
+      if (parseInt(dialogWidth, 10) > parseInt(dialogHeight, 10)) {
+        document.documentElement.setAttribute('orientation', 'horizontal');
+      } else {
+        document.documentElement.setAttribute('orientation', 'vertical');
+      }
+    }
+  },
+
+  /** @override */
   attached() {
     this.delegate_ = new multidevice_setup.PostOobeDelegate();
     this.$$('multidevice-setup').initializeSetupFlow();

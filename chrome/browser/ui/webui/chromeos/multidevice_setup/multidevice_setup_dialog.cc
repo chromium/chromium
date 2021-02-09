@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/chromeos/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,8 +31,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "net/base/url_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace chromeos {
@@ -40,6 +46,9 @@ namespace {
 
 constexpr int kPreferredDialogHeightPx = 640;
 constexpr int kPreferredDialogWidthPx = 768;
+
+constexpr char kOobeDialogHeightParamKey[] = "dialog-height";
+constexpr char kOobeDialogWidthParamKey[] = "dialog-width";
 
 }  // namespace
 
@@ -85,23 +94,42 @@ void MultiDeviceSetupDialog::AddOnCloseCallback(base::OnceClosure callback) {
 }
 
 MultiDeviceSetupDialog::MultiDeviceSetupDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIMultiDeviceSetupUrl),
-                              base::string16()) {}
+    : SystemWebDialogDelegate(CreateMultiDeviceSetupURL(), base::string16()) {}
 
 MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
   for (auto& callback : on_close_callbacks_)
     std::move(callback).Run();
 }
 
+GURL MultiDeviceSetupDialog::CreateMultiDeviceSetupURL() {
+  GURL gurl(chrome::kChromeUIMultiDeviceSetupUrl);
+  gfx::Size size;
+  GetDialogSize(&size);
+  gurl = net::AppendQueryParameter(gurl, kOobeDialogHeightParamKey,
+                                   base::NumberToString(size.height()));
+  gurl = net::AppendQueryParameter(gurl, kOobeDialogWidthParamKey,
+                                   base::NumberToString(size.width()));
+  return gurl;
+}
+
 void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
-  // Note: The size is calculated once based on the current screen orientation
-  // and is not ever updated. It might be possible to resize the dialog upon
-  // each screen rotation, but https://crbug.com/1030993 prevents this from
-  // working.
-  // TODO(https://crbug.com/1030993): Explore resizing the dialog dynamically.
-  static const gfx::Size dialog_size = ComputeDialogSizeForInternalScreen(
-      gfx::Size(kPreferredDialogWidthPx, kPreferredDialogHeightPx));
-  size->SetSize(dialog_size.width(), dialog_size.height());
+  if (features::IsNewOobeLayoutEnabled()) {
+    const gfx::Size display_size =
+        display::Screen::GetScreen()->GetPrimaryDisplay().size();
+    const bool is_horizontal = display_size.width() > display_size.height();
+    const gfx::Size dialog_size = CalculateOobeDialogSize(
+        display_size, ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
+    size->SetSize(dialog_size.width(), dialog_size.height());
+  } else {
+    // Note: The size is calculated once based on the current screen orientation
+    // and is not ever updated. It might be possible to resize the dialog upon
+    // each screen rotation, but https://crbug.com/1030993 prevents this from
+    // working.
+    // TODO(https://crbug.com/1030993): Explore resizing the dialog dynamically.
+    static const gfx::Size dialog_size = ComputeDialogSizeForInternalScreen(
+        gfx::Size(kPreferredDialogWidthPx, kPreferredDialogHeightPx));
+    size->SetSize(dialog_size.width(), dialog_size.height());
+  }
 }
 
 void MultiDeviceSetupDialog::OnDialogClosed(const std::string& json_retval) {

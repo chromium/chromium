@@ -271,6 +271,9 @@ cr.define('cr.ui.login', function() {
     },
 
     setOrientation: function(isHorizontal) {
+      // Below code is also used to set the dialog orientation for in-session
+      // multidevice setup flow and assistant onboarding flow. Please make sure
+      // code changes are applied to all places.
       if (isHorizontal) {
         document.documentElement.setAttribute('orientation', 'horizontal');
       } else {
@@ -279,6 +282,9 @@ cr.define('cr.ui.login', function() {
     },
 
     setDialogSize: function(width, height) {
+      // Below code is also used to set the dialog size for in-session
+      // multidevice setup flow and assistant onboarding flow. Please make sure
+      // code changes are applied to all places.
       document.documentElement.style.setProperty(
         '--oobe-oobe-dialog-height-base', height + 'px');
       document.documentElement.style.setProperty(
