@@ -37,7 +37,6 @@ preprocess_if_expr("preprocess_src") {
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
     "array_data_model.js",
-    "bubble.js",
     "command.js",
     "context_menu_handler.js",
     "dialogs.js",
@@ -55,7 +54,6 @@ preprocess_if_expr("preprocess_src") {
     "menu_button.js",
     "menu_item.js",
     "menu.js",
-    "overlay.js",
     "position_util.js",
     "splitter.js",
     "store_client.js",
@@ -151,7 +149,6 @@ js_type_check("ui_resources") {
     ":menu",
     ":menu_button",
     ":menu_item",
-    ":overlay",
     ":position_util",
     ":splitter",
     ":store",
@@ -169,14 +166,6 @@ js_library("array_data_model") {
   deps = [
     "..:event_target",
     "../..:cr",
-  ]
-}
-
-js_library("bubble") {
-  deps = [
-    "..:ui",
-    "../..:cr",
-    "../..:event_tracker",
   ]
 }
 
@@ -315,13 +304,6 @@ js_library("menu") {
     "..:ui",
     "../..:assert",
     "../..:cr",
-  ]
-}
-
-js_library("overlay") {
-  deps = [
-    "../..:cr",
-    "../..:util",
   ]
 }
 

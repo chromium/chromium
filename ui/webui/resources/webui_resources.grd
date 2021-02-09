@@ -37,9 +37,6 @@ without changes to the corresponding grd file. -->
       <structure name="IDR_WEBUI_CSS_MENU_BUTTON_CSS"
                  file="css/menu_button.css" type="chrome_html"
                  flattenhtml="true" />
-      <structure name="IDR_WEBUI_CSS_OVERLAY_CSS"
-                 file="css/overlay.css" type="chrome_html"
-                 flattenhtml="true" />
       <structure name="IDR_WEBUI_CSS_SPINNER_CSS"
                  file="css/spinner.css" type="chrome_html"
                  flattenhtml="true" />
@@ -49,6 +46,11 @@ without changes to the corresponding grd file. -->
       <structure name="IDR_WEBUI_CSS_WIDGETS_CSS"
                  file="css/widgets.css" type="chrome_html"
                  flattenhtml="true" />
+      <if expr="chromeos">
+        <structure name="IDR_WEBUI_CSS_OVERLAY_CSS"
+                   file="css/overlay.css" type="chrome_html"
+                   flattenhtml="true" />
+      </if>
     </structures>
   </release>
 </grit>
