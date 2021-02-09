@@ -426,7 +426,13 @@ bool ProtocolUtils::ParseTriggerScripts(
     return false;
   }
 
-  for (const auto& trigger_script_proto : response_proto.trigger_scripts()) {
+  for (auto& trigger_script_proto : *response_proto.mutable_trigger_scripts()) {
+    if (trigger_script_proto.user_interface().scroll_to_hide()) {
+      // Turn off viewport resizing when scroll to hide is on as it causes
+      // issues.
+      trigger_script_proto.mutable_user_interface()->set_resize_visual_viewport(
+          false);
+    }
     trigger_scripts->emplace_back(
         std::make_unique<TriggerScript>(trigger_script_proto));
   }
