@@ -332,6 +332,11 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
 + (NSString*)backupPathForSessionID:(NSString*)sessionID
                           directory:(const base::FilePath&)directory {
+  // TODO(crbug.com/1165798): remove when the sessionID is guaranteed to
+  // always be an non-empty string.
+  if (!sessionID.length)
+    return PathAsNSString(directory.Append(kSessionBackupFileName));
+
   return PathAsNSString(directory.Append(kSessionBackupDirectory)
                             .Append(base::SysNSStringToUTF8(sessionID))
                             .Append(kSessionBackupFileName));
@@ -339,6 +344,8 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
 + (NSArray<NSString*>*)backedupSessionIDsForBrowserState:
     (ChromeBrowserState*)browserState {
+  if (!base::ios::IsMultiwindowSupported())
+    return @[ @"" ];
   const base::FilePath backupDirectory =
       browserState->GetStatePath().Append(kSessionBackupDirectory);
   return [[NSFileManager defaultManager]

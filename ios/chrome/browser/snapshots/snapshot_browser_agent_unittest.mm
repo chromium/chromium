@@ -32,7 +32,7 @@ TEST_F(SnapshotBrowserAgentTest, SnapshotCacheCreatedAfterSettingSessionID) {
       SnapshotBrowserAgent::FromBrowser(browser_.get());
   EXPECT_NE(nullptr, agent);
   EXPECT_EQ(nil, agent->snapshot_cache());
-  agent->SetSessionID([[NSUUID UUID] UUIDString]);
+  agent->SetSessionID(base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
   EXPECT_NE(nil, agent->snapshot_cache());
 }
 

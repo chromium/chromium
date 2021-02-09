@@ -69,7 +69,7 @@ namespace {
 void AddAgentsToBrowser(Browser* browser, SceneState* scene_state) {
   SnapshotBrowserAgent::CreateForBrowser(browser);
   SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(
-      [[NSUUID UUID] UUIDString]);
+      base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
   SceneStateBrowserAgent::CreateForBrowser(browser, scene_state);
 }
 
