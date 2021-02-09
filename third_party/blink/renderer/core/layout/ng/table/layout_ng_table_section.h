@@ -39,6 +39,8 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGMixin<LayoutBlock>,
 
   void RemoveChild(LayoutObject*) override;
 
+  void WillBeRemovedFromTree() override;
+
   void StyleDidChange(StyleDifference diff,
                       const ComputedStyle* old_style) override;
 

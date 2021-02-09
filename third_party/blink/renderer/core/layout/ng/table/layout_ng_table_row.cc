@@ -86,6 +86,13 @@ void LayoutNGTableRow::RemoveChild(LayoutObject* child) {
   LayoutNGMixin<LayoutBlock>::RemoveChild(child);
 }
 
+void LayoutNGTableRow::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
+  if (LayoutNGTable* table = Table())
+    table->TableGridStructureChanged();
+  LayoutNGMixin<LayoutBlock>::WillBeRemovedFromTree();
+}
+
 void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
                                       const ComputedStyle* old_style) {
   NOT_DESTROYED();

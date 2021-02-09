@@ -121,6 +121,13 @@ void LayoutNGTableCell::StyleDidChange(StyleDifference diff,
   LayoutNGBlockFlowMixin<LayoutBlockFlow>::StyleDidChange(diff, old_style);
 }
 
+void LayoutNGTableCell::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
+  if (LayoutNGTable* table = Table())
+    table->TableGridStructureChanged();
+  LayoutNGMixin<LayoutBlockFlow>::WillBeRemovedFromTree();
+}
+
 void LayoutNGTableCell::ColSpanOrRowSpanChanged() {
   NOT_DESTROYED();
   UpdateColAndRowSpanFlags();

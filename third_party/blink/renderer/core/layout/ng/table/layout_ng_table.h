@@ -184,8 +184,8 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
   // NG does not need this method. Sections are not cached.
   void RecalcSectionsIfNeeded() const final {}
 
-  // Legacy caches sections. Might not be needed by NG.
-  void ForceSectionsRecalc() final { NOTIMPLEMENTED(); }
+  // Not used by NG. Legacy caches sections.
+  void ForceSectionsRecalc() final { NOT_DESTROYED(); }
 
   // Used in paint for printing. Should not be needed by NG.
   LayoutUnit RowOffsetFromRepeatingFooter() const final {

@@ -458,8 +458,6 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
   if (has_collapsed_columns) {
     table_inline_size = ComputeTableSizeFromColumns(
         column_locations, border_padding, border_spacing);
-    table_inline_size =
-        std::max(table_inline_size, caption_constraint.min_size);
   } else {
     table_inline_size = table_inline_size_before_collapse;
   }
@@ -617,6 +615,7 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
       fragment_borders_geometry->columns.push_back(column.offset +
                                                    grid_inline_start);
     }
+    DCHECK_NE(column_locations.size(), 0u);
     fragment_borders_geometry->columns.push_back(
         column_locations.back().offset + column_locations.back().size +
         grid_inline_start);
