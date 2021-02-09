@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_track_underlying_sink.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 
 using testing::_;
+using testing::StrictMock;
 
 namespace blink {
 
@@ -83,9 +85,8 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   PushableMediaStreamAudioSource* pushable_audio_source_;
 };
 
-// TODO(1172981): Flakes, likely due to invalid use of EXPECT_CALL().
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
-       DISABLED_WriteToStreamForwardsToMediaStreamSink) {
+       WriteToStreamForwardsToMediaStreamSink) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* underlying_sink = CreateUnderlyingSink(script_state);
@@ -94,12 +95,14 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
 
   CreateTrackAndConnectToSource();
 
-  auto mock_sink =
-      std::make_unique<::testing::StrictMock<MockMediaStreamAudioSink>>();
-  EXPECT_CALL(*mock_sink.get(), OnSetFormat(_)).Times(::testing::AnyNumber());
+  base::RunLoop write_loop;
+  StrictMock<MockMediaStreamAudioSink> mock_sink;
+  EXPECT_CALL(mock_sink, OnSetFormat(_)).Times(::testing::AnyNumber());
+  EXPECT_CALL(mock_sink, OnData(_, _))
+      .WillOnce(base::test::RunOnceClosure(write_loop.QuitClosure()));
 
   WebMediaStreamAudioSink::AddToAudioTrack(
-      mock_sink.get(), WebMediaStreamTrack(media_stream_component_.Get()));
+      &mock_sink, WebMediaStreamTrack(media_stream_component_.Get()));
 
   NonThrowableExceptionState exception_state;
   auto* writer = writable_stream->getWriter(script_state, exception_state);
@@ -108,13 +111,13 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
   auto audio_frame_chunk = CreateAudioFrame(script_state, &audio_frame);
   EXPECT_NE(audio_frame, nullptr);
   EXPECT_NE(audio_frame->buffer(), nullptr);
-  EXPECT_CALL(*mock_sink.get(), OnData(_, _));
   ScriptPromiseTester write_tester(
       script_state,
       writer->write(script_state, audio_frame_chunk, exception_state));
-  write_tester.WaitUntilSettled();
   // |audio_frame| should be invalidated after sending it to the sink.
+  write_tester.WaitUntilSettled();
   EXPECT_EQ(audio_frame->buffer(), nullptr);
+  write_loop.Run();
 
   writer->releaseLock(script_state);
   ScriptPromiseTester close_tester(
@@ -130,7 +133,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest,
             static_cast<ExceptionCode>(DOMExceptionCode::kInvalidStateError));
 
   WebMediaStreamAudioSink::RemoveFromAudioTrack(
-      mock_sink.get(), WebMediaStreamTrack(media_stream_component_.Get()));
+      &mock_sink, WebMediaStreamTrack(media_stream_component_.Get()));
 }
 
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteInvalidDataFails) {
