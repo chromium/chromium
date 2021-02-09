@@ -123,6 +123,7 @@ class VideoEncoderTest : public ::testing::Test {
 
  private:
   std::unique_ptr<BitstreamProcessor> CreateBitstreamValidator(
+      const Video* video,
       const VideoDecoderConfig& decoder_config,
       const size_t last_frame_index,
       VideoFrameValidator::GetModelFrameCB get_model_frame_cb,
@@ -146,9 +147,20 @@ class VideoEncoderTest : public ::testing::Test {
       if (frame_output_config.output_mode == FrameOutputMode::kAll)
         video_frame_processors.push_back(std::move(image_writer));
     }
+
+    // For a resolution less than 360p, we lower the tolerance. Some platforms
+    // couldn't compress a low resolution video efficiently with a low bitrate.
+    constexpr gfx::Size k360p(640, 360);
+    constexpr double kSSIMToleranceForLowerResolution = 0.65;
+    const gfx::Size encode_resolution = video->VisibleRect().size();
+    const double ssim_tolerance =
+        encode_resolution.GetArea() < k360p.GetArea()
+            ? kSSIMToleranceForLowerResolution
+            : SSIMVideoFrameValidator::kDefaultTolerance;
+
     auto ssim_validator = SSIMVideoFrameValidator::Create(
         get_model_frame_cb, std::move(image_writer),
-        VideoFrameValidator::ValidationMode::kAverage);
+        VideoFrameValidator::ValidationMode::kAverage, ssim_tolerance);
     LOG_ASSERT(ssim_validator);
     video_frame_processors.push_back(std::move(ssim_validator));
     return BitstreamValidator::Create(decoder_config, last_frame_index,
@@ -235,14 +247,14 @@ class VideoEncoderTest : public ::testing::Test {
            num_temporal_layers_to_decode <= config.num_temporal_layers;
            ++num_temporal_layers_to_decode) {
         bitstream_processors.emplace_back(CreateBitstreamValidator(
-            decoder_config, config.num_frames_to_encode - 1, get_model_frame_cb,
-            num_temporal_layers_to_decode));
+            video, decoder_config, config.num_frames_to_encode - 1,
+            get_model_frame_cb, num_temporal_layers_to_decode));
         LOG_ASSERT(bitstream_processors.back());
       }
     } else {
       bitstream_processors.emplace_back(CreateBitstreamValidator(
-          decoder_config, config.num_frames_to_encode - 1, get_model_frame_cb,
-          base::nullopt));
+          video, decoder_config, config.num_frames_to_encode - 1,
+          get_model_frame_cb, base::nullopt));
       LOG_ASSERT(bitstream_processors.back());
     }
     return bitstream_processors;
