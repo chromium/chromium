@@ -151,23 +151,4 @@ bool JavaScriptFeature::CallJavaScriptFunction(
                                                 content_world);
 }
 
-bool JavaScriptFeature::CallJavaScriptFunction(
-    WebFrame* web_frame,
-    const std::string& function_name,
-    const std::vector<base::Value>& parameters,
-    base::OnceCallback<void(const base::Value*)> callback,
-    base::TimeDelta timeout) {
-  WebFrameImpl* web_frame_impl = static_cast<WebFrameImpl*>(web_frame);
-  JavaScriptFeatureManager* feature_manager =
-      JavaScriptFeatureManager::FromBrowserState(
-          web_frame_impl->GetWebState()->GetBrowserState());
-  DCHECK(feature_manager);
-  JavaScriptContentWorld* content_world =
-      feature_manager->GetContentWorldForFeature(this);
-  // A feature can still ExecuteJavaScript even if there are no initial scripts,
-  // so a nil content_world here will execute JS in the main page content world.
-  return web_frame_impl->CallJavaScriptFunction(
-      function_name, parameters, content_world, std::move(callback), timeout);
-}
-
 }  // namespace web

@@ -50,8 +50,7 @@ source_set("test_support") {
 
   deps = [
     ":all_frames_web_test_bundle",
-    ":java_script_feature_test_inject_once_js",
-    ":java_script_feature_test_reinject_js",
+    ":java_script_feature_test_js",
     ":test_constants",
     "//base",
     "//base/test:test_support",
@@ -99,19 +98,13 @@ js_compile_bundle("all_frames_web_test_bundle") {
   sources = [
     "resources/all_frames_web_test_bundle.js",
     "resources/cookie_test.js",
+    "resources/java_script_feature_test.js",
   ]
 }
 
-js_compile_bundle("java_script_feature_test_inject_once_js") {
+js_compile_bundle("java_script_feature_test_js") {
   testonly = true
-  closure_entry_point = "__crWeb.javaScriptFeatureTestInjectOnce"
+  closure_entry_point = "__crWeb.javaScriptFeatureTest"
 
-  sources = [ "resources/java_script_feature_test_inject_once.js" ]
-}
-
-js_compile_bundle("java_script_feature_test_reinject_js") {
-  testonly = true
-  closure_entry_point = "__crWeb.javaScriptFeatureTestReinject"
-
-  sources = [ "resources/java_script_feature_test_reinject.js" ]
+  sources = [ "resources/java_script_feature_test.js" ]
 }

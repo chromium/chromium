@@ -10,19 +10,16 @@
 
 namespace web {
 
-// Filenames of the Javascript injected by FakeJavaScriptFeature which creates
+// Filename of the Javascript injected by FakeJavaScriptFeature which creates
 // a text node on document load with the text
-// |kFakeJavaScriptFeatureLoadedText|, exposes the function
-// |kScriptReplaceDivContents| and tracks the count of received errors.
-const char kJavaScriptFeatureInjectOnceTestScript[] =
-    "java_script_feature_test_inject_once_js";
-const char kJavaScriptFeatureReinjectTestScript[] =
-    "java_script_feature_test_reinject_js";
+// |kFakeJavaScriptFeatureLoadedText| and exposes
+// the function |kScriptReplaceDivContents|.
+const char kJavaScriptFeatureTestScript[] = "java_script_feature_test_js";
 
 const char kFakeJavaScriptFeatureLoadedText[] = "injected_script_loaded";
 
-// The function exposed by the feature JS which replaces the contents of the div
-// with |id="div"| with the text "updated".
+// The function exposed by kJavaScriptFeatureTestScript which replaces the
+// contents of the div with |id="div"| with the text "updated".
 const char kScriptReplaceDivContents[] =
     "javaScriptFeatureTest.replaceDivContents";
 
@@ -30,35 +27,20 @@ const char kFakeJavaScriptFeatureScriptHandlerName[] = "FakeHandlerName";
 
 const char kFakeJavaScriptFeaturePostMessageReplyValue[] = "some text";
 
-// The function exposed by the feature JS which returns the parameter value as a
-// postMessage to the script message handler with name
+// The function exposed by kJavaScriptFeatureTestScript which returns the
+// parameter value as a postMessage to the script message handler with name
 // |kFakeJavaScriptFeatureScriptHandlerName|.
 const char kScriptReplyWithPostMessage[] =
     "javaScriptFeatureTest.replyWithPostMessage";
 
-// The function exposed by the feature JS which returns the count of errors
-// received in the JS error listener.
-const char kGetErrorCount[] = "javaScriptFeatureTest.getErrorCount";
-
-// Timeout for response of kGetErrorCount.
-const int kGetErrorCountTimeout = 1;
-
 FakeJavaScriptFeature::FakeJavaScriptFeature(
     JavaScriptFeature::ContentWorld content_world)
-    : JavaScriptFeature(
-          content_world,
-          {FeatureScript::CreateWithFilename(
-               kJavaScriptFeatureInjectOnceTestScript,
-               FeatureScript::InjectionTime::kDocumentEnd,
-               FeatureScript::TargetFrames::kAllFrames,
-               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow),
-           FeatureScript::CreateWithFilename(
-               kJavaScriptFeatureReinjectTestScript,
-               FeatureScript::InjectionTime::kDocumentEnd,
-               FeatureScript::TargetFrames::kAllFrames,
-               FeatureScript::ReinjectionBehavior::
-                   kReinjectOnDocumentRecreation)},
-          {}) {}
+    : JavaScriptFeature(content_world,
+                        {FeatureScript::CreateWithFilename(
+                            kJavaScriptFeatureTestScript,
+                            FeatureScript::InjectionTime::kDocumentEnd,
+                            FeatureScript::TargetFrames::kAllFrames)},
+                        {}) {}
 FakeJavaScriptFeature::~FakeJavaScriptFeature() = default;
 
 void FakeJavaScriptFeature::ReplaceDivContents(WebFrame* web_frame) {
@@ -69,13 +51,6 @@ void FakeJavaScriptFeature::ReplyWithPostMessage(
     WebFrame* web_frame,
     const std::vector<base::Value>& parameters) {
   CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessage, parameters);
-}
-
-void FakeJavaScriptFeature::GetErrorCount(
-    WebFrame* web_frame,
-    base::OnceCallback<void(const base::Value*)> callback) {
-  CallJavaScriptFunction(web_frame, kGetErrorCount, {}, std::move(callback),
-                         base::TimeDelta::FromSeconds(kGetErrorCountTimeout));
 }
 
 std::vector<std::string> FakeJavaScriptFeature::GetScriptMessageHandlerNames()

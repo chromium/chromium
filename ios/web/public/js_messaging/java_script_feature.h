@@ -141,13 +141,6 @@ class JavaScriptFeature {
                               const std::string& function_name,
                               const std::vector<base::Value>& parameters);
 
-  bool CallJavaScriptFunction(
-      WebFrame* web_frame,
-      const std::string& function_name,
-      const std::vector<base::Value>& parameters,
-      base::OnceCallback<void(const base::Value*)> callback,
-      base::TimeDelta timeout);
-
   // Callback for script messages registered through |GetScriptMessageHandlers|.
   // Called when a web view associated with |browser_state| sent |message|.
   virtual void ScriptMessageReceived(BrowserState* browser_state,
