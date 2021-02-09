@@ -425,7 +425,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #else
     LOG_IF(ERROR, !gpu_info_.passthrough_cmd_decoder)
 #endif
-      << "Passthrough is not supported, GL is"
+        << "Passthrough is not supported, GL is "
         << gl::GetGLImplementationName(gl::GetGLImplementation());
   } else {
     gpu_info_.passthrough_cmd_decoder = false;
