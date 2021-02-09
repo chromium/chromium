@@ -242,8 +242,7 @@ void AlertIndicator::TransitionToAlertState(
 }
 
 void AlertIndicator::OnParentTabButtonColorChanged() {
-  if (alert_state_ == TabAlertState::AUDIO_PLAYING ||
-      alert_state_ == TabAlertState::AUDIO_MUTING)
+  if (alert_state_)
     ResetImage(alert_state_.value());
 }
 

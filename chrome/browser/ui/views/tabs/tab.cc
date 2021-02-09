@@ -743,19 +743,20 @@ SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
   if (!theme_provider)
     return foreground_color_;
 
+  // TODO(tluk): These color computations should be moved into ThemeProvider
+  // when other tab colors are also computed there.
   switch (state) {
-    case TabAlertState::AUDIO_PLAYING:
-    case TabAlertState::AUDIO_MUTING:
-      return theme_provider->GetColor(ThemeProperties::COLOR_TAB_ALERT_AUDIO);
     case TabAlertState::MEDIA_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
-      return theme_provider->GetColor(
-          ThemeProperties::COLOR_TAB_ALERT_RECORDING);
+      return color_utils::IsDark(foreground_color_) ? gfx::kGoogleRed600
+                                                    : gfx::kGoogleRed300;
     case TabAlertState::TAB_CAPTURING:
-      return theme_provider->GetColor(
-          ThemeProperties::COLOR_TAB_ALERT_CAPTURING);
     case TabAlertState::PIP_PLAYING:
-      return theme_provider->GetColor(ThemeProperties::COLOR_TAB_PIP_PLAYING);
+      if (color_utils::IsDark(foreground_color_))
+        return gfx::kGoogleBlue600;
+      FALLTHROUGH;
+    case TabAlertState::AUDIO_PLAYING:
+    case TabAlertState::AUDIO_MUTING:
     case TabAlertState::BLUETOOTH_CONNECTED:
     case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
     case TabAlertState::USB_CONNECTED:
@@ -776,6 +777,7 @@ bool Tab::IsActive() const {
 void Tab::ActiveStateChanged() {
   UpdateTabIconNeedsAttentionBlocked();
   UpdateForegroundColors();
+  alert_indicator_->OnParentTabButtonColorChanged();
   title_->SetFontList(tab_style_->GetFontList());
   Layout();
 }

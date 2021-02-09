@@ -142,12 +142,6 @@ class ThemeProperties {
     COLOR_TAB_THROBBER_SPINNING,
     COLOR_TAB_THROBBER_WAITING,
 
-    // The colors used by the various alert indicator icons in the tab.
-    COLOR_TAB_ALERT_AUDIO,
-    COLOR_TAB_ALERT_RECORDING,
-    COLOR_TAB_PIP_PLAYING,
-    COLOR_TAB_ALERT_CAPTURING,
-
     // Note: All tab group color ids must be grouped together consecutively and
     // grouped together by use (eg grouped by dialog, context menu etc).
     // This permits range checking and reduces redundant code. If you change or

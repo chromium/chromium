@@ -550,21 +550,18 @@ void TabStripUIHandler::HandleGetThemeColors(const base::ListValue* args) {
               ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE),
           /* 16% opacity */ 0.16 * 255)));
 
-  colors.SetString("--tabstrip-tab-loading-spinning-color",
-                   color_utils::SkColorToRgbaString(embedder_->GetColor(
-                       ThemeProperties::COLOR_TAB_THROBBER_SPINNING)));
+  std::string throbber_color = color_utils::SkColorToRgbaString(
+      embedder_->GetColor(ThemeProperties::COLOR_TAB_THROBBER_SPINNING));
+  colors.SetString("--tabstrip-tab-loading-spinning-color", throbber_color);
   colors.SetString("--tabstrip-tab-waiting-spinning-color",
                    color_utils::SkColorToRgbaString(embedder_->GetColor(
                        ThemeProperties::COLOR_TAB_THROBBER_WAITING)));
   colors.SetString("--tabstrip-indicator-recording-color",
-                   color_utils::SkColorToRgbaString(embedder_->GetColor(
-                       ThemeProperties::COLOR_TAB_ALERT_RECORDING)));
-  colors.SetString("--tabstrip-indicator-pip-color",
-                   color_utils::SkColorToRgbaString(embedder_->GetColor(
-                       ThemeProperties::COLOR_TAB_PIP_PLAYING)));
-  colors.SetString("--tabstrip-indicator-capturing-color",
-                   color_utils::SkColorToRgbaString(embedder_->GetColor(
-                       ThemeProperties::COLOR_TAB_ALERT_CAPTURING)));
+                   color_utils::SkColorToRgbaString(
+                       ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
+                           ui::NativeTheme::kColorId_AlertSeverityHigh)));
+  colors.SetString("--tabstrip-indicator-pip-color", throbber_color);
+  colors.SetString("--tabstrip-indicator-capturing-color", throbber_color);
   colors.SetString("--tabstrip-tab-blocked-color",
                    color_utils::SkColorToRgbaString(
                        ui::NativeTheme::GetInstanceForWeb()->GetSystemColor(
