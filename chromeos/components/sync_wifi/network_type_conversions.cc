@@ -261,6 +261,7 @@ network_config::mojom::ConfigPropertiesPtr MojoNetworkConfigFromProto(
   wifi->ssid = DecodeHexString(specifics.hex_ssid());
   wifi->security = MojoSecurityTypeFromProto(specifics.security_type());
   wifi->passphrase = specifics.passphrase();
+  wifi->hidden_ssid = network_config::mojom::HiddenSsidMode::kDisabled;
 
   config->type_config =
       network_config::mojom::NetworkTypeConfigProperties::NewWifi(
