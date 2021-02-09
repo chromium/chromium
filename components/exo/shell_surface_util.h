@@ -57,13 +57,13 @@ void SetShellClientAccessibilityId(aura::Window* window,
 const base::Optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window);
 
-// Sets the main surface to the property handler.
-void SetShellMainSurface(ui::PropertyHandler* property_handler,
+// Sets the root surface to the property handler.
+void SetShellRootSurface(ui::PropertyHandler* property_handler,
                          Surface* surface);
 
 // Returns the main Surface instance or nullptr if it is not set.
 // |window| must not be nullptr.
-Surface* GetShellMainSurface(const aura::Window* window);
+Surface* GetShellRootSurface(const aura::Window* window);
 
 // Returns the ShellSurfaceBase for the given |window|, or nullptr if no such
 // surface exists.

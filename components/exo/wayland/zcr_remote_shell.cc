@@ -59,7 +59,7 @@ constexpr char kForceRemoteShellScale[] = "force-remote-shell-scale";
 Surface* FindRootSurface(aura::Window* window) {
   if (!window)
     return nullptr;
-  Surface* root = GetShellMainSurface(window);
+  Surface* root = GetShellRootSurface(window);
   if (root)
     return root;
   root = Surface::AsSurface(window);

@@ -93,7 +93,7 @@ void ArcAppPerformanceTracingSession::Start() {
   frame_deltas_.clear();
   last_commit_timestamp_ = base::Time();
 
-  exo::Surface* const surface = exo::GetShellMainSurface(window_);
+  exo::Surface* const surface = exo::GetShellRootSurface(window_);
   DCHECK(surface);
   surface->AddSurfaceObserver(this);
 
@@ -113,7 +113,7 @@ void ArcAppPerformanceTracingSession::Start() {
 void ArcAppPerformanceTracingSession::Stop() {
   tracing_active_ = false;
   tracing_timer_.Stop();
-  exo::Surface* const surface = exo::GetShellMainSurface(window_);
+  exo::Surface* const surface = exo::GetShellRootSurface(window_);
   // Surface might be destroyed.
   if (surface)
     surface->RemoveSurfaceObserver(this);

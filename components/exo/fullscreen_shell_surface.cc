@@ -100,7 +100,7 @@ void FullscreenShellSurface::SetSurface(Surface* surface) {
   if (root_surface())
     root_surface()->RemoveSurfaceObserver(this);
   SetRootSurface(surface);
-  SetShellMainSurface(widget_->GetNativeWindow(), root_surface());
+  SetShellRootSurface(widget_->GetNativeWindow(), root_surface());
   if (surface) {
     surface->AddSurfaceObserver(this);
     host_window()->Show();
@@ -162,7 +162,7 @@ void FullscreenShellSurface::OnSurfaceDestroying(Surface* surface) {
   SetRootSurface(nullptr);
 
   if (widget_)
-    SetShellMainSurface(widget_->GetNativeWindow(), nullptr);
+    SetShellRootSurface(widget_->GetNativeWindow(), nullptr);
 
   // Hide widget before surface is destroyed. This allows hide animations to
   // run using the current surface contents.
@@ -293,7 +293,7 @@ void FullscreenShellSurface::CreateFullscreenShellSurfaceWidget(
 
   SetShellApplicationId(window, application_id_);
   SetShellStartupId(window, startup_id_);
-  SetShellMainSurface(window, root_surface());
+  SetShellRootSurface(window, root_surface());
 
   window->AddObserver(this);
 }

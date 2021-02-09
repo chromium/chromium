@@ -232,7 +232,7 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
   if (!focus_)
     return;
 
-  DCHECK(GetShellMainSurface(static_cast<aura::Window*>(event->target())) ||
+  DCHECK(GetShellRootSurface(static_cast<aura::Window*>(event->target())) ||
          Surface::AsSurface(static_cast<aura::Window*>(event->target())));
 
   // Ignore synthetic key repeat events.

@@ -111,7 +111,7 @@ ArcAppPerformanceTracing::ArcAppPerformanceTracing(
 // Releasing resources in DTOR is not safe, see |Shutdown|.
 ArcAppPerformanceTracing::~ArcAppPerformanceTracing() {
   if (arc_active_window_) {
-    exo::Surface* const surface = exo::GetShellMainSurface(arc_active_window_);
+    exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
     // Surface might be destroyed.
     if (surface)
       surface->RemoveSurfaceObserver(this);
@@ -412,7 +412,7 @@ void ArcAppPerformanceTracing::AttachActiveWindow(aura::Window* window) {
   arc_active_window_ = window;
   arc_active_window_->AddObserver(this);
 
-  exo::Surface* const surface = exo::GetShellMainSurface(window);
+  exo::Surface* const surface = exo::GetShellRootSurface(window);
   DCHECK(surface);
   surface->AddSurfaceObserver(this);
 }
@@ -421,7 +421,7 @@ void ArcAppPerformanceTracing::DetachActiveWindow() {
   if (!arc_active_window_)
     return;
 
-  exo::Surface* const surface = exo::GetShellMainSurface(arc_active_window_);
+  exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
   // Surface might be destroyed.
   if (surface)
     surface->RemoveSurfaceObserver(this);

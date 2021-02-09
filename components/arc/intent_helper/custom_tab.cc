@@ -78,7 +78,7 @@ void CustomTab::OnWindowDestroying(aura::Window* window) {
 
 void CustomTab::UpdateHostBounds(aura::Window* arc_app_window) {
   DCHECK(arc_app_window);
-  auto* surface = exo::GetShellMainSurface(arc_app_window);
+  auto* surface = exo::GetShellRootSurface(arc_app_window);
   if (!surface)
     return;
 

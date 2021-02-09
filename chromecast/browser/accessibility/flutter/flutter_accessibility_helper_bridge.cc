@@ -74,7 +74,7 @@ void FlutterAccessibilityHelperBridge::AccessibilityStateChanged(bool value) {
     bool found = false;
     if (window) {
       for (aura::Window* child : window->children()) {
-        exo::Surface* surface = exo::GetShellMainSurface(child);
+        exo::Surface* surface = exo::GetShellRootSurface(child);
         if (surface) {
           views::Widget* widget =
               views::Widget::GetWidgetForNativeWindow(child);

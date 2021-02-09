@@ -39,7 +39,7 @@ UILockController::~UILockController() {
 void UILockController::OnKeyEvent(ui::KeyEvent* event) {
   // If the event target is not an exo::Surface, let another handler process the
   // event.
-  if (!GetShellMainSurface(static_cast<aura::Window*>(event->target())) &&
+  if (!GetShellRootSurface(static_cast<aura::Window*>(event->target())) &&
       !Surface::AsSurface(static_cast<aura::Window*>(event->target()))) {
     return;
   }

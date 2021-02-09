@@ -32,7 +32,7 @@ namespace exo {
 
 namespace {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(Surface*, kMainSurfaceKey, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(Surface*, kRootSurfaceKey, nullptr)
 
 // Application Id set by the client. For example:
 // "org.chromium.arc.<task-id>" for ARC++ shell surfaces.
@@ -136,18 +136,18 @@ const base::Optional<int32_t> GetShellClientAccessibilityId(
     return id;
 }
 
-void SetShellMainSurface(ui::PropertyHandler* property_handler,
+void SetShellRootSurface(ui::PropertyHandler* property_handler,
                          Surface* surface) {
-  property_handler->SetProperty(kMainSurfaceKey, surface);
+  property_handler->SetProperty(kRootSurfaceKey, surface);
 }
 
-Surface* GetShellMainSurface(const aura::Window* window) {
-  return window->GetProperty(kMainSurfaceKey);
+Surface* GetShellRootSurface(const aura::Window* window) {
+  return window->GetProperty(kRootSurfaceKey);
 }
 
 ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window) {
   // Only windows with a surface can have a shell surface.
-  if (!GetShellMainSurface(window))
+  if (!GetShellRootSurface(window))
     return nullptr;
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (!widget)
@@ -164,14 +164,14 @@ Surface* GetTargetSurfaceForLocatedEvent(
         static_cast<aura::Window*>(original_event->target()));
   }
 
-  Surface* main_surface = GetShellMainSurface(window);
+  Surface* root_surface = GetShellRootSurface(window);
   // Skip if the event is captured by non exo windows.
-  if (!main_surface) {
+  if (!root_surface) {
     auto* widget = views::Widget::GetTopLevelWidgetForNativeView(window);
     if (!widget)
       return nullptr;
-    main_surface = GetShellMainSurface(widget->GetNativeWindow());
-    if (!main_surface)
+    root_surface = GetShellRootSurface(widget->GetNativeWindow());
+    if (!root_surface)
       return nullptr;
   }
 
@@ -213,7 +213,7 @@ Surface* GetTargetSurfaceForLocatedEvent(
     aura::Window* parent_window = wm::GetTransientParent(window);
 
     if (!parent_window)
-      return main_surface;
+      return root_surface;
 
     event->set_location_f(location_in_target_f);
     event_target->ConvertEventToTarget(parent_window, event);

@@ -200,7 +200,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     if (IsInResizeHandle(window, event, local_point))
       return true;
 
-    Surface* surface = GetShellMainSurface(window);
+    Surface* surface = GetShellRootSurface(window);
     if (!surface)
       return false;
 
@@ -663,7 +663,7 @@ void ShellSurfaceBase::OnSurfaceDestroying(Surface* surface) {
   SetRootSurface(nullptr);
 
   if (widget_)
-    SetShellMainSurface(widget_->GetNativeWindow(), nullptr);
+    SetShellRootSurface(widget_->GetNativeWindow(), nullptr);
 
   // Hide widget before surface is destroyed. This allows hide animations to
   // run using the current surface contents.
@@ -915,7 +915,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
       /*for_creation=*/true, params.init_properties_container);
 
   SetShellApplicationId(&params.init_properties_container, application_id_);
-  SetShellMainSurface(&params.init_properties_container, root_surface());
+  SetShellRootSurface(&params.init_properties_container, root_surface());
   SetShellStartupId(&params.init_properties_container, startup_id_);
 
   bool activatable = activatable_;

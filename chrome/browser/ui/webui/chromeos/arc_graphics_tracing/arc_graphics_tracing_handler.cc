@@ -373,7 +373,7 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   jank_detector_ =
       std::make_unique<arc::ArcGraphicsJankDetector>(base::BindRepeating(
           &ArcGraphicsTracingHandler::OnJankDetected, base::Unretained(this)));
-  exo::Surface* const surface = exo::GetShellMainSurface(arc_active_window_);
+  exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
   DCHECK(surface);
   surface->AddSurfaceObserver(this);
 }
@@ -451,7 +451,7 @@ void ArcGraphicsTracingHandler::DiscardActiveArcWindow() {
   if (!arc_active_window_)
     return;
 
-  exo::Surface* const surface = exo::GetShellMainSurface(arc_active_window_);
+  exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
   if (surface)
     surface->RemoveSurfaceObserver(this);
 
