@@ -34,6 +34,10 @@
   self.view.layer.cornerRadius = kTopCornerRadius;
   self.view.hidden = YES;
 
+  [self.view addGestureRecognizer:[[UITapGestureRecognizer alloc]
+                                      initWithTarget:self
+                                              action:@selector(handleTap:)]];
+
   self.steadyView = [[LocationBarSteadyView alloc] init];
   self.steadyView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.steadyView];
@@ -48,6 +52,13 @@
   NamedGuide* guide = [NamedGuide guideWithName:kPrimaryToolbarLocationViewGuide
                                            view:self.view];
   AddSameConstraints(guide, self.steadyView);
+}
+
+- (void)handleTap:(UITapGestureRecognizer*)sender {
+  if (sender.state != UIGestureRecognizerStateEnded) {
+    return;
+  }
+  [self.panGestureHandler setNextState:ViewRevealState::Hidden animated:YES];
 }
 
 - (void)setPanGestureHandler:
@@ -87,7 +98,7 @@
   [self.steadyView setLocationLabelText:@""];
 }
 
-#pragma mark - viewRevealingAnimatee
+#pragma mark - ViewRevealingAnimatee
 
 - (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
                                toState:(ViewRevealState)nextViewRevealState {
