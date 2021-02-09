@@ -240,6 +240,10 @@ views::View* HoldingSpaceBrowserTestBase::GetTray() {
   return test_api_->GetTray();
 }
 
+views::View* HoldingSpaceBrowserTestBase::GetTrayDropTargetOverlay() {
+  return test_api_->GetTrayDropTargetOverlay();
+}
+
 views::View* HoldingSpaceBrowserTestBase::GetDefaultTrayIcon() {
   return test_api_->GetDefaultTrayIcon();
 }

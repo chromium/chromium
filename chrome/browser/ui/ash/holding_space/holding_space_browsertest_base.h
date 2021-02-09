@@ -101,6 +101,10 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Returns the holding space tray in the shelf.
   views::View* GetTray();
 
+  // Returns the view drawn on top of the holding space tray to indicate that
+  // it is a drop target capable of handling the current drag payload.
+  views::View* GetTrayDropTargetOverlay();
+
   // Getter for the holding space tray icons in the shelf.
   views::View* GetDefaultTrayIcon();
   views::View* GetPreviewsTrayIcon();

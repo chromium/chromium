@@ -61,6 +61,10 @@ class ASH_EXPORT HoldingSpaceTestApi {
   // Returns the holding space tray in the shelf.
   views::View* GetTray();
 
+  // Returns the view drawn on top of the holding space tray to indicate that
+  // it is a drop target capable of handling the current drag payload.
+  views::View* GetTrayDropTargetOverlay();
+
   // Returns the holding space tray icon view for the default, non content
   // forward  icon.
   views::View* GetDefaultTrayIcon();

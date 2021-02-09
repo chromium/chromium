@@ -81,7 +81,10 @@ void DoubleClick(const views::View* view) {
 }
 
 // Performs a gesture drag between `from` and `to`.
-void GestureDrag(const views::View* from, const views::View* to) {
+void GestureDrag(const views::View* from,
+                 const views::View* to,
+                 base::OnceClosure before_release_callback = base::DoNothing(),
+                 base::OnceClosure after_release_callback = base::DoNothing()) {
   auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.PressTouch(from->GetBoundsInScreen().CenterPoint());
@@ -99,7 +102,10 @@ void GestureDrag(const views::View* from, const views::View* to) {
   // be compensated for here.
   event_generator.MoveTouch(
       gfx::Point(to->GetBoundsInScreen().CenterPoint() + gfx::Vector2d(0, 25)));
+
+  std::move(before_release_callback).Run();
   event_generator.ReleaseTouch();
+  std::move(after_release_callback).Run();
 }
 
 // Performs a gesture tap on `view`.
@@ -110,13 +116,23 @@ void GestureTap(const views::View* view) {
 }
 
 // Performs a mouse drag between `from` and `to`.
-void MouseDrag(const views::View* from, const views::View* to) {
+void MouseDrag(const views::View* from,
+               const views::View* to,
+               base::OnceClosure before_release_callback = base::DoNothing(),
+               base::OnceClosure after_release_callback = base::DoNothing()) {
   auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseTo(from->GetBoundsInScreen().CenterPoint());
   event_generator.PressLeftButton();
-  event_generator.MoveMouseTo(to->GetBoundsInScreen().CenterPoint());
+
+  // Generate multiple interpolated mouse move events so that views are notified
+  // of mouse enter/exit as they would be in production.
+  event_generator.MoveMouseTo(to->GetBoundsInScreen().CenterPoint(),
+                              /*count=*/10);
+
+  std::move(before_release_callback).Run();
   event_generator.ReleaseLeftButton();
+  std::move(after_release_callback).Run();
 }
 
 // Moves mouse to `view` over `count` number of events.
@@ -449,12 +465,30 @@ class HoldingSpaceUiBrowserTest : public HoldingSpaceBrowserTestBase {
 // Parameterized by a callback to invoke to perform a drag-and-drop.
 class HoldingSpaceUiDragAndDropBrowserTest
     : public HoldingSpaceUiBrowserTest,
-      public testing::WithParamInterface<base::RepeatingCallback<
-          void(const views::View* from, const views::View* to)>> {
+      public testing::WithParamInterface<base::RepeatingCallback<void(
+          const views::View* from,
+          const views::View* to,
+          base::OnceClosure before_release_callback,
+          base::OnceClosure after_release_callback)>> {
  public:
+  // Asserts expectations that the holding space tray is or isn't a drop target.
+  void ExpectTrayIsDropTarget(bool is_drop_target) {
+    EXPECT_EQ(GetTrayDropTargetOverlay()->layer()->GetTargetOpacity(),
+              is_drop_target ? 1.f : 0.f);
+    EXPECT_EQ(GetDefaultTrayIcon()->layer()->GetTargetOpacity(),
+              is_drop_target ? 0.f : 1.f);
+    EXPECT_EQ(GetPreviewsTrayIcon()->layer()->GetTargetOpacity(),
+              is_drop_target ? 0.f : 1.f);
+  }
+
   // Performs a drag-and-drop between `from` and `to`.
-  void PerformDragAndDrop(const views::View* from, const views::View* to) {
-    GetParam().Run(from, to);
+  void PerformDragAndDrop(
+      const views::View* from,
+      const views::View* to,
+      base::OnceClosure before_release_callback = base::DoNothing(),
+      base::OnceClosure after_release_callback = base::DoNothing()) {
+    GetParam().Run(from, to, std::move(before_release_callback),
+                   std::move(after_release_callback));
   }
 
   // Returns the view serving as the drop sender for tests.
@@ -579,7 +613,17 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
         });
 
     // Perform and verify the ability to pin a file via drag-and-drop.
-    PerformDragAndDrop(/*from=*/sender(), /*to=*/GetTray());
+    ExpectTrayIsDropTarget(false);
+    PerformDragAndDrop(
+        /*from=*/sender(), /*to=*/GetTray(),
+        /*before_release_callback=*/
+        base::BindOnce(
+            &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
+            base::Unretained(this), true),
+        /*after_release_callback=*/
+        base::BindOnce(
+            &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
+            base::Unretained(this), false));
     run_loop.Run();
   }
 
@@ -602,7 +646,17 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
 
     // Perform and verify the ability to pin multiple files via drag-and-drop.
     // Note that any already pinned files in the drop payload are ignored.
-    PerformDragAndDrop(/*from=*/sender(), /*to=*/GetTray());
+    ExpectTrayIsDropTarget(false);
+    PerformDragAndDrop(
+        /*from=*/sender(), /*to=*/GetTray(),
+        /*before_release_callback=*/
+        base::BindOnce(
+            &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
+            base::Unretained(this), true),
+        /*after_release_callback=*/
+        base::BindOnce(
+            &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
+            base::Unretained(this), false));
     run_loop.Run();
   }
 
@@ -617,7 +671,17 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
     // Verify that attempting to drag-and-drop a payload which contains only
     // files that are already pinned will not result in a client interaction.
     EXPECT_CALL(client, PinFiles).Times(0);
-    PerformDragAndDrop(/*from=*/sender(), /*to=*/GetTray());
+    ExpectTrayIsDropTarget(false);
+    PerformDragAndDrop(
+        /*from=*/sender(), /*to=*/GetTray(),
+        /*before_release_callback=*/
+        base::BindOnce(
+            &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
+            base::Unretained(this), false),
+        /*after_release_callback=*/
+        base::BindOnce(
+            &HoldingSpaceUiDragAndDropBrowserTest::ExpectTrayIsDropTarget,
+            base::Unretained(this), false));
     testing::Mock::VerifyAndClearExpectations(&client);
   }
 }

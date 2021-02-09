@@ -74,8 +74,11 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool AreDropTypesRequired() override;
   bool CanDrop(const ui::OSExchangeData& data) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
   int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  void Layout() override;
 
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {
     use_zero_previews_update_delay_ = zero_delay;
@@ -145,6 +148,11 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // enabled/ disabled by the user at runtime.
   bool PreviewsShown() const;
 
+  // Updates this view (and its children) to reflect state as a potential drop
+  // target. If `is_drop_target` is true, this view represents a suitable drop
+  // target for the current drag payload.
+  void UpdateDropTargetState(bool is_drop_target);
+
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
@@ -157,6 +165,10 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // Content forward tray icon that contains holding space item previews.
   // Owned by views hierarchy.
   HoldingSpaceTrayIcon* previews_tray_icon_ = nullptr;
+
+  // The view drawn on top of all other child views to indicate that this
+  // view is a drop target capable of handling the current drag payload.
+  views::View* drop_target_overlay_ = nullptr;
 
   // When the holding space previews feature is enabled, the user can enable/
   // disable previews at runtime. This registrar is associated with the active

@@ -27,16 +27,37 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/vector_icons.h"
 
 namespace ash {
 
 namespace {
 
+// Animation.
+constexpr base::TimeDelta kAnimationDuration =
+    base::TimeDelta::FromMilliseconds(167);
+
 // Helpers ---------------------------------------------------------------------
+
+// Animates the specified `view` to the given `target_opacity`.
+void AnimateToTargetOpacity(views::View* view, float target_opacity) {
+  DCHECK(view->layer());
+  if (view->layer()->GetTargetOpacity() == target_opacity)
+    return;
+
+  ui::ScopedLayerAnimationSettings settings(view->layer()->GetAnimator());
+  settings.SetPreemptionStrategy(
+      ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  settings.SetTransitionDuration(kAnimationDuration);
+
+  view->layer()->SetOpacity(target_opacity);
+}
 
 // Returns the file paths extracted from the specified `data` which are *not*
 // pinned to the attached holding space model.
@@ -77,6 +98,7 @@ bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
   return false;
 }
 
+// Creates the default tray icon.
 std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
   auto icon = std::make_unique<views::ImageView>();
   icon->SetID(kHoldingSpaceTrayDefaultIconId);
@@ -85,7 +107,35 @@ std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
   icon->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+  icon->SetPaintToLayer();
+  icon->layer()->SetFillsBoundsOpaquely(false);
   return icon;
+}
+
+// TODO(crbug.com/1171059): Refine UI upon delivery of spec.
+// Creates the overlay to be drawn over all other child views to indicate that
+// the parent view is a drop target and is capable of handling the current drag
+// payload.
+std::unique_ptr<views::View> CreateDropTargetOverlay() {
+  auto drop_target_overlay = std::make_unique<views::View>();
+  drop_target_overlay->SetID(kHoldingSpaceTrayDropTargetOverlayId);
+  drop_target_overlay->SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  // Layer.
+  drop_target_overlay->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  drop_target_overlay->layer()->SetColor(gfx::kGoogleGrey400);
+
+  // Icon.
+  auto* icon =
+      drop_target_overlay->AddChildView(std::make_unique<views::ImageView>());
+  icon->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+  icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  icon->SetImage(gfx::CreateVectorIcon(views::kUnpinIcon, kHoldingSpaceIconSize,
+                                       gfx::kGoogleGrey700));
+  icon->SetPaintToLayer();
+  icon->layer()->SetFillsBoundsOpaquely(false);
+
+  return drop_target_overlay;
 }
 
 }  // namespace
@@ -109,6 +159,15 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
     set_context_menu_controller(this);
   }
 
+  // Drop target overlay.
+  // NOTE: The `drop_target_overlay_` will only be visible when:
+  //   * a drag is in progress,
+  //   * the drag payload contains pinnable files, and
+  //   * the cursor is sufficiently close to this view.
+  drop_target_overlay_ = AddChildView(CreateDropTargetOverlay());
+  drop_target_overlay_->layer()->SetOpacity(0.f);
+
+  // Animation.
   set_use_bounce_in_animation(true);
 }
 
@@ -254,13 +313,33 @@ bool HoldingSpaceTray::CanDrop(const ui::OSExchangeData& data) {
   return !ExtractUnpinnedFilePaths(data).empty();
 }
 
+// TODO(crbug.com/1171059): Instead of handling `OnDragEntered()`, show the
+// `drop_target_overlay_` if the cursor is within range of this view.
+void HoldingSpaceTray::OnDragEntered(const ui::DropTargetEvent& event) {
+  if (ExtractUnpinnedFilePaths(event.data()).empty())
+    UpdateDropTargetState(/*is_drop_target=*/false);
+  else
+    UpdateDropTargetState(/*is_drop_target=*/true);
+}
+
 int HoldingSpaceTray::OnDragUpdated(const ui::DropTargetEvent& event) {
-  return ExtractUnpinnedFilePaths(event.data()).empty()
-             ? ui::DragDropTypes::DRAG_NONE
-             : ui::DragDropTypes::DRAG_COPY;
+  if (ExtractUnpinnedFilePaths(event.data()).empty()) {
+    UpdateDropTargetState(/*is_drop_target=*/false);
+    return ui::DragDropTypes::DRAG_NONE;
+  }
+  UpdateDropTargetState(/*is_drop_target=*/true);
+  return ui::DragDropTypes::DRAG_COPY;
+}
+
+// TODO(crbug.com/1171059): Instead of handling `OnDragExited()`, hide the
+// `drop_target_overlay_` if the cursor is outside range of this view.
+void HoldingSpaceTray::OnDragExited() {
+  UpdateDropTargetState(/*is_drop_target=*/false);
 }
 
 int HoldingSpaceTray::OnPerformDrop(const ui::DropTargetEvent& event) {
+  UpdateDropTargetState(/*is_drop_target=*/false);
+
   std::vector<base::FilePath> unpinned_file_paths(
       ExtractUnpinnedFilePaths(event.data()));
   if (unpinned_file_paths.empty())
@@ -268,6 +347,15 @@ int HoldingSpaceTray::OnPerformDrop(const ui::DropTargetEvent& event) {
 
   HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
   return ui::DragDropTypes::DRAG_COPY;
+}
+
+void HoldingSpaceTray::Layout() {
+  TrayBackgroundView::Layout();
+
+  // The `drop_target_overlay_` should always fill this view's bounds as they
+  // are perceived by the user. Note that the user perceives the bounds of this
+  // view to be its background bounds, not its local bounds.
+  drop_target_overlay_->SetBoundsRect(GetBackgroundBounds());
 }
 
 void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {
@@ -508,6 +596,13 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
 
 bool HoldingSpaceTray::PreviewsShown() const {
   return previews_tray_icon_ && previews_tray_icon_->GetVisible();
+}
+
+// TODO(crbug.com/1171059): Animate translation of tray icons.
+void HoldingSpaceTray::UpdateDropTargetState(bool is_drop_target) {
+  AnimateToTargetOpacity(drop_target_overlay_, is_drop_target ? 1.f : 0.f);
+  AnimateToTargetOpacity(default_tray_icon_, is_drop_target ? 0.f : 1.f);
+  AnimateToTargetOpacity(previews_tray_icon_, is_drop_target ? 0.f : 1.f);
 }
 
 BEGIN_METADATA(HoldingSpaceTray, TrayBackgroundView)

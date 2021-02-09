@@ -132,6 +132,10 @@ views::View* HoldingSpaceTestApi::GetTray() {
   return holding_space_tray_;
 }
 
+views::View* HoldingSpaceTestApi::GetTrayDropTargetOverlay() {
+  return holding_space_tray_->GetViewByID(kHoldingSpaceTrayDropTargetOverlayId);
+}
+
 views::View* HoldingSpaceTestApi::GetDefaultTrayIcon() {
   return holding_space_tray_->GetViewByID(kHoldingSpaceTrayDefaultIconId);
 }
