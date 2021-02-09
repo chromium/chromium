@@ -393,6 +393,11 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
     }
 
+    @Override
+    public void delete() {
+        super.delete();
+    }
+
     /**
      * Encapsulates use cases where saving is disabled - as taken from TabPersistentStore.java to
      * ensure feature parity.
@@ -577,7 +582,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     }
 
     @VisibleForTesting
-    protected void setShouldSaveForTesting(boolean shouldSaveForTesting) {
+    public void setShouldSaveForTesting(boolean shouldSaveForTesting) {
         mShouldSaveForTesting = shouldSaveForTesting;
     }
 }
