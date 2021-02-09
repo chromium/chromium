@@ -37,5 +37,6 @@ FAIL Acquiring a reader after partially async-iterating a stream promise_test: U
 FAIL Acquiring a reader and reading the remaining chunks after partially async-iterating a stream with preventCancel = true promise_test: Unhandled rejection with value: object "TypeError: s.values(...) is not a function or its return value is not async iterable"
 FAIL return() should unlock the stream synchronously when preventCancel = false rs.values is not a function
 FAIL return() should unlock the stream synchronously when preventCancel = true rs.values is not a function
+FAIL close() while next() is pending promise_test: Unhandled rejection with value: object "TypeError: rs is not async iterable"
 Harness: the test ran to completion.
 
