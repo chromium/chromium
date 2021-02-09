@@ -848,14 +848,28 @@ TEST_F(HardwareDisplayControllerTest, ModesetWhilePageFlipping) {
 }
 
 TEST_F(HardwareDisplayControllerTest, FailPageFlipping) {
-  ui::DrmOverlayPlane plane1(CreateBuffer(), nullptr);
-  EXPECT_TRUE(ModesetWithPlane(plane1));
+  ASSERT_TRUE(ModesetWithPlane(ui::DrmOverlayPlane(CreateBuffer(), nullptr)));
 
   drm_->set_commit_expectation(false);
+  ui::DrmOverlayPlane post_modeset_plane(CreateBuffer(), nullptr);
+
   std::vector<ui::DrmOverlayPlane> planes;
-  planes.push_back(plane1.Clone());
+  planes.push_back(post_modeset_plane.Clone());
   EXPECT_DEATH_IF_SUPPORTED(SchedulePageFlip(std::move(planes)),
                             "SchedulePageFlip failed");
+}
+
+TEST_F(HardwareDisplayControllerTest,
+       RecreateBuffersOnOldPlanesPageFlipFailure) {
+  ui::DrmOverlayPlane pre_modeset_plane(CreateBuffer(), nullptr);
+  ASSERT_TRUE(ModesetWithPlane(pre_modeset_plane));
+
+  drm_->set_commit_expectation(false);
+
+  std::vector<ui::DrmOverlayPlane> planes;
+  planes.push_back(pre_modeset_plane.Clone());
+  SchedulePageFlip(std::move(planes));
+  EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS, last_swap_result_);
 }
 
 TEST_F(HardwareDisplayControllerTest, CheckNoPrimaryPlaneOnFlip) {
