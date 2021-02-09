@@ -3064,7 +3064,6 @@ crbug.com/626703 external/wpt/css/cssom-view/scroll-behavior-smooth.html [ Timeo
 crbug.com/626703 external/wpt/html/browsers/history/joint-session-history/joint-session-history-remove-iframe.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-descriptor-01.html [ Failure ]
 crbug.com/626703 [ Win7 ] external/wpt/css/css-fonts/variations/font-opentype-collections.html [ Timeout ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/redefine-attr-mapping.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/disclosure-styles.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-05.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-06.xht [ Failure ]
