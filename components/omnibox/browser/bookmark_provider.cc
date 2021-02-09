@@ -59,24 +59,6 @@ class ScoringFunctor {
   double scoring_factor_;
 };
 
-query_parser::MatchingAlgorithm GetMatchingAlgorithm(AutocompleteInput input) {
-  // If both short bookmark features are disabled, use default matching; i.e.
-  //   don't allow short input words to prefix match.
-  // If |IsShortBookmarkSuggestionsEnabled()| is enabled, allow short input
-  //   words to prefix match.
-  // If |IsShortBookmarkSuggestionsByTotalInputLengthEnabled()| is enabled,
-  //   allow short input words to prefix match only if the total input length is
-  //   longer than |ShortBookmarkSuggestionsByTotalInputLengthThreshold()|.
-  return OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled() ||
-                 (OmniboxFieldTrial::
-                      IsShortBookmarkSuggestionsByTotalInputLengthEnabled() &&
-                  input.text().length() >=
-                      OmniboxFieldTrial::
-                          ShortBookmarkSuggestionsByTotalInputLengthThreshold())
-             ? query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH
-             : query_parser::MatchingAlgorithm::DEFAULT;
-}
-
 }  // namespace
 
 // BookmarkProvider ------------------------------------------------------------
@@ -156,6 +138,28 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   std::partial_sort(matches_.begin(), matches_.begin() + num_matches,
                     matches_.end(), AutocompleteMatch::MoreRelevant);
   matches_.resize(num_matches);
+}
+
+query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
+    AutocompleteInput input) {
+  if (OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled())
+    return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
+
+  if (OmniboxFieldTrial::
+          IsShortBookmarkSuggestionsByTotalInputLengthEnabled() &&
+      input.text().length() >=
+          OmniboxFieldTrial::
+              ShortBookmarkSuggestionsByTotalInputLengthThreshold()) {
+    client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
+        OmniboxTriggeredFeatureService::Feature::
+            kShortBookmarkSuggestionsByTotalInputLength);
+    return OmniboxFieldTrial::
+                   ShortBookmarkSuggestionsByTotalInputLengthCounterfactual()
+               ? query_parser::MatchingAlgorithm::DEFAULT
+               : query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
+  }
+
+  return query_parser::MatchingAlgorithm::DEFAULT;
 }
 
 int BookmarkProvider::CalculateBookmarkMatchRelevance(

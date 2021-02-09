@@ -378,6 +378,9 @@ EmphasizeTitlesCondition GetEmphasizeTitlesConditionForInput(
 // matches as well when the input is short.
 bool IsShortBookmarkSuggestionsEnabled();
 bool IsShortBookmarkSuggestionsByTotalInputLengthEnabled();
+// If |...Counterfactual()| returns true, when applicable, the feature will be
+// logged as triggered but won't affect omnibox results.
+bool ShortBookmarkSuggestionsByTotalInputLengthCounterfactual();
 // Returns the minimum input length to enable prefix matches.
 size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold();
 
@@ -541,6 +544,8 @@ extern const char kOnDeviceHeadSuggestDemoteMode[];
 extern int kDefaultMinimumTimeBetweenSuggestQueriesMs;
 
 // Parameter names used for short bookmarks variations.
+extern const char
+    kShortBookmarkSuggestionsByTotalInputLengthCounterfactualParam[];
 extern const char kShortBookmarkSuggestionsByTotalInputLengthThresholdParam[];
 
 // Parameter names used for rich autocompletion variations.

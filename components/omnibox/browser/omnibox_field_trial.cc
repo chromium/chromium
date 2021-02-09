@@ -643,6 +643,13 @@ bool OmniboxFieldTrial::IsShortBookmarkSuggestionsByTotalInputLengthEnabled() {
            RichAutocompletionAutocompleteNonPrefixAll()));
 }
 
+bool OmniboxFieldTrial::
+    ShortBookmarkSuggestionsByTotalInputLengthCounterfactual() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+      kShortBookmarkSuggestionsByTotalInputLengthCounterfactualParam, false);
+}
+
 size_t
 OmniboxFieldTrial::ShortBookmarkSuggestionsByTotalInputLengthThreshold() {
   // The rich autocompletion feature requires this feature to be enabled. If
@@ -964,6 +971,9 @@ const char OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode[] =
 
 int OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 100;
 
+const char OmniboxFieldTrial::
+    kShortBookmarkSuggestionsByTotalInputLengthCounterfactualParam[] =
+        "ShortBookmarkSuggestionsByTotalInputLengthCounterfactual";
 const char OmniboxFieldTrial::
     kShortBookmarkSuggestionsByTotalInputLengthThresholdParam[] =
         "ShortBookmarkSuggestionsByTotalInputLengthThreshold";

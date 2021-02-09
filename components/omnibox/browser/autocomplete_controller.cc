@@ -596,10 +596,8 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
   }
 
   // Add any features that have been triggered.
-  // |GetOmniboxTriggeredFeatureService()| can be null in tests.
-  if (provider_client_->GetOmniboxTriggeredFeatureService())
-    provider_client_->GetOmniboxTriggeredFeatureService()->RecordToLogs(
-        &logs->feature_triggered_in_session);
+  provider_client_->GetOmniboxTriggeredFeatureService()->RecordToLogs(
+      &logs->feature_triggered_in_session);
 }
 
 void AutocompleteController::ResetSession() {
@@ -615,9 +613,7 @@ void AutocompleteController::ResetSession() {
     provider_client_->GetPedalProvider()->ResetSession();
   }
 
-  // |GetOmniboxTriggeredFeatureService()| can be null in tests.
-  if (provider_client_->GetOmniboxTriggeredFeatureService())
-    provider_client_->GetOmniboxTriggeredFeatureService()->ResetSession();
+  provider_client_->GetOmniboxTriggeredFeatureService()->ResetSession();
 }
 
 void AutocompleteController::UpdateMatchDestinationURLWithQueryFormulationTime(
