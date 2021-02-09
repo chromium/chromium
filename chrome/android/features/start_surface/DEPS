@@ -4,7 +4,6 @@ include_rules = [
   "+chrome/browser/tabmodel/android/java",
   "+chrome/browser/tabpersistence/android/java",
   "+chrome/browser/profiles/android/java",
-  "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/HomeButton.java",
   "+components/browser_ui/widget/android",
   "+content/public/android/java/src/org/chromium/content_public",
 ]

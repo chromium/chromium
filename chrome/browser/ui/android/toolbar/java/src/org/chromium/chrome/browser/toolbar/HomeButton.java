@@ -74,7 +74,6 @@ public class HomeButton extends ChromeImageButton
     public boolean onMenuItemClick(MenuItem item) {
         assert !mIsManagedByPolicySupplier.get();
         assert item.getItemId() == ID_SETTINGS;
-        assert mOnMenuClickCallback != null;
 
         mOnMenuClickCallback.onResult(getContext());
         return true;
@@ -95,7 +94,7 @@ public class HomeButton extends ChromeImageButton
     }
 
     private void updateContextMenuListener() {
-        if (!mIsManagedByPolicySupplier.get() && mOnMenuClickCallback != null) {
+        if (!mIsManagedByPolicySupplier.get()) {
             setOnCreateContextMenuListener(this);
         } else {
             setOnCreateContextMenuListener(null);

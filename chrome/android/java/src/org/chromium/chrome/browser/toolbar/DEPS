@@ -22,8 +22,5 @@ specific_include_rules = {
   'ToolbarButtonInProductHelpController.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser",
     "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  'StartSurfaceToolbarView.java': [
-    "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/HomeButton.java",
   ]
 }
