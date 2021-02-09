@@ -5,9 +5,12 @@
 #include "chrome/browser/password_entry_edit/android/credential_edit_bridge.h"
 
 #include <jni.h>
+#include <memory>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/password_entry_edit/android/jni_headers/CredentialEditBridge_jni.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
@@ -15,14 +18,34 @@
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 
+std::unique_ptr<CredentialEditBridge> CredentialEditBridge::MaybeCreate(
+    const password_manager::PasswordForm* credential,
+    base::OnceClosure dismissal_callback,
+    const base::android::JavaRef<jobject>& context,
+    const base::android::JavaRef<jobject>& settings_launcher) {
+  base::android::ScopedJavaGlobalRef<jobject> java_bridge;
+  java_bridge.Reset(Java_CredentialEditBridge_maybeCreate(
+      base::android::AttachCurrentThread()));
+  if (!java_bridge) {
+    return nullptr;
+  }
+  return base::WrapUnique(new CredentialEditBridge(
+      credential, std::move(dismissal_callback), context, settings_launcher,
+      std::move(java_bridge)));
+}
+
 CredentialEditBridge::CredentialEditBridge(
     const password_manager::PasswordForm* credential,
+    base::OnceClosure dismissal_callback,
     const base::android::JavaRef<jobject>& context,
-    const base::android::JavaRef<jobject>& settings_launcher)
-    : credential_(credential) {
-  java_bridge_.Reset(Java_CredentialEditBridge_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      context, settings_launcher));
+    const base::android::JavaRef<jobject>& settings_launcher,
+    base::android::ScopedJavaGlobalRef<jobject> java_bridge)
+    : credential_(credential),
+      dismissal_callback_(std::move(dismissal_callback)),
+      java_bridge_(java_bridge) {
+  Java_CredentialEditBridge_initAndLaunchUi(
+      base::android::AttachCurrentThread(), java_bridge_,
+      reinterpret_cast<intptr_t>(this), context, settings_launcher);
 }
 
 CredentialEditBridge::~CredentialEditBridge() {
@@ -38,6 +61,10 @@ void CredentialEditBridge::GetCredential(JNIEnv* env) {
       base::android::ConvertUTF16ToJavaString(env, credential_->password_value),
       base::android::ConvertUTF16ToJavaString(env,
                                               GetDisplayFederationOrigin()));
+}
+
+void CredentialEditBridge::OnUIDismissed(JNIEnv* env) {
+  std::move(dismissal_callback_).Run();
 }
 
 base::string16 CredentialEditBridge::GetDisplayURLOrAppName() {

@@ -92,6 +92,8 @@ class PasswordUIViewAndroid : public PasswordUIView {
   // Destroy the native implementation.
   void Destroy(JNIEnv*, const base::android::JavaRef<jobject>&);
 
+  void OnEditUIDismissed();
+
   void set_export_target_for_testing(
       SerializationResult* export_target_for_testing) {
     export_target_for_testing_ = export_target_for_testing;
