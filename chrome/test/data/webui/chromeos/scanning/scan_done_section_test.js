@@ -114,4 +114,14 @@ export function scanDoneSectionTest() {
       });
     });
   });
+
+  test('doneClick', () => {
+    let doneEventFired = false;
+    scanDoneSection.addEventListener('done-click', function() {
+      doneEventFired = true;
+    });
+
+    scanDoneSection.$$('#doneButton').click();
+    assertTrue(doneEventFired);
+  });
 }
