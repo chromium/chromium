@@ -15,7 +15,10 @@ source_set("system_memory") {
     "system_memory_api.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//extensions/browser/api/system_info",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

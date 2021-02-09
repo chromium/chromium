@@ -18,6 +18,7 @@ source_set("system_cpu") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//extensions/browser/api/system_info",
     "//extensions/common/api",
   ]
 
