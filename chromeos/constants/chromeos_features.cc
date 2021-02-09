@@ -508,6 +508,10 @@ const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kPinSetupForFamilyLink{"PinSetupForFamilyLink",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Hides shelf in immersive mode and allows esc hold to exit.
+const base::Feature kPluginVmFullscreen{"PluginVmFullscreen",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera permissions should be shown in the Plugin
 // VM app settings.
 const base::Feature kPluginVmShowCameraPermissions{

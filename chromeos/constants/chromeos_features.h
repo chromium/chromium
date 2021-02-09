@@ -227,6 +227,8 @@ extern const base::Feature kPhoneHub;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPinSetupForFamilyLink;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kPluginVmFullscreen;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPluginVmShowCameraPermissions;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kPluginVmShowMicrophonePermissions;
