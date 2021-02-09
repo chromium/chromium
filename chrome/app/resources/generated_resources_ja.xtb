@@ -4563,7 +4563,7 @@
 <translation id="6309443618838462258">この入力方法は管理者によって許可されていません</translation>
 <translation id="6309510305002439352">マイクがオフになっています</translation>
 <translation id="6310472381159916879">プロファイルを削除</translation>
-<translation id="6311220991371174222">プロファイルを開こうとして問題が発生したため、Chrome を起動できません。Chrome を再起動してみてください。</translation>
+<translation id="6311220991371174222">プロフィールを開こうとして問題が発生したため、Chrome を起動できません。Chrome を再起動してみてください。</translation>
 <translation id="6312403991423642364">ネットワークが不明なためエラーが発生しました</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{安全確認を 1 日前に実行しました}other{安全確認を {NUM_DAYS} 日前に実行しました}}</translation>
 <translation id="6312638141433622592">記事をリーダーモードで表示するか確認します（可能な場合）</translation>
