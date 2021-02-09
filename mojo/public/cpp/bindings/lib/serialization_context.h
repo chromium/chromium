@@ -20,15 +20,14 @@
 #include "mojo/public/cpp/system/handle.h"
 
 namespace mojo {
-
-class Message;
-
 namespace internal {
 
 // Context information for serialization/deserialization routines.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SerializationContext {
  public:
   SerializationContext();
+  SerializationContext(SerializationContext&&);
+  SerializationContext& operator=(SerializationContext&&);
   ~SerializationContext();
 
   // Adds a handle to the handle list and outputs its serialized form in
@@ -53,11 +52,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SerializationContext {
                                   uint32_t version,
                                   AssociatedInterface_Data* out_data);
 
+  void set_receiver_connection_group(const ConnectionGroup::Ref* group) {
+    receiver_connection_group_ = group;
+  }
   const ConnectionGroup::Ref* receiver_connection_group() const {
     return receiver_connection_group_;
   }
 
-  const std::vector<mojo::ScopedHandle>* handles() { return &handles_; }
+  const std::vector<mojo::ScopedHandle>* handles() const { return &handles_; }
   std::vector<mojo::ScopedHandle>* mutable_handles() { return &handles_; }
 
   const std::vector<ScopedInterfaceEndpointHandle>*
@@ -68,10 +70,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SerializationContext {
   mutable_associated_endpoint_handles() {
     return &associated_endpoint_handles_;
   }
-
-  // Takes handles from a received Message object and assumes ownership of them.
-  // Individual handles can be extracted using Take* methods below.
-  void TakeHandlesFromMessage(Message* message);
 
   // Takes a handle from the list of serialized handle data.
   mojo::ScopedHandle TakeHandle(const Handle_Data& encoded_handle);

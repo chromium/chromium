@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
+#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message.h"
@@ -182,18 +183,26 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
 
   internal::Buffer* payload_buffer() { return &payload_buffer_; }
 
+  internal::SerializationContext& serialization_context() {
+    return serialization_context_;
+  }
+
   // Access the handles of a received message. Note that these are unused on
   // outgoing messages.
-  const std::vector<ScopedHandle>* handles() const { return &handles_; }
-  std::vector<ScopedHandle>* mutable_handles() { return &handles_; }
+  const std::vector<ScopedHandle>* handles() const {
+    return serialization_context_.handles();
+  }
+  std::vector<ScopedHandle>* mutable_handles() {
+    return serialization_context_.mutable_handles();
+  }
 
   const std::vector<ScopedInterfaceEndpointHandle>*
   associated_endpoint_handles() const {
-    return &associated_endpoint_handles_;
+    return serialization_context_.associated_endpoint_handles();
   }
   std::vector<ScopedInterfaceEndpointHandle>*
   mutable_associated_endpoint_handles() {
-    return &associated_endpoint_handles_;
+    return serialization_context_.mutable_associated_endpoint_handles();
   }
 
   // Sets the ConnectionGroup to which this Message's local receiver belongs, if
@@ -201,16 +210,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // but before it's deserialized. If non-null, |ref| must point to a Ref that
   // outlives this Message object.
   void set_receiver_connection_group(const ConnectionGroup::Ref* ref) {
-    receiver_connection_group_ = ref;
+    serialization_context_.set_receiver_connection_group(ref);
   }
   const ConnectionGroup::Ref* receiver_connection_group() const {
-    return receiver_connection_group_;
+    return serialization_context_.receiver_connection_group();
   }
-
-  // Takes ownership of any handles within |*context| and attaches them to this
-  // Message.
-  void AttachHandlesFromSerializationContext(
-      internal::SerializationContext* context);
 
   // Takes a scoped MessageHandle which may be passed to |WriteMessageNew()| for
   // transmission. Note that this invalidates this Message object, taking
@@ -221,13 +225,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // rejected by bindings validation code.
   void NotifyBadMessage(const std::string& error);
 
-  // Serializes |associated_endpoint_handles_| into the payload_interface_ids
-  // field.
-  void SerializeAssociatedEndpointHandles(
-      AssociatedGroupController* group_controller);
+  // Serializes and attaches Mojo handles and associated endpoint handles from
+  // the |serialization_context_|.
+  void SerializeHandles(AssociatedGroupController* group_controller);
 
-  // Deserializes |associated_endpoint_handles_| from the payload_interface_ids
-  // field.
+  // Deserializes associated endpoint handles from the payload_interface_ids
+  // field, into |serialization_context_|.
   bool DeserializeAssociatedEndpointHandles(
       AssociatedGroupController* group_controller);
 
@@ -279,8 +282,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // payload for reading or writing.
   internal::Buffer payload_buffer_;
 
-  std::vector<ScopedHandle> handles_;
-  std::vector<ScopedInterfaceEndpointHandle> associated_endpoint_handles_;
+  // The SerializationContext is used to accumulate metadata and handles
+  // regarding a Message that is either being serialized for transmission or
+  // deserialized upon receipt.
+  internal::SerializationContext serialization_context_;
 
   // Indicates whether this Message object is transferable, i.e. can be sent
   // elsewhere. In general this is true unless |handle_| is invalid or
@@ -296,11 +301,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   const char* interface_name_ = nullptr;
   const char* method_name_ = nullptr;
 #endif
-
-  // A reference to the ConnectionGroup to which the receiver of this Message
-  // belongs, if any. Only set if this Message was just read off of a message
-  // pipe and is about to be deserialized.
-  const ConnectionGroup::Ref* receiver_connection_group_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(Message);
 };

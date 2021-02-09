@@ -42,19 +42,7 @@ bool ThreadSafeForwarderBase::PrefersSerializedMessages() {
 }
 
 bool ThreadSafeForwarderBase::Accept(Message* message) {
-  if (!message->associated_endpoint_handles()->empty()) {
-    // If this DCHECK fails, it is likely because:
-    // - This is a non-associated interface pointer setup using
-    //     PtrWrapper::BindOnTaskRunner(
-    //         InterfacePtrInfo<InterfaceType> ptr_info);
-    //   Please see the TODO in that method.
-    // - This is an associated interface which hasn't been associated with a
-    //   message pipe. In other words, the corresponding
-    //   AssociatedInterfaceRequest hasn't been sent.
-    DCHECK(associated_group_.GetController());
-    message->SerializeAssociatedEndpointHandles(
-        associated_group_.GetController());
-  }
+  message->SerializeHandles(associated_group_.GetController());
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(forward_, std::move(*message)));
   return true;
@@ -63,12 +51,7 @@ bool ThreadSafeForwarderBase::Accept(Message* message) {
 bool ThreadSafeForwarderBase::AcceptWithResponder(
     Message* message,
     std::unique_ptr<MessageReceiver> responder) {
-  if (!message->associated_endpoint_handles()->empty()) {
-    // Please see comment for the DCHECK in the previous method.
-    DCHECK(associated_group_.GetController());
-    message->SerializeAssociatedEndpointHandles(
-        associated_group_.GetController());
-  }
+  message->SerializeHandles(associated_group_.GetController());
 
   // Async messages are always posted (even if |task_runner_| runs tasks on
   // this sequence) to guarantee that two async calls can't be reordered.

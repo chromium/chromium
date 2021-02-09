@@ -204,13 +204,10 @@ Message::Message() = default;
 Message::Message(Message&& other)
     : handle_(std::move(other.handle_)),
       payload_buffer_(std::move(other.payload_buffer_)),
-      handles_(std::move(other.handles_)),
-      associated_endpoint_handles_(
-          std::move(other.associated_endpoint_handles_)),
+      serialization_context_(std::move(other.serialization_context_)),
       transferable_(other.transferable_),
       serialized_(other.serialized_),
-      heap_profiler_tag_(other.heap_profiler_tag_),
-      receiver_connection_group_(other.receiver_connection_group_) {
+      heap_profiler_tag_(other.heap_profiler_tag_) {
   other.transferable_ = false;
   other.serialized_ = false;
 #if defined(ENABLE_IPC_FUZZER)
@@ -332,14 +329,12 @@ Message::~Message() = default;
 Message& Message::operator=(Message&& other) {
   handle_ = std::move(other.handle_);
   payload_buffer_ = std::move(other.payload_buffer_);
-  handles_ = std::move(other.handles_);
-  associated_endpoint_handles_ = std::move(other.associated_endpoint_handles_);
+  serialization_context_ = std::move(other.serialization_context_);
   transferable_ = other.transferable_;
   other.transferable_ = false;
   serialized_ = other.serialized_;
   other.serialized_ = false;
   heap_profiler_tag_ = other.heap_profiler_tag_;
-  receiver_connection_group_ = other.receiver_connection_group_;
 #if defined(ENABLE_IPC_FUZZER)
   interface_name_ = other.interface_name_;
   method_name_ = other.method_name_;
@@ -350,12 +345,10 @@ Message& Message::operator=(Message&& other) {
 void Message::Reset() {
   handle_.reset();
   payload_buffer_.Reset();
-  handles_.clear();
-  associated_endpoint_handles_.clear();
+  serialization_context_ = {};
   transferable_ = false;
   serialized_ = false;
   heap_profiler_tag_ = nullptr;
-  receiver_connection_group_ = nullptr;
 }
 
 const uint8_t* Message::payload() const {
@@ -397,42 +390,10 @@ const uint32_t* Message::payload_interface_ids() const {
   return array_pointer ? array_pointer->storage() : nullptr;
 }
 
-void Message::AttachHandlesFromSerializationContext(
-    internal::SerializationContext* context) {
-  if (context->handles()->empty() &&
-      context->associated_endpoint_handles()->empty()) {
-    // No handles attached, so no extra serialization work.
-    return;
-  }
-
-  if (context->associated_endpoint_handles()->empty()) {
-    // Attaching only non-associated handles is easier since we don't have to
-    // modify the message header. Faster path for that.
-    payload_buffer_.AttachHandles(context->mutable_handles());
-    return;
-  }
-
-  // Allocate a new message with enough space to hold all attached handles. Copy
-  // this message's contents into the new one and use it to replace ourself.
-  //
-  // TODO(rockot): We could avoid the extra full message allocation by instead
-  // growing the buffer and carefully moving its contents around. This errs on
-  // the side of less complexity with probably only marginal performance cost.
-  uint32_t payload_size = payload_num_bytes();
-  mojo::Message new_message(name(), header()->flags, payload_size,
-                            context->associated_endpoint_handles()->size(),
-                            context->mutable_handles());
-  std::swap(*context->mutable_associated_endpoint_handles(),
-            new_message.associated_endpoint_handles_);
-  memcpy(new_message.payload_buffer()->AllocateAndGet(payload_size), payload(),
-         payload_size);
-  *this = std::move(new_message);
-}
-
 ScopedMessageHandle Message::TakeMojoMessage() {
-  // If there are associated endpoints transferred,
-  // SerializeAssociatedEndpointHandles() must be called before this method.
-  DCHECK(associated_endpoint_handles_.empty());
+  // If there are associated endpoints transferred, SerializeHandles() must be
+  // called before this method.
+  DCHECK(associated_endpoint_handles()->empty());
   DCHECK(transferable_);
   payload_buffer_.Seal();
   auto handle = std::move(handle_);
@@ -445,30 +406,60 @@ void Message::NotifyBadMessage(const std::string& error) {
   mojo::NotifyBadMessage(handle_.get(), error);
 }
 
-void Message::SerializeAssociatedEndpointHandles(
-    AssociatedGroupController* group_controller) {
-  if (associated_endpoint_handles_.empty())
+void Message::SerializeHandles(AssociatedGroupController* group_controller) {
+  if (mutable_handles()->empty() &&
+      mutable_associated_endpoint_handles()->empty()) {
+    // No handles attached, so no extra serialization work.
     return;
+  }
 
+  if (mutable_associated_endpoint_handles()->empty()) {
+    // Attaching only non-associated handles is easier since we don't have to
+    // modify the message header. Faster path for that.
+    payload_buffer_.AttachHandles(mutable_handles());
+    return;
+  }
+
+  // Allocate a new message with enough space to hold all attached handles. Copy
+  // this message's contents into the new one and use it to replace ourself.
+  //
+  // TODO(rockot): We could avoid the extra full message allocation by instead
+  // growing the buffer and carefully moving its contents around. This errs on
+  // the side of less complexity with probably only marginal performance cost.
+  uint32_t payload_size = payload_num_bytes();
+  const size_t num_endpoint_handles = associated_endpoint_handles()->size();
+  mojo::Message new_message(name(), header()->flags, payload_size,
+                            num_endpoint_handles, mutable_handles());
+  new_message.header()->interface_id = header()->interface_id;
+  new_message.header()->trace_id = header()->trace_id;
+  if (header()->version >= 1) {
+    new_message.header_v1()->request_id = header_v1()->request_id;
+  }
+  new_message.set_receiver_connection_group(receiver_connection_group());
+  *new_message.mutable_associated_endpoint_handles() =
+      std::move(*mutable_associated_endpoint_handles());
+  memcpy(new_message.payload_buffer()->AllocateAndGet(payload_size), payload(),
+         payload_size);
+  *this = std::move(new_message);
+
+  DCHECK(group_controller);
   DCHECK_GE(version(), 2u);
   DCHECK(header_v2()->payload_interface_ids.is_null());
   DCHECK(payload_buffer_.is_valid());
   DCHECK(handle_.is_valid());
 
-  size_t size = associated_endpoint_handles_.size();
-
   internal::Array_Data<uint32_t>::BufferWriter handle_writer;
-  handle_writer.Allocate(size, &payload_buffer_);
+  handle_writer.Allocate(num_endpoint_handles, &payload_buffer_);
   header_v2()->payload_interface_ids.Set(handle_writer.data());
 
-  for (size_t i = 0; i < size; ++i) {
-    ScopedInterfaceEndpointHandle& handle = associated_endpoint_handles_[i];
-
+  for (size_t i = 0; i < num_endpoint_handles; ++i) {
+    ScopedInterfaceEndpointHandle& handle =
+        (*mutable_associated_endpoint_handles())[i];
     DCHECK(handle.pending_association());
     handle_writer->storage()[i] =
         group_controller->AssociateInterface(std::move(handle));
   }
-  associated_endpoint_handles_.clear();
+  mutable_associated_endpoint_handles()->clear();
 }
 
 bool Message::DeserializeAssociatedEndpointHandles(
@@ -476,13 +467,14 @@ bool Message::DeserializeAssociatedEndpointHandles(
   if (!serialized_)
     return true;
 
-  associated_endpoint_handles_.clear();
+  auto& endpoint_handles = *mutable_associated_endpoint_handles();
+  endpoint_handles.clear();
 
   uint32_t num_ids = payload_num_interface_ids();
   if (num_ids == 0)
     return true;
 
-  associated_endpoint_handles_.reserve(num_ids);
+  endpoint_handles.reserve(num_ids);
   uint32_t* ids = header_v2()->payload_interface_ids.Get()->storage();
   bool result = true;
   for (uint32_t i = 0; i < num_ids; ++i) {
@@ -494,7 +486,7 @@ bool Message::DeserializeAssociatedEndpointHandles(
       result = false;
     }
 
-    associated_endpoint_handles_.push_back(std::move(handle));
+    endpoint_handles.push_back(std::move(handle));
     ids[i] = kInvalidInterfaceId;
   }
   return result;
@@ -538,9 +530,10 @@ Message::Message(ScopedMessageHandle message_handle,
                  bool serialized)
     : handle_(std::move(message_handle)),
       payload_buffer_(std::move(payload_buffer)),
-      handles_(std::move(attached_handles)),
-      transferable_(!serialized || handles_.empty()),
-      serialized_(serialized) {}
+      transferable_(!serialized || attached_handles.empty()),
+      serialized_(serialized) {
+  *mutable_handles() = std::move(attached_handles);
+}
 
 bool MessageReceiver::PrefersSerializedMessages() {
   return false;

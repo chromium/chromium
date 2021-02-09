@@ -15,6 +15,11 @@ namespace internal {
 
 SerializationContext::SerializationContext() = default;
 
+SerializationContext::SerializationContext(SerializationContext&&) = default;
+
+SerializationContext& SerializationContext::operator=(SerializationContext&&) =
+    default;
+
 SerializationContext::~SerializationContext() = default;
 
 void SerializationContext::AddHandle(mojo::ScopedHandle handle,
@@ -56,15 +61,6 @@ void SerializationContext::AddAssociatedInterfaceInfo(
     AssociatedInterface_Data* out_data) {
   AddAssociatedEndpoint(std::move(handle), &out_data->handle);
   out_data->version = version;
-}
-
-void SerializationContext::TakeHandlesFromMessage(Message* message) {
-  if (!message->is_serialized())
-    return;
-  receiver_connection_group_ = message->receiver_connection_group();
-  handles_.swap(*message->mutable_handles());
-  associated_endpoint_handles_.swap(
-      *message->mutable_associated_endpoint_handles());
 }
 
 mojo::ScopedHandle SerializationContext::TakeHandle(

@@ -62,7 +62,6 @@ struct MojomSerializationImplTraits<
 
 template <typename MojomType, typename UserType>
 mojo::Message SerializeAsMessageImpl(UserType* input) {
-  SerializationContext context;
   // Note that this is only called by application code serializing a structure
   // manually (e.g. for storage). As such we don't want Mojo's soft message size
   // limits to be applied.
@@ -70,8 +69,9 @@ mojo::Message SerializeAsMessageImpl(UserType* input) {
                         nullptr);
   typename MojomTypeTraits<MojomType>::Data::BufferWriter writer;
   MojomSerializationImplTraits<MojomType>::Serialize(
-      *input, message.payload_buffer(), &writer, &context);
-  message.AttachHandlesFromSerializationContext(&context);
+      *input, message.payload_buffer(), &writer,
+      &message.serialization_context());
+  message.SerializeHandles(/*group_controller=*/nullptr);
   return message;
 }
 
@@ -89,9 +89,9 @@ DataArrayType SerializeImpl(UserType* input) {
 }
 
 template <typename MojomType, typename UserType>
-bool DeserializeImpl(const void* data,
+bool DeserializeImpl(internal::SerializationContext& context,
+                     const void* data,
                      size_t data_num_bytes,
-                     std::vector<mojo::ScopedHandle> handles,
                      UserType* output,
                      bool (*validate_func)(const void*, ValidationContext*)) {
   static_assert(BelongsTo<MojomType, MojomTypeCategory::kStruct>::value ||
@@ -114,12 +114,11 @@ bool DeserializeImpl(const void* data,
   }
 
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(data_num_bytes));
-  ValidationContext validation_context(
-      input_buffer, static_cast<uint32_t>(data_num_bytes), handles.size(), 0);
+  ValidationContext validation_context(input_buffer,
+                                       static_cast<uint32_t>(data_num_bytes),
+                                       context.handles()->size(), 0);
   bool result = false;
   if (validate_func(input_buffer, &validation_context)) {
-    SerializationContext context;
-    *context.mutable_handles() = std::move(handles);
     result = Deserialize<MojomType>(
         reinterpret_cast<DataType*>(const_cast<void*>(input_buffer)), output,
         &context);
