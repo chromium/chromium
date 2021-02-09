@@ -105,7 +105,14 @@ def json5_config_checks_factory(mojom_source_path, json5_config_path,
     """
 
     def run_json5_config_checks(input_api, output_api):
-        affected_paths = {f.LocalPath() for f in input_api.AffectedFiles()}
+        # Note:
+        # |input_api.change.AffectedFiles()| returns all affected files in a CL.
+        # |input_api.AffectedFiles()| only returns affected files under current
+        # PRESUBMIT directory.
+        affected_paths = {
+            f.LocalPath()
+            for f in input_api.change.AffectedFiles()
+        }
         if mojom_source_path not in affected_paths and json5_config_path not in affected_paths:
             return []
 
