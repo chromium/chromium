@@ -45,20 +45,19 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   }
 
   void LoadIFrame(const GURL& url) {
-    EXPECT_TRUE(content::ExecJs(web_contents(), content::JsReplace(R"(
+    EXPECT_EQ(true, content::EvalJs(web_contents(), content::JsReplace(R"(
       new Promise(resolve => {
         let iframe = document.createElement("iframe");
         iframe.src = $1;
-        iframe.onload = resolve;
+        iframe.onload = () => resolve(true);
         document.body.appendChild(iframe);
       });
     )",
-                                                                   url)));
+                                                                       url)));
   }
 
   void ExpectHistogramIncreasedBy(int count) {
     expected_count_ += count;
-    EXPECT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
     histogram_.ExpectBucketCount("Blink.UseCounter.Features",
                                  monitored_feature_, expected_count_);
   }
