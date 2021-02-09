@@ -39,7 +39,7 @@ void ExtractBaseAddressAndLength(char** base_address,
 // on if |kMacNextGenerationCapturer| is enabled or disabled.
 Class GetVideoCaptureDeviceAVFoundationImplementationClass();
 
-gfx::Size GetPixelBufferSize(CVPixelBufferRef pixel_buffer);
+gfx::Size CAPTURE_EXPORT GetPixelBufferSize(CVPixelBufferRef pixel_buffer);
 gfx::Size CAPTURE_EXPORT GetSampleBufferSize(CMSampleBufferRef sample_buffer);
 
 }  // namespace media

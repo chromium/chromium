@@ -38,6 +38,12 @@ class CAPTURE_EXPORT SampleBufferTransformer {
     kLibyuv,
   };
 
+  // TODO(https://crbug.com/1175763): Make determining the optimal Transformer
+  // an implementation detail determined at Transform()-time, making
+  // Reconfigure() only care about destination resolution and pixel format. Then
+  // make it possible to override this decision explicitly but only do that for
+  // testing and measurements purposes, not in default capturer integration.
+  static const Transformer kBestTransformerForPixelBufferToNv12Output;
   static Transformer GetBestTransformerForNv12Output(
       CMSampleBufferRef sample_buffer);
 
@@ -56,10 +62,11 @@ class CAPTURE_EXPORT SampleBufferTransformer {
                    const gfx::Size& destination_size,
                    base::Optional<size_t> buffer_pool_size = base::nullopt);
 
-  // Converts the sample buffer to an IOSurface-backed pixel buffer according to
+  // Converts the input buffer to an IOSurface-backed pixel buffer according to
   // current configurations. If no transformation is needed (input format is the
-  // same as the configured output format), the sample buffer's pixel buffer is
-  // returned.
+  // same as the configured output format), the input pixel buffer is returned.
+  base::ScopedCFTypeRef<CVPixelBufferRef> Transform(
+      CVPixelBufferRef pixel_buffer);
   base::ScopedCFTypeRef<CVPixelBufferRef> Transform(
       CMSampleBufferRef sample_buffer);
 

@@ -434,13 +434,17 @@ void CopyNV12(const NV12Planes& source, const NV12Planes& destination) {
 }  // namespace
 
 // static
+const SampleBufferTransformer::Transformer
+    SampleBufferTransformer::kBestTransformerForPixelBufferToNv12Output =
+        SampleBufferTransformer::Transformer::kPixelBufferTransfer;
+
+// static
 SampleBufferTransformer::Transformer
 SampleBufferTransformer::GetBestTransformerForNv12Output(
     CMSampleBufferRef sample_buffer) {
-  if (CMSampleBufferGetImageBuffer(sample_buffer)) {
-    // Pixel transfers are more efficient for converting to NV12 and is
-    // supported for any pixel buffer.
-    return Transformer::kPixelBufferTransfer;
+  if (CVPixelBufferRef pixel_buffer =
+          CMSampleBufferGetImageBuffer(sample_buffer)) {
+    return kBestTransformerForPixelBufferToNv12Output;
   }
   // When we don't have a pixel buffer (e.g. it's MJPEG or we get a SW-backed
   // byte buffer) only libyuv is able to perform the transform.
@@ -502,21 +506,20 @@ void SampleBufferTransformer::Reconfigure(
 }
 
 base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
-    CMSampleBufferRef sample_buffer) {
+    CVPixelBufferRef pixel_buffer) {
   DCHECK(transformer_ != Transformer::kNotConfigured);
-  CVPixelBufferRef source_pixel_buffer =
-      CMSampleBufferGetImageBuffer(sample_buffer);
+  DCHECK(pixel_buffer);
   // Fast path: If source and destination formats are identical, return the
   // source pixel buffer.
-  if (source_pixel_buffer &&
+  if (pixel_buffer &&
       static_cast<size_t>(destination_size_.width()) ==
-          CVPixelBufferGetWidth(source_pixel_buffer) &&
+          CVPixelBufferGetWidth(pixel_buffer) &&
       static_cast<size_t>(destination_size_.height()) ==
-          CVPixelBufferGetHeight(source_pixel_buffer) &&
+          CVPixelBufferGetHeight(pixel_buffer) &&
       destination_pixel_format_ ==
-          CVPixelBufferGetPixelFormatType(source_pixel_buffer) &&
-      CVPixelBufferGetIOSurface(source_pixel_buffer)) {
-    return base::ScopedCFTypeRef<CVPixelBufferRef>(source_pixel_buffer,
+          CVPixelBufferGetPixelFormatType(pixel_buffer) &&
+      CVPixelBufferGetIOSurface(pixel_buffer)) {
+    return base::ScopedCFTypeRef<CVPixelBufferRef>(pixel_buffer,
                                                    base::scoped_policy::RETAIN);
   }
   // Create destination buffer from pool.
@@ -528,10 +531,28 @@ base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
     LOG(ERROR) << "Maximum destination buffers exceeded";
     return base::ScopedCFTypeRef<CVPixelBufferRef>();
   }
-  if (source_pixel_buffer) {
-    // Pixel buffer path. Do pixel transfer or libyuv conversion + rescale.
-    TransformPixelBuffer(source_pixel_buffer, destination_pixel_buffer);
-    return destination_pixel_buffer;
+  // Do pixel transfer or libyuv conversion + rescale.
+  TransformPixelBuffer(pixel_buffer, destination_pixel_buffer);
+  return destination_pixel_buffer;
+}
+
+base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
+    CMSampleBufferRef sample_buffer) {
+  DCHECK(transformer_ != Transformer::kNotConfigured);
+  DCHECK(sample_buffer);
+  // If the sample buffer has a pixel buffer, run the pixel buffer path instead.
+  if (CVPixelBufferRef pixel_buffer =
+          CMSampleBufferGetImageBuffer(sample_buffer)) {
+    return Transform(pixel_buffer);
+  }
+  // Create destination buffer from pool.
+  base::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
+      destination_pixel_buffer_pool_->CreateBuffer();
+  if (!destination_pixel_buffer) {
+    // Maximum destination buffers exceeded. Old buffers are not being released
+    // (and thus not returned to the pool) in time.
+    LOG(ERROR) << "Maximum destination buffers exceeded";
+    return base::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Sample buffer path - it's MJPEG. Do libyuv conversion + rescale.
   if (!TransformSampleBuffer(sample_buffer, destination_pixel_buffer)) {
