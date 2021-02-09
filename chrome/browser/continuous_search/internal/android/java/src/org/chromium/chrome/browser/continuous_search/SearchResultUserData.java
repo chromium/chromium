@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
@@ -24,12 +26,16 @@ public class SearchResultUserData implements UserData {
     private GURL mCurrentUrl;
     private int mCurrentPosition = INVALID_POSITION;
 
+    private static SearchResultUserData sInstanceForTesting;
+
     static void createForTab(Tab tab) {
         assert tab.getUserDataHost().getUserData(USER_DATA_KEY) == null;
         tab.getUserDataHost().setUserData(USER_DATA_KEY, new SearchResultUserData());
     }
 
     static SearchResultUserData getForTab(Tab tab) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
+
         assert tab.getUserDataHost().getUserData(USER_DATA_KEY) != null;
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
@@ -105,5 +111,10 @@ public class SearchResultUserData implements UserData {
         for (SearchResultUserDataObserver observer : mObservers) {
             observer.onUrlChanged(url);
         }
+    }
+
+    @VisibleForTesting
+    static void setInstanceForTesting(SearchResultUserData instance) {
+        sInstanceForTesting = instance;
     }
 }
