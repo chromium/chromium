@@ -23,6 +23,7 @@ import android.util.SparseArray;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
@@ -245,6 +246,7 @@ public class ChildProcessService {
                         android.os.Debug.waitForDebugger();
                     }
 
+                    EarlyTraceEvent.onCommandLineAvailableInChildProcess();
                     mDelegate.loadNativeLibrary(getApplicationContext());
 
                     synchronized (mLibraryInitializedLock) {

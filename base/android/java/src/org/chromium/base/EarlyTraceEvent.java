@@ -40,9 +40,6 @@ import javax.annotation.concurrent.GuardedBy;
 @JNINamespace("base::android")
 @MainDex
 public class EarlyTraceEvent {
-    // Must be kept in sync with the native kAndroidTraceConfigFile.
-    private static final String TRACE_CONFIG_FILENAME = "/data/local/chrome-trace-config.json";
-
     /** Single trace event. */
     @VisibleForTesting
     static final class Event {
@@ -85,15 +82,37 @@ public class EarlyTraceEvent {
     @VisibleForTesting static final int STATE_ENABLED = 1;
     @VisibleForTesting
     static final int STATE_FINISHED = 2;
+    @VisibleForTesting
+    static volatile int sState = STATE_DISABLED;
+
+    // In child processes the CommandLine is not available immediately, so early tracing is enabled
+    // unconditionally in Chrome. This flag allows not to enable early tracing twice in this case.
+    private static volatile boolean sEnabledInChildProcessBeforeCommandLine;
 
     private static final String BACKGROUND_STARTUP_TRACING_ENABLED_KEY = "bg_startup_tracing";
     private static boolean sCachedBackgroundStartupTracingFlag;
 
-    // Locks the fields below.
+    // Early tracing can be enabled on browser start if the browser finds this file present. Must be
+    // kept in sync with the native kAndroidTraceConfigFile.
+    private static final String TRACE_CONFIG_FILENAME = "/data/local/chrome-trace-config.json";
+
+    // Early tracing can be enabled on browser start if the browser finds this command line switch.
+    // Must be kept in sync with switches::kTraceStartup.
+    private static final String TRACE_STARTUP_SWITCH = "trace-startup";
+
+    // Added to child process switches if tracing is enabled when the process is getting created.
+    // The flag is checked early in child process lifetime to have a solid guarantee that the early
+    // java tracing is not enabled forever. Native flags cannot be used for this purpose because the
+    // native library is not loaded at the moment. Cannot set --trace-startup for the child to avoid
+    // overriding the list of categories it may load from the config later. Also --trace-startup
+    // depends on other flags that early tracing should not know about. Public for use in
+    // ChildProcessLauncherHelperImpl.
+    public static final String TRACE_EARLY_JAVA_IN_CHILD_SWITCH = "trace-early-java-in-child";
+
+    // Protects the fields below.
     private static final Object sLock = new Object();
 
-    @VisibleForTesting static volatile int sState = STATE_DISABLED;
-    // Not final as these object are not likely to be used at all.
+    // Not final because in many configurations these objects are not used.
     @GuardedBy("sLock")
     @VisibleForTesting
     static List<Event> sEvents;
@@ -101,15 +120,17 @@ public class EarlyTraceEvent {
     @VisibleForTesting
     static List<AsyncEvent> sAsyncEvents;
 
-    /** @see TraceEvent#maybeEnableEarlyTracing() */
-    static void maybeEnable() {
+    /** @see TraceEvent#maybeEnableEarlyTracing(long, boolean) */
+    static void maybeEnableInBrowserProcess() {
         ThreadUtils.assertOnUiThread();
+        assert !sEnabledInChildProcessBeforeCommandLine
+            : "Should not have been initialized in a child process";
         if (sState != STATE_DISABLED) return;
         boolean shouldEnable = false;
         // Checking for the trace config filename touches the disk.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         try {
-            if (CommandLine.getInstance().hasSwitch("trace-startup")) {
+            if (CommandLine.getInstance().hasSwitch(TRACE_STARTUP_SWITCH)) {
                 shouldEnable = true;
             } else {
                 try {
@@ -134,6 +155,36 @@ public class EarlyTraceEvent {
             StrictMode.setThreadPolicy(oldPolicy);
         }
         if (shouldEnable) enable();
+    }
+
+    /**
+     * Enables early tracing in child processes before CommandLine arrives there.
+     */
+    public static void earlyEnableInChildWithoutCommandLine() {
+        sEnabledInChildProcessBeforeCommandLine = true;
+        assert sState == STATE_DISABLED;
+        enable();
+    }
+
+    /**
+     * Based on a command line switch from the process launcher, enables or resets early tracing.
+     * Should be called only in child processes and as soon as possible after the CommandLine is
+     * initialized.
+     */
+    public static void onCommandLineAvailableInChildProcess() {
+        // Ignore early Java tracing in WebView and other startup configurations that did not start
+        // collecting events before the command line was available.
+        if (!sEnabledInChildProcessBeforeCommandLine) return;
+        synchronized (sLock) {
+            // Remove early trace events if the child process launcher did not ask for early
+            // tracing.
+            if (!CommandLine.getInstance().hasSwitch(TRACE_EARLY_JAVA_IN_CHILD_SWITCH)) {
+                reset();
+                return;
+            }
+            // Otherwise continue with tracing enabled.
+            if (sState == STATE_DISABLED) enable();
+        }
     }
 
     static void enable() {
@@ -164,6 +215,18 @@ public class EarlyTraceEvent {
             }
 
             sState = STATE_FINISHED;
+            sEvents = null;
+            sAsyncEvents = null;
+        }
+    }
+
+    /**
+     * Stops early tracing without flushing the buffered events.
+     */
+    @VisibleForTesting
+    static void reset() {
+        synchronized (sLock) {
+            sState = STATE_DISABLED;
             sEvents = null;
             sAsyncEvents = null;
         }
@@ -234,15 +297,6 @@ public class EarlyTraceEvent {
         synchronized (sLock) {
             if (!enabled()) return;
             sAsyncEvents.add(event);
-        }
-    }
-
-    @VisibleForTesting
-    static void resetForTesting() {
-        synchronized (sLock) {
-            sState = EarlyTraceEvent.STATE_DISABLED;
-            sEvents = null;
-            sAsyncEvents = null;
         }
     }
 

@@ -21,9 +21,11 @@ import org.chromium.base.ChildBindingState;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.CpuFeatures;
+import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -118,6 +120,10 @@ public final class ChildProcessLauncherHelperImpl {
 
     // Tracks reporting exception from child process to avoid reporting it more than once.
     private boolean mReportedException;
+
+    // Enables early Java tracing in child process before native is initialized.
+    private static final String TRACE_EARLY_JAVA_IN_CHILD_SWITCH =
+            "--" + EarlyTraceEvent.TRACE_EARLY_JAVA_IN_CHILD_SWITCH;
 
     private final ChildProcessLauncher.Delegate mLauncherDelegate =
             new ChildProcessLauncher.Delegate() {
@@ -233,6 +239,10 @@ public final class ChildProcessLauncherHelperImpl {
         String processType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
 
+        if (TraceEvent.enabled()) {
+            commandLine = Arrays.copyOf(commandLine, commandLine.length + 1);
+            commandLine[commandLine.length - 1] = TRACE_EARLY_JAVA_IN_CHILD_SWITCH;
+        }
         boolean sandboxed = true;
         if (!ContentSwitches.SWITCH_RENDERER_PROCESS.equals(processType)) {
             if (ContentSwitches.SWITCH_GPU_PROCESS.equals(processType)) {

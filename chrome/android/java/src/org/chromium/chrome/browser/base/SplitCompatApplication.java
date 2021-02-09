@@ -20,6 +20,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.PathUtils;
@@ -51,6 +52,7 @@ import org.chromium.ui.base.ResourceBundle;
  */
 public class SplitCompatApplication extends Application {
     private static final String COMMAND_LINE_FILE = "chrome-command-line";
+    private static final String ATTACH_BASE_CONTEXT_EVENT = "ChromeApplication.attachBaseContext";
     // Public to allow use in ChromeBackupAgent
     public static final String PRIVATE_DATA_DIRECTORY_SUFFIX = "chrome";
 
@@ -144,7 +146,10 @@ public class SplitCompatApplication extends Application {
                 ProductConfig.USE_CHROMIUM_LINKER, ProductConfig.USE_MODERN_LINKER);
         LibraryLoader.getInstance().enableJniChecks();
 
-        if (isBrowserProcess) {
+        if (!isBrowserProcess) {
+            EarlyTraceEvent.earlyEnableInChildWithoutCommandLine();
+            TraceEvent.begin(ATTACH_BASE_CONTEXT_EVENT);
+        } else {
             checkAppBeingReplaced();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Fixes are never required before O (where "cmd package compile" does not exist).
@@ -165,7 +170,7 @@ public class SplitCompatApplication extends Application {
             TraceEvent.maybeEnableEarlyTracing(
                     (isAppDebuggable || isOsDebuggable) ? TraceEvent.ATRACE_TAG_APP : 0,
                     /*readCommandLine=*/true);
-            TraceEvent.begin("ChromeApplication.attachBaseContext");
+            TraceEvent.begin(ATTACH_BASE_CONTEXT_EVENT);
 
             // Register for activity lifecycle callbacks. Must be done before any activities are
             // created and is needed only by processes that use the ApplicationStatus api (which
@@ -192,9 +197,7 @@ public class SplitCompatApplication extends Application {
             PureJavaExceptionHandler.installHandler();
         }
 
-        if (isBrowserProcess) {
-            TraceEvent.end("ChromeApplication.attachBaseContext");
-        }
+        TraceEvent.end(ATTACH_BASE_CONTEXT_EVENT);
     }
 
     @Override

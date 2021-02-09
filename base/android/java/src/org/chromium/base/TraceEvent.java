@@ -635,7 +635,7 @@ public class TraceEvent implements AutoCloseable {
         // done for Chrome since WebView tracing isn't controlled with command
         // line flags.
         if (readCommandLine) {
-            EarlyTraceEvent.maybeEnable();
+            EarlyTraceEvent.maybeEnableInBrowserProcess();
         }
         if (traceTag != 0) {
             sATrace = new ATrace(traceTag);
