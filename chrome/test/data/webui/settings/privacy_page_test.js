@@ -163,6 +163,12 @@ suite('PrivacySandboxSettingsEnabled', function() {
   /** @type {!SettingsPrivacyPageElement} */
   let page;
 
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      privacySandboxSettingsEnabled: true,
+    });
+  });
+
   setup(function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.instance_ = metricsBrowserProxy;

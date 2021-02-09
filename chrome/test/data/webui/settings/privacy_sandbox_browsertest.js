@@ -8,7 +8,9 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "chrome/common/chrome_features.h"');
+GEN('#include "content/public/common/content_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "third_party/blink/public/common/features.h"');
 
 // eslint-disable-next-line no-var
 var PrivacySandboxTest = class extends PolymerTest {
@@ -19,7 +21,13 @@ var PrivacySandboxTest = class extends PolymerTest {
 
   /** @override */
   get featureList() {
-    return {enabled: ['features::kPrivacySandboxSettings']};
+    return {
+      enabled: [
+        'blink::features::kInterestCohortAPIOriginTrial',
+        'features::kConversionMeasurement',
+        'features::kPrivacySandboxSettings',
+      ]
+    };
   }
 };
 

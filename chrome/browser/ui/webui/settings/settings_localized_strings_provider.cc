@@ -23,6 +23,8 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -1432,7 +1434,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   AddPersonalizationOptionsStrings(html_source);
 }
 
-void AddPrivacySandboxStrings(content::WebUIDataSource* html_source) {
+void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
+                              Profile* profile) {
   // Strings that need to be available in any case.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"privacySandboxTitle", IDS_SETTINGS_PRIVACY_SANDBOX_TITLE},
@@ -1440,7 +1443,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source) {
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
   // Strings that only need to be available when the flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+  if (PrivacySandboxSettingsFactory::GetForProfile(profile)
+          ->PrivacySandboxSettingsFunctional()) {
     static constexpr webui::LocalizedString kLocalizedStringsBehindFlag[] = {
         {"privacySandboxPageHeading",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING},
@@ -2492,7 +2496,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddLanguagesStrings(html_source, profile);
   AddOnStartupStrings(html_source);
   AddPeopleStrings(html_source, profile);
-  AddPrivacySandboxStrings(html_source);
+  AddPrivacySandboxStrings(html_source, profile);
   AddPrivacyStrings(html_source, profile);
   AddSafetyCheckStrings(html_source);
   AddResetStrings(html_source, profile);

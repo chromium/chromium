@@ -25,8 +25,10 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -121,10 +123,14 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
     // Setup privacy sandbox feature & preference.
     feature_list()->Reset();
-    if (privacy_sandbox_available)
-      feature_list()->InitAndEnableFeature(features::kPrivacySandboxSettings);
-    else
+    if (privacy_sandbox_available) {
+      feature_list()->InitWithFeatures(
+          {features::kPrivacySandboxSettings, features::kConversionMeasurement,
+           blink::features::kInterestCohortAPIOriginTrial},
+          {});
+    } else {
       feature_list()->InitAndDisableFeature(features::kPrivacySandboxSettings);
+    }
 
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kPrivacySandboxApisEnabled,
@@ -153,6 +159,34 @@ class PrivacySandboxSettingsTest : public testing::Test {
 
   std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
 };
+
+TEST_F(PrivacySandboxSettingsTest, PrivacySandboxSettingsFunctional) {
+  // Check that the settings are only reported as functional when at least one
+  // privacy sandbox API is enabled.
+  feature_list()->InitWithFeatures(
+      {features::kPrivacySandboxSettings, features::kConversionMeasurement},
+      {});
+  EXPECT_TRUE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
+  feature_list()->Reset();
+
+  feature_list()->InitWithFeatures(
+      {features::kPrivacySandboxSettings,
+       blink::features::kInterestCohortAPIOriginTrial},
+      {});
+  EXPECT_TRUE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
+  feature_list()->Reset();
+
+  feature_list()->InitWithFeatures(
+      {features::kConversionMeasurement,
+       blink::features::kInterestCohortAPIOriginTrial},
+      {});
+  EXPECT_FALSE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
+  feature_list()->Reset();
+
+  feature_list()->InitWithFeatures({features::kPrivacySandboxSettings}, {});
+  EXPECT_FALSE(privacy_sandbox_settings()->PrivacySandboxSettingsFunctional());
+  feature_list()->Reset();
+}
 
 TEST_F(PrivacySandboxSettingsTest, CookieSettingAppliesWhenUiDisabled) {
   // When the Privacy Sandbox UI is unavailable, the cookie setting should

@@ -15,7 +15,9 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "content/public/common/content_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -162,6 +164,17 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
+bool PrivacySandboxSettings::PrivacySandboxSettingsFunctional() {
+  // The order in which the features are checked matters here. Preventing
+  // checking for the PrivacySandboxSettings if all the APIs are disabled
+  // avoids polluting rollout data, as it stops clients reporting as active
+  // while the feature is enabled but not accessible.
+  return (base::FeatureList::IsEnabled(
+              blink::features::kInterestCohortAPIOriginTrial) ||
+          base::FeatureList::IsEnabled(features::kConversionMeasurement)) &&
+         base::FeatureList::IsEnabled(features::kPrivacySandboxSettings);
+}
+
 bool PrivacySandboxSettings::IsFlocAllowed(
     const GURL& url,
     const base::Optional<url::Origin>& top_frame_origin) const {
@@ -206,7 +219,7 @@ bool PrivacySandboxSettings::ShouldSendConversionReport(
 }
 
 bool PrivacySandboxSettings::IsPrivacySandboxAllowed() {
-  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings)) {
+  if (!PrivacySandboxSettingsFunctional()) {
     // Simply respect 3rd-party cookies blocking settings if the UI is not
     // available.
     return !cookie_settings_->ShouldBlockThirdPartyCookies();
@@ -298,7 +311,7 @@ bool PrivacySandboxSettings::IsPrivacySandboxAllowedForContext(
 
 void PrivacySandboxSettings::MaybeReconcilePrivacySandboxPref() {
   // No action required if the user does not have the UI available.
-  if (!base::FeatureList::IsEnabled(features::kPrivacySandboxSettings))
+  if (!PrivacySandboxSettingsFunctional())
     return;
 
   // No need to reconcile preferences if it has already happened.
