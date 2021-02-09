@@ -238,36 +238,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     return it != histogram_values.end();
   }
 
-  void ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
-                     base::Location location) {
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(outcome);
-    AddSampleToBuckets(&expected_outcomes_, sample);
-
-    EXPECT_THAT(histogram_tester_.GetAllSamples(
-                    "BackForwardCache.HistoryNavigationOutcome"),
-                UnorderedElementsAreArray(expected_outcomes_))
-        << location.ToString();
-
-    if (!check_all_sites_)
-      return;
-
-    EXPECT_THAT(histogram_tester_.GetAllSamples(
-                    "BackForwardCache.AllSites.HistoryNavigationOutcome"),
-                UnorderedElementsAreArray(expected_outcomes_))
-        << location.ToString();
-
-    std::string is_served_from_bfcache =
-        "BackForwardCache.IsServedFromBackForwardCache";
-    bool ukm_outcome =
-        outcome == BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored;
-    expected_ukm_outcomes_.push_back(
-        {{is_served_from_bfcache, static_cast<int64_t>(ukm_outcome)}});
-    EXPECT_THAT(ukm_recorder_->GetMetrics("HistoryNavigation",
-                                          {is_served_from_bfcache}),
-                expected_ukm_outcomes_)
-        << location.ToString();
-  }
-
   void ExpectOutcomeDidNotChange(base::Location location) {
     EXPECT_EQ(expected_outcomes_,
               histogram_tester_.GetAllSamples(
@@ -290,9 +260,17 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
         << location.ToString();
   }
 
+  void ExpectRestored(base::Location location) {
+    ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                  location);
+  }
+
   void ExpectNotRestored(
       std::vector<BackForwardCacheMetrics::NotRestoredReason> reasons,
       base::Location location) {
+    ExpectOutcome(
+        BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
+        location);
     uint64_t not_restored_reasons_bits = 0;
     for (BackForwardCacheMetrics::NotRestoredReason reason : reasons) {
       base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
@@ -378,12 +356,13 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
         << location.ToString();
   }
 
-  void ExpectDisabledWithReason(const std::string& reason,
-                                base::Location location) {
-    base::HistogramBase::Sample sample =
-        base::HistogramBase::Sample(base::HashMetricName(reason));
-    AddSampleToBuckets(&expected_disabled_reasons_, sample);
-
+  void ExpectDisabledWithReasons(const std::vector<std::string>& reasons,
+                                 base::Location location) {
+    for (auto reason : reasons) {
+      base::HistogramBase::Sample sample =
+          base::HistogramBase::Sample(base::HashMetricName(reason));
+      AddSampleToBuckets(&expected_disabled_reasons_, sample);
+    }
     EXPECT_THAT(histogram_tester_.GetAllSamples(
                     "BackForwardCache.HistoryNavigationOutcome."
                     "DisabledForRenderFrameHostReason"),
@@ -391,19 +370,25 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
         << location.ToString();
   }
 
-  void ExpectBrowsingInstanceNotSwappedReason(ShouldSwapBrowsingInstance reason,
-                                              base::Location location) {
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
-    AddSampleToBuckets(&expected_browsing_instance_not_swapped_reasons_,
-                       sample);
+  void ExpectDisabledWithReason(const std::string& reason,
+                                base::Location location) {
+    ExpectDisabledWithReasons({reason}, location);
+  }
 
+  void ExpectBrowsingInstanceNotSwappedReasons(
+      const std::vector<ShouldSwapBrowsingInstance>& reasons,
+      base::Location location) {
+    for (auto reason : reasons) {
+      base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
+      AddSampleToBuckets(&expected_browsing_instance_not_swapped_reasons_,
+                         sample);
+    }
     EXPECT_THAT(histogram_tester_.GetAllSamples(
                     "BackForwardCache.HistoryNavigationOutcome."
                     "BrowsingInstanceNotSwappedReason"),
                 UnorderedElementsAreArray(
                     expected_browsing_instance_not_swapped_reasons_))
         << location.ToString();
-
     if (!check_all_sites_)
       return;
 
@@ -413,6 +398,11 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
                 UnorderedElementsAreArray(
                     expected_browsing_instance_not_swapped_reasons_))
         << location.ToString();
+  }
+
+  void ExpectBrowsingInstanceNotSwappedReason(ShouldSwapBrowsingInstance reason,
+                                              base::Location location) {
+    ExpectBrowsingInstanceNotSwappedReasons({reason}, location);
   }
 
   void ExpectEvictedAfterCommitted(
@@ -533,6 +523,44 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     } else {
       it->count++;
     }
+  }
+
+  void ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome outcome,
+                     base::Location location) {
+    base::HistogramBase::Sample sample = base::HistogramBase::Sample(outcome);
+    AddSampleToBuckets(&expected_outcomes_, sample);
+
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    "BackForwardCache.HistoryNavigationOutcome"),
+                UnorderedElementsAreArray(expected_outcomes_))
+        << location.ToString();
+
+    // If we restored the page, there should be no blocking reasons logged.
+    if (outcome ==
+        BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored) {
+      ExpectBlocklistedFeatures({}, FROM_HERE);
+      ExpectDisabledWithReasons({}, FROM_HERE);
+      ExpectBrowsingInstanceNotSwappedReasons({}, FROM_HERE);
+      ExpectBrowsingInstanceNotSwappedReasons({}, FROM_HERE);
+    }
+    if (!check_all_sites_)
+      return;
+
+    EXPECT_THAT(histogram_tester_.GetAllSamples(
+                    "BackForwardCache.AllSites.HistoryNavigationOutcome"),
+                UnorderedElementsAreArray(expected_outcomes_))
+        << location.ToString();
+
+    std::string is_served_from_bfcache =
+        "BackForwardCache.IsServedFromBackForwardCache";
+    bool ukm_outcome =
+        outcome == BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored;
+    expected_ukm_outcomes_.push_back(
+        {{is_served_from_bfcache, static_cast<int64_t>(ukm_outcome)}});
+    EXPECT_THAT(ukm_recorder_->GetMetrics("HistoryNavigation",
+                                          {is_served_from_bfcache}),
+                expected_ukm_outcomes_)
+        << location.ToString();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -796,8 +824,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Basic) {
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
   EXPECT_EQ(rfh_b->GetVisibilityState(), PageVisibilityState::kHidden);
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Navigate from A to B and go back.
@@ -833,8 +860,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BasicDocumentInitiated) {
   EXPECT_FALSE(rfh_a->IsInBackForwardCache());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Navigate from back and forward repeatedly.
@@ -867,8 +893,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(rfh_a->IsInBackForwardCache());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // 4) Go forward to B.
   web_contents()->GetController().GoForward();
@@ -878,8 +903,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_FALSE(rfh_b->IsInBackForwardCache());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // 5) Go back to A.
   web_contents()->GetController().GoBack();
@@ -889,8 +913,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(rfh_a->IsInBackForwardCache());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // 6) Go forward to B.
   web_contents()->GetController().GoForward();
@@ -903,8 +926,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_FALSE(delete_observer_rfh_b.deleted());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // The current page can't enter the BackForwardCache if another page can script
@@ -1005,8 +1027,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BasicIframe) {
   EXPECT_FALSE(rfh_b->IsInBackForwardCache());
   EXPECT_TRUE(rfh_c->IsInBackForwardCache());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Ensure flushing the BackForwardCache works properly.
@@ -1093,8 +1114,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   web_contents()->GetController().GoToOffset(-2);
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kCacheLimit},
                     FROM_HERE);
 }
@@ -1176,8 +1195,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeSurviveCache1) {
   EXPECT_EQ("I am alive", EvalJs(b2, "window.alive"));
   EXPECT_FALSE(b2_observer.deleted());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Similar to BackForwardCacheBrowserTest.SubframeSurviveCache*
@@ -1219,8 +1237,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeSurviveCache2) {
   EXPECT_EQ("I am alive", EvalJs(b2, "window.alive"));
   EXPECT_FALSE(b2_observer.deleted());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Similar to BackForwardCacheBrowserTest.tSubframeSurviveCache*
@@ -1265,8 +1282,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeSurviveCache3) {
   EXPECT_EQ("I am alive", EvalJs(b2, "window.alive"));
   EXPECT_FALSE(b2_observer.deleted());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // 4) Go forward to b3(a4).
   web_contents()->GetController().GoForward();
@@ -1280,8 +1296,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeSurviveCache3) {
   EXPECT_EQ("I am alive", EvalJs(a4, "window.alive"));
   EXPECT_FALSE(a4_observer.deleted());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Similar to BackForwardCacheBrowserTest.SubframeSurviveCache*
@@ -1400,8 +1415,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Page B should be deleted (not cached).
   delete_observer_rfh_b.WaitUntilDeleted();
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // 4. Navigate from a cacheable page to a cacheable page (A->C).
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
@@ -1422,8 +1436,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(delete_observer_rfh_c.deleted());
   EXPECT_TRUE(rfh_c->IsInBackForwardCache());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -2056,8 +2069,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheIfWebGL) {
   // 3) Go back.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Since blink::mojom::HidService binder is not added in
@@ -2124,8 +2136,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(current_frame_host(), rfh_a);
   EXPECT_TRUE(EvalJs(rfh_a, "wakeLockIsReleased()").ExtractBool());
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -2924,8 +2935,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 4) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution},
       FROM_HERE);
@@ -2970,8 +2979,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 4) Go back to A(B).
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution},
       FROM_HERE);
@@ -3013,8 +3020,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 5) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution},
       FROM_HERE);
@@ -3305,8 +3310,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictPageWithInfiniteLoop) {
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kTimeoutPuttingInCache},
       FROM_HERE);
@@ -3444,8 +3447,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(rfh_a2, rfh_b);
   EXPECT_EQ(rfh_a2->GetLastCommittedURL(), url_a);
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution},
       FROM_HERE);
@@ -3531,8 +3532,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 4) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kRendererProcessKilled},
       FROM_HERE);
@@ -3721,8 +3720,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Tests the case when the header was received before the page is frozen,
@@ -3760,8 +3758,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kNetworkRequestDatapipeDrained},
                     FROM_HERE);
@@ -3794,8 +3790,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image
   // value, we'll get the "error" event.
@@ -3835,8 +3830,6 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       FROM_HERE);
@@ -3908,8 +3901,6 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       FROM_HERE);
@@ -3995,8 +3986,6 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       FROM_HERE);
@@ -4054,8 +4043,7 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // The second page was still loading images when we navigated away, but it's
   // still eligible for back-forward cache.
@@ -4077,8 +4065,7 @@ IN_PROC_BROWSER_TEST_F(
   // cache.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4133,8 +4120,6 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       FROM_HERE);
@@ -4157,8 +4142,7 @@ IN_PROC_BROWSER_TEST_F(
   // cache.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image
   // value, we'll get the "error" event.
@@ -4197,8 +4181,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestTimeout},
       FROM_HERE);
@@ -4240,8 +4222,6 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       FROM_HERE);
@@ -4319,8 +4299,6 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       FROM_HERE);
@@ -4368,8 +4346,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4414,8 +4391,7 @@ IN_PROC_BROWSER_TEST_F(
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
@@ -4450,8 +4426,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
   // back-forward cache.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image
   // value, we'll get the "error" event.
@@ -4694,8 +4669,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
@@ -4720,8 +4694,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestWithServiceWorkerEnabled
@@ -4803,8 +4776,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
   // 6) Navigate to A in tab X.
   tab_x->web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(tab_x->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {
           BackForwardCacheMetrics::NotRestoredReason::
@@ -4870,8 +4841,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
   // 6) Go back to A in |tab_to_be_bfcached|.
   tab_to_be_bfcached->web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kServiceWorkerPostMessage},
       FROM_HERE);
@@ -4923,8 +4892,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithServiceWorkerEnabled,
   EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_TRUE(deleted.deleted());
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kServiceWorkerClaim},
       FROM_HERE);
@@ -5105,8 +5072,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
   EXPECT_EQ(current_frame_host()->GetLastCommittedURL(), url_a1);
   delete_rfh_a2.WaitUntilDeleted();
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {
           BackForwardCacheMetrics::NotRestoredReason::
@@ -5118,8 +5083,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
   ExpectNotRestored(
       {
           BackForwardCacheMetrics::NotRestoredReason::
@@ -6516,8 +6479,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
   EXPECT_EQ(web_contents()->GetContentsMimeType(), "text/html");
 }
 
@@ -6940,8 +6902,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(current_frame_host(), rfh_a);
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -6960,8 +6921,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -7174,8 +7134,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Go back.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // RTCPeerConnection object, that is created before being put into the cache,
   // is still available.
@@ -8015,8 +7974,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // This test is not important for Chrome OS if TTS is called in content. For
@@ -8107,8 +8065,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 6) Go back to the page with FileChooser.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
-                FROM_HERE);
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kDisableForRenderFrameHostCalled},
+                    FROM_HERE);
 }
 
 // RenderFrameHostImpl::coep_reporter() must be preserved when doing a back
@@ -8294,8 +8253,7 @@ IN_PROC_BROWSER_TEST_F(
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -8378,8 +8336,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 // Tests that if a page is already ineligible to be saved in the back-forward
@@ -9205,8 +9162,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // Check that CSP was restored.
   {
@@ -9350,8 +9306,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFileSystemAPISupported,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -9429,8 +9384,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSupportedFeatures,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 
   // 4) Use KeyboardLock
   EXPECT_EQ("DONE", EvalJs(rfh_a, R"(
@@ -9449,8 +9403,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSupportedFeatures,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
-  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
-                FROM_HERE);
+  ExpectRestored(FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestWithNoSupportedFeatures
