@@ -270,6 +270,7 @@ outlineStyle
 outlineWidth
 overflow
 overflowAnchor
+overflowClipMargin
 overflowWrap
 overflowX
 overflowY
