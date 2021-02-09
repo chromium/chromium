@@ -55,7 +55,7 @@ namespace {
 ThreadProfiler* g_main_thread_instance = nullptr;
 
 // Run continuous profiling 2% of the time.
-constexpr const double kFractionOfExecutionTimeToSample = 0.02;
+constexpr double kFractionOfExecutionTimeToSample = 0.02;
 
 bool IsCurrentProcessBackgrounded() {
 #if defined(OS_MAC)
