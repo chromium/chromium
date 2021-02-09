@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -279,6 +280,9 @@ class CONTENT_EXPORT VideoCaptureManager
   // determine which device to use when ConnectClient() occurs. Used
   // only on the IO thread.
   SessionMap sessions_;
+
+  // A set of sessions that have encountered screen lock.
+  base::flat_set<media::VideoCaptureSessionId> locked_sessions_;
 
   // Currently opened VideoCaptureController instances. The device may or may
   // not be started. This member is only accessed on IO thread.

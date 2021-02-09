@@ -13,7 +13,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -34,27 +34,8 @@
 
 namespace {
 
-// Used for logging capture events.
-// Elements in this enum should not be deleted or rearranged; the only
-// permitted operation is to add new elements before NUM_VIDEO_CAPTURE_EVENT.
-enum VideoCaptureEvent {
-  VIDEO_CAPTURE_START_CAPTURE = 0,
-  VIDEO_CAPTURE_STOP_CAPTURE_OK = 1,
-  VIDEO_CAPTURE_STOP_CAPTURE_DUE_TO_ERROR = 2,
-  VIDEO_CAPTURE_STOP_CAPTURE_OK_NO_FRAMES_PRODUCED_BY_DEVICE = 3,
-  VIDEO_CAPTURE_STOP_CAPTURE_OK_NO_FRAMES_PRODUCED_BY_DESKTOP_OR_TAB = 4,
-  NUM_VIDEO_CAPTURE_EVENT
-};
-
-void LogVideoCaptureEvent(VideoCaptureEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Media.VideoCaptureManager.Event", event,
-                            NUM_VIDEO_CAPTURE_EVENT);
-}
-
 void LogVideoCaptureError(media::VideoCaptureError error) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Media.VideoCapture.Error", error,
-      static_cast<int>(media::VideoCaptureError::kMaxValue) + 1);
+  base::UmaHistogramEnumeration("Media.VideoCapture.Error", error);
 }
 
 const base::UnguessableToken& FakeSessionId() {
@@ -214,6 +195,17 @@ void VideoCaptureManager::Close(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureManager::OnClosed, this,
                                 session_it->second.type, capture_session_id));
+
+  if (blink::IsDeviceMediaType(session_it->second.type)) {
+    auto locked_it = locked_sessions_.find(session_it->first);
+    const bool was_locked = locked_it != locked_sessions_.end();
+    base::UmaHistogramBoolean(
+        "Media.VideoCaptureManager.DeviceSessionWasLocked", was_locked);
+    if (was_locked)
+      locked_sessions_.erase(locked_it);
+  } else {
+    DCHECK(!locked_sessions_.contains(session_it->first));
+  }
   sessions_.erase(session_it);
 }
 
@@ -407,8 +399,6 @@ void VideoCaptureManager::ConnectClient(
     return;
   }
 
-  LogVideoCaptureEvent(VIDEO_CAPTURE_START_CAPTURE);
-
   // First client starts the device.
   if (!controller->HasActiveClient() && !controller->HasPausedClient()) {
     std::ostringstream string_stream;
@@ -439,19 +429,7 @@ void VideoCaptureManager::DisconnectClient(
     NOTREACHED();
     return;
   }
-  if (error == media::VideoCaptureError::kNone) {
-    if (controller->has_received_frames()) {
-      LogVideoCaptureEvent(VIDEO_CAPTURE_STOP_CAPTURE_OK);
-    } else if (controller->stream_type() ==
-               blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-      LogVideoCaptureEvent(
-          VIDEO_CAPTURE_STOP_CAPTURE_OK_NO_FRAMES_PRODUCED_BY_DEVICE);
-    } else {
-      LogVideoCaptureEvent(
-          VIDEO_CAPTURE_STOP_CAPTURE_OK_NO_FRAMES_PRODUCED_BY_DESKTOP_OR_TAB);
-    }
-  } else {
-    LogVideoCaptureEvent(VIDEO_CAPTURE_STOP_CAPTURE_DUE_TO_ERROR);
+  if (error != media::VideoCaptureError::kNone) {
     LogVideoCaptureError(error);
     std::ostringstream string_stream;
     string_stream << "Video capture session stopped with error code "
@@ -730,7 +708,7 @@ void VideoCaptureManager::OnDeviceInfosReceived(
                        "VideoCaptureManager::OnDeviceInfosReceived",
                        TRACE_EVENT_SCOPE_PROCESS);
 
-  UMA_HISTOGRAM_TIMES(
+  base::UmaHistogramTimes(
       "Media.VideoCaptureManager.GetAvailableDevicesInfoOnDeviceThreadTime",
       timer->Elapsed());
   devices_info_cache_ = device_infos;
@@ -942,6 +920,9 @@ void VideoCaptureManager::OnScreenLocked() {
   for (auto it : sessions_) {
     if (blink::IsDesktopCaptureMediaType(it.second.type))
       desktopcapture_session_ids.push_back(it.first);
+
+    if (blink::IsDeviceMediaType(it.second.type))
+      locked_sessions_.insert(it.first);
   }
 
   for (auto session_id : desktopcapture_session_ids) {
