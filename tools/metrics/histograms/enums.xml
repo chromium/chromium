@@ -59203,6 +59203,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="SetLocalAnswerResolved"/>
 </enum>
 
+<enum name="PeerConnectionBundlePolicy">
+  <int value="0" label="balanced"/>
+  <int value="1" label="max-bundle"/>
+  <int value="2" label="max-compat"/>
+</enum>
+
 <enum name="PeerConnectionBundleUsage">
   <int value="0" label="There are no m-lines"/>
   <int value="1" label="No BUNDLE, datachannel-only"/>
