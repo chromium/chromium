@@ -49,8 +49,8 @@ void EmojiPickerDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void EmojiPickerDialog::GetDialogSize(gfx::Size* size) const {
-  const int kDefaultWidth = 280;
-  const int kDefaultHeight = 343;
+  const int kDefaultWidth = 340;
+  const int kDefaultHeight = 390;
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
