@@ -1122,7 +1122,7 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
       group_index = 0;
 
     LayoutUnit remaining_deficit = excess_block_size;
-    NGTableTypes::Section* last_section;
+    NGTableTypes::Section* last_section = nullptr;
     for (NGTableTypes::Section& section : *sections) {
       if (group_index == 2 && !is_group_2(section))
         continue;
