@@ -19,8 +19,26 @@ namespace {
 
 constexpr char kLogTestPageFileName[] = "console_logging.html";
 constexpr char kWebEngineLogTag[] = "web_engine_exe";
-constexpr char kNormalizedLineNumber[] = "123";
-constexpr char kNormalizedPortNumber[] = "456";
+constexpr char kNormalizedLineNumber[] = "12345";
+constexpr char kNormalizedPortNumber[] = "678";
+
+// Replaces the line number in frame_impl.cc with kNormalizedLineNumber and
+// the port with kNormalizedPortNumber to enable reliable comparison of
+// console log messages.
+std::string NormalizeConsoleLogMessage(base::StringPiece original) {
+  size_t line_number_begin = original.find("(") + 1;
+  size_t close_parenthesis = original.find(")", line_number_begin);
+  std::string normalized = original.as_string().replace(
+      line_number_begin, close_parenthesis - line_number_begin,
+      kNormalizedLineNumber);
+
+  const char kSchemePortColon[] = "http://127.0.0.1:";
+  size_t port_begin =
+      normalized.find(kSchemePortColon) + strlen(kSchemePortColon);
+  size_t path_begin = normalized.find("/", port_begin);
+  return normalized.replace(port_begin, path_begin - port_begin,
+                            kNormalizedPortNumber);
+}
 
 }  // namespace
 
@@ -130,24 +148,6 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
         navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
         embedded_test_server_.GetURL(std::string("/") + kLogTestPageFileName)
             .spec()));
-  }
-
-  // Replaces the line number in frame_impl.cc with kNormalizedLineNumber and
-  // the port with kNormalizedPortNumber to enable reliable comparison of
-  // console log messages.
-  std::string NormalizeConsoleLogMessage(base::StringPiece original) {
-    size_t line_number_begin = original.find("(") + 1;
-    size_t close_parenthesis = original.find(")", line_number_begin);
-
-    const char kSchemePortColon[] = "http://127.0.0.1:";
-    size_t port_begin =
-        original.find(kSchemePortColon) + strlen(kSchemePortColon);
-    size_t path_begin = original.find("/", port_begin);
-
-    return original.as_string()
-        .replace(line_number_begin, close_parenthesis - line_number_begin,
-                 kNormalizedLineNumber)
-        .replace(port_begin, path_begin - port_begin, kNormalizedPortNumber);
   }
 
   fuchsia::sys::ComponentControllerPtr archivist_controller_;
