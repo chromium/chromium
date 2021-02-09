@@ -399,8 +399,12 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
 
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
   handlers.push_back(std::make_unique<RenderMediaEventHandler>());
+  // Temporarily disable this on Fuchsia due to a cross-platform mmemory leak.
+  // TODO(crbug.com/1170717): Remove this condition when fixing the bug.
+#if !defined(OS_FUCHSIA)
   handlers.push_back(
       std::make_unique<InspectorMediaEventHandler>(inspector_context));
+#endif
 
   // This must be created for every new WebMediaPlayer, each instance generates
   // a new player id which is used to collate logs on the browser side.
@@ -691,8 +695,12 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
 
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
   handlers.push_back(std::make_unique<RenderMediaEventHandler>());
+  // Temporarily disable this on Fuchsia due to a cross-platform mmemory leak.
+  // TODO(crbug.com/1170717): Remove this condition when fixing the bug.
+#if !defined(OS_FUCHSIA)
   handlers.push_back(
       std::make_unique<InspectorMediaEventHandler>(inspector_context));
+#endif
 
   // This must be created for every new WebMediaPlayer, each instance generates
   // a new player id which is used to collate logs on the browser side.
