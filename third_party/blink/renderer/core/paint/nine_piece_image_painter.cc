@@ -75,6 +75,18 @@ base::Optional<TileParameters> ComputeTileParameters(
   return base::nullopt;
 }
 
+bool ShouldTile(const NinePieceImageGrid::NinePieceDrawInfo& draw_info) {
+  // Corner pieces shouldn't be tiled.
+  if (draw_info.is_corner_piece)
+    return false;
+  // If we're supposed to stretch in both dimensions, we can skip tiling
+  // calculations.
+  if (draw_info.tile_rule.horizontal == kStretchImageRule &&
+      draw_info.tile_rule.vertical == kStretchImageRule)
+    return false;
+  return true;
+}
+
 void PaintPieces(GraphicsContext& context,
                  const PhysicalRect& border_image_rect,
                  const ComputedStyle& style,
@@ -105,49 +117,42 @@ void PaintPieces(GraphicsContext& context,
   for (NinePiece piece = kMinPiece; piece < kMaxPiece; ++piece) {
     NinePieceImageGrid::NinePieceDrawInfo draw_info =
         grid.GetNinePieceDrawInfo(piece);
+    if (!draw_info.is_drawable)
+      continue;
 
-    if (draw_info.is_drawable) {
-      if (draw_info.is_corner_piece) {
-        // Since there is no way for the developer to specify decode behavior,
-        // use kSync by default.
-        context.DrawImage(image, Image::kSyncDecode, draw_info.destination,
-                          &draw_info.source, style.HasFilterInducingProperty());
-      } else if (draw_info.tile_rule.horizontal == kStretchImageRule &&
-                 draw_info.tile_rule.vertical == kStretchImageRule) {
-        // Just do a scale.
-        // Since there is no way for the developer to specify decode behavior,
-        // use kSync by default.
-        context.DrawImage(image, Image::kSyncDecode, draw_info.destination,
-                          &draw_info.source, style.HasFilterInducingProperty());
-      } else {
-        // TODO(cavalcantii): see crbug.com/662513.
-        base::Optional<TileParameters> h_tile = ComputeTileParameters(
-            draw_info.tile_rule.horizontal, draw_info.destination.X(),
-            draw_info.destination.Width(), draw_info.source.X(),
-            draw_info.source.Width(), draw_info.tile_scale.Width());
-        base::Optional<TileParameters> v_tile = ComputeTileParameters(
-            draw_info.tile_rule.vertical, draw_info.destination.Y(),
-            draw_info.destination.Height(), draw_info.source.Y(),
-            draw_info.source.Height(), draw_info.tile_scale.Height());
-        if (!h_tile || !v_tile)
-          continue;
-
-        FloatSize tile_scale_factor(h_tile->scale_factor, v_tile->scale_factor);
-        FloatPoint tile_phase(draw_info.destination.X() - h_tile->phase,
-                              draw_info.destination.Y() - v_tile->phase);
-        FloatSize tile_spacing(h_tile->spacing, v_tile->spacing);
-
-        // TODO(cavalcantii): see crbug.com/662507.
-        base::Optional<ScopedInterpolationQuality>
-            interpolation_quality_override;
-        if (draw_info.tile_rule.horizontal == kRoundImageRule ||
-            draw_info.tile_rule.vertical == kRoundImageRule)
-          interpolation_quality_override.emplace(context, kInterpolationMedium);
-
-        context.DrawImageTiled(image, draw_info.destination, draw_info.source,
-                               tile_scale_factor, tile_phase, tile_spacing);
-      }
+    if (!ShouldTile(draw_info)) {
+      // Since there is no way for the developer to specify decode behavior,
+      // use kSync by default.
+      context.DrawImage(image, Image::kSyncDecode, draw_info.destination,
+                        &draw_info.source, style.HasFilterInducingProperty());
+      continue;
     }
+
+    // TODO(cavalcantii): see crbug.com/662513.
+    base::Optional<TileParameters> h_tile = ComputeTileParameters(
+        draw_info.tile_rule.horizontal, draw_info.destination.X(),
+        draw_info.destination.Width(), draw_info.source.X(),
+        draw_info.source.Width(), draw_info.tile_scale.Width());
+    base::Optional<TileParameters> v_tile = ComputeTileParameters(
+        draw_info.tile_rule.vertical, draw_info.destination.Y(),
+        draw_info.destination.Height(), draw_info.source.Y(),
+        draw_info.source.Height(), draw_info.tile_scale.Height());
+    if (!h_tile || !v_tile)
+      continue;
+
+    FloatSize tile_scale_factor(h_tile->scale_factor, v_tile->scale_factor);
+    FloatPoint tile_phase(draw_info.destination.X() - h_tile->phase,
+                          draw_info.destination.Y() - v_tile->phase);
+    FloatSize tile_spacing(h_tile->spacing, v_tile->spacing);
+
+    // TODO(cavalcantii): see crbug.com/662507.
+    base::Optional<ScopedInterpolationQuality> interpolation_quality_override;
+    if (draw_info.tile_rule.horizontal == kRoundImageRule ||
+        draw_info.tile_rule.vertical == kRoundImageRule)
+      interpolation_quality_override.emplace(context, kInterpolationMedium);
+
+    context.DrawImageTiled(image, draw_info.destination, draw_info.source,
+                           tile_scale_factor, tile_phase, tile_spacing);
   }
 }
 
