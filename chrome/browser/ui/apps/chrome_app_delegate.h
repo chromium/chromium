@@ -42,7 +42,7 @@ class ChromeAppDelegate : public extensions::AppDelegate,
 
   // extensions::AppDelegate:
   void InitWebContents(content::WebContents* web_contents) override;
-  void RenderViewCreated(content::RenderViewHost* render_view_host) override;
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
   void ResizeWebContents(content::WebContents* web_contents,
                          const gfx::Size& size) override;
   content::WebContents* OpenURLFromTab(

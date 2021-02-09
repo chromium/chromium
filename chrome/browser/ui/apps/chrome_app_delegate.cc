@@ -232,8 +232,8 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
   zoom::ZoomController::CreateForWebContents(web_contents);
 }
 
-void ChromeAppDelegate::RenderViewCreated(
-    content::RenderViewHost* render_view_host) {
+void ChromeAppDelegate::RenderFrameCreated(
+    content::RenderFrameHost* frame_host) {
   if (!chrome::IsRunningInForcedAppMode()) {
     // Due to a bug in the way apps reacted to default zoom changes, some apps
     // can incorrectly have host level zoom settings. These aren't wanted as
@@ -241,12 +241,16 @@ void ChromeAppDelegate::RenderViewCreated(
     // can be made to zoom again.
     // See http://crbug.com/446759 for more details.
     content::WebContents* web_contents =
-        content::WebContents::FromRenderViewHost(render_view_host);
+        content::WebContents::FromRenderFrameHost(frame_host);
     DCHECK(web_contents);
-    content::HostZoomMap* zoom_map =
-        content::HostZoomMap::GetForWebContents(web_contents);
-    DCHECK(zoom_map);
-    zoom_map->SetZoomLevelForHost(web_contents->GetURL().host(), 0);
+
+    // Only do this for the initial main frame.
+    if (frame_host == web_contents->GetMainFrame()) {
+      content::HostZoomMap* zoom_map =
+          content::HostZoomMap::GetForWebContents(web_contents);
+      DCHECK(zoom_map);
+      zoom_map->SetZoomLevelForHost(web_contents->GetURL().host(), 0);
+    }
   }
 }
 

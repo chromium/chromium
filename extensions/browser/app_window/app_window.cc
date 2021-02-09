@@ -464,8 +464,8 @@ bool AppWindow::OnMessageReceived(const IPC::Message& message,
   return handled;
 }
 
-void AppWindow::RenderViewCreated(content::RenderViewHost* render_view_host) {
-  app_delegate_->RenderViewCreated(render_view_host);
+void AppWindow::RenderFrameCreated(content::RenderFrameHost* frame_host) {
+  app_delegate_->RenderFrameCreated(frame_host);
 }
 
 void AppWindow::AddOnDidFinishFirstNavigationCallback(
