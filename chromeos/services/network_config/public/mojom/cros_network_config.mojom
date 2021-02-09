@@ -124,6 +124,17 @@ struct SIMLockStatus {
   int32 retries_left;
 };
 
+// Details about a sim slot available on the device.
+struct SIMInfo {
+  // Slot identifier.
+  uint32 slot_id;
+  // EID of EUICC at this slot. Empty if this is a physical SIM slot.
+  string eid;
+  // TODO(hsuregan): Add ICCID of the eSIM profile or the physical SIM
+  // card active on this slot when available from Shill.
+  // string iccid;
+};
+
 struct CellularStateProperties {
   // Enumerated ONC activation state.
   ActivationStateType activation_state = kUnknown;
@@ -229,6 +240,9 @@ struct DeviceStateProperties {
   bool scanning = false;
   // The SIM lock status if Type = Cellular and a SIM is present.
   SIMLockStatus? sim_lock_status;
+  // Details about the physical SIM and eSIM available on the device if Type =
+  // Cellular. Note that the array will be ordered by the |slot_id|.
+  array<SIMInfo>? sim_infos;
   // True when a SIM is required and not present.
   bool sim_absent = false;
   DeviceStateType device_state;

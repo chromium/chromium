@@ -30,6 +30,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_metadata_store.h"
@@ -222,6 +223,7 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     chromeos::shill_clients::InitializeFakes();
+    chromeos::hermes_clients::InitializeFakes();
     // Initializing NetworkHandler before ash is more like production.
     chromeos::NetworkHandler::Initialize();
     AshTestBase::SetUp();
@@ -237,6 +239,7 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
     chromeos::NetworkHandler::Get()->ShutdownPrefServices();
     AshTestBase::TearDown();
     chromeos::NetworkHandler::Shutdown();
+    chromeos::hermes_clients::Shutdown();
     chromeos::shill_clients::Shutdown();
   }
 

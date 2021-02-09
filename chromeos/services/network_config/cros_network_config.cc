@@ -9,6 +9,8 @@
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
+#include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
@@ -417,6 +419,14 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
   return result;
 }
 
+mojom::SIMInfoPtr HermesSimPropertiesToMojo(
+    HermesEuiccClient::Properties* properties) {
+  auto sim_info = mojom::SIMInfo::New();
+  sim_info->eid = properties->eid().value();
+  sim_info->slot_id = properties->physical_slot().value();
+  return sim_info;
+}
+
 mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     const DeviceState* device,
     mojom::DeviceStateType technology_state) {
@@ -452,6 +462,20 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     sim_lock_status->lock_enabled = device->sim_lock_enabled();
     sim_lock_status->retries_left = device->sim_retries_left();
     result->sim_lock_status = std::move(sim_lock_status);
+  }
+  if (type == mojom::NetworkType::kCellular) {
+    // TODO(hsuregan): Once Shill exposes a SIMInfo array of dictionaries, which
+    // may contain incomplete info about the different slots, use
+    // HermesManagerClient::Get()->GetAvailableEuiccs() to fill in the missing
+    // info to make sure eid is always populated for eSIM slots. This addition
+    // added preemptively to unblock UI work.
+    std::vector<mojom::SIMInfoPtr> sim_infos;
+    for (auto& euicc_path : HermesManagerClient::Get()->GetAvailableEuiccs()) {
+      HermesEuiccClient::Properties* properties =
+          HermesEuiccClient::Get()->GetProperties(euicc_path);
+      sim_infos.push_back(HermesSimPropertiesToMojo(properties));
+    }
+    result->sim_infos = std::move(sim_infos);
   }
   return result;
 }
