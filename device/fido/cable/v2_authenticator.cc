@@ -225,7 +225,6 @@ class TunnelTransport : public Transport {
       base::span<const uint8_t, device::kP256X962Length> peer_identity,
       GeneratePairingDataCallback generate_pairing_data)
       : platform_(platform),
-        nonce_(RandomNonce()),
         tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
             secret,
             base::span<uint8_t>(),
@@ -258,7 +257,6 @@ class TunnelTransport : public Transport {
       base::span<const uint8_t, 16> tunnel_id,
       bssl::UniquePtr<EC_KEY> local_identity)
       : platform_(platform),
-        nonce_(RandomNonce()),
         tunnel_id_(fido_parsing_utils::Materialize(tunnel_id)),
         eid_key_(device::cablev2::Derive<EXTENT(eid_key_)>(
             secret,
@@ -343,18 +341,26 @@ class TunnelTransport : public Transport {
 
     FIDO_LOG(DEBUG) << "WebSocket connection established.";
 
+    CableEidArray plaintext_eid;
     if (state_ == State::kConnecting) {
+      const device::cablev2::eid::Components components{
+          .tunnel_server_domain = kTunnelServer,
+          .routing_id = *routing_id,
+          .nonce = RandomNonce(),
+      };
+      plaintext_eid = device::cablev2::eid::FromComponents(components);
       state_ = State::kConnected;
     } else {
       DCHECK_EQ(state_, State::kConnectingPaired);
+      crypto::RandBytes(plaintext_eid);
+      // The first byte is reserved to ensure that the format can be changed in
+      // the future.
+      plaintext_eid[0] = 0;
       state_ = State::kConnectedPaired;
     }
 
-    static constexpr std::array<uint8_t, device::cablev2::kRoutingIdSize>
-        kZeroRoutingID = {0, 0, 0};
-    const device::CableEidArray plaintext_eid =
-        StartAdvertising(routing_id.value_or(kZeroRoutingID));
-
+    ble_advert_ =
+        platform_->SendBLEAdvert(eid::Encrypt(plaintext_eid, eid_key_));
     psk_ = device::cablev2::Derive<EXTENT(psk_)>(
         secret_, plaintext_eid, device::cablev2::DerivedValueType::kPSK);
 
@@ -433,22 +439,8 @@ class TunnelTransport : public Transport {
     }
   }
 
-  device::CableEidArray StartAdvertising(
-      std::array<uint8_t, device::cablev2::kRoutingIdSize> routing_id) {
-    const device::cablev2::eid::Components components{
-        .tunnel_server_domain = kTunnelServer,
-        .routing_id = routing_id,
-        .nonce = nonce_,
-    };
-    const device::CableEidArray eid =
-        device::cablev2::eid::FromComponents(components);
-    ble_advert_ = platform_->SendBLEAdvert(eid::Encrypt(eid, eid_key_));
-    return eid;
-  }
-
   Platform* const platform_;
   State state_ = State::kNone;
-  const std::array<uint8_t, kNonceSize> nonce_;
   const std::array<uint8_t, kTunnelIdSize> tunnel_id_;
   const std::array<uint8_t, kEIDKeySize> eid_key_;
   std::unique_ptr<WebSocketAdapter> websocket_client_;

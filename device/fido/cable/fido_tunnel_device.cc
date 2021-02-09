@@ -172,13 +172,6 @@ bool FidoTunnelDevice::MatchAdvert(
     return false;
   }
 
-  const eid::Components components = eid::ToComponents(*plaintext);
-  static_assert(EXTENT(components.routing_id) == 3, "");
-  if (components.routing_id[0] || components.routing_id[1] ||
-      components.routing_id[2]) {
-    return false;
-  }
-
   info.psk = Derive<EXTENT(*info.psk)>(info.secret, *plaintext,
                                        DerivedValueType::kPSK);
 
