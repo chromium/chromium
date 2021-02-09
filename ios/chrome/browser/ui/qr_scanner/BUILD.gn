@@ -44,6 +44,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/scanner",
     "//ios/chrome/browser/ui/toolbar/public",
   ]

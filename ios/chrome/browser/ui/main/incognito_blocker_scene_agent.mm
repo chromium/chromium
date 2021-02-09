@@ -59,7 +59,7 @@
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level == SceneActivationLevelBackground &&
-      sceneState.incognitoContentVisible) {
+      (sceneState.incognitoContentVisible || sceneState.QRScannerVisible)) {
     // If the current BVC is incognito, or if we are in the tab switcher and
     // there are incognito tabs visible, place a full screen view containing
     // the switcher background to hide any incognito content.
