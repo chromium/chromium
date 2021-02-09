@@ -121,10 +121,10 @@ const CSSValue* AlignSelf::CSSValueFromComputedStyleInternal(
 }
 const CSSValue* AlignmentBaseline::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.AlignmentBaseline());
+  return CSSIdentifierValue::Create(style.AlignmentBaseline());
 }
 
 const CSSValue* AnimationDelay::ParseSingleValue(
@@ -1407,10 +1407,10 @@ const CSSValue* BreakInside::CSSValueFromComputedStyleInternal(
 
 const CSSValue* BufferedRendering::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.BufferedRendering());
+  return CSSIdentifierValue::Create(style.BufferedRendering());
 }
 
 const CSSValue* CaptionSide::CSSValueFromComputedStyleInternal(
@@ -2850,11 +2850,11 @@ const CSSValue* FloodOpacity::ParseSingleValue(
 }
 
 const CSSValue* FloodOpacity::CSSValueFromComputedStyleInternal(
-    const ComputedStyle&,
-    const SVGComputedStyle& svg_style,
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSNumericLiteralValue::Create(svg_style.FloodOpacity(),
+  return CSSNumericLiteralValue::Create(style.FloodOpacity(),
                                         CSSPrimitiveValue::UnitType::kNumber);
 }
 
@@ -4715,18 +4715,18 @@ const CSSValue* Mask::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* Mask::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForSVGResource(svg_style.MaskerResource());
+  return ComputedStyleUtils::ValueForSVGResource(style.MaskerResource());
 }
 
 const CSSValue* MaskType::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.MaskType());
+  return CSSIdentifierValue::Create(style.MaskType());
 }
 
 const CSSValue* MathShift::CSSValueFromComputedStyleInternal(
@@ -6536,11 +6536,11 @@ const CSSValue* StopOpacity::ParseSingleValue(
 }
 
 const CSSValue* StopOpacity::CSSValueFromComputedStyleInternal(
-    const ComputedStyle&,
-    const SVGComputedStyle& svg_style,
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSNumericLiteralValue::Create(svg_style.StopOpacity(),
+  return CSSNumericLiteralValue::Create(style.StopOpacity(),
                                         CSSPrimitiveValue::UnitType::kNumber);
 }
 
@@ -7534,10 +7534,10 @@ const CSSValue* UserSelect::CSSValueFromComputedStyleInternal(
 
 const CSSValue* VectorEffect::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.VectorEffect());
+  return CSSIdentifierValue::Create(style.VectorEffect());
 }
 
 const CSSValue* VerticalAlign::ParseSingleValue(

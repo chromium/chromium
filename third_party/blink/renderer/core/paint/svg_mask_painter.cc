@@ -42,9 +42,9 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
                            EnclosingIntRect(visual_rect));
 
   SVGResourceClient* client = SVGResources::GetClient(layout_object);
-  const SVGComputedStyle& svg_style = layout_object.StyleRef().SvgStyle();
+  const ComputedStyle& style = layout_object.StyleRef();
   auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-      *client, svg_style.MaskerResource());
+      *client, style.MaskerResource());
   DCHECK(masker);
   SECURITY_DCHECK(!masker->NeedsLayout());
   masker->ClearInvalidationMask();
@@ -57,7 +57,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
     content_transformation.ScaleNonUniform(reference_box.Width(),
                                            reference_box.Height());
   } else if (layout_object.IsSVGForeignObject()) {
-    content_transformation.Scale(layout_object.StyleRef().EffectiveZoom());
+    content_transformation.Scale(style.EffectiveZoom());
   }
 
   sk_sp<const PaintRecord> record =

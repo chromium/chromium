@@ -82,7 +82,7 @@ void SVGResources::UpdateClipPathFilterMask(SVGElement& element,
     layout_object->SetNeedsPaintPropertyUpdate();
     client.MarkFilterDataDirty();
   }
-  if (StyleSVGResource* masker_resource = style.SvgStyle().MaskerResource())
+  if (StyleSVGResource* masker_resource = style.MaskerResource())
     masker_resource->AddClient(element.EnsureSVGResourceClient());
   if (had_client)
     ClearClipPathFilterMask(element, old_style);
@@ -102,7 +102,7 @@ void SVGResources::ClearClipPathFilterMask(SVGElement& element,
     style->Filter().RemoveClient(*client);
     client->InvalidateFilterData();
   }
-  if (StyleSVGResource* masker_resource = style->SvgStyle().MaskerResource())
+  if (StyleSVGResource* masker_resource = style->MaskerResource())
     masker_resource->RemoveClient(*client);
 }
 
@@ -269,7 +269,7 @@ void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
     layout_object->InvalidateClipPathCache();
   }
 
-  if (ContainsResource(svg_style.MaskerResource(), resource)) {
+  if (ContainsResource(style.MaskerResource(), resource)) {
     // TODO(fs): "Downgrade" to non-subtree?
     layout_object->SetSubtreeShouldDoFullPaintInvalidation();
     layout_object->SetNeedsPaintPropertyUpdate();
@@ -385,7 +385,7 @@ void SVGResourceInvalidator::InvalidateEffects() {
     object_.SetShouldDoFullPaintInvalidation();
     object_.InvalidateClipPathCache();
   }
-  if (style.SvgStyle().HasMasker()) {
+  if (style.MaskerResource()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.SetNeedsPaintPropertyUpdate();
   }

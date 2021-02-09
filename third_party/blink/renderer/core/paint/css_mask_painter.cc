@@ -21,7 +21,7 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
   if (object.IsSVG()) {
     if (SVGResourceClient* client = SVGResources::GetClient(object)) {
       auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, style.SvgStyle().MaskerResource());
+          *client, style.MaskerResource());
       if (masker) {
         const FloatRect reference_box =
             SVGResources::ReferenceBoxForEffects(object);
@@ -65,10 +65,10 @@ ColorFilter CSSMaskPainter::MaskColorFilter(const LayoutObject& object) {
   if (!client)
     return kColorFilterNone;
   auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-      *client, object.StyleRef().SvgStyle().MaskerResource());
+      *client, object.StyleRef().MaskerResource());
   if (!masker)
     return kColorFilterNone;
-  return masker->StyleRef().SvgStyle().MaskType() == MT_LUMINANCE
+  return masker->StyleRef().MaskType() == MT_LUMINANCE
              ? kColorFilterLuminanceToAlpha
              : kColorFilterNone;
 }

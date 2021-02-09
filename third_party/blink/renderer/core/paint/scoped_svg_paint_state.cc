@@ -109,7 +109,7 @@ void ScopedSVGPaintState::ApplyMaskIfNecessary() {
   if (!client)
     return;
   if (GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, object_.StyleRef().SvgStyle().MaskerResource()))
+          *client, object_.StyleRef().MaskerResource()))
     should_paint_mask_ = true;
 }
 

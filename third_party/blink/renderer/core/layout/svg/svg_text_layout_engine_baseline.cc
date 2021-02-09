@@ -118,8 +118,7 @@ float SVGTextLayoutEngineBaseline::CalculateAlignmentBaselineShift(
   LineLayoutItem text_line_layout_parent = text_line_layout.Parent();
   DCHECK(text_line_layout_parent);
 
-  EAlignmentBaseline baseline =
-      text_line_layout.StyleRef().SvgStyle().AlignmentBaseline();
+  EAlignmentBaseline baseline = text_line_layout.StyleRef().AlignmentBaseline();
   if (baseline == AB_AUTO || baseline == AB_BASELINE) {
     baseline = DominantBaselineToAlignmentBaseline(is_vertical_text,
                                                    text_line_layout_parent);

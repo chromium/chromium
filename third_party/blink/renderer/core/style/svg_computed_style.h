@@ -367,7 +367,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   }
 
   // convenience
-  bool HasMasker() const { return MaskerResource(); }
   bool HasMarkers() const {
     return MarkerStartResource() || MarkerMidResource() || MarkerEndResource();
   }

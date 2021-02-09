@@ -104,7 +104,7 @@ static HeapVector<Member<SVGResource>> CollectResources(
       resources.push_back(reference_operation->Resource());
   }
   const SVGComputedStyle& svg_style = style.SvgStyle();
-  if (auto* masker = svg_style.MaskerResource())
+  if (auto* masker = style.MaskerResource())
     resources.push_back(masker->Resource());
   if (auto* marker = svg_style.MarkerStartResource())
     resources.push_back(marker->Resource());

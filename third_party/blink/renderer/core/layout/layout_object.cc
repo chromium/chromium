@@ -4310,7 +4310,7 @@ void LayoutObject::SetNeedsBoundariesUpdate() {
   NOT_DESTROYED();
   if (IsSVGChild()) {
     // The boundaries affect mask clip.
-    if (StyleRef().SvgStyle().HasMasker())
+    if (StyleRef().MaskerResource())
       SetNeedsPaintPropertyUpdate();
     if (StyleRef().HasClipPath())
       InvalidateClipPathCache();

@@ -745,10 +745,10 @@ void WriteResources(WTF::TextStream& ts,
   if (!client)
     return;
   if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, style.SvgStyle().MaskerResource())) {
+          *client, style.MaskerResource())) {
     WriteSVGResourceReferencePrefix(ts, "masker", masker,
-                                    style.SvgStyle().MaskerResource()->Url(),
-                                    tree_scope, indent);
+                                    style.MaskerResource()->Url(), tree_scope,
+                                    indent);
     ts << " " << masker->ResourceBoundingBox(reference_box, 1) << "\n";
   }
   if (const ClipPathOperation* clip_path = style.ClipPath()) {

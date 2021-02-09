@@ -167,7 +167,7 @@ static inline void CheckDescendantTextNodeConsistency(
 }
 
 void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
-  if (StyleRef().SvgStyle().VectorEffect() == VE_NON_SCALING_STROKE) {
+  if (StyleRef().VectorEffect() == VE_NON_SCALING_STROKE) {
     SetTransformAffectsVectorEffect(true);
     return;
   }
@@ -176,8 +176,7 @@ void LayoutSVGText::UpdateTransformAffectsVectorEffect() {
   for (LayoutObject* descendant = FirstChild(); descendant;
        descendant = descendant->NextInPreOrder(this)) {
     if (descendant->IsSVGInline() &&
-        descendant->StyleRef().SvgStyle().VectorEffect() ==
-            VE_NON_SCALING_STROKE) {
+        descendant->StyleRef().VectorEffect() == VE_NON_SCALING_STROKE) {
       SetTransformAffectsVectorEffect(true);
       break;
     }

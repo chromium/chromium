@@ -463,9 +463,10 @@ TEST_F(DocumentLoadingRenderingTest, StableSVGStopStylingWhileLoadingImport) {
 
     Element* element = GetDocument().getElementById("test");
     ASSERT_NE(nullptr, element);
-    const SVGComputedStyle& svg_style = element->ComputedStyleRef().SvgStyle();
-    EXPECT_EQ(0xff008000, svg_style.StopColor().GetColor());
-    EXPECT_EQ(.5f, svg_style.StopOpacity());
+    const ComputedStyle& style = element->ComputedStyleRef();
+    EXPECT_EQ(0xff008000,
+              style.VisitedDependentColor(GetCSSPropertyStopColor()));
+    EXPECT_EQ(.5f, style.StopOpacity());
   };
 
   EXPECT_TRUE(GetDocument().HaveRenderBlockingResourcesLoaded());

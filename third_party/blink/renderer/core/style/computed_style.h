@@ -1101,6 +1101,13 @@ class ComputedStyle : public ComputedStyleBase,
   const SVGComputedStyle& SvgStyle() const { return *svg_style_.Get(); }
   SVGComputedStyle& AccessSVGStyle() { return *svg_style_.Access(); }
 
+  EAlignmentBaseline AlignmentBaseline() const {
+    return SvgStyle().AlignmentBaseline();
+  }
+  EBufferedRendering BufferedRendering() const {
+    return SvgStyle().BufferedRendering();
+  }
+
   // baseline-shift
   EBaselineShift BaselineShift() const { return SvgStyle().BaselineShift(); }
   const Length& BaselineShiftValue() const {
@@ -1152,9 +1159,11 @@ class ComputedStyle : public ComputedStyleBase,
   void SetStopColor(const StyleColor& c) { AccessSVGStyle().SetStopColor(c); }
 
   // flood-color
+  const StyleColor& FloodColor() const { return SvgStyle().FloodColor(); }
   void SetFloodColor(const StyleColor& c) { AccessSVGStyle().SetFloodColor(c); }
 
   // lighting-color
+  const StyleColor& LightingColor() const { return SvgStyle().LightingColor(); }
   void SetLightingColor(const StyleColor& c) {
     AccessSVGStyle().SetLightingColor(c);
   }
@@ -1162,6 +1171,11 @@ class ComputedStyle : public ComputedStyleBase,
   // flood-opacity
   float FloodOpacity() const { return SvgStyle().FloodOpacity(); }
   void SetFloodOpacity(float f) { AccessSVGStyle().SetFloodOpacity(f); }
+
+  EMaskType MaskType() const { return SvgStyle().MaskType(); }
+  StyleSVGResource* MaskerResource() const {
+    return SvgStyle().MaskerResource();
+  }
 
   // stop-opacity
   float StopOpacity() const { return SvgStyle().StopOpacity(); }
@@ -1194,6 +1208,8 @@ class ComputedStyle : public ComputedStyleBase,
   void SetStrokeWidth(const UnzoomedLength& w) {
     AccessSVGStyle().SetStrokeWidth(w);
   }
+
+  EVectorEffect VectorEffect() const { return SvgStyle().VectorEffect(); }
 
   // Comparison operators
   // FIXME: Replace callers of operator== wth a named method instead, e.g.
@@ -2455,7 +2471,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Return true if this style has properties ('filter', 'clip-path' and 'mask')
   // that applies an effect to SVG elements.
   bool HasSVGEffect() const {
-    return HasFilter() || HasClipPath() || SvgStyle().HasMasker();
+    return HasFilter() || HasClipPath() || MaskerResource();
   }
 
   // Paint utility functions.
@@ -2916,8 +2932,6 @@ class ComputedStyle : public ComputedStyleBase,
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;
 
   const StyleColor& StopColor() const { return SvgStyle().StopColor(); }
-  const StyleColor& FloodColor() const { return SvgStyle().FloodColor(); }
-  const StyleColor& LightingColor() const { return SvgStyle().LightingColor(); }
 
   // Appearance accessors are private to make sure callers use
   // EffectiveAppearance in almost all cases.

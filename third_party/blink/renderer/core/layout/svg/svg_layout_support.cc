@@ -269,9 +269,8 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
   if (LayoutSVGResourceClipper* clipper =
           GetSVGResourceAsType(*client, style.ClipPath()))
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
-  const SVGComputedStyle& svg_style = style.SvgStyle();
   if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, svg_style.MaskerResource()))
+          *client, style.MaskerResource()))
     visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box, 1));
 }
 
@@ -370,7 +369,7 @@ bool SVGLayoutSupport::IsLayoutableTextNode(const LayoutObject* object) {
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForStyle(
     const ComputedStyle& style) {
   return style.HasGroupingProperty(style.BoxReflect()) ||
-         style.SvgStyle().HasMasker();
+         style.MaskerResource();
 }
 
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
@@ -383,7 +382,7 @@ bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
 }
 
 bool SVGLayoutSupport::IsIsolationRequired(const LayoutObject* object) {
-  if (object->StyleRef().SvgStyle().HasMasker())
+  if (object->StyleRef().MaskerResource())
     return true;
   return WillIsolateBlendingDescendantsForObject(object) &&
          object->HasNonIsolatedBlendingDescendants();
