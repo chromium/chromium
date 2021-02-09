@@ -15,6 +15,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "chromeos/network/cellular_esim_connection_handler.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_configuration_handler.h"
@@ -45,6 +47,15 @@ namespace {
 const char kSuccessResult[] = "success";
 
 const char kTetherGuid[] = "tether-guid";
+
+const char kTestCellularDevicePath[] = "cellular_path";
+const char kTestCellularDeviceName[] = "cellular_name";
+const char kTestCellularServicePath[] = "cellular_service_path";
+
+const char kTestCellularName[] = "cellular_name";
+const char kTestIccid[] = "1234567890123456789";
+const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/1";
+const char kTestEid[] = "123456789012345678901234567890123";
 
 class TestNetworkConnectionObserver : public NetworkConnectionObserver {
  public:
@@ -164,11 +175,19 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         network_config_handler_.get(), nullptr /* network_device_handler */,
         nullptr /* prohibited_tecnologies_handler */);
 
+    cellular_inhibitor_.reset(new CellularInhibitor());
+    cellular_inhibitor_->Init(helper_.network_state_handler(),
+                              helper_.network_device_handler());
+
+    cellular_esim_connection_handler_.reset(
+        new CellularESimConnectionHandler());
+    cellular_esim_connection_handler_->Init(helper_.network_state_handler(),
+                                            cellular_inhibitor_.get());
+
     network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
     network_connection_handler_->Init(
         helper_.network_state_handler(), network_config_handler_.get(),
-        managed_config_handler_.get(),
-        /*cellular_esim_connection_handler=*/nullptr);
+        managed_config_handler_.get(), cellular_esim_connection_handler_.get());
     network_connection_observer_.reset(new TestNetworkConnectionObserver);
     network_connection_handler_->AddObserver(
         network_connection_observer_.get());
@@ -315,6 +334,38 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     return helper_.GetServiceStringProperty(service_path, key);
   }
 
+  void QueueEuiccErrorStatus() {
+    helper_.hermes_euicc_test()->QueueHermesErrorStatus(
+        HermesResponseStatus::kErrorUnknown);
+  }
+
+  void SetCellularServiceConnectable() {
+    helper_.service_test()->SetServiceProperty(kTestCellularServicePath,
+                                               shill::kConnectableProperty,
+                                               base::Value(true));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void AddCellularServiceWithESimProfile() {
+    // Add Cellular device.
+    helper_.device_test()->AddDevice(
+        kTestCellularDevicePath, shill::kTypeCellular, kTestCellularDeviceName);
+    base::RunLoop().RunUntilIdle();
+
+    // Add EUICC which will hold the profile.
+    helper_.hermes_manager_test()->AddEuicc(dbus::ObjectPath(kTestEuiccPath),
+                                            kTestEid, true);
+
+    // Add eSIM profile; internally, this causes an associated Shill service to
+    // be created.
+    helper_.hermes_euicc_test()->AddCarrierProfile(
+        dbus::ObjectPath(kTestCellularServicePath),
+        dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestCellularName,
+        "service_provider", "activation_code", kTestCellularServicePath,
+        hermes::profile::State::kInactive, /*service_only=*/false);
+    base::RunLoop().RunUntilIdle();
+  }
+
   // Used when testing a code that accesses NetworkHandler::Get() directly (e.g.
   // when checking if VPN is disabled by policy when attempting to connect to a
   // VPN network). NetworkStateTestHelper can not be used here. That's because
@@ -356,6 +407,9 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   std::unique_ptr<TestNetworkConnectionObserver> network_connection_observer_;
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>
       managed_config_handler_;
+  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
+  std::unique_ptr<CellularESimConnectionHandler>
+      cellular_esim_connection_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
   crypto::ScopedTestNSSDB test_nssdb_;
   std::unique_ptr<net::NSSCertDatabaseChromeOS> test_nsscertdb_;
@@ -823,6 +877,42 @@ TEST_F(NetworkConnectionHandlerImplTest,
   EXPECT_TRUE(network_connection_observer()->GetRequested(kTetherGuid));
   EXPECT_EQ(NetworkConnectionHandler::kErrorTetherAttemptWithNoDelegate,
             network_connection_observer()->GetResult(kTetherGuid));
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_AlreadyConnectable) {
+  AddCellularServiceWithESimProfile();
+
+  // Set the service to be connectable before trying to connect. This does not
+  // invoke the CellularESimConnectionHandler flow since the profile is already
+  // enabled.
+  SetCellularServiceConnectable();
+  Connect(kTestCellularServicePath);
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_EnableProfile) {
+  AddCellularServiceWithESimProfile();
+
+  // Do not set the service to be connectable before trying to connect. When a
+  // connection is initiated, we attempt to enable the profile via Hermes.
+  Connect(kTestCellularServicePath);
+  SetCellularServiceConnectable();
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_EnableProfile_Fails) {
+  AddCellularServiceWithESimProfile();
+
+  // Queue an error which should cause enabling the profile to fail.
+  QueueEuiccErrorStatus();
+
+  // Do not set the service to be connectable before trying to connect. When a
+  // connection is initiated, we attempt to enable the profile via Hermes.
+  Connect(kTestCellularServicePath);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(NetworkConnectionHandler::kErrorESimProfileIssue,
+            GetResultAndReset());
 }
 
 }  // namespace chromeos

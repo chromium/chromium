@@ -75,6 +75,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
 
   ConnectRequest* GetPendingRequest(const std::string& service_path);
 
+  void OnEnableESimProfileFailure(
+      const std::string& service_path,
+      const std::string& error_name,
+      std::unique_ptr<base::DictionaryValue> error_data);
+
   // Callback from Shill.Service.GetProperties. Parses |properties| to verify
   // whether or not the network appears to be configured. If configured,
   // attempts a connection, otherwise invokes error_callback from
