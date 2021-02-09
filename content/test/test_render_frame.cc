@@ -294,6 +294,7 @@ void TestRenderFrame::NavigateWithError(
       std::move(common_params), std::move(commit_params),
       false /* has_stale_copy_in_cache */, error_code, resolve_error_info,
       error_page_content, std::move(pending_factory_bundle),
+      CreateStubPolicyContainer(),
       base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
                      base::Unretained(mock_frame_host_.get())));
 }

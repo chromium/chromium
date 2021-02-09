@@ -3302,6 +3302,13 @@ void NavigationRequest::CommitErrorPage(
   ComputeSandboxFlagsToCommit(/*response_head=*/nullptr,
                               /*required_csp=*/nullptr);
 
+  // Error pages should not inherit any policies. Initialize a new, default
+  // PolicyContainerHost.
+  //
+  // TODO(https://crbug.com/1175787): We should enforce strict policies on error
+  // pages.
+  policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>();
+
   ReadyToCommitNavigation(true);
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ = net::IsolationInfo::CreateTransient();

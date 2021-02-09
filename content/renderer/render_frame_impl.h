@@ -461,6 +461,7 @@ class CONTENT_EXPORT RenderFrameImpl
       const base::Optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
+      blink::mojom::PolicyContainerPtr policy_container,
       mojom::NavigationClient::CommitFailedNavigationCallback
           per_navigation_mojo_interface_callback);
 

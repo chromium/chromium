@@ -232,7 +232,8 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       int32_t error_code,
       const base::Optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          subresource_loader_factories) override;
+          subresource_loader_factories,
+      blink::mojom::PolicyContainerPtr policy_container) override;
 
  private:
   void SendNavigateWithParameters(int nav_entry_id,

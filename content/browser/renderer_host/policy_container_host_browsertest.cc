@@ -810,4 +810,32 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
             current_frame_host()->policy_container_host()->referrer_policy());
 }
 
+// Test that chrome error pages are loaded with a default policy container and
+// don't inherit policies.
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, FailedNavigation) {
+  // Perform a navigation setting referrer policy.
+  GURL url = embedded_test_server()->GetURL(
+      "/set-header?Referrer-Policy: no-referrer");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
+            current_frame_host()->policy_container_host()->referrer_policy());
+
+  // Now open a popup with an unreachable url.
+  GURL error_url = embedded_test_server()->GetURL("/close-socket");
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(
+      ExecJs(current_frame_host(), JsReplace("window.open($1)", error_url)));
+  WebContentsImpl* popup_webcontents =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
+  WaitForLoadStop(popup_webcontents);
+
+  NavigationEntry* entry =
+      popup_webcontents->GetController().GetLastCommittedEntry();
+  EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
+  RenderFrameHostImpl* popup_frame =
+      popup_webcontents->GetFrameTree()->root()->current_frame_host();
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
+            popup_frame->policy_container_host()->referrer_policy());
+}
+
 }  // namespace content

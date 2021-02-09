@@ -1982,7 +1982,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int32_t error_code,
       const base::Optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-          subresource_loader_factories);
+          subresource_loader_factories,
+      blink::mojom::PolicyContainerPtr policy_container);
 
   // The Build*Callback functions below are responsible for building the
   // callbacks for either successful or failed commits.

@@ -3162,6 +3162,7 @@ void RenderFrameImpl::CommitFailedNavigation(
     const base::Optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
+    blink::mojom::PolicyContainerPtr policy_container,
     mojom::NavigationClient::CommitFailedNavigationCallback callback) {
   TRACE_EVENT1("navigation,benchmark,rail",
                "RenderFrameImpl::CommitFailedNavigation", "id", routing_id_);
@@ -3315,6 +3316,9 @@ void RenderFrameImpl::CommitFailedNavigation(
   } else {
     navigation_params->pre_redirect_url_for_failed_navigations = error.url();
   }
+
+  navigation_params->policy_container =
+      ToWebPolicyContainer(std::move(policy_container));
 
   // The error page load (not to confuse with a failed load of original page)
   // was not initiated through BeginNavigation, therefore

@@ -151,6 +151,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       const net::ResolveErrorInfo& resolve_error_info,
       const base::Optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
+      blink::mojom::PolicyContainerPtr policy_container,
       CommitFailedNavigationCallback callback) override {
     std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
   }

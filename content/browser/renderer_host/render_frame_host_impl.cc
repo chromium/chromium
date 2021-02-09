@@ -6892,10 +6892,16 @@ void RenderFrameHostImpl::FailedNavigation(
   mojom::NavigationClient* navigation_client =
       navigation_request->GetCommitNavigationClient();
 
+  DCHECK(navigation_request->policy_container_host());
+  blink::mojom::PolicyContainerPtr policy_container =
+      navigation_request->policy_container_host()
+          ->CreatePolicyContainerForBlink();
+
   SendCommitFailedNavigation(
       navigation_client, navigation_request, common_params.Clone(),
       commit_params.Clone(), has_stale_copy_in_cache, error_code,
-      error_page_content, std::move(subresource_loader_factories));
+      error_page_content, std::move(subresource_loader_factories),
+      std::move(policy_container));
 
   // TODO(crbug/1129537): support UKM source creation for failed navigations
   // too.
@@ -9291,14 +9297,15 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     int32_t error_code,
     const base::Optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        subresource_loader_factories) {
+        subresource_loader_factories,
+    blink::mojom::PolicyContainerPtr policy_container) {
   DCHECK(navigation_client && navigation_request);
   DCHECK_NE(GURL(), common_params->url);
   navigation_client->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
       has_stale_copy_in_cache, error_code,
       navigation_request->GetResolveErrorInfo(), error_page_content,
-      std::move(subresource_loader_factories),
+      std::move(subresource_loader_factories), std::move(policy_container),
       BuildCommitFailedNavigationCallback(navigation_request));
 }
 

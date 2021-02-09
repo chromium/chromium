@@ -503,7 +503,8 @@ void TestRenderFrameHost::SendCommitFailedNavigation(
     int32_t error_code,
     const base::Optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        subresource_loader_factories) {
+        subresource_loader_factories,
+    blink::mojom::PolicyContainerPtr policy_container) {
   CHECK(navigation_client);
   commit_failed_callback_[navigation_request] =
       BuildCommitFailedNavigationCallback(navigation_request);
