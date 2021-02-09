@@ -549,6 +549,8 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/ViewportTest.java",
     "javatests/src/org/chromium/content/browser/WakeLockTest.java",
     "javatests/src/org/chromium/content/browser/WebContentsObserverAndroidTest.java",
+    "javatests/src/org/chromium/content/browser/accessibility/AccessibilityContentShellTestData.java",
+    "javatests/src/org/chromium/content/browser/accessibility/AccessibilityContentShellTestUtils.java",
     "javatests/src/org/chromium/content/browser/accessibility/AccessibilityEventDispatcherTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/captioning/CaptioningChangeDelegateTest.java",
