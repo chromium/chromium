@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -72,7 +73,7 @@ class MediaArtworkView : public views::ImageView {
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:
-  SkColor vignette_color_;
+  SkColor vignette_color_ = gfx::kPlaceholderColor;
   float corner_radius_;
 };
 
