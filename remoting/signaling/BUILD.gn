@@ -64,7 +64,9 @@ static_library("signaling") {
     "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/proto/ftl/v1:ftl_messages",
+    "//services/network/public/cpp:cpp",
   ]
 }
 
@@ -82,6 +84,8 @@ static_library("test_support") {
 
   public_deps = [
     ":signaling",
+    "//remoting/base:test_support",
+    "//remoting/proto/ftl/v1:ftl_messages",
     "//testing/gmock",
   ]
 }
@@ -107,6 +111,8 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//net:test_support",
+    "//remoting/base:base",
+    "//services/network/public/cpp:cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
