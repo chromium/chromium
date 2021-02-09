@@ -272,6 +272,18 @@ void Adapter::DeviceAdded(device::BluetoothAdapter* adapter,
 
 void Adapter::DeviceChanged(device::BluetoothAdapter* adapter,
                             device::BluetoothDevice* device) {
+  const std::string& address = device->GetAddress();
+  base::Optional<int8_t> rssi = device->GetInquiryRSSI();
+  auto it = pending_connect_to_service_args_.begin();
+  while (it != pending_connect_to_service_args_.end()) {
+    if (address == std::get<0>(*it) && !rssi) {
+      std::move(std::get<2>(*it)).Run(/*result=*/nullptr);
+      it = pending_connect_to_service_args_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   auto device_info = Device::ConstructDeviceInfoStruct(device);
   for (auto& observer : observers_)
     observer->DeviceChanged(device_info->Clone());
@@ -279,6 +291,17 @@ void Adapter::DeviceChanged(device::BluetoothAdapter* adapter,
 
 void Adapter::DeviceRemoved(device::BluetoothAdapter* adapter,
                             device::BluetoothDevice* device) {
+  const std::string& address = device->GetAddress();
+  auto it = pending_connect_to_service_args_.begin();
+  while (it != pending_connect_to_service_args_.end()) {
+    if (address == std::get<0>(*it)) {
+      std::move(std::get<2>(*it)).Run(/*result=*/nullptr);
+      it = pending_connect_to_service_args_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
   auto device_info = Device::ConstructDeviceInfoStruct(device);
   for (auto& observer : observers_)
     observer->DeviceRemoved(device_info->Clone());
@@ -295,7 +318,6 @@ void Adapter::GattServicesDiscovered(device::BluetoothAdapter* adapter,
     return;
 
   const std::string& address = device->GetAddress();
-
   auto it = pending_connect_to_service_args_.begin();
   while (it != pending_connect_to_service_args_.end()) {
     if (address == std::get<0>(*it)) {
@@ -318,7 +340,8 @@ void Adapter::OnDeviceFetchedForInsecureServiceConnection(
     const device::BluetoothUUID& service_uuid,
     ConnectToServiceInsecurelyCallback callback,
     device::BluetoothDevice* device) {
-  if (device->IsConnected() && !device->IsGattServicesDiscoveryComplete()) {
+  if (!device->IsPaired() && device->IsConnected() &&
+      !device->IsGattServicesDiscoveryComplete()) {
     // This provided device is most likely a result of calling ConnectDevice():
     // it's connected, but the remote device's services are still being probed
     // (IsGattServicesDiscoveryComplete() refers to all services, not just GATT
