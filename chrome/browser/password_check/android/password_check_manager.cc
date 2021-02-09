@@ -310,8 +310,21 @@ PasswordCheckUIStatus PasswordCheckManager::GetUIStatus(State state) const {
 bool PasswordCheckManager::CanUseAccountCheck() const {
   SyncState sync_state = password_manager_util::GetPasswordSyncState(
       ProfileSyncServiceFactory::GetForProfile(profile_));
-  return sync_state == SyncState::SYNCING_NORMAL_ENCRYPTION ||
-         sync_state == SyncState::ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION;
+  switch (sync_state) {
+    case SyncState::NOT_SYNCING:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::SYNCING_WITH_CUSTOM_PASSPHRASE:
+      return false;
+
+    case SyncState::SYNCING_NORMAL_ENCRYPTION:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION:
+      return true;
+
+    default:
+      NOTREACHED();
+      return false;
+  }
 }
 
 bool PasswordCheckManager::AreScriptsRefreshed() const {
@@ -347,12 +360,22 @@ bool PasswordCheckManager::ShouldFetchPasswordScripts() const {
 
   // Password change scripts are using password generation, so automatic
   // password change should not be offered to non sync users.
-  if (sync_state == password_manager::NOT_SYNCING) {
-    return false;
-  }
+  switch (sync_state) {
+    case SyncState::NOT_SYNCING:
+      return false;
 
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordScriptsFetching);
+    case SyncState::SYNCING_WITH_CUSTOM_PASSPHRASE:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::SYNCING_NORMAL_ENCRYPTION:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION:
+      return base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordScriptsFetching);
+
+    default:
+      NOTREACHED();
+      return false;
+  }
 }
 
 bool PasswordCheckManager::IsPreconditionFulfilled(
