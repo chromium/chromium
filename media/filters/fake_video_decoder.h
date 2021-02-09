@@ -49,6 +49,7 @@ class FakeVideoDecoder : public VideoDecoder {
   bool SupportsDecryption() const override;
   bool IsPlatformDecoder() const override;
   std::string GetDisplayName() const override;
+  VideoDecoderType GetDecoderType() const override;
 
   // VideoDecoder implementation
   void Initialize(const VideoDecoderConfig& config,

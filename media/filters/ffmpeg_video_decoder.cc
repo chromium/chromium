@@ -196,6 +196,10 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   return 0;
 }
 
+VideoDecoderType FFmpegVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kFFmpeg;
+}
+
 std::string FFmpegVideoDecoder::GetDisplayName() const {
   return "FFmpegVideoDecoder";
 }

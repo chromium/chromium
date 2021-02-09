@@ -82,7 +82,7 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
   media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
       std::string("AudioDecoder(WebCodecs)"));
   media_log->SetProperty<media::MediaLogProperty::kAudioDecoderName>(
-      decoder.GetDisplayName());
+      decoder.GetDecoderType());
   media_log->SetProperty<media::MediaLogProperty::kIsPlatformAudioDecoder>(
       decoder.IsPlatformDecoder());
   media_log->SetProperty<media::MediaLogProperty::kAudioTracks>(

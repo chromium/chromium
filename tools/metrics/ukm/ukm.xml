@@ -7584,8 +7584,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="AudioDecoderName">
     <summary>
-      Enumeration of audio decoder names, zero if none or unknown (Cast, HLS,
-      etc). See WatchTimeRecorder::AudioDecoderName enum for expected values.
+      Enumeration of audio decoder implementations, zero if none or unknown
+      (Cast, HLS, etc). See AudioDecoderType (media/base/decoder.h) for expected
+      values.
     </summary>
   </metric>
   <metric name="AudioEncryptionScheme">
@@ -7697,8 +7698,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="VideoDecoderName">
     <summary>
-      Enumeration of video decoder names, zero if none or unknown (Cast, HLS,
-      etc). See WatchTimeRecorder::VideoDecoderName enum for expected values.
+      Enumeration of video decoder implementations, zero if none or unknown
+      (Cast, HLS, etc). See VideoDecoderType (media/base/decoder.h) for expected
+      values.
     </summary>
   </metric>
   <metric name="VideoEncryptionScheme">

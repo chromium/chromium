@@ -53,8 +53,8 @@ PipelineStatistics DefaultStats() {
   stats.audio_memory_usage = 5678;
   stats.video_memory_usage = 6789;
   stats.video_keyframe_distance_average = base::TimeDelta::Max();
-  stats.audio_decoder_info = {false, false, "Default"};
-  stats.video_decoder_info = {false, false, "Default"};
+  stats.audio_decoder_info = {false, false, AudioDecoderType::kUnknown};
+  stats.video_decoder_info = {false, false, VideoDecoderType::kUnknown};
   return stats;
 }
 
@@ -419,12 +419,12 @@ class CourierRendererTest : public testing::Test {
     message->set_video_memory_usage(stats.video_memory_usage);
     message->mutable_audio_decoder_info()->set_is_platform_decoder(
         stats.audio_decoder_info.is_platform_decoder);
-    message->mutable_audio_decoder_info()->set_decoder_name(
-        stats.audio_decoder_info.decoder_name);
+    message->mutable_audio_decoder_info()->set_decoder_type(
+        static_cast<int64_t>(stats.audio_decoder_info.decoder_type));
     message->mutable_video_decoder_info()->set_is_platform_decoder(
         stats.video_decoder_info.is_platform_decoder);
-    message->mutable_video_decoder_info()->set_decoder_name(
-        stats.video_decoder_info.decoder_name);
+    message->mutable_video_decoder_info()->set_decoder_type(
+        static_cast<int64_t>(stats.video_decoder_info.decoder_type));
     OnReceivedRpc(std::move(rpc));
     RunPendingTasks();
   }

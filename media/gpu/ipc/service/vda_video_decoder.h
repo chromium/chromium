@@ -77,6 +77,7 @@ class VdaVideoDecoder : public VideoDecoder,
   static void DestroyAsync(std::unique_ptr<VdaVideoDecoder>);
 
   // media::VideoDecoder implementation.
+  VideoDecoderType GetDecoderType() const override;
   std::string GetDisplayName() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

@@ -45,6 +45,7 @@ class CrossThreadVideoDecoderClient {
  public:
   struct DecoderDetails {
     std::string display_name;
+    media::VideoDecoderType decoder_id;
     bool is_platform_decoder;
     bool needs_bitstream_conversion;
     int max_decode_requests;
@@ -88,6 +89,7 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   VideoDecoderBroker& operator=(const VideoDecoderBroker&) = delete;
 
   // VideoDecoder implementation.
+  media::VideoDecoderType GetDecoderType() const override;
   std::string GetDisplayName() const override;
   bool IsPlatformDecoder() const override;
   void Initialize(const media::VideoDecoderConfig& config,

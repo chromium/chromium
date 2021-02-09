@@ -52,6 +52,10 @@ std::string MediaCodecAudioDecoder::GetDisplayName() const {
   return "MediaCodecAudioDecoder";
 }
 
+AudioDecoderType MediaCodecAudioDecoder::GetDecoderType() const {
+  return AudioDecoderType::kMediaCodec;
+}
+
 void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                         CdmContext* cdm_context,
                                         InitCB init_cb,

@@ -1159,6 +1159,10 @@ std::string MediaCodecVideoDecoder::GetDisplayName() const {
   return "MediaCodecVideoDecoder";
 }
 
+VideoDecoderType MediaCodecVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kMediaCodec;
+}
+
 bool MediaCodecVideoDecoder::NeedsBitstreamConversion() const {
   return true;
 }

@@ -42,6 +42,7 @@ class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
 
   // Decoder implementation
   bool SupportsDecryption() const override;
+  AudioDecoderType GetDecoderType() const override;
   std::string GetDisplayName() const override;
 
   // AudioDecoder implementation.

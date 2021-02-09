@@ -41,6 +41,7 @@ class CrossThreadAudioDecoderClient {
  public:
   struct DecoderDetails {
     std::string display_name;
+    media::AudioDecoderType decoder_id;
     bool is_platform_decoder;
     bool needs_bitstream_conversion;
   };
@@ -80,6 +81,7 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
 
   // AudioDecoder implementation.
   std::string GetDisplayName() const override;
+  media::AudioDecoderType GetDecoderType() const override;
   bool IsPlatformDecoder() const override;
   void Initialize(const media::AudioDecoderConfig& config,
                   media::CdmContext* cdm_context,

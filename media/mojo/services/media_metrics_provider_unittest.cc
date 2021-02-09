@@ -157,8 +157,8 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
 TEST_F(MediaMetricsProviderTest, TestPipelineUMA) {
   base::HistogramTester histogram_tester;
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
-  provider_->SetAudioPipelineInfo({false, false, "TestAudioDecoder"});
-  provider_->SetVideoPipelineInfo({false, false, "TestVideoDecoder"});
+  provider_->SetAudioPipelineInfo({false, false, AudioDecoderType::kMojo});
+  provider_->SetVideoPipelineInfo({false, false, VideoDecoderType::kMojo});
   provider_->SetHasAudio(AudioCodec::kCodecVorbis);
   provider_->SetHasVideo(VideoCodec::kCodecVP9);
   provider_->SetHasPlayed();
@@ -175,7 +175,7 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMANoAudioEMEHW) {
   base::HistogramTester histogram_tester;
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
-  provider_->SetVideoPipelineInfo({true, true, "TestEMEVideoDecoder"});
+  provider_->SetVideoPipelineInfo({true, true, VideoDecoderType::kMojo});
   provider_->SetHasVideo(VideoCodec::kCodecAV1);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
@@ -192,13 +192,13 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
   base::HistogramTester histogram_tester;
   Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
   provider_->SetIsEME();
-  provider_->SetAudioPipelineInfo({false, false, "TestAudioDecoder"});
-  provider_->SetVideoPipelineInfo({true, false, "D3D11VideoDecoder"});
+  provider_->SetAudioPipelineInfo({false, false, AudioDecoderType::kMojo});
+  provider_->SetVideoPipelineInfo({true, false, VideoDecoderType::kD3D11});
   provider_->SetHasVideo(VideoCodec::kCodecVP9);
   provider_->SetHasAudio(AudioCodec::kCodecVorbis);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
-  provider_->SetVideoPipelineInfo({true, false, "DXVAVideoDecoder"});
+  provider_->SetVideoPipelineInfo({true, false, VideoDecoderType::kFFmpeg});
   provider_.reset();
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount("Media.PipelineStatus.AudioVideo.VP9.HW",

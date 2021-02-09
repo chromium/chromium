@@ -28,6 +28,10 @@ DecryptingVideoDecoder::DecryptingVideoDecoder(
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
+VideoDecoderType DecryptingVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kDecrypting;
+}
+
 std::string DecryptingVideoDecoder::GetDisplayName() const {
   return kDecoderName;
 }

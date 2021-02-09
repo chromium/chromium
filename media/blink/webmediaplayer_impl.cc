@@ -2482,12 +2482,12 @@ void WebMediaPlayerImpl::OnVideoAverageKeyframeDistanceUpdate() {
   UpdateBackgroundVideoOptimizationState();
 }
 
-void WebMediaPlayerImpl::OnAudioDecoderChange(const PipelineDecoderInfo& info) {
+void WebMediaPlayerImpl::OnAudioDecoderChange(const AudioDecoderInfo& info) {
   media_metrics_provider_->SetAudioPipelineInfo(info);
-  if (info.decoder_name == audio_decoder_name_)
+  if (info.decoder_type == audio_decoder_type_)
     return;
 
-  audio_decoder_name_ = info.decoder_name;
+  audio_decoder_type_ = info.decoder_type;
 
   // If there's no current reporter, there's nothing to be done.
   if (!watch_time_reporter_)
@@ -2496,12 +2496,12 @@ void WebMediaPlayerImpl::OnAudioDecoderChange(const PipelineDecoderInfo& info) {
   UpdateSecondaryProperties();
 }
 
-void WebMediaPlayerImpl::OnVideoDecoderChange(const PipelineDecoderInfo& info) {
+void WebMediaPlayerImpl::OnVideoDecoderChange(const VideoDecoderInfo& info) {
   media_metrics_provider_->SetVideoPipelineInfo(info);
-  if (info.decoder_name == video_decoder_name_)
+  if (info.decoder_type == video_decoder_type_)
     return;
 
-  video_decoder_name_ = info.decoder_name;
+  video_decoder_type_ = info.decoder_type;
 
   // If there's no current reporter, there's nothing to be done.
   if (!watch_time_reporter_)
@@ -3437,7 +3437,7 @@ void WebMediaPlayerImpl::UpdateSecondaryProperties() {
           pipeline_metadata_.video_decoder_config.codec(),
           pipeline_metadata_.audio_decoder_config.profile(),
           pipeline_metadata_.video_decoder_config.profile(),
-          audio_decoder_name_, video_decoder_name_,
+          audio_decoder_type_, video_decoder_type_,
           pipeline_metadata_.audio_decoder_config.encryption_scheme(),
           pipeline_metadata_.video_decoder_config.encryption_scheme(),
           pipeline_metadata_.natural_size));

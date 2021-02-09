@@ -46,6 +46,10 @@ std::string DecryptingAudioDecoder::GetDisplayName() const {
   return "DecryptingAudioDecoder";
 }
 
+AudioDecoderType DecryptingAudioDecoder::GetDecoderType() const {
+  return AudioDecoderType::kDecrypting;
+}
+
 void DecryptingAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                         CdmContext* cdm_context,
                                         InitCB init_cb,

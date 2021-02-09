@@ -101,6 +101,10 @@ std::string MockVideoDecoder::GetDisplayName() const {
   return decoder_name_;
 }
 
+VideoDecoderType MockVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kUnknown;
+}
+
 MockVideoEncoder::MockVideoEncoder() = default;
 MockVideoEncoder::~MockVideoEncoder() {
   Dtor();
@@ -130,6 +134,10 @@ bool MockAudioDecoder::SupportsDecryption() const {
 
 std::string MockAudioDecoder::GetDisplayName() const {
   return decoder_name_;
+}
+
+AudioDecoderType MockAudioDecoder::GetDecoderType() const {
+  return AudioDecoderType::kUnknown;
 }
 
 MockRendererClient::MockRendererClient() = default;

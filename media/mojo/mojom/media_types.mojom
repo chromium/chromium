@@ -70,6 +70,14 @@ enum VideoCodecProfile;
 [Native]
 enum VideoPixelFormat;
 
+// See media/base/decoder.h for descriptions.
+[Native]
+enum VideoDecoderType;
+
+// See media/base/decoder.h for descriptions.
+[Native]
+enum AudioDecoderType;
+
 // See media/base/video_transformation.h for descriptions.
 enum VideoRotation {
   kVideoRotation0,
@@ -436,9 +444,16 @@ struct PredictionTargets {
   uint32 frames_power_efficient = 0;
 };
 
-// See media/base/pipeline/status.h for descriptions.
-struct PipelineDecoderInfo {
-  string decoder_name;
+// See media/base/pipeline_status.h for descriptions.
+struct AudioDecoderInfo {
+  AudioDecoderType decoder_type;
+  bool is_platform_decoder = false;
+  bool has_decrypting_demuxer_stream = false;
+};
+
+// See media/base/pipeline_status.h for descriptions.
+struct VideoDecoderInfo {
+  VideoDecoderType decoder_type;
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;
 };

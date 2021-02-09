@@ -69,6 +69,10 @@ std::string FFmpegAudioDecoder::GetDisplayName() const {
   return "FFmpegAudioDecoder";
 }
 
+AudioDecoderType FFmpegAudioDecoder::GetDecoderType() const {
+  return AudioDecoderType::kFFmpeg;
+}
+
 void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                     CdmContext* /* cdm_context */,
                                     InitCB init_cb,

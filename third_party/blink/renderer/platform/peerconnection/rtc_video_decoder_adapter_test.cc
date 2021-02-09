@@ -50,6 +50,9 @@ namespace {
 class MockVideoDecoder : public media::VideoDecoder {
  public:
   std::string GetDisplayName() const override { return "MockVideoDecoder"; }
+  media::VideoDecoderType GetDecoderType() const override {
+    return media::VideoDecoderType::kUnknown;
+  }
   void Initialize(const media::VideoDecoderConfig& config,
                   bool low_delay,
                   media::CdmContext* cdm_context,

@@ -197,6 +197,7 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   bool IsPlatformDecoder() const override;
   bool SupportsDecryption() const override;
   std::string GetDisplayName() const override;
+  VideoDecoderType GetDecoderType() const override;
 
   // VideoDecoder implementation.
   void Initialize(const VideoDecoderConfig& config,
@@ -360,6 +361,10 @@ bool FuchsiaVideoDecoder::SupportsDecryption() const {
 
 std::string FuchsiaVideoDecoder::GetDisplayName() const {
   return "FuchsiaVideoDecoder";
+}
+
+VideoDecoderType FuchsiaVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kFuchsia;
 }
 
 void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,

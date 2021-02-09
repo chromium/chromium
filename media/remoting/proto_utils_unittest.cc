@@ -126,15 +126,15 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
   original.video_memory_usage = 43;
   original.video_keyframe_distance_average = base::TimeDelta::Max();
   original.video_frame_duration_average = base::TimeDelta::Max();
-  original.audio_decoder_info = {false, false, "TestAudioDecoder"};
-  original.video_decoder_info = {false, false, "TestVideoDecoder"};
+  original.audio_decoder_info = {false, false,
+                                 media::AudioDecoderType::kUnknown};
+  original.video_decoder_info = {false, false,
+                                 media::VideoDecoderType::kUnknown};
 
   // There is no convert-to-proto function, so just do that here.
   pb::PipelineStatistics pb_stats;
-  pb::PipelineDecoderInfo* pb_video_info =
-      pb_stats.mutable_video_decoder_info();
-  pb::PipelineDecoderInfo* pb_audio_info =
-      pb_stats.mutable_audio_decoder_info();
+  pb::VideoDecoderInfo* pb_video_info = pb_stats.mutable_video_decoder_info();
+  pb::AudioDecoderInfo* pb_audio_info = pb_stats.mutable_audio_decoder_info();
   pb_stats.set_audio_bytes_decoded(original.audio_bytes_decoded);
   pb_stats.set_video_bytes_decoded(original.video_bytes_decoded);
   pb_stats.set_video_frames_decoded(original.video_frames_decoded);
@@ -144,11 +144,13 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
   pb_stats.set_video_frame_duration_average_usec(
       original.video_frame_duration_average.InMicroseconds());
 
-  pb_video_info->set_decoder_name(original.video_decoder_info.decoder_name);
+  pb_video_info->set_decoder_type(
+      static_cast<int64_t>(original.video_decoder_info.decoder_type));
   pb_video_info->set_is_platform_decoder(
       original.video_decoder_info.is_platform_decoder);
 
-  pb_audio_info->set_decoder_name(original.audio_decoder_info.decoder_name);
+  pb_audio_info->set_decoder_type(
+      static_cast<int64_t>(original.audio_decoder_info.decoder_type));
   pb_audio_info->set_is_platform_decoder(
       original.audio_decoder_info.is_platform_decoder);
 
@@ -157,11 +159,11 @@ TEST_F(ProtoUtilsTest, PipelineStatisticsConversion) {
   // NOTE: fields will all be initialized with 0xcd. Forcing the conversion to
   // properly assigned them. Since nested structs have strings, memsetting must
   // be done infividually for them.
-  memset(&converted, 0xcd, sizeof(converted) - sizeof(PipelineDecoderInfo) * 2);
-  memset(&converted.audio_decoder_info, 0xcd,
-         sizeof(PipelineDecoderInfo) - sizeof(std::string));
-  memset(&converted.video_decoder_info, 0xcd,
-         sizeof(PipelineDecoderInfo) - sizeof(std::string));
+  memset(
+      &converted, 0xcd,
+      sizeof(converted) - sizeof(AudioDecoderInfo) - sizeof(VideoDecoderInfo));
+  memset(&converted.audio_decoder_info, 0xcd, sizeof(AudioDecoderInfo));
+  memset(&converted.video_decoder_info, 0xcd, sizeof(VideoDecoderInfo));
 
   ConvertProtoToPipelineStatistics(pb_stats, &converted);
 

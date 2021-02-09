@@ -188,9 +188,9 @@ class FakeMediaMetricsProvider
   void SetHasAudio(media::mojom::AudioCodec audio_codec) override {}
   void SetHasVideo(media::mojom::VideoCodec video_codec) override {}
   void SetVideoPipelineInfo(
-      media::mojom::blink::PipelineDecoderInfoPtr info) override {}
+      media::mojom::blink::VideoDecoderInfoPtr info) override {}
   void SetAudioPipelineInfo(
-      media::mojom::blink::PipelineDecoderInfoPtr info) override {}
+      media::mojom::blink::AudioDecoderInfoPtr info) override {}
 
  private:
   mojo::Receiver<media::mojom::blink::MediaMetricsProvider> receiver_{this};

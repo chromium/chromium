@@ -39,6 +39,11 @@ class MockOffloadableVideoDecoder : public OffloadableVideoDecoder {
   std::string GetDisplayName() const override {
     return "MockOffloadableVideoDecoder";
   }
+
+  VideoDecoderType GetDecoderType() const override {
+    return VideoDecoderType::kUnknown;
+  }
+
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,

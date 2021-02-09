@@ -70,8 +70,8 @@ class MockPipelineClient : public Pipeline::Client {
   MOCK_METHOD1(OnVideoOpacityChange, void(bool));
   MOCK_METHOD1(OnVideoFrameRateChange, void(base::Optional<int>));
   MOCK_METHOD0(OnVideoAverageKeyframeDistanceUpdate, void());
-  MOCK_METHOD1(OnAudioDecoderChange, void(const PipelineDecoderInfo&));
-  MOCK_METHOD1(OnVideoDecoderChange, void(const PipelineDecoderInfo&));
+  MOCK_METHOD1(OnAudioDecoderChange, void(const AudioDecoderInfo&));
+  MOCK_METHOD1(OnVideoDecoderChange, void(const VideoDecoderInfo&));
   MOCK_METHOD1(OnRemotePlayStateChange, void(MediaStatus::State state));
 };
 
@@ -229,6 +229,7 @@ class MockVideoDecoder : public VideoDecoder {
   bool IsPlatformDecoder() const override;
   bool SupportsDecryption() const override;
   std::string GetDisplayName() const override;
+  VideoDecoderType GetDecoderType() const override;
 
   // VideoDecoder implementation.
   void Initialize(const VideoDecoderConfig& config,
@@ -314,6 +315,7 @@ class MockAudioDecoder : public AudioDecoder {
   bool IsPlatformDecoder() const override;
   bool SupportsDecryption() const override;
   std::string GetDisplayName() const override;
+  AudioDecoderType GetDecoderType() const override;
 
   // AudioDecoder implementation.
   void Initialize(const AudioDecoderConfig& config,

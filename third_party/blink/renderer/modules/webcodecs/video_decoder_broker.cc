@@ -225,10 +225,10 @@ class MediaVideoTaskWrapper {
     base::Optional<DecoderDetails> decoder_details;
     if (decoder_) {
       status = media::OkStatus();
-      decoder_details = DecoderDetails({decoder_->GetDisplayName(),
-                                        decoder_->IsPlatformDecoder(),
-                                        decoder_->NeedsBitstreamConversion(),
-                                        decoder_->GetMaxDecodeRequests()});
+      decoder_details = DecoderDetails(
+          {decoder_->GetDisplayName(), decoder_->GetDecoderType(),
+           decoder_->IsPlatformDecoder(), decoder_->NeedsBitstreamConversion(),
+           decoder_->GetMaxDecodeRequests()});
     }
 
     // Fire |init_cb|.
@@ -313,6 +313,11 @@ VideoDecoderBroker::~VideoDecoderBroker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   media_task_runner_->DeleteSoon(FROM_HERE, std::move(media_tasks_));
+}
+
+media::VideoDecoderType VideoDecoderBroker::GetDecoderType() const {
+  return decoder_details_ ? decoder_details_->decoder_id
+                          : media::VideoDecoderType::kBroker;
 }
 
 std::string VideoDecoderBroker::GetDisplayName() const {

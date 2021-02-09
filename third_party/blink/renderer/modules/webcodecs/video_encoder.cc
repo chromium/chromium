@@ -282,8 +282,8 @@ void VideoEncoder::UpdateEncoderLog(std::string encoder_name,
   // TODO(https://crbug.com/1139089) : Add encoder properties.
   media::MediaLog* log = logger_->log();
 
-  log->SetProperty<media::MediaLogProperty::kVideoDecoderName>(encoder_name);
-  log->SetProperty<media::MediaLogProperty::kIsPlatformVideoDecoder>(
+  log->SetProperty<media::MediaLogProperty::kVideoEncoderName>(encoder_name);
+  log->SetProperty<media::MediaLogProperty::kIsPlatformVideoEncoder>(
       is_hw_accelerated);
 }
 

@@ -87,6 +87,9 @@ class MEDIA_EXPORT AudioDecoder : public Decoder {
   // Returns true if the decoder needs bitstream conversion before decoding.
   virtual bool NeedsBitstreamConversion() const;
 
+  // Returns the type of the decoder for statistics recording purposes.
+  virtual AudioDecoderType GetDecoderType() const = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(AudioDecoder);
 };

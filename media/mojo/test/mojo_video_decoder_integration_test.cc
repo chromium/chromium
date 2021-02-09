@@ -69,6 +69,8 @@ class MockVideoDecoder : public VideoDecoder {
     // Treat const getters like a NiceMock.
     EXPECT_CALL(*this, GetDisplayName())
         .WillRepeatedly(Return("MockVideoDecoder"));
+    EXPECT_CALL(*this, GetDecoderType())
+        .WillRepeatedly(Return(VideoDecoderType::kUnknown));
     EXPECT_CALL(*this, NeedsBitstreamConversion())
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*this, CanReadWithoutStalling()).WillRepeatedly(Return(true));
@@ -87,6 +89,7 @@ class MockVideoDecoder : public VideoDecoder {
 
   // media::VideoDecoder implementation
   MOCK_CONST_METHOD0(GetDisplayName, std::string());
+  MOCK_CONST_METHOD0(GetDecoderType, VideoDecoderType());
 
   // Initialize() records values before delegating to the mock method.
   void Initialize(const VideoDecoderConfig& config,

@@ -210,8 +210,15 @@ VdaVideoDecoder::~VdaVideoDecoder() {
 std::string VdaVideoDecoder::GetDisplayName() const {
   DVLOG(3) << __func__;
   DCHECK(parent_task_runner_->BelongsToCurrentThread());
-
   return "VdaVideoDecoder";
+}
+
+VideoDecoderType VdaVideoDecoder::GetDecoderType() const {
+  DVLOG(3) << __func__;
+  DCHECK(parent_task_runner_->BelongsToCurrentThread());
+  // TODO(tmathmeyer) query the accelerator for it's implementation type and
+  // return that instead.
+  return VideoDecoderType::kVda;
 }
 
 void VdaVideoDecoder::Initialize(const VideoDecoderConfig& config,

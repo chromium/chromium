@@ -247,6 +247,10 @@ std::string Gav1VideoDecoder::GetDisplayName() const {
   return "Gav1VideoDecoder";
 }
 
+VideoDecoderType Gav1VideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kGav1;
+}
+
 void Gav1VideoDecoder::Initialize(const VideoDecoderConfig& config,
                                   bool low_delay,
                                   CdmContext* /* cdm_context */,

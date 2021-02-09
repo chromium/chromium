@@ -20,6 +20,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
+#include "media/base/decoder.h"
 #include "media/base/demuxer.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -776,7 +777,7 @@ void PipelineImpl::RendererWrapper::OnStatisticsUpdate(
   shared_state_.statistics.audio_memory_usage += stats.audio_memory_usage;
   shared_state_.statistics.video_memory_usage += stats.video_memory_usage;
 
-  if (!stats.audio_decoder_info.decoder_name.empty() &&
+  if (stats.audio_decoder_info.decoder_type != AudioDecoderType::kUnknown &&
       stats.audio_decoder_info != shared_state_.statistics.audio_decoder_info) {
     shared_state_.statistics.audio_decoder_info = stats.audio_decoder_info;
     main_task_runner_->PostTask(
@@ -784,7 +785,7 @@ void PipelineImpl::RendererWrapper::OnStatisticsUpdate(
                                   weak_pipeline_, stats.audio_decoder_info));
   }
 
-  if (!stats.video_decoder_info.decoder_name.empty() &&
+  if (stats.video_decoder_info.decoder_type != VideoDecoderType::kUnknown &&
       stats.video_decoder_info != shared_state_.statistics.video_decoder_info) {
     shared_state_.statistics.video_decoder_info = stats.video_decoder_info;
     main_task_runner_->PostTask(
@@ -1631,7 +1632,7 @@ void PipelineImpl::OnVideoAverageKeyframeDistanceUpdate() {
   client_->OnVideoAverageKeyframeDistanceUpdate();
 }
 
-void PipelineImpl::OnAudioDecoderChange(const PipelineDecoderInfo& info) {
+void PipelineImpl::OnAudioDecoderChange(const AudioDecoderInfo& info) {
   DVLOG(2) << __func__ << ": info=" << info;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsRunning());
@@ -1640,7 +1641,7 @@ void PipelineImpl::OnAudioDecoderChange(const PipelineDecoderInfo& info) {
   client_->OnAudioDecoderChange(info);
 }
 
-void PipelineImpl::OnVideoDecoderChange(const PipelineDecoderInfo& info) {
+void PipelineImpl::OnVideoDecoderChange(const VideoDecoderInfo& info) {
   DVLOG(2) << __func__ << ": info=" << info;
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsRunning());

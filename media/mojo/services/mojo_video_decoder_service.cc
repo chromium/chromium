@@ -280,9 +280,13 @@ void MojoVideoDecoderService::OnDecoderInitialized(Status status) {
   TRACE_EVENT_ASYNC_END1("media", kInitializeTraceName, this, "success",
                          status.code());
 
-  std::move(init_cb_).Run(
-      status, status.is_ok() ? decoder_->NeedsBitstreamConversion() : false,
-      status.is_ok() ? decoder_->GetMaxDecodeRequests() : 1);
+  if (!status.is_ok()) {
+    std::move(init_cb_).Run(status, false, 1, VideoDecoderType::kUnknown);
+    return;
+  }
+  std::move(init_cb_).Run(status, decoder_->NeedsBitstreamConversion(),
+                          decoder_->GetMaxDecodeRequests(),
+                          decoder_->GetDecoderType());
 }
 
 void MojoVideoDecoderService::OnReaderRead(

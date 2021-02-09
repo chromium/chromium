@@ -331,7 +331,7 @@ TEST_F(AudioDecoderBrokerTest, Decode_WithMojoDecoder) {
       media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted));
   EXPECT_EQ(GetDisplayName(), "MojoAudioDecoder");
 
-  // Using vorbis buffer here because its easy and the  fake decoder generates
+  // Using vorbis buffer here because its easy and the fake decoder generates
   // output regardless of the input details.
   DecodeBuffer(media::ReadTestDataFile("vorbis-packet-0"));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());

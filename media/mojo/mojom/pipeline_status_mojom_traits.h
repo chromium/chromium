@@ -47,27 +47,54 @@ struct StructTraits<media::mojom::PipelineStatisticsDataView,
 };
 
 template <>
-struct StructTraits<media::mojom::PipelineDecoderInfoDataView,
-                    media::PipelineDecoderInfo> {
-  static std::string decoder_name(const media::PipelineDecoderInfo& input) {
-    return input.decoder_name;
+struct StructTraits<media::mojom::AudioDecoderInfoDataView,
+                    media::AudioDecoderInfo> {
+  static media::AudioDecoderType decoder_type(
+      const media::AudioDecoderInfo& input) {
+    return input.decoder_type;
   }
 
-  static bool is_platform_decoder(const media::PipelineDecoderInfo& input) {
+  static bool is_platform_decoder(const media::AudioDecoderInfo& input) {
     return input.is_platform_decoder;
   }
 
   static bool has_decrypting_demuxer_stream(
-      const media::PipelineDecoderInfo& input) {
+      const media::AudioDecoderInfo& input) {
     return input.has_decrypting_demuxer_stream;
   }
 
-  static bool Read(media::mojom::PipelineDecoderInfoDataView data,
-                   media::PipelineDecoderInfo* output) {
+  static bool Read(media::mojom::AudioDecoderInfoDataView data,
+                   media::AudioDecoderInfo* output) {
     output->is_platform_decoder = data.is_platform_decoder();
     output->has_decrypting_demuxer_stream =
         data.has_decrypting_demuxer_stream();
-    return data.ReadDecoderName(&output->decoder_name);
+    return data.ReadDecoderType(&output->decoder_type);
+  }
+};
+
+template <>
+struct StructTraits<media::mojom::VideoDecoderInfoDataView,
+                    media::VideoDecoderInfo> {
+  static media::VideoDecoderType decoder_type(
+      const media::VideoDecoderInfo& input) {
+    return input.decoder_type;
+  }
+
+  static bool is_platform_decoder(const media::VideoDecoderInfo& input) {
+    return input.is_platform_decoder;
+  }
+
+  static bool has_decrypting_demuxer_stream(
+      const media::VideoDecoderInfo& input) {
+    return input.has_decrypting_demuxer_stream;
+  }
+
+  static bool Read(media::mojom::VideoDecoderInfoDataView data,
+                   media::VideoDecoderInfo* output) {
+    output->is_platform_decoder = data.is_platform_decoder();
+    output->has_decrypting_demuxer_stream =
+        data.has_decrypting_demuxer_stream();
+    return data.ReadDecoderType(&output->decoder_type);
   }
 };
 

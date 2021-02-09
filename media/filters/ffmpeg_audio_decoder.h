@@ -40,6 +40,7 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   ~FFmpegAudioDecoder() override;
 
   // AudioDecoder implementation.
+  AudioDecoderType GetDecoderType() const override;
   std::string GetDisplayName() const override;
   void Initialize(const AudioDecoderConfig& config,
                   CdmContext* cdm_context,

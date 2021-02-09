@@ -143,6 +143,10 @@ bool MojoVideoDecoder::SupportsDecryption() const {
 #endif
 }
 
+VideoDecoderType MojoVideoDecoder::GetDecoderType() const {
+  return decoder_type_;
+}
+
 std::string MojoVideoDecoder::GetDisplayName() const {
   return "MojoVideoDecoder";
 }
@@ -207,12 +211,14 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
 void MojoVideoDecoder::OnInitializeDone(const Status& status,
                                         bool needs_bitstream_conversion,
-                                        int32_t max_decode_requests) {
+                                        int32_t max_decode_requests,
+                                        VideoDecoderType decoder_type) {
   DVLOG(1) << __func__ << ": status = " << std::hex << status.code();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   initialized_ = status.is_ok();
   needs_bitstream_conversion_ = needs_bitstream_conversion;
   max_decode_requests_ = max_decode_requests;
+  decoder_type_ = decoder_type;
   std::move(init_cb_).Run(status);
 }
 

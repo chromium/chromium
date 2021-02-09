@@ -88,6 +88,7 @@ class MEDIA_EXPORT OffloadingVideoDecoder : public VideoDecoder {
   ~OffloadingVideoDecoder() override;
 
   // VideoDecoder implementation.
+  VideoDecoderType GetDecoderType() const override;
   std::string GetDisplayName() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

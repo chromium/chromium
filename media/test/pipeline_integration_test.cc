@@ -351,6 +351,9 @@ class NoResponseApp : public FakeEncryptedMedia::AppBase {
 class FailingVideoDecoder : public VideoDecoder {
  public:
   std::string GetDisplayName() const override { return "FailingVideoDecoder"; }
+  VideoDecoderType GetDecoderType() const override {
+    return VideoDecoderType::kUnknown;
+  }
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,

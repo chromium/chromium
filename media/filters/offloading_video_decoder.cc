@@ -75,6 +75,11 @@ OffloadingVideoDecoder::~OffloadingVideoDecoder() {
     offload_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
 }
 
+VideoDecoderType OffloadingVideoDecoder::GetDecoderType() const {
+  // This call is expected to be static and safe to call from any thread.
+  return helper_->decoder()->GetDecoderType();
+}
+
 std::string OffloadingVideoDecoder::GetDisplayName() const {
   // This call is expected to be static and safe to call from any thread.
   return helper_->decoder()->GetDisplayName();

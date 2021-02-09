@@ -17,6 +17,7 @@
 #include "media/base/container_names.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/decode_status.h"
+#include "media/base/decoder.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/decryptor.h"
 #include "media/base/demuxer_stream.h"
@@ -129,6 +130,12 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(media::VideoCodecProfile,
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoDecoderImplementation,
                           media::VideoDecoderImplementation::kMaxValue)
+
+IPC_ENUM_TRAITS_MAX_VALUE(media::VideoDecoderType,
+                          media::VideoDecoderType::kMaxValue)
+
+IPC_ENUM_TRAITS_MAX_VALUE(media::AudioDecoderType,
+                          media::AudioDecoderType::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoPixelFormat, media::PIXEL_FORMAT_MAX)
 

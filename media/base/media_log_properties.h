@@ -59,14 +59,18 @@ enum class MediaLogProperty {
   kIsRangeHeaderSupported,
 
   // The name of the decoder implementation currently being used to play the
-  // media stream. All audio/video decoders have names, such as
-  // FFMpegVideoDecoder or D3D11VideoDecoder.
+  // media stream. All audio/video decoders have id numbers defined in
+  // decoder.h.
   kVideoDecoderName,
   kAudioDecoderName,
 
   // Whether this decoder is using hardware accelerated decoding.
   kIsPlatformVideoDecoder,
   kIsPlatformAudioDecoder,
+
+  // Webcodecs supports encoding video streams.
+  kVideoEncoderName,
+  kIsPlatformVideoEncoder,
 
   // Whether this media player is using a decrypting demuxer for the given
   // audio or video stream.
@@ -101,12 +105,14 @@ MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsStreaming, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kFrameUrl, std::string);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kFrameTitle, std::string);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsSingleOrigin, bool);
-MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoDecoderName, std::string);
+MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoDecoderName, VideoDecoderType);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsPlatformVideoDecoder, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsRangeHeaderSupported, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsVideoDecryptingDemuxerStream, bool);
-MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kAudioDecoderName, std::string);
+MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kAudioDecoderName, AudioDecoderType);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsPlatformAudioDecoder, bool);
+MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kVideoEncoderName, std::string);
+MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsPlatformVideoEncoder, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kIsAudioDecryptingDemuxerStream, bool);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kAudioTracks, std::vector<AudioDecoderConfig>);
 MEDIA_LOG_PROPERTY_SUPPORTS_TYPE(kTextTracks, std::vector<TextTrackConfig>);

@@ -82,6 +82,10 @@ std::string TestVDAVideoDecoder::GetDisplayName() const {
   return "TestVDAVideoDecoder";
 }
 
+VideoDecoderType TestVDAVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kUnknown;
+}
+
 bool TestVDAVideoDecoder::IsPlatformDecoder() const {
   return true;
 }

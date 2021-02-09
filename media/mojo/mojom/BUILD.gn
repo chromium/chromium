@@ -140,6 +140,10 @@ mojom("mojom") {
           mojom = "media.mojom.AudioDecoderConfig"
           cpp = "::media::AudioDecoderConfig"
         },
+        {
+          mojom = "media.mojom.AudioDecoderType"
+          cpp = "::media::AudioDecoderType"
+        },
       ]
       traits_headers = [ "audio_decoder_config_mojom_traits.h" ]
       traits_sources = [ "audio_decoder_config_mojom_traits.cc" ]
@@ -262,8 +266,20 @@ mojom("mojom") {
           cpp = "::media::PipelineStatistics"
         },
         {
-          mojom = "media.mojom.PipelineDecoderInfo"
-          cpp = "::media::PipelineDecoderInfo"
+          mojom = "media.mojom.AudioDecoderInfo"
+          cpp = "::media::AudioDecoderInfo"
+        },
+        {
+          mojom = "media.mojom.VideoDecoderInfo"
+          cpp = "::media::VideoDecoderInfo"
+        },
+        {
+          mojom = "media.mojom.AudioDecoderType"
+          cpp = "::media::AudioDecoderType"
+        },
+        {
+          mojom = "media.mojom.VideoDecoderType"
+          cpp = "::media::VideoDecoderType"
         },
       ]
       traits_headers = [ "pipeline_status_mojom_traits.h" ]
@@ -316,6 +332,10 @@ mojom("mojom") {
         {
           mojom = "media.mojom.VideoDecoderImplementation"
           cpp = "::media::VideoDecoderImplementation"
+        },
+        {
+          mojom = "media.mojom.VideoDecoderType"
+          cpp = "::media::VideoDecoderType"
         },
       ]
       traits_headers = [

@@ -126,6 +126,12 @@ class MEDIA_EXPORT VideoDecoder : public Decoder {
   // [|limits::kMinVideoDecodeThreads|, |limits::kMaxVideoDecodeThreads|].
   static int GetRecommendedThreadCount(int desired_threads);
 
+  // Returns the type of the decoder for statistics recording purposes.
+  // For meta-decoders (those which wrap other decoders, ie, MojoVideoDecoder)
+  // this should return the underlying type, if it is known, otherwise return
+  // its own type.
+  virtual VideoDecoderType GetDecoderType() const = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(VideoDecoder);
 };

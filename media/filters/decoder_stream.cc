@@ -410,7 +410,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
   media_log_->SetProperty<StreamTraits::kIsDecryptingDemuxerStream>(
       !!decrypting_demuxer_stream_);
   media_log_->SetProperty<StreamTraits::kDecoderName>(
-      decoder_->GetDisplayName());
+      decoder_->GetDecoderType());
   media_log_->SetProperty<StreamTraits::kIsPlatformDecoder>(
       decoder_->IsPlatformDecoder());
 

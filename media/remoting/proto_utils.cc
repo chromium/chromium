@@ -311,14 +311,16 @@ void ConvertProtoToPipelineStatistics(
   // that sender provided the values.
   if (stats_message.has_audio_decoder_info()) {
     auto audio_info = stats_message.audio_decoder_info();
-    stats->audio_decoder_info.decoder_name = audio_info.decoder_name();
+    stats->audio_decoder_info.decoder_type =
+        static_cast<AudioDecoderType>(audio_info.decoder_type());
     stats->audio_decoder_info.is_platform_decoder =
         audio_info.is_platform_decoder();
     stats->audio_decoder_info.has_decrypting_demuxer_stream = false;
   }
   if (stats_message.has_video_decoder_info()) {
     auto video_info = stats_message.video_decoder_info();
-    stats->video_decoder_info.decoder_name = video_info.decoder_name();
+    stats->video_decoder_info.decoder_type =
+        static_cast<VideoDecoderType>(video_info.decoder_type());
     stats->video_decoder_info.is_platform_decoder =
         video_info.is_platform_decoder();
     stats->video_decoder_info.has_decrypting_demuxer_stream = false;

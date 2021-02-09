@@ -108,6 +108,10 @@ VpxVideoDecoder::~VpxVideoDecoder() {
   CloseDecoder();
 }
 
+VideoDecoderType VpxVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kVpx;
+}
+
 std::string VpxVideoDecoder::GetDisplayName() const {
   return "VpxVideoDecoder";
 }

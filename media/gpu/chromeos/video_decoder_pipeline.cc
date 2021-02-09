@@ -157,8 +157,12 @@ void VideoDecoderPipeline::DestroyAsync(
 
 std::string VideoDecoderPipeline::GetDisplayName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-
   return "VideoDecoderPipeline";
+}
+
+VideoDecoderType VideoDecoderPipeline::GetDecoderType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+  return VideoDecoderType::kChromeOs;
 }
 
 bool VideoDecoderPipeline::IsPlatformDecoder() const {

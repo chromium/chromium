@@ -65,6 +65,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
                          InitCB init_cb,
                          const OutputCB& output_cb,
                          const WaitingCB& waiting_cb);
+  void OnDecoderInitialized(DecoderType* decoder, InitCB cb, Status status);
   DecoderConfigType GetDecoderConfig(DemuxerStream* stream);
   void OnDecode(const DecoderBuffer& buffer);
   PostDecodeAction OnDecodeDone(OutputType* buffer);
@@ -84,6 +85,10 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   ChannelLayout initial_hw_layout_;
   PipelineStatistics stats_;
   AudioDecoderConfig config_;
+
+  base::WeakPtr<DecoderStreamTraits<DemuxerStream::AUDIO>> weak_this_;
+  base::WeakPtrFactory<DecoderStreamTraits<DemuxerStream::AUDIO>> weak_factory_{
+      this};
 };
 
 template <>
@@ -118,6 +123,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
                          InitCB init_cb,
                          const OutputCB& output_cb,
                          const WaitingCB& waiting_cb);
+  void OnDecoderInitialized(DecoderType* decoder, InitCB cb, Status status);
   void OnDecode(const DecoderBuffer& buffer);
   PostDecodeAction OnDecodeDone(OutputType* buffer);
   void OnStreamReset(DemuxerStream* stream);
@@ -136,6 +142,10 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
   base::flat_map<base::TimeDelta, FrameMetadata> frame_metadata_;
 
   PipelineStatistics stats_;
+
+  base::WeakPtr<DecoderStreamTraits<DemuxerStream::VIDEO>> weak_this_;
+  base::WeakPtrFactory<DecoderStreamTraits<DemuxerStream::VIDEO>> weak_factory_{
+      this};
 };
 
 }  // namespace media

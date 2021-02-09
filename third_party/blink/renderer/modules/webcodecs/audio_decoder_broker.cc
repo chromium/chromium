@@ -199,6 +199,7 @@ class MediaAudioTaskWrapper {
     if (decoder_) {
       status = media::OkStatus();
       decoder_details = DecoderDetails({decoder_->GetDisplayName(),
+                                        decoder_->GetDecoderType(),
                                         decoder_->IsPlatformDecoder(),
                                         decoder_->NeedsBitstreamConversion()});
     }
@@ -281,6 +282,11 @@ AudioDecoderBroker::~AudioDecoderBroker() {
 std::string AudioDecoderBroker::GetDisplayName() const {
   return decoder_details_ ? decoder_details_->display_name
                           : AudioDecoderBroker::kDefaultDisplayName;
+}
+
+media::AudioDecoderType AudioDecoderBroker::GetDecoderType() const {
+  return decoder_details_ ? decoder_details_->decoder_id
+                          : media::AudioDecoderType::kBroker;
 }
 
 bool AudioDecoderBroker::IsPlatformDecoder() const {

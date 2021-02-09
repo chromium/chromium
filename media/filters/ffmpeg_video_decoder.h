@@ -38,6 +38,7 @@ class MEDIA_EXPORT FFmpegVideoDecoder : public VideoDecoder {
   void set_decode_nalus(bool decode_nalus) { decode_nalus_ = decode_nalus; }
 
   // VideoDecoder implementation.
+  VideoDecoderType GetDecoderType() const override;
   std::string GetDisplayName() const override;
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

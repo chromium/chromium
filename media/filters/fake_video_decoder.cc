@@ -68,6 +68,10 @@ std::string FakeVideoDecoder::GetDisplayName() const {
   return decoder_name_;
 }
 
+VideoDecoderType FakeVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kUnknown;
+}
+
 void FakeVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                   bool low_delay,
                                   CdmContext* cdm_context,

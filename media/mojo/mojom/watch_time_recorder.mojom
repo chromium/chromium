@@ -28,8 +28,8 @@ struct SecondaryPlaybackProperties {
   VideoCodec video_codec;  // playbacks (HLS, remoting, etc).
   AudioCodecProfile audio_codec_profile;
   VideoCodecProfile video_codec_profile;
-  string audio_decoder_name;
-  string video_decoder_name;
+  AudioDecoderType audio_decoder;
+  VideoDecoderType video_decoder;
   EncryptionScheme audio_encryption_scheme;
   EncryptionScheme video_encryption_scheme;
   gfx.mojom.Size natural_size;  // Size of video frame; (0, 0) if audio only.

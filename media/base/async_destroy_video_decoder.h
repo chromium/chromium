@@ -35,6 +35,11 @@ class AsyncDestroyVideoDecoder final : public VideoDecoder {
       T::DestroyAsync(std::move(wrapped_decoder_));
   }
 
+  VideoDecoderType GetDecoderType() const override {
+    DCHECK(wrapped_decoder_);
+    return wrapped_decoder_->GetDecoderType();
+  }
+
   std::string GetDisplayName() const override {
     DCHECK(wrapped_decoder_);
     return wrapped_decoder_->GetDisplayName();

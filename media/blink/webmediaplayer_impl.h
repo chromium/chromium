@@ -360,8 +360,8 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   void OnVideoOpacityChange(bool opaque) override;
   void OnVideoFrameRateChange(base::Optional<int> fps) override;
   void OnVideoAverageKeyframeDistanceUpdate() override;
-  void OnAudioDecoderChange(const PipelineDecoderInfo& info) override;
-  void OnVideoDecoderChange(const PipelineDecoderInfo& info) override;
+  void OnAudioDecoderChange(const AudioDecoderInfo& info) override;
+  void OnVideoDecoderChange(const VideoDecoderInfo& info) override;
 
   // Simplified watch time reporting.
   void OnSimpleWatchTimerTick();
@@ -892,8 +892,8 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   // Monitors the watch time of the played content.
   std::unique_ptr<blink::WatchTimeReporter> watch_time_reporter_;
-  std::string audio_decoder_name_;
-  std::string video_decoder_name_;
+  AudioDecoderType audio_decoder_type_ = AudioDecoderType::kUnknown;
+  VideoDecoderType video_decoder_type_ = VideoDecoderType::kUnknown;
 
   // The time at which DoLoad() is executed.
   base::TimeTicks load_start_time_;

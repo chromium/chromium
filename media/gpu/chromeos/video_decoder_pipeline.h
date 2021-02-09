@@ -148,6 +148,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   static void DestroyAsync(std::unique_ptr<VideoDecoderPipeline>);
 
   // VideoDecoder implementation
+  VideoDecoderType GetDecoderType() const override;
   std::string GetDisplayName() const override;
   bool IsPlatformDecoder() const override;
   int GetMaxDecodeRequests() const override;
