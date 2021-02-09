@@ -8322,6 +8322,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Is malware"/>
 </enum>
 
+<enum name="BooleanIsMimeTypeApk">
+  <int value="0" label="Not apk"/>
+  <int value="1" label="Apk"/>
+</enum>
+
 <enum name="BooleanIsMobileOptimized">
   <int value="0" label="Not mobile optimized web page"/>
   <int value="1" label="Mobile optimized web page"/>

@@ -57,6 +57,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.IsMimeTypeApk"
+    enum="BooleanIsMimeTypeApk" expires_after="2022-02-05">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether the mime type of the download is apk. Logged each time an
+    apk download report is sent on Android.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.Outcome"
     enum="ApkDownloadTelemetryOutcome" expires_after="2021-07-01">
   <owner>xinghuilu@chromium.org</owner>

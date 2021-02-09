@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -38,6 +39,8 @@ namespace safe_browsing {
 namespace {
 // File suffix for APKs.
 const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
+// MIME-type for APKs.
+const char kApkMimeType[] = "application/vnd.android.package-archive";
 
 // The number of user gestures to trace back for the referrer chain.
 const int kAndroidTelemetryUserGestureLimit = 2;
@@ -111,6 +114,9 @@ void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK(item->GetTargetFilePath().MatchesExtension(kApkSuffix));
 
   if (item->GetState() == download::DownloadItem::COMPLETE) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.AndroidTelemetry.ApkDownload.IsMimeTypeApk",
+        (item->GetMimeType() == kApkMimeType));
     // Download completed. Send report.
     std::unique_ptr<ClientSafeBrowsingReportRequest> report = GetReport(item);
     MaybeSendApkDownloadReport(
@@ -133,7 +139,6 @@ bool AndroidTelemetryService::CanSendPing(download::DownloadItem* item) {
     // how often people download non-APK files.
     return false;
   }
-  // TODO(crbug.com/1173145): Add a metric to check if the MIME type is APK.
 
   if (!IsSafeBrowsingEnabled(*GetPrefs())) {
     RecordApkDownloadTelemetryOutcome(
