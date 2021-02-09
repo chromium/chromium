@@ -460,8 +460,7 @@ bool IsSaveDataSizeValid(size_t size) {
   return size > 0 && size <= kMaximumSavedFileSize;
 }
 
-PP_PrivateAccessibilityPageInfo
-PrivateAccessibilityPageInfoFromAccessibilityPageInfo(
+PP_PrivateAccessibilityPageInfo ToPrivateAccessibilityPageInfo(
     const AccessibilityPageInfo& page_info) {
   PP_PrivateAccessibilityPageInfo pp_page_info;
   pp_page_info.page_index = page_info.page_index;
@@ -471,8 +470,7 @@ PrivateAccessibilityPageInfoFromAccessibilityPageInfo(
   return pp_page_info;
 }
 
-std::vector<PP_PrivateAccessibilityCharInfo>
-PrivateAccessibilityCharInfoFromAccessibilityCharInfo(
+std::vector<PP_PrivateAccessibilityCharInfo> ToPrivateAccessibilityCharInfo(
     const std::vector<AccessibilityCharInfo>& chars) {
   std::vector<PP_PrivateAccessibilityCharInfo> pp_chars;
   pp_chars.reserve(chars.size());
@@ -481,8 +479,7 @@ PrivateAccessibilityCharInfoFromAccessibilityCharInfo(
   return pp_chars;
 }
 
-pp::PDF::PrivateAccessibilityTextStyleInfo
-PrivateAccessibilityTextStyleInfoFromAccessibilityTextStyleInfo(
+pp::PDF::PrivateAccessibilityTextStyleInfo ToPrivateAccessibilityTextStyleInfo(
     const AccessibilityTextStyleInfo& style) {
   pp::PDF::PrivateAccessibilityTextStyleInfo pp_style;
   pp_style.font_name = style.font_name;
@@ -497,7 +494,7 @@ PrivateAccessibilityTextStyleInfoFromAccessibilityTextStyleInfo(
 }
 
 std::vector<pp::PDF::PrivateAccessibilityTextRunInfo>
-PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(
+ToPrivateAccessibilityCharInfo(
     const std::vector<AccessibilityTextRunInfo>& text_runs) {
   std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> pp_text_runs;
   pp_text_runs.reserve(text_runs.size());
@@ -505,8 +502,7 @@ PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(
     pp::PDF::PrivateAccessibilityTextRunInfo pp_text_run = {
         text_run.len, PPFloatRectFromRectF(text_run.bounds),
         static_cast<PP_PrivateDirection>(text_run.direction),
-        PrivateAccessibilityTextStyleInfoFromAccessibilityTextStyleInfo(
-            text_run.style)};
+        ToPrivateAccessibilityTextStyleInfo(text_run.style)};
     pp_text_runs.push_back(std::move(pp_text_run));
   }
   return pp_text_runs;
@@ -963,11 +959,11 @@ void OutOfProcessInstance::SendNextAccessibilityPage(int32_t page_index) {
   }
 
   PP_PrivateAccessibilityPageInfo pp_page_info =
-      PrivateAccessibilityPageInfoFromAccessibilityPageInfo(page_info);
+      ToPrivateAccessibilityPageInfo(page_info);
   std::vector<PP_PrivateAccessibilityCharInfo> pp_chars =
-      PrivateAccessibilityCharInfoFromAccessibilityCharInfo(chars);
+      ToPrivateAccessibilityCharInfo(chars);
   std::vector<pp::PDF::PrivateAccessibilityTextRunInfo> pp_text_runs =
-      PrivateAccessibilityCharInfoFromAccessibilityTextRunInfo(text_runs);
+      ToPrivateAccessibilityCharInfo(text_runs);
   pp::PDF::PrivateAccessibilityPageObjects pp_page_objects =
       ToPrivateAccessibilityPageObjects(page_objects);
   pp::PDF::SetAccessibilityPageInfo(GetPluginInstance(), &pp_page_info,
