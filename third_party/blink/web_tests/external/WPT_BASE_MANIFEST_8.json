@@ -182286,6 +182286,12 @@
       []
      ]
     },
+    "plugin-types": {
+     "plugin-types-ignored.html.sub.headers": [
+      "5508935fff4bf3c2d15f0de35a0efb43da595910",
+      []
+     ]
+    },
     "prefetch-src": {
      "prefetch-header-allowed.html.headers": [
       "2b1d42a8d16c04cf339366b05262c27516e4196c",
@@ -224296,7 +224302,7 @@
       []
      ],
      "justifyleft_2001-last-expected.txt": [
-      "d23a057b64b156408f3a66ff90a02a10308ae265",
+      "248e4286b4235bb9f1e0a4fdedacb132a9548fc2",
       []
      ],
      "justifyright_1-1000-expected.txt": [
@@ -251340,7 +251346,7 @@
       []
      ],
      "webxr-test.js": [
-      "2846adda6ab414a8593a4c83dc4dbe082adcb62b",
+      "e3b21fb720af82c479d8b1547a5c420eceeb004d",
       []
      ],
      "webxr-test.js.headers": [
@@ -263142,11 +263148,11 @@
       []
      ],
      "webxr_math_utils.js": [
-      "bb55fb72978690427aac38b84d1eac24e838d0eb",
+      "54a61c185469c1c4472a72f5816e6fe05562af83",
       []
      ],
      "webxr_test_asserts.js": [
-      "38f1364ce03ce96890cda97dcc226b8e472dd332",
+      "a82f7aaf90aabb8a49b9f10aa0d50ba795d798fe",
       []
      ],
      "webxr_test_constants.js": [
@@ -285513,6 +285519,15 @@
      ],
      "object-src-url-redirect-blocked.sub.html": [
       "c79c9938e1ce9045b4772b48f5670be6319bf550",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "plugin-types": {
+     "plugin-types-ignored.html": [
+      "cf27cdfc54b31aa12c0f5718a85ab6e956e70093",
       [
        null,
        {}
@@ -344474,6 +344489,15 @@
        {
         "timeout": "long"
        }
+      ]
+     ]
+    },
+    "redirects": {
+     "data.window.js": [
+      "eeb41966b447cd58b7f124176a07664e91d2d3c6",
+      [
+       "fetch/redirects/data.window.html",
+       {}
       ]
      ]
     },
@@ -446891,14 +446915,14 @@
       ]
      ],
      "ar_hittest_subscription_inputSources.https.html": [
-      "dcd1d717883367fc8f01f49864621be913fb3850",
+      "ca92d390fc6c913410b10fd2c656f544ac1e5317",
       [
        null,
        {}
       ]
      ],
      "ar_hittest_subscription_refSpaces.https.html": [
-      "465e16110394600c6ffaefdd23cb58958411bd02",
+      "a30e71949c9d6af6c81f1095b90c27a899b0b3f3",
       [
        null,
        {}
@@ -446919,7 +446943,7 @@
       ]
      ],
      "ar_hittest_subscription_transientInputSources.https.html": [
-      "04df13240668c2513ccb01975259919cc95438e9",
+      "9e0347963c64fb1d481d23f6d8b6249274dcd7f7",
       [
        null,
        {}
@@ -447232,7 +447256,7 @@
      ]
     ],
     "xrRigidTransform_inverse.https.html": [
-     "cd5b34583b3a152879ad6d559a3c3098357630b8",
+     "d4fdc15396d25223ab07d473a0039434b4c58761",
      [
       null,
       {}
