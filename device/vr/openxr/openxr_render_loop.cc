@@ -108,7 +108,13 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   return frame_data;
 }
 
-bool OpenXrRenderLoop::StartRuntime() {
+// StartRuntime is called by XRCompositorCommon::RequestSession. When the
+// runtime is fully started, start_runtime_callback.Run must be called with a
+// success boolean, or false on failure. OpenXrRenderLoop::StartRuntime waits
+// until the Viz context provider is fully started before running
+// start_runtime_callback.
+void OpenXrRenderLoop::StartRuntime(
+    StartRuntimeCallback start_runtime_callback) {
   DCHECK(instance_ != XR_NULL_HANDLE);
   DCHECK(!openxr_);
   DCHECK(!input_helper_);
@@ -121,7 +127,7 @@ bool OpenXrRenderLoop::StartRuntime() {
   std::unique_ptr<OpenXrApiWrapper> openxr =
       OpenXrApiWrapper::Create(instance_);
   if (!openxr)
-    return false;
+    return std::move(start_runtime_callback).Run(false);
 
   texture_helper_.SetUseBGRA(true);
   LUID luid;
@@ -131,7 +137,7 @@ bool OpenXrRenderLoop::StartRuntime() {
       XR_FAILED(openxr->InitSession(texture_helper_.GetDevice(), &input_helper_,
                                     extension_helper_))) {
     texture_helper_.Reset();
-    return false;
+    return std::move(start_runtime_callback).Run(false);
   }
 
   // Starting session succeeded so we can set the member variable.
@@ -148,12 +154,7 @@ bool OpenXrRenderLoop::StartRuntime() {
       &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr()));
   InitializeDisplayInfo();
 
-  // TODO(https://crbug.com/1131616): In a subsequent change, refactor
-  // StartContextProviderIfNeeded such that we do not start the session until
-  // the context provider has been created.
-  StartContextProviderIfNeeded();
-
-  return true;
+  StartContextProviderIfNeeded(std::move(start_runtime_callback));
 }
 
 void OpenXrRenderLoop::StopRuntime() {
@@ -165,6 +166,7 @@ void OpenXrRenderLoop::StopRuntime() {
   openxr_ = nullptr;
   current_display_info_ = nullptr;
   texture_helper_.Reset();
+  context_provider_.reset();
 }
 
 void OpenXrRenderLoop::EnableSupportedFeatures(
@@ -475,17 +477,22 @@ void OpenXrRenderLoop::DetachAnchor(uint64_t anchor_id) {
   anchor_manager->DetachAnchor(AnchorId(anchor_id));
 }
 
-void OpenXrRenderLoop::StartContextProviderIfNeeded() {
+void OpenXrRenderLoop::StartContextProviderIfNeeded(
+    StartRuntimeCallback start_runtime_callback) {
   DCHECK(task_runner()->BelongsToCurrentThread());
-  // We could arrive here in scenarios where we've shutdown the render loop.
-  // In that case, there is no need to start the context provider.
-  if (!context_provider_ && !HasSessionEnded()) {
+  DCHECK_EQ(context_provider_, nullptr);
+  // We could arrive here in scenarios where we've shutdown the render loop or
+  // runtime. In that case, there is no need to start the context provider.
+  // If openxr_ has been torn down the context provider is unnecessary as
+  // there is nothing to connect to the GPU process.
+  if (openxr_) {
     main_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             context_provider_factory_async_,
             base::BindOnce(&OpenXrRenderLoop::OnContextProviderCreated,
-                           weak_ptr_factory_.GetWeakPtr()),
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(start_runtime_callback)),
             task_runner()));
   }
 }
@@ -511,22 +518,30 @@ void OpenXrRenderLoop::OnContextLost() {
                                 std::move(context_provider_)));
 }
 
-// Called on the render loop thread as a continuation of OnContextLost
+// Called on the render loop thread as a continuation of OnContextLost.
 void OpenXrRenderLoop::OnContextLostCallback(
-    scoped_refptr<viz::ContextProvider> context_provider) {
+    scoped_refptr<viz::ContextProvider> lost_context_provider) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(context_provider_, nullptr);
 
-  // context_provider is required to be released on the context thread it was
-  // bound to.
-  context_provider.reset();
+  // Context providers are required to be released on the context thread they
+  // were bound to.
+  lost_context_provider.reset();
 
-  StartContextProviderIfNeeded();
+  StartContextProviderIfNeeded(base::DoNothing());
 }
 
-// Called on the render loop thread by IsolatedXRRuntimeProvider when it has
-// finished creating the context provider.
+// OpenXrRenderLoop::StartContextProvider queues a task on the main thread's
+// task runner to run IsolatedXRRuntimeProvider::CreateContextProviderAsync.
+// When CreateContextProviderAsync finishes creating the Viz context provider,
+// it will queue a task onto the render loop's task runner to run
+// OnContextProviderCreated, passing it the newly created context provider.
+// StartContextProvider uses BindOnce to passthrough the start_runtime_callback
+// given to it from it's caller OnContextProviderCreated must run the
+// start_runtime_callback, passing true on successful call to
+// BindToCurrentThread and false if not.
 void OpenXrRenderLoop::OnContextProviderCreated(
+    StartRuntimeCallback start_runtime_callback,
     scoped_refptr<viz::ContextProvider> context_provider) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(context_provider_, nullptr);
@@ -534,13 +549,14 @@ void OpenXrRenderLoop::OnContextProviderCreated(
   const gpu::ContextResult context_result =
       context_provider->BindToCurrentThread();
   if (context_result != gpu::ContextResult::kSuccess) {
-    // TODO(https://crbug.com/1131616): Handle this by creating the context
-    // provider again.
+    std::move(start_runtime_callback).Run(false);
     return;
   }
 
   context_provider->AddObserver(this);
   context_provider_ = std::move(context_provider);
+
+  std::move(start_runtime_callback).Run(true);
 }
 
 }  // namespace device

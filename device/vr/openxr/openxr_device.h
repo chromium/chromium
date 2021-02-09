@@ -50,9 +50,7 @@ class DEVICE_VR_EXPORT OpenXrDevice
 
   void EnsureRenderLoop();
 
-  void OnRequestSessionResult(mojom::XRRuntime::RequestSessionCallback callback,
-                              bool result,
-                              mojom::XRSessionPtr session);
+  void OnRequestSessionResult(bool result, mojom::XRSessionPtr session);
   void OnPresentingControllerMojoConnectionError();
   bool IsArBlendModeSupported(OpenXrStatics* openxr_statics);
 
@@ -67,6 +65,8 @@ class DEVICE_VR_EXPORT OpenXrDevice
   mojo::PendingReceiver<mojom::ImmersiveOverlay> overlay_receiver_;
 
   VizContextProviderFactoryAsync context_provider_factory_async_;
+
+  mojom::XRRuntime::RequestSessionCallback request_session_callback_;
 
   base::WeakPtrFactory<OpenXrDevice> weak_ptr_factory_;
 

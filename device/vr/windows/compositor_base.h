@@ -31,7 +31,9 @@ namespace device {
 class XRDeviceAbstraction {
  public:
   virtual mojom::XRFrameDataPtr GetNextFrameData();
-  virtual bool StartRuntime() = 0;
+
+  using StartRuntimeCallback = base::OnceCallback<void(bool success)>;
+  virtual void StartRuntime(StartRuntimeCallback start_runtime_callback) = 0;
   virtual void StopRuntime() = 0;
   virtual void OnSessionStart();
   virtual bool HasSessionEnded();
@@ -112,6 +114,14 @@ class XRCompositorCommon : public base::Thread,
 
   void ClearPendingFrame();
   void StartPendingFrame();
+
+  void StartRuntimeFinish(
+      base::OnceCallback<void()> on_presentation_ended,
+      base::RepeatingCallback<void(mojom::XRVisibilityState)>
+          on_visibility_state_changed,
+      mojom::XRRuntimeSessionOptionsPtr options,
+      RequestSessionCallback callback,
+      bool success);
 
   // Will Submit if we have textures submitted from the Overlay (if it is
   // visible), and WebXR (if it is visible).  We decide what to wait for during

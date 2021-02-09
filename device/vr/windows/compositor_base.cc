@@ -206,7 +206,25 @@ void XRCompositorCommon::RequestSession(
   EnableSupportedFeatures(options->required_features,
                           options->optional_features);
 
-  if (!StartRuntime()) {
+  // Call the subclass's StartRuntime method. Upon completion, StartRuntime will
+  // call the callback passed to its first parameter, start_runtime_callback.
+  // XRCompositorCommon::StartRuntimeFinish. We setup BindOnce such that all of
+  // the parameters give to us here in XRCompositorCommon::RequestSession are
+  // passed through to StartRuntimeFinish so that it can finish the job.
+  StartRuntime(base::BindOnce(
+      &XRCompositorCommon::StartRuntimeFinish, base::Unretained(this),
+      std::move(on_presentation_ended), std::move(on_visibility_state_changed),
+      std::move(options), std::move(callback)));
+}
+
+void XRCompositorCommon::StartRuntimeFinish(
+    base::OnceCallback<void()> on_presentation_ended,
+    base::RepeatingCallback<void(mojom::XRVisibilityState)>
+        on_visibility_state_changed,
+    mojom::XRRuntimeSessionOptionsPtr options,
+    RequestSessionCallback callback,
+    bool success) {
+  if (!success) {
     TRACE_EVENT_INSTANT0("xr", "Failed to start runtime",
                          TRACE_EVENT_SCOPE_THREAD);
     main_thread_task_runner_->PostTask(

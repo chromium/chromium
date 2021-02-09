@@ -51,7 +51,7 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
   // XRDeviceAbstraction:
   mojom::XRFrameDataPtr GetNextFrameData() override;
-  bool StartRuntime() override;
+  void StartRuntime(StartRuntimeCallback start_runtime_callback) override;
   void StopRuntime() override;
   void OnSessionStart() override;
   bool HasSessionEnded() override;
@@ -126,9 +126,10 @@ class OpenXrRenderLoop : public XRCompositorCommon,
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform& native_origin_from_anchor) const;
 
-  // viz::ContextLostObserver
-  void StartContextProviderIfNeeded();
+  void StartContextProviderIfNeeded(
+      StartRuntimeCallback start_runtime_callback);
   void OnContextProviderCreated(
+      StartRuntimeCallback start_runtime_callback,
       scoped_refptr<viz::ContextProvider> context_provider);
   void OnContextLostCallback(
       scoped_refptr<viz::ContextProvider> context_provider);
