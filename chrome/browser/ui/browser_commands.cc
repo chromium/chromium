@@ -417,23 +417,32 @@ int GetContentRestrictions(const Browser* browser) {
 }
 
 void NewEmptyWindow(Profile* profile) {
-  bool incognito = profile->IsOffTheRecord();
+  bool off_the_record = profile->IsOffTheRecord();
   PrefService* prefs = profile->GetPrefs();
-  if (incognito) {
+  if (off_the_record) {
     if (IncognitoModePrefs::GetAvailability(prefs) ==
         IncognitoModePrefs::DISABLED) {
-      incognito = false;
+      off_the_record = false;
     }
   } else if (profile->IsGuestSession() ||
              (browser_defaults::kAlwaysOpenIncognitoWindow &&
               IncognitoModePrefs::ShouldLaunchIncognito(
                   *base::CommandLine::ForCurrentProcess(), prefs))) {
-    incognito = true;
+    off_the_record = true;
   }
 
-  if (incognito) {
+  if (off_the_record) {
+    // This metric counts the Incognito and Off-The-Record Guest profiles
+    // together.
     base::RecordAction(UserMetricsAction("NewIncognitoWindow"));
+    if (profile->IsGuestSession())
+      base::RecordAction(UserMetricsAction("NewGuestWindow"));
+    else
+      base::RecordAction(UserMetricsAction("NewIncognitoWindow2"));
     OpenEmptyWindow(profile->GetPrimaryOTRProfile());
+  } else if (profile->IsEphemeralGuestProfile()) {
+    base::RecordAction(UserMetricsAction("NewGuestWindow"));
+    OpenEmptyWindow(profile);
   } else {
     base::RecordAction(UserMetricsAction("NewWindow"));
     SessionService* session_service =

@@ -16309,6 +16309,11 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="NewGuestWindow">
+  <owner>rhalavati@chromium.org</owner>
+  <description>The user opened a Guest window.</description>
+</action>
+
 <action name="NewIncognitoTabTipTargetSelected">
   <owner>gambard@chromium.org</owner>
   <description>
@@ -16318,8 +16323,15 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewIncognitoWindow">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>rhalavati@chromium.org</owner>
+  <description>
+    The user opened an off-the-record window (Incognito or Guest).
+  </description>
+</action>
+
+<action name="NewIncognitoWindow2">
+  <owner>rhalavati@chromium.org</owner>
+  <description>The user opened an Incognito window.</description>
 </action>
 
 <action name="NewProfileWindowByIndex">

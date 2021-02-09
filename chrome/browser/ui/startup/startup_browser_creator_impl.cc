@@ -297,7 +297,8 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   StartupTabs cmd_line_tabs;
   UrlsToTabs(cmd_line_urls, &cmd_line_tabs);
 
-  const bool is_incognito_or_guest = profile_->IsOffTheRecord();
+  const bool is_incognito_or_guest =
+      profile_->IsOffTheRecord() || profile_->IsEphemeralGuestProfile();
   bool is_post_crash_launch = HasPendingUncleanExit(profile_);
   bool has_incompatible_applications = false;
   LogSessionServiceStartEvent(profile_, is_post_crash_launch);
