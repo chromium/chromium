@@ -90,6 +90,7 @@ found in the LICENSE file.
       // similate the one from the local camera.
       const video_src = GetVideoSource(video_count, video_count);
       createOneVideo(0, _total_video_width - 89, 89, 50, video_src);
+      createOneIcon(0, _total_video_width - 89, 89, 50);
     }
 
     function createOneVideo(top, left, width, height, video_src) {
@@ -117,8 +118,8 @@ found in the LICENSE file.
       icon.style.position = "absolute";
       icon.style.width = icon_width;
       icon.style.height = icon_height;
-      icon.style.top = video_top + video_height - icon_width;
-      icon.style.left = video_left + icon_height;
+      icon.style.top = video_top + video_height - icon_height * 2;
+      icon.style.left = video_left + icon_width;
 
       container.appendChild(icon);
     }

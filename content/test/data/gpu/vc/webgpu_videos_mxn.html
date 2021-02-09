@@ -6,15 +6,27 @@ found in the LICENSE file.
 <html>
 <head>
   <title>WebGpu MxN Video playbacks</title>
+  <style>
+    #message {
+      position: absolute;
+      width: 1600px;
+      height: 900px;
+      top: 200px;
+      left: 400px;
+    }
+  </style>
   <script type="text/javascript" src="webgpu_video.js"></script>
   <script>
     const _defaultRows = 7;
     const _defaultColumns = 7;
     const _totalVideoWidth = 1600;
     const _totalVideoHeight = 900;
+    var hasUIOnTop = true;
+    var useWebGpuForUI = true;
+    var useImportTextureApi = false;
 
-    const parseString = (function (names) {
-      var pairs = {};
+    const parsedString = (function (names) {
+      const pairs = {};
       for (let i = 0; i < names.length; ++i) {
         var keyValue = names[i].split('=', 2);
         if (keyValue.length == 1)
@@ -40,16 +52,11 @@ found in the LICENSE file.
 
     async function startMxNVideos() {
       const container = document.getElementById('container');
+      const p = document.getElementById('message');
 
       // Initialize WebGpu
-      const gpuSetting = await webGpuInit();
+      const gpuSetting = await webGpuInit(_totalVideoWidth, _totalVideoHeight);
       if (!gpuSetting) {
-        var p = container.appendChild(document.createElement('p'));
-        p.style.position = "absolute";
-        p.style.top = 0;
-        p.style.left = 0;
-        p.style.width = _totalVideoWidth;
-        p.style.height = _totalVideoHeight;
         p.innerHTML = "Webgpu not supported!" + "<br />" + "<br />" +
           "Did you forget to add command line switch --enable-unsafe-webgpu ?" +
           "<br />" +
@@ -57,9 +64,18 @@ found in the LICENSE file.
         return;
       }
 
+      // Get the UI rendering options from the string.
+      const uiOption = parsedString['ui'];
+      if (uiOption == 'none')
+        hasUIOnTop = false;
+      else if (uiOption == 'css')
+        useWebGpuForUI = false;
+      if (parsedString['import_texture_api'] == '1')
+        useImportTextureApi = true;
+
       // Get the number of video rows and columns from the string.
-      var videoRows = parseString['rows'];
-      var videoColumns = parseString['columns'];
+      var videoRows = parsedString['rows'];
+      var videoColumns = parsedString['columns'];
       if (videoRows == undefined)
         videoRows = _defaultRows;
       if (videoColumns == undefined)
@@ -69,26 +85,21 @@ found in the LICENSE file.
       // The video will not load when the number is too big.
       const maxColRow = Math.max(videoRows, videoColumns);
       if (maxColRow > 20) {
-        var p = container.appendChild(document.createElement('p'));
-        p.style.position = "absolute";
-        p.style.top = 0;
-        p.style.left = 0;
-        p.style.width = _totalVideoWidth;
-        p.style.height = _totalVideoHeight;
         p.innerHTML = "Cannot support videos more than 20 x 20 !" + "<br />" +
           "Please change the number of rows/columns.";
         return;
       }
 
-      // Calculate the video size
+      // Calculate the video onscreen size
       const videoWidth = _totalVideoWidth / maxColRow;
       const videoHeight = _totalVideoHeight / maxColRow;
 
-      // Create MxN videos and TODO(magchen@)- a small video(size = 89x50) at
-      // the upper right corner to similate the one from the local camera.
+      // Create MxN videos and a small video (size = 89x50) at the upper right
+      // corner to similate the one from the local camera.
+      p.innerHTML = "Uploading videos...";
       var videos = [];
       const videoCount = videoRows * videoColumns;
-      for (let i = 0; i < videoCount; i++) {
+      for (let i = 0; i < videoCount + 1; i++) {
         const video = document.createElement('video');
         video.id = 'video_' + i;
         video.loop = true;
@@ -97,19 +108,54 @@ found in the LICENSE file.
         video.src = GetVideoSource(videoCount, i);
         video.width = videoWidth;
         video.height = videoHeight;
-        await video.play();
+        video.crossorigin = "anonymous";
         videos.push(video);
       }
+      // For the small video.
+      videos[videoRows * videoColumns].width = 89;
+      videos[videoRows * videoColumns].height = 50;
 
-      webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns);
+      await Promise.all(videos.map(video => video.play()));
+      p.innerHTML = "";
 
-      // TODO(magchen@): Add icons on top of video.
+      // Simulate video playback by WebGpu rendering.
+      webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
+        hasUIOnTop && useWebGpuForUI, useImportTextureApi);
+
+      // Add CSS icons on top of videos if this is preferred.
+      if (hasUIOnTop && !useWebGpuForUI) {
+        for (let row = 0; row < videoRows; ++row) {
+          for (let column = 0; column < videoColumns; ++column) {
+            const video_top = row * videoHeight;
+            const video_left = column * videoWidth;
+            // Create an icon on top of each video.
+            createOneIcon(video_top, video_left, videoWidth, videoHeight);
+          }
+        }
+      }
+      // Create an icon for the samll video at the corner.
+      createOneIcon(0, _totalVideoWidth - 89, 89, 50);
     }
 
+    function createOneIcon(video_top, video_left, video_width, video_height) {
+      const icon = document.createElement('icon');
+      const icon_width = video_width / 10;
+      const icon_height = video_height / 10;
+
+      icon.style.backgroundColor = "red";
+      icon.style.position = "absolute";
+      icon.style.width = icon_width;
+      icon.style.height = icon_height;
+      icon.style.top = video_top + video_height - icon_height * 2;
+      icon.style.left = video_left + icon_width;
+
+      container.appendChild(icon);
+    }
   </script>
 </head>
 <body onload="startMxNVideos()">
   <div id="container" style="position:absolute; top:0px; left:0px">
+    <p id="message"></p>
   </div>
 </body>
 </html>

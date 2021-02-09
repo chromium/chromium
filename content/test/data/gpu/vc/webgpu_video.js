@@ -2,17 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-async function webGpuInit() {
-  const canvas = document.createElement('canvas');
-
-  if (!navigator.gpu) {
-    console.warn('Webgpu not supported. navigator.gpu fails!');
-    return null;
-  }
-
-  const adapter = await navigator.gpu.requestAdapter();
+async function webGpuInit(canvasWidth, canvasHeight) {
+  const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
   if (!adapter) {
-    console.warn('Webgpu not supported. navigator.gpu.requestAdapter fails!');
+    console.warn('navigator.gpu && navigator.gpu.requestAdapter fails!');
     return null;
   }
 
@@ -22,18 +15,23 @@ async function webGpuInit() {
     return null;
   }
 
+  const container = document.getElementById('container');
+  const canvas = container.appendChild(document.createElement('canvas'));
+  canvas.width = canvasWidth;
+  canvas.height = canvasHeight;
+
   const context = canvas.getContext('gpupresent');
   if (!context) {
     console.warn('Webgpu not supported. canvas.getContext(gpupresent) fails!');
     return null;
   }
 
-  return { device, canvas, context };
+  return { device, context };
 }
 
   const wgslShaders = {
     vertex: `
-[[location(0)]] var<in> position : vec3<f32>;
+[[location(0)]] var<in> position : vec2<f32>;
 [[location(1)]] var<in> uv : vec2<f32>;
 
 [[location(0)]] var<out> fragUV : vec2<f32>;
@@ -41,7 +39,7 @@ async function webGpuInit() {
 
 [[stage(vertex)]]
 fn main() -> void {
-  Position = vec4<f32>(position, 1.0);
+  Position = vec4<f32>(position, 0.0, 1.0);
   fragUV = uv;
   return;
 }
@@ -60,31 +58,69 @@ fn main() -> void {
   return;
 }
 `,
+    vertex_icons: `
+[[location(0)]] var<in> position : vec2<f32>;
+[[builtin(position)]] var<out> Position : vec4<f32>;
+
+[[stage(vertex)]]
+fn main() -> void {
+  Position = vec4<f32>(position, 0.0, 1.0);
+  return;
+}
+`,
+
+    fragment_output_red: `
+[[location(0)]] var<out> outColor : vec4<f32>;
+
+[[stage(fragment)]]
+fn main() -> void {
+  outColor = vec4<f32>(1.0, 0.0, 0.0, 1.0);
+  return;
+}
+`,
   };
 
-function createVertexBuffer(device, videoRows, videoColumns) {
-  // Each video takes 6 vertices (2 triangles). Each vertice has 5 floats.
-  // Therefore, each video needs 30 floats.
-  const rectVerts = new Float32Array(videoRows * videoColumns * 30);
+function createVertexBuffer(device, videos, videoRows, videoColumns) {
+  // Each video takes 6 vertices (2 triangles). Each vertice has 4 floats.
+  // Therefore, each video needs 24 floats.
+  // The small video at the corner is included in the vertex buffer.
+  const rectVerts = new Float32Array(videos.length * 24);
 
-  for (let row = 0; row < videoRows; row++) {
-    for (let column = 0; column < videoColumns; column++) {
-      const index = (row * videoColumns + column) * 30;
-      const w = 2.0 / videoColumns;
-      const h = 2.0 / videoRows;
+  let w = 2.0 / videoColumns;
+  let h = 2.0 / videoRows;
+  for (let row = 0; row < videoRows; ++row) {
+    for (let column = 0; column < videoColumns; ++column) {
+      const array_index = (row * videoColumns + column) * 24;
       const x = -1.0 + w * column;
       const y = 1.0 - h * row;
 
       rectVerts.set([
-        (x + w), y, 0.0, 1.0, 0.0,
-        (x + w), (y - h), 0.0, 1.0, 1.0,
-        x, (y - h), 0.0, 0.0, 1.0,
-        (x + w), y, 0.0, 1.0, 0.0,
-        x, (y - h), 0.0, 0.0, 1.0,
-        x, y, 0.0, 0.0, 0.0,
-      ], index);
+        (x + w), y, 1.0, 0.0,
+        (x + w), (y - h), 1.0, 1.0,
+        x, (y - h), 0.0, 1.0,
+        (x + w), y, 1.0, 0.0,
+        x, (y - h), 0.0, 1.0,
+        x, y, 0.0, 0.0,
+      ], array_index);
     }
   }
+
+  // For the small video at the corner, the last one in |videos|.
+  w = w / videos[0].width * videos[videos.length - 1].width;
+  h = h / videos[0].height * videos[videos.length - 1].height;
+  const x = 1.0 - w;
+  const y = 1.0;
+  const array_index = (videos.length - 1) * 24;
+
+  rectVerts.set([
+    (x + w), y, 1.0, 0.0,
+    (x + w), (y - h), 1.0, 1.0,
+    x, (y - h), 0.0, 1.0,
+    (x + w), y, 1.0, 0.0,
+    x, (y - h), 0.0, 1.0,
+    x, y, 0.0, 0.0,
+  ], array_index);
+
 
   const verticesBuffer = device.createBuffer({
     size: rectVerts.byteLength,
@@ -98,14 +134,74 @@ function createVertexBuffer(device, videoRows, videoColumns) {
   return verticesBuffer;
 }
 
-function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns) {
-  const { canvas, context, device } = gpuSetting;
-  const container = document.getElementById('container');
-  canvas.width = videos[0].width * videoColumns;
-  canvas.height = videos[0].height * videoRows;
-  container.appendChild(canvas);
+function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
+  // Each video takes 6 vertices (2 triangles). Each vertice has 2 floats.
+  // Therefore, each video needs 12 floats.
+  const rectVerts = new Float32Array(videos.length * 12);
 
-  const verticesBuffer = createVertexBuffer(device, videoRows, videoColumns);
+  let w = 2.0 / videoColumns;
+  let h = 2.0 / videoRows;
+  let wIcon = w / 10.0;
+  let hIcon = h / 10.0;
+
+  for (let row = 0; row < videoRows; ++row) {
+    for (let column = 0; column < videoColumns; ++column) {
+      const array_index = (row * videoColumns + column) * 12;
+      const x = -1.0 + w * column;
+      const y = 1.0 - h * row;
+      const xIcon = x + wIcon;
+      const yIcon = y - h + hIcon * 2;
+
+      rectVerts.set([
+        (xIcon + wIcon), yIcon,
+        (xIcon + wIcon), (yIcon - hIcon),
+        xIcon, (yIcon - hIcon),
+        (xIcon + wIcon), yIcon,
+        xIcon, (yIcon - hIcon),
+        xIcon, yIcon,
+      ], array_index);
+    }
+  }
+
+  // For the small video at the corner, the last one in |videos|.
+  w = w / videos[0].width * videos[videos.length - 1].width;
+  h = h / videos[0].height * videos[videos.length - 1].height;
+  wIcon = w / 10.0;
+  hIcon = h / 10.0;
+
+  const x = 1.0 - w;
+  const y = 1.0;
+  const xIcon = x + wIcon;
+  const yIcon = y - h + hIcon * 2;
+
+  array_index = (videos.length - 1) * 12;
+  rectVerts.set([
+    (xIcon + wIcon), yIcon,
+    (xIcon + wIcon), (yIcon - hIcon),
+    xIcon, (yIcon - hIcon),
+    (xIcon + wIcon), yIcon,
+    xIcon, (yIcon - hIcon),
+    xIcon, yIcon,
+  ], array_index);
+
+  const verticesBuffer = device.createBuffer({
+    size: rectVerts.byteLength,
+    usage: GPUBufferUsage.VERTEX,
+    mappedAtCreation: true,
+  });
+
+  new Float32Array(verticesBuffer.getMappedRange()).set(rectVerts);
+  verticesBuffer.unmap();
+
+  return verticesBuffer;
+}
+
+function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
+                               addUI, useImportTextureApi) {
+  const { device, context } = gpuSetting;
+
+  const verticesBuffer = createVertexBuffer(device, videos, videoRows,
+                         videoColumns);
 
   const swapChainFormat = 'bgra8unorm';
   const swapChain = context.configureSwapChain({
@@ -131,18 +227,18 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns) {
     vertexState: {
       vertexBuffers: [
         {
-          arrayStride: 20,
+          arrayStride: 16,
           attributes: [
             {
               // position
               shaderLocation: 0,
               offset: 0,
-              format: 'float3',
+              format: 'float2',
             },
             {
               // uv
               shaderLocation: 1,
-              offset: 12,
+              offset: 8,
               format: 'float2',
             },
           ],
@@ -157,13 +253,22 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns) {
     ],
   });
 
+  const renderPassDescriptor = {
+    colorAttachments: [
+      {
+        attachment: undefined, // Assigned later
+        loadValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
+      },
+    ],
+  };
+
   const sampler = device.createSampler({
     magFilter: 'linear',
     minFilter: 'linear',
   });
 
   const videoTextures = [];
-  for (let i = 0; i < videoRows * videoColumns; ++i) {
+  for (let i = 0; i < videos.length; ++i) {
     videoTextures[i] = device.createTexture({
       size: {
         width: videos[i].videoWidth,
@@ -176,7 +281,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns) {
   }
 
   const bindGroups = [];
-  for (let i = 0; i < videoRows * videoColumns; ++i) {
+  for (let i = 0; i < videos.length; ++i) {
     bindGroups[i] = device.createBindGroup({
       layout: pipeline.getBindGroupLayout(0),
       entries: [
@@ -192,16 +297,50 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns) {
     });
   }
 
-  const drawOneFrame = () => {
-    const textureView = swapChain.getCurrentTexture().createView();
-    const renderPassDescriptor = {
-      colorAttachments: [
+  // For rendering the icons
+  const verticesBufferForIcons =
+    createVertexBufferForIcons(device, videos, videoRows, videoColumns);
+
+  const pipelineForIcons = device.createRenderPipeline({
+    vertexStage: {
+      module: device.createShaderModule({
+        code: wgslShaders.vertex_icons,
+      }),
+      entryPoint: 'main',
+    },
+    fragmentStage: {
+      module: device.createShaderModule({
+        code: wgslShaders.fragment_output_red,
+      }),
+      entryPoint: 'main',
+    },
+    primitiveTopology: 'triangle-list',
+    vertexState: {
+      vertexBuffers: [
         {
-          attachment: textureView,
-          loadValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
+          arrayStride: 8,
+          attributes: [
+            {
+              // position
+              shaderLocation: 0,
+              offset: 0,
+              format: 'float2',
+            },
+          ],
         },
       ],
-    };
+    },
+    colorStates: [
+      {
+        format: swapChainFormat,
+      },
+    ],
+  });
+
+  const oneFrame = () => {
+    renderPassDescriptor.colorAttachments[0].attachment = swapChain
+      .getCurrentTexture()
+      .createView();
 
     const commandEncoder = device.createCommandEncoder();
     const passEncoder =
@@ -211,26 +350,34 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns) {
 
     Promise.all(videos.map(video => createImageBitmap(video))).
       then((videoFrames) => {
-      for (let i = 0; i < videoRows * videoColumns; ++i) {
-        const firstVertex = i * 6;
-        device.queue.copyImageBitmapToTexture(
-          { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
-          { texture: videoTextures[i] },
-          { width: videos[i].videoWidth, height: videos[i].videoHeight, depth: 1 }
-        );
+        for (let i = 0; i < videos.length; ++i) {
+          device.queue.copyImageBitmapToTexture(
+            { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
+            { texture: videoTextures[i] },
+            { width: videos[i].videoWidth, height: videos[i].videoHeight, depth: 1 }
+          );
 
-        passEncoder.setBindGroup(0, bindGroups[i]);
-        passEncoder.draw(6, 1, firstVertex, 0);
-      }
-      passEncoder.endPass();
-      device.queue.submit([commandEncoder.finish()]);
+          const firstVertex = i * 6;
+          passEncoder.setBindGroup(0, bindGroups[i]);
+          passEncoder.draw(6, 1, firstVertex, 0);
+        }
 
-      window.requestAnimationFrame(drawOneFrame);
-    });
+        // Add UI on Top of (videoRows * videoColumns) videos.
+        if (addUI) {
+          passEncoder.setPipeline(pipelineForIcons);
+          passEncoder.setVertexBuffer(0, verticesBufferForIcons);
+          passEncoder.draw(videos.length * 6, 1, 0, 0);
+        }
+
+        passEncoder.endPass();
+        device.queue.submit([commandEncoder.finish()]);
+      });
   }
-  window.requestAnimationFrame(drawOneFrame);
+
+  setInterval(oneFrame, 143);
+
+  // TODO(magchen@): Render frames at different fps.
+  // 4 videos at 30 fps, oneFrame() should be called every 33 milliseconds.
+  // 12 videos at 30 fps, oneFrame() should be called 33 milliseconds.
+  // The rest at 7 fps, oneFrame() should be called 143 milliseconds.
 }
-
-
-
-
