@@ -2241,7 +2241,6 @@ crbug.com/626703 external/wpt/uievents/order-of-events/mouse-events/mousemove-ac
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/focus-contained-manual.html [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/mouse-events/click-on-html-manual.html [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/mouse-events/click-on-div-manual.html [ Skip ]
-crbug.com/626703 external/wpt/touch-events/multi-touch-interfaces-manual.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/pointerevent_multiple_primary_pointers_boundary_events-manual.html [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/mouse-events/click-order-manual.html [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/mouse-events/mousemove-between-manual.html [ Skip ]
