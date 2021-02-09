@@ -272,67 +272,49 @@ String HebrewAlgorithm(unsigned value) {
   return list_marker_text::GetText(EListStyleType::kHebrew, value);
 }
 
-String SimpChineseInformalAlgorithm(unsigned value) {
+int AbsoluteValueForLegacyCJKAlgorithms(int value) {
   // @counter-style algorithm works on absolute value, but the legacy
   // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kSimpChineseInformal, value);
+  // its own). Clamp to the signed int range before proceeding.
+  if (UNLIKELY(value == std::numeric_limits<int>::min()))
+    return std::numeric_limits<int>::max();
+  else
+    return std::abs(value);
 }
 
-String SimpChineseFormalAlgorithm(unsigned value) {
-  // @counter-style algorithm works on absolute value, but the legacy
-  // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kSimpChineseFormal, value);
+String SimpChineseInformalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kSimpChineseInformal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
 }
 
-String TradChineseInformalAlgorithm(unsigned value) {
-  // @counter-style algorithm works on absolute value, but the legacy
-  // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kTradChineseInformal, value);
+String SimpChineseFormalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kSimpChineseFormal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
 }
 
-String TradChineseFormalAlgorithm(unsigned value) {
-  // @counter-style algorithm works on absolute value, but the legacy
-  // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kTradChineseFormal, value);
+String TradChineseInformalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kTradChineseInformal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
 }
 
-String KoreanHangulFormalAlgorithm(unsigned value) {
-  // @counter-style algorithm works on absolute value, but the legacy
-  // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kKoreanHangulFormal, value);
+String TradChineseFormalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kTradChineseFormal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
 }
 
-String KoreanHanjaInformalAlgorithm(unsigned value) {
-  // @counter-style algorithm works on absolute value, but the legacy
-  // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kKoreanHanjaInformal, value);
+String KoreanHangulFormalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kKoreanHangulFormal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
 }
 
-String KoreanHanjaFormalAlgorithm(unsigned value) {
-  // @counter-style algorithm works on absolute value, but the legacy
-  // implementation works on the original value (and handles negative sign on
-  // its own). Range check before proceeding.
-  if (value > std::numeric_limits<int>::max())
-    return String();
-  return list_marker_text::GetText(EListStyleType::kKoreanHanjaFormal, value);
+String KoreanHanjaInformalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kKoreanHanjaInformal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+}
+
+String KoreanHanjaFormalAlgorithm(int value) {
+  return list_marker_text::GetText(EListStyleType::kKoreanHanjaFormal,
+                                   AbsoluteValueForLegacyCJKAlgorithms(value));
 }
 
 String LowerArmenianAlgorithm(unsigned value) {
@@ -639,7 +621,10 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
   if (!RangeContains(value))
     return String();
 
-  unsigned abs_value = value < 0 ? -value : value;
+  unsigned abs_value =
+      value == std::numeric_limits<int>::min()
+          ? static_cast<unsigned>(std::numeric_limits<int>::max()) + 1u
+          : std::abs(value);
 
   switch (system_) {
     case CounterStyleSystem::kCyclic:
@@ -658,19 +643,19 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
     case CounterStyleSystem::kHebrew:
       return HebrewAlgorithm(abs_value);
     case CounterStyleSystem::kSimpChineseInformal:
-      return SimpChineseInformalAlgorithm(abs_value);
+      return SimpChineseInformalAlgorithm(value);
     case CounterStyleSystem::kSimpChineseFormal:
-      return SimpChineseFormalAlgorithm(abs_value);
+      return SimpChineseFormalAlgorithm(value);
     case CounterStyleSystem::kTradChineseInformal:
-      return TradChineseInformalAlgorithm(abs_value);
+      return TradChineseInformalAlgorithm(value);
     case CounterStyleSystem::kTradChineseFormal:
-      return TradChineseFormalAlgorithm(abs_value);
+      return TradChineseFormalAlgorithm(value);
     case CounterStyleSystem::kKoreanHangulFormal:
-      return KoreanHangulFormalAlgorithm(abs_value);
+      return KoreanHangulFormalAlgorithm(value);
     case CounterStyleSystem::kKoreanHanjaInformal:
-      return KoreanHanjaInformalAlgorithm(abs_value);
+      return KoreanHanjaInformalAlgorithm(value);
     case CounterStyleSystem::kKoreanHanjaFormal:
-      return KoreanHanjaFormalAlgorithm(abs_value);
+      return KoreanHanjaFormalAlgorithm(value);
     case CounterStyleSystem::kLowerArmenian:
       return LowerArmenianAlgorithm(abs_value);
     case CounterStyleSystem::kUpperArmenian:
