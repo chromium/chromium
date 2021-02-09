@@ -23,7 +23,7 @@ namespace {
 
 // The em-width value used to differentiate small and large devices.
 // With Larger Text Off, Bold Text Off and the device orientation in portrait:
-// iPhone 6s is considered as a small device, unlike iPhone 8 or iPhone 12 mini.
+// iPhone 5s is considered as a small device, unlike iPhone 8 or iPhone 12 mini.
 const CGFloat kSmallDeviceThreshold = 22.0;
 
 }  // namespace
