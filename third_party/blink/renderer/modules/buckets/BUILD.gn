@@ -6,9 +6,9 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("buckets") {
   sources = [
-    "bucket_manager.cc",
-    "bucket_manager.h",
     "storage_bucket.cc",
     "storage_bucket.h",
+    "storage_bucket_manager.cc",
+    "storage_bucket_manager.h",
   ]
 }

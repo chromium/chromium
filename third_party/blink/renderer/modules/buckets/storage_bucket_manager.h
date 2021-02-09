@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_BUCKET_MANAGER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_BUCKET_MANAGER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_STORAGE_BUCKET_MANAGER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_STORAGE_BUCKET_MANAGER_H_
 
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -19,21 +19,22 @@ class ExceptionState;
 class NavigatorBase;
 class StorageBucketOptions;
 
-class MODULES_EXPORT BucketManager final : public ScriptWrappable,
-                                           public Supplement<NavigatorBase>,
-                                           public ExecutionContextClient {
+class MODULES_EXPORT StorageBucketManager final
+    : public ScriptWrappable,
+      public Supplement<NavigatorBase>,
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static const char kSupplementName[];
 
   // Web-exposed as navigator.storageBuckets
-  static BucketManager* storageBuckets(ScriptState* script_state,
-                                       NavigatorBase& navigator,
-                                       ExceptionState& exception_state);
+  static StorageBucketManager* storageBuckets(ScriptState* script_state,
+                                              NavigatorBase& navigator,
+                                              ExceptionState& exception_state);
 
-  BucketManager(NavigatorBase& navigator, ExecutionContext* context);
-  ~BucketManager() override = default;
+  StorageBucketManager(NavigatorBase& navigator, ExecutionContext* context);
+  ~StorageBucketManager() override = default;
 
   ScriptPromise open(ScriptState* script_state,
                      const String& name,
@@ -61,4 +62,4 @@ class MODULES_EXPORT BucketManager final : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_BUCKET_MANAGER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_BUCKETS_STORAGE_BUCKET_MANAGER_H_

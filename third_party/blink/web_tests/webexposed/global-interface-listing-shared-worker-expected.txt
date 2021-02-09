@@ -70,12 +70,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method postMessage
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
-[Worker] interface BucketManager
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method delete
-[Worker]     method keys
-[Worker]     method open
 [Worker] interface ByteLengthQueuingStrategy
 [Worker]     attribute @@toStringTag
 [Worker]     getter highWaterMark
@@ -1307,6 +1301,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method expires
 [Worker]     method persisted
 [Worker]     method setExpires
+[Worker] interface StorageBucketManager
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method delete
+[Worker]     method keys
+[Worker]     method open
 [Worker] interface StorageManager : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter onquotachange

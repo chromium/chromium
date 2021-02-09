@@ -77,12 +77,6 @@ interface BroadcastChannel : EventTarget
     method postMessage
     setter onmessage
     setter onmessageerror
-interface BucketManager
-    attribute @@toStringTag
-    method constructor
-    method delete
-    method keys
-    method open
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -1427,6 +1421,12 @@ interface StorageBucket
     method expires
     method persisted
     method setExpires
+interface StorageBucketManager
+    attribute @@toStringTag
+    method constructor
+    method delete
+    method keys
+    method open
 interface StorageManager : EventTarget
     attribute @@toStringTag
     getter onquotachange

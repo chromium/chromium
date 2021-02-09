@@ -9,7 +9,7 @@ idl_test(
   ['html'],
   async (idl_array, t) => {
     idl_array.add_objects({
-      BucketManager: ['navigator.storageBuckets'],
+      StorageBucketManager: ['navigator.storageBuckets'],
       StorageBucket: []
     });
 

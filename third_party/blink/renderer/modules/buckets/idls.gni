@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 modules_idl_files = [
-  "bucket_manager.idl",
+  "storage_bucket_manager.idl",
   "storage_bucket.idl",
 ]
 

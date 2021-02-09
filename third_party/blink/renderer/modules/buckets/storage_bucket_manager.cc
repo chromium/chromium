@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/buckets/bucket_manager.h"
+#include "third_party/blink/renderer/modules/buckets/storage_bucket_manager.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -39,10 +39,10 @@ mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
 
 }  // namespace
 
-const char BucketManager::kSupplementName[] = "BucketManager";
+const char StorageBucketManager::kSupplementName[] = "StorageBucketManager";
 
-BucketManager::BucketManager(NavigatorBase& navigator,
-                             ExecutionContext* context)
+StorageBucketManager::StorageBucketManager(NavigatorBase& navigator,
+                                           ExecutionContext* context)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextClient(context),
       manager_remote_(context) {
@@ -52,22 +52,24 @@ BucketManager::BucketManager(NavigatorBase& navigator,
   DCHECK(manager_remote_.is_bound());
 }
 
-BucketManager* BucketManager::storageBuckets(ScriptState* script_state,
-                                             NavigatorBase& navigator,
-                                             ExceptionState& exception_state) {
-  auto* supplement = Supplement<NavigatorBase>::From<BucketManager>(navigator);
+StorageBucketManager* StorageBucketManager::storageBuckets(
+    ScriptState* script_state,
+    NavigatorBase& navigator,
+    ExceptionState& exception_state) {
+  auto* supplement =
+      Supplement<NavigatorBase>::From<StorageBucketManager>(navigator);
   if (!supplement) {
     auto* context = ExecutionContext::From(script_state);
-    supplement = MakeGarbageCollected<BucketManager>(navigator, context);
+    supplement = MakeGarbageCollected<StorageBucketManager>(navigator, context);
     Supplement<NavigatorBase>::ProvideTo(navigator, supplement);
   }
   return supplement;
 }
 
-ScriptPromise BucketManager::open(ScriptState* script_state,
-                                  const String& name,
-                                  const StorageBucketOptions* options,
-                                  ExceptionState& exception_state) {
+ScriptPromise StorageBucketManager::open(ScriptState* script_state,
+                                         const String& name,
+                                         const StorageBucketOptions* options,
+                                         ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -76,35 +78,35 @@ ScriptPromise BucketManager::open(ScriptState* script_state,
 
   manager_remote_->OpenBucket(
       name, std::move(bucket_policies),
-      WTF::Bind(&BucketManager::DidOpen, WrapPersistent(this),
+      WTF::Bind(&StorageBucketManager::DidOpen, WrapPersistent(this),
                 WrapPersistent(resolver)));
   return promise;
 }
 
-ScriptPromise BucketManager::keys(ScriptState* script_state,
-                                  ExceptionState& exception_state) {
+ScriptPromise StorageBucketManager::keys(ScriptState* script_state,
+                                         ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  manager_remote_->Keys(WTF::Bind(&BucketManager::DidGetKeys,
+  manager_remote_->Keys(WTF::Bind(&StorageBucketManager::DidGetKeys,
                                   WrapPersistent(this),
                                   WrapPersistent(resolver)));
   return promise;
 }
 
-ScriptPromise BucketManager::Delete(ScriptState* script_state,
-                                    const String& name,
-                                    ExceptionState& exception_state) {
+ScriptPromise StorageBucketManager::Delete(ScriptState* script_state,
+                                           const String& name,
+                                           ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   manager_remote_->DeleteBucket(
-      name, WTF::Bind(&BucketManager::DidDelete, WrapPersistent(this),
+      name, WTF::Bind(&StorageBucketManager::DidDelete, WrapPersistent(this),
                       WrapPersistent(resolver)));
   return promise;
 }
 
-void BucketManager::DidOpen(
+void StorageBucketManager::DidOpen(
     ScriptPromiseResolver* resolver,
     mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote) {
   ScriptState* script_state = resolver->GetScriptState();
@@ -122,9 +124,9 @@ void BucketManager::DidOpen(
       GetExecutionContext(), std::move(bucket_remote)));
 }
 
-void BucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
-                               const Vector<String>& keys,
-                               bool success) {
+void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
+                                      const Vector<String>& keys,
+                                      bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -139,7 +141,8 @@ void BucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
   resolver->Resolve(keys);
 }
 
-void BucketManager::DidDelete(ScriptPromiseResolver* resolver, bool success) {
+void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,
+                                     bool success) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
@@ -154,7 +157,7 @@ void BucketManager::DidDelete(ScriptPromiseResolver* resolver, bool success) {
   resolver->Resolve();
 }
 
-void BucketManager::Trace(Visitor* visitor) const {
+void StorageBucketManager::Trace(Visitor* visitor) const {
   visitor->Trace(manager_remote_);
   ScriptWrappable::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);

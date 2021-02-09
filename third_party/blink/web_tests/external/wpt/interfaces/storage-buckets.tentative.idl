@@ -1,7 +1,7 @@
 [
   Exposed=(Window,Worker),
   SecureContext
-] interface BucketManager {
+] interface StorageBucketManager {
     Promise<StorageBucket> open(DOMString name,
                                 optional StorageBucketOptions options = {});
     Promise<sequence<DOMString>> keys();
