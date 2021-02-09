@@ -29,7 +29,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
@@ -46,8 +45,6 @@ static constexpr int kEntityImageSize = 32;
 class PlaceholderImageSource : public gfx::CanvasImageSource {
  public:
   PlaceholderImageSource(const gfx::Size& canvas_size, SkColor color);
-  PlaceholderImageSource(const PlaceholderImageSource&) = delete;
-  PlaceholderImageSource& operator=(const PlaceholderImageSource&) = delete;
   ~PlaceholderImageSource() override = default;
 
   // gfx::CanvasImageSource:
@@ -55,6 +52,8 @@ class PlaceholderImageSource : public gfx::CanvasImageSource {
 
  private:
   const SkColor color_;
+
+  DISALLOW_COPY_AND_ASSIGN(PlaceholderImageSource);
 };
 
 PlaceholderImageSource::PlaceholderImageSource(const gfx::Size& canvas_size,
@@ -77,10 +76,7 @@ void PlaceholderImageSource::Draw(gfx::Canvas* canvas) {
 
 class RoundedCornerImageView : public views::ImageView {
  public:
-  METADATA_HEADER(RoundedCornerImageView);
   RoundedCornerImageView() = default;
-  RoundedCornerImageView(const RoundedCornerImageView&) = delete;
-  RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
 
   // views::ImageView:
   bool GetCanProcessEventsWithinSubtree() const override { return false; }
@@ -88,6 +84,9 @@ class RoundedCornerImageView : public views::ImageView {
  protected:
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(RoundedCornerImageView);
 };
 
 void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
@@ -99,9 +98,6 @@ void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
   canvas->ClipPath(mask, true);
   ImageView::OnPaint(canvas);
 }
-
-BEGIN_METADATA(RoundedCornerImageView, views::ImageView)
-END_METADATA
 
 }  // namespace
 

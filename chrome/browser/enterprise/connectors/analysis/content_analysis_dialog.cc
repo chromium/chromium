@@ -39,8 +39,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace enterprise_connectors {
 
@@ -105,8 +103,6 @@ class DeepScanningBaseView {
 class DeepScanningTopImageView : public DeepScanningBaseView,
                                  public views::ImageView {
  public:
-  METADATA_HEADER(DeepScanningTopImageView);
-
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() { SetImage(dialog()->GetTopImage()); }
@@ -118,14 +114,9 @@ class DeepScanningTopImageView : public DeepScanningBaseView,
   }
 };
 
-BEGIN_METADATA(DeepScanningTopImageView, views::ImageView)
-END_METADATA
-
 class DeepScanningSideIconImageView : public DeepScanningBaseView,
                                       public views::ImageView {
  public:
-  METADATA_HEADER(DeepScanningSideIconImageView);
-
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() {
@@ -144,14 +135,9 @@ class DeepScanningSideIconImageView : public DeepScanningBaseView,
   }
 };
 
-BEGIN_METADATA(DeepScanningSideIconImageView, views::ImageView)
-END_METADATA
-
 class DeepScanningSideIconSpinnerView : public DeepScanningBaseView,
                                         public views::Throbber {
  public:
-  METADATA_HEADER(DeepScanningSideIconSpinnerView);
-
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() {
@@ -168,14 +154,9 @@ class DeepScanningSideIconSpinnerView : public DeepScanningBaseView,
   }
 };
 
-BEGIN_METADATA(DeepScanningSideIconSpinnerView, views::Throbber)
-END_METADATA
-
 class DeepScanningMessageView : public DeepScanningBaseView,
                                 public views::Label {
  public:
-  METADATA_HEADER(DeepScanningMessageView);
-
   using DeepScanningBaseView::DeepScanningBaseView;
 
   void Update() {
@@ -189,9 +170,6 @@ class DeepScanningMessageView : public DeepScanningBaseView,
     Update();
   }
 };
-
-BEGIN_METADATA(DeepScanningMessageView, views::Label)
-END_METADATA
 
 // static
 base::TimeDelta ContentAnalysisDialog::GetMinimumPendingDialogTime() {
