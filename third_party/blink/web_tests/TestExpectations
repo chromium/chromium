@@ -5536,7 +5536,7 @@ crbug.com/1170041 [ Mac ] fast/canvas/color-space/canvas-createImageBitmap-e_srg
 crbug.com/1148259 [ Mac ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-return-value-handling-dynamic.html [ Failure ]
 
 # Sheriff 2020-11-19
-crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/registration-updateviacache.https.html [ Pass Timeout ]
+crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/registration-updateviacache.https.html [ Pass Timeout Failure ]
 crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck-cors-import.https.html [ Pass Timeout ]
 
 # Disable flaky tests when scroll unification is enabled
