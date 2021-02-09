@@ -23,6 +23,7 @@ CanvasFormattedText::CanvasFormattedText(Document* document) {
 }
 
 CanvasFormattedText::~CanvasFormattedText() {
+  AllowDestroyingLayoutObjectInFinalizerScope scope;
   if (block_)
     block_->Destroy();
 }

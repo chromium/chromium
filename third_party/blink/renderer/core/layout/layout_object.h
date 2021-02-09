@@ -150,7 +150,7 @@ const int kShowTreeCharacterOffset = 39;
 // exclude certain functions like ~SVGImage() from this rule. This is allowed
 // when a Persistent is guaranteeing to keep the LayoutObject alive for that GC
 // cycle.
-class AllowDestroyingLayoutObjectInFinalizerScope {
+class CORE_EXPORT AllowDestroyingLayoutObjectInFinalizerScope {
   STACK_ALLOCATED();
 
  public:
