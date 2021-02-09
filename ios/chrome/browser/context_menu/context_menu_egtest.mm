@@ -62,7 +62,7 @@ const char kDestinationPageTextId[] = "message";
 const char kDestinationPageText[] = "You made it!";
 
 // URL to a page with a link to the destination page.
-const char kInitialPageUrl[] = "/scenarioContextMenuOpenInNewTab";
+const char kInitialPageUrl[] = "/scenarioContextMenuOpenInNewSurface";
 // HTML content of a page with a link to the destination page.
 const char kInitialPageHtml[] =
     "<html><body><a style='margin-left:150px' href='/destination' id='link'>"
@@ -187,6 +187,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 
 + (void)tearDown {
   [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
+  [ChromeEarlGrey closeAllExtraWindows];
   [super tearDown];
 }
 
@@ -444,6 +445,33 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
                    chrome_test_util::ButtonWithAccessibilityLabelId(IDS_CANCEL)]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
+}
+
+// Checks that "open in new window" shows up on a long press of a url link
+// and that it actually opens in a new window.
+- (void)testOpenLinkInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in new window.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInNewWindowButton()]
+      performAction:grey_tap()];
+
+  // Assert there's a second window with expected content.
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText
+                             inWindowWithNumber:1];
 }
 
 @end

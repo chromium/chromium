@@ -468,9 +468,11 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 + (BOOL)webStateContainsText:(NSString*)text
           inWindowWithNumber:(int)windowNumber {
-  return web::test::IsWebViewContainingText(
-      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber),
-      base::SysNSStringToUTF8(text));
+  web::WebState* webState =
+      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber);
+  return webState ? web::test::IsWebViewContainingText(
+                        webState, base::SysNSStringToUTF8(text))
+                  : NO;
 }
 
 #pragma mark - WebState Utilities (EG2)
