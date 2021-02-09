@@ -713,6 +713,8 @@ crbug.com/845235 external/wpt/css/css-flexbox/hittest-overlapping-order.html [ F
 
 crbug.com/1074752 editing/selection/selection-color.html [ Failure ]
 
+crbug.com/1002937 external/wpt/editing/run/caret-navigation-around-line-break.html [ Failure ]
+
 crbug.com/1074752 external/wpt/css/css-pseudo/active-selection-051.html [ Failure ]
 crbug.com/1074752 external/wpt/css/css-pseudo/active-selection-052.html [ Failure ]
 crbug.com/1074752 external/wpt/css/css-pseudo/active-selection-053.html [ Failure ]

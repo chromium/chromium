@@ -198,6 +198,41 @@ TEST_F(VisiblePositionTest, NonNullInvalidatedAfterStyleChange) {
   EXPECT_FALSE(visible_position2.IsValid());
 }
 
+TEST_F(VisiblePositionTest, NormalizationAroundLineBreak) {
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "width: 5.5ch;"
+      "font: 10px/10px Ahem;"
+      "word-wrap: break-word;"
+      "}");
+  SetBodyContent(
+      "<div>line1line2</div>"
+      "<div>line1<br>line2</div>"
+      "<div>line1<wbr>line2</div>"
+      "<div>line1<span></span>line2</div>"
+      "<div>line1<span></span><span></span>line2</div>");
+
+  StaticElementList* tests = GetDocument().QuerySelectorAll("div");
+  for (unsigned i = 0; i < tests->length(); ++i) {
+    Element* test = tests->item(i);
+    Node* node1 = test->firstChild();
+    Node* node2 = test->lastChild();
+    PositionWithAffinity line1_end(Position(node1, 5), TextAffinity::kUpstream);
+    PositionWithAffinity line2_start(Position(node2, node1 == node2 ? 5 : 0),
+                                     TextAffinity::kDownstream);
+    PositionWithAffinity line1_end_normalized =
+        CreateVisiblePosition(line1_end).ToPositionWithAffinity();
+    PositionWithAffinity line2_start_normalized =
+        CreateVisiblePosition(line2_start).ToPositionWithAffinity();
+
+    EXPECT_FALSE(InSameLine(line1_end, line2_start));
+    EXPECT_FALSE(InSameLine(line1_end_normalized, line2_start_normalized));
+    EXPECT_TRUE(InSameLine(line1_end, line1_end_normalized));
+    EXPECT_TRUE(InSameLine(line2_start, line2_start_normalized));
+  }
+}
+
 #endif
 
 }  // namespace blink

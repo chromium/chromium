@@ -632,6 +632,10 @@ PositionInFlatTree ToPositionInFlatTree(const Position& pos) {
   return PositionInFlatTree(anchor, pos.AnchorType());
 }
 
+PositionInFlatTree ToPositionInFlatTree(const PositionInFlatTree& position) {
+  return position;
+}
+
 Position ToPositionInDOMTree(const Position& position) {
   return position;
 }

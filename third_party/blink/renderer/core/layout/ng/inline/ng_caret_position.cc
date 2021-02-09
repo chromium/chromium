@@ -313,9 +313,14 @@ NGCaretPosition ComputeNGCaretPosition(
   const base::Optional<unsigned> maybe_offset =
       mapping->GetTextContentOffset(position);
   if (!maybe_offset.has_value()) {
-    // TODO(xiaochengh): Investigate if we reach here.
-    NOTREACHED();
-    return NGCaretPosition();
+    // We can reach here with empty text nodes.
+    if (auto* data = DynamicTo<Text>(position.AnchorNode())) {
+      DCHECK_EQ(data->length(), 0u);
+    } else {
+      // TODO(xiaochengh): Investigate if we reach here.
+      NOTREACHED();
+      return NGCaretPosition();
+    }
   }
 
   const LayoutText* const layout_text =
@@ -324,7 +329,7 @@ NGCaretPosition ComputeNGCaretPosition(
                 *position.AnchorNode(), position.OffsetInContainerNode()))
           : nullptr;
 
-  const unsigned offset = *maybe_offset;
+  const unsigned offset = maybe_offset.value_or(0);
   const TextAffinity affinity = position_with_affinity.Affinity();
   // For upstream position, we use offset before ZWS to distinguish downstream
   // and upstream position when line breaking before ZWS.
