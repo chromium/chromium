@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
 
 #include "base/notreached.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/policy_signout_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_view_controller.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -55,12 +59,15 @@
 }
 
 - (void)confirmationAlertPrimaryAction {
-  [self.handler hidePolicySignoutPrompt];
+  [self.signoutPromptHandler hidePolicySignoutPrompt];
 }
 
 - (void)confirmationAlertSecondaryAction {
-  // There should be no secondary action button for this UI.
-  NOTREACHED();
+  [self.signoutPromptHandler hidePolicySignoutPrompt];
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
+  command.userInitiated = YES;
+  [self.applicationHandler openURLInNewTab:command];
 }
 
 - (void)confirmationAlertTertiaryAction {

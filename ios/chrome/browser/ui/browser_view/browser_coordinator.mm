@@ -979,7 +979,9 @@
     self.policySignoutPromptCoordinator = [[UserPolicySignoutCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
-    self.policySignoutPromptCoordinator.handler = self;
+    self.policySignoutPromptCoordinator.signoutPromptHandler = self;
+    self.policySignoutPromptCoordinator.applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
   }
   [self.policySignoutPromptCoordinator start];
 }

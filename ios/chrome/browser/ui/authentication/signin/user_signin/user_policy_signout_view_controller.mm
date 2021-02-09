@@ -22,12 +22,15 @@
   self.customSpacingAfterImage = 30;
 
   self.primaryActionAvailable = YES;
+  self.secondaryActionAvailable = YES;
   self.showDismissBarButton = NO;
   self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
   self.subtitleString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
+  self.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
 
   if (@available(iOS 13.4, *)) {

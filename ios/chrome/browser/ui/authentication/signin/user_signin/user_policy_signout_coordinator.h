@@ -7,14 +7,18 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
+@protocol ApplicationCommands;
 @protocol PolicySignoutPromptCommands;
 
 // Coordinates the user sign-out prompt when the user is signed out due to
 // the BrowserSignin policy disabling browser sign-in.
 @interface UserPolicySignoutCoordinator : ChromeCoordinator
 
-// Handler for all actions of this coordinator.
-@property(nonatomic, weak) id<PolicySignoutPromptCommands> handler;
+// Handler for commands related to the sign-out prompt for this coordinator.
+@property(nonatomic, weak) id<PolicySignoutPromptCommands> signoutPromptHandler;
+
+// Handler for application commands for this coordinator.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 @end
 

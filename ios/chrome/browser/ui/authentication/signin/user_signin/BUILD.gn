@@ -29,6 +29,7 @@ source_set("user_signin") {
     "//components/sync/base",
     "//components/unified_consent",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy/resources:enterprise_icon_blue_large",
     "//ios/chrome/browser/signin",
