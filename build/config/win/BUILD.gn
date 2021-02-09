@@ -80,9 +80,6 @@ config("compiler") {
   ]
 
   if (is_clang) {
-    # Don't look for includes in %INCLUDE%.
-    cflags += [ "/X" ]
-
     # Required to make the 19041 SDK compatible with clang-cl.
     # See https://crbug.com/1089996 issue #2 for details.
     cflags += [ "/D__WRL_ENABLE_FUNCTION_STATICS__" ]

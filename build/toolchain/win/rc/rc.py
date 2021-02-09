@@ -10,6 +10,7 @@ options:
 -h, --help     Print this message.
 -I<dir>        Add include path, used for both headers and resources.
 -imsvc<dir>    Add system include path, used for preprocessing only.
+/winsysroot<d> Set winsysroot, used for preprocessing only.
 -D<sym>        Define a macro for the preprocessor.
 /fo<out>       Set path of output .res file.
 /nologo        Ignored (rc.py doesn't print a logo by default).
@@ -35,6 +36,7 @@ def ParseFlags():
   # Can't use optparse / argparse because of /fo flag :-/
   includes = []
   imsvcs = []
+  winsysroot = []
   defines = []
   output = None
   input = None
@@ -48,6 +50,8 @@ def ParseFlags():
       includes.append(flag)
     elif flag.startswith('-imsvc'):
       imsvcs.append(flag)
+    elif flag.startswith('/winsysroot'):
+      winsysroot = [flag]
     elif flag.startswith('-D'):
       defines.append(flag)
     elif flag.startswith('/fo'):
@@ -76,10 +80,17 @@ def ParseFlags():
     sys.exit(1)
   if not output:
     output = os.path.splitext(input)[0] + '.res'
-  Flags = namedtuple('Flags', ['includes', 'defines', 'output', 'imsvcs',
-                               'input', 'show_includes'])
-  return Flags(includes=includes, defines=defines, output=output, imsvcs=imsvcs,
-               input=input, show_includes=show_includes)
+  Flags = namedtuple('Flags', [
+      'includes', 'defines', 'output', 'imsvcs', 'winsysroot', 'input',
+      'show_includes'
+  ])
+  return Flags(includes=includes,
+               defines=defines,
+               output=output,
+               imsvcs=imsvcs,
+               winsysroot=winsysroot,
+               input=input,
+               show_includes=show_includes)
 
 
 def ReadInput(input):
@@ -131,7 +142,7 @@ def Preprocess(rc_file_data, flags):
     clang_cmd.append('-I' + os.path.dirname(flags.input))
   if flags.show_includes:
     clang_cmd.append('/showIncludes')
-  clang_cmd += flags.imsvcs + flags.includes + flags.defines
+  clang_cmd += flags.imsvcs + flags.winsysroot + flags.includes + flags.defines
   p = subprocess.Popen(clang_cmd, stdin=subprocess.PIPE)
   p.communicate(input=rc_file_data)
   if p.returncode != 0:

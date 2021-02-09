@@ -249,6 +249,15 @@ def main():
   # TODO(scottmg|goma): Do we need an equivalent of
   # ninja_use_custom_environment_files?
 
+  def relflag(s):  # Make s relative to builddir when cwd and sdk on same drive.
+    try:
+      return os.path.relpath(s)
+    except ValueError:
+      return s
+
+  def q(s):  # Quote s if it contains spaces or other weird characters.
+    return s if re.match(r'^[a-zA-Z0-9._/\\:-]*$', s) else '"' + s + '"'
+
   for cpu in cpus:
     if cpu == target_cpu:
       # Extract environment variables for subprocesses.
@@ -264,22 +273,11 @@ def main():
       # The separator for INCLUDE here must match the one used in
       # _LoadToolchainEnv() above.
       include = [p.replace('"', r'\"') for p in env['INCLUDE'].split(';') if p]
-
-      # Make include path relative to builddir when cwd and sdk in same drive.
-      try:
-        include = list(map(os.path.relpath, include))
-      except ValueError:
-        pass
+      include = list(map(relflag, include))
 
       lib = [p.replace('"', r'\"') for p in env['LIB'].split(';') if p]
-      # Make lib path relative to builddir when cwd and sdk in same drive.
-      try:
-        lib = list(map(os.path.relpath, lib))
-      except ValueError:
-        pass
+      lib = list(map(relflag, lib))
 
-      def q(s):  # Quote s if it contains spaces or other weird characters.
-        return s if re.match(r'^[a-zA-Z0-9._/\\:-]*$', s) else '"' + s + '"'
       include_I = ' '.join([q('/I' + i) for i in include])
       include_imsvc = ' '.join([q('-imsvc' + i) for i in include])
       libpath_flags = ' '.join([q('-libpath:' + i) for i in lib])
@@ -293,7 +291,11 @@ def main():
   assert include_I
   print('include_flags_I = ' + gn_helpers.ToGNString(include_I))
   assert include_imsvc
-  print('include_flags_imsvc = ' + gn_helpers.ToGNString(include_imsvc))
+  if bool(int(os.environ.get('DEPOT_TOOLS_WIN_TOOLCHAIN', 1))) and win_sdk_path:
+    print('include_flags_imsvc = ' +
+          gn_helpers.ToGNString(q('/winsysroot' + relflag(toolchain_root))))
+  else:
+    print('include_flags_imsvc = ' + gn_helpers.ToGNString(include_imsvc))
   print('vc_lib_path = ' + gn_helpers.ToGNString(vc_lib_path))
   # Possible atlmfc library path gets introduced in the future for store thus
   # output result if a result exists.
