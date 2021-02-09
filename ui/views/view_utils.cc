@@ -46,10 +46,21 @@ std::vector<debug::ViewDebugWrapper*> ViewDebugWrapperImpl::GetChildren() {
   return child_ptrs;
 }
 
-void PrintViewHierarchy(View* view, int depth) {
+void ViewDebugWrapperImpl::ForAllProperties(PropCallback callback) {
+  views::View* view = const_cast<views::View*>(view_);
+  for (auto* member : *(view->GetClassMetaData())) {
+    auto flags = member->GetPropertyFlags();
+    if (!!(flags & views::metadata::PropertyFlags::kSerializable)) {
+      callback.Run(member->member_name(),
+                   base::UTF16ToUTF8(member->GetValueAsString(view)));
+    }
+  }
+}
+
+void PrintViewHierarchy(View* view, bool verbose, int depth) {
   ViewDebugWrapperImpl debug_view(view);
   std::ostringstream out;
-  debug::PrintViewHierarchy(&out, &debug_view, depth);
+  debug::PrintViewHierarchy(&out, &debug_view, verbose, depth);
   LOG(ERROR) << '\n' << out.str();
 }
 

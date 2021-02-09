@@ -32,6 +32,7 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
   bool GetNeedsLayout() override;
   bool GetEnabled() override;
   std::vector<debug::ViewDebugWrapper*> GetChildren() override;
+  void ForAllProperties(PropCallback callback) override;
 
  private:
   const View* const view_;
@@ -48,7 +49,9 @@ bool IsViewClass(View* view) {
   return !!child;
 }
 
-VIEWS_EXPORT void PrintViewHierarchy(View* view, int depth = -1);
+VIEWS_EXPORT void PrintViewHierarchy(View* view,
+                                     bool verbose = false,
+                                     int depth = -1);
 
 }  // namespace views
 

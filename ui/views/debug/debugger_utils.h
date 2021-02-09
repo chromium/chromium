@@ -10,6 +10,8 @@
 #include <tuple>
 #include <vector>
 
+#include "base/callback.h"
+
 namespace views {
 namespace debug {
 
@@ -21,6 +23,9 @@ class ViewDebugWrapper {
  public:
   // Tuple used to represent View bounds. Takes the form <x, y, width, height>.
   using BoundsTuple = std::tuple<int, int, int, int>;
+  // Callback function used to iterate through all metadata properties.
+  using PropCallback =
+      base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
   ViewDebugWrapper() = default;
   virtual ~ViewDebugWrapper() = default;
@@ -32,10 +37,12 @@ class ViewDebugWrapper {
   virtual bool GetNeedsLayout() = 0;
   virtual bool GetEnabled() = 0;
   virtual std::vector<ViewDebugWrapper*> GetChildren() = 0;
+  virtual void ForAllProperties(PropCallback callback) = 0;
 };
 
 void PrintViewHierarchy(std::ostream* out,
                         ViewDebugWrapper* view,
+                        bool verbose = false,
                         int depth = -1,
                         size_t column_limit = 240);
 
