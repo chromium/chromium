@@ -3050,8 +3050,11 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
   // We should apply FirstBaseline() of the placeholder fragment because the
   // placeholder might have the 'overflow' property, and its LastBaseline()
   // might be the block-end margin.
-  offset.block_offset =
-      *container_builder_.Baseline() - *fragment.FirstBaseline();
+  // |fragment| has no FirstBaseline() if it consists of only white-spaces.
+  if (fragment.FirstBaseline().has_value()) {
+    offset.block_offset =
+        *container_builder_.Baseline() - *fragment.FirstBaseline();
+  }
   container_builder_.AddResult(*result, offset);
 
   // This function doesn't update previous_inflow_position. Other children in
