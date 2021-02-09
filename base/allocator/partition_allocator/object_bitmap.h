@@ -66,6 +66,10 @@ class ObjectBitmap final {
   template <AccessType = AccessType::kAtomic, typename Callback>
   inline void Iterate(Callback) const;
 
+  // Same as above, but also clears the bitmap while iterating.
+  template <AccessType = AccessType::kAtomic, typename Callback>
+  inline void IterateAndClear(Callback);
+
   inline void Clear();
 
  private:
@@ -75,6 +79,9 @@ class ObjectBitmap final {
   const std::atomic<CellType>& AsAtomicCell(size_t cell_index) const {
     return reinterpret_cast<const std::atomic<CellType>&>(bitmap_[cell_index]);
   }
+
+  template <AccessType = AccessType::kAtomic, typename Callback, bool Clear>
+  inline void IterateImpl(Callback);
 
   template <AccessType>
   ALWAYS_INLINE CellType LoadCell(size_t cell_index) const;
@@ -167,9 +174,10 @@ ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ObjectIndexAndBit(
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
 template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
               AccessType access_type,
-          typename Callback>
-inline void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::Iterate(
-    Callback callback) const {
+          typename Callback,
+          bool should_clear>
+inline void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::IterateImpl(
+    Callback callback) {
   // The bitmap (|this|) is allocated inside the page with |kPageAlignment|.
   const uintptr_t base = reinterpret_cast<uintptr_t>(this) & kPageBaseMask;
   for (size_t cell_index = 0; cell_index < kBitmapSize; ++cell_index) {
@@ -184,7 +192,34 @@ inline void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::Iterate(
       // Clear current object bit in temporary value to advance iteration.
       value &= ~(static_cast<CellType>(1) << trailing_zeroes);
     }
+    if (should_clear) {
+      if (access_type == AccessType::kNonAtomic) {
+        bitmap_[cell_index] = 0;
+      } else {
+        AsAtomicCell(cell_index).store(0, std::memory_order_relaxed);
+      }
+    }
   }
+}
+
+template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
+template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
+              AccessType access_type,
+          typename Callback>
+inline void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::Iterate(
+    Callback callback) const {
+  const_cast<ObjectBitmap&>(*this)
+      .template IterateImpl<access_type, Callback, false>(std::move(callback));
+}
+
+template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
+template <typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::
+              AccessType access_type,
+          typename Callback>
+inline void
+ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::IterateAndClear(
+    Callback callback) {
+  IterateImpl<access_type, Callback, true>(std::move(callback));
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>

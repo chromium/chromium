@@ -165,5 +165,21 @@ TYPED_TEST(ObjectBitmapTest, AdjacentObjectsAtEnd) {
   EXPECT_EQ(2u, count);
 }
 
+TYPED_TEST(ObjectBitmapTest, IterateAndClearBitmap) {
+  static constexpr AccessType kAccessType = TestFixture::kAccessType;
+
+  size_t expected_count = 0;
+  for (size_t i = 0; i < this->LastIndex(); i += 2, ++expected_count) {
+    this->SetBitForObject(i);
+  }
+
+  size_t actual_count = 0;
+  this->bitmap().template IterateAndClear<kAccessType>(
+      [&actual_count](uintptr_t current) { ++actual_count; });
+
+  EXPECT_EQ(expected_count, actual_count);
+  EXPECT_TRUE(this->IsEmpty());
+}
+
 }  // namespace internal
 }  // namespace base

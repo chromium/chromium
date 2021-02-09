@@ -652,14 +652,13 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
         QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
         reinterpret_cast<char*>(super_page));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
-    bitmap->template Iterate<AccessType::kNonAtomic>(
+    bitmap->template IterateAndClear<AccessType::kNonAtomic>(
         [root, &swept_bytes](uintptr_t ptr) {
           auto* object = reinterpret_cast<void*>(ptr);
           auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
           swept_bytes += slot_span->bucket->slot_size;
           root->FreeNoHooksImmediate(object, slot_span);
         });
-    bitmap->Clear();
   }
 
   return swept_bytes;
