@@ -221,7 +221,7 @@ float NativeThemeBase::GetBorderRadiusForPart(Part part,
 
   switch (part) {
     case kCheckbox:
-      return 2.f * zoom;
+      return 2.f;
     case kPushButton:
     case kTextField:
       return 2.f;

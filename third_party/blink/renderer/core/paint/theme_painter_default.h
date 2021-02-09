@@ -34,6 +34,7 @@
 
 namespace blink {
 
+class GraphicsContextStateSaver;
 class LayoutThemeDefault;
 
 class ThemePainterDefault final : public ThemePainter {
@@ -102,6 +103,11 @@ class ThemePainterDefault final : public ThemePainter {
                           const ComputedStyle&,
                           const IntRect&,
                           WebThemeEngine::ExtraParams&);
+
+  IntRect ApplyZoomToRect(const IntRect&,
+                          const PaintInfo&,
+                          GraphicsContextStateSaver&,
+                          float zoom_level);
 
   // ThemePaintDefault is a part object of m_theme.
   LayoutThemeDefault& theme_;

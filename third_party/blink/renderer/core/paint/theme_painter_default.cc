@@ -167,15 +167,8 @@ bool ThemePainterDefault::PaintCheckbox(const Element& element,
   float zoom_level = style.EffectiveZoom();
   extra_params.button.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(paint_info.context, false);
-  IntRect unzoomed_rect = rect;
-  if (zoom_level != 1 && !features::IsFormControlsRefreshEnabled()) {
-    state_saver.Save();
-    unzoomed_rect.SetWidth(unzoomed_rect.Width() / zoom_level);
-    unzoomed_rect.SetHeight(unzoomed_rect.Height() / zoom_level);
-    paint_info.context.Translate(unzoomed_rect.X(), unzoomed_rect.Y());
-    paint_info.context.Scale(zoom_level, zoom_level);
-    paint_info.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
-  }
+  IntRect unzoomed_rect =
+      ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartCheckbox, GetWebThemeState(element),
@@ -193,9 +186,15 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   extra_params.button = WebThemeEngine::ButtonExtraParams();
   extra_params.button.checked = IsChecked(element);
 
+  float zoom_level = style.EffectiveZoom();
+  extra_params.button.zoom = zoom_level;
+  GraphicsContextStateSaver state_saver(paint_info.context, false);
+  IntRect unzoomed_rect =
+      ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
+
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartRadio, GetWebThemeState(element),
-      gfx::Rect(rect), &extra_params, style.UsedColorScheme());
+      gfx::Rect(unzoomed_rect), &extra_params, style.UsedColorScheme());
   return false;
 }
 
@@ -576,6 +575,24 @@ bool ThemePainterDefault::PaintSearchFieldCancelButton(
           : color_scheme_adjusted_cancel_image,
       Image::kSyncDecode, FloatRect(painting_rect));
   return false;
+}
+
+IntRect ThemePainterDefault::ApplyZoomToRect(
+    const IntRect& rect,
+    const PaintInfo& paint_info,
+    GraphicsContextStateSaver& state_saver,
+    float zoom_level) {
+  IntRect unzoomed_rect = rect;
+  if (zoom_level != 1) {
+    state_saver.Save();
+    unzoomed_rect.SetWidth(unzoomed_rect.Width() / zoom_level);
+    unzoomed_rect.SetHeight(unzoomed_rect.Height() / zoom_level);
+    paint_info.context.Translate(unzoomed_rect.X(), unzoomed_rect.Y());
+    paint_info.context.Scale(zoom_level, zoom_level);
+    paint_info.context.Translate(-unzoomed_rect.X(), -unzoomed_rect.Y());
+  }
+
+  return unzoomed_rect;
 }
 
 }  // namespace blink

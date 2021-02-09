@@ -133,17 +133,28 @@ class FormControlsBrowserTest : public ContentBrowserTest {
         gfx::Size(screenshot_width, screenshot_height), comparator));
   }
 
+  // Check if the test can run on the current system.
+  bool CheckShouldRunTest() const {
+#if defined(OS_ANDROID)
+    // Lower versions of android running on older devices, ex Nexus 5, render
+    // form controls with a too large of a difference -- >20% error -- to
+    // pixel compare.
+    if (base::android::BuildInfo::GetInstance()->sdk_int() <
+        base::android::SDK_VERSION_OREO) {
+      return false;
+    }
+#endif  // defined(OS_ANDROID)
+    return true;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Disabled due to https://crbug.com/1172370
-#if defined(OS_ANDROID)
-#define MAYBE_Checkbox DISABLED_Checkbox
-#else
-#define MAYBE_Checkbox Checkbox
-#endif
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Checkbox) {
+  if (!CheckShouldRunTest())
+    return;
+
   RunTest("form_controls_browsertest_checkbox",
           "<input type=checkbox>"
           "<input type=checkbox checked>"
@@ -157,13 +168,10 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
           /* screenshot_height */ 40);
 }
 
-// Disabled due to https://crbug.com/1172370
-#if defined(OS_ANDROID)
-#define MAYBE_Radio DISABLED_Radio
-#else
-#define MAYBE_Radio Radio
-#endif
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Radio) {
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
+  if (!CheckShouldRunTest())
+    return;
+
   RunTest("form_controls_browsertest_radio",
           "<input type=radio>"
           "<input type=radio checked>"
