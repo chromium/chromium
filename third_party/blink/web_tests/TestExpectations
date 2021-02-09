@@ -380,6 +380,8 @@ crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientatio
 
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
+crbug.com/935057 external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
+crbug.com/935057 external/wpt/css/css-backgrounds/background-size-044.html [ Failure ]
 
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Skip ]
@@ -1220,6 +1222,12 @@ crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-with-table-child.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-lists/list-style-type-string-005b.html [ Failure ]
 
+# css-pseudo
+crbug.com/1163437 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
+crbug.com/1163437 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-001.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-002.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-003.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-pseudo/first-letter-exclude-inline-marker.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-pseudo/first-letter-exclude-inline-child-marker.html [ Failure ]
 crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-digraph.html [ Failure ]
@@ -2552,13 +2560,7 @@ crbug.com/626703 external/wpt/css/css-images/object-fit-cover-svg-003o.html [ Fa
 crbug.com/626703 external/wpt/css/css-images/object-fit-none-svg-001e.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/object-fit-none-svg-003i.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/object-fit-fill-svg-002e.html [ Failure ]
-crbug.com/626703 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
-crbug.com/626703 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/background-size-044.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-backgrounds/background-size-044.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-screenx-screeny.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/css/css-animations/nested-scale-animations.html [ Failure ]
 crbug.com/1014091 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
@@ -5626,11 +5628,6 @@ crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [
 
 # Sheriff 2021-01-13
 crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Pass Failure ]
-
-# CSS spelling and grammar features (issue 1163437)
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-001.html [ Failure ]
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-002.html [ Failure ]
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-003.html [ Failure ]
 
 # Sheriff 2021-01-15
 crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Pass Failure ]
