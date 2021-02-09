@@ -27,55 +27,21 @@ namespace cablev2 {
 
 namespace tunnelserver {
 
-// Base32Ord converts |c| into its base32 value, as defined in
-// https://tools.ietf.org/html/rfc4648#section-6.
-constexpr uint32_t Base32Ord(char c) {
-  if (c >= 'a' && c <= 'z') {
-    return c - 'a';
-  } else if (c >= '2' && c <= '7') {
-    return 26 + c - '2';
-  } else {
-    __builtin_unreachable();
-  }
-}
-
-// TLD enumerates the set of possible top-level domains that a tunnel server can
-// use.
-enum class TLD {
-  COM = 0,
-  ORG = 1,
-  NET = 2,
-  INFO = 3,
-};
-
-// EncodeDomain converts a domain name, in the form of a four-letter, base32
-// domain plus a TLD, into a 22-bit value.
-constexpr uint32_t EncodeDomain(const char label[5], TLD tld) {
-  const uint32_t tld_value = static_cast<uint32_t>(tld);
-  if (tld_value > 3 || label[4] != 0) {
-    __builtin_unreachable();
-  }
-  return ((Base32Ord(label[0]) << 15 | Base32Ord(label[1]) << 10 |
-           Base32Ord(label[2]) << 5 | Base32Ord(label[3]))
-          << 2) |
-         tld_value;
-}
-
 // DecodeDomain converts a 22-bit tunnel server domain (as encoded by
 // |EncodeDomain|) into a string in dotted form.
-COMPONENT_EXPORT(DEVICE_FIDO) std::string DecodeDomain(uint32_t domain);
+COMPONENT_EXPORT(DEVICE_FIDO) std::string DecodeDomain(uint16_t domain);
 
 // GetNewTunnelURL converts a 22-bit tunnel server domain (as encoded by
 // |EncodeDomain|), and a tunnel ID, into a WebSockets-based URL for creating a
 // new tunnel.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetNewTunnelURL(uint32_t domain, base::span<const uint8_t, 16> id);
+GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id);
 
 // GetConnectURL converts a 22-bit tunnel server domain (as encoded by
 // |EncodeDomain|), a routing-ID, and a tunnel ID, into a WebSockets-based URL
 // for connecting to an existing tunnel.
 COMPONENT_EXPORT(DEVICE_FIDO)
-GURL GetConnectURL(uint32_t domain,
+GURL GetConnectURL(uint16_t domain,
                    std::array<uint8_t, kRoutingIdSize> routing_id,
                    base::span<const uint8_t, 16> id);
 
@@ -108,7 +74,7 @@ base::Optional<CableEidArray> Decrypt(
 
 // Components contains the parts of a decrypted EID.
 struct Components {
-  uint32_t tunnel_server_domain;
+  uint16_t tunnel_server_domain;
   std::array<uint8_t, kRoutingIdSize> routing_id;
   std::array<uint8_t, kNonceSize> nonce;
 };

@@ -71,9 +71,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // kTunnelServer is the hardcoded tunnel server that phones will use for network
 // communication. This specifies a Google service and the short domain need is
 // necessary to fit within a BLE advert.
-constexpr uint32_t kTunnelServer = device::cablev2::tunnelserver::EncodeDomain(
-    "ua5v",
-    device::cablev2::tunnelserver::TLD::COM);
+constexpr uint16_t kTunnelServer = 0;
 
 struct MakeCredRequest {
   const std::vector<uint8_t>* client_data_hash;

@@ -83,7 +83,7 @@ std::array<uint8_t, 32> PairingSignature(
 // ReservedBitsAreZero returns true if the currently unused bits in |eid| are
 // all set to zero.
 bool ReservedBitsAreZero(const CableEidArray& eid) {
-  return eid[6] == 0 && eid[7] == 0 && (eid[2] >> 6) == 0;
+  return eid[0] == 0;
 }
 
 bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
@@ -98,23 +98,37 @@ bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
 
 namespace tunnelserver {
 
-std::string DecodeDomain(uint32_t domain) {
+std::string DecodeDomain(uint16_t domain) {
+  char templ[] = "caBLEv2 tunnel server domain\x00\x00";
+  memcpy(&templ[sizeof(templ) - 2], &domain, sizeof(domain));
+  uint8_t digest[SHA256_DIGEST_LENGTH];
+  SHA256(reinterpret_cast<const uint8_t*>(templ), sizeof(templ), digest);
+  uint64_t result;
+  static_assert(sizeof(result) <= sizeof(digest), "");
+  memcpy(&result, digest, sizeof(result));
+  // This value causes the range of this function to intersect at a single point
+  // with the function previously used. This allows us not to change the initial
+  // tunnel server domain name.
+  result ^= 0x35286e67508f8e42;
+
   static const char kBase32Chars[33] = "abcdefghijklmnopqrstuvwxyz234567";
+  const int tld_value = result & 3;
+  result >>= 2;
 
   std::string ret = "cable.";
-  ret.push_back(kBase32Chars[(domain >> 17) & 0x1f]);
-  ret.push_back(kBase32Chars[(domain >> 12) & 0x1f]);
-  ret.push_back(kBase32Chars[(domain >> 7) & 0x1f]);
-  ret.push_back(kBase32Chars[(domain >> 2) & 0x1f]);
+  while (result != 0) {
+    ret.push_back(kBase32Chars[result & 31]);
+    result >>= 5;
+  }
   ret.push_back('.');
 
   static const char kTLDs[4][5] = {"com", "org", "net", "info"};
-  ret += kTLDs[domain & 3];
+  ret += kTLDs[tld_value];
 
   return ret;
 }
 
-GURL GetNewTunnelURL(uint32_t domain, base::span<const uint8_t, 16> id) {
+GURL GetNewTunnelURL(uint16_t domain, base::span<const uint8_t, 16> id) {
   std::string ret = "wss://" + DecodeDomain(domain) + "/cable/new/";
 
   ret += base::HexEncode(id);
@@ -123,7 +137,7 @@ GURL GetNewTunnelURL(uint32_t domain, base::span<const uint8_t, 16> id) {
   return url;
 }
 
-GURL GetConnectURL(uint32_t domain,
+GURL GetConnectURL(uint16_t domain,
                    std::array<uint8_t, kRoutingIdSize> routing_id,
                    base::span<const uint8_t, 16> id) {
   std::string ret = "wss://" + DecodeDomain(domain) + "/cable/connect/";
@@ -217,37 +231,36 @@ base::Optional<CableEidArray> Decrypt(
 }
 
 CableEidArray FromComponents(const Components& components) {
-  DCHECK_EQ(components.tunnel_server_domain >> 22, 0u);
-
   CableEidArray eid;
-  static_assert(EXTENT(eid) == 16, "");
-  eid[0] = components.tunnel_server_domain;
-  eid[1] = components.tunnel_server_domain >> 8;
-  eid[2] = components.tunnel_server_domain >> 16;
-  static_assert(EXTENT(components.routing_id) == 3, "");
-  eid[3] = components.routing_id[0];
-  eid[4] = components.routing_id[1];
-  eid[5] = components.routing_id[2];
-  eid[6] = 0;
-  eid[7] = 0;
-  static_assert(EXTENT(eid) == 8 + kNonceSize, "");
-  memcpy(&eid[8], components.nonce.data(), kNonceSize);
+  static_assert(EXTENT(components.nonce) == kNonceSize, "");
+  static_assert(EXTENT(eid) == 1 + kNonceSize + sizeof(components.routing_id) +
+                                   sizeof(components.tunnel_server_domain),
+                "");
+
+  eid[0] = 0;
+  memcpy(&eid[1], components.nonce.data(), kNonceSize);
+  memcpy(&eid[1 + kNonceSize], components.routing_id.data(),
+         sizeof(components.routing_id));
+  memcpy(&eid[1 + kNonceSize + sizeof(components.routing_id)],
+         &components.tunnel_server_domain,
+         sizeof(components.tunnel_server_domain));
 
   return eid;
 }
 
 Components ToComponents(const CableEidArray& eid) {
   Components ret;
-  static_assert(EXTENT(eid) == 16, "");
-  ret.tunnel_server_domain = static_cast<uint32_t>(eid[0]) |
-                             (static_cast<uint32_t>(eid[1]) << 8) |
-                             ((static_cast<uint32_t>(eid[2]) & 0x3f) << 16);
-  ret.routing_id[0] = eid[3];
-  ret.routing_id[1] = eid[4];
-  ret.routing_id[2] = eid[5];
+  static_assert(EXTENT(ret.nonce) == kNonceSize, "");
+  static_assert(EXTENT(eid) == 1 + kNonceSize + sizeof(ret.routing_id) +
+                                   sizeof(ret.tunnel_server_domain),
+                "");
 
-  static_assert(EXTENT(eid) == 8 + kNonceSize, "");
-  memcpy(ret.nonce.data(), &eid[8], kNonceSize);
+  memcpy(ret.nonce.data(), &eid[1], kNonceSize);
+  memcpy(ret.routing_id.data(), &eid[1 + kNonceSize], sizeof(ret.routing_id));
+  memcpy(&ret.tunnel_server_domain,
+         &eid[1 + kNonceSize + sizeof(ret.routing_id)],
+         sizeof(ret.tunnel_server_domain));
+
   return ret;
 }
 

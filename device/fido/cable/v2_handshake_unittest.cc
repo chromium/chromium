@@ -18,16 +18,14 @@ namespace {
 
 TEST(CableV2Encoding, TunnelServerURLs) {
   // Test that a domain name survives an encode-decode round trip.
-  constexpr uint32_t encoded =
-      tunnelserver::EncodeDomain("abcd", tunnelserver::TLD::NET);
   uint8_t tunnel_id[16] = {0};
-  const GURL url = tunnelserver::GetNewTunnelURL(encoded, tunnel_id);
-  EXPECT_TRUE(url.spec().find("//cable.abcd.net/") != std::string::npos) << url;
+  const GURL url = tunnelserver::GetNewTunnelURL(/*domain=*/0, tunnel_id);
+  EXPECT_TRUE(url.spec().find("//cable.ua5v.com/") != std::string::npos) << url;
 }
 
 TEST(CableV2Encoding, EIDToFromComponents) {
   eid::Components components;
-  components.tunnel_server_domain = 0x010203;
+  components.tunnel_server_domain = 0x0102;
   components.routing_id = {9, 10, 11};
   crypto::RandBytes(components.nonce);
 
@@ -41,7 +39,7 @@ TEST(CableV2Encoding, EIDToFromComponents) {
 
 TEST(CableV2Encoding, EIDEncrypt) {
   eid::Components components;
-  components.tunnel_server_domain = 0x010203;
+  components.tunnel_server_domain = 0x0102;
   components.routing_id = {9, 10, 11};
   crypto::RandBytes(components.nonce);
   const CableEidArray eid = eid::FromComponents(components);
