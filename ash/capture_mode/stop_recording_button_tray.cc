@@ -25,7 +25,7 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
   image_view->SetImage(gfx::CreateVectorIcon(
       kCaptureModeCircleStopIcon,
       AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+          AshColorProvider::ContentLayerType::kIconColorAlert)));
   image_view->SetTooltipText(GetAccessibleNameForTray());
   image_view->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
