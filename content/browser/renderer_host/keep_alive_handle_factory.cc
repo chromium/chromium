@@ -20,8 +20,9 @@
 
 namespace content {
 
-class KeepAliveHandleFactory::KeepAliveHandleImpl final
-    : public blink::mojom::KeepAliveHandle {
+namespace {
+
+class KeepAliveHandleImpl final : public blink::mojom::KeepAliveHandle {
  public:
   explicit KeepAliveHandleImpl(int process_id) : process_id_(process_id) {
     GetContentClient()->browser()->OnKeepaliveRequestStarted();
@@ -48,16 +49,15 @@ class KeepAliveHandleFactory::KeepAliveHandleImpl final
   const int process_id_;
 };
 
-class KeepAliveHandleFactory::Context final
-    : public base::RefCounted<Context>,
-      public blink::mojom::KeepAliveHandleFactory {
+}  // namespace
+
+class KeepAliveHandleFactory::Context
+    : public blink::mojom::KeepAliveHandleFactory {
  public:
   explicit Context(int process_id) : process_id_(process_id) {}
-
-  void Clear() {
-    handle_receivers_.Clear();
-    factory_receivers_.Clear();
-  }
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+  ~Context() override = default;
 
   void IssueKeepAliveHandle(
       mojo::PendingReceiver<blink::mojom::KeepAliveHandle> receiver) override {
@@ -70,29 +70,25 @@ class KeepAliveHandleFactory::Context final
     factory_receivers_.Add(this, std::move(receiver));
   }
 
-  void ClearLater(base::TimeDelta timeout) {
-    GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&Context::Clear, this), timeout);
-  }
-
  private:
-  friend class base::RefCounted<Context>;
-  ~Context() override = default;
-
   mojo::UniqueReceiverSet<blink::mojom::KeepAliveHandle> handle_receivers_;
   mojo::ReceiverSet<blink::mojom::KeepAliveHandleFactory> factory_receivers_;
   const int process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(Context);
 };
 
 KeepAliveHandleFactory::KeepAliveHandleFactory(RenderProcessHost* process_host,
                                                base::TimeDelta timeout)
-    : context_(base::MakeRefCounted<Context>(process_host->GetID())),
+    : context_(std::make_unique<Context>(process_host->GetID())),
       timeout_(timeout) {}
 
 KeepAliveHandleFactory::~KeepAliveHandleFactory() {
-  context_->ClearLater(timeout_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Extend the lifetime of `context_` a bit. Note that `context_` has an
+  // ability to extend the lifetime of the associated render process.
+  GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce([](std::unique_ptr<Context>) {}, std::move(context_)),
+      timeout_);
 }
 
 void KeepAliveHandleFactory::Bind(
