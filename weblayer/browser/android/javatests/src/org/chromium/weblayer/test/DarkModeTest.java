@@ -44,6 +44,7 @@ public class DarkModeTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(90)
     public void testDarkModeWithWebThemeDarkening() throws Exception {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         mActivity = mActivityTestRule.launchShell(new Bundle());
@@ -54,6 +55,7 @@ public class DarkModeTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(90)
     public void testDarkModeWithUserAgentDarkening() throws Exception {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         mActivity = mActivityTestRule.launchShell(new Bundle());
@@ -64,6 +66,7 @@ public class DarkModeTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(90)
     public void testDarkModeWithPreferWebThemeDarkening() throws Exception {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         mActivity = mActivityTestRule.launchShell(new Bundle());
@@ -74,6 +77,7 @@ public class DarkModeTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(90)
     public void testLightModeWithWebThemeDarkening() throws Exception {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         mActivity = mActivityTestRule.launchShell(new Bundle());
@@ -84,6 +88,7 @@ public class DarkModeTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(90)
     public void testLightModeWithUserAgentDarkening() throws Exception {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         mActivity = mActivityTestRule.launchShell(new Bundle());
@@ -94,6 +99,7 @@ public class DarkModeTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(90)
     public void testLightModeWithPreferWebThemeDarkening() throws Exception {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         mActivity = mActivityTestRule.launchShell(new Bundle());
