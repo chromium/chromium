@@ -876,7 +876,7 @@ void SandboxedUnpacker::ReportFailure(
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
 
   UMA_HISTOGRAM_ENUMERATION(
-      "Extensions.SandboxUnpackFailureReason", reason,
+      "Extensions.SandboxUnpackFailureReason2", reason,
       SandboxedUnpackerFailureReason::NUM_FAILURE_REASONS);
   Cleanup();
 

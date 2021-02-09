@@ -229,7 +229,7 @@ void ReportDetailedFailureReasons(
   }
   if (installation.unpacker_failure_reason) {
     base::UmaHistogramEnumeration(
-        "Extensions.ForceInstalledFailureSandboxUnpackFailureReason",
+        "Extensions.ForceInstalledFailureSandboxUnpackFailureReason2",
         installation.unpacker_failure_reason.value(),
         SandboxedUnpackerFailureReason::NUM_FAILURE_REASONS);
   }

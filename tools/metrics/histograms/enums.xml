@@ -27004,14 +27004,20 @@ Called by update_extension_permission.py.-->
   <int value="25" label="INVALID_PATH_FOR_BITMAP_IMAGE"/>
   <int value="26" label="ERROR_RE_ENCODING_THEME_IMAGE"/>
   <int value="27" label="ERROR_SAVING_THEME_IMAGE"/>
-  <int value="28" label="COULD_NOT_READ_CATALOG_DATA_FROM_DISK"/>
-  <int value="29" label="INVALID_CATALOG_DATA"/>
-  <int value="30" label="INVALID_PATH_FOR_CATALOG"/>
-  <int value="31" label="ERROR_SERIALIZING_CATALOG"/>
-  <int value="32" label="ERROR_SAVING_CATALOG"/>
-  <int value="33" label="CRX_HASH_VERIFICATION_FAILED"/>
-  <int value="34" label="CRX_FILE_IS_DELTA_UPDATE"/>
-  <int value="35" label="CRX_EXPECTED_HASH_INVALID"/>
+  <int value="28" label="DEPRECATED_ABORTED_DUE_TO_SHUTDOWN"/>
+  <int value="29" label="COULD_NOT_READ_CATALOG_DATA_FROM_DISK"/>
+  <int value="30" label="INVALID_CATALOG_DATA"/>
+  <int value="31" label="INVALID_PATH_FOR_CATALOG"/>
+  <int value="32" label="ERROR_SERIALIZING_CATALOG"/>
+  <int value="33" label="ERROR_SAVING_CATALOG"/>
+  <int value="34" label="CRX_HASH_VERIFICATION_FAILED"/>
+  <int value="35" label="UNZIP_FAILED"/>
+  <int value="36" label="DIRECTORY_MOVE_FAILED"/>
+  <int value="37" label="CRX_FILE_IS_DELTA_UPDATE"/>
+  <int value="38" label="CRX_EXPECTED_HASH_INVALID"/>
+  <int value="39" label="DEPRECATED_ERROR_PARSING_DNR_RULESET"/>
+  <int value="40" label="ERROR_INDEXING_DNR_RULESET"/>
+  <int value="41" label="CRX_REQUIRED_PROOF_MISSING"/>
 </enum>
 
 <enum name="ExtensionUpdateCheckDataKey">

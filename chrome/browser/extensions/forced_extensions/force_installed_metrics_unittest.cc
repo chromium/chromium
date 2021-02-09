@@ -90,7 +90,7 @@ constexpr char kHttpErrorCodeManifestFetchFailedStatsSH[] =
 constexpr char kFetchRetriesManifestFetchFailedStats[] =
     "Extensions.ForceInstalledManifestFetchFailedFetchTries";
 constexpr char kSandboxUnpackFailureReason[] =
-    "Extensions.ForceInstalledFailureSandboxUnpackFailureReason";
+    "Extensions.ForceInstalledFailureSandboxUnpackFailureReason2";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kFailureSessionStats[] =
     "Extensions.ForceInstalledFailureSessionType";

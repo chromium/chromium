@@ -8,7 +8,9 @@
 namespace extensions {
 
 // Enumerate all the ways SandboxedUnpacker can fail.
-// Don't change the order or change the value of the enums.
+// Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
+// update enums.xml (name: ExtensionUnpackFailureReason) when adding new
+// entries.
 // Don't forget to update device_management_backend.proto (name:
 // ExtensionInstallReportLogEvent::SandboxedUnpackerFailureReason) when adding
 // new entries. Don't forget to update ConvertUnpackerFailureReasonToProto

@@ -1465,6 +1465,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceInstalledFailureSandboxUnpackFailureReason"
     enum="ExtensionUnpackFailureReason" expires_after="2021-08-01">
+  <obsolete>
+    Deprecated as of 02/2021 in favour of
+    `Extensions.ForceInstalledFailureSandboxUnpackFailureReason2`.
+  </obsolete>
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1473,6 +1477,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded for each forced extension that failed to install after 5 minutes
     with Extensions.ForceInstalledFailureReason3 equal to
     CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ForceInstalledFailureSandboxUnpackFailureReason2"
+    enum="ExtensionUnpackFailureReason" expires_after="2021-08-01">
+  <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    The reason why enterprise policy forced extensions had failed to unpack.
+    Recorded for each forced extension that failed to install after 5 minutes
+    with Extensions.ForceInstalledFailureReason3 equal to
+    CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE.
+
+    Replaced Extensions.ForceInstalledFailureSandboxUnpackFailureReason because
+    the enum values were not in sync with the C++ enums.
   </summary>
 </histogram>
 
@@ -3098,12 +3118,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.SandboxUnpackFailureReason"
     enum="ExtensionUnpackFailureReason" expires_after="never">
+  <obsolete>
+    Deprecated as of 02/2021 in favour of
+    `Extensions.SandboxUnpackFailureReason2`.
+  </obsolete>
 <!-- expires-never: Monitors core extension installation flows. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The reason an extension failed to unpack, recorded when a failure occurs.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.SandboxUnpackFailureReason2"
+    enum="ExtensionUnpackFailureReason" expires_after="never">
+<!-- expires-never: Monitors core extension installation flows. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The reason an extension failed to unpack, recorded when a failure occurs.
+
+    Replaced Extensions.SandboxUnpackFailureReason because the enum values were
+    not in sync with the C++ enums.
   </summary>
 </histogram>
 
