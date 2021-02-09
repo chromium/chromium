@@ -732,8 +732,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool enabled = three_finger_click_enabled_.GetValue();
     if (user_is_active)
       touchpad_settings.SetThreeFingerClick(enabled);
-    ReportBooleanPrefApplication(reason, "Touchpad.ThreeFingerClick.Changed",
-                                 "Touchpad.ThreeFingerClick.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kUnifiedDesktopEnabledByDefault) {
@@ -1094,7 +1092,6 @@ void Preferences::ForceNaturalScrollDefault() {
       is_syncing && !prefs_->GetUserPrefValue(ash::prefs::kNaturalScroll)) {
     DVLOG(1) << "Natural scroll forced to true";
     natural_scroll_.SetValue(true);
-    base::UmaHistogramBoolean("Touchpad.NaturalScroll.Forced", true);
   }
 }
 
