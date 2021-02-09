@@ -59,6 +59,9 @@ class FlocId {
   // |id_| must be valid.
   std::string ToStringForJsApi() const;
 
+  // Returns the internal uint64_t number. Precondition: |id_| must be valid.
+  uint64_t ToUint64() const;
+
   base::Time history_begin_time() const { return history_begin_time_; }
 
   base::Time history_end_time() const { return history_end_time_; }

@@ -37,6 +37,8 @@ class FixedFlocIdProvider : public federated_learning::FlocIdProvider {
       const base::Optional<url::Origin>& top_frame_origin) const override {
     return "12345.6.7.8.9";
   }
+
+  void MaybeRecordFlocToUkm(ukm::SourceId source_id) override {}
 };
 
 }  // namespace

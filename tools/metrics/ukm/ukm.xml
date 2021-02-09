@@ -4633,6 +4633,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FlocPageLoad" singular="True">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Whenever the floc is computed, this event will be recorded at the commit
+    time of the next page load. Caveat: if the browser is closed before the next
+    page load occurs (in a new session), the event won't be recorded.
+  </summary>
+  <metric name="FlocId">
+    <summary>
+      The user's floc id. This ignores any general or per-context access
+      permissions, and records the internal int64_t number directly. This metric
+      may still be skipped if the floc was not calculated or has been
+      invalidated.
+    </summary>
+  </metric>
+</event>
+
 <event name="FontMatchAttempts">
   <owner>caraitto@chromium.org</owner>
   <owner>pauljensen@chromium.org</owner>

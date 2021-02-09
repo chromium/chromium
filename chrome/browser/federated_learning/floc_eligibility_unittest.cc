@@ -7,6 +7,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/floc_page_load_metrics_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
@@ -25,6 +27,10 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    TestingBrowserProcess::GetGlobal()->SetFlocSortingLshClustersService(
+        std::make_unique<federated_learning::FlocSortingLshClustersService>());
+
     ASSERT_TRUE(profile()->CreateHistoryService());
 
     InitWebContents();
