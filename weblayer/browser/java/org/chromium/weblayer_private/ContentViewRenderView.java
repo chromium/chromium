@@ -107,8 +107,8 @@ public class ContentViewRenderView
     // Common interface to listen to surface related events.
     private interface SurfaceEventListener {
         void surfaceCreated();
-        void surfaceChanged(Surface surface, boolean canBeUsedWithSurfaceControl, int format,
-                int width, int height);
+        void surfaceChanged(
+                Surface surface, boolean canBeUsedWithSurfaceControl, int width, int height);
         // |cacheBackBuffer| will delay destroying the EGLSurface until after the next swap.
         void surfaceDestroyed(boolean cacheBackBuffer);
         void surfaceRedrawNeededAsync(Runnable drawingFinished);
@@ -165,12 +165,12 @@ public class ContentViewRenderView
         }
 
         @Override
-        public void surfaceChanged(Surface surface, boolean canBeUsedWithSurfaceControl, int format,
-                int width, int height) {
+        public void surfaceChanged(
+                Surface surface, boolean canBeUsedWithSurfaceControl, int width, int height) {
             assert mNativeContentViewRenderView != 0;
             assert mSurfaceData == ContentViewRenderView.this.mCurrent;
             ContentViewRenderViewJni.get().surfaceChanged(mNativeContentViewRenderView,
-                    canBeUsedWithSurfaceControl, format, width, height, surface);
+                    canBeUsedWithSurfaceControl, width, height, surface);
             mCompositorHasSurface = surface != null;
             maybeUpdatePhysicalBackingSize(width, height);
         }
@@ -481,12 +481,12 @@ public class ContentViewRenderView
         }
 
         @Override
-        public void surfaceChanged(Surface surface, boolean canBeUsedWithSurfaceControl, int format,
-                int width, int height) {
+        public void surfaceChanged(
+                Surface surface, boolean canBeUsedWithSurfaceControl, int width, int height) {
             if (mMarkedForDestroy) return;
             // Selection magnifier does not work with surface control enabled.
-            mListener.surfaceChanged(surface, canBeUsedWithSurfaceControl && mAllowSurfaceControl,
-                    format, width, height);
+            mListener.surfaceChanged(
+                    surface, canBeUsedWithSurfaceControl && mAllowSurfaceControl, width, height);
             mNumSurfaceViewSwapsUntilVisible = 2;
         }
 
@@ -551,7 +551,7 @@ public class ContentViewRenderView
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            mListener.surfaceChanged(holder.getSurface(), true, format, width, height);
+            mListener.surfaceChanged(holder.getSurface(), true, width, height);
         }
 
         @Override
@@ -602,7 +602,7 @@ public class ContentViewRenderView
                 mCurrentSurfaceTexture = surfaceTexture;
                 mCurrentSurface = new Surface(mCurrentSurfaceTexture);
             }
-            mListener.surfaceChanged(mCurrentSurface, false, PixelFormat.OPAQUE, width, height);
+            mListener.surfaceChanged(mCurrentSurface, false, width, height);
         }
 
         @Override
@@ -949,7 +949,7 @@ public class ContentViewRenderView
         void surfaceCreated(long nativeContentViewRenderView);
         void surfaceDestroyed(long nativeContentViewRenderView, boolean cacheBackBuffer);
         void surfaceChanged(long nativeContentViewRenderView, boolean canBeUsedWithSurfaceControl,
-                int format, int width, int height, Surface surface);
+                int width, int height, Surface surface);
         void setNeedsRedraw(long nativeContentViewRenderView);
         void evictCachedSurface(long nativeContentViewRenderView);
         ResourceManager getResourceManager(long nativeContentViewRenderView);
