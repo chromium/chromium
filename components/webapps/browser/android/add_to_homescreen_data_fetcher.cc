@@ -227,15 +227,15 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
 
   is_waiting_for_manifest_ = false;
 
-  if (!data.manifest->IsEmpty()) {
+  if (!data.manifest.IsEmpty()) {
     base::RecordAction(base::UserMetricsAction("webapps.AddShortcut.Manifest"));
-    shortcut_info_.UpdateFromManifest(*data.manifest);
+    shortcut_info_.UpdateFromManifest(data.manifest);
     shortcut_info_.manifest_url = data.manifest_url;
   }
 
   // Do this after updating from the manifest for the case where a site has
   // a manifest with name and standalone specified, but no icons.
-  if (data.manifest->IsEmpty() || !data.primary_icon) {
+  if (data.manifest.IsEmpty() || !data.primary_icon) {
     observer_->OnUserTitleAvailable(shortcut_info_.user_title,
                                     shortcut_info_.url,
                                     /*is_webapk_compatible=*/false);
@@ -255,7 +255,7 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
       WebappsIconUtils::GetMinimumSplashImageSizeInPx();
   shortcut_info_.splash_image_url =
       blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-          data.manifest->icons, shortcut_info_.ideal_splash_image_size_in_px,
+          data.manifest.icons, shortcut_info_.ideal_splash_image_size_in_px,
           shortcut_info_.minimum_splash_image_size_in_px,
           blink::mojom::ManifestImageResource_Purpose::ANY);
 
@@ -274,7 +274,7 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
 
   bool webapk_compatible =
       (data.NoBlockingErrors() && data.valid_manifest && data.has_worker &&
-       WebappsUtils::AreWebManifestUrlsWebApkCompatible(*data.manifest));
+       WebappsUtils::AreWebManifestUrlsWebApkCompatible(data.manifest));
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
       shortcut_info_.url, webapk_compatible);

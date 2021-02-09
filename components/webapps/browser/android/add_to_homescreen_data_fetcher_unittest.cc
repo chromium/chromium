@@ -159,7 +159,7 @@ class TestInstallableManager : public InstallableManager {
     if (code != NO_ERROR_DETECTED)
       errors.push_back(code);
     std::move(callback).Run(
-        {std::move(errors), GURL(kDefaultManifestUrl), &manifest_,
+        {std::move(errors), GURL(kDefaultManifestUrl), manifest_,
          params.valid_primary_icon ? primary_icon_url_ : GURL(),
          params.valid_primary_icon ? primary_icon_.get() : nullptr,
          params.prefer_maskable_icon, GURL() /* splash_icon_url */,

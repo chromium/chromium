@@ -48,10 +48,12 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
     InstallableStatusCode installable_code,
     const GURL& manifest_url,
     std::unique_ptr<blink::Manifest> manifest) {
+  DCHECK(manifest);
+
   FakeInstallableManager* installable_manager =
       FakeInstallableManager::CreateForWebContents(web_contents);
 
-  const bool valid_manifest = manifest && !manifest->IsEmpty();
+  const bool valid_manifest = !manifest->IsEmpty();
   installable_manager->manifest_url_ = manifest_url;
   installable_manager->manifest_ = std::move(manifest);
 
@@ -66,9 +68,9 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
 
   auto installable_data = std::make_unique<InstallableData>(
       std::move(errors), installable_manager->manifest_url_,
-      installable_manager->manifest_.get(), GURL::EmptyGURL(), icon.get(),
-      false, GURL::EmptyGURL(), icon.get(), std::vector<SkBitmap>(),
-      valid_manifest, has_worker);
+      *installable_manager->manifest_, GURL::EmptyGURL(), icon.get(), false,
+      GURL::EmptyGURL(), icon.get(), std::vector<SkBitmap>(), valid_manifest,
+      has_worker);
 
   installable_manager->data_ = std::move(installable_data);
 

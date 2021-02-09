@@ -512,7 +512,7 @@ void InstallableManager::RunCallback(
   InstallableData data = {
       std::move(errors),
       manifest_url(),
-      &manifest(),
+      manifest(),
       primary_icon->url,
       primary_icon->icon.get(),
       has_maskable_primary_icon,

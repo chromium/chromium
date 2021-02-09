@@ -708,9 +708,11 @@ IN_PROC_BROWSER_TEST_F(
   GURL test_url = GetBannerURLWithAction("stash_event");
   service->ResetBaseScoreForURL(test_url, 10);
 
+  blink::Manifest manifest;
+  std::vector<SkBitmap> screenshots;
   installable_manager_->FailNext(base::WrapUnique(new InstallableData(
-      {MANIFEST_URL_CHANGED}, GURL(), nullptr, GURL(), nullptr, false, GURL(),
-      nullptr, std::vector<SkBitmap>(), false, false)));
+      {MANIFEST_URL_CHANGED}, GURL::EmptyGURL(), manifest, GURL::EmptyGURL(),
+      nullptr, false, GURL::EmptyGURL(), nullptr, screenshots, false, false)));
 
   // The page should record one failure of MANIFEST_URL_CHANGED, but it should
   // still successfully get to the PENDING_PROMPT state of the pipeline, as it

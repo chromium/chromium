@@ -139,8 +139,7 @@ class CallbackTester {
   void OnDidFinishInstallableCheck(const InstallableData& data) {
     errors_ = data.errors;
     manifest_url_ = data.manifest_url;
-    if (data.manifest)
-      manifest_ = *data.manifest;
+    manifest_ = data.manifest;
     primary_icon_url_ = data.primary_icon_url;
     if (data.primary_icon)
       primary_icon_.reset(new SkBitmap(*data.primary_icon));
@@ -196,7 +195,7 @@ class NestedCallbackTester {
   void OnDidFinishFirstCheck(const InstallableData& data) {
     errors_ = data.errors;
     manifest_url_ = data.manifest_url;
-    manifest_ = *data.manifest;
+    manifest_ = data.manifest;
     primary_icon_url_ = data.primary_icon_url;
     if (data.primary_icon)
       primary_icon_.reset(new SkBitmap(*data.primary_icon));
@@ -215,12 +214,12 @@ class NestedCallbackTester {
     EXPECT_EQ(primary_icon_.get(), data.primary_icon);
     EXPECT_EQ(valid_manifest_, data.valid_manifest);
     EXPECT_EQ(has_worker_, data.has_worker);
-    EXPECT_EQ(manifest_.IsEmpty(), data.manifest->IsEmpty());
-    EXPECT_EQ(manifest_.start_url, data.manifest->start_url);
-    EXPECT_EQ(manifest_.display, data.manifest->display);
-    EXPECT_EQ(manifest_.name, data.manifest->name);
-    EXPECT_EQ(manifest_.short_name, data.manifest->short_name);
-    EXPECT_EQ(manifest_.display_override, data.manifest->display_override);
+    EXPECT_EQ(manifest_.IsEmpty(), data.manifest.IsEmpty());
+    EXPECT_EQ(manifest_.start_url, data.manifest.start_url);
+    EXPECT_EQ(manifest_.display, data.manifest.display);
+    EXPECT_EQ(manifest_.name, data.manifest.name);
+    EXPECT_EQ(manifest_.short_name, data.manifest.short_name);
+    EXPECT_EQ(manifest_.display_override, data.manifest.display_override);
 
     std::move(quit_closure_).Run();
   }

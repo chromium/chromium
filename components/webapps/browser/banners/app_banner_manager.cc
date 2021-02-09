@@ -350,10 +350,10 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   }
 
   DCHECK(!data.manifest_url.is_empty());
-  DCHECK(!data.manifest->IsEmpty());
+  DCHECK(!data.manifest.IsEmpty());
 
   manifest_url_ = data.manifest_url;
-  manifest_ = *data.manifest;
+  manifest_ = data.manifest;
 
   PerformInstallableChecks();
 }

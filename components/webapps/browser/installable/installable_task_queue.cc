@@ -75,17 +75,17 @@ void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
   for (InstallableTask& task : tasks) {
     if (task.callback) {
       std::move(task.callback)
-          .Run(InstallableData({code}, GURL(), &manifest, GURL(), nullptr,
-                               false, GURL(), nullptr, std::vector<SkBitmap>(),
-                               false, false));
+          .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
+                               GURL(), nullptr, std::vector<SkBitmap>(), false,
+                               false));
     }
   }
   for (InstallableTask& task : paused_tasks) {
     if (task.callback) {
       std::move(task.callback)
-          .Run(InstallableData({code}, GURL(), &manifest, GURL(), nullptr,
-                               false, GURL(), nullptr, std::vector<SkBitmap>(),
-                               false, false));
+          .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
+                               GURL(), nullptr, std::vector<SkBitmap>(), false,
+                               false));
     }
   }
 }

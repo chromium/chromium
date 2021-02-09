@@ -132,9 +132,8 @@ void ManifestUpdateTask::OnDidGetInstallableData(
     return;
   }
 
-  DCHECK(data.manifest);
   web_application_info_.emplace();
-  UpdateWebAppInfoFromManifest(*data.manifest, data.manifest_url,
+  UpdateWebAppInfoFromManifest(data.manifest, data.manifest_url,
                                &web_application_info_.value());
 
   // We cannot allow the app ID to change via the manifest changing. We rely on

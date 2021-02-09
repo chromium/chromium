@@ -24,7 +24,7 @@ namespace webapps {
 struct InstallableData {
   InstallableData(std::vector<InstallableStatusCode> errors,
                   const GURL& manifest_url,
-                  const blink::Manifest* manifest,
+                  const blink::Manifest& manifest,
                   const GURL& primary_icon_url,
                   const SkBitmap* primary_icon,
                   bool has_maskable_primary_icon,
@@ -51,9 +51,8 @@ struct InstallableData {
   // <link rel="manifest"> tag.
   const GURL& manifest_url;
 
-  // The parsed web app manifest. nullptr if the site has an unparseable
-  // manifest.
-  const blink::Manifest* manifest;
+  // The parsed web app manifest.
+  const blink::Manifest& manifest;
 
   // The URL of the chosen primary icon.
   const GURL& primary_icon_url;

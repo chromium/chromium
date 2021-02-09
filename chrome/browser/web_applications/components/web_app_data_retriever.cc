@@ -181,14 +181,13 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
 
   Observe(nullptr);
 
-  DCHECK(data.manifest);
-  DCHECK(data.manifest_url.is_valid() || data.manifest->IsEmpty());
+  DCHECK(data.manifest_url.is_valid() || data.manifest.IsEmpty());
 
   const bool is_installable = data.NoBlockingErrors();
   DCHECK(!is_installable || data.valid_manifest);
   base::Optional<blink::Manifest> opt_manifest;
-  if (!data.manifest->IsEmpty())
-    opt_manifest = *data.manifest;
+  if (!data.manifest.IsEmpty())
+    opt_manifest = data.manifest;
 
   std::move(check_installability_callback_)
       .Run(std::move(opt_manifest), data.manifest_url, data.valid_manifest,

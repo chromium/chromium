@@ -143,14 +143,14 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // observing too. It is based on our assumption that it is invalid for
   // web developers to change the Web Manifest location. When it does
   // change, we will treat the new Web Manifest as the one of another WebAPK.
-  if (!data.NoBlockingErrors() || data.manifest->IsEmpty() ||
+  if (!data.NoBlockingErrors() || data.manifest.IsEmpty() ||
       web_manifest_url_ != data.manifest_url ||
       !webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
-          *data.manifest)) {
+          data.manifest)) {
     return;
   }
 
-  info_.UpdateFromManifest(*data.manifest);
+  info_.UpdateFromManifest(data.manifest);
   info_.manifest_url = data.manifest_url;
   info_.best_primary_icon_url = data.primary_icon_url;
   primary_icon_ = *data.primary_icon;
