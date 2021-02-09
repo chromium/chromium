@@ -4,11 +4,16 @@
 
 #include "net/android/network_library.h"
 
+#include <string>
+#include <vector>
+
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
+#include "base/strings/string_split.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/net_jni_headers/AndroidNetworkLibrary_jni.h"
 #include "net/net_jni_headers/DnsStatus_jni.h"
@@ -132,7 +137,11 @@ base::Optional<int32_t> GetWifiSignalLevel() {
 
 bool GetDnsServers(std::vector<IPEndPoint>* dns_servers,
                    bool* dns_over_tls_active,
-                   std::string* dns_over_tls_hostname) {
+                   std::string* dns_over_tls_hostname,
+                   std::vector<std::string>* search_suffixes) {
+  DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
+            base::android::SDK_VERSION_MARSHMALLOW);
+
   JNIEnv* env = AttachCurrentThread();
   // Get the DNS status for the active network.
   ScopedJavaLocalRef<jobject> result =
@@ -153,6 +162,12 @@ bool GetDnsServers(std::vector<IPEndPoint>* dns_servers,
   *dns_over_tls_active = Java_DnsStatus_getPrivateDnsActive(env, result);
   *dns_over_tls_hostname = base::android::ConvertJavaStringToUTF8(
       Java_DnsStatus_getPrivateDnsServerName(env, result));
+
+  std::string search_suffixes_str = base::android::ConvertJavaStringToUTF8(
+      Java_DnsStatus_getSearchDomains(env, result));
+  *search_suffixes =
+      base::SplitString(search_suffixes_str, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
 
   return !dns_servers->empty();
 }

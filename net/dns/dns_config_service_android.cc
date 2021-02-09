@@ -101,9 +101,9 @@ class DnsConfigServiceAndroid::ConfigReader : public SerialWorker {
 
     if (base::android::BuildInfo::GetInstance()->sdk_int() >=
         base::android::SDK_VERSION_MARSHMALLOW) {
-      if (!dns_server_getter_.Run(&dns_config_->nameservers,
-                                  &dns_config_->dns_over_tls_active,
-                                  &dns_config_->dns_over_tls_hostname)) {
+      if (!dns_server_getter_.Run(
+              &dns_config_->nameservers, &dns_config_->dns_over_tls_active,
+              &dns_config_->dns_over_tls_hostname, &dns_config_->search)) {
         dns_config_.reset();
       }
       return;

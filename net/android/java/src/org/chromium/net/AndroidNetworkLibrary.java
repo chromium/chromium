@@ -397,11 +397,12 @@ class AndroidNetworkLibrary {
             return null;
         }
         List<InetAddress> dnsServersList = linkProperties.getDnsServers();
+        String searchDomains = linkProperties.getDomains();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             return new DnsStatus(dnsServersList, ApiHelperForP.isPrivateDnsActive(linkProperties),
-                    ApiHelperForP.getPrivateDnsServerName(linkProperties));
+                    ApiHelperForP.getPrivateDnsServerName(linkProperties), searchDomains);
         } else {
-            return new DnsStatus(dnsServersList, false, "");
+            return new DnsStatus(dnsServersList, false, "", searchDomains);
         }
     }
 

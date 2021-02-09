@@ -93,13 +93,16 @@ NET_EXPORT_PRIVATE base::Optional<int32_t> GetWifiSignalLevel();
 // |dns_over_tls_active| is true.
 // Only callable on Marshmallow and newer releases.
 // Returns false when a valid server config could not be read.
-NET_EXPORT_PRIVATE bool GetDnsServers(std::vector<IPEndPoint>* dns_servers,
-                                      bool* dns_over_tls_active,
-                                      std::string* dns_over_tls_hostname);
+NET_EXPORT_PRIVATE bool GetDnsServers(
+    std::vector<IPEndPoint>* dns_servers,
+    bool* dns_over_tls_active,
+    std::string* dns_over_tls_hostname,
+    std::vector<std::string>* search_suffixes);
 using DnsServerGetter =
     base::RepeatingCallback<bool(std::vector<IPEndPoint>* dns_servers,
                                  bool* dns_over_tls_active,
-                                 std::string* dns_over_tls_hostname)>;
+                                 std::string* dns_over_tls_hostname,
+                                 std::vector<std::string>* search_suffixes)>;
 
 // Reports to the framework that the current default network appears to have
 // connectivity issues. This may serve as a signal for the OS to consider

@@ -60,6 +60,10 @@ class MockDnsServerGetter
     dns_over_tls_hostname_ = std::move(dns_over_tls_hostname);
   }
 
+  void set_search_suffixes(std::vector<std::string> search_suffixes) {
+    search_suffixes_ = std::move(search_suffixes);
+  }
+
   android::DnsServerGetter ConstructGetter() {
     return base::BindRepeating(&MockDnsServerGetter::GetDnsServers, this);
   }
@@ -70,11 +74,13 @@ class MockDnsServerGetter
 
   bool GetDnsServers(std::vector<IPEndPoint>* dns_servers,
                      bool* dns_over_tls_active,
-                     std::string* dns_over_tls_hostname) {
+                     std::string* dns_over_tls_hostname,
+                     std::vector<std::string>* search_suffixes) {
     if (retval_) {
       *dns_servers = dns_servers_;
       *dns_over_tls_active = dns_over_tls_active_;
       *dns_over_tls_hostname = dns_over_tls_hostname_;
+      *search_suffixes = search_suffixes_;
     }
     return retval_;
   }
@@ -83,6 +89,7 @@ class MockDnsServerGetter
   std::vector<IPEndPoint> dns_servers_;
   bool dns_over_tls_active_ = false;
   std::string dns_over_tls_hostname_;
+  std::vector<std::string> search_suffixes_;
 };
 
 class DnsConfigServiceAndroidTest : public testing::Test,
@@ -232,6 +239,37 @@ TEST_F(DnsConfigServiceAndroidTest, ChangeConfigMultipleTimes) {
     ASSERT_TRUE(seen_config_);
     EXPECT_THAT(real_config_.nameservers, testing::ElementsAre(kNameserver1));
   }
+}
+
+TEST_F(DnsConfigServiceAndroidTest, ReadsSearchSuffixes) {
+  SKIP_ANDROID_VERSIONS_BEFORE_M();
+
+  const std::vector<std::string> kSuffixes{"name1.test", "name2.test"};
+
+  mock_dns_server_getter_->set_retval(true);
+  mock_dns_server_getter_->set_dns_servers({kNameserver1});
+  mock_dns_server_getter_->set_search_suffixes(kSuffixes);
+
+  service_->ReadConfig(base::BindRepeating(
+      &DnsConfigServiceAndroidTest::OnConfigChanged, base::Unretained(this)));
+  FastForwardBy(DnsConfigServiceAndroid::kConfigChangeDelay);
+  RunUntilIdle();
+  ASSERT_TRUE(seen_config_);
+  EXPECT_EQ(real_config_.search, kSuffixes);
+}
+
+TEST_F(DnsConfigServiceAndroidTest, ReadsEmptySearchSuffixes) {
+  SKIP_ANDROID_VERSIONS_BEFORE_M();
+
+  mock_dns_server_getter_->set_retval(true);
+  mock_dns_server_getter_->set_dns_servers({kNameserver1});
+
+  service_->ReadConfig(base::BindRepeating(
+      &DnsConfigServiceAndroidTest::OnConfigChanged, base::Unretained(this)));
+  FastForwardBy(DnsConfigServiceAndroid::kConfigChangeDelay);
+  RunUntilIdle();
+  ASSERT_TRUE(seen_config_);
+  EXPECT_TRUE(real_config_.search.empty());
 }
 
 }  // namespace

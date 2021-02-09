@@ -170,6 +170,7 @@ android_library("net_javatests") {
   testonly = true
   sources = [
     "javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+    "javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
     "javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
     "javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
     "javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
