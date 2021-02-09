@@ -152,6 +152,8 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   }
 
   web_app.SetCaptureLinks(web_app_info.capture_links);
+
+  web_app.SetManifestUrl(web_app_info.manifest_url);
 }
 
 }  // namespace web_app

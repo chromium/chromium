@@ -322,6 +322,7 @@ class WebAppDatabaseTest : public WebAppTest {
         CreateShortcutsMenuItemInfos(base_url, random.next_uint()));
     app->SetDownloadedShortcutsMenuIconsSizes(
         CreateDownloadedShortcutsMenuIconsSizes());
+    app->SetManifestUrl(GURL(base_url + "manifest" + seed_str + ".json"));
 
     if (IsChromeOs()) {
       auto chromeos_data = base::make_optional<WebAppChromeOsData>();
@@ -607,6 +608,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->shortcuts_menu_item_infos().empty());
   EXPECT_TRUE(app->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
+  EXPECT_TRUE(app->manifest_url().is_empty());
   controller().RegisterApp(std::move(app));
 
   Registry registry = database_factory().ReadRegistry();
@@ -662,6 +664,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
   EXPECT_TRUE(app_copy->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
+  EXPECT_TRUE(app_copy->manifest_url().is_empty());
 }
 
 TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {

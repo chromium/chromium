@@ -134,7 +134,8 @@ void ManifestUpdateTask::OnDidGetInstallableData(
 
   DCHECK(data.manifest);
   web_application_info_.emplace();
-  UpdateWebAppInfoFromManifest(*data.manifest, &web_application_info_.value());
+  UpdateWebAppInfoFromManifest(*data.manifest, data.manifest_url,
+                               &web_application_info_.value());
 
   // We cannot allow the app ID to change via the manifest changing. We rely on
   // fixed app IDs to determine whether web apps installed in the user sync
@@ -198,6 +199,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
+  // TODO(crbug.com/1072058): Check the manifest URL.
   // TODO(crbug.com/926083): Check more manifest fields.
   return false;
 }

@@ -57,7 +57,9 @@ class BrowserNonClientFrameViewBrowserTest
     manifest.theme_color = app_theme_color_;
 
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
+    GURL manifest_url = embedded_test_server()->GetURL("/manifest");
+    web_app::UpdateWebAppInfoFromManifest(manifest, manifest_url,
+                                          web_app_info.get());
 
     web_app::AppId app_id =
         web_app::InstallWebApp(profile(), std::move(web_app_info));

@@ -188,6 +188,7 @@ base::Optional<apps::ShareTarget> ToWebAppShareTarget(
 }  // namespace
 
 void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
+                                  const GURL& manifest_url,
                                   WebApplicationInfo* web_app_info) {
   // Give the full length name priority if it's not empty.
   base::string16 name = manifest.name.value_or(base::string16());
@@ -287,6 +288,9 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
   }
 
   web_app_info->capture_links = manifest.capture_links;
+
+  if (manifest_url.is_valid())
+    web_app_info->manifest_url = manifest_url;
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(

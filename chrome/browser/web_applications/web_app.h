@@ -173,6 +173,8 @@ class WebApp {
 
   blink::mojom::CaptureLinks capture_links() const { return capture_links_; }
 
+  const GURL& manifest_url() const { return manifest_url_; }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
@@ -226,6 +228,7 @@ class WebApp {
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
+  void SetManifestUrl(const GURL& manifest_url);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -280,6 +283,7 @@ class WebApp {
   blink::mojom::CaptureLinks capture_links_ =
       blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;
+  GURL manifest_url_;
   // New fields must be added to |operator==| and |operator<<|.
 };
 

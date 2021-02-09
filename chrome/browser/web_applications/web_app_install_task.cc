@@ -438,6 +438,7 @@ void WebAppInstallTask::OnWebAppUrlLoadedCheckAndRetrieveManifest(
 
 void WebAppInstallTask::OnWebAppInstallabilityChecked(
     base::Optional<blink::Manifest> manifest,
+    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     bool is_installable) {
   if (ShouldStopInstall())
@@ -512,6 +513,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
     std::unique_ptr<WebApplicationInfo> web_app_info,
     bool force_shortcut_app,
     base::Optional<blink::Manifest> manifest,
+    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     bool is_installable) {
   if (ShouldStopInstall())
@@ -533,7 +535,7 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
                                         : ForInstallableSite::kNo;
 
   if (manifest)
-    UpdateWebAppInfoFromManifest(*manifest, web_app_info.get());
+    UpdateWebAppInfoFromManifest(*manifest, manifest_url, web_app_info.get());
 
   AppId app_id = GenerateAppIdFromURL(web_app_info->start_url);
 

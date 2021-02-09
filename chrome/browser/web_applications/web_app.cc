@@ -275,6 +275,10 @@ void WebApp::SetLaunchQueryParams(
   launch_query_params_ = std::move(launch_query_params);
 }
 
+void WebApp::SetManifestUrl(const GURL& manifest_url) {
+  manifest_url_ = manifest_url;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -379,6 +383,8 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   if (app.client_data_.system_web_app_data.has_value())
     out << app.client_data_.system_web_app_data.value();
 
+  out << "  manifest_url: " << app.manifest_url_ << std::endl;
+
   return out;
 }
 
@@ -435,6 +441,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.sync_fallback_data_,
         app.url_handlers_,
         app.capture_links_,
+        app.manifest_url_,
         app.client_data_.system_web_app_data
         // clang-format on
     );

@@ -107,6 +107,9 @@ struct WebApplicationInfo {
   // https://www.w3.org/TR/appmanifest/#start_url-member
   GURL start_url;
 
+  // The URL of the manifest.
+  GURL manifest_url;
+
   // Optional query parameters to add to the start_url when launching the app.
   base::Optional<std::string> launch_query_params;
 

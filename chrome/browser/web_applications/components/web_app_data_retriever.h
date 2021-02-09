@@ -46,8 +46,10 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // |is_installable| represents installability check result.
   // If |is_installable| then |valid_manifest_for_web_app| is true.
   // If manifest is present then it is non-empty.
+  // |manifest_url| is empty if manifest is empty.
   using CheckInstallabilityCallback =
       base::OnceCallback<void(base::Optional<blink::Manifest> manifest,
+                              const GURL& manifest_url,
                               bool valid_manifest_for_web_app,
                               bool is_installable)>;
   // Returns empty map if error.

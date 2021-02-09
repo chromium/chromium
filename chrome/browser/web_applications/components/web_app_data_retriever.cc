@@ -191,7 +191,8 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
     opt_manifest = *data.manifest;
 
   std::move(check_installability_callback_)
-      .Run(std::move(opt_manifest), data.valid_manifest, is_installable);
+      .Run(std::move(opt_manifest), data.manifest_url, data.valid_manifest,
+           is_installable);
 }
 
 void WebAppDataRetriever::OnIconsDownloaded(bool success, IconsMap icons_map) {
@@ -214,7 +215,8 @@ void WebAppDataRetriever::CallCallbackOnError() {
     std::move(get_web_app_info_callback_).Run(nullptr);
   } else if (check_installability_callback_) {
     std::move(check_installability_callback_)
-        .Run(base::nullopt, /*valid_manifest_for_web_app=*/false,
+        .Run(/*manifest=*/base::nullopt, /*manifest_url=*/GURL(),
+             /*valid_manifest_for_web_app=*/false,
              /*is_installable=*/false);
   } else if (get_icons_callback_) {
     std::move(get_icons_callback_).Run(IconsMap{});

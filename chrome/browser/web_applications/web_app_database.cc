@@ -345,6 +345,9 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   else
     local_data->clear_capture_links();
 
+  if (!web_app.manifest_url().is_empty())
+    local_data->set_manifest_url(web_app.manifest_url().spec());
+
   return local_data;
 }
 
@@ -683,6 +686,15 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   else
     web_app->SetCaptureLinks(blink::mojom::CaptureLinks::kUndefined);
 
+  if (local_data.has_manifest_url()) {
+    GURL manifest_url(local_data.manifest_url());
+    if (manifest_url.is_empty() || !manifest_url.is_valid()) {
+      DLOG(ERROR) << "WebApp proto manifest_url parse error: "
+                  << manifest_url.possibly_invalid_spec();
+      return nullptr;
+    }
+    web_app->SetManifestUrl(manifest_url);
+  }
   return web_app;
 }
 

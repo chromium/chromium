@@ -337,9 +337,11 @@ TEST_F(WebAppDataRetrieverTest,
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
       base::BindLambdaForTesting([&](base::Optional<blink::Manifest> manifest,
+                                     const GURL& manifest_url,
                                      bool valid_manifest_for_web_app,
                                      bool is_installable) {
         EXPECT_FALSE(manifest);
+        EXPECT_EQ(manifest_url, GURL());
         EXPECT_FALSE(valid_manifest_for_web_app);
         EXPECT_FALSE(is_installable);
         run_loop.Quit();
@@ -419,20 +421,22 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
 
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
-      base::BindLambdaForTesting([&](base::Optional<blink::Manifest> result,
-                                     bool valid_manifest_for_web_app,
-                                     bool is_installable) {
-        EXPECT_TRUE(is_installable);
+      base::BindLambdaForTesting(
+          [&](base::Optional<blink::Manifest> result, const GURL& manifest_url,
+              bool valid_manifest_for_web_app, bool is_installable) {
+            EXPECT_TRUE(is_installable);
 
-        EXPECT_EQ(manifest_short_name, result->short_name);
-        EXPECT_EQ(manifest_name, result->name);
-        EXPECT_EQ(manifest_start_url, result->start_url);
-        EXPECT_EQ(manifest_scope, result->scope);
-        EXPECT_EQ(manifest_theme_color, result->theme_color);
+            EXPECT_EQ(manifest_short_name, result->short_name);
+            EXPECT_EQ(manifest_name, result->name);
+            EXPECT_EQ(manifest_start_url, result->start_url);
+            EXPECT_EQ(manifest_scope, result->scope);
+            EXPECT_EQ(manifest_theme_color, result->theme_color);
 
-        callback_called = true;
-        run_loop.Quit();
-      }));
+            EXPECT_EQ(manifest_url, GURL("https://example.com/manifest"));
+
+            callback_called = true;
+            run_loop.Quit();
+          }));
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);
@@ -454,14 +458,15 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
 
   retriever.CheckInstallabilityAndRetrieveManifest(
       web_contents(), /*bypass_service_worker_check=*/false,
-      base::BindLambdaForTesting([&](base::Optional<blink::Manifest> result,
-                                     bool valid_manifest_for_web_app,
-                                     bool is_installable) {
-        EXPECT_FALSE(is_installable);
-        EXPECT_FALSE(valid_manifest_for_web_app);
-        callback_called = true;
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](base::Optional<blink::Manifest> result, const GURL& manifest_url,
+              bool valid_manifest_for_web_app, bool is_installable) {
+            EXPECT_FALSE(is_installable);
+            EXPECT_FALSE(valid_manifest_for_web_app);
+            EXPECT_EQ(manifest_url, GURL());
+            callback_called = true;
+            run_loop.Quit();
+          }));
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);

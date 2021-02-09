@@ -183,6 +183,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       WebAppUrlLoader::Result result);
   void OnWebAppInstallabilityChecked(
       base::Optional<blink::Manifest> opt_manifest,
+      const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
 
@@ -200,6 +201,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       std::unique_ptr<WebApplicationInfo> web_app_info,
       bool force_shortcut_app,
       base::Optional<blink::Manifest> opt_manifest,
+      const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       bool is_installable);
 

@@ -77,6 +77,7 @@
 namespace {
 
 constexpr const char kExampleURL[] = "http://example.org/";
+constexpr const char kExampleManifestURL[] = "http://example.org/manifest";
 
 constexpr char kLaunchWebAppDisplayModeHistogram[] = "Launch.WebAppDisplayMode";
 
@@ -203,7 +204,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     manifest.scope = GURL(kExampleURL);
     manifest.theme_color = theme_color;
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
+    web_app::UpdateWebAppInfoFromManifest(manifest, GURL(kExampleManifestURL),
+                                          web_app_info.get());
 
     AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -231,7 +233,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColor) {
   manifest.scope = GURL(kExampleURL);
   manifest.background_color = SkColorSetA(SK_ColorBLUE, 0xF0);
   auto web_app_info = std::make_unique<WebApplicationInfo>();
-  web_app::UpdateWebAppInfoFromManifest(manifest, web_app_info.get());
+  web_app::UpdateWebAppInfoFromManifest(manifest, GURL(kExampleManifestURL),
+                                        web_app_info.get());
   AppId app_id = InstallWebApp(std::move(web_app_info));
 
   auto* provider = WebAppProviderBase::GetProviderBase(profile());

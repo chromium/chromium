@@ -206,4 +206,6 @@ message WebAppProto {
   }
 
   optional CaptureLinks capture_links = 29;
+
+  optional string manifest_url = 30;
 }

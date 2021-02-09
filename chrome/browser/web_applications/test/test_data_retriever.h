@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
+#include "url/gurl.h"
 
-class GURL;
 struct WebApplicationInfo;
 
 namespace web_app {
@@ -45,7 +45,8 @@ class TestDataRetriever : public WebAppDataRetriever {
   void SetEmptyRendererWebApplicationInfo();
   // Set arguments to respond on |CheckInstallabilityAndRetrieveManifest|.
   void SetManifest(std::unique_ptr<blink::Manifest> manifest,
-                   bool is_installable);
+                   bool is_installable,
+                   GURL manifest_url = GURL());
   // Set icons to respond on |GetIcons|.
   void SetIcons(IconsMap icons_map);
   using GetIconsDelegate =
@@ -71,6 +72,7 @@ class TestDataRetriever : public WebAppDataRetriever {
   std::unique_ptr<WebApplicationInfo> web_app_info_;
 
   std::unique_ptr<blink::Manifest> manifest_;
+  GURL manifest_url_;
   bool is_installable_;
 
   IconsMap icons_map_;
