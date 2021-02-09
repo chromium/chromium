@@ -179,18 +179,24 @@ DataTransferDlpController::~DataTransferDlpController() = default;
 void DataTransferDlpController::NotifyBlockedPaste(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
-  helper_.NotifyBlockedPaste(data_src, data_dst);
+  clipboard_notifier_.NotifyBlockedAction(data_src, data_dst);
 }
 
 void DataTransferDlpController::WarnOnPaste(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
-  helper_.WarnOnPaste(data_src, data_dst);
+  clipboard_notifier_.WarnOnAction(data_src, data_dst);
 }
 
 bool DataTransferDlpController::ShouldProceedOnWarn(
     const ui::DataTransferEndpoint* const data_dst) {
-  return helper_.DidUserProceedOnWarn(data_dst);
+  return clipboard_notifier_.DidUserProceedOnWarn(data_dst);
+}
+
+void DataTransferDlpController::NotifyBlockedDrop(
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst) {
+  drag_drop_notifier_.NotifyBlockedAction(data_src, data_dst);
 }
 
 }  // namespace policy

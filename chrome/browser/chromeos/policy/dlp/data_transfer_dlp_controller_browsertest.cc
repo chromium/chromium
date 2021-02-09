@@ -50,19 +50,19 @@ constexpr char kMailUrl[] = "https://mail.google.com";
 constexpr char kDocsUrl[] = "https://docs.google.com";
 constexpr char kExampleUrl[] = "https://example.com";
 
-class FakeNotificationHelper : public DlpClipboardNotificationHelper {
+class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
   views::Widget* GetWidget() { return GetWidgetForTesting(); }
 
   void ProceedOnWarn(const ui::DataTransferEndpoint& data_dst) {
-    DlpClipboardNotificationHelper::ProceedOnWarn(GetWidget(), data_dst);
+    DlpClipboardNotifier::ProceedOnWarn(GetWidget(), data_dst);
   }
 };
 
 class FakeDlpController : public DataTransferDlpController,
                           public views::WidgetObserver {
  public:
-  FakeDlpController(FakeNotificationHelper* helper)
+  explicit FakeDlpController(FakeClipboardNotifier* helper)
       : DataTransferDlpController(
             *DlpRulesManagerFactory::GetForPrimaryProfile()),
         helper_(helper) {
@@ -78,12 +78,12 @@ class FakeDlpController : public DataTransferDlpController,
   void NotifyBlockedPaste(
       const ui::DataTransferEndpoint* const data_src,
       const ui::DataTransferEndpoint* const data_dst) override {
-    helper_->NotifyBlockedPaste(data_src, data_dst);
+    helper_->NotifyBlockedAction(data_src, data_dst);
   }
 
   void WarnOnPaste(const ui::DataTransferEndpoint* const data_src,
                    const ui::DataTransferEndpoint* const data_dst) override {
-    helper_->WarnOnPaste(data_src, data_dst);
+    helper_->WarnOnAction(data_src, data_dst);
   }
 
   bool ShouldProceedOnWarn(
@@ -102,7 +102,7 @@ class FakeDlpController : public DataTransferDlpController,
 
   MOCK_METHOD1(OnWidgetClosing, void(views::Widget* widget));
   views::Widget* widget_;
-  FakeNotificationHelper* helper_;
+  FakeClipboardNotifier* helper_;
 };
 
 void SetClipboardText(base::string16 text,
@@ -205,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   SkipToLoginScreen();
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
-  std::unique_ptr<FakeNotificationHelper> helper =
-      std::make_unique<FakeNotificationHelper>();
+  std::unique_ptr<FakeClipboardNotifier> helper =
+      std::make_unique<FakeClipboardNotifier>();
   FakeDlpController dlp_controller(helper.get());
 
   base::Value rules(base::Value::Type::LIST);
@@ -329,8 +329,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, WarnDestination) {
   SkipToLoginScreen();
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
-  std::unique_ptr<FakeNotificationHelper> helper =
-      std::make_unique<FakeNotificationHelper>();
+  std::unique_ptr<FakeClipboardNotifier> helper =
+      std::make_unique<FakeClipboardNotifier>();
   FakeDlpController dlp_controller(helper.get());
 
   {

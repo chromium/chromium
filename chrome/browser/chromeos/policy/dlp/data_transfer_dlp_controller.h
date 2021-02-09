@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DATA_TRANSFER_DLP_CONTROLLER_H_
 
 #include "base/strings/string16.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notification_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_drag_drop_notifier.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
 namespace ui {
@@ -55,8 +56,13 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   virtual bool ShouldProceedOnWarn(
       const ui::DataTransferEndpoint* const data_dst);
 
+  virtual void NotifyBlockedDrop(
+      const ui::DataTransferEndpoint* const data_src,
+      const ui::DataTransferEndpoint* const data_dst);
+
   const DlpRulesManager& dlp_rules_manager_;
-  DlpClipboardNotificationHelper helper_;
+  DlpClipboardNotifier clipboard_notifier_;
+  DlpDragDropNotifier drag_drop_notifier_;
 };
 
 }  // namespace policy
