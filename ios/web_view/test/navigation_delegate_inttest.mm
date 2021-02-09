@@ -59,6 +59,7 @@ TEST_F(NavigationDelegateTest, RequestSucceeds) {
                             navigationType:CWVNavigationTypeTyped])
       .andReturn(YES);
   OCMExpect([mock_delegate_ webViewDidStartProvisionalNavigation:web_view_]);
+  OCMExpect([mock_delegate_ webViewDidStartNavigation:web_view_]);
   OCMExpect([mock_delegate_ webView:web_view_
                 shouldContinueLoadWithResponse:ArgWithURL(GetEchoURL())
                                   forMainFrame:YES])
@@ -77,6 +78,7 @@ TEST_F(NavigationDelegateTest, RequestFails) {
                             navigationType:CWVNavigationTypeTyped])
       .andReturn(YES);
   OCMExpect([mock_delegate_ webViewDidStartProvisionalNavigation:web_view_]);
+  OCMExpect([mock_delegate_ webViewDidStartNavigation:web_view_]);
   OCMExpect([mock_delegate_ webViewDidCommitNavigation:web_view_]);
   OCMExpect([mock_delegate_ webView:web_view_
          didFailNavigationWithError:[OCMArg any]]);
@@ -110,12 +112,42 @@ TEST_F(NavigationDelegateTest, CancelResponse) {
                             navigationType:CWVNavigationTypeTyped])
       .andReturn(YES);
   OCMExpect([mock_delegate_ webViewDidStartProvisionalNavigation:web_view_]);
+  OCMExpect([mock_delegate_ webViewDidStartNavigation:web_view_]);
   OCMExpect([mock_delegate_ webView:web_view_
                 shouldContinueLoadWithResponse:ArgWithURL(GetEchoURL())
                                   forMainFrame:YES])
       .andReturn(NO);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
+  [(id)mock_delegate_ verify];
+}
+
+// Tests that same document navigations do not trigger delegate methods.
+TEST_F(NavigationDelegateTest, SameDocumentNavigations) {
+  // A request made with -loadRequest: has type CWVNavigationTypeTyped.
+  OCMExpect([mock_delegate_ webView:web_view_
+                shouldStartLoadWithRequest:ArgWithURL(GetEchoURL())
+                            navigationType:CWVNavigationTypeTyped])
+      .andReturn(YES);
+  OCMExpect([mock_delegate_ webViewDidStartProvisionalNavigation:web_view_]);
+  OCMExpect([mock_delegate_ webViewDidStartNavigation:web_view_]);
+  OCMExpect([mock_delegate_ webView:web_view_
+                shouldContinueLoadWithResponse:ArgWithURL(GetEchoURL())
+                                  forMainFrame:YES])
+      .andReturn(YES);
+  OCMExpect([mock_delegate_ webViewDidCommitNavigation:web_view_]);
+  OCMExpect([mock_delegate_ webViewDidFinishNavigation:web_view_]);
+
+  ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
+
+  [(id)mock_delegate_ verify];
+
+  // Same document navigations should not trigger the delegate methods.
+  NSError* error;
+  ASSERT_NSEQ(nil, test::EvaluateJavaScript(
+                       web_view_, @"history.pushState({}, \"\");", &error));
+  ASSERT_NSEQ(nil, error);
+
   [(id)mock_delegate_ verify];
 }
 

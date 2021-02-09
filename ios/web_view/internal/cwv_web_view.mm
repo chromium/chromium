@@ -356,9 +356,16 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigation {
   [self updateNavigationAvailability];
-  SEL selector = @selector(webViewDidStartProvisionalNavigation:);
-  if ([_navigationDelegate respondsToSelector:selector]) {
-    [_navigationDelegate webViewDidStartProvisionalNavigation:self];
+
+  if (!navigation->IsSameDocument()) {
+    SEL oldSelector = @selector(webViewDidStartProvisionalNavigation:);
+    if ([_navigationDelegate respondsToSelector:oldSelector]) {
+      [_navigationDelegate webViewDidStartProvisionalNavigation:self];
+    }
+    SEL newSelector = @selector(webViewDidStartNavigation:);
+    if ([_navigationDelegate respondsToSelector:newSelector]) {
+      [_navigationDelegate webViewDidStartNavigation:self];
+    }
   }
 }
 
@@ -370,7 +377,7 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   // TODO(crbug.com/898357): Remove this once crbug.com/898357 is fixed.
   [self updateVisibleSSLStatus];
 
-  if (navigation->HasCommitted() &&
+  if (navigation->HasCommitted() && !navigation->IsSameDocument() &&
       [_navigationDelegate
           respondsToSelector:@selector(webViewDidCommitNavigation:)]) {
     [_navigationDelegate webViewDidCommitNavigation:self];
