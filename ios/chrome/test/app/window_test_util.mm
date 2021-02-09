@@ -53,4 +53,16 @@ web::WebState* GetCurrentWebStateForWindowWithNumber(int windowNumber) {
   return web_state_list ? web_state_list->GetActiveWebState() : nullptr;
 }
 
+NSUInteger GetMainTabCountForWindowWithNumber(int windowNumber) {
+  return GetInterfaceProviderForWindowWithNumber(windowNumber)
+      .mainInterface.browser->GetWebStateList()
+      ->count();
+}
+
+NSUInteger GetIncognitoTabCountForWindowWithNumber(int windowNumber) {
+  return GetInterfaceProviderForWindowWithNumber(windowNumber)
+      .incognitoInterface.browser->GetWebStateList()
+      ->count();
+}
+
 }  // namespace chrome_test_util

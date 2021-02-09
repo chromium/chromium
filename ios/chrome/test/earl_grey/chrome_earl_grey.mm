@@ -932,8 +932,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
                               timeout:(NSTimeInterval)timeout
                    inWindowWithNumber:(int)windowNumber {
   NSString* text = base::SysUTF8ToNSString(UTF8Text);
-  NSString* errorString = [NSString
-      stringWithFormat:@"Failed waiting for web state containing %@", text];
+  NSString* errorString =
+      [NSString stringWithFormat:@"Failed waiting for web state containing %@ "
+                                 @"in window with number %d",
+                                 text, windowNumber];
 
   GREYCondition* waitForText =
       [GREYCondition conditionWithName:errorString
@@ -944,6 +946,66 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
                                  }];
   bool containsText = [waitForText waitWithTimeout:timeout];
   EG_TEST_HELPER_ASSERT_TRUE(containsText, errorString);
+}
+
+- (void)waitForMainTabCount:(NSUInteger)count
+         inWindowWithNumber:(int)windowNumber {
+  __block NSUInteger actualCount =
+      [ChromeEarlGreyAppInterface mainTabCountInWindowWithNumber:windowNumber];
+  NSString* conditionName = [NSString
+      stringWithFormat:@"Waiting for main tab count to become %" PRIuNS
+                        " from %" PRIuNS " in window with number %d",
+                       count, actualCount, windowNumber];
+
+  // Allow the UI to become idle, in case any tabs are being opened or closed.
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  GREYCondition* tabCountCheck = [GREYCondition
+      conditionWithName:conditionName
+                  block:^{
+                    actualCount = [ChromeEarlGreyAppInterface
+                        mainTabCountInWindowWithNumber:windowNumber];
+                    return actualCount == count;
+                  }];
+  bool tabCountEqual = [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout];
+
+  NSString* errorString = [NSString
+      stringWithFormat:@"Failed waiting for main tab count to become %" PRIuNS
+                        " in window with number %d"
+                        "; actual count: %" PRIuNS,
+                       count, windowNumber, actualCount];
+  EG_TEST_HELPER_ASSERT_TRUE(tabCountEqual, errorString);
+}
+
+- (void)waitForIncognitoTabCount:(NSUInteger)count
+              inWindowWithNumber:(int)windowNumber {
+  __block NSUInteger actualCount =
+      [ChromeEarlGreyAppInterface mainTabCountInWindowWithNumber:windowNumber];
+  NSString* conditionName =
+      [NSString stringWithFormat:
+                    @"Failed waiting for incognito tab count to become %" PRIuNS
+                     " from %" PRIuNS " in window with number %d",
+                    count, actualCount, windowNumber];
+
+  // Allow the UI to become idle, in case any tabs are being opened or closed.
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  GREYCondition* tabCountCheck = [GREYCondition
+      conditionWithName:conditionName
+                  block:^{
+                    actualCount = [ChromeEarlGreyAppInterface
+                        incognitoTabCountInWindowWithNumber:windowNumber];
+                    return actualCount == count;
+                  }];
+  bool tabCountEqual = [tabCountCheck waitWithTimeout:kWaitForUIElementTimeout];
+
+  NSString* errorString =
+      [NSString stringWithFormat:
+                    @"Failed waiting for incognito tab count to become %" PRIuNS
+                     " in window with number %d"
+                     "; actual count: %" PRIuNS,
+                    count, windowNumber, actualCount];
+  EG_TEST_HELPER_ASSERT_TRUE(tabCountEqual, errorString);
 }
 
 #pragma mark - SignIn Utilities (EG2)

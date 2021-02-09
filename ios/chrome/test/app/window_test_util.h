@@ -6,6 +6,8 @@
 #ifndef IOS_CHROME_TEST_APP_WINDOW_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_WINDOW_TEST_UTIL_H_
 
+#import <Foundation/Foundation.h>
+
 #include "base/compiler_specific.h"
 
 namespace web {
@@ -16,6 +18,12 @@ namespace chrome_test_util {
 
 // Gets current active WebState, in window with given number.
 web::WebState* GetCurrentWebStateForWindowWithNumber(int windowNumber);
+
+// Returns the number of main tabs, in window with given number.
+NSUInteger GetMainTabCountForWindowWithNumber(int windowNumber);
+
+// Returns the number of incognito tabs, in window with given number.
+NSUInteger GetIncognitoTabCountForWindowWithNumber(int windowNumber);
 
 }  // namespace chrome_test_util
 

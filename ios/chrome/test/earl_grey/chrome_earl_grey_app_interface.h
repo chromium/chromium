@@ -212,6 +212,12 @@
 + (BOOL)webStateContainsText:(NSString*)text
           inWindowWithNumber:(int)windowNumber;
 
+// Returns the number of open non-incognito tabs, in window with given number.
++ (NSUInteger)mainTabCountInWindowWithNumber:(int)windowNumber;
+
+// Returns the number of open incognito tabs, in window with given number.
++ (NSUInteger)incognitoTabCountInWindowWithNumber:(int)windowNumber;
+
 #pragma mark - WebState Utilities (EG2)
 
 // Attempts to tap the element with |element_id| within window.frames[0] of the

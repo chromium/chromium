@@ -5,12 +5,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -22,6 +24,7 @@
 #endif
 
 using chrome_test_util::TabGridOtherDevicesPanelButton;
+using chrome_test_util::LongPressAndDragToEdge;
 
 namespace {
 char kURL1[] = "http://firstURL";
@@ -41,6 +44,11 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
           IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION, numberOfTabs));
   return grey_allOf(grey_accessibilityLabel(closeTabs),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
+// Identifer for cell at given |index| in the tab grid.
+NSString* IdentifierForCellAtIndex(unsigned int index) {
+  return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
 }
 }  // namespace
 
@@ -67,6 +75,12 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
   // Page 3 does not have <title> tag, so URL will be its title.
   responses[_URL3] = kResponse3;
   web::test::SetUpSimpleHttpServer(responses);
+}
+
+- (void)tearDown {
+  [ChromeEarlGrey closeAllExtraWindows];
+  [EarlGrey setRootMatcherForSubsequentInteractions:nil];
+  [super tearDown];
 }
 
 // Tests entering and leaving the tab grid.
@@ -240,8 +254,6 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
                                           _URL1.GetContent())]
       assertWithMatcher:grey_notNil()];
-
-  [ChromeEarlGrey closeAllExtraWindows];
 }
 
 // Tests the Share action on a recent tab's context menu.
@@ -303,15 +315,120 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+#pragma mark - Drag and drop in Multiwindow
+
+// Tests that dragging a tab grid item to the edge opens a new window and that
+// the tab is properly transferred, incuding navigation stack.
+- (void)testDragAndDropAtEdgeToCreateNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:0];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  LongPressAndDragToEdge(IdentifierForCellAtIndex(0), kGREYContentEdgeRight);
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Assert two windows and the expected tabs in each.
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  // Navigate back on second window to check the navigation stack is intact.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1
+                             inWindowWithNumber:1];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that dragging a tab grid incognito item to the edge opens a new window
+// and that the tab is properly transferred, incuding navigation stack.
+// TODO(crbug.com/1176180): re-eable when it is fixed.
+- (void)DISABLED_testIncognitoDragAndDropAtEdgeToCreateNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [ChromeEarlGrey closeAllNormalTabs];
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey waitForIncognitoTabCount:2 inWindowWithNumber:0];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  LongPressAndDragToEdge(IdentifierForCellAtIndex(0), kGREYContentEdgeRight);
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Assert two windows and the expected tabs in each.
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey waitForIncognitoTabCount:1 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForIncognitoTabCount:1 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  // Navigate back on second window to check the navigation stack is intact.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1
+                             inWindowWithNumber:1];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
+  [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:_URL2];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
 
+  [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:_URL3];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
 }

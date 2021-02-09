@@ -475,6 +475,15 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
                   : NO;
 }
 
++ (NSUInteger)mainTabCountInWindowWithNumber:(int)windowNumber {
+  return chrome_test_util::GetMainTabCountForWindowWithNumber(windowNumber);
+}
+
++ (NSUInteger)incognitoTabCountInWindowWithNumber:(int)windowNumber {
+  return chrome_test_util::GetIncognitoTabCountForWindowWithNumber(
+      windowNumber);
+}
+
 #pragma mark - WebState Utilities (EG2)
 
 + (NSError*)tapWebStateElementInIFrameWithID:(NSString*)elementID {

@@ -203,6 +203,8 @@ source_set("eg_test_support+eg2") {
     "chrome_test_case.h",
     "chrome_test_case.mm",
     "chrome_test_case_app_interface.h",
+    "chrome_xcui_actions.h",
+    "chrome_xcui_actions.mm",
     "earl_grey_scoped_block_swizzler.h",
     "earl_grey_scoped_block_swizzler.mm",
     "earl_grey_scoped_block_swizzler_app_interface.h",

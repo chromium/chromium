@@ -413,6 +413,16 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
                               timeout:(NSTimeInterval)timeout
                    inWindowWithNumber:(int)windowNumber;
 
+// Waits for there to be |count| number of non-incognito tabs within a timeout,
+// or a GREYAssert is induced.
+- (void)waitForMainTabCount:(NSUInteger)count
+         inWindowWithNumber:(int)windowNumber;
+
+// Waits for there to be |count| number of incognito tabs within a timeout, or a
+// GREYAssert is induced.
+- (void)waitForIncognitoTabCount:(NSUInteger)count
+              inWindowWithNumber:(int)windowNumber;
+
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts entirely and checks whether the
