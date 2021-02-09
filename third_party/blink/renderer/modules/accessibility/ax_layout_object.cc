@@ -503,7 +503,8 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   if (IsWebArea())
     return false;
 
-  if (IsA<HTMLHtmlElement>(GetNode()))
+  const Node* node = GetNode();
+  if (IsA<HTMLHtmlElement>(node))
     return true;
 
   if (!layout_object_) {
@@ -536,8 +537,8 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     return false;
 
   // Make sure renderers with layers stay in the tree.
-  if (GetLayoutObject() && GetLayoutObject()->HasLayer() && GetNode() &&
-      GetNode()->hasChildren()) {
+  if (GetLayoutObject() && GetLayoutObject()->HasLayer() && node &&
+      node->hasChildren()) {
     if (IsPlaceholder()) {
       // Placeholder is already exposed via AX attributes, do not expose as
       // child of text input. Therefore, if there is a child of a text input,
@@ -583,7 +584,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   }
 
   // FIXME(aboxhall): may need to move?
-  base::Optional<String> alt_text = GetCSSAltText(GetNode());
+  base::Optional<String> alt_text = GetCSSAltText(node);
   if (alt_text)
     return alt_text->IsEmpty();
 
@@ -612,9 +613,10 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   // Inner editor element of editable area with empty text provides bounds
   // used to compute the character extent for index 0. This is the same as
   // what the caret's bounds would be if the editable area is focused.
-  if (ParentObject() && ParentObject()->GetLayoutObject() &&
-      ParentObject()->GetLayoutObject()->IsTextControlIncludingNG()) {
-    return false;
+  if (node) {
+    const TextControlElement* text_control = EnclosingTextControl(node);
+    if (text_control && text_control->InnerEditorElement() == node)
+      return false;
   }
 
   // Ignore layout objects that are block flows with inline children. These
@@ -627,9 +629,8 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     const bool has_any_text = HasLineBox(*block_flow);
 
     // Always include interesting-looking objects.
-    if (has_any_text ||
-        (GetNode() && GetNode()->HasAnyEventListeners(
-                          event_util::MouseButtonEventTypes()))) {
+    if (has_any_text || (node && node->HasAnyEventListeners(
+                                     event_util::MouseButtonEventTypes()))) {
       return false;
     }
 
@@ -639,7 +640,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   }
 
   // If setting enabled, do not ignore SVG grouping (<g>) elements.
-  if (IsA<SVGGElement>(GetNode())) {
+  if (IsA<SVGGElement>(node)) {
     Settings* settings = GetDocument()->GetSettings();
     if (settings->GetAccessibilityIncludeSvgGElement()) {
       return false;

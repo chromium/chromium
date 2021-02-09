@@ -281,7 +281,7 @@ struct DowncastTraits<TextControlElement> {
 
 TextControlElement* EnclosingTextControl(const Position&);
 TextControlElement* EnclosingTextControl(const PositionInFlatTree&);
-TextControlElement* EnclosingTextControl(const Node*);
+CORE_EXPORT TextControlElement* EnclosingTextControl(const Node*);
 
 }  // namespace blink
 
