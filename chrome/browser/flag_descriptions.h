@@ -2463,6 +2463,9 @@ extern const char kEnableQuickAnswersTranslationDescription[];
 extern const char kEnableQuickAnswersTranslationCloudAPIName[];
 extern const char kEnableQuickAnswersTranslationCloudAPIDescription[];
 
+extern const char kPluginVmFullscreenName[];
+extern const char kPluginVmFullscreenDescription[];
+
 extern const char kPluginVmShowCameraPermissionsName[];
 extern const char kPluginVmShowCameraPermissionsDescription[];
 

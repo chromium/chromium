@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
@@ -525,13 +527,16 @@ void AppServiceAppWindowLauncherController::RegisterWindow(
       OnItemDelegateDiscarded(item_controller);
     }
   } else if (plugin_vm::IsPluginVmAppWindow(window)) {
-    // Set an icon for the Plugin VM app window, and set fullscreen properties.
+    // Set an icon for the Plugin VM app window.
     static_cast<exo::ShellSurfaceBase*>(
         views::Widget::GetWidgetForNativeWindow(window)->widget_delegate())
         ->SetIcon(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_LOGO_PLUGIN_VM_DEFAULT_192));
-    exo::SetShellUseImmersiveForFullscreen(window, false);
-    window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
+    // Set fullscreen properties.
+    if (base::FeatureList::IsEnabled(ash::features::kPluginVmFullscreen)) {
+      exo::SetShellUseImmersiveForFullscreen(window, false);
+      window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
+    }
   } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
     // Set fullscreen properties for Borealis.
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);

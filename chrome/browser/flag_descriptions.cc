@@ -4703,6 +4703,10 @@ const char kSystemLatinPhysicalTypingDescription[] =
     "Use the system input engine instead of the Chrome extension for physical "
     "typing in languages based on latin script.";
 
+const char kPluginVmFullscreenName[] = "Plugin VM Fullscreen";
+const char kPluginVmFullscreenDescription[] =
+    "Hides shelf in immersive mode and allows esc hold to exit.";
+
 const char kPluginVmShowCameraPermissionsName[] =
     "Show Plugin VM camera permissions";
 const char kPluginVmShowCameraPermissionsDescription[] =
