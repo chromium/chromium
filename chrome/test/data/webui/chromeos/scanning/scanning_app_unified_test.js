@@ -12,6 +12,7 @@ import 'chrome://scanning/scanning.mojom-lite.js';
 
 import {colorModeSelectTest} from './color_mode_select_test.js';
 import {fileTypeSelectTest} from './file_type_select_test.js';
+import {loadingPageTest} from './loading_page_test.js';
 import {pageSizeSelectTest} from './page_size_select_test.js';
 import {resolutionSelectTest} from './resolution_select_test.js';
 import {scanDoneSectionTest} from './scan_done_section_test.js';
@@ -30,6 +31,7 @@ function runSuite(suiteName, testFn) {
 
 runSuite('ColorModeSelect', colorModeSelectTest);
 runSuite('FileTypeSelect', fileTypeSelectTest);
+runSuite('LoadingPage', loadingPageTest);
 runSuite('PageSizeSelect', pageSizeSelectTest);
 runSuite('ResolutionSelect', resolutionSelectTest);
 runSuite('ScanApp', scanningAppTest);

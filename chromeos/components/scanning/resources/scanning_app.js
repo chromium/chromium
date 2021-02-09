@@ -363,11 +363,16 @@ Polymer({
    * @private
    */
   onScannersReceived_(response) {
-    this.setAppState_(AppState.GOT_SCANNERS);
+    if (response.scanners.length === 0) {
+      this.setAppState_(AppState.NO_SCANNERS);
+      return;
+    }
+
     for (const scanner of response.scanners) {
       this.scannerIds_.set(tokenToString(scanner.id), scanner.id);
     }
 
+    this.setAppState_(AppState.GOT_SCANNERS);
     this.scanners_ = response.scanners;
   },
 
@@ -544,6 +549,9 @@ Polymer({
       case (AppState.CANCELING):
         assert(this.appState_ === AppState.SCANNING);
         break;
+      case (AppState.NO_SCANNERS):
+        assert(this.appState_ === AppState.GETTING_SCANNERS);
+        break;
     }
 
     this.appState_ = newState;
@@ -551,7 +559,8 @@ Polymer({
 
   /** @private */
   onAppStateChange_() {
-    this.scannersLoaded_ = this.appState_ !== AppState.GETTING_SCANNERS;
+    this.scannersLoaded_ = this.appState_ !== AppState.GETTING_SCANNERS &&
+        this.appState_ !== AppState.NO_SCANNERS;
     this.settingsDisabled_ = this.appState_ !== AppState.READY;
     this.showCancelButton_ = this.appState_ === AppState.SCANNING ||
         this.appState_ === AppState.CANCELING;

@@ -51,9 +51,9 @@ ScanningAppBrowserTest.prototype = {
 // You must register all suites in unified test here as well for consistency,
 // although technically is not necessary.
 const debug_suites_list = [
-  'ColorModeSelect', 'FileTypeSelect', 'PageSizeSelect', 'ResolutionSelect',
-  'ScanApp', 'ScanDoneSection', 'ScannerSelect', 'ScanPreview', 'ScanToSelect',
-  'SourceSelect'
+  'ColorModeSelect', 'FileTypeSelect', 'LoadingPage', 'PageSizeSelect',
+  'ResolutionSelect', 'ScanApp', 'ScanDoneSection', 'ScannerSelect',
+  'ScanPreview', 'ScanToSelect', 'SourceSelect'
 ];
 
 TEST_F('ScanningAppBrowserTest', 'All', function() {

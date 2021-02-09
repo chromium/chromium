@@ -333,6 +333,8 @@ export function scanningAppTest() {
         document.createElement('scanning-app'));
     document.body.appendChild(scanningApp);
     assert(!!scanningApp);
+    assertTrue(isVisible(
+        /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
     return fakeScanService_.whenCalled('getScanners');
   }
 
@@ -393,6 +395,9 @@ export function scanningAppTest() {
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+
           scannerSelect = scanningApp.$$('#scannerSelect').$$('select');
           sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
           fileTypeSelect = scanningApp.$$('#fileTypeSelect').$$('select');
@@ -748,6 +753,16 @@ export function scanningAppTest() {
         })
         .then(() => {
           assertFalse(isSettingsOpen());
+        });
+  });
+
+  test('NoScanners', () => {
+    return initializeScanningApp(/*scanners=*/[], /*capabilities=*/ new Map())
+        .then(() => {
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
         });
   });
 }

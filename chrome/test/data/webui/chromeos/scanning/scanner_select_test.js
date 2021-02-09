@@ -41,12 +41,6 @@ export function scannerSelectTest() {
     const select = scannerSelect.$$('select');
     assertTrue(!!select);
 
-    // Verify that scanner connection help text is visible before adding
-    // scanners.
-    const helpLink = scannerSelect.$$('#scanHelp');
-    assertTrue(!!helpLink);
-    assertFalse(helpLink.hidden);
-
     const scannerArr = [
       createScanner(firstScannerId, firstScannerName),
       createScanner(secondScannerId, secondScannerName)
@@ -54,35 +48,11 @@ export function scannerSelectTest() {
     scannerSelect.scanners = scannerArr;
     flush();
 
-    // Verify that adding scanners results in the dropdown becoming visible
-    // with the correct options and the help text being hidden.
     assertFalse(select.disabled);
-    assertTrue(helpLink.hidden);
-    // The expected options are the 2 scanners + the hidden 'No scanners'
-    // option.
-    assertEquals(3, select.length);
+    assertEquals(2, select.length);
     assertEquals(firstScannerName, select.options[0].textContent.trim());
     assertEquals(secondScannerName, select.options[1].textContent.trim());
-    assertTrue(select.options[2].hidden);
     assertEquals(tokenToString(firstScannerId), select.value);
-  });
-
-  test('noScanners', () => {
-    const select = scannerSelect.$$('select');
-    assertTrue(!!select);
-    const helpLink = scannerSelect.$$('#scanHelp');
-    assertTrue(!!helpLink);
-
-    scannerSelect.loaded = true;
-    flush();
-
-    // Verify that scanner connection help text is visible.
-    assertFalse(helpLink.hidden);
-
-    // Verify the dropdown displays the default option when no scanners are
-    // available.
-    assertEquals(1, select.length);
-    assertEquals('No available scanners', select.options[0].textContent.trim());
   });
 
   test('scannersSortedAlphabetically', () => {

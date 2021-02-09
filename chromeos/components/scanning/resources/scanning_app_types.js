@@ -14,6 +14,7 @@ export const AppState = {
   SCANNING: 4,
   DONE: 5,
   CANCELING: 6,
+  NO_SCANNERS: 7,
 };
 
 /**

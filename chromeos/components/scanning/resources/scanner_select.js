@@ -83,12 +83,4 @@ Polymer({
       this.selectedScannerId = tokenToString(this.scanners[0].id);
     }
   },
-
-  /**
-   * Helper function to decide whether to hide the scanner connection help link.
-   * @protected
-   */
-  shouldHideScanHelpLink_() {
-    return this.scanners.length !== 0;
-  }
 });

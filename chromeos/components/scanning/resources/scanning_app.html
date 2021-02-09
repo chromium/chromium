@@ -175,7 +175,8 @@
   }
 </style>
 <div id="scanningContainer">
-  <loading-page hidden="[[scannersLoaded_]]"></loading-page>
+  <loading-page hidden="[[scannersLoaded_]]" app-state="[[appState_]]">
+  </loading-page>
   <div id="panelContainer" hidden="[[!scannersLoaded_]]">
     <div id="leftPanel">
       <scan-preview id="scanPreview" app-state="[[appState_]]"

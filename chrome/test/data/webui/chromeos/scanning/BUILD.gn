@@ -14,6 +14,7 @@ js_type_check("closure_compile") {
   deps = [
     ":color_mode_select_test",
     ":file_type_select_test",
+    ":loading_page_test",
     ":page_size_select_test",
     ":resolution_select_test",
     ":scan_done_section_test",
@@ -38,6 +39,11 @@ js_library("color_mode_select_test") {
 
 js_library("file_type_select_test") {
   deps = [ "//chromeos/components/scanning/resources:file_type_select" ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("loading_page_test") {
+  deps = [ "//chromeos/components/scanning/resources:loading_page" ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 

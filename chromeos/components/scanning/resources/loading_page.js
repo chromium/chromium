@@ -7,6 +7,8 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppState} from './scanning_app_types.js';
+
 /**
  * @fileoverview
  * 'loading-page' is shown while searching for available scanners.
@@ -17,4 +19,23 @@ Polymer({
   _template: html`{__html_template__}`,
 
   behaviors: [I18nBehavior],
+
+  properties: {
+    /** @type {!AppState} */
+    appState: {
+      type: Number,
+      observer: 'onAppStateChange_',
+    },
+
+    /** @private {boolean} */
+    noScannersAvailable_: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  /** @private */
+  onAppStateChange_() {
+    this.noScannersAvailable_ = this.appState === AppState.NO_SCANNERS;
+  },
 });

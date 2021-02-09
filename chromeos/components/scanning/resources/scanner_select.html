@@ -1,16 +1,4 @@
-<style include="scanning-fonts scanning-shared">
-  #scanHelp {
-    color: var(--scanning-no-scanners-help-text-color);
-    font-family: var(--scanning-no-scanners-help-text-font-family);
-    font-size: var(--scanning-no-scanners-help-text-font-size);
-    font-weight: var(--scanning-regular-font-weight);
-    line-height: var(--scanning-no-scanners-help-text-line-height);
-  }
-
-  #scanHelpLink {
-    color: var(--google-blue-600);
-    text-decoration: none;
-  }
+<style include="scanning-shared">
 </style>
 <scan-settings-section>
   <span id="scannerLabel" slot="label" aria-hidden="true">
@@ -25,17 +13,6 @@
           [[getScannerDisplayName_(scanner)]]
         </option>
       </template>
-      <option value="" hidden="[[scanners.length]]">
-        [[i18n('noScannersText')]]
-      </option>
     </select>
-  </div>
-  <div id="scanHelp" slot="error"
-      hidden$="[[shouldHideScanHelpLink_(scanners)]]">
-    [[i18n('noScannersHelpText')]]
-    <a id="scanHelpLink" target="_blank"
-        href="http://support.google.com/chromebook?p=chrome_scanning">
-      [[i18n('noScannersHelpLinkLabel')]]
-    </a>
   </div>
 </scan-settings-section>
