@@ -23,7 +23,7 @@ const char kSetAccountsInCookieFailure[] = "Account cookies could not be set.";
 const char kInvalidConsentResult[] = "Returned an invalid consent result.";
 const char kCanceled[] = "canceled";
 
-const int kCachedIssueAdviceTTLSeconds = 1;
+const int kCachedRemoteConsentTTLSeconds = 1;
 }  // namespace identity_constants
 
 }  // namespace extensions

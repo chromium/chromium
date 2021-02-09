@@ -60,70 +60,6 @@ static const char kTokenResponseNoAccessToken[] =
     "  \"issueAdvice\": \"Auto\""
     "}";
 
-static const char kValidIssueAdviceResponse[] =
-    "{"
-    "  \"issueAdvice\": \"consent\","
-    "  \"consent\": {"
-    "    \"oauthClient\": {"
-    "      \"name\": \"Test app\","
-    "      \"iconUri\": \"\","
-    "      \"developerEmail\": \"munjal@chromium.org\""
-    "    },"
-    "    \"scopes\": ["
-    "      {"
-    "        \"description\": \"Manage your calendars\","
-    "        \"detail\": \"\nView and manage your calendars\n\""
-    "      },"
-    "      {"
-    "        \"description\": \"Manage your documents\","
-    "        \"detail\": \"\nView your documents\nUpload new documents\n\""
-    "      }"
-    "    ]"
-    "  }"
-    "}";
-
-static const char kIssueAdviceResponseNoDescription[] =
-    "{"
-    "  \"issueAdvice\": \"consent\","
-    "  \"consent\": {"
-    "    \"oauthClient\": {"
-    "      \"name\": \"Test app\","
-    "      \"iconUri\": \"\","
-    "      \"developerEmail\": \"munjal@chromium.org\""
-    "    },"
-    "    \"scopes\": ["
-    "      {"
-    "        \"description\": \"Manage your calendars\","
-    "        \"detail\": \"\nView and manage your calendars\n\""
-    "      },"
-    "      {"
-    "        \"detail\": \"\nView your documents\nUpload new documents\n\""
-    "      }"
-    "    ]"
-    "  }"
-    "}";
-
-static const char kIssueAdviceResponseNoDetail[] =
-    "{"
-    "  \"issueAdvice\": \"consent\","
-    "  \"consent\": {"
-    "    \"oauthClient\": {"
-    "      \"name\": \"Test app\","
-    "      \"iconUri\": \"\","
-    "      \"developerEmail\": \"munjal@chromium.org\""
-    "    },"
-    "    \"scopes\": ["
-    "      {"
-    "        \"description\": \"Manage your calendars\","
-    "        \"detail\": \"\nView and manage your calendars\n\""
-    "      },"
-    "      {"
-    "        \"description\": \"Manage your documents\""
-    "      }"
-    "    ]"
-    "  }"
-    "}";
-
 static const char kValidRemoteConsentResponse[] =
     "{"
     "  \"issueAdvice\": \"remoteConsent\","
@@ -165,20 +101,6 @@ std::vector<std::string> CreateTestScopes() {
   return scopes;
 }
 
-static IssueAdviceInfo CreateIssueAdvice() {
-  IssueAdviceInfo ia;
-  IssueAdviceInfoEntry e1;
-  e1.description = base::ASCIIToUTF16("Manage your calendars");
-  e1.details.push_back(base::ASCIIToUTF16("View and manage your calendars"));
-  ia.push_back(e1);
-  IssueAdviceInfoEntry e2;
-  e2.description = base::ASCIIToUTF16("Manage your documents");
-  e2.details.push_back(base::ASCIIToUTF16("View your documents"));
-  e2.details.push_back(base::ASCIIToUTF16("Upload new documents"));
-  ia.push_back(e2);
-  return ia;
-}
-
 static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
   RemoteConsentResolutionData resolution_data;
   resolution_data.url = GURL("https://test.com/consent?param=value");
@@ -205,8 +127,6 @@ class MockDelegate : public OAuth2MintTokenFlow::Delegate {
                void(const std::string& access_token,
                     const std::set<std::string>& granted_scopes,
                     int time_to_live));
-  MOCK_METHOD1(OnIssueAdviceSuccess,
-               void (const IssueAdviceInfo& issue_advice));
   MOCK_METHOD1(OnRemoteConsentSuccess,
                void(const RemoteConsentResolutionData& resolution_data));
   MOCK_METHOD1(OnMintTokenFailure,
@@ -467,32 +387,6 @@ TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponse) {
   }
 }
 
-TEST_F(OAuth2MintTokenFlowTest, ParseIssueAdviceResponse) {
-  {  // Description missing.
-    std::unique_ptr<base::Value> json =
-        ParseJson(kIssueAdviceResponseNoDescription);
-    IssueAdviceInfo ia;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseIssueAdviceResponse(
-        json.get(), &ia));
-    EXPECT_TRUE(ia.empty());
-  }
-  {  // Detail missing.
-    std::unique_ptr<base::Value> json = ParseJson(kIssueAdviceResponseNoDetail);
-    IssueAdviceInfo ia;
-    EXPECT_FALSE(OAuth2MintTokenFlow::ParseIssueAdviceResponse(
-        json.get(), &ia));
-    EXPECT_TRUE(ia.empty());
-  }
-  {  // All good.
-    std::unique_ptr<base::Value> json = ParseJson(kValidIssueAdviceResponse);
-    IssueAdviceInfo ia;
-    EXPECT_TRUE(OAuth2MintTokenFlow::ParseIssueAdviceResponse(
-        json.get(), &ia));
-    IssueAdviceInfo ia_expected(CreateIssueAdvice());
-    EXPECT_EQ(ia_expected, ia);
-  }
-}
-
 TEST_F(OAuth2MintTokenFlowTest, ParseRemoteConsentResponse) {
   std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
   RemoteConsentResolutionData resolution_data;
@@ -672,37 +566,6 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_GoodToken) {
   histogram_tester_.ExpectUniqueSample(
       kOAuth2MintTokenApiCallResultHistogram,
       OAuth2MintTokenApiCallResult::kMintTokenSuccess, 1);
-}
-
-TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoDescription) {
-  CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
-  EXPECT_CALL(delegate_, OnMintTokenFailure(_));
-  ProcessApiCallSuccess(
-      head_200_.get(),
-      std::make_unique<std::string>(kIssueAdviceResponseNoDescription));
-  histogram_tester_.ExpectUniqueSample(
-      kOAuth2MintTokenApiCallResultHistogram,
-      OAuth2MintTokenApiCallResult::kParseIssueAdviceFailure, 1);
-}
-
-TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoDetail) {
-  CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
-  EXPECT_CALL(delegate_, OnMintTokenFailure(_));
-  ProcessApiCallSuccess(head_200_.get(), std::make_unique<std::string>(
-                                             kIssueAdviceResponseNoDetail));
-  histogram_tester_.ExpectUniqueSample(
-      kOAuth2MintTokenApiCallResultHistogram,
-      OAuth2MintTokenApiCallResult::kParseIssueAdviceFailure, 1);
-}
-TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_GoodIssueAdvice) {
-  CreateFlow(OAuth2MintTokenFlow::MODE_ISSUE_ADVICE);
-  IssueAdviceInfo ia(CreateIssueAdvice());
-  EXPECT_CALL(delegate_, OnIssueAdviceSuccess(ia));
-  ProcessApiCallSuccess(head_200_.get(), std::make_unique<std::string>(
-                                             kValidIssueAdviceResponse));
-  histogram_tester_.ExpectUniqueSample(
-      kOAuth2MintTokenApiCallResultHistogram,
-      OAuth2MintTokenApiCallResult::kIssueAdviceSuccess, 1);
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_GoodRemoteConsent) {

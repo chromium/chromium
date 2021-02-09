@@ -187,7 +187,6 @@ std::unique_ptr<base::ListValue> IdentityInternalsUIMessageHandler::GetScopes(
 std::string IdentityInternalsUIMessageHandler::GetStatus(
     const extensions::IdentityTokenCacheValue& token_cache_value) {
   switch (token_cache_value.status()) {
-    case extensions::IdentityTokenCacheValue::CACHE_STATUS_ADVICE:
     case extensions::IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT:
     case extensions::IdentityTokenCacheValue::
         CACHE_STATUS_REMOTE_CONSENT_APPROVED:

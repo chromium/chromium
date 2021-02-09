@@ -15,7 +15,6 @@
 #include "base/scoped_observer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
-#include "chrome/browser/extensions/api/identity/gaia_web_auth_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/extension_function.h"
@@ -50,7 +49,6 @@ class IdentityGetAuthTokenError;
 // new login token, there is a sign-in flow. If that flow completes
 // successfully, getAuthToken proceeds to the non-interactive flow.
 class IdentityGetAuthTokenFunction : public ExtensionFunction,
-                                     public GaiaWebAuthFlow::Delegate,
                                      public GaiaRemoteConsentFlow::Delegate,
                                      public IdentityMintRequestQueue::Request,
                                      public signin::IdentityManager::Observer,
@@ -72,13 +70,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   ~IdentityGetAuthTokenFunction() override;
 
   void SigninFailed();
-
-  // GaiaWebAuthFlow::Delegate implementation:
-  void OnGaiaFlowFailure(GaiaWebAuthFlow::Failure failure,
-                         GoogleServiceAuthError service_error,
-                         const std::string& oauth_error) override;
-  void OnGaiaFlowCompleted(const std::string& access_token,
-                           const std::string& expiration) override;
 
   // GaiaRemoteConsentFlow::Delegate implementation:
   void OnGaiaRemoteConsentFlowFailed(
@@ -199,7 +190,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
                           const std::set<std::string>& granted_scopes,
                           int time_to_live) override;
   void OnMintTokenFailure(const GoogleServiceAuthError& error) override;
-  void OnIssueAdviceSuccess(const IssueAdviceInfo& issue_advice) override;
   void OnRemoteConsentSuccess(
       const RemoteConsentResolutionData& resolution_data) override;
 
@@ -215,7 +205,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 
   // Methods for invoking UI. Overridable for testing.
   virtual void ShowExtensionLoginPrompt();
-  virtual void ShowOAuthApprovalDialog(const IssueAdviceInfo& issue_advice);
   virtual void ShowRemoteConsentDialog(
       const RemoteConsentResolutionData& resolution_data);
 
@@ -248,9 +237,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   std::string oauth2_client_id_;
   // When launched in interactive mode, and if there is no existing grant,
   // a permissions prompt will be popped up to the user.
-  IssueAdviceInfo issue_advice_;
-  std::unique_ptr<GaiaWebAuthFlow> gaia_web_auth_flow_;
-  // The browser resolution consent flow.
   RemoteConsentResolutionData resolution_data_;
   std::unique_ptr<GaiaRemoteConsentFlow> gaia_remote_consent_flow_;
   std::string consent_result_;

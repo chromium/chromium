@@ -22,8 +22,6 @@ class IdentityTokenCacheValue {
   IdentityTokenCacheValue& operator=(const IdentityTokenCacheValue& other);
   ~IdentityTokenCacheValue();
 
-  static IdentityTokenCacheValue CreateIssueAdvice(
-      const IssueAdviceInfo& issue_advice);
   static IdentityTokenCacheValue CreateRemoteConsent(
       const RemoteConsentResolutionData& resolution_data);
   static IdentityTokenCacheValue CreateRemoteConsentApproved(
@@ -37,7 +35,6 @@ class IdentityTokenCacheValue {
   // entries supersede older ones in SetCachedToken.
   enum CacheValueStatus {
     CACHE_STATUS_NOTFOUND,
-    CACHE_STATUS_ADVICE,
     CACHE_STATUS_REMOTE_CONSENT,
     CACHE_STATUS_REMOTE_CONSENT_APPROVED,
     CACHE_STATUS_TOKEN
@@ -46,7 +43,6 @@ class IdentityTokenCacheValue {
   CacheValueStatus status() const;
   const base::Time& expiration_time() const;
 
-  const IssueAdviceInfo& issue_advice() const;
   const RemoteConsentResolutionData& resolution_data() const;
   const std::string& consent_result() const;
   const std::string& token() const;
@@ -60,7 +56,6 @@ class IdentityTokenCacheValue {
 
   // TODO(alexilin): This class holds at any given time one of the several
   // possible types. Consider rewriting using absl::variant
-  IssueAdviceInfo issue_advice_;
   RemoteConsentResolutionData resolution_data_;
   std::string consent_result_;
   std::string token_;

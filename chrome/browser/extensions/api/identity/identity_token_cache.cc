@@ -20,26 +20,15 @@ IdentityTokenCacheValue& IdentityTokenCacheValue::operator=(
 IdentityTokenCacheValue::~IdentityTokenCacheValue() = default;
 
 // static
-IdentityTokenCacheValue IdentityTokenCacheValue::CreateIssueAdvice(
-    const IssueAdviceInfo& issue_advice) {
-  IdentityTokenCacheValue cache_value;
-  cache_value.status_ = CACHE_STATUS_ADVICE;
-  cache_value.issue_advice_ = issue_advice;
-  cache_value.expiration_time_ =
-      base::Time::Now() + base::TimeDelta::FromSeconds(
-                              identity_constants::kCachedIssueAdviceTTLSeconds);
-  return cache_value;
-}
-
-// static
 IdentityTokenCacheValue IdentityTokenCacheValue::CreateRemoteConsent(
     const RemoteConsentResolutionData& resolution_data) {
   IdentityTokenCacheValue cache_value;
   cache_value.status_ = CACHE_STATUS_REMOTE_CONSENT;
   cache_value.resolution_data_ = resolution_data;
   cache_value.expiration_time_ =
-      base::Time::Now() + base::TimeDelta::FromSeconds(
-                              identity_constants::kCachedIssueAdviceTTLSeconds);
+      base::Time::Now() +
+      base::TimeDelta::FromSeconds(
+          identity_constants::kCachedRemoteConsentTTLSeconds);
   return cache_value;
 }
 
@@ -50,8 +39,9 @@ IdentityTokenCacheValue IdentityTokenCacheValue::CreateRemoteConsentApproved(
   cache_value.status_ = CACHE_STATUS_REMOTE_CONSENT_APPROVED;
   cache_value.consent_result_ = consent_result;
   cache_value.expiration_time_ =
-      base::Time::Now() + base::TimeDelta::FromSeconds(
-                              identity_constants::kCachedIssueAdviceTTLSeconds);
+      base::Time::Now() +
+      base::TimeDelta::FromSeconds(
+          identity_constants::kCachedRemoteConsentTTLSeconds);
   return cache_value;
 }
 
@@ -94,10 +84,6 @@ bool IdentityTokenCacheValue::is_expired() const {
 
 const base::Time& IdentityTokenCacheValue::expiration_time() const {
   return expiration_time_;
-}
-
-const IssueAdviceInfo& IdentityTokenCacheValue::issue_advice() const {
-  return issue_advice_;
 }
 
 const RemoteConsentResolutionData& IdentityTokenCacheValue::resolution_data()

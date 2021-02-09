@@ -35655,16 +35655,16 @@ Called by update_feature_policy_enum.py.-->
   <int value="0" label="Success"/>
   <int value="1" label="kInvalidClientId"/>
   <int value="2" label="kEmptyScopes"/>
-  <int value="3" label="kOAuth2InvalidScopes"/>
-  <int value="4" label="kGaiaFlowAuthFailure"/>
+  <int value="3" label="kOAuth2InvalidScopes (deprecated 02/2021)"/>
+  <int value="4" label="kGaiaFlowAuthFailure (deprecated 02/2021)"/>
   <int value="5" label="kMintTokenAuthFailure"/>
   <int value="6" label="kGetAccessTokenAuthFailure"/>
-  <int value="7" label="kOAuth2Failure"/>
+  <int value="7" label="kOAuth2Failure (deprecated 02/2021)"/>
   <int value="8" label="kNoGrant"/>
   <int value="9" label="kInteractionRequired"/>
   <int value="10" label="kInteractionAlreadyRunning"/>
-  <int value="11" label="kOAuth2AccessDenied"/>
-  <int value="12" label="kGaiaFlowRejected"/>
+  <int value="11" label="kOAuth2AccessDenied (deprecated 02/2021)"/>
+  <int value="12" label="kGaiaFlowRejected (deprecated 02/2021)"/>
   <int value="13" label="kRemoteConsentFlowRejected"/>
   <int value="14" label="kUserNotSignedIn"/>
   <int value="15" label="kNotAllowlistedInPublicSession"/>
@@ -35673,9 +35673,9 @@ Called by update_feature_policy_enum.py.-->
   <int value="18" label="kUserNonPrimary"/>
   <int value="19" label="kRemoteConsentUserNonPrimary"/>
   <int value="20" label="kBrowserSigninNotAllowed"/>
-  <int value="21" label="kInvalidRedirect"/>
+  <int value="21" label="kInvalidRedirect (deprecated 02/2021)"/>
   <int value="22" label="kOffTheRecord"/>
-  <int value="23" label="kPageLoadFailure"/>
+  <int value="23" label="kPageLoadFailure (deprecated 02/2021)"/>
   <int value="24" label="kRemoteConsentPageLoadFailure"/>
   <int value="25" label="kSetAccountsInCookieFailure"/>
   <int value="26" label="kInvalidConsentResult"/>
@@ -54960,13 +54960,13 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="OAuth2MintTokenApiCallResult">
   <int value="0" label="Mint token success"/>
-  <int value="1" label="Issue advice success"/>
+  <int value="1" label="Issue advice success (deprecated 02/2021)"/>
   <int value="2" label="Remote consent success"/>
   <int value="3" label="Api call failure"/>
   <int value="4" label="Parse JSON failure"/>
   <int value="5" label="&quot;issueAdvice&quot; key not found"/>
   <int value="6" label="Parse mint token failure"/>
-  <int value="7" label="Parse issue advice failure"/>
+  <int value="7" label="Parse issue advice failure (deprecated 02/2021)"/>
   <int value="8" label="Remote consent fallback (deprecated 06/2020)"/>
   <int value="9" label="Parse remote consent failure"/>
   <int value="10" label="Mint token success with fallback scopes"/>

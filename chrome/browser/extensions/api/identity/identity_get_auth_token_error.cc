@@ -10,12 +10,6 @@
 namespace extensions {
 
 // static
-IdentityGetAuthTokenError IdentityGetAuthTokenError::FromGaiaFlowAuthError(
-    base::StringPiece error_message) {
-  return IdentityGetAuthTokenError(State::kGaiaFlowAuthFailure, error_message);
-}
-
-// static
 IdentityGetAuthTokenError IdentityGetAuthTokenError::FromMintTokenAuthError(
     base::StringPiece error_message) {
   return IdentityGetAuthTokenError(State::kMintTokenAuthFailure, error_message);
@@ -27,24 +21,6 @@ IdentityGetAuthTokenError::FromGetAccessTokenAuthError(
     base::StringPiece error_message) {
   return IdentityGetAuthTokenError(State::kGetAccessTokenAuthFailure,
                                    error_message);
-}
-
-// static
-IdentityGetAuthTokenError IdentityGetAuthTokenError::FromOAuth2Error(
-    base::StringPiece oauth2_error) {
-  const char kOAuth2ErrorAccessDenied[] = "access_denied";
-  const char kOAuth2ErrorInvalidScope[] = "invalid_scope";
-
-  if (oauth2_error == kOAuth2ErrorAccessDenied) {
-    return IdentityGetAuthTokenError(
-        IdentityGetAuthTokenError::State::kOAuth2AccessDenied);
-  } else if (oauth2_error == kOAuth2ErrorInvalidScope) {
-    return IdentityGetAuthTokenError(
-        IdentityGetAuthTokenError::State::kOAuth2InvalidScopes);
-  } else {
-    return IdentityGetAuthTokenError(
-        IdentityGetAuthTokenError::State::kOAuth2Failure, oauth2_error);
-  }
 }
 
 IdentityGetAuthTokenError::IdentityGetAuthTokenError()
@@ -64,19 +40,14 @@ std::string IdentityGetAuthTokenError::ToString() const {
     case State::kInvalidClientId:
       return identity_constants::kInvalidClientId;
     case State::kEmptyScopes:
-    case State::kOAuth2InvalidScopes:
       return identity_constants::kInvalidScopes;
-    case State::kGaiaFlowAuthFailure:
     case State::kMintTokenAuthFailure:
     case State::kGetAccessTokenAuthFailure:
-    case State::kOAuth2Failure:
       return identity_constants::kAuthFailure + error_message_;
     case State::kNoGrant:
     case State::kGaiaConsentInteractionRequired:
     case State::kGaiaConsentInteractionAlreadyRunning:
       return identity_constants::kNoGrant;
-    case State::kOAuth2AccessDenied:
-    case State::kGaiaFlowRejected:
     case State::kRemoteConsentFlowRejected:
       return identity_constants::kUserRejected;
     case State::kUserNotSignedIn:
@@ -89,11 +60,8 @@ std::string IdentityGetAuthTokenError::ToString() const {
       return identity_constants::kUserNonPrimary;
     case State::kBrowserSigninNotAllowed:
       return identity_constants::kBrowserSigninNotAllowed;
-    case State::kInvalidRedirect:
-      return identity_constants::kInvalidRedirect;
     case State::kOffTheRecord:
       return identity_constants::kOffTheRecord;
-    case State::kPageLoadFailure:
     case State::kRemoteConsentPageLoadFailure:
       return identity_constants::kPageLoadFailure;
     case State::kSetAccountsInCookieFailure:

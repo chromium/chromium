@@ -39,6 +39,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_l10n_util.h"
+#include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 
@@ -516,13 +517,6 @@ void IdentityGetAuthTokenFunction::StartMintToken(
                                    cache_entry.granted_scopes());
         break;
 
-      case IdentityTokenCacheValue::CACHE_STATUS_ADVICE:
-        CompleteMintTokenFlow();
-        should_prompt_for_signin_ = false;
-        issue_advice_ = cache_entry.issue_advice();
-        StartMintTokenFlow(IdentityMintRequestQueue::MINT_TYPE_INTERACTIVE);
-        break;
-
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT:
         CompleteMintTokenFlow();
         should_prompt_for_signin_ = false;
@@ -547,9 +541,6 @@ void IdentityGetAuthTokenFunction::StartMintToken(
                                    cache_entry.granted_scopes());
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
-      case IdentityTokenCacheValue::CACHE_STATUS_ADVICE:
-        ShowOAuthApprovalDialog(issue_advice_);
-        break;
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT:
         ShowRemoteConsentDialog(resolution_data_);
         break;
@@ -606,27 +597,6 @@ void IdentityGetAuthTokenFunction::OnMintTokenFailure(
 
   CompleteFunctionWithError(
       IdentityGetAuthTokenError::FromMintTokenAuthError(error.ToString()));
-}
-
-void IdentityGetAuthTokenFunction::OnIssueAdviceSuccess(
-    const IssueAdviceInfo& issue_advice) {
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity", "OnIssueAdviceSuccess", this);
-
-  IdentityAPI* identity_api =
-      IdentityAPI::GetFactoryInstance()->Get(GetProfile());
-  identity_api->token_cache()->SetToken(
-      token_key_, IdentityTokenCacheValue::CreateIssueAdvice(issue_advice));
-  // IssueAdvice doesn't communicate back to Chrome which account has been
-  // chosen by the user. Cached gaia id may contain incorrect information so
-  // it's better to remove it.
-  identity_api->EraseGaiaIdForExtension(token_key_.extension_id);
-  CompleteMintTokenFlow();
-
-  should_prompt_for_signin_ = false;
-  // Existing grant was revoked and we used NO_FORCE, so we got info back
-  // instead. Start a consent UI if we can.
-  issue_advice_ = issue_advice;
-  StartMintTokenFlow(IdentityMintRequestQueue::MINT_TYPE_INTERACTIVE);
 }
 
 void IdentityGetAuthTokenFunction::OnRemoteConsentSuccess(
@@ -707,70 +677,6 @@ void IdentityGetAuthTokenFunction::SigninFailed() {
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity", "SigninFailed", this);
   CompleteFunctionWithError(IdentityGetAuthTokenError(
       IdentityGetAuthTokenError::State::kSignInFailed));
-}
-
-void IdentityGetAuthTokenFunction::OnGaiaFlowFailure(
-    GaiaWebAuthFlow::Failure failure,
-    GoogleServiceAuthError service_error,
-    const std::string& oauth_error) {
-  CompleteMintTokenFlow();
-  IdentityGetAuthTokenError error;
-
-  switch (failure) {
-    case GaiaWebAuthFlow::WINDOW_CLOSED:
-      error = IdentityGetAuthTokenError(
-          IdentityGetAuthTokenError::State::kGaiaFlowRejected);
-      break;
-
-    case GaiaWebAuthFlow::INVALID_REDIRECT:
-      error = IdentityGetAuthTokenError(
-          IdentityGetAuthTokenError::State::kInvalidRedirect);
-      break;
-
-    case GaiaWebAuthFlow::SERVICE_AUTH_ERROR:
-      if (TryRecoverFromServiceAuthError(service_error)) {
-        return;
-      }
-      error = IdentityGetAuthTokenError::FromGaiaFlowAuthError(
-          service_error.ToString());
-      break;
-
-    case GaiaWebAuthFlow::OAUTH_ERROR:
-      error = IdentityGetAuthTokenError::FromOAuth2Error(oauth_error);
-      break;
-
-    case GaiaWebAuthFlow::LOAD_FAILED:
-      error = IdentityGetAuthTokenError(
-          IdentityGetAuthTokenError::State::kPageLoadFailure);
-      break;
-
-    default:
-      NOTREACHED() << "Unexpected error from gaia web auth flow: " << failure;
-      error = IdentityGetAuthTokenError(
-          IdentityGetAuthTokenError::State::kInvalidRedirect);
-      break;
-  }
-
-  CompleteFunctionWithError(error);
-}
-
-void IdentityGetAuthTokenFunction::OnGaiaFlowCompleted(
-    const std::string& access_token,
-    const std::string& expiration) {
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("identity", "OnGaiaFlowCompleted", this);
-  int time_to_live;
-  if (!expiration.empty() && base::StringToInt(expiration, &time_to_live)) {
-    IdentityTokenCacheValue token_value = IdentityTokenCacheValue::CreateToken(
-        access_token, token_key_.scopes,
-        base::TimeDelta::FromSeconds(time_to_live));
-    IdentityAPI::GetFactoryInstance()
-        ->Get(GetProfile())
-        ->token_cache()
-        ->SetToken(token_key_, token_value);
-  }
-
-  CompleteMintTokenFlow();
-  CompleteFunctionWithResult(access_token, token_key_.scopes);
 }
 
 void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
@@ -919,7 +825,6 @@ void IdentityGetAuthTokenFunction::OnAccessTokenFetchCompleted(
 }
 
 void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
-  gaia_web_auth_flow_.reset();
   device_access_token_request_.reset();
   token_key_account_access_token_fetcher_.reset();
   scoped_identity_manager_observer_.RemoveAll();
@@ -1015,15 +920,6 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
       LoginUIServiceFactory::GetForProfile(GetProfile());
   login_ui_service->ShowExtensionLoginPrompt(IsPrimaryAccountOnly(),
                                              email_hint);
-}
-
-void IdentityGetAuthTokenFunction::ShowOAuthApprovalDialog(
-    const IssueAdviceInfo& issue_advice) {
-  const std::string locale = extension_l10n_util::CurrentLocaleOrDefault();
-
-  gaia_web_auth_flow_.reset(new GaiaWebAuthFlow(this, GetProfile(), &token_key_,
-                                                oauth2_client_id_, locale));
-  gaia_web_auth_flow_->Start();
 }
 
 void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog(
