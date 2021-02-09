@@ -173,7 +173,13 @@ enum DeviceMode {
 // Domain that demo mode devices are enrolled into: cros-demo-mode.com
 POLICY_EXPORT extern const char kDemoModeDomain[];
 
-// Indicate this device's market segment. go/cros-rlz-segments
+// Indicate this device's market segment. go/cros-rlz-segments.
+// This enum should be kept in sync with MarketSegment enum in
+// device_management_backend.proto (http://shortn/_p0P58C4BRV). If any additions
+// are made to this proto, the UserDeviceMatrix in
+// src/tools/metrics/histograms/enums.xml should also be updated, as well as the
+// browser test suite in usertype_by_devicetype_metrics_provider_browsertest.cc
+// (http://shortn/_gD5uIM9Z78) to account for the new user / device type combo.
 enum class MarketSegment {
   UNKNOWN,  // If device is not enrolled or market segment is not specified.
   EDUCATION,

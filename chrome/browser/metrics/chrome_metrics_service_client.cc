@@ -50,6 +50,7 @@
 #include "chrome/browser/metrics/https_engagement_metrics_provider.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
+#include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -763,6 +764,12 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   if (base::FeatureList::IsEnabled(chromeos::kFamilyLinkUserMetricsProvider)) {
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<FamilyLinkUserMetricsProvider>());
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ::features::kUserTypeByDeviceTypeMetricsProvider)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<UserTypeByDeviceTypeMetricsProvider>());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

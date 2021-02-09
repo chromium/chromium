@@ -1362,6 +1362,21 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.UserTypeByDeviceType.LogSegment"
+    enum="UserDeviceMatrix" expires_after="M95">
+  <owner>bmalcolm@chromium.org</owner>
+  <owner>cros-client-wa@google.com</owner>
+  <summary>
+    This value is reported at the start of a user session, and is a 32-bit value
+    that reports the primary user account type and the device type (umanaged
+    user on managed device, K12 user on an education device, etc.). The upper
+    16-bits represent the device type (found at http://shortn/_3iFWcdjy0P), and
+    the lower 16-bits represent the user type (found at
+    http://shortn/_uK3ZM4pC0a). So a nonprofit user (0x03) on an enterprise
+    device (0x02) would be 0x00020003 or 131075.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -76825,6 +76825,42 @@ Full version information for the fingerprint enum values:
   <int value="5" label="There is no sync service available"/>
 </enum>
 
+<enum name="UserDeviceMatrix">
+<!--
+    These are computed values. The lower 16-bits are from
+    UserTypeByDeviceTypeMetricsProvider::UserSegment (http://shortn/_uK3ZM4pC0a)
+    and the upper 16-bits are from policy::MarketSegment
+    (http://shortn/_3iFWcdjy0P). This list of possible user / device combos
+    should be updated if either of those enums changes.
+
+    Please note that the values listed below are the only values that should be
+    sent.
+  -->
+
+  <int value="0" label="Unmanaged user on unmanaged device"/>
+  <int value="1" label="K12 user on unmanaged device"/>
+  <int value="2" label="University user on unmanaged device"/>
+  <int value="3" label="Nonprofit user on unmanaged device"/>
+  <int value="4" label="Enterprise user on unmanaged device"/>
+<!--
+    There is no value for Managed Guest Session on Unmanaged device because that
+    combination cannot occur.
+  -->
+
+  <int value="65536" label="Unmanaged user on education device"/>
+  <int value="65537" label="K12 user on education device"/>
+  <int value="65538" label="University user on education device"/>
+  <int value="65539" label="Nonprofit user on education device"/>
+  <int value="65540" label="Enterprise user on education device"/>
+  <int value="131071" label="Managed guest session on an education device"/>
+  <int value="131072" label="Unmanaged user on enterprise device"/>
+  <int value="131073" label="K12 user on enterprise device"/>
+  <int value="131074" label="University user on enterprise device"/>
+  <int value="131075" label="Nonprofit user on enterprise device"/>
+  <int value="131076" label="Enterprise user on enterprise device"/>
+  <int value="196607" label="Managed guest session on an enterprise device"/>
+</enum>
+
 <enum name="UserGestureRequirement">
   <int value="0" label="Required and available"/>
   <int value="1" label="Required and not available"/>

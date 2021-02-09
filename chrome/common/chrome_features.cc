@@ -955,6 +955,12 @@ const base::Feature kUmaStorageDimensions{"UmaStorageDimensions",
 const base::Feature kWilcoDtc{"WilcoDtc", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Populates the user type on device type metrics in UMA log if enabled.
+const base::Feature kUserTypeByDeviceTypeMetricsProvider{
+    "UserTypeByDeviceTypeMetricsProvider", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_WIN)
 // Enables the accelerated default browser flow for Windows 10.
 const base::Feature kWin10AcceleratedDefaultBrowserFlow{

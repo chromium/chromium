@@ -4374,6 +4374,8 @@ static_library("browser") {
       "metrics/perf/random_selector.h",
       "metrics/perf/windowed_incognito_observer.cc",
       "metrics/perf/windowed_incognito_observer.h",
+      "metrics/usertype_by_devicetype_metrics_provider.cc",
+      "metrics/usertype_by_devicetype_metrics_provider.h",
       "nearby_sharing/attachment_info.cc",
       "nearby_sharing/attachment_info.h",
       "nearby_sharing/bluetooth_advertising_interval_client.cc",

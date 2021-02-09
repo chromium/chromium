@@ -642,7 +642,9 @@ message PolicyData {
   // Should be fetched with user policy.
   optional string gaia_id = 29;
 
-  // Indicate this device's market segment.
+  // Indicate this device's market segment. The MarketSegment enum in
+  // cloud_policy_constants.h (http://shortn/_3iFWcdjy0P) must be kept in sync
+  // with this enum.
   enum MarketSegment {
     MARKET_SEGMENT_UNSPECIFIED = 0;
     ENROLLED_EDUCATION = 1;
@@ -675,7 +677,10 @@ message PolicyData {
   // Only set for device policy.
   optional string obfuscated_customer_id = 34;
 
-  // The different types of user segments for metrics logging.
+  // The different types of user segments for metrics logging. If any values are
+  // added to this enum, the corresponding enum in
+  // UserTypeByDeviceTypeMetricsProvider::UserSegment
+  // (http://shortn/_uK3ZM4pC0a) should be updated.
   enum MetricsLogSegment {
     UNSPECIFIED = 0;
     K12 = 1;
