@@ -52,7 +52,6 @@ enum class KeepAliveOrigin {
   // c/b/ui
   APP_LIST_SERVICE_VIEWS,
   APP_LIST_SHOWER,
-  APP_UNINSTALLATION_FROM_OS_SETTINGS,
   CHROME_APP_DELEGATE,
   CHROME_VIEWS_DELEGATE,
   PANEL,
@@ -64,6 +63,7 @@ enum class KeepAliveOrigin {
 
   // c/b/web_applications
   APP_START_URL_MIGRATION,
+  APP_UNINSTALLATION,
 };
 
 // Restart: Allow Chrome to restart when all the registered KeepAlives allow

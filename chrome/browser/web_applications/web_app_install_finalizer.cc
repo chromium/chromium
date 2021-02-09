@@ -32,9 +32,13 @@
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace web_app {
 
@@ -216,11 +220,21 @@ void WebAppInstallFinalizer::FinalizeUninstallAfterSync(
   // registry.
   DCHECK(!GetWebAppRegistrar().GetAppById(app_id));
 
+  // TODO(crbug.com/1170927)
+  // This turns an existing ambiguous crash into a trackable CHECK crash.
+  CHECK(!KeepAliveRegistry::GetInstance()->IsShuttingDown());
+
+  // TODO(https://crbug.com/1168636): Instead of one ScopedKeepAlive per
+  // uninstall, hold on to one for all sync uninstallations.
+  auto keep_browser_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::APP_UNINSTALLATION, KeepAliveRestartOption::DISABLED);
+
   icon_manager_->DeleteData(
       app_id,
       base::BindOnce(
           &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
-          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback),
+          std::move(keep_browser_alive)));
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebApp(
@@ -324,16 +338,29 @@ void WebAppInstallFinalizer::Shutdown() {
 
 void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
                                              UninstallWebAppCallback callback) {
+  // TODO(crbug.com/1170927)
+  // This turns an existing ambiguous crash into a trackable CHECK crash.
+  CHECK(!KeepAliveRegistry::GetInstance()->IsShuttingDown());
+
+  // ScopedKeepAlive will prevent shutdown in the middle of
+  // web app installation. Shutdown process could start if a web app window
+  // is the last window to be closed, which happen in the
+  // WebAppBrowserController::OnWebAppWillBeUninstalled handler.
+  auto keep_browser_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::APP_UNINSTALLATION, KeepAliveRestartOption::DISABLED);
+
   registrar().NotifyWebAppWillBeUninstalled(app_id);
   os_integration_manager().UninstallAllOsHooks(
-      app_id, base::BindOnce(&WebAppInstallFinalizer::OnUninstallOsHooks,
-                             weak_ptr_factory_.GetWeakPtr(), app_id,
-                             std::move(callback)));
+      app_id,
+      base::BindOnce(&WebAppInstallFinalizer::OnUninstallOsHooks,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(callback), std::move(keep_browser_alive)));
 }
 
 void WebAppInstallFinalizer::OnUninstallOsHooks(
     const AppId& app_id,
     UninstallWebAppCallback callback,
+    std::unique_ptr<ScopedKeepAlive> keep_browser_alive,
     OsHooksResults os_hooks_info) {
   ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
   update->DeleteApp(app_id);
@@ -342,7 +369,8 @@ void WebAppInstallFinalizer::OnUninstallOsHooks(
       app_id,
       base::BindOnce(
           &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
-          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback),
+          std::move(keep_browser_alive)));
 }
 
 void WebAppInstallFinalizer::UninstallWebAppOrRemoveSource(
@@ -440,6 +468,7 @@ void WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten(
 void WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled(
     const AppId& app_id,
     UninstallWebAppCallback callback,
+    std::unique_ptr<ScopedKeepAlive> keep_browser_alive,
     bool success) {
   registrar().NotifyWebAppUninstalled(app_id);
   std::move(callback).Run(success);
