@@ -850,14 +850,6 @@ by a child template that "extends" this file.
             android:label="@string/cablev2_activity_title"
             android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
             android:exported="true">
-            <!-- This activity can be started by GMSCore, and is thus exported
-            with a permission set, or can be started by the Android system in
-            the case that a USB device is attached. -->
-            <intent-filter>
-                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
-            </intent-filter>
-            <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
-                android:resource="@xml/phone_as_a_security_key_accessory_filter" />
         </activity>
 
         <receiver
