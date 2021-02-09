@@ -329,6 +329,8 @@ struct BLINK_EXPORT WebNavigationParams {
   bool has_text_fragment_token = false;
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
+  // Whether this navigation was for prerendering.
+  bool is_prerendering = false;
   // Whether the document should be able to access local file:// resources.
   bool grant_load_local_resources = false;
   // The previews state which should be used for this navigation.

@@ -321,6 +321,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // to ensure the token can only be used to invoke a single text fragment.
   bool ConsumeTextFragmentToken();
 
+  // Returns whether the load request was initiated for prerendering.
+  bool IsPrerendering() const { return is_prerendering_; }
+
  protected:
   Vector<KURL> redirect_chain_;
 
@@ -525,6 +528,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Whether this load request was initiated by the browser.
   const bool is_browser_initiated_ = false;
+
+  // Whether this load request was initiated for prerendering.
+  const bool is_prerendering_ = false;
 
   // Whether this load request was initiated by the same origin.
   bool is_same_origin_navigation_ = false;

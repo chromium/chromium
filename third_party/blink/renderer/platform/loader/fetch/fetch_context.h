@@ -189,6 +189,9 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return nullptr;
   }
 
+  // Returns if the request context is for prerendering or not.
+  virtual bool IsPrerendering() const { return false; }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(FetchContext);
 };

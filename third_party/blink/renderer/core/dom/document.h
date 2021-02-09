@@ -322,6 +322,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // document to cease to be the initial empty document.
   void OverrideIsInitialEmptyDocument() { is_initial_empty_document_ = false; }
 
+  bool IsPrerendering() const { return is_prerendering_; }
+
   // Gets the associated LocalDOMWindow even if this Document is associated with
   // an HTMLImportsController.
   LocalDOMWindow* ExecutingWindow() const;
@@ -1835,6 +1837,11 @@ class CORE_EXPORT Document : public ContainerNode,
   DocumentLifecycle lifecycle_;
 
   bool is_initial_empty_document_;
+
+  // Track the prerendering state.
+  // TODO(crbug.com/1169032): Update the flag on the prerendering activation.
+  // Also, we will merge the state into the lifecycle state eventually.
+  const bool is_prerendering_;
 
   bool evaluate_media_queries_on_style_recalc_;
 

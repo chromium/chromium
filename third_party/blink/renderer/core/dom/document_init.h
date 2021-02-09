@@ -108,6 +108,9 @@ class CORE_EXPORT DocumentInit final {
   DocumentInit& ForInitialEmptyDocument(bool empty);
   bool IsInitialEmptyDocument() const { return is_initial_empty_document_; }
 
+  DocumentInit& ForPrerendering(bool is_prerendering);
+  bool IsPrerendering() const { return is_prerendering_; }
+
   // Compute the type of document to be loaded inside a |frame|, given its |url|
   // and its |mime_type|.
   //
@@ -146,6 +149,7 @@ class CORE_EXPORT DocumentInit final {
   static PluginData* GetPluginData(LocalFrame* frame, const KURL& url);
 
   Type type_ = Type::kUnspecified;
+  bool is_prerendering_ = false;
   bool is_initial_empty_document_ = false;
   String mime_type_;
   LocalDOMWindow* window_ = nullptr;

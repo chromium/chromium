@@ -229,6 +229,7 @@ struct SameSizeAsDocumentLoader
   bool had_sticky_activation;
   bool had_transient_activation;
   bool is_browser_initiated;
+  bool is_prerendering;
   bool is_same_origin_navigation;
   bool has_text_fragment_token;
   bool was_discarded;
@@ -343,6 +344,7 @@ DocumentLoader::DocumentLoader(
       had_sticky_activation_(params_->is_user_activated),
       had_transient_activation_(params_->had_transient_activation),
       is_browser_initiated_(params_->is_browser_initiated),
+      is_prerendering_(params_->is_prerendering),
       was_discarded_(params_->was_discarded),
       loading_srcdoc_(url_.IsAboutSrcdocURL()),
       loading_url_as_empty_document_(!params_->is_static_data &&
@@ -467,6 +469,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->is_user_activated = had_sticky_activation_;
   params->had_transient_activation = had_transient_activation_;
   params->is_browser_initiated = is_browser_initiated_;
+  params->is_prerendering = is_prerendering_;
   params->was_discarded = was_discarded_;
   params->web_bundle_physical_url = web_bundle_physical_url_;
   params->web_bundle_claimed_url = web_bundle_claimed_url_;
@@ -1956,6 +1959,7 @@ void DocumentLoader::CommitNavigation() {
           .WithWindow(frame_->DomWindow(), owner_document)
           .ForInitialEmptyDocument(commit_reason_ ==
                                    CommitReason::kInitialization)
+          .ForPrerendering(is_prerendering_)
           .WithURL(Url())
           .WithTypeFrom(MimeType())
           .WithSrcdocDocument(loading_srcdoc_)

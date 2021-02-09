@@ -190,7 +190,8 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
               float device_pixel_ratio,
               const String& user_agent,
               const base::Optional<UserAgentMetadata>& user_agent_metadata,
-              bool is_svg_image_chrome_client)
+              bool is_svg_image_chrome_client,
+              bool is_prerendering)
       : url(url),
         parent_security_origin(std::move(parent_security_origin)),
         content_security_policy(content_security_policy),
@@ -200,7 +201,8 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
         device_pixel_ratio(device_pixel_ratio),
         user_agent(user_agent),
         user_agent_metadata(user_agent_metadata),
-        is_svg_image_chrome_client(is_svg_image_chrome_client) {}
+        is_svg_image_chrome_client(is_svg_image_chrome_client),
+        is_prerendering(is_prerendering) {}
 
   const KURL url;
   const scoped_refptr<const SecurityOrigin> parent_security_origin;
@@ -212,6 +214,7 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
   const String user_agent;
   const base::Optional<UserAgentMetadata> user_agent_metadata;
   const bool is_svg_image_chrome_client;
+  const bool is_prerendering;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(content_security_policy);
@@ -510,6 +513,12 @@ void FrameFetchContext::PopulateResourceRequest(
     request.AddHttpHeaderField("CSP", "active");
 }
 
+bool FrameFetchContext::IsPrerendering() const {
+  if (GetResourceFetcherProperties().IsDetached())
+    return frozen_state_->is_prerendering;
+  return document_->IsPrerendering();
+}
+
 void FrameFetchContext::SetFirstPartyCookie(ResourceRequest& request) {
   // Set the first party for cookies url if it has not been set yet (new
   // requests). This value will be updated during redirects, consistent with
@@ -753,7 +762,7 @@ FetchContext* FrameFetchContext::Detach() {
       Url(), GetParentSecurityOrigin(), GetContentSecurityPolicy(),
       GetSiteForCookies(), GetTopFrameOrigin(), GetClientHintsPreferences(),
       GetDevicePixelRatio(), GetUserAgent(), GetUserAgentMetadata(),
-      IsSVGImageChromeClient());
+      IsSVGImageChromeClient(), IsPrerendering());
   document_loader_ = nullptr;
   document_ = nullptr;
   return this;

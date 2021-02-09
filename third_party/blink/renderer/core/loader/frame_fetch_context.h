@@ -99,6 +99,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                                ResourceRequest&,
                                const ResourceLoaderOptions&) override;
 
+  bool IsPrerendering() const override;
+
   // Exposed for testing.
   void ModifyRequestForCSP(ResourceRequest&);
   void AddClientHintsIfNecessary(const ClientHintsPreferences&,

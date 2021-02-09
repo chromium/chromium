@@ -185,6 +185,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
@@ -14021,6 +14022,37 @@ TEST_F(WebFrameTest, ZeroScaleRemoteFrameCompositingScaleFactor) {
   // The compositing scale factor tells the OOPIF compositor to raster at a
   // reasonable minimum scale even though the iframe's transform scale is zero.
   EXPECT_EQ(remote_frame->GetCompositingScaleFactor(), 0.25f);
+}
+
+TEST_F(WebFrameTest, IsPrerendering) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  auto params = std::make_unique<WebNavigationParams>();
+  params->url = KURL("about:blank");
+  params->is_prerendering = false;
+  web_view_helper.LocalMainFrame()->CommitNavigation(std::move(params),
+                                                     nullptr);
+  WebViewImpl* web_view = web_view_helper.GetWebView();
+
+  EXPECT_FALSE(web_view->MainFrameImpl()
+                   ->GetFrame()
+                   ->GetDocument()
+                   ->Fetcher()
+                   ->Context()
+                   .IsPrerendering());
+
+  params = std::make_unique<WebNavigationParams>();
+  params->url = KURL("about:blank");
+  params->is_prerendering = true;
+  web_view_helper.LocalMainFrame()->CommitNavigation(std::move(params),
+                                                     nullptr);
+
+  EXPECT_TRUE(web_view->MainFrameImpl()
+                  ->GetFrame()
+                  ->GetDocument()
+                  ->Fetcher()
+                  ->Context()
+                  .IsPrerendering());
 }
 
 }  // namespace blink

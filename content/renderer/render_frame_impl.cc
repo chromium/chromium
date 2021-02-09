@@ -993,6 +993,7 @@ void FillMiscNavigationParams(
       common_params.text_fragment_token;
 
   navigation_params->is_browser_initiated = commit_params.is_browser_initiated;
+  navigation_params->is_prerendering = commit_params.is_prerendering;
 
   navigation_params->is_cross_browsing_context_group_navigation =
       commit_params.is_cross_browsing_instance;
