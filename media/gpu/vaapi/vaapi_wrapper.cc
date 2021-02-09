@@ -2151,15 +2151,16 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
   VASurfaceAttribExternalBuffers va_attrib_extbuf{};
   va_attrib_extbuf.num_planes = 3;
   va_attrib_extbuf.buffers = buffers;
-  va_attrib_extbuf.data_size = buffer_size;
+  va_attrib_extbuf.data_size = base::checked_cast<uint32_t>(buffer_size);
   va_attrib_extbuf.num_buffers = 1u;
-  va_attrib_extbuf.width = size.width();
-  va_attrib_extbuf.height = size.height();
+  va_attrib_extbuf.width = base::checked_cast<uint32_t>(size.width());
+  va_attrib_extbuf.height = base::checked_cast<uint32_t>(size.height());
   va_attrib_extbuf.offsets[0] = 0;
-  va_attrib_extbuf.offsets[1] = size.GetArea();
-  va_attrib_extbuf.offsets[2] = size.GetArea() * 2;
+  va_attrib_extbuf.offsets[1] = size.GetCheckedArea().ValueOrDie<uint32_t>();
+  va_attrib_extbuf.offsets[2] =
+      (size.GetCheckedArea() * 2).ValueOrDie<uint32_t>();
   std::fill(va_attrib_extbuf.pitches, va_attrib_extbuf.pitches + 3,
-            size.width());
+            base::checked_cast<uint32_t>(size.width()));
   va_attrib_extbuf.pixel_format = VA_FOURCC_RGBP;
 
   std::vector<VASurfaceAttrib> va_attribs(2);
@@ -2174,7 +2175,7 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
   va_attribs[1].value.value.p = &va_attrib_extbuf;
 
   VASurfaceID va_surface_id = VA_INVALID_ID;
-  const unsigned int va_format = VA_RT_FORMAT_YUV420;
+  const unsigned int va_format = VA_RT_FORMAT_RGBP;
   {
     base::AutoLock auto_lock(*va_lock_);
     VAStatus va_res = vaCreateSurfaces(
