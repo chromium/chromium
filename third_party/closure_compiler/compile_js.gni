@@ -218,20 +218,28 @@ template("js_binary") {
       args += [ "--checks-only" ]
     }
 
-    if (!defined(is_polymer3)) {
-      is_polymer3 = false
-    }
-
     # |minifying_closure_args| from
     # //third_party/closure_compiler/closure_args.gni
     if (!defined(closure_flags)) {
       closure_flags = default_closure_args
     }
+
+    # Only one of |is_polymer3|, |uses_js_modules| and |uses_legacy_modules|
+    # should be true at any given time.
+    is_polymer3 = defined(is_polymer3) && is_polymer3
+    uses_legacy_modules = defined(uses_legacy_modules) && uses_legacy_modules
+    uses_js_modules = defined(uses_js_modules) && uses_js_modules
+
     if (is_polymer3) {
+      assert(!uses_js_modules && !uses_legacy_modules)
       closure_flags += polymer3_args
-    } else if (defined(uses_js_modules) && uses_js_modules) {
+    }
+    if (uses_js_modules) {
+      assert(!uses_legacy_modules && !is_polymer3)
       closure_flags += js_modules_args
-    } else if (defined(uses_legacy_modules) && uses_legacy_modules) {
+    }
+    if (uses_legacy_modules) {
+      assert(!uses_js_modules && !is_polymer3)
       closure_flags += legacy_modules_args
     }
 
