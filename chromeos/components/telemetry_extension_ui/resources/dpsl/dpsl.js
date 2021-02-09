@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Concatenation of the JS files we use in
- * chrome-untrusted://telemetry-extension/index.html.
+ * @fileoverview Wrapper library around lower level system APIs. The library is
+ * used by Telemetry System Extensions.
  */
 
 // <include src="../../../system_apps/public/js/message_pipe.js">
