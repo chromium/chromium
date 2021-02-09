@@ -4,7 +4,7 @@
     flex-direction: column;
   }
 
-  cr-icon-button {
+  #button {
     font-size: 32px;
     height: 36px;
     margin: 0;
@@ -12,23 +12,26 @@
     width: 36px;
   }
 
-  cr-icon-button.emoji-group-active {
+  #button.emoji-group-active {
     --cr-icon-button-fill-color: var(--cr-checked-color);
   }
 
-  div {
+  #bar {
     background-color: transparent;
     border-radius: 2px;
     height: 4px;
     width: 100%;
   }
 
-  div.emoji-group-active {
+  #bar.emoji-group-active {
     background-color: var(--cr-checked-color);
   }
 </style>
 
-<cr-icon-button iron-icon="[[icon]]"
-    class$="[[_className(active)]]" on-click="handleClick">
+<cr-icon-button
+    id="button"
+    iron-icon="[[icon]]"
+    class$="[[_className(active)]]"
+    on-click="handleClick">
 </cr-icon-button>
-<div class$="[[_className(active)]]" on-click="handleClick"></div>
+<div id="bar" class$="[[_className(active)]]" on-click="handleClick"></div>

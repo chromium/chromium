@@ -12,23 +12,23 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE, EMOJI_SIZE_PX} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
-import {createCustomEvent, DATA_LOADED_EVENT, EMOJI_BUTTON_EVENT, GROUP_BUTTON_EVENT, SHOW_VARIANTS_EVENT, ShowVariantsEvent} from './events.js';
+import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
 import {RecentEmojiStore} from './store.js';
 import {Codepoints, Emoji, EmojiData, EmojiGroup} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
 
 const GROUP_TABS = [
-  {icon: 'emoji_picker:schedule', group: 'history', active: true},
-  {icon: 'emoji_picker:insert_emoticon', group: '0', active: false},
-  {icon: 'emoji_picker:emoji_people', group: '1', active: false},
-  {icon: 'emoji_picker:emoji_nature', group: '2', active: false},
-  {icon: 'emoji_picker:emoji_food_beverage', group: '3', active: false},
-  {icon: 'emoji_picker:emoji_transportation', group: '4', active: false},
-  {icon: 'emoji_picker:emoji_events', group: '5', active: false},
-  {icon: 'emoji_picker:emoji_objects', group: '6', active: false},
-  {icon: 'emoji_picker:emoji_symbols', group: '7', active: false},
-  {icon: 'emoji_picker:flag', group: '8', active: false},
+  {icon: 'emoji_picker:schedule', groupId: 'history', active: true},
+  {icon: 'emoji_picker:insert_emoticon', groupId: '0', active: false},
+  {icon: 'emoji_picker:emoji_people', groupId: '1', active: false},
+  {icon: 'emoji_picker:emoji_nature', groupId: '2', active: false},
+  {icon: 'emoji_picker:emoji_food_beverage', groupId: '3', active: false},
+  {icon: 'emoji_picker:emoji_transportation', groupId: '4', active: false},
+  {icon: 'emoji_picker:emoji_events', groupId: '5', active: false},
+  {icon: 'emoji_picker:emoji_objects', groupId: '6', active: false},
+  {icon: 'emoji_picker:emoji_symbols', groupId: '7', active: false},
+  {icon: 'emoji_picker:flag', groupId: '8', active: false},
 ];
 
 /**
@@ -53,15 +53,17 @@ export class EmojiPicker extends PolymerElement {
 
   static get properties() {
     return {
+      /** @type {!string} */
       emojiDataUrl: {type: String, value: EMOJI_ORDERING_JSON},
-      emojiGroups: {type: Array},
-      /** @type {?EmojiData} */
+      emojiGroupTabs: {type: Array},
+      /** @private {?EmojiData} */
       emojiData: {
         type: Object,
         observer: 'onEmojiDataChanged',
       },
-      /** @type {EmojiGroup} */
+      /** @private {!EmojiGroup} */
       history: {type: Object},
+      /** @private {!string} */
       search: {type: String},
     };
   }
@@ -69,9 +71,10 @@ export class EmojiPicker extends PolymerElement {
   constructor() {
     super();
 
+    /** @type {!RecentEmojiStore} */
     this.recentEmojiStore = new RecentEmojiStore();
 
-    this.emojiGroups = GROUP_TABS;
+    this.emojiGroupTabs = GROUP_TABS;
     this.emojiData = [];
     this.history = {
       'group': 'Recently Used',
@@ -79,10 +82,10 @@ export class EmojiPicker extends PolymerElement {
     };
     this.search = '';
 
-    /** @type {?number} */
+    /** @private {?number} */
     this.scrollTimeout = null;
 
-    /** @type {?EmojiButton} */
+    /** @private {?EmojiButton} */
     this.activeVariant = null;
   }
 
@@ -95,12 +98,13 @@ export class EmojiPicker extends PolymerElement {
     xhr.send();
 
     this.addEventListener(
-        GROUP_BUTTON_EVENT, ev => this.selectGroup(ev.detail.group));
+        GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
     this.addEventListener(
-        EMOJI_BUTTON_EVENT, ev => this.insertEmoji(ev.detail.emoji));
+        EMOJI_BUTTON_CLICK, ev => this.insertEmoji(ev.detail.emoji));
     this.addEventListener(
-        SHOW_VARIANTS_EVENT,
-        ev => this.onShowEmojiVariants(/** @type {!ShowVariantsEvent} */ (ev)));
+        EMOJI_VARIANTS_SHOWN,
+        ev => this.onShowEmojiVariants(
+            /** @type {!EmojiVariantsShownEvent} */ (ev)));
     this.addEventListener('click', () => this.hideEmojiVariants());
 
     this.updateStyles({
@@ -143,11 +147,10 @@ export class EmojiPicker extends PolymerElement {
 
   updateActiveGroup() {
     // get bounding rect of scrollable emoji region.
-    const thisRect =
-        this.shadowRoot.querySelector('.emoji-groups').getBoundingClientRect();
+    const thisRect = this.$.groups.getBoundingClientRect();
 
-    const groupElements = Array.from(
-        this.shadowRoot.querySelectorAll('.emoji-groups [data-group]'));
+    const groupElements =
+        Array.from(this.$.groups.querySelectorAll('[data-group]'));
 
     // activate the first group which is visible for at least 10 pixels,
     // i.e. whose bottom edge is at least 10px below the top edge of the
@@ -159,9 +162,9 @@ export class EmojiPicker extends PolymerElement {
     const activeGroupId = activeGroup.dataset.group;
 
     // set active to true for selected group and false for others.
-    this.emojiGroups.forEach((g, i) => {
-      const isActive = g.group === activeGroupId;
-      this.set(['emojiGroups', i, 'active'], isActive);
+    this.emojiGroupTabs.forEach((g, i) => {
+      const isActive = g.groupId === activeGroupId;
+      this.set(['emojiGroupTabs', i, 'active'], isActive);
     });
 
     // scroll the active group button into view on the tab bar.
@@ -179,7 +182,7 @@ export class EmojiPicker extends PolymerElement {
   }
 
   /**
-   * @param {!ShowVariantsEvent} ev
+   * @param {!EmojiVariantsShownEvent} ev
    */
   onShowEmojiVariants(ev) {
     this.hideEmojiVariants();
@@ -187,7 +190,7 @@ export class EmojiPicker extends PolymerElement {
     this.positionEmojiVariants(ev.detail.variants);
   }
 
-  positionEmojiVariants(el) {
+  positionEmojiVariants(variants) {
     // TODO(crbug.com/1174311): currently positions horizontally within page.
     // ideal UI would be overflowing the bounds of the page.
     // also need to account for vertical positioning.
@@ -198,17 +201,15 @@ export class EmojiPicker extends PolymerElement {
     // indicators if present. 10 pixels are added for padding and the shadow.
 
     // get size of emoji picker
-    const pickerRect =
-        this.shadowRoot.querySelector('.emoji-picker').getBoundingClientRect();
+    const pickerRect = this.getBoundingClientRect();
 
     // determine how much overflows the right edge of the window.
-    const container = el.shadowRoot.getElementById('container');
-    const rect = container.getBoundingClientRect();
+    const rect = variants.getBoundingClientRect();
     const overflowWidth = rect.x + rect.width - pickerRect.width;
     // shift left by overflowWidth rounded up to next multiple of EMOJI_SIZE.
     const shift = EMOJI_SIZE * Math.ceil(overflowWidth / EMOJI_SIZE);
     // negative value means we are already within bounds, so no shift needed.
-    container.style.marginLeft = `-${Math.max(shift, 0)}px`;
+    variants.style.marginLeft = `-${Math.max(shift, 0)}px`;
   }
 
 
@@ -230,7 +231,7 @@ export class EmojiPicker extends PolymerElement {
     // https://polymer-library.polymer-project.org/3.0/docs/devguide/data-system#property-effects
 
     if (newValue && newValue.length) {
-      this.dispatchEvent(createCustomEvent(DATA_LOADED_EVENT));
+      this.dispatchEvent(createCustomEvent(EMOJI_DATA_LOADED));
     }
   }
 }

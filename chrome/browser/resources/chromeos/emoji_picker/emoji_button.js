@@ -6,7 +6,7 @@ import './emoji_variants.js';
 
 import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createCustomEvent, EMOJI_BUTTON_EVENT, SHOW_VARIANTS_EVENT} from './events.js';
+import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
 import {Codepoints} from './types.js';
 
 export class EmojiButton extends PolymerElement {
@@ -21,9 +21,9 @@ export class EmojiButton extends PolymerElement {
   static get properties() {
     return {
       /** @type {!Codepoints} */
-      emoji: {type: Array},
-      /** @type {Array<Codepoints>} */
-      variants: {type: Array},
+      emoji: {type: Array, readonly: true},
+      /** @type {!Array<Codepoints>} */
+      variants: {type: Array, readonly: true},
       /** @type {!boolean} */
       variantsVisible: {type: Boolean, value: false},
       /** @type {!boolean} */
@@ -39,7 +39,7 @@ export class EmojiButton extends PolymerElement {
     if (this.disabled)
       return;
     this.dispatchEvent(createCustomEvent(
-        EMOJI_BUTTON_EVENT, {emoji: this._renderEmoji(this.emoji)}));
+        EMOJI_BUTTON_CLICK, {emoji: this._renderEmoji(this.emoji)}));
   }
 
   onContextMenu(ev) {
@@ -59,7 +59,7 @@ export class EmojiButton extends PolymerElement {
         // need to defer this until <emoji-variants> is created and sized by
         // Polymer.
         beforeNextRender(this, () => {
-          this.dispatchEvent(createCustomEvent(SHOW_VARIANTS_EVENT, {
+          this.dispatchEvent(createCustomEvent(EMOJI_VARIANTS_SHOWN, {
             button: this,
             variants: this.shadowRoot.querySelector('emoji-variants'),
           }));

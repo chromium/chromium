@@ -59,11 +59,11 @@ export class EmojiVariants extends PolymerElement {
     return {
       /** @type {!Array<Codepoints>} */
       variants: {type: Array, readonly: true},
-      /** @type {!Array<!Array<Codepoints>>} */
+      /** @private {!Array<!Array<Codepoints>>} */
       variantRows: {type: Array},
-      /** @type {?Codepoints} */
+      /** @private {?Codepoints} */
       baseEmoji: {type: Array},
-      /** @type {boolean} */
+      /** @private {boolean} */
       showSkinTones: {type: Boolean},
     };
   }

@@ -20,7 +20,7 @@ class EmojiGroupComponent extends PolymerElement {
   static get properties() {
     return {
       /** @type {EmojiGroup} */
-      data: {type: Object},
+      data: {type: Object, readonly: true},
     };
   }
 

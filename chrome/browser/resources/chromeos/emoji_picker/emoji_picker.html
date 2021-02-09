@@ -7,7 +7,7 @@
     --emoji-per-row: 0;
   }
 
-  .emoji-picker {
+  :host {
     display: flex;
     flex-direction: column;
     font-family: 'Roboto', sans-serif;
@@ -18,10 +18,10 @@
   }
 
   #search {
-    display: none;
+    display: none; /* hidden while not implemented. */
   }
 
-  .emoji-tabs {
+  #tabs {
     display: flex;
     flex-shrink: 0;
     overflow-x: scroll;
@@ -29,42 +29,39 @@
     width: 100%;
   }
 
-  .emoji-groups {
+  #groups {
     flex-grow: 1;
     overflow-y: scroll;
     /* scroll-behavior: smooth; */
   }
 </style>
 
-<div class="emoji-picker">
+<input id="search" class="w-100"
+        type="text" value="{{search::input}}">
+</input>
 
-  <input id="search" class="w-100"
-         type="text" value="{{search::input}}">
-  </input>
+<div id="tabs">
+  <template is="dom-repeat" items="[[emojiGroupTabs]]">
+    <emoji-group-button
+        data-group$="[[item.groupId]]" group-id="[[item.groupId]]"
+        active="[[item.active]]" icon="[[item.icon]]">
+    </emoji-group-button>
+  </template>
+</div>
 
-  <div class="emoji-tabs">
-    <template is="dom-repeat" items="[[emojiGroups]]">
-      <emoji-group-button
-          data-group$="[[item.group]]" group="[[item.group]]"
-          active="[[item.active]]" icon="[[item.icon]]">
-      </emoji-group-button>
+<div id="groups" on-scroll="onEmojiScroll">
+  <!--
+    history is the "recently used" group and is populated in code,
+    whereas the other groups are created from the emoji metadata.
+  -->
+  <div data-group="history">
+    <template is="dom-if" if="[[history.emoji.length]]">
+      <emoji-group data="[[history]]"></emoji-group>
     </template>
   </div>
-
-  <div class="emoji-groups w-100" on-scroll="onEmojiScroll">
-    <!--
-      group-history is the "frequently used" group and is populated in code,
-      whereas the other groups are created from the emoji metadata.
-    -->
-    <div data-group="history">
-      <template is="dom-if" if="[[history.emoji.length]]">
-        <emoji-group data="[[history]]"></emoji-group>
-      </template>
+  <template is="dom-repeat" items="[[emojiData]]">
+    <div data-group$="[[index]]">
+      <emoji-group data="[[item]]"></emoji-group>
     </div>
-    <template is="dom-repeat" items="[[emojiData]]">
-      <div data-group$="[[index]]">
-        <emoji-group data="[[item]]"></emoji-group>
-      </div>
-    </template>
-  </div>
+  </template>
 </div>

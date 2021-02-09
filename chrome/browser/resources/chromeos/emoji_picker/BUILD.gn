@@ -9,9 +9,9 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 component_js_files = [
   "emoji_button.js",
-  "emoji_picker.js",
-  "emoji_group.js",
   "emoji_group_button.js",
+  "emoji_group.js",
+  "emoji_picker.js",
   "emoji_variants.js",
   "icons.js",
 ]
@@ -28,12 +28,12 @@ generate_grd("build_grd") {
   grd_prefix = "emoji_picker"
   out_grd = resources_grd_file
   input_files = [
-    "index.html",
-    "types.js",
     "constants.js",
-    "events.js",
-    "store.js",
     "emoji_test_ordering.json",
+    "events.js",
+    "index.html",
+    "store.js",
+    "types.js",
   ]
   grdp_files = [
     components_grdp_file,

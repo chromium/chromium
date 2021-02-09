@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {createCustomEvent, GROUP_BUTTON_EVENT} from './events.js';
+import {createCustomEvent, GROUP_BUTTON_CLICK} from './events.js';
 
 export class EmojiGroupButton extends PolymerElement {
   static get is() {
@@ -20,9 +20,11 @@ export class EmojiGroupButton extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {string} */
-      icon: {type: String},
-      group: {type: String},
+      /** @type {!string} */
+      icon: {type: String, readonly: true},
+      /** @type {!string} */
+      groupId: {type: String, readonly: true},
+      /** @type {!boolean} */
       active: {type: Boolean, value: false},
     };
   }
@@ -33,7 +35,7 @@ export class EmojiGroupButton extends PolymerElement {
 
   handleClick(ev) {
     this.dispatchEvent(
-        createCustomEvent(GROUP_BUTTON_EVENT, {group: this.group}));
+        createCustomEvent(GROUP_BUTTON_CLICK, {group: this.groupId}));
   }
 
   _className(active) {

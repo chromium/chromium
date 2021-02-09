@@ -2,35 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Codepoints} from './types.js';
-
 /**
  * @typedef {!CustomEvent<{group: string}>}
  */
-export let GroupButtonEvent;
+export let GroupButtonClickEvent;
 
-export const GROUP_BUTTON_EVENT = 'group-button';
+export const GROUP_BUTTON_CLICK = 'group-button-click';
 
 /**
  * @typedef {!CustomEvent<{emoji: string}>}
  */
-export let EmojiButtonEvent;
+export let EmojiButtonClickEvent;
 
-export const EMOJI_BUTTON_EVENT = 'emoji-button';
+export const EMOJI_BUTTON_CLICK = 'emoji-button-click';
 
 /**
  * @typedef {!CustomEvent<{button: Element, variants: Element}>}
  */
-export let ShowVariantsEvent;
+export let EmojiVariantsShownEvent;
 
-export const SHOW_VARIANTS_EVENT = 'emoji-variants-event';
+export const EMOJI_VARIANTS_SHOWN = 'emoji-variants-shown';
 
 /**
  * @typedef {!CustomEvent}
  */
-export let DataLoadedEvent;
+export let EmojiDataLoadedEvent;
 
-export const DATA_LOADED_EVENT = 'data-loaded';
+export const EMOJI_DATA_LOADED = 'emoji-data-loaded';
 
 /**
  * Constructs a CustomEvent with the given event type and details.

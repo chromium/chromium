@@ -3,12 +3,12 @@
     margin-top: 10px;
   }
 
-  .emoji-group-heading {
+  #heading {
     color: var(--cr-secondary-text-color);
     font-size: 10pt;
   }
 
-  .emoji-group-emoji {
+  #emoji {
     display: grid;
     grid-auto-rows: max-content;
     grid-template-columns: repeat(var(--emoji-per-row), 1fr);
@@ -16,8 +16,8 @@
   }
 </style>
 
-<div class="emoji-group-heading">[[data.group]]</div>
-<div class="emoji-group-emoji">
+<div id="heading">[[data.group]]</div>
+<div id="emoji">
   <template is="dom-repeat" items="[[data.emoji]]">
     <emoji-button emoji="[[item.base]]" variants="[[item.alternates]]">
     </emoji-button>
