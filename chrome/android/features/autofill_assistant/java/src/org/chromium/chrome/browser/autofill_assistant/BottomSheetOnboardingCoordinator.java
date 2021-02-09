@@ -5,11 +5,18 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Space;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayState;
@@ -49,6 +56,36 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
         this.mBrowserControls = browserControls;
         this.mCompositorViewHolder = compositorViewHolder;
         this.mScrimCoordinator = scrim;
+    }
+
+    @Override
+    ScrollView createViewImpl() {
+        ScrollView baseView = (ScrollView) LayoutUtils.createInflater(mContext).inflate(
+                R.layout.autofill_assistant_base_onboarding, /* root= */ null);
+        ViewGroup onboardingContentContainer =
+                baseView.findViewById(R.id.onboarding_layout_container);
+
+        LinearLayout buttonsLayout = new LinearLayout(mContext);
+        buttonsLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        buttonsLayout.setGravity(Gravity.BOTTOM | Gravity.CENTER);
+        buttonsLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        LayoutUtils.createInflater(mContext).inflate(
+                R.layout.autofill_assistant_onboarding_no_button, /* root= */ buttonsLayout);
+
+        Space space = new Space(mContext);
+        LinearLayout.LayoutParams spaceLayoutParams =
+                new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT);
+        spaceLayoutParams.weight = 1;
+        space.setLayoutParams(spaceLayoutParams);
+        buttonsLayout.addView(space);
+
+        LayoutUtils.createInflater(mContext).inflate(
+                R.layout.autofill_assistant_onboarding_yes_button, /* root= */ buttonsLayout);
+
+        onboardingContentContainer.addView(buttonsLayout);
+        return baseView;
     }
 
     @Override
