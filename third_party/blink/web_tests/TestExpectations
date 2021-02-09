@@ -5695,10 +5695,6 @@ crbug.com/1168785 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/aut
 # Sheriff 2021-01-29
 crbug.com/1172437 svg/hixie/perf/004.xml [ Timeout Pass ]
 
-crbug.com/1173137 external/wpt/webxr/hit-test/ar_hittest_subscription_inputSources.https.html [ Failure ]
-crbug.com/1173137 external/wpt/webxr/hit-test/ar_hittest_subscription_refSpaces.https.html [ Failure ]
-crbug.com/1173137 external/wpt/webxr/hit-test/ar_hittest_subscription_transientInputSources.https.html [ Failure ]
-
 # COEP reporting for PlzDedicatedWorker
 crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Timeout ]
 crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Pass ]
