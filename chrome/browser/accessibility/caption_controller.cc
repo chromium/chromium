@@ -46,7 +46,12 @@ namespace captions {
 
 CaptionController::CaptionController(Profile* profile) : profile_(profile) {}
 
-CaptionController::~CaptionController() = default;
+CaptionController::~CaptionController() {
+  if (enabled_) {
+    enabled_ = false;
+    StopLiveCaption();
+  }
+}
 
 // static
 void CaptionController::RegisterProfilePrefs(

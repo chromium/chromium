@@ -5,9 +5,11 @@
 #include "chrome/browser/accessibility/caption_controller.h"
 
 #include "base/files/file_path.h"
+#include "base/ranges/ranges.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
@@ -263,12 +265,13 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserAdded_Incognito) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserRemoved) {
+  Profile* profile = browser()->profile();
   CaptionController* controller = GetController();
   Browser* browser1 = browser();
   // Add 3 browsers.
-  Browser* browser2 = CreateBrowser(browser()->profile());
-  Browser* browser3 = CreateBrowser(browser()->profile());
-  Browser* browser4 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(profile);
+  Browser* browser3 = CreateBrowser(profile);
+  Browser* browser4 = CreateBrowser(profile);
 
   SetLiveCaptionEnabled(true);
   EXPECT_EQ(4, NumBubbleControllers());
@@ -310,10 +313,22 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserRemoved) {
   chrome::CloseAllBrowsers();
   ui_test_utils::WaitForBrowserToClose();
   ui_test_utils::WaitForBrowserToClose();
-  EXPECT_EQ(nullptr,
-            controller->GetCaptionBubbleControllerForBrowser(browser2));
-  EXPECT_EQ(nullptr,
-            controller->GetCaptionBubbleControllerForBrowser(browser1));
+
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    // With DestroyProfileOnBrowserClose, the Profile* is deleted entirely.
+    //
+    // TODO(crbug.com/88586): Remove the other branch once
+    // DestroyProfileOnBrowserClose becomes the default.
+    std::vector<Profile*> loaded_profiles =
+        g_browser_process->profile_manager()->GetLoadedProfiles();
+    auto it = base::ranges::find(loaded_profiles, profile);
+    EXPECT_EQ(loaded_profiles.end(), it);
+  } else {
+    EXPECT_EQ(nullptr,
+              controller->GetCaptionBubbleControllerForBrowser(browser2));
+    EXPECT_EQ(nullptr,
+              controller->GetCaptionBubbleControllerForBrowser(browser1));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserRemoved_Incognito) {
