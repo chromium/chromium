@@ -868,6 +868,12 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
+                       NewWindow_AttachInSubFrame) {
+  TestHelper("testNewWindowAttachInSubFrame", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowInteractiveTest,
                        NewWindow_NewWindowNameTakesPrecedence) {
   TestHelper("testNewWindowNameTakesPrecedence",
              "web_view/newwindow",
