@@ -5691,5 +5691,8 @@ crbug.com/1172437 svg/hixie/perf/004.xml [ Timeout Pass ]
 crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Timeout ]
 crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-owner.https.html [ Pass ]
 
+# flaky test
+crbug.com/1173956 	http/tests/xsl/xslt-transform-with-javascript-disabled.html [ Failure Pass ]
+
 # Failing on Webkit Linux Leak
 crbug.com/1174806 external/wpt/css/selectors/focus-visible-006.html [ Pass Failure ]
