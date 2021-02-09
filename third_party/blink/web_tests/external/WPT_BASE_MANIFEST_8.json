@@ -500,6 +500,15 @@
        {}
       ]
      ],
+     "crashtests": {
+      "inline-splitting-crash.html": [
+       "decc3eb1fbe1937e693a5401c64f58a3411d792b",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "visibility-collapse-colspan-crash.html": [
       "591fbd9a9941648f1456b41aeee1e23ed660a1ed",
       [
@@ -1166,7 +1175,7 @@
    },
    "shadow-dom": {
     "nested-slot-remove-crash.html": [
-     "3081dd6540fe2b2ad42ad3c98ca1bde29b0c79dd",
+     "d53b3b40e126b6cf2d419117751d62b8f1d6f874",
      [
       null,
       {}
@@ -80859,6 +80868,32 @@
         {}
        ]
       ],
+      "grid-auto-repeat-multiple-values-004.html": [
+       "460de5f9e848d843cf8e51f91cbd838d6f2b160b",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/grid-definition/grid-auto-repeat-multiple-values-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-auto-repeat-multiple-values-005.html": [
+       "8671df79b7c9ec5897973b9312a166b70f95a3f1",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/grid-definition/grid-auto-repeat-multiple-values-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-auto-repeat-positioned-container-001.html": [
        "309ad85671204b52def9309a3147ee031f72948f",
        [
@@ -113180,6 +113215,49 @@
         {}
        ]
       ],
+      "hyphens-auto-002.html": [
+       "490f78e94cfc060eca3eceb644639c27378d195c",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hyphens/reference/hyphens-auto-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hyphens-auto-003.html": [
+       "347805bac746b22b92c8ec4e9c30a297c502e704",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hyphens/reference/hyphens-auto-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hyphens-auto-004.html": [
+       "3d99985a00c4bb2f527ebc2b7529eb1e74e3e7ec",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hyphens/reference/hyphens-auto-004M-ref.html",
+          "=="
+         ],
+         [
+          "/css/css-text/hyphens/reference/hyphens-auto-004H-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "hyphens-auto-010.html": [
        "1aac0bf29fd26558922a4fbe113ac0e5330ebee5",
        [
@@ -140827,6 +140905,71 @@
        {}
       ]
      ],
+     "calc-background-image-gradient-1.html": [
+      "b2c02897425f7dfc4b6c06ce56adbf03f0a78dfe",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-background-image-gradient-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-background-linear-gradient-1.html": [
+      "6d60e8dd9f0481bcf23ceb686ec32780f76e78a6",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-background-linear-gradient-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-background-position-1.html": [
+      "68351aef6e57dff3f065bad14630e81db171c0a6",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-background-position-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-background-size-1.html": [
+      "f52ceeeabe16a0011beb170d3bcc75852ae4e0cb",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-background-size-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-border-radius-1.html": [
+      "ad36d36492a8006197ca5dc32841264370c08edd",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-border-radius-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "calc-ch-ex-lang.html": [
       "eb447475d528876078aca114f80bde50349a6bf5",
       [
@@ -140834,6 +140977,32 @@
        [
         [
          "/css/css-values/calc-ch-ex-lang-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-height-block-1.html": [
+      "9525c87de5609a010f64b063d6b725b358876991",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-height-block-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-height-table-1.html": [
+      "64b7b5dc31cf83c37ccab48159a2389c73266ca4",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-height-table-1-ref.html",
          "=="
         ]
        ],
@@ -140918,6 +141087,71 @@
        {}
       ]
      ],
+     "calc-margin-block-1.html": [
+      "7372bd2aed43ae803450af448e0d601a07b75e99",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-margin-block-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-max-height-block-1.html": [
+      "d0f978a2b4097c139b16aea2301dcb007afc5c49",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-max-height-block-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-max-width-block-1.html": [
+      "c6a31d2293d048d37a5c611f0224723d6bd0b6f7",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-width-block-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-max-width-block-intrinsic-1.html": [
+      "433c1950cd3d366ed6dd07545e36d3031a9b4c08",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-max-width-block-intrinsic-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-min-height-block-1.html": [
+      "ed60d9a03ad6061954904b4a7c516d2f19a9f1ca",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-height-block-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "calc-min-height.html": [
       "a3cfa47213fd3ce46a7c7302b5763f49142a3767",
       [
@@ -140925,6 +141159,149 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-min-width-block-1.html": [
+      "8195f68591c5e689243dbb58e6935063c1efc910",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-width-block-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-min-width-block-intrinsic-1.html": [
+      "edc564331ea4873521edfe9ead5bb1ca001eae36",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-min-width-block-intrinsic-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-offsets-absolute-bottom-1.html": [
+      "b3bf1ccb7e24392fef6b4bc8ff33e364c420a741",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-offsets-absolute-top-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-offsets-absolute-left-1.html": [
+      "8ee19c7a56946251a676328a1da9f610801d232a",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-offsets-relative-left-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-offsets-absolute-right-1.html": [
+      "3fcdba055e803eef411a979d92dfd8342f4dd69d",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-offsets-relative-left-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-offsets-absolute-top-1.html": [
+      "7ac2dfe2a442a658e366c04868a51e642a398c48",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-offsets-absolute-top-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-offsets-relative-bottom-1.html": [
+      "1f121ac541d824f20c8813951fed996fb5c2e341",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-offsets-relative-top-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-offsets-relative-left-1.html": [
+      "b091ca5502c58577b0baa0a3c7166884eef471de",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-offsets-relative-left-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-offsets-relative-right-1.html": [
+      "28e154777cbf553b6cc7b730c22bfe06223fadc7",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-offsets-relative-left-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-offsets-relative-top-1.html": [
+      "f2e9e4d9b6c132a963835f2774cdf85f3f940658",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-offsets-relative-top-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-padding-block-1.html": [
+      "97dbaeb2f66c38eb6838ee8b7a281bdd95897487",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-padding-block-1-ref.html",
          "=="
         ]
        ],
@@ -140964,6 +141341,110 @@
        [
         [
          "/css/css-values/calc-rem-lang-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-text-indent-1.html": [
+      "dec795b2dc1984a5da9c733802ee1002e0c6e3a3",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-text-indent-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-text-indent-intrinsic-1.html": [
+      "b60a7e949a6ca431e84ea4e294f4952da9ded71e",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-text-indent-intrinsic-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-transform-origin-1.html": [
+      "bbe70749db60a37c9a1bfe0b13afcb0a7fcef528",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-transform-origin-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-vertical-align-1.html": [
+      "f612b962e958101b2431b9db584a973974b86bd9",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-vertical-align-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-width-block-1.html": [
+      "d261d03984cc7c6246a7f12cf89ad4c8b5caabcf",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-width-block-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-width-block-intrinsic-1.html": [
+      "0c80b960d1d84f4d9fe6cd52baf1b5958514c05c",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-width-block-intrinsic-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-width-table-auto-1.html": [
+      "c3d147c0b1ced3dcb455709f8826a3bfe51c7219",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-width-table-auto-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "calc-width-table-fixed-1.html": [
+      "808a61274d3203f645f0df94e44c195ede1ddf50",
+      [
+       null,
+       [
+        [
+         "/css/css-values/calc-width-table-fixed-1-ref.html",
          "=="
         ]
        ],
@@ -141445,6 +141926,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "rem-root-font-size-restyle-1.html": [
+      "0f236cb3df999e9fb7d90ebf5ad05e97b3c269a1",
+      [
+       null,
+       [
+        [
+         "/css/css-values/rem-root-font-size-restyle-1-ref.html",
          "=="
         ]
        ],
@@ -202298,6 +202792,14 @@
        "975c94b795c1c1e53759a5f1e0ec0f6ee1a6889f",
        []
       ],
+      "grid-auto-repeat-multiple-values-004-ref.html": [
+       "650b7d9eaf99cf72e3fe4da306a9d8815d64b787",
+       []
+      ],
+      "grid-auto-repeat-multiple-values-005-ref.html": [
+       "305d256fcbd5d3e700dcecbccd45ea1f0b2b3b40",
+       []
+      ],
       "grid-auto-repeat-positioned-container-001-ref.html": [
        "a017563aa36082944feb7fe88a50f3dcc8a50358",
        []
@@ -209733,6 +210235,18 @@
         "c1355d0abba28491a126533c24039cffc6ee4eb0",
         []
        ],
+       "hyphens-auto-002-ref.html": [
+        "dece5f7394470d5bbc393c4318fa412ea25f9b4e",
+        []
+       ],
+       "hyphens-auto-004H-ref.html": [
+        "cb26d85e8d99793f77d2861b99f91c25931f7f24",
+        []
+       ],
+       "hyphens-auto-004M-ref.html": [
+        "4e234bf76de781615577aae4b8bc7f92323d19fb",
+        []
+       ],
        "hyphens-auto-010H-ref.html": [
         "6d453b9560b7d9c7c0503029ebb17e0fe53848ef",
         []
@@ -216409,8 +216923,28 @@
       "a22882a9996b14afa942d3403fa1a873f526073a",
       []
      ],
+     "calc-background-image-gradient-1-ref.html": [
+      "3fefef23ff7ea3811064c953bddc327098454199",
+      []
+     ],
+     "calc-background-linear-gradient-1-ref.html": [
+      "5c8a604122a7dc42612faaa6713f59468f207018",
+      []
+     ],
      "calc-background-position-003-expected.txt": [
       "14f922152854a51c24b930d848779712a7690877",
+      []
+     ],
+     "calc-background-position-1-ref.html": [
+      "b64aa46bf2eeddfc89791c13f1cea946faefece5",
+      []
+     ],
+     "calc-background-size-1-ref.html": [
+      "5385c46ef52592fa4535608ee09be865bff719ef",
+      []
+     ],
+     "calc-border-radius-1-ref.html": [
+      "24681d08a430a8093bb189cfff289405ba905802",
       []
      ],
      "calc-catch-divide-by-0-expected.txt": [
@@ -216421,6 +216955,14 @@
       "e0ac1ead1e5247c7c1d5fb2dffdf9ee0b08dd497",
       []
      ],
+     "calc-height-block-1-ref.html": [
+      "be75d5d6a3dca4d8b76eb09321580fcee87055fc",
+      []
+     ],
+     "calc-height-table-1-ref.html": [
+      "d936f69ed03afb65a540e96fa3b26eaf13f656c8",
+      []
+     ],
      "calc-in-counter-001-ref.xhtml": [
       "5614ec09b2641a580f8c965c339568701e46b612",
       []
@@ -216429,12 +216971,44 @@
       "8aa9ef0140bf92ea318bd14ef0797bde436f26ea",
       []
      ],
+     "calc-margin-block-1-ref.html": [
+      "acfc0889206431f6f4c1343c06b156ae3e8492c8",
+      []
+     ],
+     "calc-max-height-block-1-ref.html": [
+      "9907c9984b21430596351894b02ee82cf704fafe",
+      []
+     ],
+     "calc-max-width-block-intrinsic-1-ref.html": [
+      "8cb693160cc93d279a1cc640b9be961de9365e2b",
+      []
+     ],
+     "calc-min-width-block-intrinsic-1-ref.html": [
+      "82fae9717fec4dc015a5c071b49dedd21f76ee11",
+      []
+     ],
      "calc-nesting-002-expected.txt": [
       "c71d279664d4e4e262e1c39aa0a6516e638461fb",
       []
      ],
      "calc-numbers-expected.txt": [
       "3ebcb2f87bfe7168720b04767ce6ea11f08229f4",
+      []
+     ],
+     "calc-offsets-absolute-top-1-ref.html": [
+      "5c6c06364e95984e5e2baa1aac8b66d702d21505",
+      []
+     ],
+     "calc-offsets-relative-left-1-ref.html": [
+      "82ab51df06b0a8b3742c51ae9f36a05fd72672b9",
+      []
+     ],
+     "calc-offsets-relative-top-1-ref.html": [
+      "db6785b2922e7f81bee4e06ecbec3931a8d1bafd",
+      []
+     ],
+     "calc-padding-block-1-ref.html": [
+      "ca472b38ec78f4d4e2d0886f9b42298bae34f644",
       []
      ],
      "calc-rem-lang-ref.html": [
@@ -216447,6 +217021,38 @@
      ],
      "calc-serialization-expected.txt": [
       "5295f64e6898656e7db654670969e70eace71b3e",
+      []
+     ],
+     "calc-text-indent-1-ref.html": [
+      "4631c00217042b49022501842fd614c43f55edbb",
+      []
+     ],
+     "calc-text-indent-intrinsic-1-ref.html": [
+      "fa221c015d1f509952c451879a8d819caa5c6528",
+      []
+     ],
+     "calc-transform-origin-1-ref.html": [
+      "d27da3efea17eb5c2beee3d52676998825f1e997",
+      []
+     ],
+     "calc-vertical-align-1-ref.html": [
+      "8e6d42425d0fa96ae5d08303be205bb467799d2c",
+      []
+     ],
+     "calc-width-block-1-ref.html": [
+      "d62da1ad32edf402a389c1b6e6d91ec01988e247",
+      []
+     ],
+     "calc-width-block-intrinsic-1-ref.html": [
+      "e381bbab519e1a78ff7bcd78a867ce2efede7977",
+      []
+     ],
+     "calc-width-table-auto-1-ref.html": [
+      "d161ecc6f3100bf975d8b226c7aa196e0222657a",
+      []
+     ],
+     "calc-width-table-fixed-1-ref.html": [
+      "9ae2d347c6b7704f7fb14115de5cc5f81d82e512",
       []
      ],
      "ex-calc-expression-001-ref.html": [
@@ -216559,6 +217165,10 @@
        []
       ]
      },
+     "rem-root-font-size-restyle-1-ref.html": [
+      "a1a1430d35ecec0a7e8fd859f47d98d31ae8f340",
+      []
+     ],
      "resources": {
       "ChTestShortZero.woff": [
        "c7e7cc5ad813ec267af49b0a22ba7a633b96c1bb",
@@ -216624,6 +217234,10 @@
       ],
       "b-green.css": [
        "a0473f5ca26652c1229290bbf1f81eabc1e37280",
+       []
+      ],
+      "blue-32x32.png": [
+       "deefd19b2ac53bef91c82ed2f6f4ea5f53a9e34f",
        []
       ],
       "c-red.css": [
@@ -232019,7 +232633,7 @@
        []
       ],
       "canvas-tests.js": [
-       "0ccb475b763d1e9d7d6733ff27d93dce56828f3a",
+       "7d09dcfde7540ea084eb3919f8f7bd8ba4485d12",
        []
       ],
       "canvas-tests.js.headers": [
@@ -232131,7 +232745,7 @@
          []
         ],
         "transformations.yaml": [
-         "0c4e80bebb6de0dd871492e051b4ffbc4855d727",
+         "aa56c85f2aec3d6161a901823b814c6db83c74f0",
          []
         ],
         "video.yaml": [
@@ -242332,6 +242946,20 @@
        "29fda633b47882ad97a57f0fc04fa51a48773572",
        []
       ]
+     },
+     "user-prompts": {
+      "cannot-show-simple-dialogs": {
+       "support": {
+        "confirm.html": [
+         "80b2c61b396b41c54cb0a4878d3976afeb648080",
+         []
+        ],
+        "prompt.html": [
+         "db40774770cccae09644ae2b04cf8d89d3fc0d2c",
+         []
+        ]
+       }
+      }
      }
     }
    },
@@ -243977,7 +244605,7 @@
      []
     ],
     "storage-buckets.tentative.idl": [
-     "f44595c0763bbf52e30d391b6a4501e246f6cb9d",
+     "153cd0d4b8e5ed9bc3892b7504ab56b5529c201e",
      []
     ],
     "storage.idl": [
@@ -355037,6 +355665,41 @@
          {}
         ]
        ],
+       "2d.transformation.rotate3d.X.html": [
+        "c55a9bf25870387a0a070d13a3539e8c0c256025",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.transformation.rotate3d.Y.html": [
+        "12bf5078ae0bc87f703198b62d87828e4facc69f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.transformation.rotate3d.Z.html": [
+        "8a264661c75865ed455d9814c7dabc2e8f15eb72",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.transformation.rotate3d.html": [
+        "80812bde220ac1b516a44ac66533f5cfca7c263c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.transformation.rotateAxis.html": [
+        "47258dffb70d5ff0e1300049fcf10200c40e293b",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.transformation.scale.3d.html": [
         "0231b3bfba8ed5d956f93a9efbd30905d6742524",
         [
@@ -384998,6 +385661,24 @@
         {}
        ]
       ]
+     },
+     "user-prompts": {
+      "cannot-show-simple-dialogs": {
+       "confirm-different-origin-frame.sub.html": [
+        "693cde21926656f01d106bf63c468e3aa108493c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "prompt-different-origin-frame.sub.html": [
+        "151def9b5a5a9dd223b6ee14758140a132ad25b2",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
      }
     }
    },
