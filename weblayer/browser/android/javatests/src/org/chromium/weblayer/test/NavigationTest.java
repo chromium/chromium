@@ -575,21 +575,21 @@ public class NavigationTest {
     @Test
     @SmallTest
     public void testLoadError() throws Exception {
-        String url = mActivityTestRule.getTestDataURL("non_existent.html");
+        String url = mActivityTestRule.getTestDataURL("non_empty404.html");
 
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
         setNavigationCallback(activity);
 
-        int curFailedCount = mCallback.onFailedCallback.getCallCount();
+        int curCompletedCount = mCallback.onCompletedCallback.getCallCount();
 
         // navigateAndWait() expects a success code, so it won't work here.
         runOnUiThreadBlocking(
                 () -> { activity.getTab().getNavigationController().navigate(Uri.parse(url)); });
 
-        mCallback.onFailedCallback.assertCalledWith(
-                curFailedCount, url, LoadError.HTTP_CLIENT_ERROR);
-        assertEquals(mCallback.onFailedCallback.getHttpStatusCode(), 404);
-        assertEquals(mCallback.onFailedCallback.getNavigationState(), NavigationState.FAILED);
+        mCallback.onCompletedCallback.assertCalledWith(
+                curCompletedCount, url, LoadError.HTTP_CLIENT_ERROR);
+        assertEquals(mCallback.onCompletedCallback.getHttpStatusCode(), 404);
+        assertEquals(mCallback.onCompletedCallback.getNavigationState(), NavigationState.COMPLETE);
     }
 
     @MinWebLayerVersion(89)

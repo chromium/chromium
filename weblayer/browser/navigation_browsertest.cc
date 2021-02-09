@@ -116,12 +116,29 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, NoError) {
   EXPECT_EQ(observer.navigation_state(), NavigationState::kComplete);
 }
 
+// Http client error when the server returns a non-empty response.
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, HttpClientError) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
   OneShotNavigationObserver observer(shell());
   GetNavigationController()->Navigate(
-      embedded_test_server()->GetURL("/non_existent.html"));
+      embedded_test_server()->GetURL("/non_empty404.html"));
+
+  observer.WaitForNavigation();
+  EXPECT_TRUE(observer.completed());
+  EXPECT_FALSE(observer.is_error_page());
+  EXPECT_EQ(observer.load_error(), Navigation::kHttpClientError);
+  EXPECT_EQ(observer.http_status_code(), 404);
+  EXPECT_EQ(observer.navigation_state(), NavigationState::kComplete);
+}
+
+// Http client error when the server returns an empty response.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, HttpClientErrorEmptyResponse) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  OneShotNavigationObserver observer(shell());
+  GetNavigationController()->Navigate(
+      embedded_test_server()->GetURL("/empty404.html"));
 
   observer.WaitForNavigation();
   EXPECT_FALSE(observer.completed());

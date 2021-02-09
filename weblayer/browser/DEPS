@@ -21,6 +21,7 @@ include_rules = [
   "+components/download/content/public",
   "+components/download/public/common",
   "+components/embedder_support",
+  "+components/error_page/common",
   "+components/error_page/content/browser",
   "+components/favicon_base",
   "+components/favicon",

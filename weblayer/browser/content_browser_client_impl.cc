@@ -22,6 +22,8 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/error_page/common/error.h"
+#include "components/error_page/common/localized_error.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -1026,7 +1028,9 @@ ukm::UkmService* ContentBrowserClientImpl::GetUkmService() {
 }
 
 bool ContentBrowserClientImpl::HasErrorPage(int http_status_code) {
-  return http_status_code >= 400;
+  // Use an internal error page, if we have one for the status code.
+  return error_page::LocalizedError::HasStrings(
+      error_page::Error::kHttpErrorDomain, http_status_code);
 }
 
 }  // namespace weblayer
