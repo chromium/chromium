@@ -28,11 +28,13 @@ void FakeLibassistantService::Unbind() {
 
 mojo::PendingReceiver<libassistant::mojom::MediaController>
 FakeLibassistantService::GetMediaControllerPendingReceiver() {
+  EXPECT_TRUE(media_controller_pending_receiver_.is_valid());
   return std::move(media_controller_pending_receiver_);
 }
 
 mojo::PendingRemote<libassistant::mojom::MediaDelegate>
 FakeLibassistantService::GetMediaDelegatePendingRemote() {
+  EXPECT_TRUE(media_delegate_pending_remote_.is_valid());
   return std::move(media_delegate_pending_remote_);
 }
 

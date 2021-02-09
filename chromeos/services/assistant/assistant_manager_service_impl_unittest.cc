@@ -559,9 +559,10 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest, ShouldPauseMediaManagerOnPause) {
   StrictMock<LibassistantMediaControllerMock> mock;
-  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
 
   StartAndWaitForRunning();
+
+  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
 
   EXPECT_CALL(mock, PauseInternalMediaPlayer);
 
@@ -572,9 +573,10 @@ TEST_F(AssistantManagerServiceImplTest, ShouldPauseMediaManagerOnPause) {
 
 TEST_F(AssistantManagerServiceImplTest, ShouldResumeMediaManagerOnPlay) {
   StrictMock<LibassistantMediaControllerMock> mock;
-  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
 
   StartAndWaitForRunning();
+
+  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
 
   EXPECT_CALL(mock, ResumeInternalMediaPlayer);
 
@@ -585,7 +587,6 @@ TEST_F(AssistantManagerServiceImplTest, ShouldResumeMediaManagerOnPlay) {
 
 TEST_F(AssistantManagerServiceImplTest, ShouldIgnoreOtherMediaManagerActions) {
   StrictMock<LibassistantMediaControllerMock> mock;
-  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
 
   const auto unsupported_media_session_actions = {
       MediaSessionAction::kPreviousTrack, MediaSessionAction::kNextTrack,
@@ -595,6 +596,8 @@ TEST_F(AssistantManagerServiceImplTest, ShouldIgnoreOtherMediaManagerActions) {
   };
 
   StartAndWaitForRunning();
+
+  mock.Bind(mojom_libassistant_service().GetMediaControllerPendingReceiver());
 
   for (auto action : unsupported_media_session_actions) {
     // If this is not ignored, |mock| will complain about an uninterested call.
