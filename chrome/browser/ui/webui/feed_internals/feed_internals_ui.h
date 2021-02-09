@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom-forward.h"
-#include "chrome/browser/ui/webui/feed_internals/feed_internals_page_handler.h"
 #include "components/feed/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -36,12 +35,7 @@ class FeedInternalsUI : public ui::MojoWebUIController {
 
  private:
   Profile* profile_;
-#if BUILDFLAG(ENABLE_FEED_V1)
-  std::unique_ptr<FeedInternalsPageHandler> page_handler_;
-#endif
-#if BUILDFLAG(ENABLE_FEED_V2)
   std::unique_ptr<FeedV2InternalsPageHandler> v2_page_handler_;
-#endif
   WEB_UI_CONTROLLER_TYPE_DECL();
 
   DISALLOW_COPY_AND_ASSIGN(FeedInternalsUI);

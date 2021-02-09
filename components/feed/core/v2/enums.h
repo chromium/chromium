@@ -7,8 +7,6 @@
 
 #include <iosfwd>
 
-#include "components/feed/core/common/enums.h"
-
 namespace feed {
 
 enum class NetworkRequestType : int {

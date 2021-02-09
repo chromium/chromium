@@ -491,7 +491,6 @@ class TestMetricsReporter : public MetricsReporter {
   base::Optional<LoadStreamStatus> load_more_status;
   base::Optional<LoadStreamStatus> background_refresh_status;
   base::Optional<base::TimeDelta> time_since_last_clear;
-  base::Optional<TriggerType> refresh_trigger_type;
   base::Optional<UploadActionsStatus> upload_action_status;
 };
 

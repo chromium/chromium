@@ -88,6 +88,5 @@ chrome_grit_defines = [
   "enable_webui_tab_strip=$enable_webui_tab_strip",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",
-  "enable_feed_v1=$enable_feed_v1",
   "enable_feed_v2=$enable_feed_v2",
 ]

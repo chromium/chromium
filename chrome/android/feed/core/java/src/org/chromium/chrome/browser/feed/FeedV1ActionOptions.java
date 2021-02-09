@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.feed;
 
-/** Options for handling actions in Feed V1. */
+/**
+ * Options for handling actions in Feed V1.
+ * TODO(crbug.com/1165828): V1 was removed, these do nothing.
+ */
 public class FeedV1ActionOptions {
     public boolean inhibitDownload;
     public boolean inhibitOpenInIncognito;

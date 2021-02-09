@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/common/user_classifier.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/public/feed_service.h"

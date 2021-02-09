@@ -10,14 +10,13 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+// TODO(crbug.com/1165828): Clean up feedv1 features.
+
 namespace feed {
 
 extern const base::Feature kInterestFeedContentSuggestions;
 extern const base::Feature kInterestFeedV2;
 extern const base::Feature kInterestFeedV2Hearts;
-
-bool IsV1Enabled();
-bool IsV2Enabled();
 
 extern const base::FeatureParam<std::string> kDisableTriggerTypes;
 extern const base::FeatureParam<int> kSuppressRefreshDurationMinutes;

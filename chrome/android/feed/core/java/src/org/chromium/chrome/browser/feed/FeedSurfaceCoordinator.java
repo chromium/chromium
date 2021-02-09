@@ -239,11 +239,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
             boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
             Supplier<ShareDelegate> shareDelegateSupplier) {
-        if (FeedFeatures.isV2Enabled()) {
-            mStreamWrapper = FeedV2.createStreamWrapper();
-        } else {
-            mStreamWrapper = FeedV1.createStreamWrapper();
-        }
+        mStreamWrapper = FeedV2.createStreamWrapper();
 
         mActivity = activity;
         mSnackbarManager = snackbarManager;

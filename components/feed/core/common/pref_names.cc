@@ -6,29 +6,14 @@
 
 #include <string>
 
-#include "components/feed/core/common/user_classifier.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace feed {
 
 namespace prefs {
 
-const char kBackgroundRefreshPeriod[] = "feed.background_refresh_period";
-
 const char kLastFetchAttemptTime[] = "feed.last_fetch_attempt";
-
-const char kThrottlerRequestCount[] = "feed.refresh_throttler.count";
-const char kThrottlerRequestsDay[] = "feed.refresh_throttler.day";
-
-const char kUserClassifierAverageSuggestionsViwedPerHour[] =
-    "feed.user_classifier.average_suggestions_veiwed_per_hour";
-const char kUserClassifierAverageSuggestionsUsedPerHour[] =
-    "feed.user_classifier.average_suggestions_used_per_hour";
-
-const char kUserClassifierLastTimeToViewSuggestions[] =
-    "feed.user_classifier.last_time_to_view_suggestions";
-const char kUserClassifierLastTimeToUseSuggestions[] =
-    "feed.user_classifier.last_time_to_use_suggestions";
 
 const char kHostOverrideHost[] = "feed.host_override.host";
 const char kHostOverrideBlessNonce[] = "feed.host_override.bless_nonce";
@@ -36,7 +21,6 @@ const char kHostOverrideBlessNonce[] = "feed.host_override.bless_nonce";
 const char kHasReachedClickAndViewActionsUploadConditions[] =
     "feed.clicks_and_views_upload_conditions_reached";
 const char kLastFetchHadNoticeCard[] = "feed.last_fetch_had_notice_card";
-const char kLastRefreshWasSignedIn[] = "feed.last_refresh_was_signed_in";
 const char kNoticeCardViewsCount[] = "feed.notice_card_views_count";
 const char kNoticeCardClicksCount[] = "feed.notice_card_clicks_count";
 
@@ -52,14 +36,43 @@ const char kActionsEndpointOverride[] = "feedv2.actions_endpoint_override";
 
 }  // namespace prefs
 
+// Deprecated prefs:
+namespace {
+const char kLastRefreshWasSignedIn[] = "feed.last_refresh_was_signed_in";
+const char kBackgroundRefreshPeriod[] = "feed.background_refresh_period";
+const char kThrottlerRequestCount[] = "feed.refresh_throttler.count";
+const char kThrottlerRequestsDay[] = "feed.refresh_throttler.day";
+const char kUserClassifierAverageSuggestionsViwedPerHour[] =
+    "feed.user_classifier.average_suggestions_veiwed_per_hour";
+const char kUserClassifierAverageSuggestionsUsedPerHour[] =
+    "feed.user_classifier.average_suggestions_used_per_hour";
+
+const char kUserClassifierLastTimeToViewSuggestions[] =
+    "feed.user_classifier.last_time_to_view_suggestions";
+const char kUserClassifierLastTimeToUseSuggestions[] =
+    "feed.user_classifier.last_time_to_use_suggestions";
+
+void RegisterObsoletePrefsFeb_2021(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kLastRefreshWasSignedIn, false);
+  registry->RegisterTimeDeltaPref(kBackgroundRefreshPeriod, base::TimeDelta());
+  registry->RegisterIntegerPref(kThrottlerRequestCount, 0);
+  registry->RegisterIntegerPref(kThrottlerRequestsDay, 0);
+
+  registry->RegisterDoublePref(kUserClassifierAverageSuggestionsViwedPerHour,
+                               0.0);
+  registry->RegisterDoublePref(kUserClassifierAverageSuggestionsUsedPerHour,
+                               0.0);
+  registry->RegisterTimePref(kUserClassifierLastTimeToViewSuggestions,
+                             base::Time());
+  registry->RegisterTimePref(kUserClassifierLastTimeToUseSuggestions,
+                             base::Time());
+}
+}  // namespace
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(feed::prefs::kHostOverrideHost, "");
   registry->RegisterStringPref(feed::prefs::kHostOverrideBlessNonce, "");
-  registry->RegisterIntegerPref(feed::prefs::kThrottlerRequestCount, 0);
-  registry->RegisterIntegerPref(feed::prefs::kThrottlerRequestsDay, 0);
   registry->RegisterTimePref(prefs::kLastFetchAttemptTime, base::Time());
-  registry->RegisterTimeDeltaPref(prefs::kBackgroundRefreshPeriod,
-                                  base::TimeDelta());
   registry->RegisterListPref(feed::prefs::kThrottlerRequestCountListPrefName);
   registry->RegisterTimePref(feed::prefs::kThrottlerLastRequestTime,
                              base::Time());
@@ -71,10 +84,23 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       feed::prefs::kHasReachedClickAndViewActionsUploadConditions, false);
   registry->RegisterBooleanPref(feed::prefs::kLastFetchHadNoticeCard, true);
-  registry->RegisterBooleanPref(feed::prefs::kLastRefreshWasSignedIn, false);
+
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardViewsCount, 0);
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardClicksCount, 0);
-  UserClassifier::RegisterProfilePrefs(registry);
+
+  RegisterObsoletePrefsFeb_2021(registry);
+}
+
+void MigrateObsoleteProfilePrefsFeb_2021(PrefService* prefs) {
+  prefs->ClearPref(kLastRefreshWasSignedIn);
+  prefs->ClearPref(kBackgroundRefreshPeriod);
+  prefs->ClearPref(kThrottlerRequestCount);
+  prefs->ClearPref(kThrottlerRequestsDay);
+
+  prefs->ClearPref(kUserClassifierAverageSuggestionsViwedPerHour);
+  prefs->ClearPref(kUserClassifierAverageSuggestionsUsedPerHour);
+  prefs->ClearPref(kUserClassifierLastTimeToViewSuggestions);
+  prefs->ClearPref(kUserClassifierLastTimeToUseSuggestions);
 }
 
 }  // namespace feed

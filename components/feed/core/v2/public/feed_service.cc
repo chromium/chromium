@@ -240,8 +240,7 @@ void FeedService::ClearCachedData() {
 
 // static
 bool FeedService::IsEnabled(const PrefService& pref_service) {
-  return feed::IsV2Enabled() &&
-         pref_service.GetBoolean(feed::prefs::kEnableSnippets);
+  return pref_service.GetBoolean(feed::prefs::kEnableSnippets);
 }
 
 #if defined(OS_ANDROID)

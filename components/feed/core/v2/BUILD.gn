@@ -80,9 +80,10 @@ source_set("feed_core_v2") {
   ]
   deps = [
     ":common",
-    "//components/feed/core:feed_core",
-    "//components/feed/core/common:feed_core_common",
+    "//components/feed:feature_list",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/history/core/browser",
+    "//components/leveldb_proto:leveldb_proto",
     "//components/offline_pages/core:core",
     "//components/offline_pages/core/prefetch",
     "//components/offline_pages/task:task",
@@ -145,8 +146,9 @@ source_set("core_unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//components/feed/core:feed_core",
+    "//components/feed:feature_list",
     "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/history/core/browser",
     "//components/leveldb_proto:test_support",
     "//components/offline_pages/core:core",

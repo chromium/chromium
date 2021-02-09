@@ -433,8 +433,6 @@ static_library("ui") {
     "//components/feature_engagement",
     "//components/feed:buildflags",
     "//components/feed:feature_list",
-    "//components/feed/content:feed_content",
-    "//components/feed/core:feed_core",
     "//components/feedback",
     "//components/find_in_page",
     "//components/flags_ui",
@@ -619,6 +617,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//components/browser_ui/util/android",
       "//components/feed/core/common:feed_core_common",
+      "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/feed/core/v2:feed_core_v2",
       "//components/infobars/content",
       "//components/query_tiles",
@@ -794,16 +793,10 @@ static_library("ui") {
       "webui/webapks/webapks_ui.cc",
       "webui/webapks/webapks_ui.h",
     ]
-    if (enable_feed_v1 || enable_feed_v2) {
+    if (enable_feed_v2) {
       sources += [
         "webui/feed_internals/feed_internals_ui.cc",
         "webui/feed_internals/feed_internals_ui.h",
-      ]
-    }
-    if (enable_feed_v1) {
-      sources += [
-        "webui/feed_internals/feed_internals_page_handler.cc",
-        "webui/feed_internals/feed_internals_page_handler.h",
       ]
     }
     if (enable_feed_v2) {

@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.feed.shared;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.feed.FeedV1;
-import org.chromium.chrome.browser.feed.FeedV2;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -47,15 +45,11 @@ public final class FeedFeatures {
     }
 
     public static boolean isV2Enabled() {
-        if (!FeedV1.IS_AVAILABLE) return true;
-        if (!FeedV2.IS_AVAILABLE) return false;
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2);
+        return true;
     }
 
     public static boolean cachedIsV2Enabled() {
-        if (!FeedV1.IS_AVAILABLE) return true;
-        if (!FeedV2.IS_AVAILABLE) return false;
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.INTEREST_FEED_V2);
+        return true;
     }
 
     /**
@@ -93,9 +87,6 @@ public final class FeedFeatures {
             // logcat.
             Log.w(TAG, "Disabling Feed because of policy.");
             sEverDisabledForPolicy = true;
-            if (FeedV1.IS_AVAILABLE) {
-                FeedV1.destroy();
-            }
         }
     }
 

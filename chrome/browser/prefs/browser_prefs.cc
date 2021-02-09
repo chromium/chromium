@@ -1333,6 +1333,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kDataReductionProxyLastConfigRetrievalTime);
   profile_prefs->ClearPref(kDataReductionProxyConfig);
 
+#if defined(OS_ANDROID)
+  // Added 02/2021
+  feed::MigrateObsoleteProfilePrefsFeb_2021(profile_prefs);
+#endif  // defined(OS_ANDROID)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 }

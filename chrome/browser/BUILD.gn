@@ -2093,7 +2093,6 @@ static_library("browser") {
     "//components/feature_engagement",
     "//components/federated_learning",
     "//components/feed:buildflags",
-    "//components/feed/content:feed_content",
     "//components/feed/core/common:feed_core_common",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/feed/core/v2:feed_core_v2",
@@ -5829,32 +5828,6 @@ static_library("browser") {
       ]
       deps += [ "//chromeos/services/tts/public/mojom" ]
     }
-  }
-
-  if (enable_feed_v1) {
-    sources += [
-      "android/feed/feed_content_bridge.cc",
-      "android/feed/feed_content_bridge.h",
-      "android/feed/feed_debugging_bridge.cc",
-      "android/feed/feed_debugging_bridge.h",
-      "android/feed/feed_host_service_factory.cc",
-      "android/feed/feed_host_service_factory.h",
-      "android/feed/feed_journal_bridge.cc",
-      "android/feed/feed_journal_bridge.h",
-      "android/feed/feed_lifecycle_bridge.cc",
-      "android/feed/feed_lifecycle_bridge.h",
-      "android/feed/feed_logging_bridge.cc",
-      "android/feed/feed_logging_bridge.h",
-      "android/feed/feed_network_bridge.cc",
-      "android/feed/feed_network_bridge.h",
-      "android/feed/feed_offline_bridge.cc",
-      "android/feed/feed_offline_bridge.h",
-      "android/feed/feed_scheduler_bridge.cc",
-      "android/feed/feed_scheduler_bridge.h",
-      "android/feed/history/feed_history_helper.cc",
-      "android/feed/history/feed_history_helper.h",
-    ]
-    deps += [ "//components/feed/content:feed_content" ]
   }
 
   if (enable_library_cdms) {

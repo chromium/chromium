@@ -33,7 +33,6 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
@@ -61,15 +60,8 @@ ChromeBrowsingDataRemoverDelegateFactory::
   DependsOn(DataReductionProxyChromeSettingsFactory::GetInstance());
 #if defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_FEED_V2)
-  if (feed::IsV2Enabled()) {
-    DependsOn(feed::FeedServiceFactory::GetInstance());
-  }
+  DependsOn(feed::FeedServiceFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
-#if BUILDFLAG(ENABLE_FEED_V1)
-  if (feed::IsV1Enabled()) {
-    DependsOn(feed::FeedHostServiceFactory::GetInstance());
-  }
-#endif  // BUILDFLAG(ENABLE_FEED_V1)
 #endif  // defined(OS_ANDROID)
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());

@@ -67,21 +67,4 @@ std::string GetFeedReferrerUrl() {
   return referrer.empty() ? kDefaultReferrerUrl : referrer;
 }
 
-// Chrome can be built with or without v1 or v2.
-// If both are built-in, use kInterestFeedV2 to decide whether v2 is used.
-// Otherwise use the version available.
-bool IsV2Enabled() {
-#if BUILDFLAG(ENABLE_FEED_V1) && BUILDFLAG(ENABLE_FEED_V2)
-  return base::FeatureList::IsEnabled(feed::kInterestFeedV2);
-#elif BUILDFLAG(ENABLE_FEED_V1)
-  return false;
-#else
-  return true;
-#endif
-}
-
-bool IsV1Enabled() {
-  return !IsV2Enabled();
-}
-
 }  // namespace feed

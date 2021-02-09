@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.feed.v2;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
 import android.util.DisplayMetrics;
 
 import org.chromium.base.ContextUtils;
@@ -11,9 +14,11 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.feed.library.common.locale.LocaleUtils;
 import org.chromium.chrome.browser.xsurface.ImagePrefetcher;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
+
+import java.util.Locale;
+
 /**
  * Bridge for FeedService-related calls.
  */
@@ -33,10 +38,18 @@ public final class FeedServiceBridge {
         return FeedServiceBridgeJni.get().isEnabled();
     }
 
+    /** Returns the top user specified locale. */
+    @TargetApi(Build.VERSION_CODES.N)
+    private static Locale getLocale(Context context) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                ? context.getResources().getConfiguration().getLocales().get(0)
+                : context.getResources().getConfiguration().locale;
+    }
+
     // Java functionality needed for the native FeedService.
     @CalledByNative
     public static String getLanguageTag() {
-        return LocaleUtils.getLanguageTag(ContextUtils.getApplicationContext());
+        return getLocale(ContextUtils.getApplicationContext()).toLanguageTag();
     }
     @CalledByNative
     public static double[] getDisplayMetrics() {

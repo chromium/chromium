@@ -76,6 +76,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -86,7 +87,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.feed.FeedV1;
 import org.chromium.chrome.browser.feed.FeedV2;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -178,9 +178,6 @@ public class InstantStartTest {
         @Override
         public List<ParameterSet> getParameters() {
             List<ParameterSet> feedParams = new ArrayList<ParameterSet>();
-            if (FeedV1.IS_AVAILABLE) {
-                feedParams.add(new ParameterSet().value(false).name("FeedV1"));
-            }
             if (FeedV2.IS_AVAILABLE) {
                 feedParams.add(new ParameterSet().value(true).name("FeedV2"));
             }
@@ -615,10 +612,9 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/omniboxonly"})
+    @DisabledTest(message = "Test doesn't work with FeedV2. FeedV1 is removed crbug.com/1165828.")
     public void renderTabSwitcher() throws IOException, InterruptedException {
         // clang-format on
-        if (!FeedV1.IS_AVAILABLE) return; // Test not yet working for FeedV2.
-
         createTabStateFile(new int[] {0, 1, 2});
         createThumbnailBitmapAndWriteToFile(0);
         createThumbnailBitmapAndWriteToFile(1);
@@ -748,8 +744,7 @@ public class InstantStartTest {
         ViewUtils.onViewWaiting(AllOf.allOf(withId(R.id.single_tab_view), isDisplayed()));
         ChromeRenderTestRule.sanitize(surface);
         // TODO(crbug.com/1065314): fix favicon.
-        mRenderTestRule.render(
-                surface, "singlePane_singleTab_noMV4" + (isFeedV2 ? "_FeedV2" : "_FeedV1"));
+        mRenderTestRule.render(surface, "singlePane_singleTab_noMV4_FeedV2");
 
         // Initializes native.
         startAndWaitNativeInitialization();
@@ -1112,8 +1107,7 @@ public class InstantStartTest {
         });
         View surface =
                 mActivityTestRule.getActivity().findViewById(R.id.primary_tasks_surface_view);
-        mRenderTestRule.render(
-                surface, "singlePane_landscape" + (isFeedV2 ? "_FeedV2" : "_FeedV1"));
+        mRenderTestRule.render(surface, "singlePane_landscape_FeedV2");
     }
 
     @Test

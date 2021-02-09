@@ -415,7 +415,6 @@ android_library("chrome_java") {
     "//components/externalauth/android:java",
     "//components/favicon/android:java",
     "//components/feature_engagement:feature_engagement_java",
-    "//components/feed/core/proto:proto_java",
     "//components/feed/core/proto:proto_java_v2",
     "//components/find_in_page/android:java",
     "//components/gcm_driver/android:gcm_driver_java",
@@ -905,7 +904,6 @@ junit_binary("chrome_junit_tests") {
     "//components/externalauth/android:junit",
     "//components/favicon/android:java",
     "//components/feature_engagement/public:public_java",
-    "//components/feed/core/proto:proto_java",
     "//components/feed/core/proto:proto_java_v2",
     "//components/infobars/android:java",
     "//components/messages/android:java",
@@ -3491,19 +3489,6 @@ generate_jni("chrome_jni_headers") {
   # Used for testing only, should not be shipped to end users.
   if (enable_offline_pages_harness) {
     sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
-  }
-
-  if (enable_feed_v1) {
-    sources += [
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedContentBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedDebuggingBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedJournalBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedLifecycleBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedLoggingBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedNetworkBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedOfflineBridge.java",
-      "feed/core/java/src/org/chromium/chrome/browser/feed/v1/FeedSchedulerBridge.java",
-    ]
   }
 
   if (enable_vr) {

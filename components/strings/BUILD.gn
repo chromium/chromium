@@ -33,7 +33,6 @@ grit("components_strings") {
     "enable_arcore=$enable_arcore",
     "enable_plugins=$enable_plugins",
     "enable_print_preview=$enable_print_preview",
-    "enable_feed_v1=$enable_feed_v1",
     "enable_vr=$enable_vr",
   ]
 

@@ -23,7 +23,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/availability/availability_prober.h"
@@ -101,7 +100,6 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/feed/content/feed_host_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/language/core/browser/url_language_histogram.h"
@@ -140,7 +138,6 @@
 #include "chrome/android/chrome_jni_headers/PackageHash_jni.h"
 #include "chrome/browser/android/customtabs/origin_verifier.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
-#include "chrome/browser/android/feed/feed_lifecycle_bridge.h"
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
@@ -992,26 +989,15 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
 #if defined(OS_ANDROID)
 #if BUILDFLAG(ENABLE_FEED_V2)
-    if (feed::IsV2Enabled()) {
-      // Don't bridge through if the service isn't present, which means we're
-      // probably running in a native unit test.
-      feed::FeedService* service =
-          feed::FeedServiceFactory::GetForBrowserContext(profile_);
-      if (service) {
-        service->ClearCachedData();
-      }
+    // Don't bridge through if the service isn't present, which means we're
+    // probably running in a native unit test.
+    feed::FeedService* service =
+        feed::FeedServiceFactory::GetForBrowserContext(profile_);
+    if (service) {
+      service->ClearCachedData();
     }
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
 
-#if BUILDFLAG(ENABLE_FEED_V1)
-    if (feed::IsV1Enabled()) {
-      // Don't bridge through if the service isn't present, which means we're
-      // probably running in a native unit test.
-      if (feed::FeedHostServiceFactory::GetForBrowserContext(profile_)) {
-        feed::FeedLifecycleBridge::ClearCachedData();
-      }
-    }
-#endif  // BUILDFLAG(ENABLE_FEED_V1)
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)

@@ -14,8 +14,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task_runner_util.h"
 #include "base/version.h"
-#include "components/feed/core/common/enums.h"
-#include "components/feed/core/common/user_classifier.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
