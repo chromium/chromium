@@ -1022,13 +1022,6 @@ void ChromeBrowserMainPartsChromeos::PostProfileInit() {
     // Start watching for low disk space events to notify the user if it is not
     // a guest profile.
     low_disk_notification_ = std::make_unique<LowDiskNotification>();
-
-    // External PCI devices are only allowed in non-guest, primary users.
-    if (ProfileHelper::IsPrimaryProfile(profile())) {
-      PciguardClient::Get()->SendExternalPciDevicesPermissionState(
-          !base::FeatureList::IsEnabled(
-              features::kDisablePeripheralDataAccessProtection));
-    }
   }
 
   gnubby_notification_ = std::make_unique<GnubbyNotification>();
@@ -1119,6 +1112,14 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
       ->PostTask(FROM_HERE,
                  base::BindOnce(&CrosUsbDetector::ConnectToDeviceManager,
                                 base::Unretained(cros_usb_detector_.get())));
+
+  // External PCI devices are only allowed in non-guest, primary users.
+  if (!user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
+      ProfileHelper::IsPrimaryProfile(profile())) {
+    PciguardClient::Get()->SendExternalPciDevicesPermissionState(
+        base::FeatureList::IsEnabled(
+            features::kDisablePeripheralDataAccessProtection));
+  }
 
   crostini_unsupported_action_notifier_ =
       std::make_unique<crostini::CrostiniUnsupportedActionNotifier>();
