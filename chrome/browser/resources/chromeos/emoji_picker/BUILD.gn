@@ -71,6 +71,34 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
+action_foreach("emoji_data") {
+  script = "tools/emoji_data.py"
+
+  metadata_json = [
+    "//third_party/emoji-metadata/src/emoji_13_1_ordering.json",
+    "./emoji_test_ordering.json",
+  ]
+  keyword_xmls = [
+    # later keywords will override earlier keywords for a particular emoji.
+    "//third_party/cldr/src/common/annotations/en.xml",
+    "//third_party/cldr/src/common/annotations/en_001.xml",
+    "//third_party/cldr/src/common/annotationsDerived/en.xml",
+    "//third_party/cldr/src/common/annotationsDerived/en_001.xml",
+  ]
+  merged_json = "$target_gen_dir/{{source_name_part}}.json"
+
+  sources = metadata_json
+  inputs = keyword_xmls
+  outputs = [ merged_json ]
+  args = [
+           "--metadata",
+           "{{source}}",
+           "--output",
+           rebase_path(merged_json, root_build_dir),
+           "--keywords",
+         ] + rebase_path(keyword_xmls, root_build_dir)
+}
+
 js_library("emoji_picker") {
   deps = [
     ":constants",
