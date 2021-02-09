@@ -29,6 +29,15 @@ namespace blink {
 template <typename T, typename SFINAEHelper = void>
 struct ToV8Traits;
 
+// Boolean
+template <>
+struct ToV8Traits<IDLBoolean> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        bool value) WARN_UNUSED_RESULT {
+    return v8::Boolean::New(script_state->GetIsolate(), value);
+  }
+};
+
 // Integer
 // int8_t
 template <bindings::IDLIntegerConvMode mode>
@@ -108,6 +117,28 @@ struct ToV8Traits<IDLIntegerTypeBase<uint64_t, mode>> {
                                           value_in_32bit);
     }
     // v8::Integer cannot represent 64-bit integers.
+    return v8::Number::New(script_state->GetIsolate(), value);
+  }
+};
+
+// Float
+template <typename T>
+struct ToV8Traits<T,
+                  typename std::enable_if_t<
+                      std::is_base_of<IDLBaseHelper<float>, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        float value) WARN_UNUSED_RESULT {
+    return v8::Number::New(script_state->GetIsolate(), value);
+  }
+};
+
+// Double
+template <typename T>
+struct ToV8Traits<T,
+                  typename std::enable_if_t<
+                      std::is_base_of<IDLBaseHelper<double>, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        double value) WARN_UNUSED_RESULT {
     return v8::Number::New(script_state->GetIsolate(), value);
   }
 };

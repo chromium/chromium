@@ -36,7 +36,13 @@ void TestToV8Traits(const V8TestingScope& scope,
   }
 }
 
-TEST(ToV8TraitsTest, Numeric) {
+TEST(ToV8TraitsTest, Boolean) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLBoolean, "true", true);
+  TEST_TOV8_TRAITS(scope, IDLBoolean, "false", false);
+}
+
+TEST(ToV8TraitsTest, Integer) {
   const V8TestingScope scope;
   // Test type matching
   // Integer
@@ -89,6 +95,22 @@ TEST(ToV8TraitsTest, Numeric) {
                    static_cast<int64_t>(9007199254740991));  // 2^53-1
   TEST_TOV8_TRAITS(scope, IDLUnsignedLongLong, "9007199254740991",
                    static_cast<uint64_t>(9007199254740991));  // 2^53-1
+}
+
+TEST(ToV8TraitsTest, FloatAndDouble) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLFloat, "0.5", static_cast<float>(0.5));
+  TEST_TOV8_TRAITS(scope, IDLUnrestrictedFloat, "-0.5",
+                   static_cast<float>(-0.5));
+  TEST_TOV8_TRAITS(scope, IDLDouble, "0.5", static_cast<double>(0.5));
+  TEST_TOV8_TRAITS(scope, IDLUnrestrictedDouble, "-0.5",
+                   static_cast<double>(-0.5));
+  TEST_TOV8_TRAITS(scope, IDLUnrestrictedDouble, "NaN",
+                   std::numeric_limits<double>::quiet_NaN());
+  TEST_TOV8_TRAITS(scope, IDLUnrestrictedDouble, "Infinity",
+                   std::numeric_limits<double>::infinity());
+  TEST_TOV8_TRAITS(scope, IDLUnrestrictedDouble, "-Infinity",
+                   -std::numeric_limits<double>::infinity());
 }
 
 TEST(ToV8TraitsTest, String) {
