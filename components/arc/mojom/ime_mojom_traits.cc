@@ -18,15 +18,10 @@ bool StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr>::Read(
     KeyEventUniquePtr* out) {
   const ui::EventType type =
       data.pressed() ? ui::ET_KEY_PRESSED : ui::ET_KEY_RELEASED;
-  // TODO(yhanada): Currently we have no way to know the correct keyboard layout
-  // here, so assuming US layout. Find a way to get the more precise DomCode.
   ui::DomCode dom_code = ui::UsLayoutKeyboardCodeToDomCode(
       static_cast<ui::KeyboardCode>(data.key_code()));
-  if (dom_code == ui::DomCode::NONE) {
-    // |data.key_code| doesn't give us a proper DomCode. Let's fall back to
-    // scan_code.
+  if (data.scan_code() != 0)
     dom_code = ui::KeycodeConverter::EvdevCodeToDomCode(data.scan_code());
-  }
 
   int flags = 0;
   if (data.is_shift_down())
