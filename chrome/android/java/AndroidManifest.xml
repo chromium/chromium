@@ -859,16 +859,6 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:label="@string/cablev2_activity_title"
             android:exported="false">
-            <!-- This has an intent filter but is not exported. This works
-            because the intent is sent by the Android system, not another
-            application. We want to limit this activity to only be invoked by
-            Chromium or the OS because otherwise applications could fool
-            Chromium into communicating with a fake USB device. -->
-            <intent-filter>
-                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
-            </intent-filter>
-            <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
-                android:resource="@xml/phone_as_a_security_key_accessory_filter" />
         </activity>
 
         <receiver

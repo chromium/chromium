@@ -580,10 +580,6 @@
         android:label="@string/cablev2_activity_title"
         android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen">
-      <intent-filter>  # DIFF-ANCHOR: 5873407a
-        <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"/>
-      </intent-filter>  # DIFF-ANCHOR: 5873407a
-      <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" android:resource="@xml/phone_as_a_security_key_accessory_filter"/>
     </activity>  # DIFF-ANCHOR: a1fac31f
     <activity  # DIFF-ANCHOR: 1d9b4077
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
