@@ -4,6 +4,9 @@
 
 package org.chromium.content.browser.sms;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -27,6 +30,7 @@ import org.chromium.ui.base.WindowAndroid;
 @JNIAdditionalImport(Wrappers.class)
 public class SmsProviderGms {
     private static final String TAG = "SmsProviderGms";
+    private static final int MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND = 202990000;
     private final long mSmsProviderGmsAndroid;
 
     private final @GmsBackend int mBackend;
@@ -41,11 +45,14 @@ public class SmsProviderGms {
         mSmsProviderGmsAndroid = smsProviderGmsAndroid;
         mBackend = backend;
 
-        mContext = new Wrappers.WebOTPServiceContext(ContextUtils.getApplicationContext());
+        mContext = new Wrappers.WebOTPServiceContext(ContextUtils.getApplicationContext(), this);
 
-        // For AUTO, create both receivers since we may need to fallback to using the user consent
-        // backend when verification backend is not available.
-        if (mBackend == GmsBackend.AUTO || mBackend == GmsBackend.VERIFICATION) {
+        boolean isVerificationBackendAvailable =
+                GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
+                        mContext, MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND)
+                == ConnectionResult.SUCCESS;
+        if (isVerificationBackendAvailable
+                && (mBackend == GmsBackend.AUTO || mBackend == GmsBackend.VERIFICATION)) {
             mVerificationReceiver = new SmsVerificationReceiver(this, mContext);
         }
 
@@ -53,7 +60,6 @@ public class SmsProviderGms {
             mUserConsentReceiver = new SmsUserConsentReceiver(this, mContext);
         }
 
-        assert (mVerificationReceiver != null || mUserConsentReceiver != null);
         Log.i(TAG, "construction successfull %s, %s", mVerificationReceiver, mUserConsentReceiver);
     }
 
@@ -73,15 +79,25 @@ public class SmsProviderGms {
     @CalledByNative
     private void listen(WindowAndroid window) {
         mWindow = window;
-        switch (mBackend) {
-            case GmsBackend.AUTO:
-            case GmsBackend.VERIFICATION:
-                mVerificationReceiver.listen(window);
-                break;
-            case GmsBackend.USER_CONSENT:
-                mUserConsentReceiver.listen(window);
-                break;
-        }
+
+        // Using the verification receiver is preferable but also start user consent receiver in
+        // case the verification receiver fails. i.e. if the start of the verification retriever has
+        // not been successful and the SMS arrives, we fall back to the user consent receiver to
+        // handle it. Note that starting both receiver means that we may end up using the user
+        // consent receiver even when the preferred verification backend is available but slow. But
+        // this is acceptable given that handling SMS should be done in timely manner.
+        if (mVerificationReceiver != null) mVerificationReceiver.listen(window);
+        if (mUserConsentReceiver != null) mUserConsentReceiver.listen(window);
+    }
+
+    public void destoryUserConsentReceiver() {
+        Log.d(TAG, "DestroyUserConsentReceiver");
+        if (mUserConsentReceiver != null) mUserConsentReceiver.destroy();
+    }
+
+    public void destoryVerificationReceiver() {
+        Log.d(TAG, "DestroyVerificationReceiver");
+        if (mVerificationReceiver != null) mVerificationReceiver.destroy();
     }
 
     void onMethodNotAvailable() {
@@ -94,13 +110,7 @@ public class SmsProviderGms {
         // verification method first on *each request* and fallback to the user consent method if it
         // fails. The initial call to verification is expected to be cheap so this should not have
         // any noticeable impact.
-
-        if (mBackend == GmsBackend.AUTO) {
-            Log.d(TAG, "Retry using user consent API.");
-            mUserConsentReceiver.listen(mWindow);
-        } else {
-            onNotAvailable();
-        }
+        if (mBackend == GmsBackend.VERIFICATION) onNotAvailable();
     }
 
     // --------- Callbacks for receivers

@@ -54,7 +54,7 @@ class SmsProviderFakes {
 
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
-            BroadcastReceiver receiver = context.getRegisteredVerificationReceiver();
+            BroadcastReceiver receiver = context.createVerificationReceiverForTesting();
             receiver.onReceive(context, intent);
         }
 
@@ -89,7 +89,7 @@ class SmsProviderFakes {
                     SmsCodeRetriever.EXTRA_STATUS, new Status(CommonStatusCodes.TIMEOUT));
             intent.putExtras(bundle);
 
-            BroadcastReceiver receiver = context.getRegisteredVerificationReceiver();
+            BroadcastReceiver receiver = context.createVerificationReceiverForTesting();
             receiver.onReceive(context, intent);
         }
 
@@ -112,7 +112,7 @@ class SmsProviderFakes {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
 
-            SmsVerificationReceiver receiver = context.getRegisteredVerificationReceiver();
+            SmsVerificationReceiver receiver = context.createVerificationReceiverForTesting();
             receiver.onPermissionDone(window, Activity.RESULT_CANCELED);
         }
 
@@ -127,7 +127,7 @@ class SmsProviderFakes {
             }
 
             SmsVerificationReceiver receiver =
-                    (SmsVerificationReceiver) context.getRegisteredVerificationReceiver();
+                    (SmsVerificationReceiver) context.createVerificationReceiverForTesting();
             receiver.onPermissionDone(window, Activity.RESULT_OK);
         }
 
@@ -136,7 +136,7 @@ class SmsProviderFakes {
             Wrappers.WebOTPServiceContext context = super.getContext();
             assert context != null;
 
-            SmsVerificationReceiver receiver = context.getRegisteredVerificationReceiver();
+            SmsVerificationReceiver receiver = context.createVerificationReceiverForTesting();
             Log.i(TAG, "receiver %s", receiver);
 
             int code;

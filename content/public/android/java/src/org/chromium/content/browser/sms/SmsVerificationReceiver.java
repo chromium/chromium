@@ -73,6 +73,7 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
     }
 
     public void destroy() {
+        if (mDestroyed) return;
         if (DEBUG) Log.d(TAG, "Destroying SmsVerificationReceiver.");
         mDestroyed = true;
         mContext.unregisterReceiver(this);
@@ -182,9 +183,14 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         Wrappers.SmsRetrieverClientWrapper client = mProvider.getClient();
         Task<Void> task = client.startSmsCodeBrowserRetriever();
 
-        task.addOnSuccessListener(
-                unused -> { this.reportBackendAvailability(BackendAvailability.AVAILABLE); });
-        task.addOnFailureListener((Exception e) -> { this.onRetrieverTaskFailure(window, e); });
+        task.addOnSuccessListener(unused -> {
+            this.reportBackendAvailability(BackendAvailability.AVAILABLE);
+            mProvider.destoryUserConsentReceiver();
+        });
+        task.addOnFailureListener((Exception e) -> {
+            this.onRetrieverTaskFailure(window, e);
+            mProvider.destoryVerificationReceiver();
+        });
 
         if (DEBUG) Log.d(TAG, "Installed task");
     }
