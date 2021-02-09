@@ -108,20 +108,28 @@ void PaintInvalidator::UpdateDirectlyCompositedContainer(
              // This is to exclude some objects (e.g. LayoutText) inheriting
              // stacked style from parent but aren't actually stacked.
              object.HasLayer() &&
-             !To<LayoutBoxModelObject>(object)
-                  .Layer()
-                  ->IsReplacedNormalFlowStacking() &&
              context.directly_composited_container !=
                  context.directly_composited_container_for_stacked_contents) {
-    // The current object is stacked, so we should use
-    // directly_composited_container_for_stacked_contents as its paint
-    // invalidation container on which the current object is painted.
-    context.directly_composited_container =
-        context.directly_composited_container_for_stacked_contents;
-    if (context.subtree_flags &
-        PaintInvalidatorContext::kSubtreeFullInvalidationForStackedContents) {
-      context.subtree_flags |=
-          PaintInvalidatorContext::kSubtreeFullInvalidation;
+    if (To<LayoutBoxModelObject>(object)
+            .Layer()
+            ->IsReplacedNormalFlowStacking()) {
+      DCHECK(object.IsStackingContext());
+      // A ReplacedNormalFlowStacking object doesn't stack into parent stacking
+      // context, while the stacked descendants are stacked into it and inherit
+      // its direct_composited_container.
+      context.directly_composited_container_for_stacked_contents =
+          context.directly_composited_container;
+    } else {
+      // The current object is stacked, so we should use
+      // directly_composited_container_for_stacked_contents as its paint
+      // invalidation container on which the current object is painted.
+      context.directly_composited_container =
+          context.directly_composited_container_for_stacked_contents;
+      if (context.subtree_flags &
+          PaintInvalidatorContext::kSubtreeFullInvalidationForStackedContents) {
+        context.subtree_flags |=
+            PaintInvalidatorContext::kSubtreeFullInvalidation;
+      }
     }
   }
 
@@ -141,9 +149,10 @@ void PaintInvalidator::UpdateDirectlyCompositedContainer(
     }
   }
 
-  DCHECK(context.directly_composited_container ==
-         object.DirectlyCompositableContainer());
-  DCHECK(context.painting_layer == object.PaintingLayer());
+  DCHECK_EQ(context.directly_composited_container,
+            object.DirectlyCompositableContainer())
+      << object;
+  DCHECK_EQ(context.painting_layer, object.PaintingLayer()) << object;
 }
 
 void PaintInvalidator::UpdateFromTreeBuilderContext(

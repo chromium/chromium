@@ -557,6 +557,32 @@ TEST_P(CompositingTest, ContainPaintLayerBounds) {
   EXPECT_EQ(gfx::Size(200, 100), layer->bounds());
 }
 
+TEST_P(CompositingTest, SVGForeignObjectDirectlyCompositedContainer) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <!doctype html>
+    <div id="container" style="backface-visibility: hidden">
+      <svg>
+        <foreignObject id="foreign">
+          <div id="child" style="position: relative"></div>
+        </foreignObject>
+      </svg>
+    </body>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  // PaintInvalidator should use the same directly_composited_container during
+  // PrePaint and should not fail DCHECK.
+  auto* container = GetLayoutObjectById("container");
+  EXPECT_FALSE(container->IsStackingContext());
+  EXPECT_EQ(container,
+            &GetLayoutObjectById("foreign")->DirectlyCompositableContainer());
+  EXPECT_EQ(container,
+            &GetLayoutObjectById("child")->DirectlyCompositableContainer());
+}
+
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
   void InitializeWithHTML(const String& html) {
