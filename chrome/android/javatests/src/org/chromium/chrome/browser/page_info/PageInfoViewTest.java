@@ -38,7 +38,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -450,7 +449,6 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
-    @FlakyTest(message = "https://crbug.com/1147236")
     public void testClearCookiesOnSubpage() throws Exception {
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
