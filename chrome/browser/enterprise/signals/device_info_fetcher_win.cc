@@ -48,7 +48,7 @@ enum class BitLockerStatus {
 std::string GetSerialNumber() {
   base::win::WmiComputerSystemInfo sys_info =
       base::win::WmiComputerSystemInfo::Get();
-  return base::UTF16ToUTF8(sys_info.serial_number());
+  return base::WideToUTF8(sys_info.serial_number());
 }
 
 // Retrieves the FQDN of the comeputer and if this fails reverts to the hostname

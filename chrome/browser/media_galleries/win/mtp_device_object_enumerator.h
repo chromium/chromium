@@ -33,7 +33,7 @@ class MTPDeviceObjectEnumerator {
 
   // If the current file object entry is valid, returns an non-empty object id.
   // Returns an empty string otherwise.
-  base::string16 GetObjectId() const;
+  std::wstring GetObjectId() const;
 
  private:
   // Returns true if the enumerator has more entries to traverse, false

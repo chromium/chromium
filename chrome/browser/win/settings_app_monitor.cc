@@ -16,6 +16,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/scoped_variant.h"
@@ -51,8 +52,8 @@ void ConfigureCacheRequest(IUIAutomationCacheRequest* cache_request) {
 
 // Helper function to get the parent element with class name "Flyout". Used to
 // determine the |element|'s type.
-base::string16 GetFlyoutParentAutomationId(IUIAutomation* automation,
-                                           IUIAutomationElement* element) {
+std::wstring GetFlyoutParentAutomationId(IUIAutomation* automation,
+                                         IUIAutomationElement* element) {
   // Create a condition that will include only elements with the right class
   // name in the tree view.
   base::win::ScopedVariant class_name(L"Flyout");
@@ -60,17 +61,17 @@ base::string16 GetFlyoutParentAutomationId(IUIAutomation* automation,
   HRESULT result = automation->CreatePropertyCondition(UIA_ClassNamePropertyId,
                                                        class_name, &condition);
   if (FAILED(result))
-    return base::string16();
+    return std::wstring();
 
   Microsoft::WRL::ComPtr<IUIAutomationTreeWalker> tree_walker;
   result = automation->CreateTreeWalker(condition.Get(), &tree_walker);
   if (FAILED(result))
-    return base::string16();
+    return std::wstring();
 
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> cache_request;
   result = automation->CreateCacheRequest(&cache_request);
   if (FAILED(result))
-    return base::string16();
+    return std::wstring();
   ConfigureCacheRequest(cache_request.Get());
 
   // From MSDN, NormalizeElementBuildCache() "Retrieves the ancestor element
@@ -79,7 +80,7 @@ base::string16 GetFlyoutParentAutomationId(IUIAutomation* automation,
   result = tree_walker->NormalizeElementBuildCache(element, cache_request.Get(),
                                                    &flyout_element);
   if (FAILED(result) || !flyout_element)
-    return base::string16();
+    return std::wstring();
 
   return GetCachedBstrValue(flyout_element, UIA_AutomationIdPropertyId);
 }
@@ -88,14 +89,16 @@ ElementType DetectElementType(IUIAutomation* automation,
                               IUIAutomationElement* sender) {
   DCHECK(automation);
   DCHECK(sender);
-  base::string16 aid(GetCachedBstrValue(sender, UIA_AutomationIdPropertyId));
+  std::wstring aid(GetCachedBstrValue(sender, UIA_AutomationIdPropertyId));
   if (aid == L"SystemSettings_DefaultApps_Browser_Button")
     return ElementType::DEFAULT_BROWSER;
   if (aid == L"SystemSettings_DefaultApps_Browser_App0_HyperlinkButton")
     return ElementType::SWITCH_ANYWAY;
-  if (base::MatchPattern(aid, L"SystemSettings_DefaultApps_Browser_*_Button")) {
+  if (base::MatchPattern(
+          base::AsString16(aid),
+          STRING16_LITERAL("SystemSettings_DefaultApps_Browser_*_Button"))) {
     // This element type depends on the automation id of one of its ancestors.
-    base::string16 automation_id =
+    std::wstring automation_id =
         GetFlyoutParentAutomationId(automation, sender);
     if (automation_id == L"settingsFlyout")
       return ElementType::CHECK_IT_OUT;
@@ -185,8 +188,7 @@ void SettingsAppMonitor::AutomationControllerDelegate::OnAutomationEvent(
           base::BindOnce(&SettingsAppMonitor::OnChooserInvoked, monitor_));
       break;
     case ElementType::BROWSER_BUTTON: {
-      base::string16 browser_name(
-          GetCachedBstrValue(sender, UIA_NamePropertyId));
+      std::wstring browser_name(GetCachedBstrValue(sender, UIA_NamePropertyId));
       if (!browser_name.empty()) {
         monitor_runner_->PostTask(
             FROM_HERE, base::BindOnce(&SettingsAppMonitor::OnBrowserChosen,
@@ -286,7 +288,7 @@ void SettingsAppMonitor::OnChooserInvoked() {
   delegate_->OnChooserInvoked();
 }
 
-void SettingsAppMonitor::OnBrowserChosen(const base::string16& browser_name) {
+void SettingsAppMonitor::OnBrowserChosen(const std::wstring& browser_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->OnBrowserChosen(browser_name);
 }

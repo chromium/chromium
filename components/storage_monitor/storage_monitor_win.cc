@@ -122,19 +122,14 @@ void StorageMonitorWin::EjectDevice(
 
 bool StorageMonitorWin::GetMTPStorageInfoFromDeviceId(
     const std::string& storage_device_id,
-    base::string16* device_location,
-    base::string16* storage_object_id) const {
+    std::wstring* device_location,
+    std::wstring* storage_object_id) const {
   StorageInfo::Type type;
   StorageInfo::CrackDeviceId(storage_device_id, &type, nullptr);
   if (type != StorageInfo::MTP_OR_PTP)
     return false;
-  std::wstring location, id;
-  if (!portable_device_watcher_->GetMTPStorageInfoFromDeviceId(
-          storage_device_id, &location, &id))
-    return false;
-  *device_location = base::WideToUTF16(location);
-  *storage_object_id = base::WideToUTF16(id);
-  return true;
+  return portable_device_watcher_->GetMTPStorageInfoFromDeviceId(
+      storage_device_id, device_location, storage_object_id);
 }
 
 // static

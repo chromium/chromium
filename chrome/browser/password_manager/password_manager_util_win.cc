@@ -25,6 +25,7 @@
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/hang_watcher.h"
@@ -382,8 +383,8 @@ bool AuthenticateUser(gfx::NativeWindow window,
   CREDUI_INFO cui;
   cui.cbSize = sizeof(cui);
   cui.hwndParent = window->GetHost()->GetAcceleratedWidget();
-  cui.pszMessageText = password_prompt.c_str();
-  cui.pszCaptionText = product_name.c_str();
+  cui.pszMessageText = base::as_wcstr(password_prompt);
+  cui.pszCaptionText = base::as_wcstr(product_name);
   cui.hbmBanner = nullptr;
 
   // Disable hang watching until the end of the function since the user can take

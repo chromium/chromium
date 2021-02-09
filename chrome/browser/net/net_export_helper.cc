@@ -19,6 +19,7 @@
 #endif
 
 #if defined(OS_WIN)
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/net/service_providers_win.h"
 #endif
@@ -74,7 +75,8 @@ std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders() {
   auto layered_provider_list = std::make_unique<base::ListValue>();
   for (size_t i = 0; i < layered_providers.size(); ++i) {
     auto service_dict = std::make_unique<base::DictionaryValue>();
-    service_dict->SetString("name", layered_providers[i].name);
+    service_dict->SetString("name",
+                            base::AsString16(layered_providers[i].name));
     service_dict->SetInteger("version", layered_providers[i].version);
     service_dict->SetInteger("chain_length", layered_providers[i].chain_length);
     service_dict->SetInteger("socket_type", layered_providers[i].socket_type);
@@ -92,7 +94,8 @@ std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders() {
   auto namespace_list = std::make_unique<base::ListValue>();
   for (size_t i = 0; i < namespace_providers.size(); ++i) {
     auto namespace_dict = std::make_unique<base::DictionaryValue>();
-    namespace_dict->SetString("name", namespace_providers[i].name);
+    namespace_dict->SetString("name",
+                              base::AsString16(namespace_providers[i].name));
     namespace_dict->SetBoolean("active", namespace_providers[i].active);
     namespace_dict->SetInteger("version", namespace_providers[i].version);
     namespace_dict->SetInteger("type", namespace_providers[i].type);

@@ -11,7 +11,7 @@
 #include "base/strings/string16.h"
 
 struct WinsockNamespaceProvider {
-  base::string16 name;
+  std::wstring name;
   int version;
   bool active;
   int type;
@@ -23,7 +23,7 @@ struct WinsockLayeredServiceProvider {
   WinsockLayeredServiceProvider(const WinsockLayeredServiceProvider& other);
   ~WinsockLayeredServiceProvider();
 
-  base::string16 name;
+  std::wstring name;
   std::wstring path;
   int version;
   int chain_length;

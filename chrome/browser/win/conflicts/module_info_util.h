@@ -61,7 +61,7 @@ bool IsMicrosoftModule(base::StringPiece16 subject);
 // e.g. c:\windows\system32 -> %systemroot%
 using StringMapping = std::vector<std::pair<base::string16, base::string16>>;
 StringMapping GetEnvironmentVariablesMapping(
-    const std::vector<base::string16>& environment_variables);
+    const std::vector<std::wstring>& environment_variables);
 
 // If |prefix_mapping| contains a matching prefix with |path|, substitutes that
 // prefix with its associated value. If multiple matches are found, the longest

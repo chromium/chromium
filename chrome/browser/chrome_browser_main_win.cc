@@ -148,7 +148,7 @@ int GetMinimumFontSize() {
 
 class TranslationDelegate : public installer::TranslationDelegate {
  public:
-  base::string16 GetLocalizedString(int installer_string_id) override;
+  std::wstring GetLocalizedString(int installer_string_id) override;
 };
 
 void DetectFaultTolerantHeap() {
@@ -188,7 +188,7 @@ void DetectFaultTolerantHeap() {
 
   base::win::RegKey FTH_HKLM_reg(HKEY_LOCAL_MACHINE, kRegPath, kRegFlags);
   FTHFlags detected = FTHFlags();
-  base::string16 chrome_app_compat;
+  std::wstring chrome_app_compat;
   if (FTH_HKLM_reg.ReadValue(module_path, &chrome_app_compat) == 0) {
     // This *usually* indicates that the fault tolerant heap is enabled.
     if (wcsicmp(chrome_app_compat.c_str(), kFTHData) == 0)
@@ -616,10 +616,10 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   const auto& details = install_static::InstallDetails::Get();
 
   static crash_reporter::CrashKeyString<50> ap_value("ap");
-  ap_value.Set(base::UTF16ToUTF8(details.update_ap()));
+  ap_value.Set(base::WideToUTF8(details.update_ap()));
 
   static crash_reporter::CrashKeyString<32> update_cohort_name("cohort-name");
-  update_cohort_name.Set(base::UTF16ToUTF8(details.update_cohort_name()));
+  update_cohort_name.Set(base::WideToUTF8(details.update_cohort_name()));
 
   if (chrome::GetChannel() == version_info::Channel::CANARY) {
     content::RenderProcessHost::SetHungRendererAnalysisFunction(
@@ -636,8 +636,8 @@ void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {
 }
 
 void ChromeBrowserMainPartsWin::ShowMissingLocaleMessageBox() {
-  ui::MessageBox(NULL, base::ASCIIToUTF16(kMissingLocaleDataMessage),
-                 base::ASCIIToUTF16(kMissingLocaleDataTitle),
+  ui::MessageBox(NULL, base::ASCIIToWide(kMissingLocaleDataMessage),
+                 base::ASCIIToWide(kMissingLocaleDataTitle),
                  MB_OK | MB_ICONERROR | MB_TOPMOST);
 }
 
@@ -818,13 +818,15 @@ int ChromeBrowserMainPartsWin::HandleIconsCommands(
   if (parsed_command_line.HasSwitch(switches::kHideIcons)) {
     // TODO(740976): This is not up-to-date and not localized. Figure out if
     // the --hide-icons and --show-icons switches are still used.
-    base::string16 cp_applet(L"Programs and Features");
+    base::string16 cp_applet = STRING16_LITERAL("Programs and Features");
     const base::string16 msg =
         l10n_util::GetStringFUTF16(IDS_HIDE_ICONS_NOT_SUPPORTED, cp_applet);
     const base::string16 caption = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
     const UINT flags = MB_OKCANCEL | MB_ICONWARNING | MB_TOPMOST;
-    if (IDOK == ui::MessageBox(NULL, msg, caption, flags))
+    if (IDOK == ui::MessageBox(NULL, base::AsWString(msg),
+                               base::AsWString(caption), flags)) {
       ShellExecute(NULL, NULL, L"appwiz.cpl", NULL, NULL, SW_SHOWNORMAL);
+    }
 
     // Exit as we are not launching the browser.
     return content::RESULT_CODE_NORMAL_EXIT;
@@ -862,7 +864,7 @@ bool ChromeBrowserMainPartsWin::CheckMachineLevelInstall() {
           uninstall_cmd.AppendSwitch(installer::switches::kTriggerActiveSetup);
 
         const base::FilePath setup_exe(uninstall_cmd.GetProgram());
-        const base::string16 params(uninstall_cmd.GetArgumentsString());
+        const std::wstring params(uninstall_cmd.GetArgumentsString());
 
         SHELLEXECUTEINFO sei = { sizeof(sei) };
         sei.fMask = SEE_MASK_NOASYNC;
@@ -879,8 +881,7 @@ bool ChromeBrowserMainPartsWin::CheckMachineLevelInstall() {
   return false;
 }
 
-base::string16 TranslationDelegate::GetLocalizedString(
-    int installer_string_id) {
+std::wstring TranslationDelegate::GetLocalizedString(int installer_string_id) {
   int resource_id = 0;
   switch (installer_string_id) {
     // HANDLE_STRING is used by the DO_STRING_MAPPING macro which is in the
@@ -895,8 +896,8 @@ base::string16 TranslationDelegate::GetLocalizedString(
     NOTREACHED();
   }
   if (resource_id)
-    return l10n_util::GetStringUTF16(resource_id);
-  return base::string16();
+    return base::UTF16ToWide(l10n_util::GetStringUTF16(resource_id));
+  return std::wstring();
 }
 
 // static

@@ -42,14 +42,14 @@ namespace {
 // Gets the details of the MTP partition storage specified by the
 // |storage_path| on the UI thread. Returns true if the storage details are
 // valid and returns false otherwise.
-bool GetStorageInfoOnUIThread(const base::string16& storage_path,
-                              base::string16* pnp_device_id,
-                              base::string16* storage_object_id) {
+bool GetStorageInfoOnUIThread(const std::wstring& storage_path,
+                              std::wstring* pnp_device_id,
+                              std::wstring* storage_object_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!storage_path.empty());
   DCHECK(pnp_device_id);
   DCHECK(storage_object_id);
-  base::string16 storage_device_id;
+  std::wstring storage_device_id;
   base::RemoveChars(storage_path, L"\\\\", &storage_device_id);
   DCHECK(!storage_device_id.empty());
   // TODO(gbillock): Take the StorageMonitor as an argument.
@@ -57,7 +57,7 @@ bool GetStorageInfoOnUIThread(const base::string16& storage_path,
       storage_monitor::StorageMonitor::GetInstance();
   DCHECK(monitor);
   return monitor->GetMTPStorageInfoFromDeviceId(
-      base::UTF16ToUTF8(storage_device_id), pnp_device_id, storage_object_id);
+      base::WideToUTF8(storage_device_id), pnp_device_id, storage_object_id);
 }
 
 // Returns the object id of the file object specified by the |file_path|,
@@ -68,7 +68,7 @@ bool GetStorageInfoOnUIThread(const base::string16& storage_path,
 //
 // Returns an empty string if the device is detached while the request is in
 // progress or when the |file_path| is invalid.
-base::string16 GetFileObjectIdFromPathOnBlockingPoolThread(
+std::wstring GetFileObjectIdFromPathOnBlockingPoolThread(
     const MTPDeviceDelegateImplWin::StorageDeviceInfo& device_info,
     const base::FilePath& file_path) {
   DCHECK(!file_path.empty());
@@ -76,7 +76,7 @@ base::string16 GetFileObjectIdFromPathOnBlockingPoolThread(
       PortableDeviceMapService::GetInstance()->GetPortableDevice(
           device_info.registered_device_path);
   if (!device)
-    return base::string16();
+    return std::wstring();
 
   if (device_info.registered_device_path == file_path.value())
     return device_info.storage_object_id;
@@ -84,17 +84,16 @@ base::string16 GetFileObjectIdFromPathOnBlockingPoolThread(
   base::FilePath relative_path;
   if (!base::FilePath(device_info.registered_device_path).AppendRelativePath(
           file_path, &relative_path))
-    return base::string16();
+    return std::wstring();
 
-  std::vector<base::string16> path_components;
+  std::vector<std::wstring> path_components;
   relative_path.GetComponents(&path_components);
   DCHECK(!path_components.empty());
-  base::string16 parent_id(device_info.storage_object_id);
-  base::string16 file_object_id;
+  std::wstring parent_id(device_info.storage_object_id);
+  std::wstring file_object_id;
   for (size_t i = 0; i < path_components.size(); ++i) {
-    file_object_id =
-        media_transfer_protocol::GetObjectIdFromName(device, parent_id,
-                                                     path_components[i]);
+    file_object_id = media_transfer_protocol::GetObjectIdFromName(
+        device, parent_id, base::AsString16(path_components[i]));
     if (file_object_id.empty())
       break;
     parent_id = file_object_id;
@@ -116,7 +115,7 @@ CreateFileEnumeratorOnBlockingPoolThread(
   if (!device)
     return std::unique_ptr<MTPDeviceObjectEnumerator>();
 
-  base::string16 object_id =
+  std::wstring object_id =
       GetFileObjectIdFromPathOnBlockingPoolThread(device_info, root);
   if (object_id.empty())
     return std::unique_ptr<MTPDeviceObjectEnumerator>();
@@ -136,8 +135,8 @@ CreateFileEnumeratorOnBlockingPoolThread(
 // |registered_device_path| specifies the registered file system root path for
 // the given device.
 bool OpenDeviceOnBlockingPoolThread(
-    const base::string16& pnp_device_id,
-    const base::string16& registered_device_path) {
+    const std::wstring& pnp_device_id,
+    const std::wstring& registered_device_path) {
   DCHECK(!pnp_device_id.empty());
   DCHECK(!registered_device_path.empty());
   Microsoft::WRL::ComPtr<IPortableDevice> device =
@@ -167,7 +166,7 @@ base::File::Error GetFileInfoOnBlockingPoolThread(
   if (!device)
     return base::File::FILE_ERROR_FAILED;
 
-  base::string16 object_id =
+  std::wstring object_id =
       GetFileObjectIdFromPathOnBlockingPoolThread(device_info, file_path);
   if (object_id.empty())
     return base::File::FILE_ERROR_FAILED;
@@ -228,9 +227,8 @@ base::File::Error GetFileStreamOnBlockingPoolThread(
   if (!device)
     return base::File::FILE_ERROR_FAILED;
 
-  base::string16 file_object_id =
-      GetFileObjectIdFromPathOnBlockingPoolThread(
-          device_info, file_details->request_info().device_file_path);
+  std::wstring file_object_id = GetFileObjectIdFromPathOnBlockingPoolThread(
+      device_info, file_details->request_info().device_file_path);
   if (file_object_id.empty())
     return base::File::FILE_ERROR_FAILED;
 
@@ -283,7 +281,7 @@ DWORD WriteDataChunkIntoSnapshotFileOnBlockingPoolThread(
 }
 
 void DeletePortableDeviceOnBlockingPoolThread(
-    const base::string16& registered_device_path) {
+    const std::wstring& registered_device_path) {
   PortableDeviceMapService::GetInstance()->RemovePortableDevice(
       registered_device_path);
 }
@@ -293,10 +291,10 @@ void DeletePortableDeviceOnBlockingPoolThread(
 // Used by CreateMTPDeviceAsyncDelegate() to create the MTP device
 // delegate on the IO thread.
 void OnGetStorageInfoCreateDelegate(
-    const base::string16& device_location,
+    const std::wstring& device_location,
     CreateMTPDeviceAsyncDelegateCallback callback,
-    base::string16* pnp_device_id,
-    base::string16* storage_object_id,
+    std::wstring* pnp_device_id,
+    std::wstring* storage_object_id,
     bool succeeded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(pnp_device_id);
@@ -308,7 +306,7 @@ void OnGetStorageInfoCreateDelegate(
 }
 
 void CreateMTPDeviceAsyncDelegate(
-    const base::string16& device_location,
+    const std::wstring& device_location,
     const bool read_only,
     CreateMTPDeviceAsyncDelegateCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -317,8 +315,8 @@ void CreateMTPDeviceAsyncDelegate(
   DCHECK(read_only);
 
   DCHECK(!device_location.empty());
-  base::string16* pnp_device_id = new base::string16;
-  base::string16* storage_object_id = new base::string16;
+  std::wstring* pnp_device_id = new std::wstring;
+  std::wstring* storage_object_id = new std::wstring;
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetStorageInfoOnUIThread, device_location,
@@ -332,9 +330,9 @@ void CreateMTPDeviceAsyncDelegate(
 // MTPDeviceDelegateImplWin ---------------------------------------------------
 
 MTPDeviceDelegateImplWin::StorageDeviceInfo::StorageDeviceInfo(
-    const base::string16& pnp_device_id,
-    const base::string16& registered_device_path,
-    const base::string16& storage_object_id)
+    const std::wstring& pnp_device_id,
+    const std::wstring& registered_device_path,
+    const std::wstring& storage_object_id)
     : pnp_device_id(pnp_device_id),
       registered_device_path(registered_device_path),
       storage_object_id(storage_object_id) {
@@ -353,9 +351,9 @@ MTPDeviceDelegateImplWin::PendingTaskInfo::PendingTaskInfo(
 MTPDeviceDelegateImplWin::PendingTaskInfo::~PendingTaskInfo() = default;
 
 MTPDeviceDelegateImplWin::MTPDeviceDelegateImplWin(
-    const base::string16& registered_device_path,
-    const base::string16& pnp_device_id,
-    const base::string16& storage_object_id)
+    const std::wstring& registered_device_path,
+    const std::wstring& pnp_device_id,
+    const std::wstring& storage_object_id)
     : init_state_(UNINITIALIZED),
       media_task_runner_(MediaFileSystemBackend::MediaTaskRunner()),
       storage_device_info_(pnp_device_id,

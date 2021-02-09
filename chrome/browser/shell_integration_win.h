@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 namespace shell_integration {
 namespace win {
@@ -62,8 +61,8 @@ void SetAsDefaultProtocolClientUsingSystemSettings(
 // app name and profile path. The returned app id format is
 // "<install_static::GetBaseAppId()>.|app_name|[.<profile_id>]".
 // |profile_id| is only appended when it's not the default profile.
-base::string16 GetAppUserModelIdForApp(const base::string16& app_name,
-                                       const base::FilePath& profile_path);
+std::wstring GetAppUserModelIdForApp(const std::wstring& app_name,
+                                     const base::FilePath& profile_path);
 
 // Generates an application user model ID (AppUserModelId) for Chromium by
 // calling GetAppUserModelIdImpl() with ShellUtil::GetBrowserModelId() as
@@ -73,7 +72,7 @@ base::string16 GetAppUserModelIdForApp(const base::string16& app_name,
 // browser_suffix is only appended to the BaseAppId if the installer
 // has set the kRegisterChromeBrowserSuffix command line switch, e.g.,
 // on user-level installs.
-base::string16 GetAppUserModelIdForBrowser(const base::FilePath& profile_path);
+std::wstring GetAppUserModelIdForBrowser(const base::FilePath& profile_path);
 
 // Returns the taskbar pin state of Chrome via the IsPinnedToTaskbarCallback.
 // The first bool is true if the state could be calculated, and the second bool

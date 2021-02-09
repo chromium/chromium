@@ -127,7 +127,7 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 };
 
 // Path to shortcut and command line arguments.
-typedef std::pair<base::FilePath, base::string16> ShortcutCommand;
+typedef std::pair<base::FilePath, std::wstring> ShortcutCommand;
 
 typedef base::RefCountedData<base::AtomicFlag> SharedCancellationFlag;
 

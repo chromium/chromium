@@ -9,10 +9,10 @@
 #include <wrl/client.h>
 
 #include <map>
+#include <string>
 
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 
 // PortableDeviceMapService keeps track of initialized portable device
@@ -23,7 +23,7 @@ class PortableDeviceMapService {
 
   // Adds the portable |device| interface to the map service for the device
   // specified by the |device_location|. Called on a blocking pool thread.
-  void AddPortableDevice(const base::string16& device_location,
+  void AddPortableDevice(const std::wstring& device_location,
                          IPortableDevice* device);
 
   // Marks the IPortableDevice interface of the device specified by the
@@ -34,19 +34,19 @@ class PortableDeviceMapService {
   // remove the IPortableDevice interface from the map service.
   //
   // Called on the IO thread.
-  void MarkPortableDeviceForDeletion(const base::string16& device_location);
+  void MarkPortableDeviceForDeletion(const std::wstring& device_location);
 
   // Removes the IPortableDevice interface from the map service for the device
   // specified by the |device_location|. Callers of this function should have
   // already called MarkPortableDeviceForDeletion() on the IO thread.
   // Called on a blocking pool thread.
-  void RemovePortableDevice(const base::string16& device_location);
+  void RemovePortableDevice(const std::wstring& device_location);
 
   // Gets the IPortableDevice interface associated with the device specified
   // by the |device_location|. Returns NULL if the |device_location| is no
   // longer valid (e.g. the corresponding device is detached etc).
   // Called on a blocking pool thread.
-  IPortableDevice* GetPortableDevice(const base::string16& device_location);
+  IPortableDevice* GetPortableDevice(const std::wstring& device_location);
 
  private:
   friend struct base::LazyInstanceTraitsBase<PortableDeviceMapService>;
@@ -63,7 +63,7 @@ class PortableDeviceMapService {
     bool scheduled_to_delete;
   };
 
-  typedef std::map<const base::string16, PortableDeviceInfo> PortableDeviceMap;
+  typedef std::map<const std::wstring, PortableDeviceInfo> PortableDeviceMap;
 
   // Get access to this class using GetInstance() method.
   PortableDeviceMapService();

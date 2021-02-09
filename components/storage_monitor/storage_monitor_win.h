@@ -42,8 +42,8 @@ class StorageMonitorWin : public StorageMonitor {
                              StorageInfo* device_info) const override;
   bool GetMTPStorageInfoFromDeviceId(
       const std::string& storage_device_id,
-      base::string16* device_location,
-      base::string16* storage_object_id) const override;
+      std::wstring* device_location,
+      std::wstring* storage_object_id) const override;
 
   void EjectDevice(const std::string& device_id,
                    base::OnceCallback<void(EjectStatus)> callback) override;

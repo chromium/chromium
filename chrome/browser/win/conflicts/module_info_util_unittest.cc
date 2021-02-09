@@ -83,7 +83,7 @@ TEST(ModuleInfoUtilTest, GetEnvironmentVariablesMapping) {
                                                                 "C:\\bar\\");
 
   // The mapping for these variables will be retrieved.
-  std::vector<base::string16> environment_variables = {
+  std::vector<std::wstring> environment_variables = {
       L"foo",
       L"SYSTEMROOT",
   };

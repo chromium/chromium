@@ -53,18 +53,18 @@ base::FilePath HeadlessCrashReporterClient::GetReporterLogFilename() {
 
 bool HeadlessCrashReporterClient::GetCrashDumpLocation(
 #if defined(OS_WIN)
-    base::string16* crash_dir
+    std::wstring* crash_dir
 #else
     base::FilePath* crash_dir
 #endif
-    ) {
+) {
   base::FilePath crash_directory = crash_dumps_dir_;
   if (crash_directory.empty() &&
       !base::PathService::Get(base::DIR_MODULE, &crash_directory)) {
     return false;
   }
 #if defined(OS_WIN)
-  *crash_dir = crash_directory.AsUTF16Unsafe();
+  *crash_dir = crash_directory.value();
 #else
   *crash_dir = std::move(crash_directory);
 #endif

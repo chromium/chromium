@@ -21,7 +21,7 @@ PortableDeviceMapService* PortableDeviceMapService::GetInstance() {
 }
 
 void PortableDeviceMapService::AddPortableDevice(
-    const base::string16& device_location,
+    const std::wstring& device_location,
     IPortableDevice* device) {
   DCHECK(!device_location.empty());
   DCHECK(device);
@@ -30,7 +30,7 @@ void PortableDeviceMapService::AddPortableDevice(
 }
 
 void PortableDeviceMapService::MarkPortableDeviceForDeletion(
-    const base::string16& device_location) {
+    const std::wstring& device_location) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!device_location.empty());
   base::AutoLock lock(lock_);
@@ -40,7 +40,7 @@ void PortableDeviceMapService::MarkPortableDeviceForDeletion(
 }
 
 void PortableDeviceMapService::RemovePortableDevice(
-    const base::string16& device_location) {
+    const std::wstring& device_location) {
   DCHECK(!device_location.empty());
   base::AutoLock lock(lock_);
   PortableDeviceMap::const_iterator it = device_map_.find(device_location);
@@ -49,7 +49,7 @@ void PortableDeviceMapService::RemovePortableDevice(
 }
 
 IPortableDevice* PortableDeviceMapService::GetPortableDevice(
-    const base::string16& device_location) {
+    const std::wstring& device_location) {
   DCHECK(!device_location.empty());
   base::AutoLock lock(lock_);
   PortableDeviceMap::const_iterator it = device_map_.find(device_location);

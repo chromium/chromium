@@ -9,6 +9,7 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
@@ -16,7 +17,6 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 #include "storage/browser/file_system/async_file_util.h"
 
@@ -39,30 +39,30 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
  public:
   // Structure used to represent MTP device storage partition details.
   struct StorageDeviceInfo {
-    StorageDeviceInfo(const base::string16& pnp_device_id,
-                      const base::string16& registered_device_path,
-                      const base::string16& storage_object_id);
+    StorageDeviceInfo(const std::wstring& pnp_device_id,
+                      const std::wstring& registered_device_path,
+                      const std::wstring& storage_object_id);
 
     // The PnP Device Id, used to open the device for communication,
     // e.g. "\\?\usb#vid_04a9&pid_3073#12#{6ac27878-a6fa-4155-ba85-f1d4f33}".
-    const base::string16 pnp_device_id;
+    const std::wstring pnp_device_id;
 
     // The media file system root path, which is obtained during the
     // registration of MTP device storage partition as a file system,
     // e.g. "\\MTP:StorageSerial:SID-{10001,E,9823}:237483".
-    const base::string16 registered_device_path;
+    const std::wstring registered_device_path;
 
     // The MTP device storage partition object identifier, used to enumerate the
     // storage contents, e.g. "s10001".
-    const base::string16 storage_object_id;
+    const std::wstring storage_object_id;
   };
 
  private:
   friend void OnGetStorageInfoCreateDelegate(
-      const base::string16& device_location,
+      const std::wstring& device_location,
       CreateMTPDeviceAsyncDelegateCallback callback,
-      base::string16* pnp_device_id,
-      base::string16* storage_object_id,
+      std::wstring* pnp_device_id,
+      std::wstring* storage_object_id,
       bool succeeded);
 
   enum InitializationState {
@@ -86,9 +86,9 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
 
   // Defers the device initializations until the first file operation request.
   // Do all the initializations in EnsureInitAndRunTask() function.
-  MTPDeviceDelegateImplWin(const base::string16& registered_device_path,
-                           const base::string16& pnp_device_id,
-                           const base::string16& storage_object_id);
+  MTPDeviceDelegateImplWin(const std::wstring& registered_device_path,
+                           const std::wstring& pnp_device_id,
+                           const std::wstring& storage_object_id);
 
   // Destructed via CancelPendingTasksAndDeleteDelegate().
   ~MTPDeviceDelegateImplWin() override;

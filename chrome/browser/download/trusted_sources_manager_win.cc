@@ -36,8 +36,8 @@ bool TrustedSourcesManagerWin::IsFromTrustedSource(const GURL& url) const {
   // URLZONE_INTERNET      3
   // URLZONE_UNTRUSTED     4
   DWORD zone = 0;
-  base::string16 url16 = base::ASCIIToUTF16(url.spec());
-  hr = security_manager->MapUrlToZone(url16.c_str(), &zone, 0);
+  std::wstring urlw = base::ASCIIToWide(url.spec());
+  hr = security_manager->MapUrlToZone(urlw.c_str(), &zone, 0);
   if (FAILED(hr)) {
     LOG(ERROR) << "security_manager->MapUrlToZone failed with hr: " << std::hex
                << hr;

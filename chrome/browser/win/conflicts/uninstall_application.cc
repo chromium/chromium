@@ -196,7 +196,7 @@ void UninstallAppController::AutomationControllerDelegate::OnAutomationEvent(
 void UninstallAppController::AutomationControllerDelegate::OnFocusChangedEvent(
     IUIAutomation* automation,
     IUIAutomationElement* sender) const {
-  base::string16 combo_box_id(
+  std::wstring combo_box_id(
       GetCachedBstrValue(sender, UIA_AutomationIdPropertyId));
   if (combo_box_id != L"SystemSettings_AppsFeatures_AppControl_ComboBox")
     return;

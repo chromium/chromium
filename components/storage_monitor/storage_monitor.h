@@ -117,8 +117,8 @@ class StorageMonitor {
   // persistent across sessions.
   virtual bool GetMTPStorageInfoFromDeviceId(
       const std::string& storage_device_id,
-      base::string16* device_location,
-      base::string16* storage_object_id) const = 0;
+      std::wstring* device_location,
+      std::wstring* storage_object_id) const = 0;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

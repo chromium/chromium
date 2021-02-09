@@ -43,15 +43,15 @@ constexpr wchar_t kPrinters[] = L"Printers";
 
 // Retrieves the path to the registry key that contains all the shell extensions
 // of type |shell_extension_type| that apply to |shell_object_type|.
-base::string16 GetShellExtensionTypePath(const wchar_t* shell_extension_type,
-                                         const wchar_t* shell_object_type) {
+std::wstring GetShellExtensionTypePath(const wchar_t* shell_extension_type,
+                                       const wchar_t* shell_object_type) {
   return base::StringPrintf(L"%ls\\shellex\\%ls", shell_object_type,
                             shell_extension_type);
 }
 
 // Returns the path to the DLL for an InProcServer32 registration.
 base::FilePath GetInProcServerPath(const wchar_t* guid) {
-  base::string16 key = base::StringPrintf(kClassIdRegistryKeyFormat, guid);
+  std::wstring key = base::StringPrintf(kClassIdRegistryKeyFormat, guid);
 
   base::win::RegKey clsid;
   if (clsid.Open(HKEY_CLASSES_ROOT, key.c_str(), KEY_QUERY_VALUE) !=
@@ -59,7 +59,7 @@ base::FilePath GetInProcServerPath(const wchar_t* guid) {
     return base::FilePath();
   }
 
-  base::string16 dll_path;
+  std::wstring dll_path;
   if (clsid.ReadValue(L"", &dll_path) != ERROR_SUCCESS)
     return base::FilePath();
 
@@ -72,15 +72,15 @@ void ReadShellExtensions(
     const wchar_t* shell_extension_type,
     const wchar_t* shell_object_type,
     const base::RepeatingCallback<void(const base::FilePath&)>& callback) {
-  base::string16 path =
+  std::wstring path =
       GetShellExtensionTypePath(shell_extension_type, shell_object_type);
 
   DCHECK_NE(path.back(), L'\\');
 
-  base::string16 guid;
+  std::wstring guid;
   for (base::win::RegistryKeyIterator iter(HKEY_CLASSES_ROOT, path.c_str());
        iter.Valid(); ++iter) {
-    base::string16 shell_extension_reg_path = path + L"\\" + iter.Name();
+    std::wstring shell_extension_reg_path = path + L"\\" + iter.Name();
     base::win::RegKey reg_key(
         HKEY_CLASSES_ROOT, shell_extension_reg_path.c_str(), KEY_QUERY_VALUE);
     if (!reg_key.Valid())

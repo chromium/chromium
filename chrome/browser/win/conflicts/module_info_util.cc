@@ -259,13 +259,13 @@ bool IsMicrosoftModule(base::StringPiece16 subject) {
 }
 
 StringMapping GetEnvironmentVariablesMapping(
-    const std::vector<base::string16>& environment_variables) {
+    const std::vector<std::wstring>& environment_variables) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
 
   StringMapping string_mapping;
-  for (const base::string16& variable : environment_variables) {
+  for (const std::wstring& variable : environment_variables) {
     std::string value;
-    if (environment->GetVar(base::UTF16ToASCII(variable).c_str(), &value)) {
+    if (environment->GetVar(base::WideToASCII(variable).c_str(), &value)) {
       value = base::TrimString(value, "\\", base::TRIM_TRAILING).as_string();
       string_mapping.push_back(
           std::make_pair(base::i18n::ToLower(base::UTF8ToUTF16(value)),

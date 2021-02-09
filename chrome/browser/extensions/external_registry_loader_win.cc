@@ -187,9 +187,8 @@ ExternalRegistryLoader::LoadPrefsOnBlockingThread() {
 
     prefs->SetString(MakePrefName(id, ExternalProviderImpl::kExternalVersion),
                      base::WideToASCII(extension_version));
-    prefs->SetString(
-        MakePrefName(id, ExternalProviderImpl::kExternalCrx),
-        extension_path_str);
+    prefs->SetString(MakePrefName(id, ExternalProviderImpl::kExternalCrx),
+                     base::AsString16(extension_path_str));
     prefs->SetBoolean(
         MakePrefName(id, ExternalProviderImpl::kMayBeUntrusted),
         true);

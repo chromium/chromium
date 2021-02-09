@@ -12,22 +12,22 @@
 #include "base/strings/string_util.h"
 #include "base/win/scoped_variant.h"
 
-base::string16 GetCachedBstrValue(IUIAutomationElement* element,
-                                  PROPERTYID property_id) {
+std::wstring GetCachedBstrValue(IUIAutomationElement* element,
+                                PROPERTYID property_id) {
   HRESULT result = S_OK;
   base::win::ScopedVariant var;
 
   result = element->GetCachedPropertyValueEx(property_id, TRUE, var.Receive());
   if (FAILED(result))
-    return base::string16();
+    return std::wstring();
 
   if (V_VT(var.ptr()) != VT_BSTR) {
     LOG_IF(ERROR, V_VT(var.ptr()) != VT_UNKNOWN)
         << __func__ << " property is not a BSTR: " << V_VT(var.ptr());
-    return base::string16();
+    return std::wstring();
   }
 
-  return base::string16(V_BSTR(var.ptr()));
+  return std::wstring(V_BSTR(var.ptr()));
 }
 
 bool GetCachedBoolValue(IUIAutomationElement* element, PROPERTYID property_id) {

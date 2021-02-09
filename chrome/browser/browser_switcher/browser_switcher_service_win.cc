@@ -214,7 +214,7 @@ GURL BrowserSwitcherServiceWin::GetIeemSitelistUrl() {
   std::wstring url_string;
   if (ERROR_SUCCESS != key.ReadValue(kIeSiteListValue, &url_string))
     return GURL();
-  return GURL(base::UTF16ToUTF8(url_string));
+  return GURL(base::WideToUTF8(url_string));
 }
 
 void BrowserSwitcherServiceWin::OnIeemSitelistParsed(ParsedXml xml) {

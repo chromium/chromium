@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/win/icon_reader_service.h"
@@ -116,16 +117,17 @@ void IconLoaderHelper::OnReadIconExecuted(const gfx::ImageSkia& icon,
                                           const base::string16& group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::wstring icon_group = base::AsWString(group);
   if (icon.isNull()) {
-    std::move(finally_).Run(std::move(default_icon_), group);
+    std::move(finally_).Run(std::move(default_icon_), icon_group);
   } else {
     gfx::Image image(icon);
-    std::move(finally_).Run(std::move(image), group);
+    std::move(finally_).Run(std::move(image), icon_group);
   }
 }
 
 // Must be called in a COM context. |group| should be a file extension.
-gfx::Image GetIconForFileExtension(base::string16 group,
+gfx::Image GetIconForFileExtension(const std::wstring& group,
                                    IconLoader::IconSize icon_size) {
   int size = 0;
   switch (icon_size) {

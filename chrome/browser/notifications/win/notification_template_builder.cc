@@ -193,7 +193,7 @@ void WriteImageElement(XmlWriter* xml_writer,
   if (!path.empty()) {
     xml_writer->StartElement(kImageElement);
     xml_writer->AddAttribute(kPlacement, placement);
-    xml_writer->AddAttribute(kSrc, base::UTF16ToUTF8(path.value()));
+    xml_writer->AddAttribute(kSrc, base::WideToUTF8(path.value()));
     if (!hint_crop.empty())
       xml_writer->AddAttribute(kHintCrop, hint_crop);
     xml_writer->EndElement();

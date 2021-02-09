@@ -212,7 +212,7 @@ std::unique_ptr<reset_report::ChromeResetReport> SerializeSettingsReportToProto(
 
   if (field_mask & ResettableSettingsSnapshot::SHORTCUTS) {
     for (const auto& shortcut_command : snapshot.shortcuts())
-      report->add_shortcuts(base::UTF16ToUTF8(shortcut_command.second));
+      report->add_shortcuts(base::WideToUTF8(shortcut_command.second));
   }
 
   report->set_guid(snapshot.guid());
@@ -318,7 +318,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
       if (!shortcut_targets.empty())
         shortcut_targets += base::ASCIIToUTF16("\n");
       shortcut_targets += base::ASCIIToUTF16("chrome.exe ");
-      shortcut_targets += i->second;
+      shortcut_targets += base::WideToUTF16(i->second);
     }
     if (!shortcut_targets.empty()) {
       AddPair(list.get(),

@@ -63,7 +63,7 @@ void RecordBlacklistSetupEvent(BlacklistSetupEventType blacklist_setup_event) {
                                 BLACKLIST_SETUP_EVENT_MAX);
 }
 
-base::string16 GetBeaconRegistryPath() {
+std::wstring GetBeaconRegistryPath() {
   return install_static::GetRegistryPath().append(
       blacklist::kRegistryBeaconKeyName);
 }
@@ -84,7 +84,7 @@ void InitializeChromeElf() {
   // sandbox::MITIGATION_EXTENSION_POINT_DISABLE is set properly in reg.
   // Note: the very existence of this key signals elf to not enable
   // this mitigation on browser next start.
-  const base::string16 finch_path(install_static::GetRegistryPath().append(
+  const std::wstring finch_path(install_static::GetRegistryPath().append(
       elf_sec::kRegSecurityFinchKeyName));
   base::win::RegKey finch_security_registry_key(HKEY_CURRENT_USER,
                                                 finch_path.c_str(), KEY_READ);
@@ -143,7 +143,7 @@ void BrowserBlacklistBeaconSetup() {
   }
 
   // Find the last recorded blacklist version.
-  base::string16 blacklist_version;
+  std::wstring blacklist_version;
   blacklist_registry_key.ReadValue(blacklist::kBeaconVersion,
                                    &blacklist_version);
 

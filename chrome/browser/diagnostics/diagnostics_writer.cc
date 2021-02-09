@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -75,9 +76,10 @@ class WinConsole : public SimpleConsole {
 
   bool Init() override { return SetIOHandles(); }
 
-  bool Write(const std::wstring& txt) override {
+  bool Write(const base::string16& txt) override {
     DWORD sz = txt.size();
-    return (TRUE == ::WriteConsoleW(std_out_, txt.c_str(), sz, &sz, NULL));
+    return (TRUE ==
+            ::WriteConsoleW(std_out_, base::as_wcstr(txt), sz, &sz, NULL));
   }
 
   // Reads a string from the console. Internally it is limited to 256
@@ -85,7 +87,7 @@ class WinConsole : public SimpleConsole {
   void OnQuit() override {
     // Block here so the user can see the results.
     SetColor(SimpleConsole::DEFAULT);
-    Write(L"Press [enter] to continue\n");
+    Write(STRING16_LITERAL("Press [enter] to continue\n"));
     wchar_t buf[256];
     DWORD read = base::size(buf);
     ::ReadConsoleW(std_in_, buf, read, &read, NULL);

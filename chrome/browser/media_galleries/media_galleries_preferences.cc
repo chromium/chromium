@@ -222,7 +222,7 @@ bool PopulateGalleryPrefInfoFromDictionary(
   MediaGalleryPrefId pref_id;
   base::string16 display_name;
   std::string device_id;
-  base::FilePath::StringType path;
+  std::string path;
   MediaGalleryPrefInfo::Type type = MediaGalleryPrefInfo::kInvalidType;
   base::string16 volume_label;
   base::string16 vendor_name;
@@ -268,7 +268,7 @@ bool PopulateGalleryPrefInfoFromDictionary(
   out_gallery_info->pref_id = pref_id;
   out_gallery_info->display_name = display_name;
   out_gallery_info->device_id = device_id;
-  out_gallery_info->path = base::FilePath(path);
+  out_gallery_info->path = base::FilePath::FromUTF8Unsafe(path);
   out_gallery_info->type = type;
   out_gallery_info->volume_label = volume_label;
   out_gallery_info->vendor_name = vendor_name;
@@ -288,7 +288,7 @@ std::unique_ptr<base::DictionaryValue> CreateGalleryPrefInfoDictionary(
   dict->SetString(kMediaGalleriesPrefIdKey,
                   base::NumberToString(gallery.pref_id));
   dict->SetString(kMediaGalleriesDeviceIdKey, gallery.device_id);
-  dict->SetString(kMediaGalleriesPathKey, gallery.path.value());
+  dict->SetString(kMediaGalleriesPathKey, gallery.path.AsUTF8Unsafe());
   dict->SetString(kMediaGalleriesTypeKey, TypeToStringValue(gallery.type));
 
   if (gallery.default_gallery_type != MediaGalleryPrefInfo::kNotDefault) {

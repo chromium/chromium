@@ -17,7 +17,7 @@
 // IPortableDeviceProperties::GetValues().
 struct MTPDeviceObjectEntry {
   MTPDeviceObjectEntry();  // Necessary for STL.
-  MTPDeviceObjectEntry(const base::string16& object_id,
+  MTPDeviceObjectEntry(const std::wstring& object_id,
                        const base::string16& object_name,
                        bool is_directory,
                        int64_t size,
@@ -25,7 +25,7 @@ struct MTPDeviceObjectEntry {
 
   // The object identifier obtained using IEnumPortableDeviceObjectIDs::Next(),
   // e.g. "o299".
-  base::string16 object_id;
+  std::wstring object_id;
 
   // Friendly name of the object, e.g. "IMG_9911.jpeg".
   base::string16 name;

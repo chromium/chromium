@@ -27,23 +27,22 @@ namespace media_transfer_protocol {
 // play device ID string. On success, returns the IPortableDevice interface.
 // On failure, returns NULL.
 Microsoft::WRL::ComPtr<IPortableDevice> OpenDevice(
-    const base::string16& pnp_device_id);
+    const std::wstring& pnp_device_id);
 
 // Gets the details of the object specified by |object_id| from the given MTP
 // |device|. On success, returns no error (base::File::FILE_OK) and fills in
 // |file_entry_info|. On failure, returns the corresponding platform file error
 // and |file_entry_info| is not set.
-base::File::Error GetFileEntryInfo(
-    IPortableDevice* device,
-    const base::string16& object_id,
-    base::File::Info* file_entry_info);
+base::File::Error GetFileEntryInfo(IPortableDevice* device,
+                                   const std::wstring& object_id,
+                                   base::File::Info* file_entry_info);
 
 // Gets the entries of the directory specified by |directory_object_id| from
 // the given MTP |device|. On success, returns true and fills in
 // |object_entries|. On failure, returns false and |object_entries| is not
 // set.
 bool GetDirectoryEntries(IPortableDevice* device,
-                         const base::string16& directory_object_id,
+                         const std::wstring& directory_object_id,
                          MTPDeviceObjectEntries* object_entries);
 
 // Gets an IStream interface to read the object content data from the |device|.
@@ -52,7 +51,7 @@ bool GetDirectoryEntries(IPortableDevice* device,
 // On failure, returns an error code and |file_stream| and
 // |optimal_transfer_size| are not set.
 HRESULT GetFileStreamForObject(IPortableDevice* device,
-                               const base::string16& file_object_id,
+                               const std::wstring& file_object_id,
                                IStream** file_stream,
                                DWORD* optimal_transfer_size);
 
@@ -74,9 +73,9 @@ DWORD CopyDataChunkToLocalFile(IStream* stream,
 // Returns the identifier of the object specified by the |object_name|.
 // |parent_id| specifies the object's parent identifier.
 // |object_name| specifies the friendly name of the object.
-base::string16 GetObjectIdFromName(IPortableDevice* device,
-                                   const base::string16& parent_id,
-                                   const base::string16& object_name);
+std::wstring GetObjectIdFromName(IPortableDevice* device,
+                                 const std::wstring& parent_id,
+                                 const base::string16& object_name);
 
 }  // namespace media_transfer_protocol
 

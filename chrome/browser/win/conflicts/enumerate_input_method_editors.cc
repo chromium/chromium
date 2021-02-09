@@ -63,9 +63,9 @@ bool IsMicrosoftIme(const wchar_t* ime_guid) {
 // Returns the path to the in-proc server DLL for |guid|, or an empty path if
 // none is found.
 base::FilePath GetInprocServerDllPath(const wchar_t* guid) {
-  base::string16 key_name = base::StringPrintf(kClassIdRegistryKeyFormat, guid);
+  std::wstring key_name = base::StringPrintf(kClassIdRegistryKeyFormat, guid);
   base::win::RegKey registry_key;
-  base::string16 value;
+  std::wstring value;
   if (registry_key.Open(HKEY_CLASSES_ROOT, key_name.c_str(), KEY_QUERY_VALUE) ==
           ERROR_SUCCESS &&
       registry_key.ReadValue(L"", &value) == ERROR_SUCCESS) {
