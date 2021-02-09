@@ -241,7 +241,7 @@ suite('ManageProfileTests', function() {
 
       // Simulate tapping the profile shortcut toggle.
       hasShortcutToggle.click();
-      return browserProxy.whenCalled('addProfileShortcut');
+      await browserProxy.whenCalled('addProfileShortcut');
     }
     setFlags({newProfilePicker: false, profileShortcutsEnabled: true});
     await profileShortcutToggle();

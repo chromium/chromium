@@ -29,7 +29,7 @@ suite('SyncAccountControl', function() {
     testElement.syncStatus = {signedIn: signedIn};
   }
 
-  setup(function() {
+  setup(async function() {
     setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.instance_ = browserProxy;
@@ -45,52 +45,50 @@ suite('SyncAccountControl', function() {
     };
     document.body.appendChild(testElement);
 
-    return browserProxy.whenCalled('getStoredAccounts').then(() => {
-      flush();
-      simulateStoredAccounts([
-        {
-          fullName: 'fooName',
-          givenName: 'foo',
-          email: 'foo@foo.com',
-        },
-        {
-          fullName: 'barName',
-          givenName: 'bar',
-          email: 'bar@bar.com',
-        },
-      ]);
-    });
+    await browserProxy.whenCalled('getStoredAccounts');
+    flush();
+    simulateStoredAccounts([
+      {
+        fullName: 'fooName',
+        givenName: 'foo',
+        email: 'foo@foo.com',
+      },
+      {
+        fullName: 'barName',
+        givenName: 'bar',
+        email: 'bar@bar.com',
+      },
+    ]);
   });
 
   teardown(function() {
     testElement.remove();
   });
 
-  test('promo shows/hides in the right states', function() {
+  test('promo shows/hides in the right states', async function() {
     // Not signed in, no accounts, will show banner.
     simulateStoredAccounts([]);
     forcePromoResetWithCount(0, false);
     const banner = testElement.$$('#banner');
     assertTrue(isVisible(banner));
     // Flipping signedIn in forcePromoResetWithCount should increment count.
-    return browserProxy.whenCalled('incrementPromoImpressionCount').then(() => {
-      forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, false);
-      assertFalse(isVisible(banner));
+    await browserProxy.whenCalled('incrementPromoImpressionCount');
+    forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, false);
+    assertFalse(isVisible(banner));
 
-      // Not signed in, has accounts, will show banner.
-      simulateStoredAccounts([{email: 'foo@foo.com'}]);
-      forcePromoResetWithCount(0, false);
-      assertTrue(isVisible(banner));
-      forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, false);
-      assertFalse(isVisible(banner));
+    // Not signed in, has accounts, will show banner.
+    simulateStoredAccounts([{email: 'foo@foo.com'}]);
+    forcePromoResetWithCount(0, false);
+    assertTrue(isVisible(banner));
+    forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, false);
+    assertFalse(isVisible(banner));
 
-      // signed in, banners never show.
-      simulateStoredAccounts([{email: 'foo@foo.com'}]);
-      forcePromoResetWithCount(0, true);
-      assertFalse(isVisible(banner));
-      forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, true);
-      assertFalse(isVisible(banner));
-    });
+    // signed in, banners never show.
+    simulateStoredAccounts([{email: 'foo@foo.com'}]);
+    forcePromoResetWithCount(0, true);
+    assertFalse(isVisible(banner));
+    forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, true);
+    assertFalse(isVisible(banner));
   });
 
   test('promo header is visible', function() {
@@ -121,7 +119,7 @@ suite('SyncAccountControl', function() {
     }
   });
 
-  test('not signed in but has stored accounts', function() {
+  test('not signed in but has stored accounts', async function() {
     // Chrome OS users are always signed in.
     if (isChromeOS) {
       return;
@@ -175,47 +173,40 @@ suite('SyncAccountControl', function() {
     syncButton.click();
     flush();
 
-    return browserProxy.whenCalled('startSyncingWithEmail')
-        .then((args) => {
-          const email = args[0];
-          const isDefaultPromoAccount = args[1];
+    let [email, isDefaultPromoAccount] =
+        await browserProxy.whenCalled('startSyncingWithEmail');
+    assertEquals(email, 'foo@foo.com');
+    assertEquals(isDefaultPromoAccount, true);
 
-          assertEquals(email, 'foo@foo.com');
-          assertEquals(isDefaultPromoAccount, true);
+    assertTrue(isChildVisible(testElement, 'cr-icon-button'));
+    assertTrue(testElement.$$('#sync-icon-container').hidden);
 
-          assertTrue(isChildVisible(testElement, 'cr-icon-button'));
-          assertTrue(testElement.$$('#sync-icon-container').hidden);
+    testElement.$$('#dropdown-arrow').click();
+    flush();
+    assertTrue(testElement.$$('#menu').open);
 
-          testElement.$$('#dropdown-arrow').click();
-          flush();
-          assertTrue(testElement.$$('#menu').open);
+    // Switching selected account will update UI with the right name and
+    // email.
+    items[1].click();
+    flush();
+    assertFalse(userInfo.textContent.includes('fooName'));
+    assertFalse(userInfo.textContent.includes('foo@foo.com'));
+    assertTrue(userInfo.textContent.includes('barName'));
+    assertTrue(userInfo.textContent.includes('bar@bar.com'));
+    assertTrue(isVisible(syncButton));
 
-          // Switching selected account will update UI with the right name and
-          // email.
-          items[1].click();
-          flush();
-          assertFalse(userInfo.textContent.includes('fooName'));
-          assertFalse(userInfo.textContent.includes('foo@foo.com'));
-          assertTrue(userInfo.textContent.includes('barName'));
-          assertTrue(userInfo.textContent.includes('bar@bar.com'));
-          assertTrue(isVisible(syncButton));
+    browserProxy.resetResolver('startSyncingWithEmail');
+    syncButton.click();
+    flush();
 
-          browserProxy.resetResolver('startSyncingWithEmail');
-          syncButton.click();
-          flush();
+    [email, isDefaultPromoAccount] =
+        await browserProxy.whenCalled('startSyncingWithEmail');
+    assertEquals(email, 'bar@bar.com');
+    assertEquals(isDefaultPromoAccount, false);
 
-          return browserProxy.whenCalled('startSyncingWithEmail');
-        })
-        .then((args) => {
-          const email = args[0];
-          const isDefaultPromoAccount = args[1];
-          assertEquals(email, 'bar@bar.com');
-          assertEquals(isDefaultPromoAccount, false);
-
-          // Tapping the last menu item will initiate sign-in.
-          items[2].click();
-          return browserProxy.whenCalled('startSignIn');
-        });
+    // Tapping the last menu item will initiate sign-in.
+    items[2].click();
+    await browserProxy.whenCalled('startSignIn');
   });
 
   test('signed in, no error', function() {

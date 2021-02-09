@@ -15,13 +15,13 @@ import {waitBeforeNextRender} from 'chrome://test/test_util.m.js';
 
 // clang-format on
 
-suite('SyncControlsTest', function() {
+suite('SyncControlsTest', async function() {
   let syncControls = null;
   let browserProxy = null;
   let syncEverything = null;
   let customizeSync = null;
 
-  setup(function() {
+  setup(async function() {
     setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.instance_ = browserProxy;
@@ -34,13 +34,11 @@ suite('SyncControlsTest', function() {
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
     flush();
 
-    return waitBeforeNextRender().then(() => {
-      syncEverything =
-          syncControls.$$('cr-radio-button[name="sync-everything"]');
-      customizeSync = syncControls.$$('cr-radio-button[name="customize-sync"]');
-      assertTrue(!!syncEverything);
-      assertTrue(!!customizeSync);
-    });
+    await waitBeforeNextRender();
+    syncEverything = syncControls.$$('cr-radio-button[name="sync-everything"]');
+    customizeSync = syncControls.$$('cr-radio-button[name="customize-sync"]');
+    assertTrue(!!syncEverything);
+    assertTrue(!!customizeSync);
   });
 
   teardown(function() {
@@ -67,7 +65,7 @@ suite('SyncControlsTest', function() {
     browserProxy.resetResolver('setSyncDatatypes');
   }
 
-  test('SettingIndividualDatatypes', function() {
+  test('SettingIndividualDatatypes', async function() {
     assertTrue(syncEverything.checked);
     assertFalse(customizeSync.checked);
     assertEquals(syncControls.$$('#syncAllDataTypesControl'), null);
@@ -87,8 +85,8 @@ suite('SyncControlsTest', function() {
     assertFalse(syncEverything.checked);
     assertTrue(customizeSync.checked);
 
-    return browserProxy.whenCalled('setSyncDatatypes')
-        .then(prefs => assertPrefs(prefs, datatypeControls));
+    const prefs = await browserProxy.whenCalled('setSyncDatatypes');
+    assertPrefs(prefs, datatypeControls);
   });
 
   test('SignedIn', function() {

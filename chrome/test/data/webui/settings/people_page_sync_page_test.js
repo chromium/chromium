@@ -58,25 +58,24 @@ suite('SyncSettingsTests', function() {
     loadTimeData.overrideValues({signinAllowed: true});
   });
 
-  setup(function() {
+  setup(async function() {
     setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.instance_ = browserProxy;
 
     setupSyncPage();
 
-    return waitBeforeNextRender().then(() => {
-      encryptionElement = syncPage.$$('settings-sync-encryption-options');
-      assertTrue(!!encryptionElement);
-      encryptionRadioGroup = encryptionElement.$$('#encryptionRadioGroup');
-      encryptWithGoogle =
-          encryptionElement.$$('cr-radio-button[name="encrypt-with-google"]');
-      encryptWithPassphrase = encryptionElement.$$(
-          'cr-radio-button[name="encrypt-with-passphrase"]');
-      assertTrue(!!encryptionRadioGroup);
-      assertTrue(!!encryptWithGoogle);
-      assertTrue(!!encryptWithPassphrase);
-    });
+    await waitBeforeNextRender();
+    encryptionElement = syncPage.$$('settings-sync-encryption-options');
+    assertTrue(!!encryptionElement);
+    encryptionRadioGroup = encryptionElement.$$('#encryptionRadioGroup');
+    encryptWithGoogle =
+        encryptionElement.$$('cr-radio-button[name="encrypt-with-google"]');
+    encryptWithPassphrase =
+        encryptionElement.$$('cr-radio-button[name="encrypt-with-passphrase"]');
+    assertTrue(!!encryptionRadioGroup);
+    assertTrue(!!encryptWithGoogle);
+    assertTrue(!!encryptWithPassphrase);
   });
 
   teardown(function() {
@@ -87,39 +86,30 @@ suite('SyncSettingsTests', function() {
   // TESTS FOR ALL PLATFORMS
   // #######################
 
-  test('NotifiesHandlerOfNavigation', function() {
+  test('NotifiesHandlerOfNavigation', async function() {
+    await browserProxy.whenCalled('didNavigateToSyncPage');
+
+    // Navigate away.
     const router = Router.getInstance();
-    function testNavigateAway() {
-      router.navigateTo(router.getRoutes().PEOPLE);
-      return browserProxy.whenCalled('didNavigateAwayFromSyncPage');
-    }
+    router.navigateTo(router.getRoutes().PEOPLE);
+    await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
 
-    function testNavigateBack() {
-      browserProxy.resetResolver('didNavigateToSyncPage');
-      router.navigateTo(router.getRoutes().SYNC);
-      return browserProxy.whenCalled('didNavigateToSyncPage');
-    }
+    // Navigate back to the page.
+    browserProxy.resetResolver('didNavigateToSyncPage');
+    router.navigateTo(router.getRoutes().SYNC);
+    await browserProxy.whenCalled('didNavigateToSyncPage');
 
-    function testDetach() {
-      browserProxy.resetResolver('didNavigateAwayFromSyncPage');
-      syncPage.remove();
-      return browserProxy.whenCalled('didNavigateAwayFromSyncPage');
-    }
+    // Remove page element.
+    browserProxy.resetResolver('didNavigateAwayFromSyncPage');
+    syncPage.remove();
+    await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
 
-    function testRecreate() {
-      browserProxy.resetResolver('didNavigateToSyncPage');
-      syncPage = document.createElement('settings-sync-page');
-      router.navigateTo(router.getRoutes().SYNC);
-
-      document.body.appendChild(syncPage);
-      return browserProxy.whenCalled('didNavigateToSyncPage');
-    }
-
-    return browserProxy.whenCalled('didNavigateToSyncPage')
-        .then(testNavigateAway)
-        .then(testNavigateBack)
-        .then(testDetach)
-        .then(testRecreate);
+    // Recreate page element.
+    browserProxy.resetResolver('didNavigateToSyncPage');
+    syncPage = document.createElement('settings-sync-page');
+    router.navigateTo(router.getRoutes().SYNC);
+    document.body.appendChild(syncPage);
+    await browserProxy.whenCalled('didNavigateToSyncPage');
   });
 
   test('SyncSectionLayout_SignedIn', function() {
@@ -559,7 +549,7 @@ suite('SyncSettingsTests', function() {
   // ##################################
 
   if (!isChromeOS) {
-    test('SyncSetupCancel', function() {
+    test('SyncSetupCancel', async function() {
       syncPage.syncStatus = {
         syncSystemEnabled: true,
         firstSetupInProgress: true,
@@ -575,13 +565,12 @@ suite('SyncSettingsTests', function() {
 
       // Clicking the setup cancel button aborts sync.
       cancelButton.click();
-      return browserProxy.whenCalled('didNavigateAwayFromSyncPage')
-          .then(abort => {
-            assertTrue(abort);
-          });
+      const abort =
+          await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
+      assertTrue(abort);
     });
 
-    test('SyncSetupConfirm', function() {
+    test('SyncSetupConfirm', async function() {
       syncPage.syncStatus = {
         syncSystemEnabled: true,
         firstSetupInProgress: true,
@@ -597,13 +586,12 @@ suite('SyncSettingsTests', function() {
       assertTrue(!!confirmButton);
       confirmButton.click();
 
-      return browserProxy.whenCalled('didNavigateAwayFromSyncPage')
-          .then(abort => {
-            assertFalse(abort);
-          });
+      const abort =
+          await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
+      assertFalse(abort);
     });
 
-    test('SyncSetupLeavePage', function() {
+    test('SyncSetupLeavePage', async function() {
       syncPage.syncStatus = {
         syncSystemEnabled: true,
         firstSetupInProgress: true,
@@ -615,44 +603,32 @@ suite('SyncSettingsTests', function() {
       // dialog.
       const router = Router.getInstance();
       router.navigateTo(routes.BASIC);
-      return eventToPromise('cr-dialog-open', syncPage)
-          .then(() => {
-            assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
-            assertTrue(syncPage.$$('#setupCancelDialog').open);
+      await eventToPromise('cr-dialog-open', syncPage);
+      assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
+      assertTrue(syncPage.$$('#setupCancelDialog').open);
 
-            // Clicking the cancel button on the 'Cancel sync?' dialog closes
-            // the dialog and removes it from the DOM.
-            syncPage.$$('#setupCancelDialog')
-                .querySelector('.cancel-button')
-                .click();
+      // Clicking the cancel button on the 'Cancel sync?' dialog closes
+      // the dialog and removes it from the DOM.
+      syncPage.$$('#setupCancelDialog').querySelector('.cancel-button').click();
+      await eventToPromise('close', syncPage.$$('#setupCancelDialog'));
+      flush();
+      assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
+      assertFalse(!!syncPage.$$('#setupCancelDialog'));
 
-            return eventToPromise('close', syncPage.$$('#setupCancelDialog'));
-          })
-          .then(() => {
-            flush();
-            assertEquals(router.getRoutes().SYNC, router.getCurrentRoute());
-            assertFalse(!!syncPage.$$('#setupCancelDialog'));
+      // Navigating away while setup is in progress opens the
+      // dialog again.
+      router.navigateTo(routes.BASIC);
+      await eventToPromise('cr-dialog-open', syncPage);
+      assertTrue(syncPage.$$('#setupCancelDialog').open);
 
-            // Navigating away while setup is in progress opens the
-            // dialog again.
-            router.navigateTo(routes.BASIC);
-            return eventToPromise('cr-dialog-open', syncPage);
-          })
-          .then(() => {
-            assertTrue(syncPage.$$('#setupCancelDialog').open);
-
-            // Clicking the confirm button on the dialog aborts sync.
-            syncPage.$$('#setupCancelDialog')
-                .querySelector('.action-button')
-                .click();
-            return browserProxy.whenCalled('didNavigateAwayFromSyncPage');
-          })
-          .then(abort => {
-            assertTrue(abort);
-          });
+      // Clicking the confirm button on the dialog aborts sync.
+      syncPage.$$('#setupCancelDialog').querySelector('.action-button').click();
+      const abort =
+          await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
+      assertTrue(abort);
     });
 
-    test('SyncSetupSearchSettings', function() {
+    test('SyncSetupSearchSettings', async function() {
       syncPage.syncStatus = {
         syncSystemEnabled: true,
         firstSetupInProgress: true,
@@ -665,10 +641,9 @@ suite('SyncSettingsTests', function() {
       router.navigateTo(
           router.getRoutes().BASIC, new URLSearchParams('search=foo'));
 
-      return browserProxy.whenCalled('didNavigateAwayFromSyncPage')
-          .then(abort => {
-            assertTrue(abort);
-          });
+      const abort =
+          await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
+      assertTrue(abort);
     });
 
     test('ShowAccountRow', function() {

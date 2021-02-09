@@ -110,21 +110,20 @@ if (!isChromeOS) {
       peoplePage.remove();
     });
 
-    test('ShowCorrectRows', function() {
-      return syncBrowserProxy.whenCalled('getSyncStatus').then(function() {
-        flush();
+    test('ShowCorrectRows', async function() {
+      await syncBrowserProxy.whenCalled('getSyncStatus');
+      flush();
 
-        // The correct /manageProfile link row is shown.
-        assertFalse(!!peoplePage.$$('#edit-profile'));
-        assertTrue(!!peoplePage.$$('#profile-row'));
+      // The correct /manageProfile link row is shown.
+      assertFalse(!!peoplePage.$$('#edit-profile'));
+      assertTrue(!!peoplePage.$$('#profile-row'));
 
-        // Control element doesn't exist when policy forbids sync.
-        simulateSyncStatus({
-          signedIn: false,
-          syncSystemEnabled: true,
-        });
-        assertFalse(!!peoplePage.$$('settings-sync-account-control'));
+      // Control element doesn't exist when policy forbids sync.
+      simulateSyncStatus({
+        signedIn: false,
+        syncSystemEnabled: true,
       });
+      assertFalse(!!peoplePage.$$('settings-sync-account-control'));
     });
   });
 
@@ -153,289 +152,246 @@ if (!isChromeOS) {
       assertTrue(peoplePage.$.toast.open);
     });
 
-    test('ShowCorrectRows', function() {
-      return syncBrowserProxy.whenCalled('getSyncStatus').then(function() {
-        simulateSyncStatus({
-          syncSystemEnabled: true,
-        });
-        flush();
+    test('ShowCorrectRows', async function() {
+      await syncBrowserProxy.whenCalled('getSyncStatus');
+      simulateSyncStatus({
+        syncSystemEnabled: true,
+      });
+      flush();
 
-        // The correct /manageProfile link row is shown.
-        assertTrue(!!peoplePage.$$('#edit-profile'));
-        assertFalse(!!peoplePage.$$('#profile-row'));
+      // The correct /manageProfile link row is shown.
+      assertTrue(!!peoplePage.$$('#edit-profile'));
+      assertFalse(!!peoplePage.$$('#profile-row'));
 
-        simulateSyncStatus({
-          signedIn: false,
-          syncSystemEnabled: true,
-        });
+      simulateSyncStatus({
+        signedIn: false,
+        syncSystemEnabled: true,
+      });
 
-        // The control element should exist when policy allows.
-        const accountControl = peoplePage.$$('settings-sync-account-control');
-        assertTrue(
-            window.getComputedStyle(accountControl)['display'] !== 'none');
+      // The control element should exist when policy allows.
+      const accountControl = peoplePage.$$('settings-sync-account-control');
+      assertTrue(window.getComputedStyle(accountControl)['display'] !== 'none');
 
-        // Control element doesn't exist when policy forbids sync.
-        simulateSyncStatus({
-          syncSystemEnabled: false,
-        });
-        assertEquals(
-            'none', window.getComputedStyle(accountControl)['display']);
+      // Control element doesn't exist when policy forbids sync.
+      simulateSyncStatus({
+        syncSystemEnabled: false,
+      });
+      assertEquals('none', window.getComputedStyle(accountControl)['display']);
 
-        const manageGoogleAccount = peoplePage.$$('#manage-google-account');
+      const manageGoogleAccount = peoplePage.$$('#manage-google-account');
 
-        // Do not show Google Account when stored accounts or sync status
-        // could not be retrieved.
-        simulateStoredAccounts(undefined);
-        simulateSyncStatus(undefined);
-        assertEquals(
-            'none', window.getComputedStyle(manageGoogleAccount)['display']);
+      // Do not show Google Account when stored accounts or sync status
+      // could not be retrieved.
+      simulateStoredAccounts(undefined);
+      simulateSyncStatus(undefined);
+      assertEquals(
+          'none', window.getComputedStyle(manageGoogleAccount)['display']);
 
-        simulateStoredAccounts([]);
-        simulateSyncStatus(undefined);
-        assertEquals(
-            'none', window.getComputedStyle(manageGoogleAccount)['display']);
+      simulateStoredAccounts([]);
+      simulateSyncStatus(undefined);
+      assertEquals(
+          'none', window.getComputedStyle(manageGoogleAccount)['display']);
 
-        simulateStoredAccounts(undefined);
-        simulateSyncStatus({});
-        assertEquals(
-            'none', window.getComputedStyle(manageGoogleAccount)['display']);
+      simulateStoredAccounts(undefined);
+      simulateSyncStatus({});
+      assertEquals(
+          'none', window.getComputedStyle(manageGoogleAccount)['display']);
 
-        simulateStoredAccounts([]);
-        simulateSyncStatus({});
-        assertEquals(
-            'none', window.getComputedStyle(manageGoogleAccount)['display']);
+      simulateStoredAccounts([]);
+      simulateSyncStatus({});
+      assertEquals(
+          'none', window.getComputedStyle(manageGoogleAccount)['display']);
 
-        // A stored account with sync off but no error should result in the
-        // Google Account being shown.
-        simulateStoredAccounts([{email: 'foo@foo.com'}]);
-        simulateSyncStatus({
-          signedIn: false,
-          hasError: false,
-        });
-        assertTrue(
-            window.getComputedStyle(manageGoogleAccount)['display'] !== 'none');
+      // A stored account with sync off but no error should result in the
+      // Google Account being shown.
+      simulateStoredAccounts([{email: 'foo@foo.com'}]);
+      simulateSyncStatus({
+        signedIn: false,
+        hasError: false,
+      });
+      assertTrue(
+          window.getComputedStyle(manageGoogleAccount)['display'] !== 'none');
 
-        // A stored account with sync off and error should not result in the
-        // Google Account being shown.
-        simulateStoredAccounts([{email: 'foo@foo.com'}]);
-        simulateSyncStatus({
-          signedIn: false,
-          hasError: true,
-        });
-        assertEquals(
-            'none', window.getComputedStyle(manageGoogleAccount)['display']);
+      // A stored account with sync off and error should not result in the
+      // Google Account being shown.
+      simulateStoredAccounts([{email: 'foo@foo.com'}]);
+      simulateSyncStatus({
+        signedIn: false,
+        hasError: true,
+      });
+      assertEquals(
+          'none', window.getComputedStyle(manageGoogleAccount)['display']);
 
-        // A stored account with sync on but no error should result in the
-        // Google Account being shown.
-        simulateStoredAccounts([{email: 'foo@foo.com'}]);
-        simulateSyncStatus({
-          signedIn: true,
-          hasError: false,
-        });
-        assertTrue(
-            window.getComputedStyle(manageGoogleAccount)['display'] !== 'none');
+      // A stored account with sync on but no error should result in the
+      // Google Account being shown.
+      simulateStoredAccounts([{email: 'foo@foo.com'}]);
+      simulateSyncStatus({
+        signedIn: true,
+        hasError: false,
+      });
+      assertTrue(
+          window.getComputedStyle(manageGoogleAccount)['display'] !== 'none');
 
-        // A stored account with sync on but with error should not result in
-        // the Google Account being shown.
-        simulateStoredAccounts([{email: 'foo@foo.com'}]);
-        simulateSyncStatus({
-          signedIn: true,
-          hasError: true,
-        });
-        assertEquals(
-            'none', window.getComputedStyle(manageGoogleAccount)['display']);
+      // A stored account with sync on but with error should not result in
+      // the Google Account being shown.
+      simulateStoredAccounts([{email: 'foo@foo.com'}]);
+      simulateSyncStatus({
+        signedIn: true,
+        hasError: true,
+      });
+      assertEquals(
+          'none', window.getComputedStyle(manageGoogleAccount)['display']);
+    });
+
+    test('SignOutNavigationNormalProfile', async function() {
+      // Navigate to chrome://settings/signOut
+      Router.getInstance().navigateTo(routes.SIGN_OUT);
+
+      await new Promise(function(resolve) {
+        peoplePage.async(resolve);
+      });
+      const signoutDialog = peoplePage.$$('settings-signout-dialog');
+      assertTrue(signoutDialog.$$('#dialog').open);
+      assertFalse(signoutDialog.$$('#deleteProfile').hidden);
+
+      const deleteProfileCheckbox = signoutDialog.$$('#deleteProfile');
+      assertTrue(!!deleteProfileCheckbox);
+      assertLT(0, deleteProfileCheckbox.clientHeight);
+
+      const disconnectConfirm = signoutDialog.$$('#disconnectConfirm');
+      assertTrue(!!disconnectConfirm);
+      assertFalse(disconnectConfirm.hidden);
+
+      disconnectConfirm.click();
+
+      await new Promise(function(resolve) {
+        listenOnce(window, 'popstate', resolve);
+      });
+      const deleteProfile = await syncBrowserProxy.whenCalled('signOut');
+      assertFalse(deleteProfile);
+    });
+
+    test('SignOutDialogManagedProfile', async function() {
+      let accountControl = null;
+      await syncBrowserProxy.whenCalled('getSyncStatus');
+      simulateSyncStatus({
+        signedIn: true,
+        domain: 'example.com',
+        syncSystemEnabled: true,
+      });
+
+      assertFalse(!!peoplePage.$$('#dialog'));
+      accountControl = peoplePage.$$('settings-sync-account-control');
+      await waitBeforeNextRender(accountControl);
+      const turnOffButton = accountControl.$$('#turn-off');
+      turnOffButton.click();
+      flush();
+
+      await new Promise(function(resolve) {
+        peoplePage.async(resolve);
+      });
+      const signoutDialog = peoplePage.$$('settings-signout-dialog');
+      assertTrue(signoutDialog.$$('#dialog').open);
+      assertFalse(!!signoutDialog.$$('#deleteProfile'));
+
+      const disconnectManagedProfileConfirm =
+          signoutDialog.$$('#disconnectManagedProfileConfirm');
+      assertTrue(!!disconnectManagedProfileConfirm);
+      assertFalse(disconnectManagedProfileConfirm.hidden);
+
+      syncBrowserProxy.resetResolver('signOut');
+
+
+      disconnectManagedProfileConfirm.click();
+
+      await new Promise(function(resolve) {
+        listenOnce(window, 'popstate', resolve);
+      });
+      const deleteProfile = await syncBrowserProxy.whenCalled('signOut');
+      assertTrue(deleteProfile);
+    });
+
+    test('getProfileStatsCount', async function() {
+      // Navigate to chrome://settings/signOut
+      Router.getInstance().navigateTo(routes.SIGN_OUT);
+
+      await new Promise(function(resolve) {
+        peoplePage.async(resolve);
+      });
+      flush();
+      const signoutDialog = peoplePage.$$('settings-signout-dialog');
+      assertTrue(signoutDialog.$$('#dialog').open);
+
+      // Assert the warning message is as expected.
+      const warningMessage = signoutDialog.$$('.delete-profile-warning');
+
+      webUIListenerCallback('profile-stats-count-ready', 0);
+      assertEquals(
+          loadTimeData.getStringF(
+              'deleteProfileWarningWithoutCounts', 'fakeUsername'),
+          warningMessage.textContent.trim());
+
+      webUIListenerCallback('profile-stats-count-ready', 1);
+      assertEquals(
+          loadTimeData.getStringF(
+              'deleteProfileWarningWithCountsSingular', 'fakeUsername'),
+          warningMessage.textContent.trim());
+
+      webUIListenerCallback('profile-stats-count-ready', 2);
+      assertEquals(
+          loadTimeData.getStringF(
+              'deleteProfileWarningWithCountsPlural', 2, 'fakeUsername'),
+          warningMessage.textContent.trim());
+
+      // Close the disconnect dialog.
+      signoutDialog.$$('#disconnectConfirm').click();
+      await new Promise(function(resolve) {
+        listenOnce(window, 'popstate', resolve);
       });
     });
 
-    test('SignOutNavigationNormalProfile', function() {
+    test('NavigateDirectlyToSignOutURL', async function() {
       // Navigate to chrome://settings/signOut
       Router.getInstance().navigateTo(routes.SIGN_OUT);
 
-      return new Promise(function(resolve) {
-               peoplePage.async(resolve);
-             })
-          .then(function() {
-            const signoutDialog = peoplePage.$$('settings-signout-dialog');
-            assertTrue(signoutDialog.$$('#dialog').open);
-            assertFalse(signoutDialog.$$('#deleteProfile').hidden);
+      await new Promise(function(resolve) {
+        peoplePage.async(resolve);
+      });
+      assertTrue(peoplePage.$$('settings-signout-dialog').$$('#dialog').open);
+      await profileInfoBrowserProxy.whenCalled('getProfileStatsCount');
+      // 'getProfileStatsCount' can be the first message sent to the
+      // handler if the user navigates directly to
+      // chrome://settings/signOut. if so, it should not cause a crash.
+      new ProfileInfoBrowserProxyImpl().getProfileStatsCount();
 
-            const deleteProfileCheckbox = signoutDialog.$$('#deleteProfile');
-            assertTrue(!!deleteProfileCheckbox);
-            assertLT(0, deleteProfileCheckbox.clientHeight);
-
-            const disconnectConfirm = signoutDialog.$$('#disconnectConfirm');
-            assertTrue(!!disconnectConfirm);
-            assertFalse(disconnectConfirm.hidden);
-
-            const popstatePromise = new Promise(function(resolve) {
-              listenOnce(window, 'popstate', resolve);
-            });
-
-            disconnectConfirm.click();
-
-            return popstatePromise;
-          })
-          .then(function() {
-            return syncBrowserProxy.whenCalled('signOut');
-          })
-          .then(function(deleteProfile) {
-            assertFalse(deleteProfile);
-          });
+      // Close the disconnect dialog.
+      peoplePage.$$('settings-signout-dialog').$$('#disconnectConfirm').click();
+      await new Promise(function(resolve) {
+        listenOnce(window, 'popstate', resolve);
+      });
     });
 
-    test('SignOutDialogManagedProfile', function() {
-      let accountControl = null;
-      return syncBrowserProxy.whenCalled('getSyncStatus')
-          .then(function() {
-            simulateSyncStatus({
-              signedIn: true,
-              domain: 'example.com',
-              syncSystemEnabled: true,
-            });
+    test('Signout dialog suppressed when not signed in', async function() {
+      await syncBrowserProxy.whenCalled('getSyncStatus');
+      Router.getInstance().navigateTo(routes.SIGN_OUT);
+      await new Promise(function(resolve) {
+        peoplePage.async(resolve);
+      });
+      assertTrue(peoplePage.$$('settings-signout-dialog').$$('#dialog').open);
 
-            assertFalse(!!peoplePage.$$('#dialog'));
-            accountControl = peoplePage.$$('settings-sync-account-control');
-            return waitBeforeNextRender(accountControl);
-          })
-          .then(function() {
-            const turnOffButton = accountControl.$$('#turn-off');
-            turnOffButton.click();
-            flush();
+      simulateSyncStatus({
+        signedIn: false,
+      });
 
-            return new Promise(function(resolve) {
-              peoplePage.async(resolve);
-            });
-          })
-          .then(function() {
-            const signoutDialog = peoplePage.$$('settings-signout-dialog');
-            assertTrue(signoutDialog.$$('#dialog').open);
-            assertFalse(!!signoutDialog.$$('#deleteProfile'));
+      await new Promise(function(resolve) {
+        listenOnce(window, 'popstate', resolve);
+      });
 
-            const disconnectManagedProfileConfirm =
-                signoutDialog.$$('#disconnectManagedProfileConfirm');
-            assertTrue(!!disconnectManagedProfileConfirm);
-            assertFalse(disconnectManagedProfileConfirm.hidden);
-
-            syncBrowserProxy.resetResolver('signOut');
-
-            const popstatePromise = new Promise(function(resolve) {
-              listenOnce(window, 'popstate', resolve);
-            });
-
-            disconnectManagedProfileConfirm.click();
-
-            return popstatePromise;
-          })
-          .then(function() {
-            return syncBrowserProxy.whenCalled('signOut');
-          })
-          .then(function(deleteProfile) {
-            assertTrue(deleteProfile);
-          });
-    });
-
-    test('getProfileStatsCount', function() {
-      // Navigate to chrome://settings/signOut
       Router.getInstance().navigateTo(routes.SIGN_OUT);
 
-      return new Promise(function(resolve) {
-               peoplePage.async(resolve);
-             })
-          .then(function() {
-            flush();
-            const signoutDialog = peoplePage.$$('settings-signout-dialog');
-            assertTrue(signoutDialog.$$('#dialog').open);
-
-            // Assert the warning message is as expected.
-            const warningMessage = signoutDialog.$$('.delete-profile-warning');
-
-            webUIListenerCallback('profile-stats-count-ready', 0);
-            assertEquals(
-                loadTimeData.getStringF(
-                    'deleteProfileWarningWithoutCounts', 'fakeUsername'),
-                warningMessage.textContent.trim());
-
-            webUIListenerCallback('profile-stats-count-ready', 1);
-            assertEquals(
-                loadTimeData.getStringF(
-                    'deleteProfileWarningWithCountsSingular', 'fakeUsername'),
-                warningMessage.textContent.trim());
-
-            webUIListenerCallback('profile-stats-count-ready', 2);
-            assertEquals(
-                loadTimeData.getStringF(
-                    'deleteProfileWarningWithCountsPlural', 2, 'fakeUsername'),
-                warningMessage.textContent.trim());
-
-            // Close the disconnect dialog.
-            signoutDialog.$$('#disconnectConfirm').click();
-            return new Promise(function(resolve) {
-              listenOnce(window, 'popstate', resolve);
-            });
-          });
-    });
-
-    test('NavigateDirectlyToSignOutURL', function() {
-      // Navigate to chrome://settings/signOut
-      Router.getInstance().navigateTo(routes.SIGN_OUT);
-
-      return new Promise(function(resolve) {
-               peoplePage.async(resolve);
-             })
-          .then(function() {
-            assertTrue(
-                peoplePage.$$('settings-signout-dialog').$$('#dialog').open);
-            return profileInfoBrowserProxy.whenCalled('getProfileStatsCount');
-          })
-          .then(function() {
-            // 'getProfileStatsCount' can be the first message sent to the
-            // handler if the user navigates directly to
-            // chrome://settings/signOut. if so, it should not cause a crash.
-            new ProfileInfoBrowserProxyImpl().getProfileStatsCount();
-
-            // Close the disconnect dialog.
-            peoplePage.$$('settings-signout-dialog')
-                .$$('#disconnectConfirm')
-                .click();
-          })
-          .then(function() {
-            return new Promise(function(resolve) {
-              listenOnce(window, 'popstate', resolve);
-            });
-          });
-    });
-
-    test('Signout dialog suppressed when not signed in', function() {
-      return syncBrowserProxy.whenCalled('getSyncStatus')
-          .then(function() {
-            Router.getInstance().navigateTo(routes.SIGN_OUT);
-            return new Promise(function(resolve) {
-              peoplePage.async(resolve);
-            });
-          })
-          .then(function() {
-            assertTrue(
-                peoplePage.$$('settings-signout-dialog').$$('#dialog').open);
-
-            const popstatePromise = new Promise(function(resolve) {
-              listenOnce(window, 'popstate', resolve);
-            });
-
-            simulateSyncStatus({
-              signedIn: false,
-            });
-
-            return popstatePromise;
-          })
-          .then(function() {
-            const popstatePromise = new Promise(function(resolve) {
-              listenOnce(window, 'popstate', resolve);
-            });
-
-            Router.getInstance().navigateTo(routes.SIGN_OUT);
-
-            return popstatePromise;
-          });
+      await new Promise(function(resolve) {
+        listenOnce(window, 'popstate', resolve);
+      });
     });
   });
 }
