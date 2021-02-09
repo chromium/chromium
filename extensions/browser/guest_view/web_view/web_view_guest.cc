@@ -68,6 +68,7 @@
 #include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -584,12 +585,19 @@ void WebViewGuest::GuestDestroyed() {
       web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID());
 }
 
+extensions::mojom::LocalFrame* WebViewGuest::GetLocalFrame() {
+  if (!local_frame_.is_bound()) {
+    content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+    main_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+        local_frame_.BindNewEndpointAndPassReceiver());
+  }
+  return local_frame_.get();
+}
+
 void WebViewGuest::GuestReady() {
   // The guest RenderView should always live in an isolated guest process.
   CHECK(web_contents()->GetMainFrame()->GetProcess()->IsForGuestsOnly());
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  main_frame->Send(
-      new ExtensionMsg_SetFrameName(main_frame->GetRoutingID(), name_));
+  GetLocalFrame()->SetFrameName(name_);
 
   // We don't want to accidentally set the opacity of an interstitial page.
   // WebContents::GetRenderWidgetHostView will return the RWHV of an
@@ -1281,9 +1289,7 @@ void WebViewGuest::SetName(const std::string& name) {
     return;
   name_ = name;
 
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
-  main_frame->Send(
-      new ExtensionMsg_SetFrameName(main_frame->GetRoutingID(), name_));
+  GetLocalFrame()->SetFrameName(name_);
 }
 
 void WebViewGuest::SetSpatialNavigationEnabled(bool enabled) {

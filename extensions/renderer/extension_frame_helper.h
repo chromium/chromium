@@ -13,7 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/view_type.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "v8/include/v8.h"
 
@@ -34,7 +37,8 @@ class ScriptContext;
 // RenderFrame-level plumbing for extension features.
 class ExtensionFrameHelper
     : public content::RenderFrameObserver,
-      public content::RenderFrameObserverTracker<ExtensionFrameHelper> {
+      public content::RenderFrameObserverTracker<ExtensionFrameHelper>,
+      public mojom::LocalFrame {
  public:
   ExtensionFrameHelper(content::RenderFrame* render_frame,
                        Dispatcher* extension_dispatcher);
@@ -95,6 +99,9 @@ class ExtensionFrameHelper
     return did_create_current_document_element_;
   }
 
+  // mojom::LocalFrame:
+  void SetFrameName(const std::string& name) override;
+
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
   // this ExtensionFrameHelper.
@@ -120,6 +127,9 @@ class ExtensionFrameHelper
   void ScheduleAtDocumentIdle(base::OnceClosure callback);
 
  private:
+  void BindLocalFrame(
+      mojo::PendingAssociatedReceiver<mojom::LocalFrame> receiver);
+
   // RenderFrameObserver implementation.
   void DidCreateDocumentElement() override;
   void DidCreateNewDocument() override;
@@ -159,7 +169,6 @@ class ExtensionFrameHelper
                                 const std::string& module_name,
                                 const std::string& function_name,
                                 const base::ListValue& args);
-  void OnSetFrameName(const std::string& name);
   void OnAppWindowClosed(bool send_onclosed);
   void OnSetSpatialNavigationEnabled(bool enabled);
 
@@ -197,6 +206,9 @@ class ExtensionFrameHelper
   // Note: Chrome Apps intentionally do not support new navigations. When a
   // navigation happens, it is either the initial one or a reload.
   bool has_started_first_navigation_ = false;
+
+  // Note that it's bound only when this frame is a main frame.
+  mojo::AssociatedReceiverSet<mojom::LocalFrame> local_frame_receivers_;
 
   base::WeakPtrFactory<ExtensionFrameHelper> weak_ptr_factory_{this};
 

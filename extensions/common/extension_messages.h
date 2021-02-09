@@ -565,10 +565,6 @@ IPC_MESSAGE_ROUTED4(ExtensionMsg_MessageInvoke,
                     std::string /* function_name */,
                     base::ListValue /* args */)
 
-// Set the top-level frame to the provided name.
-IPC_MESSAGE_ROUTED1(ExtensionMsg_SetFrameName,
-                    std::string /* frame_name */)
-
 // Notifies the renderer that extensions were loaded in the browser.
 IPC_MESSAGE_CONTROL1(ExtensionMsg_Loaded,
                      std::vector<ExtensionMsg_Loaded_Params>)
