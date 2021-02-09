@@ -51,7 +51,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
     }
 
     @CalledByNative
-    void onResultsAvailable(GURL url, String query, int resultType, String[] groupLabel,
+    void onResultsAvailable(GURL url, String query, int resultCategory, String[] groupLabel,
             boolean[] isAdGroup, int[] groupSize, String[] titles, GURL[] urls) {
         final int oldState = mState;
         mState = State.READY;
@@ -69,7 +69,8 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
             groups.add(new SearchResultGroup(groupLabel[i], isAdGroup[i], results));
         }
 
-        SearchResultMetadata metadata = new SearchResultMetadata(url, query, resultType, groups);
+        SearchResultMetadata metadata =
+                new SearchResultMetadata(url, query, resultCategory, groups);
         mListener.onResult(metadata);
     }
 

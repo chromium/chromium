@@ -15,10 +15,11 @@ import java.util.Objects;
 public class SearchResultMetadata {
     private final GURL mResultUrl;
     private final String mQuery;
-    private final int mCategory;
+    private final @SearchResultCategory int mCategory;
     private final List<SearchResultGroup> mGroups;
 
-    SearchResultMetadata(GURL url, String query, int category, List<SearchResultGroup> groups) {
+    SearchResultMetadata(GURL url, String query, @SearchResultCategory int category,
+            List<SearchResultGroup> groups) {
         mResultUrl = url;
         mQuery = query;
         mCategory = category;

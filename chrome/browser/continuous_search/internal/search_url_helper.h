@@ -7,11 +7,14 @@
 
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "chrome/browser/continuous_search/internal/search_result_category.h"
 #include "url/gurl.h"
 
 namespace continuous_search {
 
-base::Optional<std::string> ExtractSearchQueryIfGoogle(const GURL& url);
+base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url);
+
+SearchResultCategory GetResultCategoryForUrl(const GURL& url);
 
 }  // namespace continuous_search
 

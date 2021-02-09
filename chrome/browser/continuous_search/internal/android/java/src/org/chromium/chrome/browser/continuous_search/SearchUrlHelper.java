@@ -36,18 +36,19 @@ public class SearchUrlHelper {
     }
 
     /**
-     * Gets the query of the provided url if it is a SRP URL.
+     * Gets the query of the provided url if it is a SRP URL and shows the "All" or "News" tab
+     * results.
      * @param url The url to try to extract the query from.
      * @return the query of the url if the url is for a SRP or null otherwise.
      */
-    public static String getQueryIfSrpUrl(GURL url) {
-        return SearchUrlHelperJni.get().getQueryIfSrpUrl(url);
+    public static String getQueryIfValidSrpUrl(GURL url) {
+        return SearchUrlHelperJni.get().getQueryIfValidSrpUrl(url);
     }
 
     @NativeMethods
     interface Natives {
         boolean isGoogleDomainUrl(GURL url);
         boolean isSrpUrl(GURL url);
-        String getQueryIfSrpUrl(GURL url);
+        String getQueryIfValidSrpUrl(GURL url);
     }
 }

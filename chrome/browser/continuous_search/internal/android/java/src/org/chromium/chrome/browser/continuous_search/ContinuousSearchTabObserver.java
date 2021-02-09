@@ -28,7 +28,7 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         // Cancel any existing requests.
         resetProducer();
 
-        String query = SearchUrlHelper.getQueryIfSrpUrl(url);
+        String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         if (query == null) return;
 
         mProducer = SearchResultProducerFactory.create(tab, this);

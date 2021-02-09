@@ -20,7 +20,7 @@ constexpr char kSrpUrl[] = "https://www.google.com/search";
 }
 
 TEST(SearchUrlHelper, ExtractSrpUrlWithEscape) {
-  auto result = ExtractSearchQueryIfGoogle(
+  auto result = ExtractSearchQueryIfValidUrl(
       GURL(base::StrCat({kSrpUrl, R"(?q=foo%5Ebar%25baz)"})));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), R"(foo^bar%baz)");
@@ -28,20 +28,38 @@ TEST(SearchUrlHelper, ExtractSrpUrlWithEscape) {
 
 TEST(SearchUrlHelper, ExtractSrpUrlWithSpace) {
   auto result =
-      ExtractSearchQueryIfGoogle(GURL(base::StrCat({kSrpUrl, "?q=cat+dog"})));
+      ExtractSearchQueryIfValidUrl(GURL(base::StrCat({kSrpUrl, "?q=cat+dog"})));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), "cat dog");
 }
 
+TEST(SearchUrlHelper, ExtractSrpUrlNewsTab) {
+  auto result = ExtractSearchQueryIfValidUrl(
+      GURL(base::StrCat({kSrpUrl, "?q=foo&tbm=nws"})));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), "foo");
+}
+
 TEST(SearchUrlHelper, ExtractSrpUrlNoQuery) {
   EXPECT_FALSE(
-      ExtractSearchQueryIfGoogle(GURL(base::StrCat({kSrpUrl, "?foo=bar"})))
+      ExtractSearchQueryIfValidUrl(GURL(base::StrCat({kSrpUrl, "?foo=bar"})))
           .has_value());
 }
 
 TEST(SearchUrlHelper, NoExtractOtherUrl) {
-  EXPECT_FALSE(
-      ExtractSearchQueryIfGoogle(GURL("https://www.example.com/")).has_value());
+  EXPECT_FALSE(ExtractSearchQueryIfValidUrl(GURL("https://www.example.com/"))
+                   .has_value());
+}
+
+TEST(SearchUrlHelper, ResultCategory) {
+  EXPECT_EQ(SearchResultCategory::kOrganic,
+            GetResultCategoryForUrl(GURL(base::StrCat({kSrpUrl, "?q=test"}))));
+  EXPECT_EQ(SearchResultCategory::kNews,
+            GetResultCategoryForUrl(
+                GURL(base::StrCat({kSrpUrl, "?q=test&tbm=nws"}))));
+  EXPECT_EQ(SearchResultCategory::kNone,
+            GetResultCategoryForUrl(
+                GURL(base::StrCat({kSrpUrl, "?q=test&tbm=invalid"}))));
 }
 
 }  // namespace continuous_search

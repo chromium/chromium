@@ -4,6 +4,10 @@
 
 import("//build/config/android/rules.gni")
 
+java_cpp_enum("search_result_category_generated_enum") {
+  sources = [ "search_result_category.h" ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducer.java",
@@ -33,7 +37,10 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java",
   ]
 
-  srcjar_deps = [ "//components/continuous_search/browser:search_result_extractor_client_status_generated_enum" ]
+  srcjar_deps = [
+    ":search_result_category_generated_enum",
+    "//components/continuous_search/browser:search_result_extractor_client_status_generated_enum",
+  ]
 
   deps = [
     ":java_resources",
@@ -87,6 +94,7 @@ android_resources("java_resources") {
 
 source_set("internal") {
   sources = [
+    "search_result_category.h",
     "search_result_extractor_producer.cc",
     "search_result_extractor_producer.h",
     "search_result_extractor_producer_interface.h",
