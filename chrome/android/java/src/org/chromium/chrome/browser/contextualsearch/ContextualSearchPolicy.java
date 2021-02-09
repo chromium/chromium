@@ -670,9 +670,11 @@ class ContextualSearchPolicy {
         // TODO(donnd): Consider supporting URL-only requests -- for now content is required.
         StringBuilder stampBuilder = new StringBuilder().append(experimentConfigStamp);
         if (isLanguageRestricted) stampBuilder.append(RELATED_SEARCHES_LANGUAGE_RESTRICTION);
-        // Hard code a tag so the server knows this version of the client is doing a dark launch
-        // and cannot decode Related Searches.
-        stampBuilder.append(RELATED_SEARCHES_DARK_LAUNCH);
+        // Add a tag so the server knows this version of the client is doing a dark launch
+        // and cannot decode Related Searches, unless overridden by a Feature flag.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_UI)) {
+            stampBuilder.append(RELATED_SEARCHES_DARK_LAUNCH);
+        }
         return stampBuilder.toString();
     }
 

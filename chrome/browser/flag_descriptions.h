@@ -1830,6 +1830,9 @@ extern const char kReengagementNotificationDescription[];
 extern const char kRelatedSearchesName[];
 extern const char kRelatedSearchesDescription[];
 
+extern const char kRelatedSearchesUiName[];
+extern const char kRelatedSearchesUiDescription[];
+
 extern const char kReportFeedUserActionsName[];
 extern const char kReportFeedUserActionsDescription[];
 

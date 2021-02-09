@@ -201,6 +201,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kReaderModeInCCT,
     &kReengagementNotification,
     &kRelatedSearches,
+    &kRelatedSearchesUi,
     &kSearchEnginePromoExistingDevice,
     &kSearchEnginePromoNewDevice,
     &kServiceManagerForBackgroundPrefetch,
@@ -572,6 +573,9 @@ const base::Feature kReengagementNotification{
 
 const base::Feature kRelatedSearches{"RelatedSearches",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kRelatedSearchesUi{"RelatedSearchesUi",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kServiceManagerForBackgroundPrefetch{
     "ServiceManagerForBackgroundPrefetch", base::FEATURE_ENABLED_BY_DEFAULT};

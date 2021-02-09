@@ -3162,10 +3162,15 @@ const char kReengagementNotificationDescription[] =
 const char kRelatedSearchesName[] =
     "Enables an experiment for Related Searches on Android";
 const char kRelatedSearchesDescription[] =
-    "Enables displaying related searches in a UI surface for experimentation "
-    "purposes.  This may have privacy implications so do not enable unless "
-    "you have no privacy worries about sending page content and URLs to "
-    "Google!";
+    "Enables requesting related searches suggestions. These will be requested "
+    "but not shown unless the UI flag is also enabled.";
+
+const char kRelatedSearchesUiName[] =
+    "Forces showing of the Related Searches UI on Android";
+const char kRelatedSearchesUiDescription[] =
+    "Forces the Related Searches UI and underlying requests to be enabled "
+    "regardless of whether they are safe or useful. This requires the Related "
+    "Searches feature flag to also be enabled.";
 
 const char kReportFeedUserActionsName[] =
     "Enable the report of click actions on cards in Chrome's Feed on Android.";

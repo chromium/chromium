@@ -44896,6 +44896,7 @@ from previous Chrome versions.
   <int value="-202007318" label="AndroidAIAFetching:enabled"/>
   <int value="-201633741" label="DisplayAlignAssist:enabled"/>
   <int value="-200805659" label="ContextualSuggestionsButton:enabled"/>
+  <int value="-200160012" label="RelatedSearchesUi:disabled"/>
   <int value="-199690952" label="PageInfoV2:enabled"/>
   <int value="-198002129" label="MetricsSettingsAndroid:disabled"/>
   <int value="-196110497" label="force-text-direction"/>
@@ -44989,6 +44990,7 @@ from previous Chrome versions.
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
+  <int value="-113855291" label="RelatedSearchesUi:enabled"/>
   <int value="-112459802" label="WebXrRenderPath:enabled"/>
   <int value="-112335255" label="FormControlsRefresh:enabled"/>
   <int value="-111160804" label="ChromeShareLongScreenshot:disabled"/>
