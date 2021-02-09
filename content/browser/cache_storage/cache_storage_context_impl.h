@@ -117,9 +117,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
 
   void ShutdownOnTaskRunner();
 
-  void CreateQuotaClientsOnIOThread(
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
-
   // Initialized at construction.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
