@@ -87,6 +87,15 @@
       "use_goma": true
     }
   },
+  "linux-builder-perf-rel": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 1,
+      "use_gnome_keyring": false,
+      "use_goma": true
+    }
+  },
   "mac-arm-builder-perf": {
     "gn_args": {
       "enable_keystone_registration_framework": false,

@@ -21,6 +21,7 @@
 ## Linux
 
  * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-14.04, 8 core, NVIDIA Quadro P400.
+ * [linux-perf-rel](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-rel): Ubuntu-14.04, 8 core, NVIDIA Quadro P400.
 
 ## Mac
 

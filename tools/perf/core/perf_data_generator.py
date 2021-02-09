@@ -445,6 +445,9 @@ BUILDERS = {
     'linux-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
+    'linux-builder-perf-rel': {
+        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+    },
     'mac-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
@@ -760,6 +763,24 @@ BUILDERS = {
         },
     },
     'linux-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'linux',
+        'dimension': {
+            'gpu': '10de:1cb3-440.100',
+            'os': 'Ubuntu-18.04',
+            'pool': 'chrome.tests.perf',
+            'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
+        },
+    },
+    'linux-perf-rel': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',

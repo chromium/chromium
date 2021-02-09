@@ -1,0 +1,56 @@
+{
+    "0": {
+        "benchmarks": {
+            "system_health.common_desktop": {
+                "end": 22,
+                "abridged": false
+            }
+        },
+        "executables": {
+            "base_perftests": {
+                "path": "base_perftests",
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0"
+                ]
+            },
+            "load_library_perf_tests": {
+                "path": "load_library_perf_tests"
+            },
+            "performance_browser_tests": {
+                "path": "browser_tests",
+                "arguments": [
+                    "--full-performance-run",
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0",
+                    "--ui-test-action-timeout=60000",
+                    "--ui-test-action-max-timeout=60000",
+                    "--test-launcher-timeout=60000",
+                    "--gtest_filter=*/TabCapturePerformanceTest.*:*/CastV2PerformanceTest.*"
+                ]
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
+            "system_health.common_desktop": {
+                "begin": 22,
+                "abridged": false
+            }
+        },
+        "executables": {
+            "tracing_perftests": {
+                "path": "tracing_perftests"
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 84,
+        "predicted_min_shard_time": 585.0,
+        "predicted_min_shard_index": 1,
+        "predicted_max_shard_time": 588.0,
+        "predicted_max_shard_index": 0,
+        "shard #0": 588.0,
+        "shard #1": 585.0
+    }
+}
