@@ -110,6 +110,14 @@ CursorWindowController::~CursorWindowController() {
   SetContainer(NULL);
 }
 
+void CursorWindowController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void CursorWindowController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void CursorWindowController::SetLargeCursorSizeInDip(
     int large_cursor_size_in_dip) {
   large_cursor_size_in_dip =
@@ -139,13 +147,7 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
     return true;
 
   if (features::IsCaptureModeEnabled()) {
-    auto* controller = CaptureModeController::Get();
-    if (controller->is_recording_in_progress()) {
-      // To let the video capturer record the cursor.
-      return true;
-    }
-
-    auto* session = controller->capture_mode_session();
+    auto* session = CaptureModeController::Get()->capture_mode_session();
     if (session && session->is_drag_in_progress()) {
       // To ensure the cursor is aligned with the dragged region.
       return true;
@@ -197,12 +199,15 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
 }
 
 void CursorWindowController::SetCursorCompositingEnabled(bool enabled) {
-  if (is_cursor_compositing_enabled_ != enabled) {
-    is_cursor_compositing_enabled_ = enabled;
-    if (display_.is_valid())
-      UpdateCursorImage();
-    UpdateContainer();
-  }
+  if (is_cursor_compositing_enabled_ == enabled)
+    return;
+
+  is_cursor_compositing_enabled_ = enabled;
+  if (display_.is_valid())
+    UpdateCursorImage();
+  UpdateContainer();
+  for (auto& obs : observers_)
+    obs.OnCursorCompositingStateChanged(is_cursor_compositing_enabled_);
 }
 
 void CursorWindowController::UpdateContainer() {

@@ -678,7 +678,9 @@ CaptureModeController::GetCaptureParams() const {
 }
 
 void CaptureModeController::LaunchRecordingServiceAndStartRecording(
-    const CaptureParams& capture_params) {
+    const CaptureParams& capture_params,
+    mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
+        cursor_overlay) {
   DCHECK(!recording_service_remote_.is_bound())
       << "Should not launch a new recording service while one is already "
          "running.";
@@ -695,11 +697,16 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
   // audio stream factory.
   mojo::PendingRemote<recording::mojom::RecordingServiceClient> client =
       recording_service_client_receiver_.BindNewPipeAndPassRemote();
-  mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer;
+  mojo::Remote<viz::mojom::FrameSinkVideoCapturer> video_capturer_remote;
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()
-      ->CreateVideoCapturer(video_capturer.InitWithNewPipeAndPassReceiver());
+      ->CreateVideoCapturer(video_capturer_remote.BindNewPipeAndPassReceiver());
+
+  // The overlay is to be rendered on top of the video frames.
+  constexpr int kStackingIndex = 1;
+  video_capturer_remote->CreateOverlay(kStackingIndex,
+                                       std::move(cursor_overlay));
 
   // We bind the audio stream factory only if audio recording is enabled. This
   // is ok since the |audio_stream_factory| parameter in the recording service
@@ -717,7 +724,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
   switch (source_) {
     case CaptureModeSource::kFullscreen:
       recording_service_remote_->RecordFullscreen(
-          std::move(client), std::move(video_capturer),
+          std::move(client), video_capturer_remote.Unbind(),
           std::move(audio_stream_factory), frame_sink_id, bounds.size());
       break;
 
@@ -731,7 +738,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
       DCHECK(capture_params.window->subtree_capture_id().is_valid());
 
       recording_service_remote_->RecordWindow(
-          std::move(client), std::move(video_capturer),
+          std::move(client), video_capturer_remote.Unbind(),
           std::move(audio_stream_factory), frame_sink_id,
           capture_params.window->subtree_capture_id(), bounds.size(),
           capture_params.window->GetRootWindow()
@@ -741,7 +748,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
 
     case CaptureModeSource::kRegion:
       recording_service_remote_->RecordRegion(
-          std::move(client), std::move(video_capturer),
+          std::move(client), video_capturer_remote.Unbind(),
           std::move(audio_stream_factory), frame_sink_id,
           capture_params.window->GetRootWindow()
               ->GetBoundsInRootWindow()
@@ -781,7 +788,6 @@ void CaptureModeController::TerminateRecordingUiElements() {
     return;
 
   is_recording_in_progress_ = false;
-  Shell::Get()->UpdateCursorCompositingEnabled();
   capture_mode_util::SetStopRecordingButtonVisibility(
       video_recording_watcher_->window_being_recorded()->GetRootWindow(),
       false);
@@ -1069,12 +1075,13 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
     return;
   }
 
-  // We enable the software-composited cursor, in order for the video capturer
-  // to be able to record it.
   is_recording_in_progress_ = true;
-  Shell::Get()->UpdateCursorCompositingEnabled();
-  video_recording_watcher_ =
-      std::make_unique<VideoRecordingWatcher>(this, capture_params->window);
+  mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
+      cursor_capture_overlay;
+  auto cursor_overlay_receiver =
+      cursor_capture_overlay.InitWithNewPipeAndPassReceiver();
+  video_recording_watcher_ = std::make_unique<VideoRecordingWatcher>(
+      this, capture_params->window, std::move(cursor_capture_overlay));
 
   // We only paint the recorded area highlight for window and region captures.
   if (source_ != CaptureModeSource::kFullscreen)
@@ -1105,7 +1112,8 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   video_file_handler_.AsyncCall(&VideoFileHandler::Initialize)
       .Then(on_video_file_status_);
 
-  LaunchRecordingServiceAndStartRecording(*capture_params);
+  LaunchRecordingServiceAndStartRecording(*capture_params,
+                                          std::move(cursor_overlay_receiver));
 
   delegate_->StartObservingRestrictedContent(
       capture_params->window, capture_params->bounds,

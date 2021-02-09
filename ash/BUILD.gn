@@ -2489,6 +2489,7 @@ test("ash_unittests") {
     "//services/media_session/public/mojom",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
+    "//services/viz/privileged/mojom/compositing",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
