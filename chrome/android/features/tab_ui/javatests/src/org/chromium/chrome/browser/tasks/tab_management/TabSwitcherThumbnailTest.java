@@ -75,7 +75,7 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS})
+    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
     public void testThumbnailAspectRatio_one() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
@@ -90,7 +90,7 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.85"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailAspectRatio_point85() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
@@ -105,7 +105,7 @@ public class TabSwitcherThumbnailTest {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        verifyAllThumbnailHeightWithAspectRatio(tabCounts, 1.f);
+        verifyAllThumbnailHeightWithAspectRatio(tabCounts, .85f);
 
         // With soft cleanup.
         TabUiTestHelper.leaveTabSwitcher(mActivityTestRule.getActivity());
@@ -113,7 +113,7 @@ public class TabSwitcherThumbnailTest {
         // There is a chance this will fail without the current changes. Soft cleanup sets the
         // fetcher to null, which triggers TabGridViewBinder#releaseThumbnail. If the view still
         // under measuring, then its height can be zero after measurement.
-        verifyAllThumbnailHeightWithAspectRatio(tabCounts, 1.f);
+        verifyAllThumbnailHeightWithAspectRatio(tabCounts, .85f);
     }
 
     private void verifyAllThumbnailHeightWithAspectRatio(int tabCounts, float ratio) {

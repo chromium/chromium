@@ -43,6 +43,8 @@ using base::android::JavaRef;
 
 namespace {
 
+const double kDefaultThumbnailAspectRatio = 0.85;
+
 using TabReadbackCallback = base::OnceCallback<void(float, const SkBitmap&)>;
 
 }  // namespace
@@ -72,7 +74,7 @@ class TabContentManager::TabReadbackRequest {
     if (crop_to_match_aspect_ratio) {
       double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
           chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
-          1.0);
+          kDefaultThumbnailAspectRatio);
       aspect_ratio = ThumbnailCache::clampAspectRatio(aspect_ratio, 0.5, 2.0);
       int height = std::min(view_size_in_pixels.height(),
                             (int)(view_size_in_pixels.width() / aspect_ratio));
@@ -130,7 +132,8 @@ TabContentManager::TabContentManager(JNIEnv* env,
                                      jboolean save_jpeg_thumbnails)
     : weak_java_tab_content_manager_(env, obj) {
   double jpeg_aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
-      chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio", 1.0);
+      chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
+      kDefaultThumbnailAspectRatio);
   thumbnail_cache_ = std::make_unique<ThumbnailCache>(
       static_cast<size_t>(default_cache_size),
       static_cast<size_t>(approximation_cache_size),
@@ -393,7 +396,8 @@ void TabContentManager::SendThumbnailToJava(
     // landscape mode.
     int scale = need_downsampling ? 2 : 1;
     double aspect_ratio = base::GetFieldTrialParamByFeatureAsDouble(
-        chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio", 1.0);
+        chrome::android::kTabGridLayoutAndroid, "thumbnail_aspect_ratio",
+        kDefaultThumbnailAspectRatio);
     aspect_ratio = ThumbnailCache::clampAspectRatio(aspect_ratio, 0.5, 2.0);
 
     int width = std::min(bitmap.width() / scale,
