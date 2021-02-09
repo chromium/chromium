@@ -220,6 +220,12 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  if (source->WouldTaintOrigin()) {
+    exception_state.ThrowSecurityError(
+        "VideoFrames can't be created from tainted ImageBitmaps.");
+    return nullptr;
+  }
+
   const auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
   const auto sk_image =
       source->BitmapImage()->PaintImageForCurrentFrame().GetSkImage();
