@@ -68,6 +68,7 @@ class BitstreamValidator : public BitstreamProcessor {
                               VideoDecoder::InitCB init_cb);
   void ProcessBitstreamTask(scoped_refptr<BitstreamRef> decoder_buffer,
                             size_t frame_index);
+  void OutputFrameProcessed();
 
   // Functions for media::VideoDecoder.
   void DecodeDone(int64_t timestamp, Status status);

@@ -121,6 +121,9 @@ BitstreamValidator::BitstreamValidator(
 }
 
 BitstreamValidator::~BitstreamValidator() {
+  // Make sure no buffer is being validated and processed.
+  WaitUntilDone();
+
   // Since |decoder_| has to be destroyed on the sequence that executes
   // Initialize(). Destroys it on the validator thread task runner.
   if (validator_thread_.IsRunning())
@@ -131,6 +134,17 @@ void BitstreamValidator::ProcessBitstream(scoped_refptr<BitstreamRef> bitstream,
                                           size_t frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_sequence_checker_);
   base::AutoLock lock(validator_lock_);
+  // If many pending buffers are accumulated in this validator class and the
+  // allocated memory size becomes large, the test process is killed by the
+  // system due to out of memory.
+  // To avoid the issue, wait until the number of buffers being validated is
+  // less than or equal to 16. The number is arbitrary chosen.
+  if (frame_index != last_frame_index_) {
+    constexpr size_t kMaxNumPendingBuffers = 16;
+    while (num_buffers_validating_ > kMaxNumPendingBuffers)
+      validator_cv_.Wait();
+  }
+
   num_buffers_validating_++;
   validator_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BitstreamValidator::ProcessBitstreamTask,
@@ -195,6 +209,14 @@ void BitstreamValidator::DecodeDone(int64_t timestamp, Status status) {
   it->second.second.reset();
 }
 
+void BitstreamValidator::OutputFrameProcessed() {
+  // This function can be called on any sequence because the written variables
+  // are guarded by a lock.
+  base::AutoLock lock(validator_lock_);
+  num_buffers_validating_--;
+  validator_cv_.Signal();
+}
+
 void BitstreamValidator::VerifyOutputFrame(scoped_refptr<VideoFrame> frame) {
   SEQUENCE_CHECKER(validator_thread_sequence_checker_);
   auto it = decoding_buffers_.Peek(frame->timestamp().InMicroseconds());
@@ -206,14 +228,19 @@ void BitstreamValidator::VerifyOutputFrame(scoped_refptr<VideoFrame> frame) {
   size_t frame_index = it->second.first;
   decoding_buffers_.Erase(it);
 
+  // Wraps VideoFrame because the reference of |frame| might be kept in
+  // VideoDecoder and thus |frame| is not released unless |decoder_| is
+  // destructed.
+  auto wrapped_video_frame =
+      VideoFrame::WrapVideoFrame(frame, frame->format(), frame->visible_rect(),
+                                 frame->visible_rect().size());
+  LOG_ASSERT(wrapped_video_frame) << "Failed creating a wrapped VideoFrame";
+  wrapped_video_frame->AddDestructionObserver(base::BindOnce(
+      &BitstreamValidator::OutputFrameProcessed, base::Unretained(this)));
   // Send the decoded frame to the configured video frame processors to perform
   // additional verification.
   for (const auto& processor : video_frame_processors_)
-    processor->ProcessVideoFrame(frame, frame_index);
-
-  base::AutoLock lock(validator_lock_);
-  num_buffers_validating_--;
-  validator_cv_.Signal();
+    processor->ProcessVideoFrame(wrapped_video_frame, frame_index);
 }
 
 bool BitstreamValidator::WaitUntilDone() {
