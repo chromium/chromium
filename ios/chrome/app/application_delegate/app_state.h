@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include <memory>
+
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
@@ -23,6 +25,10 @@ class ChromeBrowserState;
 @protocol StartupInformation;
 @protocol TabOpening;
 @protocol TabSwitching;
+
+namespace base {
+class TimeTicks;
+}
 
 @protocol AppStateObserver <NSObject>
 
@@ -93,6 +99,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // The SceneSession ID for the last session, where the Device doesn't support
 // multiple windows.
 @property(nonatomic, strong) NSString* previousSingleWindowSessionID;
+
+// Timestamp of when a scene was last becoming active. Can be null.
+@property(nonatomic, assign) base::TimeTicks lastTimeInForeground;
 
 // Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
 // application is in background, initialize the browser to basic. If not, launch
