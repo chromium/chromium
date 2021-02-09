@@ -98,7 +98,12 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
         SectionHeaderView sectionHeaderView = null;
         if (hasHeader) {
             LayoutInflater inflater = LayoutInflater.from(mActivity);
-            if (FeedFeatures.isReportingUserActions()) {
+            // This should be kept in sync with NewTabPage#initializeMainView().
+            if (FeedFeatures.isV2Enabled()) {
+                sectionHeaderView = (SectionHeaderView) inflater.inflate(
+                        R.layout.new_tab_page_feed_v2_expandable_header, null, false);
+
+            } else if (FeedFeatures.isReportingUserActions()) {
                 sectionHeaderView = (SectionHeaderView) inflater.inflate(
                         R.layout.new_tab_page_snippets_expandable_header_with_menu, null, false);
             } else {
