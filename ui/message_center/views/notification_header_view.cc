@@ -27,6 +27,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
@@ -75,6 +77,7 @@ constexpr int kControlButtonSpacing = 16;
 // takes tab focus for accessibility purpose.
 class ExpandButton : public views::ImageView {
  public:
+  METADATA_HEADER(ExpandButton);
   ExpandButton();
   ~ExpandButton() override;
 
@@ -124,6 +127,9 @@ void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
   node_data->SetName(GetTooltipText(gfx::Point()));
 }
+
+BEGIN_METADATA(ExpandButton, views::ImageView)
+END_METADATA
 
 gfx::FontList GetHeaderTextFontList() {
   gfx::Font default_font;
