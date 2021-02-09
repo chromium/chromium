@@ -7,6 +7,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -17,6 +18,12 @@
 namespace ash {
 namespace {
 
+std::string GetDeviceModeSuffix() {
+  return Shell::Get()->tablet_mode_controller()->InTabletMode()
+             ? "TabletMode"
+             : "ClamshellMode";
+}
+
 void ReportLogin(const cc::FrameSequenceMetrics::CustomReportData& data) {
   if (data.frames_expected) {
     int smoothness = metrics_util::CalculateSmoothness(data);
@@ -25,12 +32,14 @@ void ReportLogin(const cc::FrameSequenceMetrics::CustomReportData& data) {
     float refresh_rate =
         Shell::GetPrimaryRootWindow()->GetHost()->compositor()->refresh_rate();
     int duration_ms = (1000.f / refresh_rate) * data.frames_expected;
-    base::UmaHistogramPercentage("Ash.LoginAnimation.Smoothness", smoothness);
-    base::UmaHistogramPercentage("Ash.LoginAnimation.Jank", jank);
+    std::string suffix = GetDeviceModeSuffix();
+    base::UmaHistogramPercentage("Ash.LoginAnimation.Smoothness." + suffix,
+                                 smoothness);
+    base::UmaHistogramPercentage("Ash.LoginAnimation.Jank." + suffix, jank);
     // TODO(crbug.com/1143898): Deprecate this metrics once the login
     // performance issue is resolved.
     base::UmaHistogramCustomTimes(
-        "Ash.LoginAnimation.Duration",
+        "Ash.LoginAnimation.Duration." + suffix,
         base::TimeDelta::FromMilliseconds(duration_ms),
         base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromSeconds(5),
         50);
@@ -43,9 +52,10 @@ void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
   if (data.frames_expected) {
     int smoothness = metrics_util::CalculateSmoothness(data);
     int jank = metrics_util::CalculateJank(data);
-
-    base::UmaHistogramPercentage("Ash.UnlockAnimation.Smoothness", smoothness);
-    base::UmaHistogramPercentage("Ash.UnlockAnimation.Jank", jank);
+    std::string suffix = GetDeviceModeSuffix();
+    base::UmaHistogramPercentage("Ash.UnlockAnimation.Smoothness." + suffix,
+                                 smoothness);
+    base::UmaHistogramPercentage("Ash.UnlockAnimation.Jank." + suffix, jank);
   } else {
     LOG(WARNING) << "Zero frames expected in Unlock animation throughput data";
   }

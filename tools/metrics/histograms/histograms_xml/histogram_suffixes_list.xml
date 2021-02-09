@@ -18878,8 +18878,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Apps.StateTransition.Drag.PresentationTime"/>
   <affected-histogram
       name="Apps.StateTransition.Drag.PresentationTime.MaxLatency"/>
+  <affected-histogram name="Ash.LoginAnimation.Duration"/>
+  <affected-histogram name="Ash.LoginAnimation.Jank"/>
+  <affected-histogram name="Ash.LoginAnimation.Smoothness"/>
   <affected-histogram name="Ash.Overview.AnimationSmoothness.Close"/>
   <affected-histogram name="Ash.Overview.WindowDrag.PresentationTime"/>
+  <affected-histogram name="Ash.UnlockAnimation.Jank"/>
+  <affected-histogram name="Ash.UnlockAnimation.Smoothness"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TabSwitchingType" separator=".">
