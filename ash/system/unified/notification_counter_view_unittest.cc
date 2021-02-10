@@ -4,9 +4,9 @@
 
 #include "ash/system/unified/notification_counter_view.h"
 
+#include "ash/media/media_notification_constants.h"
 #include "ash/public/cpp/ash_features.h"
-#include "ash/system/unified/notification_icons_controller.h"
-#include "ash/system/unified/unified_system_tray.h"
+#include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,8 +21,7 @@
 
 namespace ash {
 
-class NotificationCounterViewTest : public AshTestBase,
-                                    public testing::WithParamInterface<bool> {
+class NotificationCounterViewTest : public AshTestBase {
  public:
   NotificationCounterViewTest() = default;
   NotificationCounterViewTest(const NotificationCounterViewTest&) = delete;
@@ -33,46 +32,27 @@ class NotificationCounterViewTest : public AshTestBase,
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatureState(features::kScalableStatusArea,
-                                              IsScalableStatusAreaEnabled());
 
-    tray_ = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
-
-    if (IsScalableStatusAreaEnabled()) {
-      notification_icons_controller_ =
-          std::make_unique<NotificationIconsController>(tray_.get());
-      notification_icons_controller_->AddNotificationTrayItems(
-          tray_->tray_container());
-      notification_counter_view_ = std::make_unique<NotificationCounterView>(
-          tray_.get(), notification_icons_controller_.get());
-    } else {
-      notification_counter_view_ =
-          std::make_unique<NotificationCounterView>(tray_.get(), nullptr);
-    }
+    notification_counter_view_ =
+        std::make_unique<NotificationCounterView>(GetPrimaryShelf());
   }
-
-  bool IsScalableStatusAreaEnabled() { return GetParam(); }
 
   void TearDown() override {
     notification_counter_view_.reset();
-    notification_icons_controller_.reset();
-    tray_.reset();
     AshTestBase::TearDown();
   }
 
  protected:
   void AddNotification(const std::string& notification_id,
-                       bool is_pinned = false) {
-    message_center::RichNotificationData rich_notification_data;
-    rich_notification_data.pinned = is_pinned;
+                       const std::string& app_id = "app") {
     message_center::MessageCenter::Get()->AddNotification(
         std::make_unique<message_center::Notification>(
             message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
             base::UTF8ToUTF16("test_title"), base::UTF8ToUTF16("test message"),
             gfx::Image(), /*display_source=*/base::string16(), GURL(),
             message_center::NotifierId(
-                message_center::NotifierType::APPLICATION, "app"),
-            rich_notification_data,
+                message_center::NotifierType::APPLICATION, app_id),
+            message_center::RichNotificationData(),
             new message_center::NotificationDelegate()));
   }
 
@@ -81,17 +61,13 @@ class NotificationCounterViewTest : public AshTestBase,
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<UnifiedSystemTray> tray_;
-  std::unique_ptr<NotificationIconsController> notification_icons_controller_;
   std::unique_ptr<NotificationCounterView> notification_counter_view_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NotificationCounterViewTest,
-                         testing::Bool() /* IsScalableStatusAreaEnabled() */);
+TEST_F(NotificationCounterViewTest, CountForDisplay) {
+  // VM camera/mic notifications are ignored by the counter.
+  AddNotification("camera & mic", kVmCameraMicNotifierId);
 
-TEST_P(NotificationCounterViewTest, CountForDisplay) {
   // Not visible when count == 0.
   notification_counter_view()->Update();
   EXPECT_EQ(0, notification_counter_view()->count_for_display_for_testing());
@@ -114,39 +90,27 @@ TEST_P(NotificationCounterViewTest, CountForDisplay) {
   EXPECT_TRUE(notification_counter_view()->GetVisible());
 }
 
-TEST_P(NotificationCounterViewTest, DisplayChanged) {
-  AddNotification("0", false /* is_pinned */);
-  AddNotification("1", true /* is_pinned */);
+// Media notifications are not included when flag is set.
+TEST_F(NotificationCounterViewTest, MediaNotifications) {
   notification_counter_view()->Update();
-
-  // In medium size screen, the counter should not be displayed since pinned
-  // notification icon is shown (if the feature is enabled).
-  UpdateDisplay("800x800");
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            !notification_counter_view()->GetVisible());
-
-  // The counter should be shown when we remove the pinned notification.
-  message_center::MessageCenter::Get()->RemoveNotification("1",
-                                                           false /* by_user */);
-  notification_counter_view()->Update();
-  EXPECT_TRUE(notification_counter_view()->GetVisible());
-
-  AddNotification("1", true /* is_pinned */);
-  notification_counter_view()->Update();
-
-  // In small display, the counter show be shown with pinned notification.
-  UpdateDisplay("600x600");
-  EXPECT_TRUE(notification_counter_view()->GetVisible());
-
-  // In large screen size, expected the same behavior like medium screen size.
-  UpdateDisplay("1680x800");
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            !notification_counter_view()->GetVisible());
-
-  message_center::MessageCenter::Get()->RemoveNotification("1",
-                                                           false /* by_user */);
-  notification_counter_view()->Update();
-  EXPECT_TRUE(notification_counter_view()->GetVisible());
+  EXPECT_EQ(0, notification_counter_view()->count_for_display_for_testing());
+  AddNotification("1", kMediaSessionNotifierId);
+  {
+    // Counter should ignore media notifications when feature is enabled.
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(features::kMediaNotificationsCounter);
+    notification_counter_view()->Update();
+    EXPECT_EQ(0, notification_counter_view()->count_for_display_for_testing());
+    EXPECT_FALSE(notification_counter_view()->GetVisible());
+  }
+  {
+    // Counter should show media notifications when feature is disabled.
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(features::kMediaNotificationsCounter);
+    notification_counter_view()->Update();
+    EXPECT_EQ(1, notification_counter_view()->count_for_display_for_testing());
+    EXPECT_TRUE(notification_counter_view()->GetVisible());
+  }
 }
 
 }  // namespace ash

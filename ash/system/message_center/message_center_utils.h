@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_
 
-#include "ash/ash_export.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -23,11 +22,6 @@ bool CompareNotifications(message_center::Notification* n1,
 // Returns a vector of visible notifications sorted for display, using
 // CompareNotifications() above for the sorting order.
 std::vector<message_center::Notification*> GetSortedVisibleNotifications();
-
-// Returns total notifications count, with a filter to not count some of them
-// (These notifications such as camera, media controls, etc. don't need an
-// indicator in status area since they already have a dedicated tray item).
-size_t ASH_EXPORT GetNotificationCount();
 
 }  // namespace message_center_utils
 

@@ -433,9 +433,6 @@ This file contains the strings for ash.
          =1 {1 notification}
          other {# notifications}}
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_HIDDEN_NOTIFICATION_COUNT_LABEL" desc="The label for the number of hidden notifications.">
-        +<ph name="COUNT">$1<ex>2</ex></ph>
-      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH" desc="The label used as the header in the bluetooth popup. [CHAR_LIMIT=14]">
         Bluetooth
