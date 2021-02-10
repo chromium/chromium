@@ -124,8 +124,13 @@ blink_platform_sources("heap") {
       "v8_wrapper/visitor.h",
     ]
 
-    # Dependency on V8 which transitively depends on cppgc but exposes JS-related C++ heap through V8's Isolate.
-    deps += [ "//v8" ]
+    deps += [
+      "//gin:gin",
+
+      # Dependency on V8 which transitively depends on cppgc but exposes
+      # JS-related C++ heap through V8's Isolate.
+      "//v8",
+    ]
   } else {
     sources += [
       "impl/atomic_entry_flag.h",
