@@ -23,7 +23,7 @@ HEADER = headers.header(
         ),
         headers.oncall(
             name = "iOS",
-            url = "https://rota-ng.appspot.com/legacy/sheriff_ios.json",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-ios-build-sheriff",
         ),
         headers.oncall(
             name = "ChromeOS",
