@@ -77,6 +77,13 @@
        null,
        {}
       ]
+     ],
+     "no-room-for-line-in-first-fragmentainer-crash.html": [
+      "bc7b9aaa5e6e563f781b02924cf87aefcd997138",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-contain": {
@@ -501,8 +508,22 @@
       ]
      ],
      "crashtests": {
+      "dialog-table-crash.html": [
+       "decc3eb1fbe1937e693a5401c64f58a3411d792b",
+       [
+        null,
+        {}
+       ]
+      ],
       "inline-splitting-crash.html": [
        "decc3eb1fbe1937e693a5401c64f58a3411d792b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "uninitialized_read_crash.html": [
+       "5aa3b223cd53401edf01a25d2079a87b034b76fb",
        [
         null,
         {}
@@ -9948,13 +9969,6 @@
    "touch-events": {
     "multi-touch-interactions-manual.html": [
      "45e53af0ee97c0e29826002701083c21d50ce989",
-     [
-      null,
-      {}
-     ]
-    ],
-    "multi-touch-interfaces-manual.html": [
-     "e9f1b91c4862ebaa77fb855b6d20c2850e5b482b",
      [
       null,
       {}
@@ -53580,6 +53594,32 @@
        {}
       ]
      ],
+     "out-of-flow-in-multicolumn-016.html": [
+      "141cae73d86058a6475f48bcc3f4cdabc2ad80ba",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "out-of-flow-in-multicolumn-017.html": [
+      "aa56a7cddfcee78a9f57d350a579690953d0ca34",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflowed-block-with-no-room-after-000.html": [
       "084e16fb38de072fb83f92ba01302a2e404cdd97",
       [
@@ -84987,6 +85027,45 @@
        [
         [
          "/css/css-grid/table-grid-item-dynamic-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-grid-item-dynamic-002.html": [
+      "fdec4e6b3b423e4ca872210473ebd6a1f8f47b13",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/table-grid-item-dynamic-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-grid-item-dynamic-003.html": [
+      "32b809c5dcbc33a8c42f575879cd59faddab7318",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/table-grid-item-dynamic-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "table-grid-item-dynamic-004.html": [
+      "537d85ad3420fc66929511f7ced486482340fbca",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/table-grid-item-dynamic-004-ref.html",
          "=="
         ]
        ],
@@ -162587,7 +162666,7 @@
          ]
         ],
         "redefine-attr-mapping.html": [
-         "1e3fcfcf59b9acc2565b6f8907b74e58ca0dceb8",
+         "6c53b42df8153cabcb2f3d1049f663a9015b343b",
          [
           null,
           [
@@ -203567,6 +203646,18 @@
       "362904334aaef447de9d895e413474a9b4d2c5a6",
       []
      ],
+     "table-grid-item-dynamic-002-ref.html": [
+      "88fdfa71f109edc61e74c0ecf3300c7f981925f7",
+      []
+     ],
+     "table-grid-item-dynamic-003-ref.html": [
+      "1de4ccea471b5e5b12f6766ab63a1294f8cc93f9",
+      []
+     ],
+     "table-grid-item-dynamic-004-ref.html": [
+      "9189fb5f7e2f85fa7b9fef04c6b764c35bb96515",
+      []
+     ],
      "test-plan": {
       "index.html": [
        "039f3a87c1a7d042af4ac043b1a5c4c4cb6c0d1e",
@@ -222125,7 +222216,7 @@
          []
         ],
         "redefine-attr-mapping-ref.html": [
-         "3924851b5188bb298d3f1d6a240b65579d81c7da",
+         "744aa32855492b9b8cee9e170ca7de9cab7dc70e",
          []
         ],
         "redefine-builtin-ref.html": [
@@ -225954,7 +226045,7 @@
       []
      ],
      "event-timing-test-utils.js": [
-      "749cfe3c19d1b3c65da1530bd339190b0566f429",
+      "70fd66abfbcb22a62c699dba4466f76a539729ed",
       []
      ],
      "slow-image.py": [
@@ -333662,7 +333753,7 @@
      ]
     ],
     "crossiframe.html": [
-     "147e144631df10ef9e829e9978828e40b1289ceb",
+     "6beb9aa357f9490eeff55bc762ab178b1dc58619",
      [
       null,
       {
@@ -333842,7 +333933,7 @@
      ]
     ],
     "mouseenter.html": [
-     "804d5743742c73ec769613e41ce45bf190a473a9",
+     "1d0171ec460e2abf7c61587030735b8f44136a16",
      [
       null,
       {
@@ -333851,7 +333942,7 @@
      ]
     ],
     "mouseleave.html": [
-     "202cf73e2a616c5612232a7e1f987570eed9e2e3",
+     "b3cf1447e381639a1e3703d649e3aa452662637d",
      [
       null,
       {
@@ -333906,7 +333997,7 @@
      ]
     ],
     "pointerenter.html": [
-     "bae1c51d51cde4d2314e310693328fd26dbd8be3",
+     "bb8ee08abc7a35bd4ed915cfe68a71c528de972d",
      [
       null,
       {
@@ -333915,7 +334006,7 @@
      ]
     ],
     "pointerleave.html": [
-     "81e8f15ec0d16a53182f06e7f9553228cc0ab7ec",
+     "b17464e0e7b004f4a11682bc5db98f129f876ed2",
      [
       null,
       {
@@ -333971,6 +334062,15 @@
     ],
     "retrieve-firstInput.html": [
      "27b17cd18165f975fbbd98e7de07dad71251c1fa",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "shadow-dom-null-target.html": [
+     "89587312c89ba20578538a37ed30ee3904a5058b",
      [
       null,
       {
@@ -335534,7 +335634,7 @@
        ]
       ],
       "keepalive.html": [
-       "a6405dcea6f24b53db1f502b6c6233563808591f",
+       "36d156bba43606dc6ebfc29024ad59cdbad667f4",
        [
         null,
         {}
@@ -385518,7 +385618,7 @@
         ]
        ],
        "navigator-pluginarray.html": [
-        "15d671153643112b016cd6ad0cbf47e668c00dab",
+        "cd5fc41856cb4a9b46c31a743fc09a85daa5390f",
         [
          null,
          {}
@@ -427489,6 +427589,15 @@
       }
      ]
     ],
+    "multi-touch-interfaces.html": [
+     "fae884480fea05e25f9c40007d0d5cd7e1db8390",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "single-touch.html": [
      "a067bc13801928caf1bfc873a80208db4b9b0bbd",
      [
@@ -428250,6 +428359,17 @@
       [
        null,
        {}
+      ]
+     ]
+    },
+    "keyboard": {
+     "modifier-keys.html": [
+      "635e5d3b7797e1fcde058f81dda1b3b2132ee375",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ]
     },
@@ -439999,7 +440119,7 @@
      ]
     ],
     "RTCPeerConnection-capture-video.https.html": [
-     "ed12e68e598e09880b7004ec0c52be30f41fbab8",
+     "b6c0222dc21d779a6ab982d963cf3fd5acfc19c1",
      [
       null,
       {
