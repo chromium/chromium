@@ -61,6 +61,8 @@ viz_component("service") {
     "display/gl_renderer_draw_cache.h",
     "display/layer_quad.cc",
     "display/layer_quad.h",
+    "display/null_renderer.cc",
+    "display/null_renderer.h",
     "display/output_surface.cc",
     "display/output_surface.h",
     "display/output_surface_client.h",

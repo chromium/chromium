@@ -32,6 +32,7 @@
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/gl_renderer.h"
+#include "components/viz/service/display/null_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/renderer_utils.h"
 #include "components/viz/service/display/skia_output_surface.h"
@@ -530,6 +531,10 @@ void Display::InitializeRenderer(bool enable_shared_images) {
         &settings_, debug_settings_, output_surface_.get(),
         resource_provider_.get(), overlay_processor_.get(),
         current_task_runner_);
+  } else if (output_surface_->capabilities().skips_draw) {
+    renderer_ = std::make_unique<NullRenderer>(
+        &settings_, debug_settings_, output_surface_.get(),
+        resource_provider_.get(), overlay_processor_.get());
   } else {
     DCHECK(!overlay_processor_->IsOverlaySupported());
     auto renderer = std::make_unique<SoftwareRenderer>(

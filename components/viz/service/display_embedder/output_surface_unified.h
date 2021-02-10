@@ -15,10 +15,10 @@ namespace viz {
 // issue begin frames and doesn't need to do any drawing work. This class is
 // essentially a stub implementation.
 //
-// OutputSurfaceUnified will end up with a corresponding SoftwareRenderer. While
+// OutputSurfaceUnified will end up with a corresponding NullRenderer. While
 // Chrome OS uses GL rendering to draw it doesn't matter what renderer is
 // created for the unified display because it's never used to draw. Using
-// SoftwareRenderer avoids the need to allocate a GL context and command buffer,
+// NullRenderer avoids the need to allocate a GL context and command buffer,
 // which have significant memory overhead.
 class OutputSurfaceUnified : public OutputSurface {
  public:
