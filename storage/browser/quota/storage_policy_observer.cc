@@ -77,6 +77,19 @@ void StoragePolicyObserver::StartTrackingOrigin(const url::Origin& origin) {
   OnPolicyChanged();
 }
 
+void StoragePolicyObserver::StartTrackingOrigins(
+    const std::vector<url::Origin>& origins) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& origin : origins) {
+    // If the origin exists, emplace fails, and its state is unchanged.
+    GURL origin_url = GURL(origin.Serialize());
+    origin_state_.emplace(std::move(origin_url), OriginState());
+  }
+
+  OnPolicyChanged();
+}
+
 void StoragePolicyObserver::StopTrackingOrigin(const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const GURL origin_url = GURL(origin.Serialize());

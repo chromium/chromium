@@ -1530,10 +1530,8 @@ void ServiceWorkerRegistry::DidApplyPolicyUpdates(
 void ServiceWorkerRegistry::DidGetRegisteredOriginsOnStartup(
     const std::vector<url::Origin>& origins) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!special_storage_policy_)
-    return;
-  for (const auto& origin : origins)
-    storage_policy_observer_->StartTrackingOrigin(origin);
+  if (special_storage_policy_)
+    storage_policy_observer_->StartTrackingOrigins(origins);
 }
 
 void ServiceWorkerRegistry::ApplyPolicyUpdates(

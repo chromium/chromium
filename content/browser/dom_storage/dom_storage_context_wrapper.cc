@@ -349,10 +349,13 @@ void DOMStorageContextWrapper::PurgeMemory(PurgeOption purge_option) {
 
 void DOMStorageContextWrapper::OnStartupUsageRetrieved(
     std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
-  for (const auto& info : usage) {
-    if (storage_policy_observer_)
-      storage_policy_observer_->StartTrackingOrigin(info->origin);
-  }
+  if (!storage_policy_observer_)
+    return;
+
+  std::vector<url::Origin> origins;
+  for (const auto& info : usage)
+    origins.emplace_back(std::move(info->origin));
+  storage_policy_observer_->StartTrackingOrigins(std::move(origins));
 }
 
 void DOMStorageContextWrapper::ApplyPolicyUpdates(

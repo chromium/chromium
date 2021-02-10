@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) StoragePolicyObserver {
   // tracked and stopping tracking an origin that is not being tracked
   // are noops.
   void StartTrackingOrigin(const url::Origin& origin);
+  void StartTrackingOrigins(const std::vector<url::Origin>& origins);
   void StopTrackingOrigin(const url::Origin& origin);
 
   // Called by StoragePolicyObserverIOThread.
