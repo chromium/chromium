@@ -102,6 +102,9 @@ bool IsVisible(gfx::NativeView view);
 // gesture, if enabled in System Preferences. This function returns true if
 // the feature is supported and enabled, and false otherwise.
 bool IsSwipeTrackingFromScrollEventsEnabled();
+
+// Returns the active window which accepts keyboard inputs.
+NSWindow* GetActiveWindow();
 #endif
 
 // Returns true if the given browser window is in locked fullscreen mode

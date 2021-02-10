@@ -243,12 +243,13 @@ const AcceleratorMapping kEnableWithNewMappingAcceleratorMap[] = {
 #endif
 
 constexpr int kDebugModifier =
-    ui::EF_PLATFORM_ACCELERATOR | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
+    ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
 
 // Accelerators to enable if features::UIDebugTools is true.
 constexpr AcceleratorMapping kUIDebugAcceleratorMap[] = {
     {ui::VKEY_T, kDebugModifier, IDC_DEBUG_TOGGLE_TABLET_MODE},
     {ui::VKEY_V, kDebugModifier, IDC_DEBUG_PRINT_VIEW_TREE},
+    {ui::VKEY_M, kDebugModifier, IDC_DEBUG_PRINT_VIEW_TREE_DETAILS},
 };
 
 const int kRepeatableCommandIds[] = {

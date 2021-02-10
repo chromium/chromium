@@ -9,7 +9,38 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/views/debug_utils.h"
+#include "ui/views/view.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#include "ui/wm/public/activation_client.h"
+#endif
+
+#if defined(OS_MAC)
+#include "chrome/browser/platform_util.h"
+#endif
+
+namespace {
+views::View* GetActiveWindowRootView(const Browser* browser) {
+#if defined(USE_AURA)
+  wm::ActivationClient* client = wm::GetActivationClient(
+      browser->window()->GetNativeWindow()->GetRootWindow());
+  if (!client)
+    return nullptr;
+  gfx::NativeWindow active_window = client->GetActiveWindow();
+#elif defined(OS_MAC)
+  NSWindow* active_window = platform_util::GetActiveWindow();
+  if (!active_window)
+    return nullptr;
+#endif
+
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(active_window);
+  return widget ? widget->GetRootView() : nullptr;
+}
+}  // namespace
 
 namespace chrome {
 
@@ -33,11 +64,13 @@ void ExecuteUIDebugCommand(int id, const Browser* browser) {
       break;
     }
     case IDC_DEBUG_PRINT_VIEW_TREE:
-      // TODO(weili): replace with a new tree dumping utility which can show
-      // detailed property info.
-      PrintViewHierarchy(BrowserView::GetBrowserViewForBrowser(browser));
+      if (views::View* view = GetActiveWindowRootView(browser))
+        PrintViewHierarchy(view);
       break;
-
+    case IDC_DEBUG_PRINT_VIEW_TREE_DETAILS:
+      if (views::View* view = GetActiveWindowRootView(browser))
+        PrintViewHierarchy(view, /* verbose= */ true);
+      break;
     default:
       NOTREACHED() << "Unimplemented UI Debug command: " << id;
       break;

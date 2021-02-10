@@ -443,6 +443,7 @@
 // Views debug commands.
 #define IDC_DEBUG_TOGGLE_TABLET_MODE 52510
 #define IDC_DEBUG_PRINT_VIEW_TREE 52511
+#define IDC_DEBUG_PRINT_VIEW_TREE_DETAILS 52512
 // Please leave a gap here for new debug commands.
 
 // NOTE: The last valid command value is 57343 (0xDFFF)

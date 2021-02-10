@@ -8,6 +8,7 @@
 #include <Carbon/Carbon.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -19,6 +20,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
 #import "ui/base/cocoa/nsmenuitem_additions.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
@@ -173,6 +175,14 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
   });
   if (base::FeatureList::IsEnabled(features::kTabSearch)) {
     keys->push_back({true,  true,  false, false, kVK_ANSI_A, IDC_TAB_SEARCH});
+  }
+  if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
+    keys->push_back({false, true, true, true, kVK_ANSI_T,
+                     IDC_DEBUG_TOGGLE_TABLET_MODE});
+    keys->push_back({false, true, true, true, kVK_ANSI_V,
+                     IDC_DEBUG_PRINT_VIEW_TREE});
+    keys->push_back({false, true, true, true, kVK_ANSI_M,
+                     IDC_DEBUG_PRINT_VIEW_TREE_DETAILS});
   }
   // clang-format on
   return *keys;

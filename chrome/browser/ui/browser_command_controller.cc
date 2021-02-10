@@ -842,6 +842,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     // UI debug commands
     case IDC_DEBUG_TOGGLE_TABLET_MODE:
     case IDC_DEBUG_PRINT_VIEW_TREE:
+    case IDC_DEBUG_PRINT_VIEW_TREE_DETAILS:
       ExecuteUIDebugCommand(id, browser_);
       break;
 
@@ -1140,6 +1141,8 @@ void BrowserCommandController::InitCommandState() {
   if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
     command_updater_.UpdateCommandEnabled(IDC_DEBUG_TOGGLE_TABLET_MODE, true);
     command_updater_.UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE, true);
+    command_updater_.UpdateCommandEnabled(IDC_DEBUG_PRINT_VIEW_TREE_DETAILS,
+                                          true);
   }
 
   // Initialize other commands whose state changes based on various conditions.
