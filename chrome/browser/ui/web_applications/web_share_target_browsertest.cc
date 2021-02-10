@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -16,6 +17,9 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -104,6 +108,23 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
     url_observer.Wait();
     EXPECT_EQ(expected_url, web_contents->GetVisibleURL());
     return web_contents;
+  }
+
+  std::string ExecuteShare(const std::string& script) {
+    const GURL url = embedded_test_server()->GetURL("/webshare/index.html");
+    ui_test_utils::NavigateToURL(browser(), url);
+    content::WebContents* const contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    return content::EvalJs(contents, script).ExtractString();
+  }
+
+  content::WebContents* ShareToTarget(const std::string& script) {
+    ui_test_utils::AllBrowserTabAddedWaiter waiter;
+    EXPECT_EQ("share succeeded", ExecuteShare(script));
+
+    content::WebContents* contents = waiter.Wait();
+    EXPECT_TRUE(content::WaitForLoadStop(contents));
+    return contents;
   }
 };
 
@@ -281,6 +302,56 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, GetLink) {
   // Gatherer web app's service worker detects omitted value.
   EXPECT_EQ("N/A", ReadTextContent(web_contents, "author"));
   EXPECT_EQ(shared_link, ReadTextContent(web_contents, "link"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToPosterWebApp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/poster.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  sharesheet::SharesheetService::SetSelectedAppForTesting(
+      base::UTF8ToUTF16(app_id));
+
+  // Poster web app does not accept image shares.
+  EXPECT_EQ("share failed: AbortError: Share canceled",
+            ExecuteShare("share_single_file()"));
+
+  content::WebContents* web_contents = ShareToTarget("share_title()");
+  EXPECT_EQ("Subject", ReadTextContent(web_contents, "headline"));
+
+  web_contents = ShareToTarget("share_url()");
+  EXPECT_EQ("https://example.com/", ReadTextContent(web_contents, "link"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToChartsWebApp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/charts.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  sharesheet::SharesheetService::SetSelectedAppForTesting(
+      base::UTF8ToUTF16(app_id));
+
+  content::WebContents* web_contents = ShareToTarget("share_single_file()");
+  EXPECT_EQ("************", ReadTextContent(web_contents, "notes"));
+
+  web_contents = ShareToTarget("share_url()");
+  EXPECT_EQ("https://example.com/", ReadTextContent(web_contents, "link"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareToPartialWild) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/partial-wild.html");
+  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  sharesheet::SharesheetService::SetSelectedAppForTesting(
+      base::UTF8ToUTF16(app_id));
+
+  // Partial Wild does not accept text shares.
+  EXPECT_EQ("share failed: AbortError: Share canceled",
+            ExecuteShare("share_title()"));
+
+  content::WebContents* web_contents = ShareToTarget("share_single_file()");
+  EXPECT_EQ("************", ReadTextContent(web_contents, "graphs"));
 }
 
 }  // namespace web_app
