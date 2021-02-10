@@ -251,7 +251,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   // implement asyncRescaleAndReadPixelsYUV420.
   if (sk_image->isTextureBacked()) {
     YUVReadbackContext result;
-    result.coded_size = gfx::Size();
+    result.coded_size = coded_size;
     result.visible_rect = visible_rect;
     result.natural_size = natural_size;
     result.timestamp = timestamp;

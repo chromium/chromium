@@ -40,4 +40,7 @@ specific_include_rules = {
     "+base/run_loop.h",
     "+base/files/file_util.h",
   ],
+  "video_frame_test\.cc": [
+    "+components/viz/test/test_context_provider.h",
+  ]
 }

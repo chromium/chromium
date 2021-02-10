@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/base/video_frame.h"
+#include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -11,6 +12,9 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -29,6 +33,13 @@ ImageBitmap* ToImageBitmap(V8TestingScope* v8_scope, ScriptValue value) {
 
 class VideoFrameTest : public testing::Test {
  public:
+  void SetUp() override {
+    test_context_provider_ = viz::TestContextProvider::Create();
+    InitializeSharedGpuContext(test_context_provider_.get());
+  }
+
+  void TearDown() override { SharedGpuContext::ResetForTesting(); }
+
   VideoFrame* CreateBlinkVideoFrame(
       scoped_refptr<media::VideoFrame> media_frame,
       ExecutionContext* context) {
@@ -58,6 +69,9 @@ class VideoFrameTest : public testing::Test {
     media_frame->set_timestamp(timestamp);
     return media_frame;
   }
+
+ private:
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
 };
 
 TEST_F(VideoFrameTest, ConstructorAndAttributes) {
@@ -241,6 +255,32 @@ TEST_F(VideoFrameTest, ImageBitmapCreationAndZeroCopyRoundTrip) {
   auto* clone =
       video_frame->clone(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_EQ(clone->handle()->sk_image(), original_image);
+}
+
+TEST_F(VideoFrameTest, VideoFrameFromGPUImageBitmap) {
+  V8TestingScope scope;
+
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  CanvasResourceParams resource_params;
+  auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
+      IntSize(100, 100), kLow_SkFilterQuality, resource_params,
+      CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
+      RasterMode::kGPU, true /*is_origin_top_left*/,
+      0u /*shared_image_usage_flags*/);
+
+  scoped_refptr<StaticBitmapImage> bitmap = resource_provider->Snapshot();
+  ASSERT_TRUE(bitmap->IsTextureBacked());
+
+  auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(bitmap);
+  EXPECT_TRUE(image_bitmap);
+  EXPECT_TRUE(image_bitmap->BitmapImage()->IsTextureBacked());
+
+  auto* init = VideoFrameInit::Create();
+  init->setTimestamp(0);
+
+  auto* video_frame = VideoFrame::Create(scope.GetScriptState(), image_bitmap,
+                                         init, scope.GetExceptionState());
+  ASSERT_TRUE(video_frame);
 }
 
 }  // namespace
