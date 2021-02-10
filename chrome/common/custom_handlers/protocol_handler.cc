@@ -13,7 +13,6 @@
 #include "extensions/common/constants.h"
 #include "net/base/escape.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
-#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ProtocolHandler::ProtocolHandler(
@@ -26,9 +25,6 @@ ProtocolHandler::ProtocolHandler(
       last_modified_(last_modified),
       security_level_(security_level) {}
 
-ProtocolHandler::ProtocolHandler(const ProtocolHandler&) = default;
-ProtocolHandler::~ProtocolHandler() = default;
-
 ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     const std::string& protocol,
     const GURL& url,
@@ -36,28 +32,8 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   return ProtocolHandler(protocol, url, base::Time::Now(), security_level);
 }
 
-ProtocolHandler::ProtocolHandler(
-    const std::string& protocol,
-    const GURL& url,
-    const std::string& app_id,
-    base::Time last_modified,
-    blink::ProtocolHandlerSecurityLevel security_level)
-    : protocol_(base::ToLowerASCII(protocol)),
-      url_(url),
-      web_app_id_(app_id),
-      last_modified_(last_modified),
-      security_level_(security_level) {}
-
-// static
-ProtocolHandler ProtocolHandler::CreateWebAppProtocolHandler(
-    const std::string& protocol,
-    const GURL& url,
-    const std::string& app_id) {
-  return ProtocolHandler(protocol, url, app_id, base::Time::Now(),
-                         blink::ProtocolHandlerSecurityLevel::kStrict);
+ProtocolHandler::ProtocolHandler() {
 }
-
-ProtocolHandler::ProtocolHandler() = default;
 
 bool ProtocolHandler::IsValidDict(const base::DictionaryValue* value) {
   // Note that "title" parameter is ignored.
@@ -119,13 +95,6 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     security_level =
         blink::ProtocolHandlerSecurityLevelFrom(*security_level_value);
   }
-
-  if (value->HasKey("app_id")) {
-    std::string app_id;
-    value->GetString("app_id", &app_id);
-    return ProtocolHandler(protocol, GURL(url), app_id, time, security_level);
-  }
-
   return ProtocolHandler(protocol, GURL(url), time, security_level);
 }
 
@@ -143,10 +112,6 @@ std::unique_ptr<base::DictionaryValue> ProtocolHandler::Encode() const {
   d->SetString("url", url_.spec());
   d->SetKey("last_modified", util::TimeToValue(last_modified_));
   d->SetIntPath("security_level", static_cast<int>(security_level_));
-
-  if (web_app_id_.has_value())
-    d->SetString("app_id", web_app_id_.value());
-
   return d;
 }
 

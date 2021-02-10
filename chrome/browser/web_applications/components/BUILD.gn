@@ -58,8 +58,6 @@ source_set("components") {
     "web_app_install_utils.h",
     "web_app_prefs_utils.cc",
     "web_app_prefs_utils.h",
-    "web_app_protocol_handler_registration.cc",
-    "web_app_protocol_handler_registration.h",
     "web_app_provider_base.cc",
     "web_app_provider_base.h",
     "web_app_provider_base_factory.cc",
@@ -126,7 +124,6 @@ source_set("components") {
       "web_app_file_handler_registration_win.cc",
       "web_app_handler_registration_utils_win.cc",
       "web_app_handler_registration_utils_win.h",
-      "web_app_protocol_handler_registration_win.cc",
       "web_app_run_on_os_login_win.cc",
       "web_app_shortcut_win.cc",
       "web_app_shortcut_win.h",
@@ -207,7 +204,6 @@ source_set("unit_tests") {
     sources += [
       "web_app_file_handler_registration_win_unittest.cc",
       "web_app_handler_registration_utils_win_unittest.cc",
-      "web_app_protocol_handler_registration_win_unittest.cc",
       "web_app_run_on_os_login_win_unittest.cc",
     ]
   }
@@ -244,7 +240,6 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/test:test_support",
-    "//components/services/app_service/public/cpp:protocol_handling",
     "//components/webapps/browser",
     "//components/webapps/browser:test_support",
     "//components/webapps/common:mojo_bindings",
