@@ -10,11 +10,8 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-class KeyedService;
-
-namespace safe_browsing {
 class ChromePasswordProtectionService;
-}
+class KeyedService;
 
 namespace web {
 class BrowserState;
@@ -27,7 +24,7 @@ class ChromePasswordProtectionServiceFactory
  public:
   // Returns the instance of ChromePasswordProtectionService associated with
   // this browser state, creating one if none exists.
-  static safe_browsing::ChromePasswordProtectionService* GetForBrowserState(
+  static ChromePasswordProtectionService* GetForBrowserState(
       web::BrowserState* browser_state);
 
   // Returns the singleton instance of ChromePasswordProtectionServiceFactory.

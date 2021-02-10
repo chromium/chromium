@@ -44,13 +44,14 @@
 using ::testing::_;
 using password_manager::metrics_util::PasswordType;
 using password_manager::MockPasswordStore;
+using safe_browsing::LoginReputationClientRequest;
+using safe_browsing::PasswordProtectionTrigger;
+using safe_browsing::RequestOutcome;
+using safe_browsing::ReusedPasswordAccountType;
 using sync_pb::GaiaPasswordReuse;
-using sync_pb::UserEventSpecifics;
 using PasswordReuseDialogInteraction =
-    GaiaPasswordReuse::PasswordReuseDialogInteraction;
-using PasswordReuseLookup = GaiaPasswordReuse::PasswordReuseLookup;
-
-namespace safe_browsing {
+    sync_pb::GaiaPasswordReuse::PasswordReuseDialogInteraction;
+using PasswordReuseLookup = sync_pb::GaiaPasswordReuse::PasswordReuseLookup;
 
 namespace {
 
@@ -221,7 +222,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->SetIsNoHostedDomainFound(true);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
   chrome_browser_state_->GetPrefs()->SetInteger(
-      prefs::kPasswordProtectionWarningTrigger, PASSWORD_REUSE);
+      prefs::kPasswordProtectionWarningTrigger, safe_browsing::PASSWORD_REUSE);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 }
 
@@ -284,12 +285,13 @@ TEST_F(ChromePasswordProtectionServiceTest,
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 
   chrome_browser_state_->GetPrefs()->SetInteger(
-      prefs::kPasswordProtectionWarningTrigger, PASSWORD_PROTECTION_OFF);
+      prefs::kPasswordProtectionWarningTrigger,
+      safe_browsing::PASSWORD_PROTECTION_OFF);
   service_->SetIsIncognito(false);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 
   chrome_browser_state_->GetPrefs()->SetInteger(
-      prefs::kPasswordProtectionWarningTrigger, PASSWORD_REUSE);
+      prefs::kPasswordProtectionWarningTrigger, safe_browsing::PASSWORD_REUSE);
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 }
 
@@ -502,4 +504,82 @@ TEST_F(ChromePasswordProtectionServiceTest,
             service_->GetPlaceholdersForSavedPasswordWarningText());
 }
 
-}  // namespace safe_browsing
+TEST_F(ChromePasswordProtectionServiceTest, VerifySendsPingForAboutBlank) {
+  ReusedPasswordAccountType reused_password_type;
+  reused_password_type.set_account_type(
+      ReusedPasswordAccountType::SAVED_PASSWORD);
+  service_->SetIsIncognito(false);
+  EXPECT_TRUE(
+      service_->CanSendPing(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                            GURL("about:blank"), reused_password_type));
+}
+
+TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
+  {
+    // SBER disabled.
+    ReusedPasswordAccountType reused_password_type;
+    service_->SetIsIncognito(false);
+    EXPECT_EQ(RequestOutcome::DISABLED_DUE_TO_USER_POPULATION,
+              service_->GetPingNotSentReason(
+                  LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+                  GURL("about:blank"), reused_password_type));
+    reused_password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
+    EXPECT_EQ(RequestOutcome::DISABLED_DUE_TO_USER_POPULATION,
+              service_->GetPingNotSentReason(
+                  LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                  GURL("about:blank"), reused_password_type));
+  }
+  {
+    // In Incognito.
+    ReusedPasswordAccountType reused_password_type;
+    service_->SetIsIncognito(true);
+    EXPECT_EQ(RequestOutcome::DISABLED_DUE_TO_INCOGNITO,
+              service_->GetPingNotSentReason(
+                  LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+                  GURL("about:blank"), reused_password_type));
+  }
+  {
+    // Turned off by admin.
+    ReusedPasswordAccountType reused_password_type;
+    service_->SetIsIncognito(false);
+    reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
+    chrome_browser_state_->GetPrefs()->SetInteger(
+        prefs::kPasswordProtectionWarningTrigger,
+        safe_browsing::PASSWORD_PROTECTION_OFF);
+    EXPECT_EQ(RequestOutcome::TURNED_OFF_BY_ADMIN,
+              service_->GetPingNotSentReason(
+                  LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                  GURL("about:blank"), reused_password_type));
+  }
+  {
+    // Allowlisted by policy.
+    ReusedPasswordAccountType reused_password_type;
+    service_->SetIsIncognito(false);
+    reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
+    chrome_browser_state_->GetPrefs()->SetInteger(
+        prefs::kPasswordProtectionWarningTrigger,
+        safe_browsing::PHISHING_REUSE);
+    base::ListValue allowlist;
+    allowlist.AppendString("mydomain.com");
+    allowlist.AppendString("mydomain.net");
+    chrome_browser_state_->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                                           allowlist);
+    EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST,
+              service_->GetPingNotSentReason(
+                  LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                  GURL("https://www.mydomain.com"), reused_password_type));
+  }
+  {
+    // Password alert mode.
+    ReusedPasswordAccountType reused_password_type;
+    service_->SetIsIncognito(false);
+    reused_password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
+    chrome_browser_state_->GetPrefs()->SetInteger(
+        prefs::kPasswordProtectionWarningTrigger,
+        safe_browsing::PASSWORD_REUSE);
+    EXPECT_EQ(RequestOutcome::PASSWORD_ALERT_MODE,
+              service_->GetPingNotSentReason(
+                  LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                  GURL("about:blank"), reused_password_type));
+  }
+}

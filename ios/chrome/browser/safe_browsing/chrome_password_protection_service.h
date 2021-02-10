@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"
@@ -20,38 +21,45 @@ class PrefService;
 
 namespace password_manager {
 class PasswordStore;
-}
+}  // namespace password_manager
+
+namespace safe_browsing {
+class PasswordProtectionRequest;
+}  // namespace safe_browsing
 
 namespace web {
 class WebState;
-}
+}  // namespace web
 
-namespace safe_browsing {
-
-class ChromePasswordProtectionService : public PasswordProtectionService,
-                                        public KeyedService {
+class ChromePasswordProtectionService
+    : public safe_browsing::PasswordProtectionService,
+      public KeyedService {
  public:
   explicit ChromePasswordProtectionService(ChromeBrowserState* browser_state);
   ~ChromePasswordProtectionService() override;
 
-  void ShowModalWarning(PasswordProtectionRequest* request,
-                        LoginReputationClientResponse::VerdictType verdict_type,
-                        const std::string& verdict_token,
-                        ReusedPasswordAccountType password_type) override;
+  void ShowModalWarning(
+      safe_browsing::PasswordProtectionRequest* request,
+      safe_browsing::LoginReputationClientResponse::VerdictType verdict_type,
+      const std::string& verdict_token,
+      safe_browsing::ReusedPasswordAccountType password_type) override;
 
-  void MaybeReportPasswordReuseDetected(PasswordProtectionRequest* request,
-                                        const std::string& username,
-                                        PasswordType password_type,
-                                        bool is_phishing_url) override;
+  void MaybeReportPasswordReuseDetected(
+      safe_browsing::PasswordProtectionRequest* request,
+      const std::string& username,
+      safe_browsing::PasswordType password_type,
+      bool is_phishing_url) override;
 
   void ReportPasswordChanged() override;
 
-  void FillReferrerChain(const GURL& event_url,
-                         SessionID event_tab_id,  // SessionID::InvalidValue()
-                                                  // if tab not available.
-                         LoginReputationClientRequest::Frame* frame) override;
+  void FillReferrerChain(
+      const GURL& event_url,
+      SessionID event_tab_id,  // SessionID::InvalidValue()
+                               // if tab not available.
+      safe_browsing::LoginReputationClientRequest::Frame* frame) override;
 
-  void SanitizeReferrerChain(ReferrerChain* referrer_chain) override;
+  void SanitizeReferrerChain(
+      safe_browsing::ReferrerChain* referrer_chain) override;
 
   void PersistPhishedSavedPasswordCredential(
       const std::vector<password_manager::MatchingReusedCredential>&
@@ -61,23 +69,24 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials) override;
 
-  RequestOutcome GetPingNotSentReason(
-      LoginReputationClientRequest::TriggerType trigger_type,
+  safe_browsing::RequestOutcome GetPingNotSentReason(
+      safe_browsing::LoginReputationClientRequest::TriggerType trigger_type,
       const GURL& url,
-      ReusedPasswordAccountType password_type) override;
+      safe_browsing::ReusedPasswordAccountType password_type) override;
 
   void RemoveUnhandledSyncPasswordReuseOnURLsDeleted(
       bool all_history,
       const history::URLRows& deleted_rows) override;
 
   bool UserClickedThroughSBInterstitial(
-      PasswordProtectionRequest* request) override;
+      safe_browsing::PasswordProtectionRequest* request) override;
 
-  PasswordProtectionTrigger GetPasswordProtectionWarningTriggerPref(
-      ReusedPasswordAccountType password_type) const override;
+  safe_browsing::PasswordProtectionTrigger
+  GetPasswordProtectionWarningTriggerPref(
+      safe_browsing::ReusedPasswordAccountType password_type) const override;
 
-  LoginReputationClientRequest::UrlDisplayExperiment GetUrlDisplayExperiment()
-      const override;
+  safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment
+  GetUrlDisplayExperiment() const override;
 
   const policy::BrowserPolicyConnector* GetBrowserPolicyConnector()
       const override;
@@ -87,20 +96,24 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   AccountInfo GetSignedInNonSyncAccount(
       const std::string& username) const override;
 
-  LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType
-  GetSyncAccountType() const override;
+  safe_browsing::LoginReputationClientRequest::PasswordReuseEvent::
+      SyncAccountType
+      GetSyncAccountType() const override;
 
-  bool CanShowInterstitial(ReusedPasswordAccountType password_type,
-                           const GURL& main_frame_url) override;
+  bool CanShowInterstitial(
+      safe_browsing::ReusedPasswordAccountType password_type,
+      const GURL& main_frame_url) override;
 
   bool IsURLAllowlistedForPasswordEntry(const GURL& url) const override;
 
-  bool IsInPasswordAlertMode(ReusedPasswordAccountType password_type) override;
+  bool IsInPasswordAlertMode(
+      safe_browsing::ReusedPasswordAccountType password_type) override;
 
   bool CanSendSamplePing() override;
 
-  bool IsPingingEnabled(LoginReputationClientRequest::TriggerType trigger_type,
-                        ReusedPasswordAccountType password_type) override;
+  bool IsPingingEnabled(
+      safe_browsing::LoginReputationClientRequest::TriggerType trigger_type,
+      safe_browsing::ReusedPasswordAccountType password_type) override;
 
   bool IsIncognito() override;
 
@@ -125,9 +138,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // PasswordProtectionService override.
   void MaybeLogPasswordReuseLookupEvent(
       web::WebState* web_state,
-      RequestOutcome outcome,
-      PasswordType password_type,
-      const LoginReputationClientResponse* response) override;
+      safe_browsing::RequestOutcome outcome,
+      safe_browsing::PasswordType password_type,
+      const safe_browsing::LoginReputationClientResponse* response) override;
 
   // Records a Chrome Sync event that sync password reuse was detected.
   void MaybeLogPasswordReuseDetectedEvent(web::WebState* web_state);
@@ -144,7 +157,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // placeholders that are passed into the resource string. It is only set for
   // saved passwords.
   base::string16 GetWarningDetailText(
-      ReusedPasswordAccountType password_type,
+      safe_browsing::ReusedPasswordAccountType password_type,
       std::vector<size_t>* placeholder_offsets) const;
 
   // Gets the warning text for saved password reuse warnings.
@@ -165,6 +178,10 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   std::vector<base::string16> GetPlaceholdersForSavedPasswordWarningText()
       const;
 
+ protected:
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifySendsPingForAboutBlank);
+
  private:
   password_manager::PasswordStore* GetStoreForReusedCredential(
       const password_manager::MatchingReusedCredential& reused_credential);
@@ -178,14 +195,12 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   password_manager::PasswordStore* GetAccountPasswordStore() const;
 
   // Gets prefs associated with |browser_state_|.
-  PrefService* GetPrefs();
+  PrefService* GetPrefs() const;
 
   // Returns whether |browser_state_| has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
 
   ChromeBrowserState* browser_state_;
 };
-
-}  // namespace safe_browsing
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_

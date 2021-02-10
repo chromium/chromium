@@ -16,10 +16,10 @@
 #endif
 
 // static
-safe_browsing::ChromePasswordProtectionService*
+ChromePasswordProtectionService*
 ChromePasswordProtectionServiceFactory::GetForBrowserState(
     web::BrowserState* browser_state) {
-  return static_cast<safe_browsing::ChromePasswordProtectionService*>(
+  return static_cast<ChromePasswordProtectionService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
 }
 
@@ -43,7 +43,7 @@ ChromePasswordProtectionServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(browser_state);
-  return std::make_unique<safe_browsing::ChromePasswordProtectionService>(
+  return std::make_unique<ChromePasswordProtectionService>(
       chrome_browser_state);
 }
 

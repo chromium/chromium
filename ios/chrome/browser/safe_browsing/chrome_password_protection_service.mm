@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/strings/grit/components_strings.h"
@@ -23,23 +25,29 @@
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using sync_pb::GaiaPasswordReuse;
+using password_manager::metrics_util::PasswordType;
+using safe_browsing::LoginReputationClientRequest;
+using safe_browsing::LoginReputationClientResponse;
+using safe_browsing::PasswordProtectionTrigger;
+using safe_browsing::RequestOutcome;
+using safe_browsing::ReusedPasswordAccountType;
 using sync_pb::UserEventSpecifics;
-using InteractionResult =
-    GaiaPasswordReuse::PasswordReuseDialogInteraction::InteractionResult;
+using safe_browsing::ReferrerChain;
+
+using InteractionResult = sync_pb::GaiaPasswordReuse::
+    PasswordReuseDialogInteraction::InteractionResult;
 using PasswordReuseDialogInteraction =
-    GaiaPasswordReuse::PasswordReuseDialogInteraction;
+    sync_pb::GaiaPasswordReuse::PasswordReuseDialogInteraction;
 using PasswordReuseEvent =
     safe_browsing::LoginReputationClientRequest::PasswordReuseEvent;
 using SafeBrowsingStatus =
-    GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus;
-
-namespace safe_browsing {
+    sync_pb::GaiaPasswordReuse::PasswordReuseDetected::SafeBrowsingStatus;
 
 namespace {
 
@@ -86,13 +94,13 @@ std::unique_ptr<UserEventSpecifics> GetUserEventSpecifics(
 
 ChromePasswordProtectionService::ChromePasswordProtectionService(
     ChromeBrowserState* browser_state)
-    : PasswordProtectionService(nullptr, nullptr, nullptr),
+    : safe_browsing::PasswordProtectionService(nullptr, nullptr, nullptr),
       browser_state_(browser_state) {}
 
 ChromePasswordProtectionService::~ChromePasswordProtectionService() = default;
 
 void ChromePasswordProtectionService::ShowModalWarning(
-    PasswordProtectionRequest* request,
+    safe_browsing::PasswordProtectionRequest* request,
     LoginReputationClientResponse::VerdictType verdict_type,
     const std::string& verdict_token,
     ReusedPasswordAccountType password_type) {
@@ -100,7 +108,7 @@ void ChromePasswordProtectionService::ShowModalWarning(
 }
 
 void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
-    PasswordProtectionRequest* request,
+    safe_browsing::PasswordProtectionRequest* request,
     const std::string& username,
     PasswordType password_type,
     bool is_phishing_url) {
@@ -168,7 +176,36 @@ RequestOutcome ChromePasswordProtectionService::GetPingNotSentReason(
     LoginReputationClientRequest::TriggerType trigger_type,
     const GURL& url,
     ReusedPasswordAccountType password_type) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  DCHECK(!CanSendPing(trigger_type, url, password_type));
+  if (IsInExcludedCountry()) {
+    return RequestOutcome::EXCLUDED_COUNTRY;
+  }
+  if (!IsSafeBrowsingEnabled()) {
+    return RequestOutcome::SAFE_BROWSING_DISABLED;
+  }
+  if (IsIncognito()) {
+    return RequestOutcome::DISABLED_DUE_TO_INCOGNITO;
+  }
+  if (trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT &&
+      password_type.account_type() !=
+          ReusedPasswordAccountType::SAVED_PASSWORD &&
+      GetPasswordProtectionWarningTriggerPref(password_type) ==
+          safe_browsing::PASSWORD_PROTECTION_OFF) {
+    return RequestOutcome::TURNED_OFF_BY_ADMIN;
+  }
+  PrefService* prefs = browser_state_->GetPrefs();
+  if (safe_browsing::IsURLAllowlistedByPolicy(url, *prefs)) {
+    return RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST;
+  }
+  if (safe_browsing::MatchesPasswordProtectionChangePasswordURL(url, *prefs)) {
+    return RequestOutcome::MATCHED_ENTERPRISE_CHANGE_PASSWORD_URL;
+  }
+  if (safe_browsing::MatchesPasswordProtectionLoginURL(url, *prefs)) {
+    return RequestOutcome::MATCHED_ENTERPRISE_LOGIN_URL;
+  }
+  if (IsInPasswordAlertMode(password_type)) {
+    return RequestOutcome::PASSWORD_ALERT_MODE;
+  }
   return RequestOutcome::DISABLED_DUE_TO_USER_POPULATION;
 }
 
@@ -180,7 +217,7 @@ void ChromePasswordProtectionService::
 }
 
 bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
-    PasswordProtectionRequest* request) {
+    safe_browsing::PasswordProtectionRequest* request) {
   // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
   return false;
 }
@@ -188,8 +225,18 @@ bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
 PasswordProtectionTrigger
 ChromePasswordProtectionService::GetPasswordProtectionWarningTriggerPref(
     ReusedPasswordAccountType password_type) const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return PHISHING_REUSE;
+  if (password_type.account_type() ==
+          ReusedPasswordAccountType::SAVED_PASSWORD &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kPasswordProtectionForSavedPasswords))
+    return safe_browsing::PHISHING_REUSE;
+
+  bool is_policy_managed =
+      GetPrefs()->HasPrefPath(prefs::kPasswordProtectionWarningTrigger);
+  PasswordProtectionTrigger trigger_level =
+      static_cast<PasswordProtectionTrigger>(
+          GetPrefs()->GetInteger(prefs::kPasswordProtectionWarningTrigger));
+  return is_policy_managed ? trigger_level : safe_browsing::PHISHING_REUSE;
 }
 
 LoginReputationClientRequest::UrlDisplayExperiment
@@ -235,15 +282,16 @@ bool ChromePasswordProtectionService::IsURLAllowlistedForPasswordEntry(
     return false;
 
   PrefService* prefs = browser_state_->GetPrefs();
-  return IsURLAllowlistedByPolicy(url, *prefs) ||
-         MatchesPasswordProtectionChangePasswordURL(url, *prefs) ||
-         MatchesPasswordProtectionLoginURL(url, *prefs);
+  return safe_browsing::IsURLAllowlistedByPolicy(url, *prefs) ||
+         safe_browsing::MatchesPasswordProtectionChangePasswordURL(url,
+                                                                   *prefs) ||
+         safe_browsing::MatchesPasswordProtectionLoginURL(url, *prefs);
 }
 
 bool ChromePasswordProtectionService::IsInPasswordAlertMode(
     ReusedPasswordAccountType password_type) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return false;
+  return GetPasswordProtectionWarningTriggerPref(password_type) ==
+         safe_browsing::PASSWORD_REUSE;
 }
 
 bool ChromePasswordProtectionService::CanSendSamplePing() {
@@ -501,7 +549,7 @@ ChromePasswordProtectionService::GetAccountPasswordStore() const {
   return nullptr;
 }
 
-PrefService* ChromePasswordProtectionService::GetPrefs() {
+PrefService* ChromePasswordProtectionService::GetPrefs() const {
   return browser_state_->GetPrefs();
 }
 
@@ -509,4 +557,3 @@ bool ChromePasswordProtectionService::IsSafeBrowsingEnabled() {
   return ::safe_browsing::IsSafeBrowsingEnabled(*GetPrefs());
 }
 
-}  // namespace safe_browsing
