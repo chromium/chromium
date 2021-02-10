@@ -446,7 +446,7 @@ BUILDERS = {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
     },
     'linux-builder-perf-rel': {
-        'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],
+        'additional_compile_targets': ['chromium_builder_perf'],
     },
     'mac-builder-perf': {
         'additional_compile_targets': ['chromedriver', 'chromium_builder_perf'],

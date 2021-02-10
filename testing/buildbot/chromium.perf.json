@@ -1104,7 +1104,6 @@
   },
   "linux-builder-perf-rel": {
     "additional_compile_targets": [
-      "chromedriver",
       "chromium_builder_perf"
     ]
   },

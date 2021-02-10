@@ -463,14 +463,14 @@ _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite(
 # Linux
 LINUX = PerfPlatform(
     'linux-perf',
-    'Ubuntu-14.04, 8 core, NVIDIA Quadro P400',
+    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
     _LINUX_BENCHMARK_CONFIGS,
     26,
     'linux',
     executables=_LINUX_EXECUTABLE_CONFIGS)
 LINUX_REL = PerfPlatform(
     'linux-perf-rel',
-    'Ubuntu-14.04, 8 core, NVIDIA Quadro P400',
+    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
     _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP,
     2,
     'linux',
