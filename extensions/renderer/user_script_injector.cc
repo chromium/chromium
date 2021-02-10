@@ -141,7 +141,7 @@ bool UserScriptInjector::ExpectsResults() const {
 }
 
 CSSOrigin UserScriptInjector::GetCssOrigin() const {
-  return CSS_ORIGIN_USER;
+  return CSS_ORIGIN_AUTHOR;
 }
 
 bool UserScriptInjector::IsRemovingCSS() const {
