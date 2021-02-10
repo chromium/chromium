@@ -18,10 +18,7 @@ action("cached_lex_yacc_tables") {
   script = "blink_idl_parser.py"
 
   inputs = idl_lexer_parser_files
-  outputs = [
-    "$bindings_scripts_output_dir/lextab.py",
-    "$bindings_scripts_output_dir/parsetab.pickle",
-  ]
+  outputs = [ "$bindings_scripts_output_dir/parsetab.pickle" ]
 
   args = [ rebase_path(bindings_scripts_output_dir, root_build_dir) ]
 }

@@ -164,7 +164,6 @@ template("idl_compiler") {
       idl_lexer_parser_files + idl_compiler_files  # to be explicit (covered by
                                                    # parsetab)
   _inputs += [
-    "$bindings_scripts_output_dir/lextab.py",
     "$bindings_scripts_output_dir/parsetab.pickle",
     "$bindings_scripts_output_dir/cached_jinja_templates.stamp",
     "$bindings_dir/IDLExtendedAttributes.txt",
@@ -255,7 +254,6 @@ template("idl_impl") {
         idl_lexer_parser_files + idl_compiler_files  # to be explicit (covered
                                                      # by parsetab)
     inputs += [
-      "$bindings_scripts_output_dir/lextab.py",
       "$bindings_scripts_output_dir/parsetab.pickle",
       "$bindings_scripts_output_dir/cached_jinja_templates.stamp",
       "$bindings_dir/IDLExtendedAttributes.txt",
