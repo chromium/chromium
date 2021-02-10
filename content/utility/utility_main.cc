@@ -175,11 +175,15 @@ int UtilityMain(const MainFunctionParams& parameters) {
     // base::RandBytes() will CHECK fail when v8 is initialized.
     base::RandBytes(&buffer, sizeof(buffer));
 
-    // Network service process needs FWPUCLNT.DLL to be loaded otherwise
-    // getaddrinfo fails.
     if (sandbox_type == sandbox::policy::SandboxType::kNetwork) {
+      // Network service process needs FWPUCLNT.DLL to be loaded before sandbox
+      // lockdown otherwise getaddrinfo fails.
       HMODULE fwpuclnt_pin = ::LoadLibrary(L"FWPUCLNT.DLL");
       UNREFERENCED_PARAMETER(fwpuclnt_pin);
+      // Network service process needs urlmon.dll to be loaded before sandbox
+      // lockdown otherwise CoInternetCreateSecurityManager fails.
+      HMODULE urlmon_pin = ::LoadLibrary(L"urlmon.dll");
+      UNREFERENCED_PARAMETER(urlmon_pin);
     }
     g_utility_target_services->LowerToken();
   }
