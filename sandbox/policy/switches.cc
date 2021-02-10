@@ -108,6 +108,9 @@ const char kAddXrAppContainerCaps[] = "add-xr-appcontainer-caps";
 // Cause the OS X sandbox write to syslog every time an access to a resource
 // is denied by the sandbox.
 const char kEnableSandboxLogging[] = "enable-sandbox-logging";
+
+// Disables Metal's shader cache, using the GPU sandbox to prevent access to it.
+const char kDisableMetalShaderCache[] = "disable-metal-shader-cache";
 #endif
 
 // Flags spied upon from other layers.

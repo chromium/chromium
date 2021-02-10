@@ -60,6 +60,7 @@ class SANDBOX_POLICY_EXPORT SandboxMac {
   static const char* kSandboxFieldTrialSeverName;
 
   static const char* kSandboxBundleVersionPath;
+  static const char* kSandboxDisableMetalShaderCache;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MacDirAccessSandboxTest, StringEscape);

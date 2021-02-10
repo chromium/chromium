@@ -73,6 +73,8 @@ const char* SandboxMac::kSandboxOSVersion = "OS_VERSION";
 const char* SandboxMac::kSandboxMacOS1013 = "MACOS_1013";
 const char* SandboxMac::kSandboxFieldTrialSeverName = "FIELD_TRIAL_SERVER_NAME";
 const char* SandboxMac::kSandboxBundleVersionPath = "BUNDLE_VERSION_PATH";
+const char* SandboxMac::kSandboxDisableMetalShaderCache =
+    "DISABLE_METAL_SHADER_CACHE";
 
 // Warm up System APIs that empirically need to be accessed before the Sandbox
 // is turned on.

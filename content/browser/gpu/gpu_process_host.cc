@@ -277,6 +277,7 @@ static const char* const kSwitchNames[] = {
 #endif
 #if defined(OS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
+    sandbox::policy::switches::kDisableMetalShaderCache,
     switches::kDisableAVFoundationOverlays,
     switches::kDisableMacOverlays,
     switches::kDisableMetalTestShaders,

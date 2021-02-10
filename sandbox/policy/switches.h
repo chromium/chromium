@@ -65,6 +65,7 @@ SANDBOX_POLICY_EXPORT extern const char kAddXrAppContainerCaps[];
 #endif
 #if defined(OS_MAC)
 SANDBOX_POLICY_EXPORT extern const char kEnableSandboxLogging[];
+SANDBOX_POLICY_EXPORT extern const char kDisableMetalShaderCache[];
 #endif
 
 // Flags spied upon from other layers.

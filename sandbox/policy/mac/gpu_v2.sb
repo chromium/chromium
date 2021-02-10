@@ -14,6 +14,8 @@
 
 (allow ipc-posix-shm)
 
+(define disable-metal-shader-cache "DISABLE_METAL_SHADER_CACHE")
+
 ; TODO(https://crbug.com/1126350): Remove this after debugging. These blocks
 ; enumerate known denials, while turning unknown denials into fatal crashes.
 (define crash-on-unknown-denials #f) ; Single-line kill switch.
@@ -171,3 +173,11 @@
       (syscall-number SYS_write)
       (syscall-number SYS_write_nocancel)
 )))
+
+; crbug.com/1159113
+(if (param-true? disable-metal-shader-cache)
+  (let ((metal-cache-dir (subpath (string-append (param darwin-user-cache-dir)
+                                                 "/com.apple.metal"))))
+    (deny file-read* metal-cache-dir)
+    (deny file-write* metal-cache-dir))
+)
