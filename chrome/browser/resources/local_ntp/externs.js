@@ -251,6 +251,13 @@ window.chrome.embeddedSearch.newTabPage.logMostVisitedImpression;
  */
 window.chrome.embeddedSearch.newTabPage.logMostVisitedNavigation;
 
+
+/**
+ * @param {number} event_type
+ * @param {number} data
+ */
+window.chrome.embeddedSearch.newTabPage.logSuggestionEventWithValue;
+
 /**
  * No params.
  */
@@ -359,6 +366,9 @@ let NtpTheme;
 
 /** @type {?NtpTheme} */
 window.chrome.embeddedSearch.newTabPage.ntpTheme;
+
+/** @type {?NtpTheme} */
+window.chrome.embeddedSearch.newTabPage.themeBackgroundInfo;
 
 /**
  * No params.
