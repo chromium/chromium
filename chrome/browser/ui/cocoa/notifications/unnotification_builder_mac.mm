@@ -9,8 +9,7 @@
 
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
-
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
 @implementation UNNotificationBuilder
 

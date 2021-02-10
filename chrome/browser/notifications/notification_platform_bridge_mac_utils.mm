@@ -7,15 +7,14 @@
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/optional.h"
-#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -123,14 +122,6 @@ base::string16 CreateMacNotificationContext(
     return origin;
 
   return etldplusone;
-}
-
-std::string DeriveMacNotificationId(bool incognito,
-                                    const std::string& profile_id,
-                                    const std::string& notification_id) {
-  // i: incognito, r: regular profile
-  return base::StrCat(
-      {incognito ? "i" : "r", "|", profile_id, "|", notification_id});
 }
 
 bool VerifyMacNotificationData(NSDictionary* response) {

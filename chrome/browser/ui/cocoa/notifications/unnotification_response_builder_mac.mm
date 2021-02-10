@@ -8,8 +8,8 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_operation.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
 @implementation UNNotificationResponseBuilder
 

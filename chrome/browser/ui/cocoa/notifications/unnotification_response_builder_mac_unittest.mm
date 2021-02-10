@@ -7,10 +7,10 @@
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_operation.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 @interface FakeContent : NSObject

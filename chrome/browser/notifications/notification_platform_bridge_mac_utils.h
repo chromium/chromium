@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
 
-#include <string>
-
 #include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -25,12 +23,6 @@ base::string16 CreateMacNotificationContext(
     bool is_persistent,
     const message_center::Notification& notification,
     bool requires_attribution);
-
-// Derives a unique notification identifier to be used by the macOS system
-// notification center to uniquely identify a notification.
-std::string DeriveMacNotificationId(bool incognito,
-                                    const std::string& profile_id,
-                                    const std::string& notification_id);
 
 // Validates contents of the |response| dictionary as received from the system
 // when a notification gets activated.

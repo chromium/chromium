@@ -13,7 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
 @implementation StubAlertDispatcher {
   base::scoped_nsobject<NSMutableArray> _alerts;

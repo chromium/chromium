@@ -12,7 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/service_sandbox_type.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/receiver.h"

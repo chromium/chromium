@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
 #import "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "ui/base/l10n/l10n_util_mac.h"

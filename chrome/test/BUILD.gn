@@ -4270,7 +4270,10 @@ test("unit_tests") {
 
   if (is_mac) {
     data_deps += [ "//chrome:chrome_framework" ]
-    deps += [ "//chrome/services/mac_notifications:unit_tests" ]
+    deps += [
+      "//chrome/services/mac_notifications:unit_tests",
+      "//chrome/services/mac_notifications/public/cpp",
+    ]
   }
 
   if (is_win) {

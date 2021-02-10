@@ -7,9 +7,9 @@
 #import "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
 #import "chrome/browser/ui/cocoa/notifications/notification_builder_mac.h"
-#include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #import "chrome/browser/ui/cocoa/notifications/notification_response_builder_mac.h"
 #import "chrome/browser/ui/cocoa/notifications/xpc_transaction_handler.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 
 @class NSUserNotificationCenter;
 
