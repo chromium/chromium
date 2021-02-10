@@ -9,6 +9,10 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "fuchsia/engine/renderer/web_engine_render_frame_observer.h"
 
+namespace util {
+class MultiSourceMemoryPressureMonitor;
+}  // namespace util
+
 class WebEngineContentRendererClient : public content::ContentRendererClient {
  public:
   WebEngineContentRendererClient();
@@ -25,6 +29,7 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   void OnRenderFrameDeleted(int render_frame_id);
 
   // content::ContentRendererClient overrides.
+  void RenderThreadStarted() override;
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
   void AddSupportedKeySystems(
       std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems)
@@ -47,6 +52,11 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   // Map of RenderFrame ID to WebEngineRenderFrameObserver.
   std::map<int, std::unique_ptr<WebEngineRenderFrameObserver>>
       render_frame_id_to_observer_map_;
+
+  // Initiates cache purges and Blink/V8 garbage collection when free memory
+  // is limited.
+  std::unique_ptr<util::MultiSourceMemoryPressureMonitor>
+      memory_pressure_monitor_;
 
   DISALLOW_COPY_AND_ASSIGN(WebEngineContentRendererClient);
 };
