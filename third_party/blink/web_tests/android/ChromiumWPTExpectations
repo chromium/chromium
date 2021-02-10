@@ -2861,8 +2861,6 @@ crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/document
 crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/document-write/write-active-document.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-side-effects-ignore-opens-during-unload.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/location-set-and-document-open.html [ Timeout ]
-crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/reload.window.html [ Timeout ]
-crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/tasks.window.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/url.window.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.worker.html [ Failure Pass ]

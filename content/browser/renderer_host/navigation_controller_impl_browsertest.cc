@@ -1602,6 +1602,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(blank_url, new_root->current_url());
 
   // Make a new iframe in it using document.write from the opener.
+  // Call document.open() outside LoadCommittedCapturer as it implicitly does a
+  // same-document navigation.
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), "w.document.open()"));
   {
     LoadCommittedCapturer capturer(new_shell->web_contents());
     std::string html = "<iframe src='" + url1.spec() + "'></iframe>";
@@ -1613,7 +1616,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     capturer.Wait();
   }
   ASSERT_EQ(1U, new_root->child_count());
-  EXPECT_EQ(blank_url, new_root->current_url());
+  // Since we did a document.open(), the new root's URL is the same as the
+  // outer URL.
+  EXPECT_EQ(url1, new_root->current_url());
   EXPECT_EQ(url1, new_root->child_at(0)->current_url());
 
   // Navigate the subframe.
@@ -1625,7 +1630,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(ExecJs(new_root->child_at(0), script));
     capturer.Wait();
   }
-  EXPECT_EQ(blank_url, new_root->current_url());
+  EXPECT_EQ(url1, new_root->current_url());
   EXPECT_EQ(url2, new_root->child_at(0)->current_url());
   EXPECT_EQ(2, new_shell->web_contents()->GetController().GetEntryCount());
 
@@ -1658,6 +1663,96 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     observer.Wait();
   }
   EXPECT_TRUE(new_root->current_frame_host()->IsRenderFrameLive());
+}
+
+// Test that a frame's url is correctly updated after a document.open() from
+// an about:blank frame.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DocumentOpenFromAboutBlank) {
+  GURL url1 = embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+
+  // Make a new iframe that will document.open() its sibling.
+  {
+    LoadCommittedCapturer capturer(contents());
+    EXPECT_EQ("done", EvalJs(root->current_frame_host(), R"(
+      new Promise(async resolve => {
+        const blank_iframe = document.createElement('iframe');
+        await new Promise(resolve => {
+          blank_iframe.onload = resolve;
+          document.body.appendChild(blank_iframe);
+        });
+
+        let script = document.createElement('script');
+        script.text = `
+          const sibling = parent.document.getElementById("frame")
+          sibling.contentDocument.open();
+        `;
+        blank_iframe.contentDocument.body.appendChild(script);
+        resolve("done");
+      })
+    )"));
+    capturer.Wait();
+  }
+  ASSERT_EQ(2U, root->child_count());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), root->child_at(0)->current_url());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), root->child_at(1)->current_url());
+}
+
+// Test that a frame's url is correctly updated after a document.open() from
+// an about:srcdoc frame.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DocumentOpenFromSrcdoc) {
+  GURL url1 = embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+
+  // Make a new iframe that will document.open() its sibling.
+  {
+    LoadCommittedCapturer capturer(contents());
+    std::string html = "<iframe src='" + url1.spec() + "'></iframe>";
+    std::string script =
+        "let origin = document.createElement('iframe');"
+        "origin.srcdoc = '<script>parent.document.getElementById(\"frame\")"
+        ".contentDocument.open();</s' + 'cript>';"
+        "document.body.appendChild(origin);";
+    EXPECT_TRUE(ExecJs(root->current_frame_host(), script));
+    capturer.Wait();
+  }
+  ASSERT_EQ(2U, root->child_count());
+  EXPECT_EQ("about:srcdoc", root->child_at(0)->current_url());
+  EXPECT_EQ("about:srcdoc", root->child_at(1)->current_url());
+}
+
+// Test that a frame's url is correctly updated after a document.open() from
+// a blob: url
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       DocumentOpenFromBloblIframe) {
+  GURL url1 = embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  FrameTreeNode* root = contents()->GetFrameTree()->root();
+
+  // Make a new iframe that will document.open() its sibling.
+  {
+    LoadCommittedCapturer capturer(contents());
+    std::string html = "<iframe src='" + url1.spec() + "'></iframe>";
+    std::string script =
+        "let origin = document.createElement('iframe');"
+        "let blob = new Blob(['<script>"
+        "parent.document.getElementById(\"frame\").contentDocument.open();"
+        "</s' + 'cript>'], { type: 'text/html' });"
+        "origin.src = URL.createObjectURL(blob);"
+        "document.body.appendChild(origin);";
+    EXPECT_TRUE(ExecJs(root->current_frame_host(), script));
+    capturer.Wait();
+  }
+  ASSERT_EQ(2U, root->child_count());
+  EXPECT_TRUE(root->child_at(0)->current_url().SchemeIsBlob());
+  EXPECT_TRUE(root->child_at(1)->current_url().SchemeIsBlob());
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ErrorPageReplacement) {
@@ -4153,7 +4248,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(1U, root->child_at(0)->child_count());
   ASSERT_EQ(0U, root->child_at(0)->child_at(0)->child_count());
   EXPECT_EQ(main_url, root->current_url());
-  EXPECT_EQ(blank_url, root->child_at(0)->current_url());
+  EXPECT_EQ(main_url, root->child_at(0)->current_url());
   EXPECT_EQ(inner_url, root->child_at(0)->child_at(0)->current_url());
 
   EXPECT_EQ(1, controller.GetEntryCount());
@@ -4162,7 +4257,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // The entry should have FrameNavigationEntries for the subframes.
   ASSERT_EQ(1U, entry->root_node()->children.size());
-  EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
+  EXPECT_EQ(main_url, entry->root_node()->children[0]->frame_entry->url());
   EXPECT_EQ(inner_url,
             entry->root_node()->children[0]->children[0]->frame_entry->url());
 
@@ -4188,7 +4283,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
   ASSERT_EQ(1U, root->child_count());
   EXPECT_EQ(main_url, root->current_url());
-  EXPECT_EQ(blank_url, root->child_at(0)->current_url());
+  EXPECT_EQ(main_url, root->child_at(0)->current_url());
 
   // Verify that the inner iframe went to the correct URL.
   EXPECT_EQ(inner_url, root->child_at(0)->child_at(0)->current_url());
@@ -4204,7 +4299,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(1U, entry->root_node()->children.size());
 
   // The entry should have FrameNavigationEntries for the subframes.
-  EXPECT_EQ(blank_url, entry->root_node()->children[0]->frame_entry->url());
+  EXPECT_EQ(main_url, entry->root_node()->children[0]->frame_entry->url());
   EXPECT_EQ(inner_url,
             entry->root_node()->children[0]->children[0]->frame_entry->url());
 
@@ -7683,13 +7778,15 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_NE(nullptr, frame);
   EXPECT_EQ(blank_url, frame->current_url());
 
-  // Do a document.write in the subframe to create a link to click.
+  // Do a document.write() in the subframe to create a link to click. This sets
+  // the URL to be the same as the frame that called document.write().
   std::string document_write_script =
       "var iframe = document.getElementById('frame');"
       "iframe.contentWindow.document.write("
       "    \"<a id='fraglink' href='#frag'>fragment link</a>\");"
       "iframe.contentWindow.document.close();";
   EXPECT_TRUE(ExecJs(root->current_frame_host(), document_write_script));
+  EXPECT_EQ(links_url, frame->current_url());
 
   // Click the link to do a same document navigation.  Due to the
   // document.write, the new URL matches the parent frame's URL.
@@ -7716,7 +7813,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(ExecJs(root->current_frame_host(), "true;"));
   EXPECT_TRUE(root->current_frame_host()->IsRenderFrameLive());
 
-  EXPECT_EQ(blank_url, frame->current_url());
+  // When we go back in history, the history entry URL should be used. However,
+  // since we did a .write which set the history entry's URL, we go back to the
+  // main page URL.
+  EXPECT_EQ(links_url, frame->current_url());
 }
 
 // Test for same document navigation kills when going back to about:blank in an
@@ -7767,12 +7867,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "iframe.contentWindow.document.close();",
       html);
   EXPECT_TRUE(ExecJs(root, document_write_script));
+  EXPECT_EQ(data_url, frame->current_url());
   EXPECT_EQ(opaque_origin, root->current_origin());
   EXPECT_EQ(opaque_origin, frame->current_origin());
 
-  // Click the link to do a same document navigation.  Due to the
+  // Click the link to do a same document navigation. Due to the
   // document.write, the new URL matches the parent frame's URL, but the
-  // opaque origin is preserved.
+  // opaque origin is preserved. Not only that, the history entry's URL is
+  // changed to match the parent frame's URL.
   GURL frame_url_2("data:text/html,Top level page#frag");
   std::string link_script = "document.getElementById('fraglink').click()";
   EXPECT_TRUE(ExecJs(frame, link_script));
@@ -7802,7 +7904,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ("ping", EvalJs(root, "'ping'"));
   EXPECT_TRUE(root->current_frame_host()->IsRenderFrameLive());
 
-  EXPECT_EQ(blank_url, frame->current_url());
+  // When we go back in history, the history entry URL should be used. However,
+  // since we did a .write which set the history entry's URL, we go back to the
+  // main page URL.
+  EXPECT_EQ(data_url, frame->current_url());
   EXPECT_EQ(opaque_origin, frame->current_origin());
 }
 

@@ -631,6 +631,16 @@ static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
   return kSPANavTypeSameDocumentBackwardOrForward;
 }
 
+void DocumentLoader::RunURLAndHistoryUpdateSteps(
+    const KURL& new_url,
+    scoped_refptr<SerializedScriptValue> data,
+    mojom::blink::ScrollRestorationType scroll_restoration_type,
+    WebFrameLoadType type) {
+  UpdateForSameDocumentNavigation(new_url, kSameDocumentNavigationHistoryApi,
+                                  std::move(data), scroll_restoration_type,
+                                  type, true);
+}
+
 void DocumentLoader::UpdateForSameDocumentNavigation(
     const KURL& new_url,
     SameDocumentNavigationSource same_document_navigation_source,

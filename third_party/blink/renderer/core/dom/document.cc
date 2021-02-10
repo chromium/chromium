@@ -3309,49 +3309,56 @@ void Document::open(LocalDOMWindow* entered_window,
   if (ignore_opens_and_writes_for_abort_)
     return;
 
-  // If this document is fully active, change |document|'s URL to the URL of the
-  // responsible document specified by the entry settings object.
-  if (dom_window_ && entered_window && dom_window_ != entered_window) {
-    auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
-    csp->CopyStateFrom(entered_window->GetContentSecurityPolicy());
-    // We inherit the sandbox flags of the entered document, so mask on
-    // the ones contained in the CSP. The operator| is a bitwise operation on
-    // the sandbox flags bits. It makes the sandbox policy stricter (or as
-    // strict) as both policy.
-    //
-    // TODO(arthursonzogni): Why merging sandbox flags?
-    // This doesn't look great at many levels:
-    // - The browser process won't be notified of the update.
-    // - The origin won't be made opaque, despite the new flags.
-    // - The sandbox flags of the document can't be considered to be an
-    //   immutable property anymore.
-    //
-    // Ideally:
-    // - javascript-url document.
-    // - XSLT document.
-    // - document.open.
-    // should not mutate the security properties of the current document. From
-    // the browser process point of view, all of those operations are not
-    // considered to produce new documents. No IPCs are sent, it is as if it was
-    // a no-op.
-    dom_window_->GetSecurityContext().SetSandboxFlags(
-        dom_window_->GetSecurityContext().GetSandboxFlags() |
-        entered_window->GetSandboxFlags());
-    dom_window_->GetSecurityContext().SetContentSecurityPolicy(csp);
-    dom_window_->GetContentSecurityPolicy()->BindToDelegate(
-        dom_window_->GetContentSecurityPolicyDelegate());
+  // If this document is fully active, then run the URL and history update steps
+  // for this document with the entered window's url.
+  if (dom_window_ && entered_window) {
+    KURL new_url = entered_window->Url();
     // Clear the hash fragment from the inherited URL to prevent a
     // scroll-into-view for any document.open()'d frame.
-    KURL new_url = entered_window->Url();
-    new_url.SetFragmentIdentifier(String());
+    if (dom_window_ != entered_window)
+      new_url.SetFragmentIdentifier(String());
     SetURL(new_url);
-    if (Loader())
-      Loader()->UpdateUrlForDocumentOpen(new_url);
 
-    dom_window_->GetSecurityContext().SetSecurityOrigin(
-        entered_window->GetMutableSecurityOrigin());
-    dom_window_->SetReferrerPolicy(entered_window->GetReferrerPolicy());
-    cookie_url_ = entered_window->document()->CookieURL();
+    auto* state_object = Loader()->GetHistoryItem()
+                             ? Loader()->GetHistoryItem()->StateObject()
+                             : nullptr;
+    Loader()->RunURLAndHistoryUpdateSteps(new_url, state_object);
+
+    if (dom_window_ != entered_window) {
+      auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
+      csp->CopyStateFrom(entered_window->GetContentSecurityPolicy());
+      // We inherit the sandbox flags of the entered document, so mask on
+      // the ones contained in the CSP. The operator| is a bitwise operation on
+      // the sandbox flags bits. It makes the sandbox policy stricter (or as
+      // strict) as both policy.
+      //
+      // TODO(arthursonzogni): Why merging sandbox flags?
+      // This doesn't look great at many levels:
+      // - The browser process won't be notified of the update.
+      // - The origin won't be made opaque, despite the new flags.
+      // - The sandbox flags of the document can't be considered to be an
+      //   immutable property anymore.
+      //
+      // Ideally:
+      // - javascript-url document.
+      // - XSLT document.
+      // - document.open.
+      // should not mutate the security properties of the current document. From
+      // the browser process point of view, all of those operations are not
+      // considered to produce new documents. No IPCs are sent, it is as if it
+      // was a no-op.
+      dom_window_->GetSecurityContext().SetSandboxFlags(
+          dom_window_->GetSecurityContext().GetSandboxFlags() |
+          entered_window->GetSandboxFlags());
+      dom_window_->GetSecurityContext().SetContentSecurityPolicy(csp);
+      dom_window_->GetContentSecurityPolicy()->BindToDelegate(
+          dom_window_->GetContentSecurityPolicyDelegate());
+
+      dom_window_->GetSecurityContext().SetSecurityOrigin(
+          entered_window->GetMutableSecurityOrigin());
+      dom_window_->SetReferrerPolicy(entered_window->GetReferrerPolicy());
+      cookie_url_ = entered_window->document()->CookieURL();
+    }
   }
 
   open();

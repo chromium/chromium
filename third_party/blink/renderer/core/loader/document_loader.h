@@ -142,7 +142,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return subresource_filter_.Get();
   }
 
+  // TODO(dcheng, japhet): Some day, Document::Url() will always match
+  // DocumentLoader::Url(), and one of them will be removed. Today is not that
+  // day though.
   const KURL& Url() const;
+
   const KURL& UrlForHistory() const;
   const AtomicString& HttpMethod() const;
   const Referrer& GetReferrer() const;
@@ -153,12 +157,21 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void DidChangePerformanceTiming();
   void DidObserveInputDelay(base::TimeDelta input_delay);
   void DidObserveLoadingBehavior(LoadingBehaviorFlag);
+
+  // https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps
+  void RunURLAndHistoryUpdateSteps(
+      const KURL&,
+      scoped_refptr<SerializedScriptValue>,
+      mojom::blink::ScrollRestorationType =
+          mojom::blink::ScrollRestorationType::kAuto,
+      WebFrameLoadType = WebFrameLoadType::kReplaceCurrentItem);
   void UpdateForSameDocumentNavigation(const KURL&,
                                        SameDocumentNavigationSource,
                                        scoped_refptr<SerializedScriptValue>,
                                        mojom::blink::ScrollRestorationType,
                                        WebFrameLoadType,
                                        bool is_content_initiated);
+
   const ResourceResponse& GetResponse() const { return response_; }
   bool IsClientRedirect() const { return is_client_redirect_; }
   bool ReplacesCurrentHistoryItem() const {
@@ -286,11 +299,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   bool IsBrowserInitiated() const { return is_browser_initiated_; }
 
   bool IsSameOriginNavigation() const { return is_same_origin_navigation_; }
-
-  // TODO(dcheng, japhet): Some day, Document::Url() will always match
-  // DocumentLoader::Url(), and one of them will be removed. Today is not that
-  // day though.
-  void UpdateUrlForDocumentOpen(const KURL& url) { url_ = url; }
 
   enum class HistoryNavigationType {
     kDifferentDocument,

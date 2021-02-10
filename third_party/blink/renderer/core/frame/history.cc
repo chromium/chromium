@@ -341,9 +341,8 @@ void History::StateObjectAdded(
     return;
   }
 
-  DomWindow()->document()->Loader()->UpdateForSameDocumentNavigation(
-      full_url, kSameDocumentNavigationHistoryApi, std::move(data),
-      restoration_type, type, DomWindow()->document());
+  DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
+      full_url, std::move(data), restoration_type, type);
 }
 
 }  // namespace blink

@@ -1245,7 +1245,6 @@ crbug.com/1050754 external/wpt/html/user-activation/navigation-state-reset-sameo
 crbug.com/1050754 external/wpt/html/user-activation/propagation-crossorigin.sub.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/html/user-activation/propagation-sameorigin.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/location-set-and-document-open.html [ Timeout ]
-crbug.com/1050754 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/reload.window.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.worker.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/webappapis/microtask-queuing/queue-microtask.any.sharedworker.html [ Failure ]
