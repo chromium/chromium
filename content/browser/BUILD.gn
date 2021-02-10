@@ -2714,6 +2714,7 @@ source_set("browser") {
       "//chromeos/dbus/power:power_manager_proto",
       "//chromeos/network",
       "//chromeos/system",
+      "//chromeos/tpm",
       "//components/session_manager/core",
     ]
   }
