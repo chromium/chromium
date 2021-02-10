@@ -5658,3 +5658,8 @@ crbug.com/1174806 external/wpt/css/selectors/focus-visible-006.html [ Pass Failu
 
 # Timing out on Fuchsia
 crbug.com/1171283 [ Fuchsia ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Pass Timeout ]
+
+# Sheriff 2021-02-09
+crbug.com/1176286 [ Linux ] http/tests/devtools/service-workers/service-workers-redundant.js [ Failure Pass ]
+crbug.com/1175901 [ Linux ] http/tests/devtools/console/console-search-reveals-messages.js [ Failure Pass ]
+crbug.com/1175901 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Failure Pass ]
