@@ -1,11 +1,19 @@
 <html>
   <body>
-    <canvas id="canvas" width=960 height=540></canvas>
+    <canvas id="canvas" width=960 height=1080></canvas>
     <script type="module">
         const video = document.createElement('video');
         video.src = './vc/teddy1_vp9_640x360_30fps.webm';
         video.loop = true;
         video.muted = true;
+
+        // Test with two videos. The original implementation had a bug
+        // where importing a second video would result in improper
+        // synchronization. The mailbox would be used before it was created.
+        const video2 = document.createElement('video');
+        video2.src = './vc/teddy2_vp9_320x180_15fps.webm';
+        video2.loop = true;
+        video2.muted = true;
 
         const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
         const device = await adapter.requestDevice();
@@ -40,15 +48,14 @@ fn main() -> void {
   );
   const uv : array<vec2<f32>, 6> = array<vec2<f32>, 6>(
     vec2<f32>(1.0, 0.0),
-    vec2<f32>(1.0, 1.0),
-    vec2<f32>(0.0, 1.0),
+    vec2<f32>(1.0, 2.0),
+    vec2<f32>(0.0, 2.0),
     vec2<f32>(1.0, 0.0),
-    vec2<f32>(0.0, 1.0),
+    vec2<f32>(0.0, 2.0),
     vec2<f32>(0.0, 0.0)
   );
   Position = vec4<f32>(pos[VertexIndex], 1.0);
   fragUV = uv[VertexIndex];
-  return;
 }
 `,
             }),
@@ -59,14 +66,19 @@ fn main() -> void {
               code: `
 [[binding(0), group(0)]] var<uniform_constant> mySampler: sampler;
 [[binding(1), group(0)]] var<uniform_constant> myTexture: texture_2d<f32>;
+[[binding(2), group(0)]] var<uniform_constant> myTexture2: texture_2d<f32>;
 
 [[location(0)]] var<in> fragUV : vec2<f32>;
 [[location(0)]] var<out> outColor : vec4<f32>;
 
 [[stage(fragment)]]
 fn main() -> void {
-  outColor = textureSample(myTexture, mySampler, fragUV);
-  return;
+  if (fragUV.y <= 1.0) {
+    outColor = textureSample(myTexture, mySampler, fragUV);
+  } else {
+    var uv : vec2<f32> = vec2<f32>(fragUV.x, fragUV.y - 1.0);
+    outColor = textureSample(myTexture2, mySampler, uv);
+  }
 }
 `,
             }),
@@ -102,6 +114,9 @@ fn main() -> void {
           const videoTexture = device.experimentalImportTexture(
             video, GPUTextureUsage.SAMPLED);
 
+          const videoTexture2 = device.experimentalImportTexture(
+            video2, GPUTextureUsage.SAMPLED);
+
           const bindGroup = device.createBindGroup({
             layout: pipeline.getBindGroupLayout(0),
             entries: [
@@ -112,6 +127,10 @@ fn main() -> void {
               {
                 binding: 1,
                 resource: videoTexture.createView(),
+              },
+              {
+                binding: 2,
+                resource: videoTexture2.createView(),
               },
             ],
           });
@@ -126,11 +145,13 @@ fn main() -> void {
 
           // Destroy the texture after submit to promptly recycle resources.
           videoTexture.destroy();
+          videoTexture2.destroy();
 
           requestAnimationFrame(frame);
         }
 
         await video.play();
+        await video2.play();
         requestAnimationFrame(frame);
     </script>
   </body>

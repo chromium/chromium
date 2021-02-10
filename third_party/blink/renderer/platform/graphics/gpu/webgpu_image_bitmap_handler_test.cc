@@ -397,21 +397,21 @@ TEST_F(WebGPUMailboxTextureTest, VerifyAccessTexture) {
 
   // Test creating a WebGPUMailboxTexture calls ReserveTexture and
   // AssociateMailbox correctly.
-  const GLbyte* mailbox_bytes = nullptr;
-
+  gpu::Mailbox mailbox;
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
   EXPECT_CALL(*webgpu_,
               AssociateMailbox(2, 3, reservation.id, reservation.generation,
                                WGPUTextureUsage_CopySrc, _))
-      .WillOnce(testing::SaveArg<5>(&mailbox_bytes));
+      .WillOnce(
+          testing::Invoke(testing::WithArg<5>([&](const GLbyte* mailbox_bytes) {
+            mailbox = gpu::Mailbox::FromVolatile(
+                *reinterpret_cast<const volatile gpu::Mailbox*>(mailbox_bytes));
+          })));
 
-  scoped_refptr<WebGPUMailboxTexture> mailbox_texture = base::AdoptRef(
-      new WebGPUMailboxTexture(dawn_control_client_, fake_device_, bitmap.get(),
-                               WGPUTextureUsage_CopySrc));
-
-  gpu::Mailbox mailbox = gpu::Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile gpu::Mailbox*>(mailbox_bytes));
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      WebGPUMailboxTexture::FromStaticBitmapImage(
+          dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap);
 
   EXPECT_TRUE(mailbox == bitmap->GetMailboxHolder().mailbox);
   EXPECT_NE(mailbox_texture->GetTexture(), nullptr);
