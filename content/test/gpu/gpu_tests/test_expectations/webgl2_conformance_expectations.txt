@@ -966,6 +966,8 @@ crbug.com/1132297 [ android-pie android-pixel-2 passthrough ] * [ RetryOnFailure
 
 crbug.com/906737 [ android qualcomm ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/906742 [ android qualcomm no-passthrough ] conformance2/glsl3/compare-structs-containing-arrays.html [ Failure ]
+crbug.com/1155942 [ android qualcomm ] conformance2/glsl3/precision-side-effects-bug.html [ Failure ]
+crbug.com/1176485 [ android qualcomm ] conformance2/glsl3/uint-int-shift-bug.html [ Failure ]
 crbug.com/1008535 [ android android-pixel-2 passthrough ] conformance2/textures/misc/tex-image-with-bad-args-from-dom-elements.html [ Skip ]
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/951628 [ android android-pixel-2 passthrough ] conformance/rendering/blending.html [ Failure ]
@@ -981,6 +983,7 @@ crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/
 crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance/textures/webgl_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1143323 [ android android-pixel-2 passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1154706 [ android android-pixel-2 no-passthrough ] conformance/ogles/GL/clamp/clamp_001_to_006.html [ RetryOnFailure ]
+
 
 # This test is failing on Android Pixel 2 and 3 (Qualcomm)
 # Seems to be an OpenGL ES bug.
