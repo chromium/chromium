@@ -56,7 +56,6 @@ class Platform {
 
   using MakeCredentialCallback =
       base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> client_data_json,
                               base::span<const uint8_t> attestation_obj)>;
 
   struct MakeCredentialParams {
@@ -66,9 +65,8 @@ class Platform {
     MakeCredentialParams& operator=(const MakeCredentialParams&) = delete;
     MakeCredentialParams(MakeCredentialParams&&) = delete;
 
-    std::string origin;
+    std::vector<uint8_t> client_data_hash;
     std::string rp_id;
-    std::vector<uint8_t> challenge;
     std::vector<uint8_t> user_id;
     std::vector<int> algorithms;
     std::vector<std::vector<uint8_t>> excluded_cred_ids;
@@ -80,7 +78,6 @@ class Platform {
 
   using GetAssertionCallback =
       base::OnceCallback<void(uint32_t status,
-                              base::span<const uint8_t> client_data_json,
                               base::span<const uint8_t> cred_id,
                               base::span<const uint8_t> auth_data,
                               base::span<const uint8_t> sig)>;
@@ -92,9 +89,8 @@ class Platform {
     GetAssertionParams& operator=(const GetAssertionParams&) = delete;
     GetAssertionParams(GetAssertionParams&&) = delete;
 
-    std::string origin;
+    std::vector<uint8_t> client_data_hash;
     std::string rp_id;
-    std::vector<uint8_t> challenge;
     std::vector<std::vector<uint8_t>> allowed_cred_ids;
     GetAssertionCallback callback;
   };

@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "device/fido/client_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
@@ -103,8 +102,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // to be sent. This only makes sense when there is a collection of
   // authenticators to consider, i.e. for the Windows API.
   bool cred_protect_enforce = false;
-
-  base::Optional<AndroidClientDataExtensionInput> android_client_data_ext;
 };
 
 // Serializes MakeCredential request parameter into CBOR encoded map with

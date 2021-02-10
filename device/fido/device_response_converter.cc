@@ -14,13 +14,13 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_supported_options.h"
-#include "device/fido/client_data.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/opaque_attestation_statement.h"
@@ -104,13 +104,6 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
     response.enterprise_attestation_returned = it->second.GetBool();
   }
 
-  if (base::FeatureList::IsEnabled(kWebAuthPhoneSupport)) {
-    it = decoded_map.find(CBOR(kAndroidClientDataExtOutputKey));
-    if (it != decoded_map.end() && it->second.is_bytestring()) {
-      response.set_android_client_data_ext(it->second.GetBytestring());
-    }
-  }
-
   it = decoded_map.find(CBOR(0x05));
   if (it != decoded_map.end()) {
     if (!it->second.is_bytestring() ||
@@ -171,13 +164,6 @@ base::Optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
       return base::nullopt;
 
     response.SetNumCredentials(it->second.GetUnsigned());
-  }
-
-  if (base::FeatureList::IsEnabled(kWebAuthPhoneSupport)) {
-    it = response_map.find(CBOR(kAndroidClientDataExtOutputKey));
-    if (it != response_map.end() && it->second.is_bytestring()) {
-      response.set_android_client_data_ext(it->second.GetBytestring());
-    }
   }
 
   it = response_map.find(CBOR(0x07));
@@ -288,8 +274,6 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       const std::string& extension_str = extension.GetString();
       if (extension_str == kExtensionCredProtect) {
         options.supports_cred_protect = true;
-      } else if (extension_str == kExtensionAndroidClientData) {
-        options.supports_android_client_data_ext = true;
       }
       extensions.push_back(extension_str);
     }

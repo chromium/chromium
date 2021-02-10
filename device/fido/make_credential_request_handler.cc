@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
@@ -327,18 +328,6 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
     return false;
   }
 
-  if (response.android_client_data_ext() &&
-      (!options.android_client_data_ext || !authenticator.Options() ||
-       !authenticator.Options()->supports_android_client_data_ext ||
-       !IsValidAndroidClientDataJSON(
-           *options.android_client_data_ext,
-           base::StringPiece(reinterpret_cast<const char*>(
-                                 response.android_client_data_ext()->data()),
-                             response.android_client_data_ext()->size())))) {
-    FIDO_LOG(ERROR) << "Invalid androidClientData extension";
-    return false;
-  }
-
   if (response.enterprise_attestation_returned &&
       (request.attestation_preference !=
            AttestationConveyancePreference::
@@ -388,7 +377,6 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   DCHECK_EQ(request_.authenticator_attachment, AuthenticatorAttachment::kAny);
   DCHECK(!request_.resident_key_required);
   DCHECK(!request_.cred_protect);
-  DCHECK(!request_.android_client_data_ext);
   DCHECK(!request_.cred_protect_enforce);
 
   transport_availability_info().request_type =
@@ -936,11 +924,6 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->cred_protect = CredProtectForAuthenticator(
         options_.cred_protect_request->first, *authenticator);
     request->cred_protect_enforce = options_.cred_protect_request->second;
-  }
-
-  if (options_.android_client_data_ext && auth_options &&
-      auth_options->supports_android_client_data_ext) {
-    request->android_client_data_ext = *options_.android_client_data_ext;
   }
 
   if (request->hmac_secret && !authenticator->SupportsHMACSecretExtension()) {

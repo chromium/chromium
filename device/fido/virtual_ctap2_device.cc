@@ -150,25 +150,10 @@ std::vector<uint8_t> ConstructSignatureBuffer(
   return signature_buffer;
 }
 
-std::string ConstructAndroidClientDataJSON(
-    const AndroidClientDataExtensionInput& input,
-    base::StringPiece type) {
-  std::string challenge_b64url;
-  base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(input.challenge.data()),
-                        input.challenge.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &challenge_b64url);
-  return "{\"challenge\":" + base::GetQuotedJSONString(challenge_b64url) +
-         ",\"origin\":" + base::GetQuotedJSONString(input.origin.Serialize()) +
-         ",\"type\":" + base::GetQuotedJSONString(type) +
-         ",\"androidPackageName\":\"org.chromium.device.fido.test\"}";
-}
-
 std::vector<uint8_t> ConstructMakeCredentialResponse(
     const base::Optional<std::vector<uint8_t>> attestation_certificate,
     base::span<const uint8_t> signature,
     AuthenticatorData authenticator_data,
-    base::Optional<std::vector<uint8_t>> android_client_data_ext,
     bool enterprise_attestation_requested,
     base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key) {
   cbor::Value::MapValue attestation_map;
@@ -187,10 +172,6 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
           std::move(authenticator_data),
           std::make_unique<OpaqueAttestationStatement>(
               "packed", cbor::Value(std::move(attestation_map)))));
-  if (android_client_data_ext) {
-    make_credential_response.set_android_client_data_ext(
-        *android_client_data_ext);
-  }
   make_credential_response.enterprise_attestation_returned =
       enterprise_attestation_requested;
   if (large_blob_key) {
@@ -444,10 +425,6 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
   if (response.num_credentials()) {
     response_map.emplace(5, response.num_credentials().value());
   }
-  if (response.android_client_data_ext()) {
-    response_map.emplace(0xf0,
-                         cbor::Value(*response.android_client_data_ext()));
-  }
   if (response.large_blob_key()) {
     response_map.emplace(0x07, cbor::Value(*response.large_blob_key()));
   }
@@ -563,11 +540,6 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     options.default_cred_protect = config.default_cred_protect;
   }
 
-  if (config.support_android_client_data_extension) {
-    options_updated = true;
-    options.supports_android_client_data_ext = true;
-  }
-
   if (config.support_enterprise_attestation) {
     options_updated = true;
     options.enterprise_attestation = true;
@@ -604,10 +576,6 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
 
   if (config.hmac_secret_support) {
     extensions.emplace_back(device::kExtensionHmacSecret);
-  }
-
-  if (config.support_android_client_data_extension) {
-    extensions.emplace_back(device::kExtensionAndroidClientData);
   }
 
   if (config.large_blob_support) {
@@ -1142,18 +1110,8 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       ConstructAttestedCredentialData(key_handle, std::move(public_key)),
       std::move(extensions));
 
-  base::Optional<std::string> opt_android_client_data_json;
-  if (request.android_client_data_ext &&
-      config_.support_android_client_data_extension) {
-    opt_android_client_data_json.emplace(ConstructAndroidClientDataJSON(
-        *request.android_client_data_ext, "webauthn.create"));
-  }
-
-  auto sign_buffer = ConstructSignatureBuffer(
-      authenticator_data,
-      opt_android_client_data_json
-          ? fido_parsing_utils::CreateSHA256Hash(*opt_android_client_data_json)
-          : request.client_data_hash);
+  std::vector<uint8_t> sign_buffer =
+      ConstructSignatureBuffer(authenticator_data, request.client_data_hash);
 
   // Sign with attestation key.
   // Note: Non-deterministic, you need to mock this out if you rely on
@@ -1195,31 +1153,6 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     }
   }
 
-  base::Optional<std::vector<uint8_t>> opt_android_client_data_ext;
-  if (opt_android_client_data_json) {
-    opt_android_client_data_ext.emplace();
-    fido_parsing_utils::Append(
-        &*opt_android_client_data_ext,
-        base::make_span(reinterpret_cast<const uint8_t*>(
-                            opt_android_client_data_json->data()),
-                        opt_android_client_data_json->size()));
-  } else if (config_.send_unsolicited_android_client_data_extension) {
-    const std::string client_data_json =
-        "{\"challenge\":"
-        "\"ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBZWFFpT2pFMU"
-        "9EYzNOamMxTnpJc0ltVjRjQ0k2TVRVNE56ZzROelUzTWl3aWMzVmlJam9pWkdaa1ptY2"
-        "lmUS5FdFFyUXNSWE9qNlpkMGFseXVkUzF3X3FORjJSbElZdTNfb0NvTDRzbWI4\","
-        "\"origin\":" +
-        base::GetQuotedJSONString("https://" + request.rp.id) +
-        ",\"type\":\"webauthn.create\",\"androidPackageName\":\"org.chromium."
-        "device.fido.test\"}";
-    opt_android_client_data_ext.emplace();
-    fido_parsing_utils::Append(&*opt_android_client_data_ext,
-                               base::make_span(reinterpret_cast<const uint8_t*>(
-                                                   client_data_json.data()),
-                                               client_data_json.size()));
-  }
-
   base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
   if (request.large_blob_key) {
     large_blob_key.emplace();
@@ -1228,8 +1161,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   *response = ConstructMakeCredentialResponse(
       std::move(attestation_cert), sig, std::move(authenticator_data),
-      std::move(opt_android_client_data_ext), enterprise_attestation_requested,
-      large_blob_key);
+      enterprise_attestation_requested, large_blob_key);
   RegistrationData registration(std::move(private_key), rp_id_hash,
                                 1 /* signature counter */);
 
@@ -1516,18 +1448,8 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
         registration.second->counter, std::move(opt_attested_cred_data),
         std::move(extensions));
 
-    base::Optional<std::string> opt_android_client_data_json;
-    if (request.android_client_data_ext &&
-        config_.support_android_client_data_extension) {
-      opt_android_client_data_json.emplace(ConstructAndroidClientDataJSON(
-          *request.android_client_data_ext, "webauthn.get"));
-    }
-
-    auto signature_buffer = ConstructSignatureBuffer(
-        authenticator_data, opt_android_client_data_json
-                                ? fido_parsing_utils::CreateSHA256Hash(
-                                      *opt_android_client_data_json)
-                                : request.client_data_hash);
+    const std::vector<uint8_t> signature_buffer =
+        ConstructSignatureBuffer(authenticator_data, request.client_data_hash);
 
     std::vector<uint8_t> signature;
     if (config_.always_uv && !user_verified) {
@@ -1573,31 +1495,6 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       if (registration.second->large_blob_key) {
         assertion.set_large_blob_key(*registration.second->large_blob_key);
       }
-    }
-
-    if (opt_android_client_data_json) {
-      std::vector<uint8_t> android_client_data_ext;
-      fido_parsing_utils::Append(
-          &android_client_data_ext,
-          base::make_span(reinterpret_cast<const uint8_t*>(
-                              opt_android_client_data_json->data()),
-                          opt_android_client_data_json->size()));
-      assertion.set_android_client_data_ext(std::move(android_client_data_ext));
-    } else if (config_.send_unsolicited_android_client_data_extension) {
-      const std::string client_data_json =
-          "{challenge:"
-          "\"ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBZWFFpT2pFMU"
-          "9EYzNOamMxTnpJc0ltVjRjQ0k2TVRVNE56ZzROelUzTWl3aWMzVmlJam9pWkdaa1ptY2"
-          "lmUS5FdFFyUXNSWE9qNlpkMGFseXVkUzF3X3FORjJSbElZdTNfb0NvTDRzbWI4\","
-          "origin:\"https://" +
-          request.rp_id + "\",type:\"webauthn.get\"}";
-      std::vector<uint8_t> android_client_data_ext;
-      fido_parsing_utils::Append(
-          &android_client_data_ext,
-          base::make_span(
-              reinterpret_cast<const uint8_t*>(client_data_json.data()),
-              client_data_json.size()));
-      assertion.set_android_client_data_ext(std::move(android_client_data_ext));
     }
 
     if (!done_first) {

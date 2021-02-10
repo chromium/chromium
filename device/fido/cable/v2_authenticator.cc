@@ -79,8 +79,6 @@ struct MakeCredRequest {
   const std::vector<uint8_t>* user_id;
   const cbor::Value::ArrayValue* cred_params;
   const cbor::Value::ArrayValue* excluded_credentials;
-  const std::string* origin;
-  const std::vector<uint8_t>* challenge;
 };
 
 static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
@@ -104,21 +102,6 @@ static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
     IntKey<MakeCredRequest>(4),
     ELEMENT(Is::kOptional, MakeCredRequest, excluded_credentials),
     IntKey<MakeCredRequest>(5),
-
-    // TODO: remove once the FIDO API can handle clientDataJSON
-    Map<MakeCredRequest>(),
-    IntKey<MakeCredRequest>(6),
-      Map<MakeCredRequest>(),
-      StringKey<MakeCredRequest>(),
-          'g', 'o', 'o', 'g', 'l', 'e', 'A', 'n', 'd', 'r', 'o', 'i', 'd',
-          'C', 'l', 'i', 'e', 'n', 't', 'D', 'a', 't', 'a', '\0',
-          ELEMENT(Is::kRequired, MakeCredRequest, origin),
-          IntKey<MakeCredRequest>(2),
-
-          ELEMENT(Is::kRequired, MakeCredRequest, challenge),
-          IntKey<MakeCredRequest>(3),
-      Stop<MakeCredRequest>(),
-    Stop<MakeCredRequest>(),
 
     Stop<MakeCredRequest>(),
     // clang-format on
@@ -149,8 +132,6 @@ struct GetAssertionRequest {
   const std::string* rp_id;
   const std::vector<uint8_t>* client_data_hash;
   const cbor::Value::ArrayValue* allowed_credentials;
-  const std::string* origin;
-  const std::vector<uint8_t>* challenge;
 };
 
 static constexpr StepOrByte<GetAssertionRequest> kGetAssertionParseSteps[] = {
@@ -164,21 +145,6 @@ static constexpr StepOrByte<GetAssertionRequest> kGetAssertionParseSteps[] = {
     ELEMENT(Is::kOptional, GetAssertionRequest, allowed_credentials),
     IntKey<GetAssertionRequest>(3),
 
-    // TODO: remove once the FIDO API can handle clientDataJSON
-    Map<GetAssertionRequest>(),
-    IntKey<GetAssertionRequest>(4),
-      Map<GetAssertionRequest>(),
-      StringKey<GetAssertionRequest>(),
-          'g', 'o', 'o', 'g', 'l', 'e', 'A', 'n', 'd', 'r', 'o', 'i', 'd',
-          'C', 'l', 'i', 'e', 'n', 't', 'D', 'a', 't', 'a', '\0',
-          ELEMENT(Is::kRequired, GetAssertionRequest, origin),
-          IntKey<GetAssertionRequest>(2),
-
-          ELEMENT(Is::kRequired, GetAssertionRequest, challenge),
-          IntKey<GetAssertionRequest>(3),
-      Stop<GetAssertionRequest>(),
-    Stop<GetAssertionRequest>(),
-
     Stop<GetAssertionRequest>(),
     // clang-format on
 };
@@ -188,15 +154,12 @@ std::vector<uint8_t> BuildGetInfoResponse() {
   std::array<uint8_t, device::kAaguidLength> aaguid{};
   std::vector<cbor::Value> versions;
   versions.emplace_back("FIDO_2_0");
-  std::vector<cbor::Value> extensions;
-  extensions.emplace_back(device::kExtensionAndroidClientData);
   // TODO: should be based on whether a screen-lock is enabled.
   cbor::Value::MapValue options;
   options.emplace("uv", true);
 
   cbor::Value::MapValue response_map;
   response_map.emplace(1, std::move(versions));
-  response_map.emplace(2, std::move(extensions));
   response_map.emplace(3, aaguid);
   response_map.emplace(4, std::move(options));
 
@@ -559,14 +522,14 @@ class CTAP2Processor : public Transaction {
         MakeCredRequest make_cred_request;
         if (!device::cbor_extract::Extract<MakeCredRequest>(
                 &make_cred_request, kMakeCredParseSteps, payload->GetMap())) {
-          FIDO_LOG(ERROR) << "Failed to parse makeCredential request";
+          FIDO_LOG(ERROR) << "Failed to parse makeCredential request: "
+                          << base::HexEncode(cbor_bytes);
           return base::nullopt;
         }
 
         auto params = std::make_unique<Platform::MakeCredentialParams>();
-        params->origin = *make_cred_request.origin;
+        params->client_data_hash = *make_cred_request.client_data_hash;
         params->rp_id = *make_cred_request.rp_id;
-        params->challenge = *make_cred_request.challenge;
         params->user_id = *make_cred_request.user_id;
         params->callback =
             base::BindOnce(&CTAP2Processor::OnMakeCredentialResponse,
@@ -631,9 +594,8 @@ class CTAP2Processor : public Transaction {
         }
 
         auto params = std::make_unique<Platform::GetAssertionParams>();
-        params->origin = *get_assertion_request.origin;
+        params->client_data_hash = *get_assertion_request.client_data_hash;
         params->rp_id = *get_assertion_request.rp_id;
-        params->challenge = *get_assertion_request.challenge;
         params->callback =
             base::BindOnce(&CTAP2Processor::OnGetAssertionResponse,
                            weak_factory_.GetWeakPtr());
@@ -666,7 +628,6 @@ class CTAP2Processor : public Transaction {
   }
 
   void OnMakeCredentialResponse(uint32_t ctap_status,
-                                base::span<const uint8_t> client_data_json,
                                 base::span<const uint8_t> attestation_object) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_LE(ctap_status, 0xFFu);
@@ -694,8 +655,6 @@ class CTAP2Processor : public Transaction {
       response_map.emplace(
           2, base::span<const uint8_t>(*attestation_object.auth_data));
       response_map.emplace(3, attestation_object.statement->Clone());
-      response_map.emplace(device::kAndroidClientDataExtOutputKey,
-                           client_data_json);
 
       base::Optional<std::vector<uint8_t>> response_payload =
           cbor::Writer::Write(cbor::Value(std::move(response_map)));
@@ -713,7 +672,6 @@ class CTAP2Processor : public Transaction {
   }
 
   void OnGetAssertionResponse(uint32_t ctap_status,
-                              base::span<const uint8_t> client_data_json,
                               base::span<const uint8_t> credential_id,
                               base::span<const uint8_t> authenticator_data,
                               base::span<const uint8_t> signature) {
@@ -734,8 +692,6 @@ class CTAP2Processor : public Transaction {
       response_map.emplace(2, authenticator_data);
       response_map.emplace(3, signature);
       // TODO: add user entity to support resident keys.
-      response_map.emplace(device::kAndroidClientDataExtOutputKey,
-                           client_data_json);
 
       base::Optional<std::vector<uint8_t>> response_payload =
           cbor::Writer::Write(cbor::Value(std::move(response_map)));

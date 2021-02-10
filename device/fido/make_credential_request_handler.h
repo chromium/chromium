@@ -20,7 +20,6 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/bio/enroller.h"
-#include "device/fido/client_data.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -110,10 +109,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
     // "touch-only" step to collect a PIN if exactly one authenticator is
     // discovered.
     bool allow_skipping_pin_touch = false;
-
-    // android_client_data_ext is a compatibility hack to support the Clank
-    // caBLEv2 authenticator.
-    base::Optional<AndroidClientDataExtensionInput> android_client_data_ext;
 
     // large_blob_support indicates whether the request should select for
     // authenticators supporting the largeBlobs extension (kRequired), merely

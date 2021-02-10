@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "components/device_event_log/device_event_log.h"

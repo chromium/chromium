@@ -420,7 +420,7 @@ url::Origin GetTestOrigin() {
 }
 
 std::string GetTestClientDataJSON(std::string type) {
-  return device::SerializeCollectedClientDataToJson(
+  return SerializeWebAuthnCollectedClientDataToJson(
       std::move(type), GetTestOrigin().Serialize(), GetTestChallengeBytes(),
       /*is_cross_origin=*/false);
 }
@@ -637,7 +637,7 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   // the returned value.
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
   EXPECT_TRUE(
-      device::SerializeCollectedClientDataToJson("t\x05ype", "ori\"gin",
+      SerializeWebAuthnCollectedClientDataToJson("t\x05ype", "ori\"gin",
                                                  challenge_bytes, false)
           .find("{\"type\":\"t\\u0005ype\",\"challenge\":\"AQID\",\"origin\":"
                 "\"ori\\\"gin\",\"crossOrigin\":false") == 0);
@@ -673,7 +673,7 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   for (const auto& test : kTestCases) {
     SCOPED_TRACE(num++);
 
-    const std::string json = device::SerializeCollectedClientDataToJson(
+    const std::string json = SerializeWebAuthnCollectedClientDataToJson(
         test.type, test.origin, test.challenge, test.is_cross_origin);
 
     const auto parsed = base::JSONReader::Read(json);
@@ -3567,45 +3567,6 @@ TEST_F(AuthenticatorImplTest, NoUnexpectedClientExtensions) {
       assertion_options->allow_credentials.back().id(), kTestRelyingPartyId));
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(assertion_options)).status,
             AuthenticatorStatus::SUCCESS);
-}
-
-TEST_F(AuthenticatorImplTest, AndroidClientDataExtension) {
-  EnableFeature(device::kWebAuthPhoneSupport);
-  NavigateAndCommit(GURL(kTestOrigin1));
-
-  device::VirtualCtap2Device::Config config;
-  config.support_android_client_data_extension = true;
-  virtual_device_factory_->SetCtap2Config(config);
-
-  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
-
-  PublicKeyCredentialRequestOptionsPtr assertion_options =
-      GetTestPublicKeyCredentialRequestOptions();
-  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
-      assertion_options->allow_credentials.back().id(), kTestRelyingPartyId));
-  EXPECT_EQ(AuthenticatorGetAssertion(std::move(assertion_options)).status,
-            AuthenticatorStatus::SUCCESS);
-}
-
-TEST_F(AuthenticatorImplTest, UnsolicitedAndroidClientDataExtensionReponse) {
-  EnableFeature(device::kWebAuthPhoneSupport);
-  NavigateAndCommit(GURL(kTestOrigin1));
-
-  device::VirtualCtap2Device::Config config;
-  config.send_unsolicited_android_client_data_extension = true;
-  virtual_device_factory_->SetCtap2Config(config);
-
-  // An unsolicited androidClientData extension response results in an error.
-  EXPECT_EQ(AuthenticatorMakeCredential().status,
-            AuthenticatorStatus::NOT_ALLOWED_ERROR);
-
-  // The same goes for getAssertion.
-  PublicKeyCredentialRequestOptionsPtr assertion_options =
-      GetTestPublicKeyCredentialRequestOptions();
-  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
-      assertion_options->allow_credentials.back().id(), kTestRelyingPartyId));
-  EXPECT_EQ(AuthenticatorGetAssertion(std::move(assertion_options)).status,
-            AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
 // Tests that on an authenticator that supports batching, exclude lists that fit

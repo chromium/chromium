@@ -71,13 +71,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
     return transport_used_;
   }
 
-  const base::Optional<std::vector<uint8_t>>& android_client_data_ext() const {
-    return android_client_data_ext_;
-  }
-  void set_android_client_data_ext(const std::vector<uint8_t>& data) {
-    android_client_data_ext_ = data;
-  }
-
   base::Optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key()
       const {
     return large_blob_key_;
@@ -107,10 +100,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
   // Contains the transport used to register the credential in this case. It is
   // nullopt for cases where we cannot determine the transport (Windows).
   base::Optional<FidoTransportProtocol> transport_used_;
-
-  // If not base::nullopt, the content of the googleAndroidClientData extension
-  // authenticator output.
-  base::Optional<std::vector<uint8_t>> android_client_data_ext_;
 
   // The large blob key associated to the credential. This value is only
   // returned if the credential is created with the largeBlobKey extension on a

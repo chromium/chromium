@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -188,18 +189,6 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
     return false;
   }
 
-  if (response.android_client_data_ext() &&
-      (!request.android_client_data_ext || !authenticator.Options() ||
-       !authenticator.Options()->supports_android_client_data_ext ||
-       !IsValidAndroidClientDataJSON(
-           *request.android_client_data_ext,
-           base::StringPiece(reinterpret_cast<const char*>(
-                                 response.android_client_data_ext()->data()),
-                             response.android_client_data_ext()->size())))) {
-    FIDO_LOG(ERROR) << "Invalid androidClientData extension";
-    return false;
-  }
-
   return true;
 }
 
@@ -255,12 +244,6 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     const CtapGetAssertionRequest& request,
     const FidoAuthenticator& authenticator) {
   CtapGetAssertionRequest specialized_request(request);
-  if (!authenticator.Options() ||
-      !authenticator.Options()->supports_android_client_data_ext) {
-    // Only send the googleAndroidClientData extension to authenticators that
-    // support it.
-    specialized_request.android_client_data_ext.reset();
-  }
 
   if (!authenticator.Options() ||
       !authenticator.Options()->supports_large_blobs) {

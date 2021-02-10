@@ -122,8 +122,6 @@ component("fido") {
       "cable/fido_tunnel_device.h",
       "cable/v2_discovery.cc",
       "cable/v2_discovery.h",
-      "client_data.cc",
-      "client_data.h",
       "credential_management.cc",
       "credential_management.h",
       "credential_management_handler.cc",

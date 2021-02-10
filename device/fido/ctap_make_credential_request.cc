@@ -149,14 +149,6 @@ base::Optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           return base::nullopt;
         }
         request.hmac_secret = extension.second.GetBool();
-      } else if (extension_name == kExtensionAndroidClientData) {
-        base::Optional<AndroidClientDataExtensionInput>
-            android_client_data_ext =
-                AndroidClientDataExtensionInput::Parse(extension.second);
-        if (!android_client_data_ext) {
-          return base::nullopt;
-        }
-        request.android_client_data_ext = std::move(*android_client_data_ext);
       } else if (extension_name == kExtensionLargeBlobKey) {
         if (!extension.second.is_bool() || !extension.second.GetBool()) {
           return base::nullopt;
@@ -290,11 +282,6 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
   if (request.cred_protect) {
     extensions.emplace(kExtensionCredProtect,
                        static_cast<int64_t>(*request.cred_protect));
-  }
-
-  if (request.android_client_data_ext) {
-    extensions.emplace(kExtensionAndroidClientData,
-                       AsCBOR(*request.android_client_data_ext));
   }
 
   if (!extensions.empty()) {

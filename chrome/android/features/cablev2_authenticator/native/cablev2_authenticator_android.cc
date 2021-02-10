@@ -424,9 +424,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
 
     Java_CableAuthenticator_makeCredential(
         env_, cable_authenticator_,
-        ConvertUTF8ToJavaString(env_, params->origin),
         ConvertUTF8ToJavaString(env_, params->rp_id),
-        ToJavaByteArray(env_, params->challenge),
+        ToJavaByteArray(env_, params->client_data_hash),
         ToJavaByteArray(env_, params->user_id),
         ToJavaIntArray(env_, params->algorithms),
         ToJavaArrayOfByteArray(env_, params->excluded_cred_ids),
@@ -442,9 +441,8 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
 
     Java_CableAuthenticator_getAssertion(
         env_, cable_authenticator_,
-        ConvertUTF8ToJavaString(env_, params->origin),
         ConvertUTF8ToJavaString(env_, params->rp_id),
-        ToJavaByteArray(env_, params->challenge),
+        ToJavaByteArray(env_, params->client_data_hash),
         ToJavaArrayOfByteArray(env_, params->allowed_cred_ids));
   }
 
@@ -760,7 +758,6 @@ static void JNI_CableAuthenticator_OnCloudMessage(
 static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
     JNIEnv* env,
     jint ctap_status,
-    const JavaParamRef<jbyteArray>& jclient_data_json,
     const JavaParamRef<jbyteArray>& jattestation_object) {
   GlobalData& global_data = GetGlobalData();
 
@@ -771,14 +768,12 @@ static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
   global_data.pending_make_credential_callback.reset();
 
   std::move(callback).Run(ctap_status,
-                          JavaByteArrayToSpan(env, jclient_data_json),
                           JavaByteArrayToSpan(env, jattestation_object));
 }
 
 static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
     JNIEnv* env,
     jint ctap_status,
-    const JavaParamRef<jbyteArray>& jclient_data_json,
     const JavaParamRef<jbyteArray>& jcredential_id,
     const JavaParamRef<jbyteArray>& jauthenticator_data,
     const JavaParamRef<jbyteArray>& jsignature) {
@@ -791,7 +786,6 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
   global_data.pending_get_assertion_callback.reset();
 
   std::move(callback).Run(ctap_status,
-                          JavaByteArrayToSpan(env, jclient_data_json),
                           JavaByteArrayToSpan(env, jcredential_id),
                           JavaByteArrayToSpan(env, jauthenticator_data),
                           JavaByteArrayToSpan(env, jsignature));
