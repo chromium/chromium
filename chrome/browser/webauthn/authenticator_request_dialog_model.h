@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
@@ -509,6 +510,9 @@ class AuthenticatorRequestDialogModel {
   // displayed already and the user cancelled it. In this case, we shouldn't
   // jump straight to showing it again.
   bool win_native_api_already_tried_ = false;
+  // auto_advance_ will move the dialog to some |Step| when it triggers.
+  // Any transition prior to that will cancel |auto_advance_|.
+  base::Optional<base::OneShotTimer> auto_advance_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
 

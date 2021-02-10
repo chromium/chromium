@@ -109,7 +109,19 @@ AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
 }
 
 void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
+  auto_advance_.reset();
   current_step_ = step;
+
+  if (current_step_ == Step::kCableActivate && cable_is_serverlink()) {
+    // Server-linked caBLEv2 automatically shows the USB hint if idle for 30
+    // seconds. This mirrors behaviour on the mobile side.
+    auto_advance_.emplace();
+    auto_advance_->Start(
+        FROM_HERE, base::TimeDelta::FromSeconds(30),
+        base::BindOnce(&AuthenticatorRequestDialogModel::SetCurrentStep,
+                       GetWeakPtr(), Step::kAndroidAccessory));
+  }
+
   for (auto& observer : observers_)
     observer.OnStepTransition();
 }
