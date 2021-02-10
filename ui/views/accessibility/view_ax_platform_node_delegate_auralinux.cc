@@ -96,7 +96,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
   }
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override {
-    return platform_node_->GetNativeViewAccessible();
+    return ax_platform_node_->GetNativeViewAccessible();
   }
 
   const ui::AXUniqueId& GetUniqueId() const override { return unique_id_; }
@@ -160,8 +160,8 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
   }
 
   bool IsChildOfLeaf() const override {
-    // TODO(crbug.com/1100047): Needed to prevent endless loops only on the
-    // AuraLinux platform.
+    // TODO(crbug.com/1100047): Needed to prevent endless loops only on Linux
+    // ATK.
     return false;
   }
 
@@ -172,18 +172,20 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
     data_.id = unique_id_.Get();
     data_.role = ax::mojom::Role::kApplication;
     data_.AddState(ax::mojom::State::kFocusable);
-    platform_node_ = ui::AXPlatformNode::Create(this);
-    DCHECK(platform_node_);
-    ui::AXPlatformNodeAuraLinux::SetApplication(platform_node_);
+    ax_platform_node_ = ui::AXPlatformNode::Create(this);
+    DCHECK(ax_platform_node_);
+    ui::AXPlatformNodeAuraLinux::SetApplication(ax_platform_node_);
     ui::AXPlatformNodeAuraLinux::StaticInitialize();
   }
 
   ~AuraLinuxApplication() override {
-    platform_node_->Destroy();
-    platform_node_ = nullptr;
+    ax_platform_node_->Destroy();
+    ax_platform_node_ = nullptr;
   }
 
-  ui::AXPlatformNode* platform_node_;
+  // TODO(nektar): Make this into a const pointer so that it can't be set
+  // outside the class's constructor.
+  ui::AXPlatformNode* ax_platform_node_;
   ui::AXUniqueId unique_id_;
   mutable ui::AXNodeData data_;
   std::vector<Widget*> widgets_;
@@ -204,6 +206,10 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
 ViewAXPlatformNodeDelegateAuraLinux::ViewAXPlatformNodeDelegateAuraLinux(
     View* view)
     : ViewAXPlatformNodeDelegate(view) {
+  // TODO(nektar): Move this to parent class.
+  ax_platform_node_ = ui::AXPlatformNode::Create(this);
+  DCHECK(ax_platform_node_);
+
   view_observation_.Observe(view);
 }
 
@@ -226,8 +232,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegateAuraLinux::GetParent() {
 }
 
 bool ViewAXPlatformNodeDelegateAuraLinux::IsChildOfLeaf() const {
-  // TODO(crbug.com/1100047): Needed to prevent endless loops only on the
-  // AuraLinux platform.
+  // TODO(crbug.com/1100047): Needed to prevent endless loops only on Linux ATK.
   return false;
 }
 

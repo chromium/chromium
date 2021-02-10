@@ -98,10 +98,6 @@ bool AXWindowObjWrapper::HandleAccessibleAction(
   return false;
 }
 
-bool AXWindowObjWrapper::IsIgnored() {
-  return false;
-}
-
 AXAuraObjWrapper* AXWindowObjWrapper::GetParent() {
   aura::Window* parent = window_->parent();
   if (!parent)
@@ -161,7 +157,7 @@ void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
                                     GetWindowName(window_));
 }
 
-int32_t AXWindowObjWrapper::GetUniqueId() const {
+ui::AXNodeID AXWindowObjWrapper::GetUniqueId() const {
   return unique_id_.Get();
 }
 

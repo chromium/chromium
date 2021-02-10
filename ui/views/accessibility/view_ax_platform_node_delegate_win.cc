@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/layout.h"
@@ -39,7 +40,11 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
 }
 
 ViewAXPlatformNodeDelegateWin::ViewAXPlatformNodeDelegateWin(View* view)
-    : ViewAXPlatformNodeDelegate(view) {}
+    : ViewAXPlatformNodeDelegate(view) {
+  // TODO(nektar): Move this to parent class.
+  ax_platform_node_ = ui::AXPlatformNode::Create(this);
+  DCHECK(ax_platform_node_);
+}
 
 ViewAXPlatformNodeDelegateWin::~ViewAXPlatformNodeDelegateWin() = default;
 

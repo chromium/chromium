@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/views/views_export.h"
 
@@ -61,9 +62,9 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   void CreateOrReplace(std::unique_ptr<AXAuraObjWrapper> obj);
 
   // Gets an id given an Aura view.
-  int32_t GetID(View* view) const;
-  int32_t GetID(Widget* widget) const;
-  int32_t GetID(aura::Window* window) const;
+  ui::AXNodeID GetID(View* view) const;
+  ui::AXNodeID GetID(Widget* widget) const;
+  ui::AXNodeID GetID(aura::Window* window) const;
 
   // Removes an entry from this cache based on an Aura view.
   void Remove(View* view);
@@ -77,7 +78,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   void RemoveViewSubtree(View* view);
 
   // Lookup a cached entry based on an id.
-  AXAuraObjWrapper* Get(int32_t id);
+  AXAuraObjWrapper* Get(ui::AXNodeID id);
 
   // Get all top level windows this cache knows about. Under classic ash and
   // SingleProcessMash this is a list of per-display root windows.
@@ -119,22 +120,22 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   template <typename AuraViewWrapper, typename AuraView>
   AXAuraObjWrapper* CreateInternal(
       AuraView* aura_view,
-      std::map<AuraView*, int32_t>* aura_view_to_id_map);
+      std::map<AuraView*, ui::AXNodeID>* aura_view_to_id_map);
 
   template <typename AuraView>
-  int32_t GetIDInternal(
+  ui::AXNodeID GetIDInternal(
       AuraView* aura_view,
-      const std::map<AuraView*, int32_t>& aura_view_to_id_map) const;
+      const std::map<AuraView*, ui::AXNodeID>& aura_view_to_id_map) const;
 
   template <typename AuraView>
   void RemoveInternal(AuraView* aura_view,
-                      std::map<AuraView*, int32_t>* aura_view_to_id_map);
+                      std::map<AuraView*, ui::AXNodeID>* aura_view_to_id_map);
 
-  std::map<views::View*, int32_t> view_to_id_map_;
-  std::map<views::Widget*, int32_t> widget_to_id_map_;
-  std::map<aura::Window*, int32_t> window_to_id_map_;
+  std::map<views::View*, ui::AXNodeID> view_to_id_map_;
+  std::map<views::Widget*, ui::AXNodeID> widget_to_id_map_;
+  std::map<aura::Window*, ui::AXNodeID> window_to_id_map_;
 
-  std::map<int32_t, std::unique_ptr<AXAuraObjWrapper>> cache_;
+  std::map<ui::AXNodeID, std::unique_ptr<AXAuraObjWrapper>> cache_;
 
   Delegate* delegate_ = nullptr;
 

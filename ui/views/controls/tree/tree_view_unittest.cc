@@ -1076,6 +1076,7 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   // (in this case, the root node).
   ClearAccessibilityEvents();
   tree_->RequestFocus();
+  EXPECT_TRUE(tree_->HasFocus());
   EXPECT_EQ((AccessibilityEventsVector{std::make_pair(
                 GetRootAccessibilityView(), ax::mojom::Event::kFocus)}),
             accessibility_events());

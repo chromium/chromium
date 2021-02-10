@@ -2545,8 +2545,9 @@ bool AXPlatformNodeAuraLinux::IsWebDocumentForRelations() {
 AtkObject* AXPlatformNodeAuraLinux::CreateAtkObject() {
   if (GetData().role != ax::mojom::Role::kApplication &&
       !GetDelegate()->IsToplevelBrowserWindow() &&
-      !GetAccessibilityMode().has_mode(AXMode::kNativeAPIs))
+      !GetAccessibilityMode().has_mode(AXMode::kNativeAPIs)) {
     return nullptr;
+  }
   if (GetDelegate()->IsChildOfLeaf())
     return nullptr;
   EnsureGTypeInit();
