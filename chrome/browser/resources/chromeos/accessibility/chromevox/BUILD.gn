@@ -474,6 +474,7 @@ js_library("chromevox_library") {
     "$externs_path/chromeos_info_private.js",
     "$externs_path/chrome.js",
     "$externs_path/chrome_extensions.js",
+    "$externs_path/clipboard.js",
     "$externs_path/command_line_private.js",
     "$externs_path/login_state.js",
     "$externs_path/metrics_private.js",

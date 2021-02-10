@@ -1170,6 +1170,41 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_Tutorial) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
+  EnableChromeVox();
+  sm_.Call([this]() {
+    ui_test_utils::NavigateToURL(browser(),
+                                 GURL("data:text/html,<input autofocus "
+                                      "type='text' value='Foo'></input>"));
+  });
+
+  // The input is autofocused.
+  sm_.ExpectSpeech("Edit text");
+
+  // Select and copy the first character.
+  sm_.Call([this]() {
+    SendKeyPressWithShift(ui::VKEY_RIGHT);
+    SendKeyPressWithControl(ui::VKEY_C);
+  });
+  sm_.ExpectSpeech("copy F.");
+
+  // Select and copy the first two characters.
+  sm_.Call([this]() {
+    SendKeyPressWithShift(ui::VKEY_RIGHT);
+    SendKeyPressWithControl(ui::VKEY_C);
+  });
+  sm_.ExpectSpeech("copy Fo.");
+
+  // Select and copy all characters.
+  sm_.Call([this]() {
+    SendKeyPressWithShift(ui::VKEY_RIGHT);
+    SendKeyPressWithControl(ui::VKEY_C);
+  });
+  sm_.ExpectSpeech("copy Foo.");
+
+  sm_.Replay();
+}
+
 //
 // Spoken feedback tests of the out-of-box experience.
 //

@@ -72,12 +72,12 @@ export class Background extends ChromeVoxState {
     /** @type {!LiveRegions} @private */
     this.liveRegions_ = new LiveRegions(this);
 
-    document.addEventListener('copy', this.onClipboardEvent_);
-    document.addEventListener('cut', this.onClipboardEvent_);
-    document.addEventListener('paste', this.onClipboardEvent_);
+    /** @private {string|undefined} */
+    this.lastClipboardEvent_;
 
-    /** @private {boolean} */
-    this.preventPasteOutput_ = false;
+    chrome.clipboard.onClipboardDataChanged.addListener(
+        this.onClipboardDataChanged_.bind(this));
+    document.addEventListener('copy', this.onClipboardCopyEvent_.bind(this));
 
     /**
      * Maps a non-desktop root automation node to a range position suitable for
@@ -356,36 +356,36 @@ export class Background extends ChromeVoxState {
   }
 
   /**
-   * Detects various clipboard events and provides spoken output.
-   *
-   * Note that paste is explicitly skipped sometimes because during a copy or
-   * cut, the copied or cut text is retrieved by pasting into a fake text
-   * area. To prevent this from triggering paste output, this staste is
-   * tracked via a field.
+   * Processes the copy clipboard event.
    * @param {!Event} evt
    * @private
    */
-  onClipboardEvent_(evt) {
-    let text = '';
-    if (evt.type === 'paste') {
-      if (this.preventPasteOutput_) {
-        this.preventPasteOutput_ = false;
-        return;
-      }
-      text = evt.clipboardData.getData('text');
-      ChromeVox.tts.speak(Msgs.getMsg(evt.type, [text]), QueueMode.QUEUE);
-    } else if (evt.type === 'copy' || evt.type === 'cut') {
-      this.preventPasteOutput_ = true;
-      const textarea = document.createElement('textarea');
-      document.body.appendChild(textarea);
-      textarea.focus();
-      document.execCommand('paste');
-      const clipboardContent = textarea.value;
-      textarea.remove();
-      ChromeVox.tts.speak(
-          Msgs.getMsg(evt.type, [clipboardContent]), QueueMode.FLUSH);
-      ChromeVoxState.instance.pageSel_ = null;
+  onClipboardCopyEvent_(evt) {
+    // This should always be 'copy', but is still important to set for the below
+    // extension event.
+    this.lastClipboardEvent_ = evt.type;
+  }
+
+  /** @private */
+  onClipboardDataChanged_() {
+    // A DOM-based clipboard event always comes before this Chrome extension
+    // clipboard event. We only care about 'copy' events, which gets set above.
+    if (!this.lastClipboardEvent_) {
+      return;
     }
+
+    const eventType = this.lastClipboardEvent_;
+    this.lastClipboardEvent_ = undefined;
+
+    const textarea = document.createElement('textarea');
+    document.body.appendChild(textarea);
+    textarea.focus();
+    document.execCommand('paste');
+    const clipboardContent = textarea.value;
+    textarea.remove();
+    ChromeVox.tts.speak(
+        Msgs.getMsg(eventType, [clipboardContent]), QueueMode.FLUSH);
+    ChromeVoxState.instance.pageSel_ = null;
   }
 
   /** @private */
