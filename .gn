@@ -74,7 +74,6 @@ no_check_targets = [
   "//chrome/notification_helper:*",  # 4 errors
   "//chrome/test:*",  # 2682 errors
 
-  "//clank/third_party/gvr_shim:*",  # 1 error
   "//extensions/browser/api/declarative:*",  # 20 errors
   "//extensions/browser/api/declarative_net_request:*",  # 18 errors
   "//extensions/browser/api/declarative_webrequest:*",  # 29 errors
