@@ -15385,6 +15385,44 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SubresourceWebBundles.ContentLength" units="bytes"
+    expires_after="M94">
+  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
+  <summary>
+    The value of content length header of a subresource web bundle, or zero if
+    the content-length header is missing.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceWebBundles.LoadResult"
+    enum="SubresourceWebBundleLoadResult" expires_after="M94">
+  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
+  <summary>The result of loading subresource web bundles.</summary>
+</histogram>
+
+<histogram name="SubresourceWebBundles.MaxMemoryUsagePerProcess" units="bytes"
+    expires_after="M94">
+  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
+  <summary>
+    The max memory usage per renderer process for subresource web bundles which
+    are kept in the network process's memory. Recorded when all the subresource
+    web bundles for the renderer process are released.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceWebBundles.ReceivedSize" units="bytes"
+    expires_after="M94">
+  <owner>horo@chromium.org</owner>
+  <owner>webpackage-dev@chromium.org</owner>
+  <summary>
+    The received data size of a subresource web bundle. Recorded when received
+    all the body of the subresource web bundle.
+  </summary>
+</histogram>
+
 <histogram name="Suggestions.FailedRequestErrorCode" enum="NetErrorCodes"
     expires_after="2020-02-23">
   <owner>mathp@chromium.org</owner>

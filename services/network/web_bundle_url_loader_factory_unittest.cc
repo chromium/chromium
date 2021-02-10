@@ -4,6 +4,7 @@
 
 #include "services/network/web_bundle_url_loader_factory.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/web_package/test_support/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -174,6 +175,7 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
 };
 
 TEST_F(WebBundleURLLoaderFactoryTest, Basic) {
+  base::HistogramTester histogram_tester;
   WriteBundle(CreateSmallBundle());
   FinishWritingBundle();
 
@@ -187,9 +189,13 @@ TEST_F(WebBundleURLLoaderFactoryTest, Basic) {
   EXPECT_TRUE(mojo::BlockingCopyToString(
       request.client->response_body_release(), &body));
   EXPECT_EQ("body", body);
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 1);
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
+  base::HistogramTester histogram_tester;
   auto request = StartRequest(GURL(kResourceUrl));
 
   std::vector<uint8_t> bundle = CreateSmallBundle();
@@ -212,6 +218,11 @@ TEST_F(WebBundleURLLoaderFactoryTest, MetadataParseError) {
 
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             request2.client->completion_status().error_code);
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+          kMetadataParseError,
+      1);
 }
 
 TEST_F(WebBundleURLLoaderFactoryTest, ResponseParseError) {

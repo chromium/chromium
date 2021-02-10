@@ -19,6 +19,14 @@ class WebBundleMemoryQuotaConsumer;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
  public:
+  // Used for UMA. Append-only.
+  enum class SubresourceWebBundleLoadResult {
+    kSuccess = 0,
+    kMetadataParseError = 1,
+    kMemoryQuotaExceeded = 2,
+    kMaxValue = kMemoryQuotaExceeded,
+  };
+
   WebBundleURLLoaderFactory(
       const GURL& bundle_url,
       mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
@@ -52,6 +60,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
                         web_package::mojom::BundleResponsePtr response,
                         web_package::mojom::BundleResponseParseErrorPtr error);
   void OnMemoryQuotaExceeded();
+  void OnDataCompleted();
+  void MaybeRecordLoadResult();
 
   GURL bundle_url_;
   mojo::Remote<mojom::WebBundleHandle> web_bundle_handle_;
@@ -63,6 +73,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   web_package::mojom::BundleMetadataPtr metadata_;
   web_package::mojom::BundleMetadataParseErrorPtr metadata_error_;
   bool quota_exceeded_error_ = false;
+  bool data_completed_ = false;
+  bool load_result_recorded_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
 
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_ptr_factory_{this};

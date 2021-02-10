@@ -121,6 +121,11 @@ WebBundleChunkedBuffer::CreateDataSource(uint64_t offset,
       CreatePartialBuffer(offset, length), offset, length);
 }
 
+uint64_t WebBundleChunkedBuffer::size() const {
+  DCHECK_GE(end_pos(), start_pos());
+  return end_pos() - start_pos();
+}
+
 WebBundleChunkedBuffer::ChunkVector::const_iterator
 WebBundleChunkedBuffer::FindChunk(uint64_t pos) const {
   if (empty())

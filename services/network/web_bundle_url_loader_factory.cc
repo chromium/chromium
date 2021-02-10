@@ -4,6 +4,7 @@
 
 #include "services/network/web_bundle_url_loader_factory.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/web_package/web_bundle_parser.h"
@@ -22,6 +23,11 @@ namespace network {
 namespace {
 
 constexpr size_t kBlockedBodyAllocationSize = 1;
+
+void RecordLoadResult(
+    WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult result) {
+  base::UmaHistogramEnumeration("SubresourceWebBundles.LoadResult", result);
+}
 
 void DeleteProducerAndRunCallback(
     std::unique_ptr<mojo::DataPipeProducer> producer,
@@ -42,6 +48,10 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override {
+    base::UmaHistogramCustomCounts(
+        "SubresourceWebBundles.ContentLength",
+        response_head->content_length < 0 ? 0 : response_head->content_length,
+        1, 50000000, 50);
     wrapped_->OnReceiveResponse(std::move(response_head));
   }
 
@@ -234,7 +244,8 @@ class WebBundleURLLoaderFactory::BundleDataSource
                    mojo::ScopedDataPipeConsumerHandle bundle_body,
                    std::unique_ptr<WebBundleMemoryQuotaConsumer>
                        web_bundle_memory_quota_consumer,
-                   base::OnceClosure memory_quota_exceeded_closure)
+                   base::OnceClosure memory_quota_exceeded_closure,
+                   base::OnceClosure data_completed_closure)
       : data_source_receiver_(this, std::move(data_source_receiver)),
         pipe_drainer_(
             std::make_unique<mojo::DataPipeDrainer>(this,
@@ -242,7 +253,8 @@ class WebBundleURLLoaderFactory::BundleDataSource
         web_bundle_memory_quota_consumer_(
             std::move(web_bundle_memory_quota_consumer)),
         memory_quota_exceeded_closure_(
-            std::move(memory_quota_exceeded_closure)) {}
+            std::move(memory_quota_exceeded_closure)),
+        data_completed_closure_(std::move(data_completed_closure)) {}
 
   ~BundleDataSource() override {
     // The receiver must be closed before destructing pending callbacks in
@@ -321,6 +333,15 @@ class WebBundleURLLoaderFactory::BundleDataSource
 
   void OnDataComplete() override {
     DCHECK(!finished_loading_);
+    base::UmaHistogramCustomCounts(
+        "SubresourceWebBundles.ReceivedSize",
+        base::saturated_cast<base::Histogram::Sample>(buffer_.size()), 1,
+        50000000, 50);
+    DCHECK(data_completed_closure_);
+    // Defer calling |data_completed_closure_| not to run
+    // |data_completed_closure_| before |memory_quota_exceeded_closure_|.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(data_completed_closure_));
     finished_loading_ = true;
     ProcessPendingReads();
   }
@@ -375,6 +396,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
   std::unique_ptr<WebBundleMemoryQuotaConsumer>
       web_bundle_memory_quota_consumer_;
   base::OnceClosure memory_quota_exceeded_closure_;
+  base::OnceClosure data_completed_closure_;
 };
 
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
@@ -408,6 +430,8 @@ void WebBundleURLLoaderFactory::SetBundleStream(
       data_source.InitWithNewPipeAndPassReceiver(), std::move(body),
       std::move(web_bundle_memory_quota_consumer_),
       base::BindOnce(&WebBundleURLLoaderFactory::OnMemoryQuotaExceeded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&WebBundleURLLoaderFactory::OnDataCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   // WebBundleParser will self-destruct on remote mojo ends' disconnection.
   new web_package::WebBundleParser(parser_.BindNewPipeAndPassReceiver(),
@@ -481,6 +505,7 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::OnMetadataParsed");
   if (error) {
     metadata_error_ = std::move(error);
+    MaybeRecordLoadResult();
     web_bundle_handle_->OnWebBundleError(
         mojom::WebBundleErrorType::kMetadataParseError,
         metadata_error_->message);
@@ -496,6 +521,7 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
   }
 
   metadata_ = std::move(metadata);
+  MaybeRecordLoadResult();
   for (auto loader : pending_loaders_)
     StartLoad(loader.get());
   pending_loaders_.clear();
@@ -561,6 +587,7 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
 void WebBundleURLLoaderFactory::OnMemoryQuotaExceeded() {
   TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::OnMemoryQuotaExceeded");
   quota_exceeded_error_ = true;
+  MaybeRecordLoadResult();
   web_bundle_handle_->OnWebBundleError(
       mojom::WebBundleErrorType::kMemoryQuotaExceeded,
       "Memory quota exceeded. Currently, there is an upper limit on the total "
@@ -574,6 +601,31 @@ void WebBundleURLLoaderFactory::OnMemoryQuotaExceeded() {
   }
   source_.reset();
   parser_.reset();
+}
+
+void WebBundleURLLoaderFactory::OnDataCompleted() {
+  data_completed_ = true;
+  MaybeRecordLoadResult();
+}
+
+void WebBundleURLLoaderFactory::MaybeRecordLoadResult() {
+  if (load_result_recorded_)
+    return;
+  if (quota_exceeded_error_) {
+    RecordLoadResult(SubresourceWebBundleLoadResult::kMemoryQuotaExceeded);
+    load_result_recorded_ = true;
+    return;
+  }
+  if (metadata_error_) {
+    RecordLoadResult(SubresourceWebBundleLoadResult::kMetadataParseError);
+    load_result_recorded_ = true;
+    return;
+  }
+  if (metadata_ && data_completed_) {
+    RecordLoadResult(SubresourceWebBundleLoadResult::kSuccess);
+    load_result_recorded_ = true;
+    return;
+  }
 }
 
 }  // namespace network

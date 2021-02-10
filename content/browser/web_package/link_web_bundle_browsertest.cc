@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/optional.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_client.h"
@@ -76,6 +80,16 @@ class FinishNavigationObserver : public WebContentsObserver {
   base::Optional<net::Error> error_code_;
 };
 
+int64_t GetTestDataFileSize(const base::FilePath::CharType* file_path) {
+  int64_t file_size;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath test_data_dir;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::GetFileSize(test_data_dir.Append(base::FilePath(file_path)),
+                          &file_size));
+  return file_size;
+}
+
 }  // namespace
 
 class LinkWebBundleBrowserTest : public ContentBrowserTest {
@@ -123,6 +137,7 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoad) {
+  base::HistogramTester histogram_tester;
   GURL url(embedded_test_server()->GetURL("/web_bundle/link_web_bundle.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -137,6 +152,15 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, SubframeLoad) {
       "document.body.appendChild(iframe);");
   run_loop.Run();
   EXPECT_EQ(net::OK, *finish_navigation_observer.error_code());
+
+  // Check the metrics recorded in the network process.
+  FetchHistogramsFromChildProcesses();
+  int64_t web_bundle_size = GetTestDataFileSize(
+      FILE_PATH_LITERAL("content/test/data/web_bundle/urn-uuid.wbn"));
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ReceivedSize",
+                                      web_bundle_size, 1);
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ContentLength",
+                                      web_bundle_size, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, FollowLink) {

@@ -177,6 +177,12 @@ bool WebBundleManager::AllocateMemoryForProcess(int32_t process_id,
     return false;
   }
   memory_usage_per_process_[process_id] += num_bytes;
+
+  if (max_memory_usage_per_process_[process_id] <
+      memory_usage_per_process_[process_id]) {
+    max_memory_usage_per_process_[process_id] =
+        memory_usage_per_process_[process_id];
+  }
   return true;
 }
 
@@ -187,6 +193,10 @@ void WebBundleManager::ReleaseMemoryForProcess(int32_t process_id,
   memory_usage_per_process_[process_id] -= num_bytes;
   if (memory_usage_per_process_[process_id] == 0) {
     memory_usage_per_process_.erase(process_id);
+    base::UmaHistogramCustomCounts(
+        "SubresourceWebBundles.MaxMemoryUsagePerProcess",
+        max_memory_usage_per_process_[process_id], 1, 50000000, 50);
+    max_memory_usage_per_process_.erase(process_id);
   }
 }
 

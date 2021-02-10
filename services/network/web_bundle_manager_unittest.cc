@@ -4,6 +4,7 @@
 
 #include "services/network/web_bundle_manager.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "components/web_package/test_support/web_bundle_builder.h"
@@ -297,6 +298,7 @@ TEST_F(WebBundleManagerTest,
 }
 
 TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
+  base::HistogramTester histogram_tester;
   WebBundleManager manager;
 
   std::string bundle = CreateSmallBundleString();
@@ -317,6 +319,11 @@ TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
   EXPECT_EQ(handle->last_bundle_error()->first,
             mojom::WebBundleErrorType::kMemoryQuotaExceeded);
   EXPECT_EQ(handle->last_bundle_error()->second, kQuotaExceededErrorMessage);
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+          kMemoryQuotaExceeded,
+      1);
 
   // Start the subresource request after triggering the quota error.
   mojo::Remote<network::mojom::URLLoader> loader;
@@ -479,13 +486,14 @@ TEST_F(WebBundleManagerTest, MemoryQuota_QuotaErrorWhileParsingManifest) {
 }
 
 TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
+  base::HistogramTester histogram_tester;
   WebBundleManager manager;
 
   std::string bundle = CreateSmallBundleString();
 
-  // Set the max memory to trigger the quota error while loading the second
+  // Set the max memory to trigger the quota error while loading the third
   // web bundle.
-  SetMaxMemoryPerProces(manager, bundle.size() * 1.5);
+  SetMaxMemoryPerProces(manager, bundle.size() * 2.5);
 
   // Start loading the first web bundle in the process 1.
   base::WeakPtr<WebBundleURLLoaderFactory> factory1_1;
@@ -508,6 +516,11 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
   EXPECT_TRUE(
       mojo::BlockingCopyToString(client1_1->response_body_release(), &body1_1));
   EXPECT_EQ("body", body1_1);
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ReceivedSize",
+                                      bundle.size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 1);
 
   // Start loading the second web bundle in the process 1.
   base::WeakPtr<WebBundleURLLoaderFactory> factory1_2;
@@ -517,21 +530,53 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
   auto producer1_2 = SetBundleStream(*factory1_2);
   mojo::BlockingCopyFromString(bundle, producer1_2);
   producer1_2.reset();
-  // TestWebBundleHandle must receive the error.
-  handle1_2->RunUntilBundleError();
-  ASSERT_TRUE(handle1_2->last_bundle_error().has_value());
-  EXPECT_EQ(handle1_2->last_bundle_error()->first,
-            mojom::WebBundleErrorType::kMemoryQuotaExceeded);
-  EXPECT_EQ(handle1_2->last_bundle_error()->second, kQuotaExceededErrorMessage);
 
   // Start loading the subresource from the second web bundle.
   mojo::Remote<network::mojom::URLLoader> loader1_2;
   std::unique_ptr<network::TestURLLoaderClient> client1_2;
   std::tie(loader1_2, client1_2) = StartSubresourceLoad(*factory1_2);
-  // The subresource request must fail.
+  // Confirm that the subresource is correctly loaded.
   client1_2->RunUntilComplete();
+  EXPECT_EQ(net::OK, client1_2->completion_status().error_code);
+  EXPECT_EQ(client1_2->response_head()->web_bundle_url, GURL(kBundleUrl));
+  std::string body1_2;
+  EXPECT_TRUE(
+      mojo::BlockingCopyToString(client1_2->response_body_release(), &body1_2));
+  EXPECT_EQ("body", body1_2);
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ReceivedSize",
+                                      bundle.size(), 2);
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 2);
+
+  // Start loading the third web bundle in the process 1.
+  base::WeakPtr<WebBundleURLLoaderFactory> factory1_3;
+  std::unique_ptr<TestWebBundleHandle> handle1_3;
+  std::tie(factory1_3, handle1_3) =
+      CreateWebBundleLoaderFactory(manager, process_id1);
+  auto producer1_3 = SetBundleStream(*factory1_3);
+  mojo::BlockingCopyFromString(bundle, producer1_3);
+  producer1_3.reset();
+  // TestWebBundleHandle must receive the error.
+  handle1_3->RunUntilBundleError();
+  ASSERT_TRUE(handle1_3->last_bundle_error().has_value());
+  EXPECT_EQ(handle1_3->last_bundle_error()->first,
+            mojom::WebBundleErrorType::kMemoryQuotaExceeded);
+  EXPECT_EQ(handle1_3->last_bundle_error()->second, kQuotaExceededErrorMessage);
+
+  // Start loading the subresource from the second web bundle.
+  mojo::Remote<network::mojom::URLLoader> loader1_3;
+  std::unique_ptr<network::TestURLLoaderClient> client1_3;
+  std::tie(loader1_3, client1_3) = StartSubresourceLoad(*factory1_3);
+  // The subresource request must fail.
+  client1_3->RunUntilComplete();
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
-            client1_2->completion_status().error_code);
+            client1_3->completion_status().error_code);
+  histogram_tester.ExpectBucketCount(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+          kMemoryQuotaExceeded,
+      1);
 
   // Start loading the third web bundle in the process 2.
   base::WeakPtr<WebBundleURLLoaderFactory> factory2;
@@ -553,6 +598,23 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
   EXPECT_TRUE(
       mojo::BlockingCopyToString(client2->response_body_release(), &body2));
   EXPECT_EQ("body", body2);
+  histogram_tester.ExpectUniqueSample("SubresourceWebBundles.ReceivedSize",
+                                      bundle.size(), 3);
+  histogram_tester.ExpectBucketCount(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 3);
+
+  // Reset handles and RunUntilIdle to trigger MaxMemoryUsagePerProcess
+  // histogram count.
+  handle1_1.reset();
+  handle1_2.reset();
+  handle1_3.reset();
+  handle2.reset();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "SubresourceWebBundles.MaxMemoryUsagePerProcess", bundle.size() * 2, 1);
+  histogram_tester.ExpectBucketCount(
+      "SubresourceWebBundles.MaxMemoryUsagePerProcess", bundle.size(), 1);
 }
 
 }  // namespace network

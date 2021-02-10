@@ -73,6 +73,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
 
   uint64_t max_memory_per_process_;
   std::map<int32_t, uint64_t> memory_usage_per_process_;
+  std::map<int32_t, uint64_t> max_memory_usage_per_process_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

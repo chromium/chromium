@@ -47,6 +47,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
       uint64_t offset,
       uint64_t max_length) const;
 
+  // Returns the buffer size.
+  uint64_t size() const;
+
  private:
   friend class WebBundleChunkedBufferTest;
   FRIEND_TEST_ALL_PREFIXES(WebBundleChunkedBufferTest, EmptyBuffer);

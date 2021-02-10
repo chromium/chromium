@@ -72847,6 +72847,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Parse error"/>
 </enum>
 
+<enum name="SubresourceWebBundleLoadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Metadata parse error"/>
+  <int value="2" label="Memory quota exceeded"/>
+</enum>
+
 <enum name="SuccessTimeoutStarted">
   <int value="0" label="Success"/>
   <int value="1" label="Timeout"/>
