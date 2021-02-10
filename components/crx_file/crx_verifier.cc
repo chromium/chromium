@@ -4,6 +4,7 @@
 
 #include "components/crx_file/crx_verifier.h"
 
+#include <climits>
 #include <cstring>
 #include <iterator>
 #include <memory>
@@ -15,6 +16,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/crx_file/crx3.pb.h"
@@ -28,9 +30,6 @@
 namespace crx_file {
 
 namespace {
-
-// The maximum size the Crx3 parser will tolerate for a header.
-constexpr uint32_t kMaxHeaderSize = 1 << 18;
 
 // The SHA256 hash of the DER SPKI "ecdsa_2017_public" Crx3 key.
 constexpr uint8_t kPublisherKeyHash[] = {
@@ -102,14 +101,15 @@ VerifierResult VerifyCrx3(
     bool require_publisher_key,
     bool accept_publisher_test_key) {
   // Parse [header-size] and [header].
-  const uint32_t header_size = ReadAndHashLittleEndianUInt32(file, hash);
-  if (header_size > kMaxHeaderSize)
+  int header_size =
+      base::saturated_cast<int>(ReadAndHashLittleEndianUInt32(file, hash));
+  if (header_size == INT_MAX)
     return VerifierResult::ERROR_HEADER_INVALID;
   std::vector<uint8_t> header_bytes(header_size);
-  // Assuming kMaxHeaderSize can fit in an int, the following cast is safe.
   if (ReadAndHashBuffer(header_bytes.data(), header_size, file, hash) !=
-      static_cast<int>(header_size))
+      header_size) {
     return VerifierResult::ERROR_HEADER_INVALID;
+  }
   CrxFileHeader header;
   if (!header.ParseFromArray(header_bytes.data(), header_size))
     return VerifierResult::ERROR_HEADER_INVALID;
