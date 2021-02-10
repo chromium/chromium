@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
-#include "mojo/public/cpp/bindings/lib/fixed_buffer.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
@@ -287,13 +286,15 @@ TEST(UnionTest, SerializeNotNull) {
 TEST(UnionTest, SerializeIsNullInlined) {
   PodUnionPtr pod;
 
-  Message message;
-  mojo::internal::FixedBufferForTesting buffer(16);
+  Message message(0, 0, 0, 0, nullptr);
+  mojo::internal::Buffer& buffer = *message.payload_buffer();
+  EXPECT_EQ(sizeof(mojo::internal::MessageHeader), buffer.cursor());
+
   internal::PodUnion_Data::BufferWriter writer;
   writer.Allocate(&buffer);
   mojo::internal::Serialize<PodUnionDataView>(pod, &writer, true, &message);
   EXPECT_TRUE(writer.data()->is_null());
-  EXPECT_EQ(16U, buffer.cursor());
+  EXPECT_EQ(16U + sizeof(mojo::internal::MessageHeader), buffer.cursor());
 
   PodUnionPtr pod2;
   mojo::internal::Deserialize<PodUnionDataView>(writer.data(), &pod2, nullptr);
@@ -423,7 +424,8 @@ TEST(UnionTest, StringSerialization) {
 
 TEST(UnionTest, NullStringValidation) {
   constexpr size_t size = sizeof(internal::ObjectUnion_Data);
-  mojo::internal::FixedBufferForTesting buffer(size);
+  Message message(0, 0, 0, 0, nullptr);
+  mojo::internal::Buffer& buffer = *message.payload_buffer();
   internal::ObjectUnion_Data::BufferWriter writer;
   writer.Allocate(&buffer);
   writer->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
@@ -436,7 +438,8 @@ TEST(UnionTest, NullStringValidation) {
 
 TEST(UnionTest, StringPointerOverflowValidation) {
   constexpr size_t size = sizeof(internal::ObjectUnion_Data);
-  mojo::internal::FixedBufferForTesting buffer(size);
+  Message message(0, 0, 0, 0, nullptr);
+  mojo::internal::Buffer& buffer = *message.payload_buffer();
   internal::ObjectUnion_Data::BufferWriter writer;
   writer.Allocate(&buffer);
   writer->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
@@ -448,8 +451,8 @@ TEST(UnionTest, StringPointerOverflowValidation) {
 }
 
 TEST(UnionTest, StringValidateOOB) {
-  constexpr size_t size = 32;
-  mojo::internal::FixedBufferForTesting buffer(size);
+  Message message(0, 0, 0, 0, nullptr);
+  mojo::internal::Buffer& buffer = *message.payload_buffer();
   internal::ObjectUnion_Data::BufferWriter writer;
   writer.Allocate(&buffer);
   writer->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
@@ -643,8 +646,8 @@ TEST(UnionTest, Validation_NullUnion_Failure) {
       SmallStructNonNullableUnion::New());
 
   constexpr size_t size = sizeof(internal::SmallStructNonNullableUnion_Data);
-  mojo::internal::FixedBufferForTesting buffer(size);
-  mojo::Message message;
+  Message message(0, 0, 0, 0, nullptr);
+  mojo::internal::Buffer& buffer = *message.payload_buffer();
   internal::SmallStructNonNullableUnion_Data::BufferWriter writer;
   writer.Allocate(&buffer);
   mojo::internal::ValidationContext validation_context(

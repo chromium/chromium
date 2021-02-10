@@ -57,8 +57,6 @@ component("bindings_base") {
     "lib/bindings_internal.h",
     "lib/buffer.cc",
     "lib/buffer.h",
-    "lib/fixed_buffer.cc",
-    "lib/fixed_buffer.h",
     "lib/handle_serialization.cc",
     "lib/handle_serialization.h",
     "lib/hash_util.h",

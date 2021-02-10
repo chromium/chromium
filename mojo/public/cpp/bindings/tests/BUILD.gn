@@ -13,7 +13,6 @@ source_set("tests") {
     "binder_map_unittest.cc",
     "bindings_test_base.cc",
     "bindings_test_base.h",
-    "buffer_unittest.cc",
     "callback_helpers_unittest.cc",
     "connection_group_unittest.cc",
     "connector_unittest.cc",
