@@ -272,27 +272,11 @@ bool ContainedByTableCell(const EphemeralRangeInFlatTree& range) {
 bool TextFragmentFinder::IsInSameUninterruptedBlock(
     const PositionInFlatTree& start,
     const PositionInFlatTree& end) {
-  Node* start_node = start.ComputeContainerNode();
-  Node* end_node = end.ComputeContainerNode();
-
-  if (start_node->isSameNode(end_node))
+  if (!start.ComputeContainerNode()->GetLayoutObject() ||
+      !end.ComputeContainerNode()->GetLayoutObject())
     return true;
-
-  Node& start_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(*start_node);
-  Node& end_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(*end_node);
-
-  if (!start_ancestor.isSameNode(&end_ancestor))
-    return false;
-
-  Node* node = start_node;
-  while (!node->isSameNode(end_node)) {
-    if (FindBuffer::IsNodeBlockLevel(*node))
-      return false;
-    node = FlatTreeTraversal::Next(*node);
-  }
-  return true;
+  return FindBuffer::IsInSameUninterruptedBlock(*start.ComputeContainerNode(),
+                                                *end.ComputeContainerNode());
 }
 
 TextFragmentFinder::TextFragmentFinder(Client& client,

@@ -886,7 +886,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
 
-  // HTML is intentionally not formatted. Adding new lines and itendation
+  // HTML is intentionally not formatted. Adding new lines and indentation
   // creates empty text nodes which changes the dom tree.
   request.Complete(R"HTML(
     <!DOCTYPE html>
@@ -919,7 +919,7 @@ TEST_F(TextFragmentSelectorGeneratorTest, PrevNodeIsSiblingsChild) {
 TEST_F(TextFragmentSelectorGeneratorTest, PrevPrevNodeIsSiblingsChild) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
-  // HTML is intentionally not formatted. Adding new lines and itendation
+  // HTML is intentionally not formatted. Adding new lines and indentation
   // creates empty text nodes which changes the dom tree.
   request.Complete(R"HTML(
     <!DOCTYPE html>
@@ -1077,6 +1077,54 @@ TEST_F(TextFragmentSelectorGeneratorTest, OverlappingRange) {
   ASSERT_EQ("First\nblock text\ntext", PlainText(EphemeralRange(start, end)));
 
   VerifySelector(start, end, "First,text,-suffix");
+}
+
+// Checks selection across table cells.
+TEST_F(TextFragmentSelectorGeneratorTest, Table) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+<table id='table'>
+  <tbody>
+    <tr>
+      <td id='row1-col1'>row1 col1</td>
+      <td id='row1-col2'>row1 col2</td>
+      <td id='row1-col3'>row1 col3</td>
+    </tr>
+  </tbody>
+</table>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* first_paragraph =
+      GetDocument().getElementById("row1-col1")->firstChild();
+  Node* second_paragraph =
+      GetDocument().getElementById("row1-col3")->firstChild();
+  const auto& start = Position(first_paragraph, 0);
+  const auto& end = Position(second_paragraph, 9);
+  ASSERT_EQ("row1 col1\trow1 col2\trow1 col3",
+            PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "row1%20col1,row1%20col3");
+}
+
+// Checks selection across an input element.
+TEST_F(TextFragmentSelectorGeneratorTest, Input) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div id='div'>
+    First paragraph<input type='text'> Second paragraph
+  </div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* div = GetDocument().getElementById("div");
+  const auto& start = Position(div->firstChild(), 0);
+  const auto& end = Position(div->lastChild(), 7);
+  ASSERT_EQ("First paragraph Second", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "First%20paragraph,Second");
 }
 
 // Basic test case for |GetNextTextBlock|.

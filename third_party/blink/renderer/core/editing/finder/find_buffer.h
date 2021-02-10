@@ -33,14 +33,18 @@ class CORE_EXPORT FindBuffer {
 
   // Returns the closest ancestor of |start_node| (including the node itself)
   // that is block level.
-  static Node& GetFirstBlockLevelAncestorInclusive(const Node& start_node);
+  static const Node& GetFirstBlockLevelAncestorInclusive(
+      const Node& start_node);
+
+  // Returns true if start and end nodes are in the same layout block flow and
+  // there are no nodes in between that can be considered blocks. Otherwise,
+  // returns false.
+  static bool IsInSameUninterruptedBlock(const Node& start_node,
+                                         const Node& end_node);
 
   // See |GetVisibleTextNode|.
   static Node* ForwardVisibleTextNode(Node& start_node);
   static Node* BackwardVisibleTextNode(Node& start_node);
-
-  // Returns whether the given node is block level.
-  static bool IsNodeBlockLevel(Node& node);
 
   // A match result, containing the starting position of the match and
   // the length of the match.

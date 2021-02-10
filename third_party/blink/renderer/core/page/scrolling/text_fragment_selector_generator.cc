@@ -54,17 +54,24 @@ struct ForwadDirection {
   static Node* GetVisibleTextNode(Node& start_node) {
     return FindBuffer::ForwardVisibleTextNode(start_node);
   }
+  // |IsInSameUninterruptedBlock| is diraction specific because |start| and
+  // |end| should be in right order.
+  static bool IsInSameUninterruptedBlock(Node& start, Node& end) {
+    return FindBuffer::IsInSameUninterruptedBlock(start, end);
+  }
 };
 
 struct BackwardDirection {
   static Node* Next(const Node& node) {
     return FlatTreeTraversal::Previous(node);
   }
-  static Node* Next(const Node& node, const Node* stay_within) {
-    return FlatTreeTraversal::Previous(node, stay_within);
-  }
   static Node* GetVisibleTextNode(Node& start_node) {
     return FindBuffer::BackwardVisibleTextNode(start_node);
+  }
+  // |IsInSameUninterruptedBlock| is diraction specific because |start| and
+  // |end| should be in right order.
+  static bool IsInSameUninterruptedBlock(Node& start, Node& end) {
+    return FindBuffer::IsInSameUninterruptedBlock(end, start);
   }
 };
 
@@ -99,19 +106,16 @@ Node* BackwardNonEmptyVisibleTextNode(Node* start_node) {
 // Returns the next/previous visible node to |start_node|.
 template <class Direction>
 Node* FurthestVisibleTextNodeWithinBlock(Node* start_node) {
-  Node& block_ancestor =
-      FindBuffer::GetFirstBlockLevelAncestorInclusive(*start_node);
-
   // Move forward/backward until no next/previous node is available within same
   // |block_ancestor|.
   Node* last_node;
-  for (Node* node = start_node; node;
-       node = Direction::Next(*node, &block_ancestor)) {
+  for (Node* node = start_node; node; node = Direction::Next(*node)) {
     node = Direction::GetVisibleTextNode(*node);
+    if (node && !node->GetLayoutObject())
+      continue;
+
     // Stop, if crossed block boundaries.
-    if (!node ||
-        !FindBuffer::GetFirstBlockLevelAncestorInclusive(*node).isSameNode(
-            &block_ancestor))
+    if (!node || !Direction::IsInSameUninterruptedBlock(*start_node, *node))
       break;
     last_node = node;
   }
@@ -440,7 +444,7 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
   DCHECK_EQ(kNeedsNewCandidate, state_);
   EphemeralRangeInFlatTree ephemeral_range(selection_range_);
 
-  // If not in same node, should use ranges.
+  // If not in same block, should use ranges.
   if (!TextFragmentFinder::IsInSameUninterruptedBlock(
           ephemeral_range.StartPosition(), ephemeral_range.EndPosition())) {
     step_ = kRange;
