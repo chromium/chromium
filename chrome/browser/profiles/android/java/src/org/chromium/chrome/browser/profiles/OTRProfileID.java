@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.profiles;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -57,7 +59,7 @@ public class OTRProfileID {
      */
     public static OTRProfileID deserialize(String value) {
         // The value might be null, if it represents the regular profile.
-        if (value == null || value.isEmpty()) return null;
+        if (TextUtils.isEmpty(value)) return null;
 
         // Check if the format is align with |OTRProfileID#toString| function.
         assert value.startsWith("OTRProfileID{") && value.endsWith("}");
@@ -103,13 +105,28 @@ public class OTRProfileID {
     /**
      * Checks whether the given OTRProfileIDs belong to the same profile.
      * @param otrProfileID1 The first OTRProfileID
-     * @param otrProfileID2 The first OTRProfileID
+     * @param otrProfileID2 The second OTRProfileID
      * @return Whether the given OTRProfileIDs are equals.
      */
     public static boolean areEqual(
             @Nullable OTRProfileID otrProfileID1, @Nullable OTRProfileID otrProfileID2) {
         // If both OTRProfileIDs null, then both belong to the regular profile.
         if (otrProfileID1 == null) return otrProfileID2 == null;
+
+        return otrProfileID1.equals(otrProfileID2);
+    }
+
+    /**
+     * Checks whether the given OTRProfileID strings belong to the same profile.
+     * @param otrProfileID1 The string of first OTRProfileID
+     * @param otrProfileID2 The string of second OTRProfileID
+     * @return Whether the given OTRProfileIDs are equals.
+     */
+    public static boolean areEqual(@Nullable String otrProfileID1, @Nullable String otrProfileID2) {
+        // If both OTRProfileIDs null, then both belong to the regular profile.
+        if (TextUtils.isEmpty(otrProfileID1)) {
+            return TextUtils.isEmpty(otrProfileID2);
+        }
 
         return otrProfileID1.equals(otrProfileID2);
     }

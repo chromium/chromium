@@ -434,8 +434,11 @@ public class DownloadInfoBarController implements OfflineContentProvider.Observe
     }
 
     private boolean isVisibleToUser(OfflineItem offlineItem) {
-        OTRProfileID otrProfileID = OTRProfileID.deserialize(offlineItem.otrProfileId);
-        if (offlineItem.isTransient || !OTRProfileID.areEqual(mOtrProfileID, otrProfileID)
+        // Need to use serialized OTRProfileID for comparison, since calling
+        // |OTRProfileID#deserialize| method causes crash if the OTR profile is destroyed.
+        String stringOTRProfileID = OTRProfileID.serialize(mOtrProfileID);
+        if (offlineItem.isTransient
+                || !OTRProfileID.areEqual(stringOTRProfileID, offlineItem.otrProfileId)
                 || offlineItem.isSuggested || offlineItem.isDangerous) {
             return false;
         }
