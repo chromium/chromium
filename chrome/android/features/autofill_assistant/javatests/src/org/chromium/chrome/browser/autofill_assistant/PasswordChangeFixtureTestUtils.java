@@ -11,12 +11,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Log;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -43,6 +46,24 @@ public final class PasswordChangeFixtureTestUtils {
         return credential1.getUrl().equals(credential2.getUrl())
                 && credential1.getUsername().equals(credential2.getUsername())
                 && !credential1.getPassword().equals(credential2.getPassword());
+    }
+
+    /**
+     * Search for a credential matching domain and username from a collection.
+     *
+     * @param domain Credential domain.
+     * @param username Credential username.
+     * @return Credential matching domain and username, null otherwise.
+     */
+    public static @Nullable PasswordStoreCredential getCredentialForDomainAndUser(
+            PasswordStoreCredential[] credentials, GURL domain, String username) {
+        for (int i = 0; i < credentials.length; i++) {
+            PasswordStoreCredential credential = credentials[i];
+            if (credential.getUrl().equals(domain) && credential.getUsername().equals(username)) {
+                return credential;
+            }
+        }
+        return null;
     }
 
     /**

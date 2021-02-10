@@ -58,7 +58,7 @@ public class PasswordStoreCredential {
     @Override
     public String toString() {
         return "PasswordStoreCredential{"
-                + "url='" + mUrl + ", username='" + mUsername + '\'' + '\'' + ", password='"
-                + mPassword + '}';
+                + "url=" + mUrl.getSpec() + ", username=" + mUsername + ", password=" + mPassword
+                + '}';
     }
 }
