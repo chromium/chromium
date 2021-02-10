@@ -287,7 +287,7 @@
       'Win10 Tests x64': {
         'args': [
           '--target',
-          'Release',
+          'Release_x64',
         ],
         'swarming': {
           "shards": 28
@@ -297,7 +297,7 @@
         'args': [
           '--debug',
           '--target',
-          'Debug',
+          'Debug_x64',
         ],
       },
       'Win7 Tests (dbg)(1)': {
@@ -2076,7 +2076,7 @@
       },
       'Win10 Tests x64 (dbg)': {
         'args': [
-          '--browser=debug',
+          '--browser=debug_x64',
         ],
         'experiment_percentage': 100,
       },
@@ -2165,32 +2165,32 @@
     'modifications': {
       'Win10 FYI x64 Exp Release (Intel HD 630)': {
         'args': [
-          '--browser=release',
+          '--browser=release_x64',
         ],
       },
       'Win10 FYI x64 Exp Release (NVIDIA)': {
         'args': [
-          '--browser=release',
+          '--browser=release_x64',
         ],
       },
       'Win10 FYI x64 Release (AMD RX 5500 XT)': {
         'args': [
-          '--browser=release',
+          '--browser=release_x64',
         ],
       },
       'Win10 FYI x64 Release (Intel HD 630)': {
         'args': [
-          '--browser=release',
+          '--browser=release_x64',
         ],
       },
       'Win10 FYI x64 Release (NVIDIA)': {
         'args': [
-          '--browser=release',
+          '--browser=release_x64',
         ],
       },
       'Win10 x64 Release (NVIDIA)': {
         'args': [
-          '--browser=release',
+          '--browser=release_x64',
         ],
       },
     },

@@ -2215,7 +2215,8 @@
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2436,7 +2437,8 @@
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2469,7 +2471,8 @@
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2683,7 +2686,8 @@
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2716,7 +2720,8 @@
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2930,7 +2935,8 @@
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2963,7 +2969,8 @@
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3177,7 +3184,8 @@
           "--jobs=1",
           "--order=natural",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3210,7 +3218,8 @@
           "--order=natural",
           "--additional-driver-flag=--enable-dawn-backend-validation",
           "--additional-driver-flag=--disable-dawn-features=disallow_unsafe_apis",
-          "--additional-driver-flag=--use-gpu-in-tests"
+          "--additional-driver-flag=--use-gpu-in-tests",
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
