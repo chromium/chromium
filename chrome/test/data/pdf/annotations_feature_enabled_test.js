@@ -54,14 +54,14 @@ chrome.test.runTests([
     chrome.test.assertEq(3, cameras.length);
 
     const expectations = [
-      {top: 2.25, left: -106.5, right: 718.5, bottom: -412.5},
+      {top: 2.25, left: -106.5, right: 718.5, bottom: -411.75},
       {top: 2.25, left: -3.75, right: 408.75, bottom: -205.125},
       {top: -35.25, left: 33.75, right: 446.25, bottom: -242.625},
     ];
 
     for (const expectation of expectations) {
       const actual = cameras.shift();
-      const expectationBottom = Math.max(-412.5, expectation.bottom + 18);
+      const expectationBottom = Math.max(-411.75, expectation.bottom + 18);
       chrome.test.assertEq(expectation.top, actual.top);
       chrome.test.assertEq(expectation.left, actual.left);
       chrome.test.assertEq(expectation.bottom, actual.bottom);
