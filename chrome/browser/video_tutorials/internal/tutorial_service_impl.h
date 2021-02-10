@@ -30,10 +30,6 @@ class TutorialServiceImpl : public VideoTutorialService {
   void SetPreferredLocale(const std::string& locale) override;
 
  private:
-  void OnGetTutorials(SingleItemCallback callback,
-                      FeatureType feature_type,
-                      std::vector<Tutorial> tutorials);
-
   // Called at service startup to determine if a network fetch is necessary
   // based on the last fetch timestamp.
   void StartFetchIfNecessary();
