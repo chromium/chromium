@@ -472,13 +472,6 @@ TEST_F(AV1DecoderTest, DecodeFilmGrain) {
   const std::string kFilmGrainStream("av1-film_grain.ivf");
   std::vector<scoped_refptr<DecoderBuffer>> buffers = ReadIVF(kFilmGrainStream);
   ASSERT_FALSE(buffers.empty());
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::vector<DecodeResult> expected = {DecodeResult::kDecodeError};
-  EXPECT_EQ(Decode(buffers[0]), expected);
-  // Once AV1Decoder gets into an error state, Decode() returns kDecodeError
-  // until Reset().
-  EXPECT_EQ(Decode(buffers[0]), expected);
-#else
   constexpr size_t kDecodedFrames = 11;
   constexpr size_t kOutputFrames = 10;
   constexpr gfx::Size kFrameSize(352, 288);
@@ -511,7 +504,6 @@ TEST_F(AV1DecoderTest, DecodeFilmGrain) {
     expected.push_back(DecodeResult::kRanOutOfStreamData);
   }
   EXPECT_EQ(results, expected);
-#endif
 }
 
 // TODO(b/175895249): Test in isolation each of the conditions that trigger a

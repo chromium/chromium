@@ -227,12 +227,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
           return kDecodeError;
         }
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-        if (current_sequence_header_->film_grain_params_present) {
-          // TODO(b/176927551): Decode film grain streams on ChromeOS once the
-          // issue is fixed.
-          DVLOG(1) << "Film grain streams are not supported";
-          return kDecodeError;
-        }
         if (new_bit_depth != 8u) {
           // TODO(b/174722425): Decode 10 bits streams once it is fixed.
           DVLOG(1) << "10 and 12 bits streams are not supported";
@@ -497,9 +491,10 @@ uint8_t AV1Decoder::GetBitDepth() const {
 
 size_t AV1Decoder::GetRequiredNumOfPictures() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(hiroh): Double this value in the case of film grain sequence.
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
-  return kPicsInPipeline + GetNumReferenceFrames();
+  DCHECK(current_sequence_header_);
+  return (kPicsInPipeline + GetNumReferenceFrames()) *
+         (1 + current_sequence_header_->film_grain_params_present);
 }
 
 size_t AV1Decoder::GetNumReferenceFrames() const {
