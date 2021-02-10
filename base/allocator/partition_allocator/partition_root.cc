@@ -775,10 +775,9 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
     if (flags & PartitionPurgeDecommitEmptySlotSpans)
       DecommitEmptySlotSpans();
     if (flags & PartitionPurgeDiscardUnusedSystemPages) {
-      for (size_t i = 0; i < kNumBuckets; ++i) {
-        Bucket* bucket = &buckets[i];
-        if (bucket->slot_size >= SystemPageSize())
-          internal::PartitionPurgeBucket(bucket);
+      for (Bucket& bucket : buckets) {
+        if (bucket.slot_size >= SystemPageSize())
+          internal::PartitionPurgeBucket(&bucket);
       }
     }
   }
@@ -857,9 +856,9 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
 
   // Do not hold the lock when calling |dumper|, as it may allocate.
   if (!is_light_dump) {
-    for (size_t i = 0; i < kNumBuckets; ++i) {
-      if (bucket_stats[i].is_valid)
-        dumper->PartitionsDumpBucketStats(partition_name, &bucket_stats[i]);
+    for (auto& stat : bucket_stats) {
+      if (stat.is_valid)
+        dumper->PartitionsDumpBucketStats(partition_name, &stat);
     }
 
     for (size_t i = 0; i < num_direct_mapped_allocations; ++i) {

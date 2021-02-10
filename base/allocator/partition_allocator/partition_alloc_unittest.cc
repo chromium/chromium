@@ -390,11 +390,7 @@ bool CheckPageInCore(void* ptr, bool in_core) {
 
 class MockPartitionStatsDumper : public PartitionStatsDumper {
  public:
-  MockPartitionStatsDumper()
-      : total_resident_bytes(0),
-        total_active_bytes(0),
-        total_decommittable_bytes(0),
-        total_discardable_bytes(0) {}
+  MockPartitionStatsDumper() = default;
 
   void PartitionDumpTotals(const char* partition_name,
                            const PartitionMemoryStats* stats) override {
@@ -423,18 +419,18 @@ class MockPartitionStatsDumper : public PartitionStatsDumper {
   }
 
   const PartitionBucketMemoryStats* GetBucketStats(size_t bucket_size) {
-    for (size_t i = 0; i < bucket_stats.size(); ++i) {
-      if (bucket_stats[i].bucket_slot_size == bucket_size)
-        return &bucket_stats[i];
+    for (auto& stat : bucket_stats) {
+      if (stat.bucket_slot_size == bucket_size)
+        return &stat;
     }
     return nullptr;
   }
 
  private:
-  size_t total_resident_bytes;
-  size_t total_active_bytes;
-  size_t total_decommittable_bytes;
-  size_t total_discardable_bytes;
+  size_t total_resident_bytes = 0;
+  size_t total_active_bytes = 0;
+  size_t total_decommittable_bytes = 0;
+  size_t total_discardable_bytes = 0;
 
   std::vector<PartitionBucketMemoryStats> bucket_stats;
 };
