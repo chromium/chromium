@@ -1976,27 +1976,27 @@
     ],
 
     'gpu_fyi_tests_debug_trybot': [
-      'gpu_fyi_tests', 'debug_bot',
+      'gpu_fyi_tests', 'debug_bot', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_debug_trybot_x86': [
-      'gpu_fyi_tests', 'debug_bot', 'x86',
+      'gpu_fyi_tests', 'debug_bot', 'x86', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_dx12vk_debug_trybot': [
-      'gpu_fyi_tests', 'dx12vk', 'debug_bot',
+      'gpu_fyi_tests', 'dx12vk', 'debug_bot', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_dx12vk_release_trybot': [
-      'gpu_fyi_tests', 'dx12vk', 'release_trybot',
+      'gpu_fyi_tests', 'dx12vk', 'release_trybot', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot': [
-      'gpu_fyi_tests', 'release_trybot',
+      'gpu_fyi_tests', 'release_trybot', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_arm64': [
-      'gpu_fyi_tests', 'release_trybot', 'arm64',
+      'gpu_fyi_tests', 'release_trybot', 'arm64', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_asan': [
@@ -2004,7 +2004,7 @@
     ],
 
     'gpu_fyi_tests_release_trybot_fuchsia': [
-      'gpu_fyi_tests', 'release_trybot', 'fuchsia',
+      'gpu_fyi_tests', 'release_trybot', 'fuchsia', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_tsan': [
@@ -2012,7 +2012,7 @@
     ],
 
     'gpu_fyi_tests_release_trybot_x86': [
-      'gpu_fyi_tests', 'release_trybot', 'x86',
+      'gpu_fyi_tests', 'release_trybot', 'x86', 'disable_nacl',
     ],
 
     'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild': [
@@ -2738,7 +2738,7 @@
 
     'angle_specific_tests': {
       'mixins': ['angle_gles1_conform_tests', 'angle_deqp_tests',
-                 'angle_trace_perf_tests'],
+                 'angle_trace_perf_tests', 'disable_nacl'],
     },
 
     'angle_trace_perf_tests': {
