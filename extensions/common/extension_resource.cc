@@ -12,21 +12,22 @@
 
 namespace extensions {
 
-ExtensionResource::ExtensionResource() : follow_symlinks_anywhere_(false) {
-}
+ExtensionResource::ExtensionResource() : follow_symlinks_anywhere_(false) {}
 
-ExtensionResource::ExtensionResource(const std::string& extension_id,
+ExtensionResource::ExtensionResource(const ExtensionId& extension_id,
                                      const base::FilePath& extension_root,
                                      const base::FilePath& relative_path)
     : extension_id_(extension_id),
       extension_root_(extension_root),
       relative_path_(relative_path),
-      follow_symlinks_anywhere_(false) {
-}
+      follow_symlinks_anywhere_(false) {}
 
 ExtensionResource::ExtensionResource(const ExtensionResource& other) = default;
+ExtensionResource::ExtensionResource(ExtensionResource&& other) = default;
+ExtensionResource& ExtensionResource::operator=(ExtensionResource&& other) =
+    default;
 
-ExtensionResource::~ExtensionResource() {}
+ExtensionResource::~ExtensionResource() = default;
 
 void ExtensionResource::set_follow_symlinks_anywhere() {
   follow_symlinks_anywhere_ = true;
