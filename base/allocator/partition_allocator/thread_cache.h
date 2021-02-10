@@ -73,7 +73,7 @@ class BASE_EXPORT ThreadCacheRegistry {
   static PartitionLock& GetLock() { return Instance().lock_; }
   // Purges all thread caches *now*. This is completely thread-unsafe, and
   // should only be called in a post-fork() handler.
-  void ForcePurgeAllThreadUnsafe();
+  void ForcePurgeAllThreadAfterForkUnsafe();
 
   bool has_pending_purge_task() const { return has_pending_purge_task_; }
   void ResetForTesting();

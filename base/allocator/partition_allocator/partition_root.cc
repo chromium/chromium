@@ -73,7 +73,8 @@ void AfterForkInChild() {
   // If we don't reclaim this memory, it is lost forever. Note that this is only
   // really an issue if we fork() a multi-threaded process without calling
   // exec() right away, which is discouraged.
-  internal::ThreadCacheRegistry::Instance().ForcePurgeAllThreadUnsafe();
+  internal::ThreadCacheRegistry::Instance()
+      .ForcePurgeAllThreadAfterForkUnsafe();
 }
 #endif  // defined(OS_LINUX)
 

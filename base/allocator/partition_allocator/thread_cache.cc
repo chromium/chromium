@@ -122,10 +122,23 @@ void ThreadCacheRegistry::PurgeAll() {
     current_thread_tcache->Purge();
 }
 
-void ThreadCacheRegistry::ForcePurgeAllThreadUnsafe() {
+void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
   PartitionAutoLock scoped_locker(GetLock());
   ThreadCache* tcache = list_head_;
   while (tcache) {
+#if DCHECK_IS_ON()
+    // Before fork(), locks are acquired in the parent process. This means that
+    // a concurrent allocation in the parent which must be filled by the central
+    // allocator (i.e. the thread cache bucket is empty) will block inside the
+    // thread cache waiting for the lock to be released.
+    //
+    // In the child process, this allocation will never complete since this
+    // thread will not be resumed. However, calling |Purge()| triggers the
+    // reentrancy guard since the parent process thread was suspended from
+    // within the thread cache.
+    // Clear the guard to prevent this from crashing.
+    tcache->is_in_thread_cache_ = false;
+#endif
     tcache->Purge();
     tcache = tcache->next_;
   }
