@@ -115,7 +115,8 @@ public class TileRenderer {
         for (Tile tile : sectionTiles) {
             SuggestionsTileView tileView = oldTileViews.get(tile.getData());
             if (tileView == null || tileView.mIconView == null
-                    || tileView.mIconView.getDrawable() == null) {
+                    || tileView.mIconView.getDrawable() == null
+                    || tile.getSource() == TileSource.EXPLORE) {
                 tileView = buildTileView(tile, parent, setupDelegate);
             }
 
@@ -155,19 +156,16 @@ public class TileRenderer {
                     VectorDrawableCompat.create(mResources, R.drawable.ic_apps_blue_24dp, mTheme));
             tile.setType(TileVisualType.ICON_DEFAULT);
 
-            if (!LibraryLoader.getInstance().isInitialized()) {
-                tileView.initialize(tile, mTitleLinesCount);
-                return tileView;
+            if (LibraryLoader.getInstance().isInitialized()) {
+                // One task to load actual icon.
+                LargeIconBridge.LargeIconCallback bridgeCallback =
+                        setupDelegate.createIconLoadCallback(tile);
+                ExploreSitesBridge.getSummaryImage(Profile.getLastUsedRegularProfile(),
+                        mDesiredIconSize,
+                        (Bitmap img)
+                                -> bridgeCallback.onLargeIconAvailable(
+                                        img, Color.BLACK, false, IconType.FAVICON));
             }
-
-            // One task to load actual icon.
-            LargeIconBridge.LargeIconCallback bridgeCallback =
-                    setupDelegate.createIconLoadCallback(tile);
-            ExploreSitesBridge.getSummaryImage(Profile.getLastUsedRegularProfile(),
-                    mDesiredIconSize,
-                    (Bitmap img)
-                            -> bridgeCallback.onLargeIconAvailable(
-                                    img, Color.BLACK, false, IconType.FAVICON));
         } else {
             tileView = (SuggestionsTileView) LayoutInflater.from(parentView.getContext())
                                .inflate(mLayout, parentView, false);

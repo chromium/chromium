@@ -46,6 +46,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.SmallTest;
@@ -126,6 +128,8 @@ import org.chromium.chrome.test.util.ViewUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
+import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -170,6 +174,9 @@ public class InstantStartTest {
 
     @Rule
     public ErrorCollector collector = new ErrorCollector();
+
+    @Rule
+    public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
     /**
      * Parameter set controlling whether Feed v2 is enabled.
@@ -1123,18 +1130,7 @@ public class InstantStartTest {
                     "/exclude_mv_tiles/false"})
     public void renderSingleAsHomepage_MVTiles() throws IOException, InterruptedException {
         // clang-format on
-        // Get old file and ensure to delete it.
-        File oldFile = MostVisitedSitesMetadataUtils.getOrCreateTopSitesDirectory();
-        Assert.assertTrue(oldFile.delete() && !oldFile.exists());
-
-        // Save suggestion lists to file.
-        final CountDownLatch latch = new CountDownLatch(1);
-        MostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
-                createFakeSiteSuggestionTiles(), latch::countDown);
-
-        // Wait util the file has been saved.
-        latch.await();
-
+        saveSiteSuggestionTilesToFile();
         startMainActivityFromLauncher();
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
@@ -1145,7 +1141,7 @@ public class InstantStartTest {
         ViewUtils.onViewWaiting(
                 allOf(withId(R.id.tile_view_title), withText("0 TOP_SITES"), isDisplayed()));
         ChromeRenderTestRule.sanitize(surface);
-        mRenderTestRule.render(surface, "singlePane_MV");
+        mRenderTestRule.render(surface, "singlePane_MV_withTopSitesView");
     }
 
     @Test
@@ -1213,6 +1209,63 @@ public class InstantStartTest {
         });
     }
 
+    @Test
+    @SmallTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.EXPLORE_SITES})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS +
+                    "/start_surface_variation/single/exclude_mv_tiles/false"})
+    public void testExploreTopSites() throws InterruptedException {
+        // clang-format on
+        // When showing MV tiles pre-native, explore top sites view is already rendered with a
+        // non-null icon. This test is for ensuring explore top sites view is built and clickable
+        // after native initialization.
+        saveSiteSuggestionTilesToFile();
+
+        FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
+        mostVisitedSites.setTileSuggestions(createFakeSiteSuggestions());
+        mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
+
+        startMainActivityFromLauncher();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        // Initializes native.
+        startAndWaitNativeInitialization();
+
+        waitForTabModel();
+        assertEquals(0,
+                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount());
+
+        OverviewModeBehaviorWatcher hideWatcher =
+                TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isDisplayed();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "Click explore top sites view in MV tiles.";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        ViewGroup mvTilesContainer = (ViewGroup) view;
+                        mvTilesContainer.getChildAt(1).performClick();
+                    }
+                });
+        hideWatcher.waitForBehavior();
+        assertEquals(1,
+                mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount());
+    }
+
     /**
      * Toggles the header and checks whether the header has the right status.
      *
@@ -1273,17 +1326,38 @@ public class InstantStartTest {
     }
 
     private static List<Tile> createFakeSiteSuggestionTiles() {
+        List<SiteSuggestion> siteSuggestions = createFakeSiteSuggestions();
         List<Tile> suggestionTiles = new ArrayList<>();
-        SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
-                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
-                new Date());
-        suggestionTiles.add(new Tile(data, 0));
-
-        data = new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"), "",
-                TileTitleSource.UNKNOWN, TileSource.ALLOWLIST, TileSectionType.PERSONALIZED,
-                new Date());
-        suggestionTiles.add(new Tile(data, 1));
-
+        for (int i = 0; i < siteSuggestions.size(); i++) {
+            suggestionTiles.add(new Tile(siteSuggestions.get(i), i));
+        }
         return suggestionTiles;
+    }
+
+    private static List<SiteSuggestion> createFakeSiteSuggestions() {
+        List<SiteSuggestion> siteSuggestions = new ArrayList<>();
+        siteSuggestions.add(new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
+                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+                new Date()));
+
+        siteSuggestions.add(new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"), "",
+                TileTitleSource.UNKNOWN, TileSource.EXPLORE, TileSectionType.PERSONALIZED,
+                new Date()));
+
+        return siteSuggestions;
+    }
+
+    private static void saveSiteSuggestionTilesToFile() throws InterruptedException {
+        // Get old file and ensure to delete it.
+        File oldFile = MostVisitedSitesMetadataUtils.getOrCreateTopSitesDirectory();
+        Assert.assertTrue(oldFile.delete() && !oldFile.exists());
+
+        // Save suggestion lists to file.
+        final CountDownLatch latch = new CountDownLatch(1);
+        MostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
+                createFakeSiteSuggestionTiles(), latch::countDown);
+
+        // Wait util the file has been saved.
+        latch.await();
     }
 }
