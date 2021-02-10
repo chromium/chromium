@@ -38,6 +38,7 @@
 #include <dlfcn.h>
 
 #include "base/android/reached_code_profiler.h"
+#include "base/debug/elf_reader.h"
 
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
 #include "services/tracing/public/cpp/stack_sampling/stack_unwinder_arm64_android.h"
@@ -224,6 +225,104 @@ GetSequenceLocalStorageProfilerSlot() {
 TracingSamplerProfiler::LoaderLockSampler* g_test_loader_lock_sampler = nullptr;
 #endif
 
+// Stores information about the StackFrame, to emit to the trace.
+struct FrameDetails {
+  std::string frame_name;
+  std::string module_name;
+  std::string module_id;
+  uintptr_t module_base_address = 0;
+  uintptr_t rel_pc = 0;
+
+  // True if the module of the stack frame will be considered valid by the trace
+  // processor.
+  bool has_valid_module() const {
+    return !module_name.empty() && !module_id.empty() &&
+           module_base_address > 0;
+  }
+
+  bool has_valid_frame() const {
+    // Valid only if |rel_pc|, since filtering mode does not record frame names.
+    return rel_pc > 0;
+  }
+
+  // Gets module from the frame's module cache.
+  void SetModule(const base::ModuleCache::Module& module) {
+    module_base_address = module.GetBaseAddress();
+    module_id = module.GetId();
+    if (module_name.empty()) {
+      module_name = module.GetDebugBasename().MaybeAsASCII();
+    }
+  }
+
+  // Leaves the valid fields as is and fills in dummy values for invalid fields.
+  // Useful to observe errors in traces.
+  void FillWithDummyFields(uintptr_t frame_ip) {
+    if (rel_pc == 0) {
+      // Record the |frame_ip| as |rel_pc| if available, might be useful to
+      // debug.
+      rel_pc = frame_ip > 0 ? frame_ip : 1;
+    }
+    if (module_base_address == 0) {
+      module_base_address = 1;
+    }
+    if (module_id.empty()) {
+      module_id = "missing";
+    }
+    if (module_name.empty()) {
+      module_name = "missing";
+    }
+    DCHECK(has_valid_frame());
+    DCHECK(has_valid_module());
+  }
+
+#if ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
+  // Sets Chrome's module info for the frame.
+  void SetChromeModuleInfo() {
+    module_base_address = executable_start_addr();
+    static const base::Optional<base::StringPiece> library_name =
+        base::debug::ReadElfLibraryName(
+            reinterpret_cast<void*>(executable_start_addr()));
+    static const base::NoDestructor<std::string> chrome_debug_id([] {
+      base::debug::ElfBuildIdBuffer build_id;
+      size_t build_id_length = base::debug::ReadElfBuildId(
+          reinterpret_cast<void*>(executable_start_addr()), true, build_id);
+      return std::string(build_id, build_id_length);
+    }());
+    if (library_name) {
+      module_name = library_name->as_string();
+    }
+    module_id = *chrome_debug_id;
+  }
+
+  // Sets system library module info for the frame.
+  void SetSystemModuleInfo(uintptr_t frame_ip) {
+    Dl_info info = {};
+    // For addresses in framework libraries, symbolize and write the function
+    // name.
+    if (dladdr(reinterpret_cast<void*>(frame_ip), &info) == 0) {
+      return;
+    }
+    if (info.dli_sname) {
+      frame_name = info.dli_sname;
+    }
+    if (info.dli_fname) {
+      module_name = info.dli_fname;
+    }
+    module_base_address = reinterpret_cast<uintptr_t>(info.dli_fbase);
+    rel_pc = frame_ip - module_base_address;
+    // We have already symbolized these frames, so module ID is not necessary.
+    // Reading the real ID can cause crashes and we can't symbolize these
+    // server-side anyways.
+    // TODO(ssid): Remove this once perfetto can keep the frames without module
+    // ID.
+    module_id = "system";
+
+    DCHECK(has_valid_frame());
+    DCHECK(has_valid_module());
+  }
+#endif
+};
+
 }  // namespace
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
@@ -381,109 +480,89 @@ TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit(
 
   std::vector<InterningID> frame_ids;
   for (const auto& frame : frames) {
-    std::string frame_name;
-    std::string module_name;
-    std::string module_id;
-    uintptr_t rel_pc = 0;
+    FrameDetails frame_details;
+    if (frame.module) {
+      frame_details.SetModule(*frame.module);
+      frame_details.rel_pc =
+          frame.instruction_pointer - frame_details.module_base_address;
+    }
 
 #if ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
-    Dl_info info = {};
-    // For chrome address we do not have symbols on the binary. So, just write
-    // the offset address. For addresses on framework libraries, symbolize
-    // and write the function name.
-    if (frame.instruction_pointer == 0) {
-      frame_name = "Scanned";
-    } else if (is_chrome_address(frame.instruction_pointer)) {
-      rel_pc = frame.instruction_pointer - executable_start_addr();
-    } else if (dladdr(reinterpret_cast<void*>(frame.instruction_pointer),
-                      &info) != 0) {
-      // TODO(ssid): Add offset and module debug id if symbol was not resolved
-      // in case this might be useful to send report to vendors.
-      if (info.dli_sname)
-        frame_name = info.dli_sname;
-      if (info.dli_fname)
-        module_name = info.dli_fname;
-    }
-
-    if (frame.module) {
-      module_id = frame.module->GetId();
-      if (module_name.empty())
-        module_name = frame.module->GetDebugBasename().MaybeAsASCII();
-    }
-
-    // If no module is available, then name it unknown. Adding PC would be
-    // useless anyway.
-    if (module_name.empty() && !is_chrome_address(frame.instruction_pointer)) {
-      frame_name = "Unknown";
-      rel_pc = 0;
-    }
-#else   // ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
-    if (frame.module) {
-      module_name = frame.module->GetDebugBasename().MaybeAsASCII();
-      module_id = frame.module->GetId();
-      rel_pc = frame.instruction_pointer - frame.module->GetBaseAddress();
-    } else {
-      module_name = module_id = "";
-      frame_name = "Unknown";
+    if (is_chrome_address(frame.instruction_pointer)) {
+      frame_details.rel_pc =
+          frame.instruction_pointer - executable_start_addr();
+      if (!frame_details.has_valid_module()) {
+        frame_details.SetChromeModuleInfo();
+      }
+    } else if (frame.instruction_pointer == 0) {
+      // TODO(ssid): This frame is currently skipped from inserting. Find a way
+      // to specify that this frame is scanned in the trace.
+      frame_details.frame_name = "Scanned";
+    } else if (!frame_details.has_valid_module()) {
+      frame_details.SetSystemModuleInfo(frame.instruction_pointer);
     }
 #endif  // !(ANDROID_ARM64_UNWINDING_SUPPORTED ||
         // ANDROID_CFI_UNWINDING_SUPPORTED)
 
-    MangleModuleIDIfNeeded(&module_id);
+    // If we do not have a valid module and a valid frame, add a frame with
+    // dummy details. Adding invalid frame would make trace processor invalidate
+    // the whole sample.
+    if (!frame_details.has_valid_module() || !frame_details.has_valid_frame()) {
+      frame_details.FillWithDummyFields(frame.instruction_pointer);
+    }
+
+    MangleModuleIDIfNeeded(&frame_details.module_id);
 
     // We never emit frame names in privacy filtered mode.
     bool should_emit_frame_names =
-        !frame_name.empty() && !should_enable_filtering_;
-
-    if (should_enable_filtering_ && !rel_pc && frame.module) {
-      rel_pc = frame.instruction_pointer - frame.module->GetBaseAddress();
-    }
+        !frame_details.frame_name.empty() && !should_enable_filtering_;
 
     InterningIndexEntry interned_frame;
     if (should_emit_frame_names) {
-      interned_frame =
-          interned_frames_.LookupOrAdd(std::make_pair(frame_name, module_id));
+      interned_frame = interned_frames_.LookupOrAdd(
+          std::make_pair(frame_details.frame_name, frame_details.module_id));
     } else {
-      interned_frame =
-          interned_frames_.LookupOrAdd(std::make_pair(rel_pc, module_id));
+      interned_frame = interned_frames_.LookupOrAdd(
+          std::make_pair(frame_details.rel_pc, frame_details.module_id));
     }
 
     if (!interned_frame.was_emitted) {
       InterningIndexEntry interned_frame_name;
       if (should_emit_frame_names) {
-        interned_frame_name = interned_frame_names_.LookupOrAdd(frame_name);
+        interned_frame_name =
+            interned_frame_names_.LookupOrAdd(frame_details.frame_name);
         if (!interned_frame_name.was_emitted) {
           auto* frame_name_entry = interned_data->add_function_names();
           frame_name_entry->set_iid(interned_frame_name.id);
           frame_name_entry->set_str(
-              reinterpret_cast<const uint8_t*>(frame_name.data()),
-              frame_name.length());
+              reinterpret_cast<const uint8_t*>(frame_details.frame_name.data()),
+              frame_details.frame_name.length());
         }
       }
 
       InterningIndexEntry interned_module;
-      if (frame.module) {
+      if (frame_details.has_valid_module()) {
         interned_module =
-            interned_modules_.LookupOrAdd(frame.module->GetBaseAddress());
+            interned_modules_.LookupOrAdd(frame_details.module_base_address);
         if (!interned_module.was_emitted) {
           InterningIndexEntry interned_module_id =
-              interned_module_ids_.LookupOrAdd(module_id);
+              interned_module_ids_.LookupOrAdd(frame_details.module_id);
           if (!interned_module_id.was_emitted) {
             auto* module_id_entry = interned_data->add_build_ids();
             module_id_entry->set_iid(interned_module_id.id);
-            module_id_entry->set_str(
-                reinterpret_cast<const uint8_t*>(module_id.data()),
-                module_id.length());
+            module_id_entry->set_str(reinterpret_cast<const uint8_t*>(
+                                         frame_details.module_id.data()),
+                                     frame_details.module_id.length());
           }
 
           InterningIndexEntry interned_module_name =
-              interned_module_names_.LookupOrAdd(module_name);
+              interned_module_names_.LookupOrAdd(frame_details.module_name);
           if (!interned_module_name.was_emitted) {
             auto* module_name_entry = interned_data->add_mapping_paths();
             module_name_entry->set_iid(interned_module_name.id);
-            module_name_entry->set_str(
-                reinterpret_cast<const uint8_t*>(module_name.data()),
-                module_name.length());
+            module_name_entry->set_str(reinterpret_cast<const uint8_t*>(
+                                           frame_details.module_name.data()),
+                                       frame_details.module_name.length());
           }
           auto* module_entry = interned_data->add_mappings();
           module_entry->set_iid(interned_module.id);
@@ -497,9 +576,9 @@ TracingSamplerProfiler::TracingProfileBuilder::GetCallstackIDAndMaybeEmit(
       if (should_emit_frame_names) {
         frame_entry->set_function_name_id(interned_frame_name.id);
       } else {
-        frame_entry->set_rel_pc(rel_pc);
+        frame_entry->set_rel_pc(frame_details.rel_pc);
       }
-      if (frame.module) {
+      if (frame_details.has_valid_module()) {
         frame_entry->set_mapping_id(interned_module.id);
       }
     }
