@@ -160,7 +160,6 @@ crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-partial-inval
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-path-context-fill.html [ Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-state-persistence-no-dirty.html [ Pass Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-transform-skewed.html [ Failure ]
-crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-Bitmaprenderer-TransferToImageBitmapResetsToBlack.html [ Pass Failure ]
 crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-text-FontFace.html [ Pass Failure ]
 
 # Flakey tests
