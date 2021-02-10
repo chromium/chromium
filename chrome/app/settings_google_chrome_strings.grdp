@@ -97,7 +97,7 @@
   </if>
 
   <!-- Main Page -->
-  <if expr="chromeos">
+  <if expr="chromeos or lacros">
     <!-- No target="_blank" because OS settings opens its own window. -->
     <message name="IDS_SETTINGS_OS_SETTINGS_BANNER" desc="Banner displayed in browser settings page that links to OS settings.">
       If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN">&lt;a href="$1<ex>https://google.com/</ex>"&gt;</ph>
