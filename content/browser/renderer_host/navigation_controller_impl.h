@@ -326,6 +326,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // is no longer safe to display a pending URL without risking a URL spoof.
   void DidAccessInitialMainDocument();
 
+  // Temporary hack to stop showing the last committed entry when we swap
+  // RenderFrameHosts before a navigation commits (e.g., after the previous
+  // process crashed).
+  // TODO(https://crbug.com/1072817): Remove this hack after we stop swapping
+  // RenderFrameHosts before the navigation commits.
+  void HideEntryForEarlySwapAfterCrash(RenderFrameHostImpl* rfh);
+
   // The state for the page changed and should be updated in session history.
   void UpdateStateForFrame(RenderFrameHostImpl* render_frame_host,
                            const blink::PageState& page_state);
