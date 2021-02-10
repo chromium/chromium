@@ -80,7 +80,7 @@ using InstallRuntimeEnabledFeaturesFunction =
              const DOMWrapperWorld&,
              v8::Local<v8::Object> instance,
              v8::Local<v8::Object> prototype,
-             v8::Local<v8::Function> interface);
+             v8::Local<v8::Function> interface_name);
 
 using InstallRuntimeEnabledFeaturesOnTemplateFunction = InstallTemplateFunction;
 
