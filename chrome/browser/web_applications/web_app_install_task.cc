@@ -796,6 +796,7 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   InstallOsHooksOptions options;
 
   options.os_hooks[OsHookType::kShortcuts] = true;
+  options.os_hooks[OsHookType::kShortcutsMenu] = true;
   options.add_to_desktop = true;
   options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
   options.os_hooks[OsHookType::kRunOnOsLogin] = web_app_info->run_on_os_login;
@@ -810,12 +811,12 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
     DCHECK(install_params_->locally_installed);
     options.os_hooks[OsHookType::kShortcuts] =
         install_params_->add_to_applications_menu;
-    options.add_to_desktop = install_params_->add_to_desktop;
-    options.add_to_quick_launch_bar = install_params_->add_to_quick_launch_bar;
-    options.os_hooks[OsHookType::kRunOnOsLogin] =
-        install_params_->run_on_os_login;
     options.os_hooks[OsHookType::kShortcutsMenu] =
         install_params_->add_to_applications_menu;
+    options.os_hooks[OsHookType::kRunOnOsLogin] =
+        install_params_->run_on_os_login;
+    options.add_to_desktop = install_params_->add_to_desktop;
+    options.add_to_quick_launch_bar = install_params_->add_to_quick_launch_bar;
   }
 
   auto hooks_created_callback =
