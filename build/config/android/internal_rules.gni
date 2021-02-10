@@ -3937,7 +3937,7 @@ if (enable_java_templates) {
     }
 
     if (_build_host_jar || _build_device_jar) {
-      _process_prebuilt_target_name = "${target_name}_process"
+      _process_prebuilt_target_name = "${target_name}__process"
       process_java_prebuilt(_process_prebuilt_target_name) {
         forward_variables_from(invoker,
                                [
