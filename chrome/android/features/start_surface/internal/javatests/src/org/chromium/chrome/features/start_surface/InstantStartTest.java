@@ -680,7 +680,7 @@ public class InstantStartTest {
         CriteriaHelper.pollUiThread(() -> allCardsHaveThumbnail(recyclerView));
         // TODO(crbug.com/1065314): Tab group cards should not have favicons.
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.tab_list_view),
-                "tabSwitcher_tabGroups_aspect_ratio_point85");
+                "tabSwitcher_tabGroups");
 
         // Resume native initialization and make sure the GTS looks the same.
         startAndWaitNativeInitialization();

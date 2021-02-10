@@ -188,10 +188,10 @@ class TabSwitcherModeTTCoordinatorPhone {
     private boolean isNewTabVariationEnabled() {
         return mIsGridTabSwitcherEnabled && ChromeFeatureList.isInitialized()
                 && IncognitoUtils.isIncognitoModeEnabled()
-                && !ChromeFeatureList
-                            .getFieldTrialParamByFeature(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                                    "tab_grid_layout_android_new_tab")
-                            .equals("false");
+                && ChromeFeatureList
+                           .getFieldTrialParamByFeature(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                                   "tab_grid_layout_android_new_tab")
+                           .equals("NewTabVariation");
     }
 
     /**
