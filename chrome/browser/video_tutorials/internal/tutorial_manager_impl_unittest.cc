@@ -177,6 +177,8 @@ TEST_F(TutorialManagerTest, InitAndGetTutorials) {
   std::vector<FeatureType> features(
       {FeatureType::kDownload, FeatureType::kSearch});
   auto groups = CreateSampleGroups({"hi", "kn"}, features);
+  groups[1].tutorials.emplace_back(
+      Tutorial(FeatureType::kVoiceSearch, "", "", "", "", "", "", "", 10));
   auto tutorial_store = std::make_unique<StrictMock<TestStore>>();
   tutorial_store->InitStoreData("hi", groups);
   CreateTutorialManager(std::move(tutorial_store));
@@ -189,6 +191,15 @@ TEST_F(TutorialManagerTest, InitAndGetTutorials) {
 
   GetTutorial(FeatureType::kSearch);
   EXPECT_EQ(FeatureType::kSearch, last_get_tutorial_result()->feature);
+
+  languages = manager()->GetAvailableLanguagesForTutorial(FeatureType::kSearch);
+  EXPECT_EQ(languages.size(), 2u);
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kChromeIntro);
+  EXPECT_EQ(languages.size(), 0u);
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kVoiceSearch);
+  EXPECT_EQ(languages.size(), 1u);
 }
 
 TEST_F(TutorialManagerTest, InitAndGetTutorialsWithSummary) {
@@ -240,6 +251,9 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   EXPECT_EQ(languages.size(), 2u);
   GetTutorials();
   EXPECT_EQ(last_results().size(), 2u);
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kDownload);
+  EXPECT_EQ(languages.size(), 2u);
 
   // New fetch data.
   features = std::vector<FeatureType>(
@@ -252,6 +266,10 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   GetTutorials();
   EXPECT_EQ(last_results().size(), 4u);
 
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kDownload);
+  EXPECT_EQ(languages.size(), 3u);
+
   // New fetch data with summary.
   features = std::vector<FeatureType>(
       {FeatureType::kChromeIntro, FeatureType::kVoiceSearch,
@@ -261,6 +279,10 @@ TEST_F(TutorialManagerTest, SaveNewData) {
   manager()->SetPreferredLocale("tl");
   GetTutorials();
   EXPECT_EQ(last_results().size(), 3u);
+
+  languages =
+      manager()->GetAvailableLanguagesForTutorial(FeatureType::kDownload);
+  EXPECT_EQ(languages.size(), 0u);
 }
 
 }  // namespace

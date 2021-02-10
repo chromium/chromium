@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.R;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
@@ -71,7 +72,8 @@ public class LanguagePickerTest {
                     .thenReturn(TestVideoTutorialService.HINDI);
             mCoordinator = new LanguagePickerCoordinator(
                     mContentView, mVideoTutorialService, mLanguageProvider);
-            mCoordinator.showLanguagePicker(mWatchCallback, mCloseCallback);
+            mCoordinator.showLanguagePicker(
+                    FeatureType.CHROME_INTRO, mWatchCallback, mCloseCallback);
         });
     }
 

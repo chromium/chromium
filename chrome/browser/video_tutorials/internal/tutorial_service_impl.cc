@@ -72,6 +72,12 @@ const std::vector<std::string>& TutorialServiceImpl::GetSupportedLanguages() {
   return tutorial_manager_->GetSupportedLanguages();
 }
 
+const std::vector<std::string>&
+TutorialServiceImpl::GetAvailableLanguagesForTutorial(
+    FeatureType feature_type) {
+  return tutorial_manager_->GetAvailableLanguagesForTutorial(feature_type);
+}
+
 base::Optional<std::string> TutorialServiceImpl::GetPreferredLocale() {
   return tutorial_manager_->GetPreferredLocale();
 }
