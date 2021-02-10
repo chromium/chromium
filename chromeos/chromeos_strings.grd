@@ -610,10 +610,10 @@ Try tapping the mic to ask me anything.
         Looking for scanners
       </message>
       <message name="IDS_SCANNING_APP_NO_SCANNERS_TEXT" desc="The text displayed when there are no available scanners found for scanning">
-        No scanner available
+        No scanners available
       </message>
       <message name="IDS_SCANNING_APP_NO_SCANNERS_SUBTEXT" desc="The subtext displayed when there are no available scanners found for scanning">
-        Make sure the scanner is turned on and connected
+        Make sure the scanner is turned on and available via your network or a direct connection
       </message>
       <message name="IDS_SCANNING_APP_LEARN_MORE_BUTTON_LABEL" desc="The label for the button that leads to a help support article to learn more about scanning.">
         Learn more
