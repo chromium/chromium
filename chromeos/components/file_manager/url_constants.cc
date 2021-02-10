@@ -8,7 +8,7 @@ namespace chromeos {
 namespace file_manager {
 
 constexpr char kChromeUIFileManagerHost[] = "file-manager";
-constexpr char kChromeUIFileManagerURL[] = "chrome://file-manager";
+constexpr char kChromeUIFileManagerURL[] = "chrome://file-manager/";
 
 }  // namespace file_manager
 }  // namespace chromeos
