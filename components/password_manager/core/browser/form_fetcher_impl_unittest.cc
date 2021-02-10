@@ -418,12 +418,11 @@ TEST_P(FormFetcherImplTest, Stats) {
 TEST_P(FormFetcherImplTest, CompromisedCredentials) {
   Fetch();
   form_fetcher_->AddConsumer(&consumer_);
-  const std::vector<CompromisedCredentials> credentials = {
-      CompromisedCredentials(
-          form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-          base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
-  static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
-      ->OnGetCompromisedCredentials(credentials);
+  const std::vector<InsecureCredential> credentials = {InsecureCredential(
+      form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
+      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
+  static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
+      ->OnGetInsecureCredentials(credentials);
   EXPECT_THAT(form_fetcher_->GetCompromisedCredentials(),
               UnorderedElementsAreArray(credentials));
 }
@@ -488,11 +487,10 @@ TEST_P(FormFetcherImplTest, FetchStatistics) {
               UnorderedElementsAre(stats));
 }
 
-TEST_P(FormFetcherImplTest, FetchCompromised) {
-  CompromisedCredentials credentials(
+TEST_P(FormFetcherImplTest, FetchInsecure) {
+  std::vector<InsecureCredential> list = {InsecureCredential(
       form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
-  std::vector<CompromisedCredentials> list = {credentials};
+      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
   EXPECT_CALL(*mock_store_,
               GetMatchingInsecureCredentialsImpl(form_digest_.signon_realm))
       .WillOnce(Return(list));
@@ -510,7 +508,7 @@ TEST_P(FormFetcherImplTest, DontFetchStatistics) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_P(FormFetcherImplTest, DontFetchCompromised) {
+TEST_P(FormFetcherImplTest, DontFetchInsecure) {
   EXPECT_CALL(*mock_store_, GetMatchingInsecureCredentialsImpl).Times(0);
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
@@ -810,12 +808,11 @@ TEST_P(FormFetcherImplTest, Clone_Compromised) {
   // Pass empty results to make the state NOT_WAITING.
   store_consumer()->OnGetPasswordStoreResultsFrom(
       mock_store_.get(), std::vector<std::unique_ptr<PasswordForm>>());
-  const std::vector<CompromisedCredentials> credentials = {
-      CompromisedCredentials(
-          form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-          base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
-  static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
-      ->OnGetCompromisedCredentials(credentials);
+  const std::vector<InsecureCredential> credentials = {InsecureCredential(
+      form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
+      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
+  static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
+      ->OnGetInsecureCredentials(credentials);
 
   auto clone = form_fetcher_->Clone();
   EXPECT_THAT(clone->GetCompromisedCredentials(),

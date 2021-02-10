@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/compromised_credentials_observer.h"
+#include "components/password_manager/core/browser/insecure_credentials_observer.h"
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 namespace password_manager {
 
 void ProcessLoginsChanged(const PasswordStoreChangeList& changes,
-                          const RemoveCompromisedCallback& remove_callback) {
+                          const RemoveInsecureCallback& remove_callback) {
   for (const PasswordStoreChange& change : changes) {
     // New passwords are not interesting.
     if (change.type() == PasswordStoreChange::ADD)

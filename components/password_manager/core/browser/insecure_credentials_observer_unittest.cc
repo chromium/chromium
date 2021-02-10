@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/compromised_credentials_observer.h"
+#include "components/password_manager/core/browser/insecure_credentials_observer.h"
 
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,19 +30,19 @@ PasswordForm TestForm(base::StringPiece username) {
   return form;
 }
 
-class CompromisedCredentialsObserverTest : public testing::Test {
+class InsecureCredentialsObserverTest : public testing::Test {
  public:
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
-  base::MockCallback<RemoveCompromisedCallback>& remove_callback() {
+  base::MockCallback<RemoveInsecureCallback>& remove_callback() {
     return remove_callback_;
   }
 
  private:
   base::HistogramTester histogram_tester_;
-  base::MockCallback<RemoveCompromisedCallback> remove_callback_;
+  base::MockCallback<RemoveInsecureCallback> remove_callback_;
 };
 
-TEST_F(CompromisedCredentialsObserverTest, DeletePassword) {
+TEST_F(InsecureCredentialsObserverTest, DeletePassword) {
   const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
                                      RemoveInsecureCredentialsReason::kRemove));
@@ -52,7 +52,7 @@ TEST_F(CompromisedCredentialsObserverTest, DeletePassword) {
                                         PasswordStoreChange::REMOVE, 1);
 }
 
-TEST_F(CompromisedCredentialsObserverTest, UpdateFormNoPasswordChange) {
+TEST_F(InsecureCredentialsObserverTest, UpdateFormNoPasswordChange) {
   const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run).Times(0);
   ProcessLoginsChanged(
@@ -61,7 +61,7 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateFormNoPasswordChange) {
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
 }
 
-TEST_F(CompromisedCredentialsObserverTest, UpdatePassword) {
+TEST_F(InsecureCredentialsObserverTest, UpdatePassword) {
   const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
                                      RemoveInsecureCredentialsReason::kUpdate));
@@ -72,7 +72,7 @@ TEST_F(CompromisedCredentialsObserverTest, UpdatePassword) {
                                         PasswordStoreChange::UPDATE, 1);
 }
 
-TEST_F(CompromisedCredentialsObserverTest, UpdateTwice) {
+TEST_F(InsecureCredentialsObserverTest, UpdateTwice) {
   const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
                                      RemoveInsecureCredentialsReason::kUpdate));
@@ -85,7 +85,7 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateTwice) {
                                         PasswordStoreChange::UPDATE, 1);
 }
 
-TEST_F(CompromisedCredentialsObserverTest, AddPassword) {
+TEST_F(InsecureCredentialsObserverTest, AddPassword) {
   const PasswordForm form = TestForm(kUsername);
   EXPECT_CALL(remove_callback(), Run).Times(0);
   ProcessLoginsChanged({PasswordStoreChange(PasswordStoreChange::ADD, form)},
@@ -93,7 +93,7 @@ TEST_F(CompromisedCredentialsObserverTest, AddPassword) {
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
 }
 
-TEST_F(CompromisedCredentialsObserverTest, AddReplacePassword) {
+TEST_F(InsecureCredentialsObserverTest, AddReplacePassword) {
   PasswordForm form = TestForm(kUsername);
   PasswordStoreChange remove(PasswordStoreChange::REMOVE, form);
   form.password_value = base::ASCIIToUTF16("new_password_12345");
@@ -105,7 +105,7 @@ TEST_F(CompromisedCredentialsObserverTest, AddReplacePassword) {
                                         PasswordStoreChange::UPDATE, 1);
 }
 
-TEST_F(CompromisedCredentialsObserverTest, UpdateWithPrimaryKey) {
+TEST_F(InsecureCredentialsObserverTest, UpdateWithPrimaryKey) {
   const PasswordForm old_form = TestForm(kUsername);
   PasswordStoreChange remove(PasswordStoreChange::REMOVE, old_form);
   PasswordStoreChange add(PasswordStoreChange::ADD, TestForm(kUsernameNew));
@@ -117,7 +117,7 @@ TEST_F(CompromisedCredentialsObserverTest, UpdateWithPrimaryKey) {
                                         PasswordStoreChange::UPDATE, 1);
 }
 
-TEST_F(CompromisedCredentialsObserverTest, UpdateWithPrimaryKey_RemoveTwice) {
+TEST_F(InsecureCredentialsObserverTest, UpdateWithPrimaryKey_RemoveTwice) {
   const PasswordForm old_form = TestForm(kUsername);
   PasswordStoreChange remove_old(PasswordStoreChange::REMOVE, old_form);
   const PasswordForm conflicting_new_form = TestForm(kUsernameNew);

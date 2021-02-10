@@ -21,7 +21,7 @@
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
-#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
+#include "components/password_manager/core/browser/insecure_credentials_consumer.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -31,7 +31,7 @@
 #include "net/base/escape.h"
 #include "url/gurl.h"
 
-using password_manager::CompromisedCredentials;
+using password_manager::InsecureCredential;
 using password_manager::PasswordForm;
 using password_manager::PasswordStore;
 using sync_datatype_helper::test;
@@ -73,26 +73,27 @@ class PasswordStoreConsumerHelper
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreConsumerHelper);
 };
 
+// TODO(crbug.com/1175743) Rename Compromised to Insecure.
 class CompromisedCredentialsConsumerHelper
-    : public password_manager::CompromisedCredentialsConsumer {
+    : public password_manager::InsecureCredentialsConsumer {
  public:
   CompromisedCredentialsConsumerHelper() = default;
 
-  void OnGetCompromisedCredentials(
-      std::vector<CompromisedCredentials> compromised_credentials) override {
-    compromised_credentials_ = std::move(compromised_credentials);
+  void OnGetInsecureCredentials(
+      std::vector<InsecureCredential> insecure_credentials) override {
+    insecure_credentials_ = std::move(insecure_credentials);
     run_loop_.Quit();
   }
 
-  std::vector<CompromisedCredentials> WaitForResult() {
+  std::vector<InsecureCredential> WaitForResult() {
     DCHECK(!run_loop_.running());
     content::RunThisRunLoop(&run_loop_);
-    return compromised_credentials_;
+    return insecure_credentials_;
   }
 
  private:
   base::RunLoop run_loop_;
-  std::vector<CompromisedCredentials> compromised_credentials_;
+  std::vector<InsecureCredential> insecure_credentials_;
 
   DISALLOW_COPY_AND_ASSIGN(CompromisedCredentialsConsumerHelper);
 };
@@ -177,7 +178,7 @@ void AddLogin(PasswordStore* store, const PasswordForm& form) {
 }
 
 void AddCompromisedCredentials(PasswordStore* store,
-                               const CompromisedCredentials& issue) {
+                               const InsecureCredential& issue) {
   ASSERT_TRUE(store);
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -225,7 +226,7 @@ std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(PasswordStore* store) {
   return consumer.WaitForResult();
 }
 
-std::vector<CompromisedCredentials> GetAllCompromisedCredentials(
+std::vector<InsecureCredential> GetAllCompromisedCredentials(
     PasswordStore* store) {
   DCHECK(store);
   CompromisedCredentialsConsumerHelper consumer;
@@ -251,7 +252,7 @@ void RemoveLogins(PasswordStore* store) {
 }
 
 void RemoveCompromisedCredentials(PasswordStore* store,
-                                  const CompromisedCredentials& credential) {
+                                  const InsecureCredential& credential) {
   ASSERT_TRUE(store);
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -380,10 +381,10 @@ PasswordForm CreateTestPasswordForm(int index) {
   return form;
 }
 
-CompromisedCredentials CreateCompromisedCredentials(
+InsecureCredential CreateCompromisedCredentials(
     int index,
     password_manager::InsecureType type) {
-  CompromisedCredentials issue;
+  InsecureCredential issue;
   issue.signon_realm = kFakeSignonRealm;
   // This should stay compatible with the implementation of
   // CreateTestPasswordForm() and use the same username format.

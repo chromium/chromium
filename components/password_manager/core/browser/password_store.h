@@ -52,7 +52,7 @@ using metrics_util::GaiaPasswordHashChange;
 
 class AffiliatedMatchHelper;
 class PasswordStoreConsumer;
-class CompromisedCredentialsConsumer;
+class InsecureCredentialsConsumer;
 class PasswordStoreSigninNotifier;
 class PasswordSyncBridge;
 struct FieldInfo;
@@ -288,12 +288,12 @@ class PasswordStore : protected PasswordStoreSync,
 
   // Retrieves all insecure credentials and notifies |consumer| on
   // completion. The request will be cancelled if the consumer is destroyed.
-  void GetAllInsecureCredentials(CompromisedCredentialsConsumer* consumer);
+  void GetAllInsecureCredentials(InsecureCredentialsConsumer* consumer);
 
   // Returns all the insecure credentials for a given site. This list also
   // includes Android affiliated credentials.
   void GetMatchingInsecureCredentials(const std::string& signon_realm,
-                                      CompromisedCredentialsConsumer* consumer);
+                                      InsecureCredentialsConsumer* consumer);
 
   // Adds information about field. If the record for given form_signature and
   // field_signature already exists, the new one will be ignored.
@@ -322,12 +322,12 @@ class PasswordStore : protected PasswordStoreSync,
   // Removes |observer| from the observer list.
   void RemoveObserver(Observer* observer);
 
-  // Adds an observer to be notified when the list of compromised passwords in
+  // Adds an observer to be notified when the list of insecure passwords in
   // the password store changes.
   void AddDatabaseInsecureCredentialsObserver(
       DatabaseInsecureCredentialsObserver* observer);
 
-  // Removes |observer| from the list of compromised credentials observer.
+  // Removes |observer| from the list of insecure credentials observer.
   void RemoveDatabaseInsecureCredentialsObserver(
       DatabaseInsecureCredentialsObserver* observer);
 
@@ -693,10 +693,10 @@ class PasswordStore : protected PasswordStoreSync,
       StatsTask task);
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
-  // Invokes |consumer|->OnGetCompromisedCredentials() on the caller's thread
+  // Invokes |consumer|->OnGetInsecureCredentials() on the caller's thread
   // with the result.
   void PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
-      CompromisedCredentialsConsumer* consumer,
+      InsecureCredentialsConsumer* consumer,
       InsecureCredentialsTask task);
 
   // The following methods notify observers that the password store may have
@@ -794,7 +794,7 @@ class PasswordStore : protected PasswordStoreSync,
   // Schedules GetInsecureCredentialsWithAffiliationsImpl() to be run on the
   // background sequence.
   void ScheduleGetInsecureCredentialsWithAffiliations(
-      base::WeakPtr<CompromisedCredentialsConsumer> consumer,
+      base::WeakPtr<InsecureCredentialsConsumer> consumer,
       const std::string& signon_realm,
       const std::vector<std::string>& additional_android_realms);
 

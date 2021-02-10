@@ -39,9 +39,9 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
   void ProcessMigratedForms(
       std::vector<std::unique_ptr<PasswordForm>> forms) override;
 
-  // CompromisedCredentialsConsumer:
-  void OnGetCompromisedCredentials(
-      std::vector<CompromisedCredentials> compromised_credentials) override;
+  // InsecureCredentialsConsumer:
+  void OnGetInsecureCredentials(
+      std::vector<InsecureCredential> insecure_credentials) override;
 
  private:
   void AggregatePasswordStoreResults(

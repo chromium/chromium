@@ -36,7 +36,7 @@ void InsecureCredentialsReader::Init() {
 }
 
 void InsecureCredentialsReader::OnInsecureCredentialsChanged() {
-  // This class overrides OnCompromisedCredentialsChangedIn() (the version of
+  // This class overrides OnInsecureCredentialsChangedIn() (the version of
   // this method that also receives the originating store), so the store-less
   // version never gets called.
   NOTREACHED();
@@ -47,15 +47,15 @@ void InsecureCredentialsReader::OnInsecureCredentialsChangedIn(
   store->GetAllInsecureCredentials(this);
 }
 
-void InsecureCredentialsReader::OnGetCompromisedCredentials(
+void InsecureCredentialsReader::OnGetInsecureCredentials(
     std::vector<InsecureCredential> insecure_credentials) {
-  // This class overrides OnGetCompromisedCredentialFrom() (the version of this
+  // This class overrides OnGetInsecureCredentialFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
   NOTREACHED();
 }
 
-void InsecureCredentialsReader::OnGetCompromisedCredentialsFrom(
+void InsecureCredentialsReader::OnGetInsecureCredentialsFrom(
     PasswordStore* store,
     std::vector<InsecureCredential> insecure_credentials) {
   profile_store_responded_ |= store == profile_store_;
@@ -73,8 +73,8 @@ void InsecureCredentialsReader::OnGetCompromisedCredentialsFrom(
   base::ranges::move(insecure_credentials,
                      std::back_inserter(insecure_credentials_));
 
-  // Observers are reptitively notified of compromised credentials, and hence
-  // vbservers can expect partial view of the compromised credentials, so inform
+  // Observers are reptitively notified of insecure credentials, and hence
+  // vbservers can expect partial view of the insecure credentials, so inform
   // the observers directly.
   for (auto& observer : observers_)
     observer.OnInsecureCredentialsChanged(insecure_credentials_);

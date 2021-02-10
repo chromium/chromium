@@ -162,12 +162,12 @@ void MultiStoreFormFetcher::ProcessMigratedForms(
   AggregatePasswordStoreResults(std::move(forms));
 }
 
-void MultiStoreFormFetcher::OnGetCompromisedCredentials(
-    std::vector<CompromisedCredentials> compromised_credentials) {
+void MultiStoreFormFetcher::OnGetInsecureCredentials(
+    std::vector<InsecureCredential> insecure_credentials) {
   // Both the profile and account store has been queried. Therefore, append the
   // received credentials to the existing ones.
-  base::ranges::move(compromised_credentials,
-                     std::back_inserter(compromised_credentials_));
+  base::ranges::move(insecure_credentials,
+                     std::back_inserter(insecure_credentials_));
 }
 
 void MultiStoreFormFetcher::SplitResults(

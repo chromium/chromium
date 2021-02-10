@@ -18,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/strong_alias.h"
-#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/password_store.h"

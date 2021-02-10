@@ -139,7 +139,7 @@ const std::vector<InteractionsStats>& FormFetcherImpl::GetInteractionsStats()
 
 base::span<const CompromisedCredentials>
 FormFetcherImpl::GetCompromisedCredentials() const {
-  return compromised_credentials_;
+  return insecure_credentials_;
 }
 
 std::vector<const PasswordForm*> FormFetcherImpl::GetNonFederatedMatches()
@@ -195,7 +195,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
       &result->preferred_match_);
 
   result->interactions_stats_ = interactions_stats_;
-  result->compromised_credentials_ = compromised_credentials_;
+  result->insecure_credentials_ = insecure_credentials_;
   result->state_ = state_;
   result->need_to_refetch_ = need_to_refetch_;
 
@@ -276,9 +276,9 @@ void FormFetcherImpl::ProcessMigratedForms(
   ProcessPasswordStoreResults(std::move(forms));
 }
 
-void FormFetcherImpl::OnGetCompromisedCredentials(
-    std::vector<CompromisedCredentials> compromised_credentials) {
-  compromised_credentials_ = std::move(compromised_credentials);
+void FormFetcherImpl::OnGetInsecureCredentials(
+    std::vector<InsecureCredential> insecure_credentials) {
+  insecure_credentials_ = std::move(insecure_credentials);
 }
 
 }  // namespace password_manager

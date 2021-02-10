@@ -29,9 +29,9 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
-#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
-#include "components/password_manager/core/browser/compromised_credentials_observer.h"
 #include "components/password_manager/core/browser/field_info_table.h"
+#include "components/password_manager/core/browser/insecure_credentials_consumer.h"
+#include "components/password_manager/core/browser/insecure_credentials_observer.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -426,7 +426,7 @@ void PasswordStore::RemoveInsecureCredentials(
 }
 
 void PasswordStore::GetAllInsecureCredentials(
-    CompromisedCredentialsConsumer* consumer) {
+    InsecureCredentialsConsumer* consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
       consumer,
@@ -435,7 +435,7 @@ void PasswordStore::GetAllInsecureCredentials(
 
 void PasswordStore::GetMatchingInsecureCredentials(
     const std::string& signon_realm,
-    CompromisedCredentialsConsumer* consumer) {
+    InsecureCredentialsConsumer* consumer) {
   if (affiliated_match_helper_) {
     FormDigest form(PasswordForm::Scheme::kHtml, signon_realm,
                     GURL(signon_realm));
@@ -948,13 +948,12 @@ void PasswordStore::PostStatsTaskAndReplyToConsumerWithResult(
 }
 
 void PasswordStore::PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
-    CompromisedCredentialsConsumer* consumer,
+    InsecureCredentialsConsumer* consumer,
     InsecureCredentialsTask task) {
   consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE, std::move(task),
-      base::BindOnce(
-          &CompromisedCredentialsConsumer::OnGetCompromisedCredentialsFrom,
-          consumer->GetWeakPtr(), base::RetainedRef(this)));
+      base::BindOnce(&InsecureCredentialsConsumer::OnGetInsecureCredentialsFrom,
+                     consumer->GetWeakPtr(), base::RetainedRef(this)));
 }
 
 void PasswordStore::AddLoginInternal(const PasswordForm& form) {
@@ -1236,7 +1235,7 @@ void PasswordStore::ScheduleGetFilteredLoginsWithAffiliations(
 }
 
 void PasswordStore::ScheduleGetInsecureCredentialsWithAffiliations(
-    base::WeakPtr<CompromisedCredentialsConsumer> consumer,
+    base::WeakPtr<InsecureCredentialsConsumer> consumer,
     const std::string& signon_realm,
     const std::vector<std::string>& additional_android_realms) {
   if (consumer) {

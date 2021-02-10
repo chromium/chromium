@@ -11,9 +11,9 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
+#include "components/password_manager/core/browser/insecure_credentials_consumer.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -27,7 +27,7 @@ class PasswordManagerClient;
 // update the Clone() method accordingly.
 class FormFetcherImpl : public FormFetcher,
                         public PasswordStoreConsumer,
-                        public CompromisedCredentialsConsumer,
+                        public InsecureCredentialsConsumer,
                         public HttpPasswordStoreMigrator::Consumer {
  public:
   // |form_digest| describes what credentials need to be retrieved and
@@ -94,8 +94,8 @@ class FormFetcherImpl : public FormFetcher,
   // non-federated matches.
   std::vector<std::unique_ptr<PasswordForm>> federated_;
 
-  // List of compromised credentials for the current domain.
-  std::vector<CompromisedCredentials> compromised_credentials_;
+  // List of insecure credentials for the current domain.
+  std::vector<InsecureCredential> insecure_credentials_;
 
   // Indicates whether HTTP passwords should be migrated to HTTPS. This is
   // always false for non HTML forms.
@@ -111,9 +111,9 @@ class FormFetcherImpl : public FormFetcher,
   void ProcessMigratedForms(
       std::vector<std::unique_ptr<PasswordForm>> forms) override;
 
-  // CompromisedCredentialsConsumer:
-  void OnGetCompromisedCredentials(
-      std::vector<CompromisedCredentials> compromised_credentials) override;
+  // InsecureCredentialsConsumer:
+  void OnGetInsecureCredentials(
+      std::vector<InsecureCredential> insecure_credentials) override;
 
   // Does the actual migration.
   std::unique_ptr<HttpPasswordStoreMigrator> http_migrator_;

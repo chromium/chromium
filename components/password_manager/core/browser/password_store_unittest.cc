@@ -25,8 +25,8 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
+#include "components/password_manager/core/browser/insecure_credentials_consumer.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -85,16 +85,14 @@ constexpr const char kTestAndroidName2[] = "Example Android App 2";
 constexpr const char kTestAndroidIconURL2[] = "https://example.com/icon_2.png";
 constexpr const time_t kTestLastUsageTime = 1546300800;  // 00:00 Jan 1 2019 UTC
 
-class MockCompromisedCredentialsConsumer
-    : public CompromisedCredentialsConsumer {
+class MockInsecureCredentialsConsumer : public InsecureCredentialsConsumer {
  public:
-  MockCompromisedCredentialsConsumer() = default;
+  MockInsecureCredentialsConsumer() = default;
 
-  MOCK_METHOD1(OnGetCompromisedCredentials,
-               void(std::vector<CompromisedCredentials>));
+  MOCK_METHOD1(OnGetInsecureCredentials, void(std::vector<InsecureCredential>));
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockCompromisedCredentialsConsumer);
+  DISALLOW_COPY_AND_ASSIGN(MockInsecureCredentialsConsumer);
 };
 
 class MockPasswordStoreConsumer : public PasswordStoreConsumer {
@@ -465,14 +463,14 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnRemoveLogin) {
   store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
-  MockCompromisedCredentialsConsumer consumer;
+  MockInsecureCredentialsConsumer consumer;
   base::RunLoop run_loop;
   store->RemoveLoginsCreatedBetween(base::Time::FromDoubleT(0),
                                     base::Time::FromDoubleT(2),
                                     run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(testing::IsEmpty()));
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(testing::IsEmpty()));
   store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
@@ -504,14 +502,14 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
   store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
-  MockCompromisedCredentialsConsumer consumer;
+  MockInsecureCredentialsConsumer consumer;
   kTestCredential.password_value = L"password_value_2";
   std::unique_ptr<PasswordForm> test_form_2(
       FillPasswordFormWithData(kTestCredential));
   store->UpdateLogin(*test_form_2);
   WaitForPasswordStore();
 
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(testing::IsEmpty()));
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(testing::IsEmpty()));
   store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
@@ -543,14 +541,14 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
   store->AddInsecureCredential(insecure_credential);
   WaitForPasswordStore();
 
-  MockCompromisedCredentialsConsumer consumer;
+  MockInsecureCredentialsConsumer consumer;
   kTestCredential.password_value = L"password_value_2";
   std::unique_ptr<PasswordForm> test_form_2(
       FillPasswordFormWithData(kTestCredential));
   store->AddLogin(*test_form_2);
   WaitForPasswordStore();
 
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(testing::IsEmpty()));
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(testing::IsEmpty()));
   store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
 
@@ -1563,8 +1561,8 @@ TEST_F(PasswordStoreTest, GetAllInsecureCredentials) {
 
   store->AddInsecureCredential(insecure_credential);
   store->AddInsecureCredential(insecure_credential2);
-  MockCompromisedCredentialsConsumer consumer;
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
+  MockInsecureCredentialsConsumer consumer;
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(UnorderedElementsAre(
                             insecure_credential, insecure_credential2)));
   store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
@@ -1573,7 +1571,7 @@ TEST_F(PasswordStoreTest, GetAllInsecureCredentials) {
   store->RemoveInsecureCredentials(insecure_credential.signon_realm,
                                    insecure_credential.username,
                                    RemoveInsecureCredentialsReason::kRemove);
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(
                             UnorderedElementsAre(insecure_credential2)));
   store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
@@ -1604,9 +1602,9 @@ TEST_F(PasswordStoreTest, GetMatchingInsecureWithoutAffiliations) {
   for (const auto& credential : {credential1, credential2})
     store->AddInsecureCredential(credential);
 
-  MockCompromisedCredentialsConsumer consumer;
+  MockInsecureCredentialsConsumer consumer;
   EXPECT_CALL(consumer,
-              OnGetCompromisedCredentials(UnorderedElementsAre(credential1)));
+              OnGetInsecureCredentials(UnorderedElementsAre(credential1)));
   store->GetMatchingInsecureCredentials(kTestWebRealm1, &consumer);
   WaitForPasswordStore();
 
@@ -1649,8 +1647,8 @@ TEST_F(PasswordStoreTest, GetMatchingInsecureWithAffiliations) {
       observed_form, affiliated_android_realms);
   store->SetAffiliatedMatchHelper(std::move(mock_helper));
 
-  MockCompromisedCredentialsConsumer consumer;
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(
+  MockInsecureCredentialsConsumer consumer;
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(
                             UnorderedElementsAre(credential1, credential2)));
   store->GetMatchingInsecureCredentials(kTestWebRealm1, &consumer);
   WaitForPasswordStore();
@@ -1686,9 +1684,9 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
   // Update the password value and immediately get the insecure passwords.
   form->password_value = base::ASCIIToUTF16("new_password");
   store->UpdateLogin(*form);
-  MockCompromisedCredentialsConsumer consumer;
+  MockInsecureCredentialsConsumer consumer;
   store->GetAllInsecureCredentials(&consumer);
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(IsEmpty()));
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(IsEmpty()));
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -1721,9 +1719,9 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnDelete) {
 
   // Delete the password and immediately get the insecure passwords.
   store->RemoveLogin(*form);
-  MockCompromisedCredentialsConsumer consumer;
+  MockInsecureCredentialsConsumer consumer;
   store->GetAllInsecureCredentials(&consumer);
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(IsEmpty()));
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(IsEmpty()));
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -1829,8 +1827,8 @@ TEST_F(PasswordStoreTest, AddInsecureCredentialsSync) {
   WaitForPasswordStore();
   EXPECT_EQ(add_login_error, AddLoginError::kNone);
 
-  MockCompromisedCredentialsConsumer consumer;
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
+  MockInsecureCredentialsConsumer consumer;
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(UnorderedElementsAre(
                             credentials[0], credentials[1])));
   store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();
@@ -1883,9 +1881,9 @@ TEST_F(PasswordStoreTest, UpdateInsecureCredentialsSync) {
       *test_form, new_credentials));
   WaitForPasswordStore();
 
-  MockCompromisedCredentialsConsumer consumer;
+  MockInsecureCredentialsConsumer consumer;
   // Verify the password store has been updated.
-  EXPECT_CALL(consumer, OnGetCompromisedCredentials(UnorderedElementsAre(
+  EXPECT_CALL(consumer, OnGetInsecureCredentials(UnorderedElementsAre(
                             new_credentials[0], new_credentials[1])));
   store->GetAllInsecureCredentials(&consumer);
   WaitForPasswordStore();

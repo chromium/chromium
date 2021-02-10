@@ -7,7 +7,7 @@
 
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
-#include "components/password_manager/core/browser/compromised_credentials_consumer.h"
+#include "components/password_manager/core/browser/insecure_credentials_consumer.h"
 #include "components/password_manager/core/browser/password_store.h"
 
 namespace password_manager {
@@ -15,7 +15,7 @@ namespace password_manager {
 // insecure credentials in the underlying password stores.
 class InsecureCredentialsReader
     : public PasswordStore::DatabaseInsecureCredentialsObserver,
-      public CompromisedCredentialsConsumer {
+      public InsecureCredentialsConsumer {
  public:
   using GetInsecureCredentialsCallback =
       base::OnceCallback<void(std::vector<InsecureCredential>)>;
@@ -51,12 +51,12 @@ class InsecureCredentialsReader
   void OnInsecureCredentialsChanged() override;
   void OnInsecureCredentialsChangedIn(PasswordStore* store) override;
 
-  // CompromisedCredentialsConsumer:
-  void OnGetCompromisedCredentials(
-      std::vector<CompromisedCredentials> compromised_credentials) override;
-  void OnGetCompromisedCredentialsFrom(
+  // InsecureCredentialsConsumer:
+  void OnGetInsecureCredentials(
+      std::vector<InsecureCredential> insecure_credentials) override;
+  void OnGetInsecureCredentialsFrom(
       PasswordStore* store,
-      std::vector<CompromisedCredentials> compromised_credentials) override;
+      std::vector<InsecureCredential> insecure_credentials) override;
 
   // The password stores containing the insecure credentials.
   // |profile_store_| must not be null and must outlive this class.
