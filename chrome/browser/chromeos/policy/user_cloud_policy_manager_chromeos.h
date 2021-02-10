@@ -141,9 +141,6 @@ class UserCloudPolicyManagerChromeOS
   // uploading status report) for child user.
   bool RequiresOAuthTokenForChildUser() const;
 
-  // Returns true if the underlying CloudPolicyClient is already registered.
-  bool IsClientRegistered() const;
-
   // Indicates a wildcard login check should be performed once an access token
   // is available.
   void EnableWildcardLoginCheck(const std::string& username);

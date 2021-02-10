@@ -103,10 +103,6 @@ void UserCloudPolicyManager::DisconnectAndRemovePolicy() {
   SetPoliciesRequired(false);
 }
 
-bool UserCloudPolicyManager::IsClientRegistered() const {
-  return client() && client()->is_registered();
-}
-
 void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
   CloudPolicyManager::GetChromePolicy(policy_map);
 

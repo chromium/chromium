@@ -36,9 +36,6 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyManager
   void Connect(PrefService* local_state,
                std::unique_ptr<CloudPolicyClient> client);
 
-  // Returns true if the underlying CloudPolicyClient is already registered.
-  bool IsClientRegistered();
-
   // Add or remove |observer| to/from the CloudPolicyClient embedded in |core_|.
   void AddClientObserver(CloudPolicyClient::Observer* observer);
   void RemoveClientObserver(CloudPolicyClient::Observer* observer);

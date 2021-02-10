@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
 
+#include "base/callback_forward.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace extensions {
 namespace enterprise_reporting {
@@ -16,7 +21,10 @@ namespace enterprise_reporting {
 // has its own subclass implementation.
 class ContextInfoFetcher {
  public:
-  explicit ContextInfoFetcher(
+  using ContextInfoCallback =
+      base::OnceCallback<void(api::enterprise_reporting_private::ContextInfo)>;
+  ContextInfoFetcher(
+      content::BrowserContext* browser_context,
       enterprise_connectors::ConnectorsService* connectors_service);
   virtual ~ContextInfoFetcher();
 
@@ -25,10 +33,14 @@ class ContextInfoFetcher {
 
   // Returns a platform specific instance of ContextInfoFetcher.
   static std::unique_ptr<ContextInfoFetcher> CreateInstance(
+      content::BrowserContext* browser_context,
       enterprise_connectors::ConnectorsService* connectors_service);
 
-  // Fetches the device information for the current platform.
-  api::enterprise_reporting_private::ContextInfo Fetch();
+  // Fetches the context information for the current platform. Eventually calls
+  // |callback_|. This function takes a callback to return a ContextInfo instead
+  // of returning synchronously because some attributes need to be fetched
+  // asynchronously.
+  void Fetch(ContextInfoCallback callback);
 
  private:
   // The following private methods each populate an attribute of ContextInfo. If
@@ -48,6 +60,8 @@ class ContextInfoFetcher {
   std::vector<std::string> GetOnSecurityEventProviders();
 
   std::string GetBrowserVersion();
+
+  content::BrowserContext* browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.
   enterprise_connectors::ConnectorsService* connectors_service_;

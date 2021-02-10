@@ -326,10 +326,6 @@ void UserCloudPolicyManagerChromeOS::OnWildcardCheckCompleted(
   }
 }
 
-bool UserCloudPolicyManagerChromeOS::IsClientRegistered() const {
-  return client() && client()->is_registered();
-}
-
 void UserCloudPolicyManagerChromeOS::EnableWildcardLoginCheck(
     const std::string& username) {
   DCHECK(access_token_.empty());

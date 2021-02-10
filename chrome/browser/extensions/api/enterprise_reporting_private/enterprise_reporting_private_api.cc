@@ -282,25 +282,13 @@ EnterpriseReportingPrivateGetContextInfoFunction::Run() {
       enterprise_connectors::ConnectorsServiceFactory::GetInstance()
           ->GetForBrowserContext(browser_context());
   DCHECK(connectors_service);
-#if defined(OS_WIN)
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner({}).get(), FROM_HERE,
-      base::BindOnce(&enterprise_reporting::ContextInfoFetcher::Fetch,
-                     enterprise_reporting::ContextInfoFetcher::CreateInstance(
-                         connectors_service)),
-      base::BindOnce(&EnterpriseReportingPrivateGetContextInfoFunction::
-                         OnContextInfoRetrieved,
-                     this));
-#else
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateTaskRunner({}).get(), FROM_HERE,
-      base::BindOnce(&enterprise_reporting::ContextInfoFetcher::Fetch,
-                     enterprise_reporting::ContextInfoFetcher::CreateInstance(
-                         connectors_service)),
-      base::BindOnce(&EnterpriseReportingPrivateGetContextInfoFunction::
-                         OnContextInfoRetrieved,
-                     this));
-#endif  // defined(OS_WIN)
+
+  context_info_fetcher_ =
+      enterprise_reporting::ContextInfoFetcher::CreateInstance(
+          browser_context(), connectors_service);
+  context_info_fetcher_->Fetch(base::BindOnce(
+      &EnterpriseReportingPrivateGetContextInfoFunction::OnContextInfoRetrieved,
+      this));
 
   return RespondLater();
 }

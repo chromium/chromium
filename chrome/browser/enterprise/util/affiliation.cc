@@ -3,10 +3,52 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/util/affiliation.h"
+
 #include <set>
+
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 
 namespace chrome {
 namespace enterprise_util {
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+
+namespace {
+
+const enterprise_management::PolicyData* GetPolicyData(
+    policy::CloudPolicyManager* policy_manager) {
+  if (!policy_manager || !policy_manager->IsClientRegistered() ||
+      !policy_manager->core() || !policy_manager->core()->store()) {
+    return nullptr;
+  }
+
+  return policy_manager->core()->store()->policy();
+}
+
+}  // namespace
+
+const enterprise_management::PolicyData* GetProfilePolicyData(
+    Profile* profile) {
+  DCHECK(profile);
+  return GetPolicyData(profile->GetUserCloudPolicyManager());
+}
+
+const enterprise_management::PolicyData* GetBrowserPolicyData() {
+  if (!g_browser_process->browser_policy_connector())
+    return nullptr;
+
+  policy::MachineLevelUserCloudPolicyManager* policy_manager =
+      g_browser_process->browser_policy_connector()
+          ->machine_level_user_cloud_policy_manager();
+
+  return GetPolicyData(policy_manager);
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
 
 bool IsProfileAffiliated(
     const enterprise_management::PolicyData& profile_policy,

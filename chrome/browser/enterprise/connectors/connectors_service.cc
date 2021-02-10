@@ -303,20 +303,11 @@ bool ConnectorsService::CanUseProfileDmToken() const {
   if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
     return true;
 
-  policy::UserCloudPolicyManager* profile_policy_manager =
-      Profile::FromBrowserContext(context_)->GetUserCloudPolicyManager();
-  policy::MachineLevelUserCloudPolicyManager* browser_policy_manager =
-      g_browser_process->browser_policy_connector()
-          ->machine_level_user_cloud_policy_manager();
-
-  if (!profile_policy_manager || !browser_policy_manager ||
-      !profile_policy_manager->IsClientRegistered() ||
-      !browser_policy_manager->IsClientRegistered()) {
-    return false;
-  }
-
-  auto* profile_policy = profile_policy_manager->core()->store()->policy();
-  auto* browser_policy = browser_policy_manager->core()->store()->policy();
+  const enterprise_management::PolicyData* profile_policy =
+      chrome::enterprise_util::GetProfilePolicyData(
+          Profile::FromBrowserContext(context_));
+  const enterprise_management::PolicyData* browser_policy =
+      chrome::enterprise_util::GetBrowserPolicyData();
 
   if (!profile_policy || !browser_policy)
     return false;
