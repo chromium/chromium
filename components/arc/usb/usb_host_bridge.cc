@@ -23,6 +23,9 @@
 namespace arc {
 namespace {
 
+// USB class codes are detailed at https://www.usb.org/defined-class-codes
+constexpr int kUsbClassMassStorage = 0x08;
+
 // Singleton factory for ArcUsbHostBridge
 class ArcUsbHostBridgeFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
@@ -41,6 +44,26 @@ class ArcUsbHostBridgeFactory
   ArcUsbHostBridgeFactory() = default;
   ~ArcUsbHostBridgeFactory() override = default;
 };
+
+bool IsMassStorageInterface(const device::mojom::UsbInterfaceInfo& interface) {
+  for (const auto& alternate : interface.alternates) {
+    if (alternate->class_code == kUsbClassMassStorage)
+      return true;
+  }
+  return false;
+}
+
+bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
+  // ChromeOS allows mass storage devices to be detached, but we don't expose
+  // these directly to ARC.
+  for (const auto& configuration : device_info.configurations) {
+    for (const auto& interface : configuration->interfaces) {
+      if (!IsMassStorageInterface(*interface))
+        return true;
+    }
+  }
+  return false;
+}
 
 void OnDeviceOpened(mojom::UsbHostHost::OpenDeviceCallback callback,
                     base::ScopedFD fd) {
@@ -289,6 +312,9 @@ void ArcUsbHostBridge::OnDeviceChecked(const std::string& guid, bool allowed) {
   // CheckAccess().
   auto iter = devices_.find(guid);
   if (iter == devices_.end())
+    return;
+
+  if (!ShouldExposeDevice(*iter->second))
     return;
 
   mojom::UsbHostInstance* usb_host_instance = ARC_GET_INSTANCE_FOR_METHOD(
