@@ -783,5 +783,52 @@ TEST_F(SystemRoutineControllerTest, MemoryRuntimeEmitted) {
       /*expected_count=*/1);
 }
 
+TEST_F(SystemRoutineControllerTest, CancelThenStartRoutine) {
+  const int32_t expected_id = 1;
+  SetRunRoutineResponse(expected_id,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  auto routine_runner = std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner->result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
+      mojo::ScopedHandle());
+
+  // Close the routine_runner
+  routine_runner.reset();
+  base::RunLoop().RunUntilIdle();
+
+  SetRunRoutineResponse(/*id=*/1,
+                        healthd::DiagnosticRoutineStatusEnum::kRunning);
+
+  FakeRoutineRunner routine_runner_2;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kCpuStress,
+      routine_runner_2.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Assert that the first routine is not complete.
+  EXPECT_TRUE(routine_runner_2.result.is_null());
+
+  // Update the status on cros_healthd.
+  SetNonInteractiveRoutineUpdateResponse(
+      /*percent_complete=*/100, healthd::DiagnosticRoutineStatusEnum::kPassed,
+      mojo::ScopedHandle());
+
+  // After the update interval, the update is fetched and processed.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(60));
+  EXPECT_FALSE(routine_runner_2.result.is_null());
+  VerifyRoutineResult(*routine_runner_2.result, mojom::RoutineType::kCpuStress,
+                      mojom::StandardRoutineResult::kTestPassed);
+}
+
 }  // namespace diagnostics
 }  // namespace chromeos

@@ -674,9 +674,9 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
   // already disconnected.
   inflight_routine_runner_.reset();
 
-  // Reset `inflight_routine_timer_` so that we do not attempt to fetch the
+  // Stop `inflight_routine_timer_` so that we do not attempt to fetch the
   // status of a cancelled routine.
-  inflight_routine_timer_.reset();
+  inflight_routine_timer_->Stop();
 
   // Make a best effort attempt to remove the routine.
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
@@ -685,6 +685,10 @@ void SystemRoutineController::OnInflightRoutineRunnerDisconnected() {
       /*should_include_output=*/false,
       base::BindOnce(&SystemRoutineController::OnRoutineCancelAttempted,
                      base::Unretained(this)));
+
+  // Reset `inflight_routine_id_` to maintain invariant.
+  inflight_routine_id_ = kInvalidRoutineId;
+
   if (IsLoggingEnabled()) {
     routine_log_ptr_->LogRoutineCancelled();
   }
