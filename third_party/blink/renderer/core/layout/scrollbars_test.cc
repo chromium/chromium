@@ -3594,4 +3594,83 @@ TEST_F(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
             box_always_both_scrollbars);
 }
 
+// Test the additional gutter created by the "both" keyword of scrollbar-gutter.
+TEST_F(ScrollbarsTest, ScrollbarGutterBothKeywordWithClassicScrollbars) {
+  // This test requires that scrollbars take up space.
+  ENABLE_OVERLAY_SCROLLBARS(false);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        margin: 0;
+      }
+      #container {
+        scrollbar-gutter: always both;
+        width: 200px;
+        height: 200px;
+        overflow: auto;
+        writing-mode: horizontal-tb;
+        direction: ltr;
+      }
+      #content {
+        width: 100%;
+        height: 300px;
+      }
+    </style>
+    <div id="container">
+      <div id="content">
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Document& document = GetDocument();
+  Element* container = document.getElementById("container");
+
+  auto* scrollable_container = GetScrollableArea(*container);
+  scrollable_container->SetScrollbarsHiddenForTesting(false);
+
+  if (WebView().GetPage()->GetScrollbarTheme().AllowsHitTest()) {
+    // Scrollbar on the right side.
+    HitTestResult hit_test_result = HitTest(195, 5);
+    EXPECT_EQ(hit_test_result.InnerElement(), container);
+    EXPECT_TRUE(hit_test_result.GetScrollbar());
+    EXPECT_TRUE(hit_test_result.GetScrollbar()->Enabled());
+
+    // Empty gutter on the left side, where the events will take place.
+    hit_test_result = HitTest(5, 5);
+    EXPECT_EQ(hit_test_result.InnerElement(), container);
+    EXPECT_FALSE(hit_test_result.GetScrollbar());
+  }
+
+  EXPECT_EQ(container->scrollTop(), 0);
+
+  // Scroll down.
+  WebView().MainFrameViewWidget()->HandleInputEvent(
+      GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollBegin,
+                                IntPoint(5, 5), ScrollOffset(0, -100)));
+  WebView().MainFrameViewWidget()->HandleInputEvent(
+      GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
+                                IntPoint(5, 5), ScrollOffset(0, -100)));
+  WebView().MainFrameViewWidget()->HandleInputEvent(GenerateWheelGestureEvent(
+      WebInputEvent::Type::kGestureScrollEnd, IntPoint(5, 5)));
+
+  EXPECT_EQ(container->scrollTop(), 100);
+
+  // Scroll up.
+  WebView().MainFrameViewWidget()->HandleInputEvent(
+      GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollBegin,
+                                IntPoint(5, 5), ScrollOffset(0, 100)));
+  WebView().MainFrameViewWidget()->HandleInputEvent(
+      GenerateWheelGestureEvent(WebInputEvent::Type::kGestureScrollUpdate,
+                                IntPoint(5, 5), ScrollOffset(0, 100)));
+  WebView().MainFrameViewWidget()->HandleInputEvent(GenerateWheelGestureEvent(
+      WebInputEvent::Type::kGestureScrollEnd, IntPoint(195, 5)));
+
+  EXPECT_EQ(container->scrollTop(), 0);
+}
+
 }  // namespace blink
