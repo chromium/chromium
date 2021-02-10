@@ -16,6 +16,7 @@ if (current_toolchain == default_toolchain &&
   # Currently static_initializers come from:
   # * base_logging.cc
   # * iostream.cpp
+  # * token.cc
   if (target_cpu == "arm" || target_cpu == "arm64") {
     expected_static_initializer_count = 3
 
