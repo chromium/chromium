@@ -940,6 +940,7 @@ crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] deqp/functional/gles3/inte
 crbug.com/1165751 [ android-lollipop ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 crbug.com/1165751 [ android-marshmallow ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/1165751 [ android-pie ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 # Video tests are flaky. Sometimes the video is black.
 crbug.com/948894 [ android ] conformance/textures/video/* [ RetryOnFailure ]

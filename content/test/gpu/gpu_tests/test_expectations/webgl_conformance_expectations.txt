@@ -261,6 +261,7 @@ crbug.com/angleproject/4931 [ win nvidia angle-vulkan passthrough ] conformance/
 crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 # Need to adjust tolerances of this test.
 crbug.com/1165751 [ win intel angle-vulkan passthrough ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/1165751 [ win nvidia angle-vulkan passthrough ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 ####################
 # Fuchsia failures #
@@ -743,6 +744,8 @@ crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-prec
 
 # Flaky renderer hangs suspected due to some driver issue on Kevin devices.
 crbug.com/1091562 [ chromeos-board-kevin ] * [ RetryOnFailure ]
+
+crbug.com/1165751 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 ########################
 # SwiftShader failures #
