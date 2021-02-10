@@ -51,6 +51,10 @@ public class AutofillAssistantMetrics {
 
     /**
      * UKM metric. Records the start of a lite script.
+     *
+     * The events recorded by this call lacks a trigger type. This is appropriate when the trigger
+     * type is not yet known, because the Trigger protos sent by the server have not been processed
+     * yet. If trigger protos are available, record the metric from C++.
      */
     public static void recordLiteScriptStarted(
             WebContents webContents, @LiteScriptStarted int started) {
@@ -65,6 +69,10 @@ public class AutofillAssistantMetrics {
 
     /**
      * UKM metric. Records the finish of a lite script.
+     *
+     * The events recorded by this call lacks a trigger type. This is appropriate when the trigger
+     * type is not yet known, because the Trigger protos sent by the server have not been processed
+     * yet. If trigger protos are available, record the metric from C++.
      */
     public static void recordLiteScriptFinished(
             WebContents webContents, @LiteScriptFinishedState int finishedState) {
@@ -79,8 +87,12 @@ public class AutofillAssistantMetrics {
 
     /**
      * UKM metric. Records the onboarding after a successful lite script.
+     *
+     * The events recorded by this call lacks a trigger type. This is only appropriate when called
+     * for the deprecated lite script triggers, not defined from a TriggerProto.
      */
-    public static void recordLiteScriptOnboarding(
+    @Deprecated
+    /* package */ static void recordLiteScriptOnboarding(
             WebContents webContents, @LiteScriptOnboarding int onboarding) {
         if (!areWebContentsValid(webContents)) {
             return;
@@ -93,8 +105,12 @@ public class AutofillAssistantMetrics {
 
     /**
      * UKM metric. Records whether the lite script prompt was shown to the user or not.
+     *
+     * The events recorded by this call lacks a trigger type. This is only appropriate when called
+     * for the deprecated lite script trigger, not defined from a TriggerProto.
      */
-    public static void recordLiteScriptShownToUser(
+    @Deprecated
+    /* package */ static void recordLiteScriptShownToUser(
             WebContents webContents, @LiteScriptShownToUser int shownToUser) {
         if (!areWebContentsValid(webContents)) {
             return;
