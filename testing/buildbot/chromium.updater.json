@@ -132,49 +132,6 @@
       }
     ]
   },
-  "mac10.13-updater-tester-dbg": {
-    "gtest_tests": [
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Mac-10.13",
-              "pool": "chromium.updater.mac"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "updater_tests",
-        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
-      }
-    ],
-    "isolated_scripts": [
-      {
-        "isolate_name": "updater_integration_tests",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "updater_integration_tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Mac-10.13",
-              "pool": "chromium.updater.mac"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://chrome/updater:updater_integration_tests/"
-      }
-    ]
-  },
   "mac10.13-updater-tester-rel": {
     "gtest_tests": [
       {
@@ -252,6 +209,49 @@
           "dimension_sets": [
             {
               "os": "Mac-10.14",
+              "pool": "chromium.updater.mac"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/updater:updater_integration_tests/"
+      }
+    ]
+  },
+  "mac10.15-updater-tester-dbg": {
+    "gtest_tests": [
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Mac-10.15",
+              "pool": "chromium.updater.mac"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "updater_tests",
+        "test_id_prefix": "ninja://chrome/updater:updater_tests/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "updater_integration_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "updater_integration_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Mac-10.15",
               "pool": "chromium.updater.mac"
             }
           ],

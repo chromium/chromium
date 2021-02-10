@@ -3163,15 +3163,6 @@ ci.updater_builder(
 )
 
 ci.updater_builder(
-    name = "mac10.13-updater-tester-dbg",
-    console_view_entry = consoles.console_view_entry(
-        category = "debug|mac",
-        short_name = "10.13",
-    ),
-    triggered_by = ["mac-updater-builder-dbg"],
-)
-
-ci.updater_builder(
     name = "mac10.13-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -3187,6 +3178,15 @@ ci.updater_builder(
         short_name = "10.14",
     ),
     triggered_by = ["mac-updater-builder-rel"],
+)
+
+ci.updater_builder(
+    name = "mac10.15-updater-tester-dbg",
+    console_view_entry = consoles.console_view_entry(
+        category = "debug|mac",
+        short_name = "10.15",
+    ),
+    triggered_by = ["mac-updater-builder-dbg"],
 )
 
 ci.updater_builder(

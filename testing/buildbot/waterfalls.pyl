@@ -5615,20 +5615,6 @@
           ]
         },
       },
-      'mac10.13-updater-tester-dbg': {
-        'test_suites': {
-          'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chromium.updater.mac',
-              'os': 'Mac-10.13',
-            }
-          ]
-        },
-      },
       'mac10.13-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
@@ -5653,6 +5639,20 @@
             {
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.14',
+            }
+          ]
+        },
+      },
+      'mac10.15-updater-tester-dbg': {
+        'test_suites': {
+          'gtest_tests': 'updater_gtests',
+          'isolated_scripts': 'updater_isolated_scripts',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.15',
             }
           ]
         },
