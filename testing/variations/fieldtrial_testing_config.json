@@ -5932,7 +5932,7 @@
             ]
         }
     ],
-    "SafeBrowsingEnhancedProtectionAndroid": [
+    "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid": [
         {
             "platforms": [
                 "android"
@@ -5941,29 +5941,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PrivacyReorderedAndroid",
-                        "SafeBrowsingEnhancedProtection",
-                        "SafeBrowsingSecuritySectionUIAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingEnhancedProtectionMessageInInterstitials": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingEnhancedProtectionMessageInInterstitials"
+                        "SafeBrowsingPasswordProtectionReferringAppEnabledAndroid"
                     ]
                 }
             ]
@@ -5995,21 +5973,6 @@
                 "linux",
                 "mac",
                 "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingRealTimeUrlLookupEnabledWithToken"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingRealTimeUrlLookupEnabledWithTokenAndroid": [
-        {
-            "platforms": [
-                "android"
             ],
             "experiments": [
                 {
