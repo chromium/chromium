@@ -919,7 +919,7 @@
 <translation id="4658638640878098064">ステープル（左上）</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">バーチャル リアリティ（VR）</translation>
-<translation id="4675657451653251260">ゲストモードでは Chrome プロフィールの情報が表示されません。<ph name="LINK_BEGIN" />ログイン<ph name="LINK_END" />すると、パスワードやお支払い方法などの Google アカウント情報にアクセスできます。</translation>
+<translation id="4675657451653251260">ゲストモードでは Chrome プロファイルの情報が表示されません。<ph name="LINK_BEGIN" />ログイン<ph name="LINK_END" />すると、パスワードやお支払い方法などの Google アカウント情報にアクセスできます。</translation>
 <translation id="467662567472608290">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書にはエラーがあります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="4677585247300749148"><ph name="URL" /> から、ユーザー補助機能のイベントに応答する許可を求められています</translation>
 <translation id="467809019005607715">Google スライド</translation>
@@ -2062,6 +2062,7 @@
 <translation id="936474030629450166">Super-B</translation>
 <translation id="936602727769022409">Google アカウントにアクセスできなくなる可能性があります。Chromium で今すぐパスワードを変更することをおすすめします。変更の際には、ログインするよう求められます。</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
+<translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>
 <translation id="950736567201356821">3 穴パンチ（上）</translation>
 <translation id="951941430552851965">画面上のコンテンツに問題があるため、管理者によってスクリーン キャプチャが一時停止されました。</translation>

@@ -474,7 +474,7 @@
 <translation id="4487967297491345095">Chrome'дун колдонмо дайындарынын бардыгы биротоло өчүрүлөт. Ага бардык файлдар, жөндөөлөр, каттоо эсептери, дайындар базасы ж.б. кирет.</translation>
 <translation id="4493497663118223949">Жөнөкөй режим күйүк</translation>
 <translation id="4508528996305412043">Түрмөктөгү меню ачылды</translation>
-<translation id="4508642716788467538">Тилиңизди тандаңыз</translation>
+<translation id="4508642716788467538">Тил тандаңыз</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# күн мурун}other{# күн мурун}}</translation>
 <translation id="451872707440238414">Кыстармаларды издөө</translation>
 <translation id="4521489764227272523">Тандалган дайындар Chrome'дон жана шайкештирилген түзмөктөрүңүздөн өчүрүлдү.
@@ -748,7 +748,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6277522088822131679">Баракты басып чыгарууда көйгөй келип чыкты. Дагы аракет кылып көрүңүз.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6292420053234093573">Chrome'ду колдонуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен Chrome OS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макулдугуңузду билдиресиз.</translation>
-<translation id="629730747756840877">Каттоо эсеби</translation>
+<translation id="629730747756840877">Аккаунт</translation>
 <translation id="6297765934698848803">Түзмөгүңүздү башкарган уюм камераңызды өчүрүп койду.</translation>
 <translation id="6301525844455696527">Окуу тизмеңизди унутпаңыз</translation>
 <translation id="6303969859164067831">Аккаунттан чыгып, шайкештирүүнү өчүрүү</translation>
@@ -929,7 +929,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7481312909269577407">Багыттоо</translation>
 <translation id="7482656565088326534">Алдын ала көрүү өтмөгү</translation>
 <translation id="7484997419527351112">Сунуштар- өчүк</translation>
-<translation id="7493994139787901920"><ph name="VERSION" /> (Жаңыртылган <ph name="TIME_SINCE_UPDATE" />)</translation>
+<translation id="7493994139787901920"><ph name="VERSION" /> (Жаңырган <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">үнөмдөлгөн дайындар</translation>
 <translation id="7498271377022651285">Күтө туруңуз…</translation>
 <translation id="7507207699631365376">Бул кызмат көрсөтүүчүнүн <ph name="BEGIN_LINK" />купуялык саясатын<ph name="END_LINK" /> көрүңүз</translation>

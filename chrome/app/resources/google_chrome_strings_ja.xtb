@@ -112,7 +112,7 @@
 <translation id="4053720452172726777">Google Chrome の設定</translation>
 <translation id="4110895483821904099">新しい Chrome プロファイルの設定</translation>
 <translation id="4143243756087420366">Chrome の名前と画像</translation>
-<translation id="4147555960264124640">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロフィールを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。<ph name="LEARN_MORE" /></translation>
+<translation id="4147555960264124640">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。<ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">インストーラー アーカイブを解凍できませんでした。Google Chrome をダウンロードし直してください。</translation>
 <translation id="4191857738314598978">{0,plural, =1{1 日以内に Chrome を再起動してください}other{# 日以内に Chrome を再起動してください}}</translation>
 <translation id="4205939740494406371">Chrome でパスワードを確認できません。24 時間後にもう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウントでパスワードをご確認ください<ph name="END_LINK" />。</translation>
@@ -150,7 +150,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5062123544085870375">Chrome OS を再起動してください</translation>
 <translation id="5132929315877954718">Google Chrome のすばらしいアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>
-<translation id="5170938038195470297">バージョンが新しい Google Chrome のプロフィールは使用できません。一部の機能が利用できない可能性があります。別の場所のプロフィールを指定するか、新しいバージョンの Chrome をご使用ください。</translation>
+<translation id="5170938038195470297">バージョンが新しい Google Chrome のプロファイルは使用できません。一部の機能が利用できない可能性があります。別の場所のプロファイルを指定するか、新しいバージョンの Chrome をご使用ください。</translation>
 <translation id="5193136243808726294">Google Chrome OS ではこのページを開けません。</translation>
 <translation id="5251420635869119124">ゲスト ユーザーは、記録を残さずに Chrome を使用できます。</translation>
 <translation id="532046782124376502">警告: 拡張機能による閲覧履歴の記録を Google Chrome で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
@@ -203,7 +203,7 @@
 <translation id="7106741999175697885">タスク マネージャ - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。}=1{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="7155997830309522122">その場合は、Chrome に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
-<translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロフィールを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロフィールを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
+<translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロファイルを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">この言語が Google Chrome UI の表示に使用されます</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>
@@ -224,7 +224,7 @@
 <translation id="7761834446675418963">Chrome を開いてブラウジングを始めるには、名前をクリックしてください。</translation>
 <translation id="7777080907402804672">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
 <translation id="7781002470561365167">Google クロームブラウザの最新バージョンを是非お試しください。</translation>
-<translation id="7787950393032327779">プロフィールは、別のコンピュータ（<ph name="HOST_NAME" />）の別の Google Chrome プロセス（<ph name="PROCESS_ID" />）で使用されているようです。Chrome はプロフィールが破損しないようにプロフィールをロックしています。他のプロセスがこのプロフィールを使用していないことが確実であれば、プロフィールのロックを解除して Chrome を再起動できます。</translation>
+<translation id="7787950393032327779">プロファイルは、別のコンピュータ（<ph name="HOST_NAME" />）の別の Google Chrome プロセス（<ph name="PROCESS_ID" />）で使用されているようです。Chrome はプロファイルが破損しないようにプロファイルをロックしています。他のプロセスがこのプロファイルを使用していないことが確実であれば、プロファイルのロックを解除して Chrome を再起動できます。</translation>
 <translation id="7801699035218095297">Google Chrome がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="7808348361785373670">Chrome から削除...</translation>
 <translation id="7825851276765848807">原因不明のエラーによりインストールに失敗しました。Google Chrome をもう一度ダウンロードしてください。</translation>
