@@ -15,6 +15,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.text.SpanApplier;
@@ -53,6 +54,7 @@ public class PrivacySandboxSettingsFragment
         ChromeSwitchPreference privacySandboxToggle =
                 (ChromeSwitchPreference) findPreference(TOGGLE_PREFERENCE);
         privacySandboxToggle.setOnPreferenceChangeListener(this);
+        privacySandboxToggle.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
         privacySandboxToggle.setChecked(PrivacySandboxBridge.isPrivacySandboxEnabled());
     }
 
@@ -77,5 +79,12 @@ public class PrivacySandboxSettingsFragment
         // Add the header view to the top.
         view.addView(headerView, 0);
         return view;
+    }
+
+    private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
+        return preference -> {
+            if (!TOGGLE_PREFERENCE.equals(preference.getKey())) return false;
+            return PrivacySandboxBridge.isPrivacySandboxManaged();
+        };
     }
 }
