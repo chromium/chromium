@@ -8,6 +8,7 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -45,6 +46,7 @@ import java.util.List;
  * TODO(mattsimmons): Move logic and view manipulation into the mediator/viewbinder. (and add tests)
  */
 class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSetupDelegate {
+    private static final String TAG = "TopSites";
     private static final int TITLE_LINES = 1;
 
     // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
@@ -83,7 +85,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
                     mRenderer.renderTileSection(tiles, mParent, this);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.i(TAG, "No cached MV tiles file.");
             }
         }
     }
