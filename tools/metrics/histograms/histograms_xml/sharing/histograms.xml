@@ -218,7 +218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="M92">
+    expires_after="2021-08-09">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

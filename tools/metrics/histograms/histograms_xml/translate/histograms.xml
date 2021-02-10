@@ -61,7 +61,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CLD3.LanguageDetected" enum="CLD3LanguageCode"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>frechette@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CLD3.LanguagePercentage" units="%"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>frechette@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -99,7 +99,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.AlwaysTranslate"
-    enum="CLD3LanguageCode" expires_after="2021-06-06">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.MoreLanguages"
-    enum="CLD3LanguageCode" expires_after="2021-04-04">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -118,7 +118,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.NeverTranslate"
-    enum="CLD3LanguageCode" expires_after="2021-06-06">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -128,7 +128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.PageNotIn"
-    enum="CLD3LanguageCode" expires_after="2021-06-06">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -147,7 +147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.TranslationsPerPage"
-    units="translations" expires_after="2021-06-06">
+    units="translations" expires_after="2021-08-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -168,7 +168,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.ContentLanguage" enum="TranslateLanguage"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -178,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.DeclineTranslate" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -188,7 +188,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.DeclineTranslateCloseInfobar" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -212,7 +212,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.Event"
-    enum="TranslateExplicitAskPromptEventType" expires_after="2021-06-06">
+    enum="TranslateExplicitAskPromptEventType" expires_after="2021-08-09">
   <owner>yyushkina@google.com</owner>
   <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -223,7 +223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.LanguageAdded"
-    enum="CLD3LanguageCode" expires_after="2021-06-06">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>yyushkina@google.com</owner>
   <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -234,7 +234,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.LanguageRemoved"
-    enum="CLD3LanguageCode" expires_after="2021-06-06">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>yyushkina@google.com</owner>
   <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -304,7 +304,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.ContentLength" units="characters"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>sclittle@chromium.org</owner>
   <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -339,7 +339,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.LanguageSettingsIsShown" enum="BooleanShown"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>frechette@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -382,7 +382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.MenuTranslation.IsAvailable" enum="BooleanAvailable"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -419,7 +419,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.ModifyOriginalLang" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -429,7 +429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.ModifyTargetLang" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -439,7 +439,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.NeverTranslateLang" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -449,7 +449,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.NeverTranslateSite" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -472,7 +472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.FinalSourceLanguage"
-    enum="CLD3LanguageCode" expires_after="2021-06-06">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -486,7 +486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.FinalState" enum="TranslateState"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -500,7 +500,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.FinalTargetLanguage"
-    enum="CLD3LanguageCode" expires_after="2021-06-06">
+    enum="CLD3LanguageCode" expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -528,7 +528,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialState" enum="TranslateState"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -572,7 +572,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.NumReversions" units="reversions"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -585,7 +585,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.NumTargetLanguageChanges"
-    units="target language changes" expires_after="2021-06-06">
+    units="target language changes" expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -598,7 +598,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.NumTranslations" units="translations"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -610,7 +610,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.Ranker.Decision"
-    enum="TranslateRankerDecision" expires_after="2021-06-06">
+    enum="TranslateRankerDecision" expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -623,7 +623,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.Ranker.Version" units="version"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -635,7 +635,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.TriggerDecision"
-    enum="TranslateTriggerDecision" expires_after="2021-06-06">
+    enum="TranslateTriggerDecision" expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -754,7 +754,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.RevertTranslation" units="units"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -799,7 +799,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.TargetLanguage" enum="CLD3LanguageCode"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>yyushkina@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -809,7 +809,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.TargetLanguage.Origin"
-    enum="TranslateTargetLanguageOrigin" expires_after="2021-06-06">
+    enum="TranslateTargetLanguageOrigin" expires_after="2021-08-09">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -854,7 +854,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.Translate.AMPCacheURL" enum="BooleanTranslate"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -1011,7 +1011,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.UserActionDuration" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

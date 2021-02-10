@@ -226,7 +226,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.CrOS.CrashSenderRemoveReason"
-    enum="CrosCrashSenderRemoveReason" expires_after="2021-06-06">
+    enum="CrosCrashSenderRemoveReason" expires_after="2021-08-09">
   <owner>iby@chromium.org</owner>
   <owner>mutexlox@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>
@@ -360,7 +360,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.DetachableBase.RWUpdateResult"
-    enum="DetachableBaseRWUpdateResult" expires_after="2021-06-02">
+    enum="DetachableBaseRWUpdateResult" expires_after="2021-08-09">
   <owner>drinkcat@chromium.org</owner>
   <owner>fshao@chromium.org</owner>
   <owner>chromeos-kukui@google.com</owner>
@@ -626,7 +626,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.Memory.Gpu" units="MiB" expires_after="2021-06-06">
+<histogram name="Platform.Memory.Gpu" units="MiB" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
 
   <owner>sonnyrao@chromium.org</owner>
@@ -945,7 +945,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Platform.SwapInDaily" units="pages" expires_after="2021-04-28">
+<histogram name="Platform.SwapInDaily" units="pages" expires_after="2021-08-09">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>Number of pages swapped IN over a day, sampled daily.</summary>

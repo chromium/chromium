@@ -133,14 +133,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.DriveHostedFilePinSuccess" enum="BooleanSuccess"
-    expires_after="M92">
+    expires_after="2021-08-09">
   <owner>austinct@chromium.org</owner>
   <owner>dats@chromium.org</owner>
   <summary>Tracks success rate of pinning hosted files in Drive.</summary>
 </histogram>
 
 <histogram name="FileBrowser.DrivePinSuccess" enum="BooleanSuccess"
-    expires_after="M92">
+    expires_after="2021-08-09">
   <owner>austinct@chromium.org</owner>
   <owner>dats@chromium.org</owner>
   <summary>Tracks success rate of pinning files in Drive.</summary>
@@ -197,7 +197,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.FormatFileSystemType"
-    enum="FileManagerFormatFileSystemType" expires_after="2021-05-02">
+    enum="FileManagerFormatFileSystemType" expires_after="2021-08-09">
   <owner>austinct@chromium.org</owner>
   <summary>
     Chrome OS File Browser: this records the filesystem selected when formatting
@@ -490,7 +490,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.PhotoEditor.LoadTime" units="ms"
-    expires_after="M92">
+    expires_after="2021-08-09">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS Photo Editor: time to load an image from a file.</summary>
@@ -661,7 +661,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.SuggestApps.Install"
-    enum="SuggestAppsDialogInstall" expires_after="M92">
+    enum="SuggestAppsDialogInstall" expires_after="2021-08-09">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -671,7 +671,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.SuggestApps.Load" enum="SuggestAppsDialogLoad"
-    expires_after="M92">
+    expires_after="2021-08-09">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

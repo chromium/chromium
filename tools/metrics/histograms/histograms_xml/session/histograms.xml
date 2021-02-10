@@ -465,7 +465,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.WebStates.ReadFromFileTime" units="ms"
-    expires_after="2021-06-10">
+    expires_after="2021-08-09">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -486,7 +486,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.WebStates.SerializedSize" units="KB"
-    expires_after="2021-06-10">
+    expires_after="2021-08-09">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>

@@ -173,7 +173,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Badge.Tapped"
-    enum="MobileMessagesBadgeState" expires_after="2021-05-23">
+    enum="MobileMessagesBadgeState" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -182,7 +182,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Banner.Dismiss"
-    enum="MobileMessagesBannerDismissType" expires_after="2021-05-23">
+    enum="MobileMessagesBannerDismissType" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -590,7 +590,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.Result"
-    enum="DownloadLocationDialogResult" expires_after="2021-06-06">
+    enum="DownloadLocationDialogResult" expires_after="2021-08-09">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -624,7 +624,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileDownload.Location.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2021-05-02">
+    enum="DownloadLocationDirectoryType" expires_after="2021-08-09">
   <owner>xingliu@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
@@ -636,14 +636,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileDownload.Location.Download.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2021-05-02">
+    enum="DownloadLocationDirectoryType" expires_after="2021-08-09">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the directory type when download is completed.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Setting.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2021-05-02">
+    enum="DownloadLocationDirectoryType" expires_after="2021-08-09">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -1045,7 +1045,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilXButton"
-    units="impressions" expires_after="2021-04-20">
+    units="impressions" expires_after="2021-08-09">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

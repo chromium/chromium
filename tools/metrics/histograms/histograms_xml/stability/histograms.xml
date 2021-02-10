@@ -86,7 +86,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Android.RendererCrash" enum="Boolean"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>wnwen@chromium.org</owner>
   <summary>
     Counts renderer crashes including OOMs. Android only. Mirrors old stability
@@ -96,7 +96,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Stability.Android.StrongBindingOomRemainingBindingState"
     enum="Android.ChildProcessBindingStateCombination"
-    expires_after="2021-04-25">
+    expires_after="2021-08-09">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -415,7 +415,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.AvailableStorage" units="KB"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -441,7 +441,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.DeviceThermalState"
-    enum="IOSDeviceThermalState" expires_after="2021-06-06">
+    enum="IOSDeviceThermalState" expires_after="2021-08-09">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -451,7 +451,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.HasPossibleExplanation"
-    enum="BooleanHasPossibleExplanation" expires_after="2021-06-06">
+    enum="BooleanHasPossibleExplanation" expires_after="2021-08-09">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -508,7 +508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.OSRestartedAfterPreviousSession"
-    enum="BooleanRebooted" expires_after="2021-06-06">
+    enum="BooleanRebooted" expires_after="2021-08-09">
   <owner>olivierrobin@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>

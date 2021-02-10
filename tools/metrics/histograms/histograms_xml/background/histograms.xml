@@ -340,7 +340,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.OneShot"
-    enum="BackgroundSyncStatus" expires_after="2021-06-06">
+    enum="BackgroundSyncStatus" expires_after="2021-08-09">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -349,7 +349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.OneShot.CouldFire"
-    enum="BooleanCouldFireImmediately" expires_after="2021-04-25">
+    enum="BooleanCouldFireImmediately" expires_after="2021-08-09">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>

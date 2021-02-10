@@ -1071,7 +1071,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingVideoRtpPacketsInSeconds" units="s"
-    expires_after="2021-05-02">
+    expires_after="2021-08-09">
   <owner>saza@chromium.org</owner>
   <summary>
     The amount of time between the arrival of the first and last video RTP
@@ -1178,7 +1178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.AddIceCandidate"
-    enum="AddIceCandidateResult" expires_after="2021-05-09">
+    enum="AddIceCandidateResult" expires_after="2021-08-09">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1223,7 +1223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ConnectionState"
-    enum="IceConnectionStates" expires_after="2021-06-06">
+    enum="IceConnectionStates" expires_after="2021-08-09">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
@@ -1438,7 +1438,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpFormatReceived"
-    enum="PeerConnectionSdpFormatReceived" expires_after="2021-06-06">
+    enum="PeerConnectionSdpFormatReceived" expires_after="2021-08-09">
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1455,7 +1455,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpFormatReceivedAnswer"
-    enum="PeerConnectionSdpFormatReceived" expires_after="2021-06-06">
+    enum="PeerConnectionSdpFormatReceived" expires_after="2021-08-09">
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -3638,7 +3638,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRtcTextLogging.UploadFailureReason"
-    enum="WebRtcLoggingUploadFailureReason" expires_after="2021-06-01">
+    enum="WebRtcLoggingUploadFailureReason" expires_after="2021-08-09">
   <owner>guidou@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>

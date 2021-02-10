@@ -203,7 +203,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AuthError" enum="GoogleServiceAuthError"
-    expires_after="2021-05-09">
+    expires_after="2021-08-09">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -308,7 +308,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Extensions.GaiaRemoteConsentFlowResult"
-    enum="GaiaRemoteConsentFlowResult" expires_after="2021-03-28">
+    enum="GaiaRemoteConsentFlowResult" expires_after="2021-08-09">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -318,7 +318,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Extensions.GetAuthTokenResult"
-    enum="GetAuthTokenResult" expires_after="2021-03-28">
+    enum="GetAuthTokenResult" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="GetAuthTokenType" -->
 
   <owner>alexilin@chromium.org</owner>
@@ -922,7 +922,7 @@ accounts .-->
 </histogram>
 
 <histogram name="Signin.SecondaryAccountConsentLog"
-    enum="SecondaryAccountConsentLoggerResult" expires_after="2021-06-06">
+    enum="SecondaryAccountConsentLoggerResult" expires_after="2021-08-09">
   <owner>anastasiian@chromium.org</owner>
   <owner>sinhak@chromium.org</owner>
   <summary>
@@ -1178,7 +1178,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram base="true" name="Signin.SyncErrorInfoBar"
-    enum="SyncErrorInfoBarAction" expires_after="2021-06-01">
+    enum="SyncErrorInfoBarAction" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="SyncErrorInfoBarType" -->
 
   <owner>triploblastic@chromium.org</owner>
@@ -1190,7 +1190,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncFirstSetupCompleteSource"
-    enum="SyncFirstSetupCompleteSource" expires_after="2021-06-01">
+    enum="SyncFirstSetupCompleteSource" expires_after="2021-08-09">
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>Tracks where FirstSetupComplete bit is set from.</summary>

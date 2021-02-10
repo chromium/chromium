@@ -98,7 +98,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.BookmarksModelMetadataCorruptionReason"
-    enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="M92">
+    enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2021-08-09">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -161,7 +161,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.ConfigureDataTypes" enum="SyncModelTypes"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -186,7 +186,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ConfigureTime_Initial" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2021-08-09">
   <owner>victorvianna@google.com</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ConfigureTime_Subsequent" units="ms"
-    expires_after="2021-04-01">
+    expires_after="2021-08-09">
   <owner>victorvianna@google.com</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -233,7 +233,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Sync.Crypto.CustomPassphraseKeyDerivationMethodOnNewPassphrase"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
-    expires_after="2021-05-09">
+    expires_after="2021-08-09">
   <owner>vitaliii@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -261,7 +261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup"
     enum="SyncCustomPassphraseKeyDerivationMethodState"
-    expires_after="2021-04-04">
+    expires_after="2021-08-09">
   <owner>vitaliii@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -271,7 +271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.Crypto.NigoriKeyDerivationDuration"
-    units="ms" expires_after="2021-04-04">
+    units="ms" expires_after="2021-08-09">
   <owner>vitaliii@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -414,7 +414,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.InitialState" enum="SyncInitialState"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -589,7 +589,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeErrorSite"
-    enum="SyncModelTypeErrorSite" expires_after="2021-06-06">
+    enum="SyncModelTypeErrorSite" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="SyncModelType" -->
 
   <owner>jkrcal@chromium.org</owner>
@@ -623,7 +623,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeStoreCommitWriteBatchOutcome"
-    enum="LevelDBStatus" expires_after="2021-06-06">
+    enum="LevelDBStatus" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="SyncModelType" -->
 
   <owner>qjw@chromium.org</owner>
@@ -979,7 +979,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.SharingMessage.CommitResult"
-    enum="SyncSharingMessageCommitErrorCode" expires_after="2021-06-06">
+    enum="SyncSharingMessageCommitErrorCode" expires_after="2021-08-09">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -1100,7 +1100,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.SyncEverything2" enum="Boolean"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1159,7 +1159,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram base="true" name="Sync.UndecryptedEntitiesOnDataTypeDisabled"
-    units="sync entities" expires_after="2021-06-06">
+    units="sync entities" expires_after="2021-08-09">
   <owner>victorvianna@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>

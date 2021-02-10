@@ -34,7 +34,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ActioniOS" enum="NewTabPageActioniOS"
-    expires_after="2021-06-10">
+    expires_after="2021-08-09">
   <owner>justincohen@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -917,7 +917,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.MostVisitedAge" units="seconds"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1227,7 +1227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.SearchAvailableLoadTime2.ColdStart" units="ms"
-    expires_after="2021-06-08">
+    expires_after="2021-08-09">
   <owner>fgorski@chromium.org</owner>
   <owner>ender@google.com</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1239,7 +1239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.SearchAvailableLoadTime2.WarmStart" units="ms"
-    expires_after="2021-06-08">
+    expires_after="2021-08-09">
   <owner>fgorski@chromium.org</owner>
   <owner>ender@google.com</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1506,7 +1506,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.SuggestionsImpressionAge" units="seconds"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

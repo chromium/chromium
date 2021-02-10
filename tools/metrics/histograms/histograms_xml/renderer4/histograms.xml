@@ -36,7 +36,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.Browser.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2021-06-01">
+    units="microseconds" expires_after="2021-08-09">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState" enum="GpuImageUsageState"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.GpuImageDecodeState.CachePeakUsagePercent"
-    units="units" expires_after="2021-06-06">
+    units="units" expires_after="2021-08-09">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>ericrk@chromium.org</owner>
   <summary>
@@ -158,7 +158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Renderer4.ImageUploadTaskDurationUs"
-    units="microseconds" expires_after="2021-05-30">
+    units="microseconds" expires_after="2021-08-09">
 <!-- Name completed by histogram_suffixes name="DecodedImageType" -->
 
   <owner>sashamcintosh@chromium.org</owner>

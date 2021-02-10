@@ -620,7 +620,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DeviceSize.LargestDisplaySize" units="dp"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -632,7 +632,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DeviceSize.SmallestDisplaySize" units="dp"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>twellington@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -683,7 +683,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Download.Rename.Dialog.Action"
-    enum="Android.Download.Rename.Dialog.Action" expires_after="2021-05-30">
+    enum="Android.Download.Rename.Dialog.Action" expires_after="2021-08-09">
   <owner>hesen@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -693,7 +693,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Download.Rename.Result"
-    enum="Android.Download.Rename.Result" expires_after="2021-05-30">
+    enum="Android.Download.Rename.Result" expires_after="2021-08-09">
   <owner>hesen@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -808,7 +808,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DownloadManager.OpenSource.Audio"
-    enum="AndroidDownloadOpenSource" expires_after="2021-06-06">
+    enum="AndroidDownloadOpenSource" expires_after="2021-08-09">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records how users open audio download files on Android.</summary>
@@ -1519,7 +1519,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.NTP.Impression" enum="NTPImpressionType"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>finkm@chromium.org</owner>
   <summary>
     Counts impressions of the NTP on Android. It also counts potential
@@ -1830,7 +1830,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.PhotoPicker.EnumerationTime" units="ms"
-    expires_after="2021-06-01">
+    expires_after="2021-08-09">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -2079,7 +2079,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.ShouldDestroyIncognitoProfileOnStartup"
-    units="Boolean" expires_after="M92">
+    units="Boolean" expires_after="2021-08-09">
   <owner>rhalavati@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>

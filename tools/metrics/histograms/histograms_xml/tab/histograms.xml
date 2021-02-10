@@ -250,7 +250,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.MemoryUsage.CompressedData.PerThumbnailKiB"
-    units="KB" expires_after="M92">
+    units="KB" expires_after="2021-08-09">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -260,7 +260,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.MemoryUsage.CompressedData.TotalKiB" units="KB"
-    expires_after="M92">
+    expires_after="2021-08-09">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -318,7 +318,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.VideoCaptureDuration" units="ms"
-    expires_after="M92">
+    expires_after="2021-08-09">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -608,7 +608,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.SessionsPerGroup" units="sessions"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -651,7 +651,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.UserGroupCount" units="groups"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -672,7 +672,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.UserNamedGroupCount" units="groups"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -1248,7 +1248,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="M92">
+<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2021-08-09">
   <owner>marq@chromium.org</owner>
   <summary>[Android and iOS] The number of tabs open at cold launch.</summary>
 </histogram>
@@ -2605,7 +2605,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabStrip.TabCountOnPageLoad" units="tabs"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>

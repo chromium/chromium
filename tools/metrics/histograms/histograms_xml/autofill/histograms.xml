@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
-    expires_after="2021-04-01">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill@google.com</owner>
   <summary>
@@ -32,7 +32,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Address.IsEnabled.Startup" enum="BooleanEnabled"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill@google.com</owner>
   <summary>
@@ -324,7 +324,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedIn.Duration"
-    units="ms" expires_after="2021-05-31">
+    units="ms" expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>manasverma@google.com</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -392,7 +392,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CardUnmask.CvcLength" units="digits"
-    expires_after="2021-03-31">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -417,7 +417,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CardUploadEnabled" enum="AutofillCardUploadEnabled"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>aneeshali@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -428,7 +428,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CreditCard.IsEnabled.PageLoad" enum="BooleanEnabled"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill@google.com</owner>
   <summary>
@@ -438,7 +438,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CreditCard.IsEnabled.Startup" enum="BooleanEnabled"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill@google.com</owner>
   <summary>
@@ -592,7 +592,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ExpirationDateFixFlowPromptShown" enum="Boolean"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>siashah@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -972,7 +972,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.IsEnabled.Startup" enum="BooleanEnabled"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill@google.com</owner>
@@ -1159,7 +1159,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ManageCardsPrompt" enum="AutofillManageCardsPrompt"
-    expires_after="2021-06-01">
+    expires_after="2021-08-09">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1497,7 +1497,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ServerCardLinkClicked" enum="AutofillSyncState"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill@google.com</owner>
@@ -1775,7 +1775,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.Duration" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -1786,7 +1786,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.Events" enum="AutofillUnmaskPromptEvent"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -1796,7 +1796,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration" units="ms"
-    expires_after="2021-06-06">
+    expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
@@ -1807,7 +1807,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanResult"
-    enum="AutofillGetRealPanResult" expires_after="2021-06-06">
+    enum="AutofillGetRealPanResult" expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>
