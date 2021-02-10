@@ -459,6 +459,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("absolute-offscreen.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAccordion) {
+  RunHtmlTest(FILE_PATH_LITERAL("accordion.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityActionVerbs) {
   RunHtmlTest(FILE_PATH_LITERAL("action-verbs.html"));
 }

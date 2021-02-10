@@ -29,12 +29,14 @@ const char* const BOOL_ATTRIBUTES[] = {
     "checkable",
     "checked",
     "clickable",
+    "collapsed",
     "collection",
     "collection_item",
     "content_invalid",
     "disabled",
     "dismissable",
     "editable_text",
+    "expanded",
     "focusable",
     "focused",
     "has_character_locations",
@@ -75,6 +77,17 @@ const char* const INT_ATTRIBUTES[] = {
     "range_current_value",
     "text_change_added_count",
     "text_change_removed_count",
+};
+
+const char* const ACTION_ATTRIBUTES[] = {
+    "action_scroll_forward",
+    "action_scroll_backward",
+    "action_scroll_up",
+    "action_scroll_down",
+    "action_scroll_left",
+    "action_scroll_right",
+    "action_expand",
+    "action_collapse",
 };
 // clang-format on
 }  // namespace
@@ -149,11 +162,13 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("checkable", android_node->IsCheckable());
   dict->SetBoolean("checked", android_node->IsChecked());
   dict->SetBoolean("clickable", android_node->IsClickable());
+  dict->SetBoolean("collapsed", android_node->IsCollapsed());
   dict->SetBoolean("collection", android_node->IsCollection());
   dict->SetBoolean("collection_item", android_node->IsCollectionItem());
   dict->SetBoolean("disabled", !android_node->IsEnabled());
   dict->SetBoolean("dismissable", android_node->IsDismissable());
   dict->SetBoolean("editable_text", android_node->IsTextField());
+  dict->SetBoolean("expanded", android_node->IsExpanded());
   dict->SetBoolean("focusable", android_node->IsFocusable());
   dict->SetBoolean("focused", android_node->IsFocused());
   dict->SetBoolean("has_character_locations",
@@ -205,6 +220,8 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("action_scroll_down", android_node->CanScrollDown());
   dict->SetBoolean("action_scroll_left", android_node->CanScrollLeft());
   dict->SetBoolean("action_scroll_right", android_node->CanScrollRight());
+  dict->SetBoolean("action_expand", android_node->IsCollapsed());
+  dict->SetBoolean("action_collapse", android_node->IsExpanded());
 }
 
 std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
@@ -254,6 +271,15 @@ std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
     if (!dict.GetInteger(attribute_name, &value) || value == 0)
       continue;
     WriteAttribute(true, StringPrintf("%s=%d", attribute_name, value), &line);
+  }
+
+  for (unsigned i = 0; i < base::size(ACTION_ATTRIBUTES); i++) {
+    const char* attribute_name = ACTION_ATTRIBUTES[i];
+    bool value;
+    if (dict.GetBoolean(attribute_name, &value) && value) {
+      WriteAttribute(false /* Exclude actions by default */, attribute_name,
+                     &line);
+    }
   }
 
   return line;
