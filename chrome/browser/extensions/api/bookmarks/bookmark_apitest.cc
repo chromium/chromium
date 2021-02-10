@@ -59,13 +59,10 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
   profile->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks, list);
   ASSERT_EQ(2u, managed->managed_node()->children().size());
 
-  if (GetParam() == ContextType::kEventPage) {
-    ASSERT_TRUE(RunExtensionTest("bookmarks")) << message_;
-  } else {
-    ASSERT_TRUE(RunExtensionTestWithFlags(
-        "bookmarks", kFlagRunAsServiceWorkerBasedExtension, kFlagNone))
-        << message_;
-  }
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "bookmarks"},
+      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
+      << message_;
 }
 
 }  // namespace extensions

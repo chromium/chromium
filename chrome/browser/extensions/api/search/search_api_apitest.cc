@@ -21,7 +21,9 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, Normal) {
 IN_PROC_BROWSER_TEST_F(SearchApiTest, Incognito) {
   ResultCatcher catcher;
   CreateIncognitoBrowser(browser()->profile());
-  ASSERT_TRUE(RunExtensionTestIncognito("search/query/incognito")) << message_;
+  ASSERT_TRUE(RunExtensionTest({.name = "search/query/incognito"},
+                               {.allow_in_incognito = true}))
+      << message_;
 }
 
 // Test incognito browser in extension split mode.
@@ -30,7 +32,8 @@ IN_PROC_BROWSER_TEST_F(SearchApiTest, IncognitoSplit) {
   catcher.RestrictToBrowserContext(
       browser()->profile()->GetPrimaryOTRProfile());
   CreateIncognitoBrowser(browser()->profile());
-  ASSERT_TRUE(RunExtensionTestIncognito("search/query/incognito_split"))
+  ASSERT_TRUE(RunExtensionTest({.name = "search/query/incognito_split"},
+                               {.allow_in_incognito = true}))
       << message_;
 }
 

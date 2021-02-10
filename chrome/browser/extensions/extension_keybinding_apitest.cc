@@ -532,8 +532,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  ASSERT_TRUE(RunExtensionTest("keybinding/basics"))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("keybinding/basics")) << message_;
 
   CommandService* command_service = CommandService::Get(browser()->profile());
 
@@ -1029,10 +1028,9 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, MAYBE_IncognitoMode) {
 
   bool is_incognito_enabled = GetParam();
 
-  if (is_incognito_enabled)
-    ASSERT_TRUE(RunExtensionTestIncognito("keybinding/basics")) << message_;
-  else
-    ASSERT_TRUE(RunExtensionTest("keybinding/basics")) << message_;
+  ASSERT_TRUE(RunExtensionTest({.name = "keybinding/basics"},
+                               {.allow_in_incognito = is_incognito_enabled}))
+      << message_;
 
   // Open incognito window and navigate to test page.
   Browser* incognito_browser = OpenURLOffTheRecord(

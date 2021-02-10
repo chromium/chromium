@@ -66,7 +66,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MainFrameTests) {
   OpenURLInNewTab(
       embedded_test_server()->GetURL("chromium.org", "/title2.html"));
 
-  ASSERT_TRUE(RunExtensionTestIgnoreManifestWarnings("scripting/main_frame"))
+  ASSERT_TRUE(RunExtensionTest({.name = "scripting/main_frame"},
+                               {.ignore_manifest_warnings = true}))
       << message_;
 }
 

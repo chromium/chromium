@@ -446,8 +446,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, FormatVolume) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Permissions) {
-  EXPECT_TRUE(
-      RunExtensionTestIgnoreManifestWarnings("file_browser/permissions"));
+  EXPECT_TRUE(RunExtensionTest({.name = "file_browser/permissions"},
+                               {.ignore_manifest_warnings = true}));
   const extensions::Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension);
   ASSERT_EQ(1u, extension->install_warnings().size());

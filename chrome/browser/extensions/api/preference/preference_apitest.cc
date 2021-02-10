@@ -193,9 +193,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, PersistentIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
-  EXPECT_TRUE(
-      RunExtensionTestIncognito("preference/persistent_incognito")) <<
-      message_;
+  EXPECT_TRUE(RunExtensionTest({.name = "preference/persistent_incognito"},
+                               {.allow_in_incognito = true}))
+      << message_;
 
   // Setting an incognito preference should not create an incognito profile.
   EXPECT_FALSE(profile_->HasPrimaryOTRProfile());
@@ -221,9 +221,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SessionOnlyIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   SetCookieControlsMode(prefs, CookieControlsMode::kOff);
 
-  EXPECT_TRUE(
-      RunExtensionTestIncognito("preference/session_only_incognito")) <<
-      message_;
+  EXPECT_TRUE(RunExtensionTest({.name = "preference/session_only_incognito"},
+                               {.allow_in_incognito = true}))
+      << message_;
 
   EXPECT_TRUE(profile_->HasPrimaryOTRProfile());
 
@@ -253,8 +253,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Clear) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChange) {
-  EXPECT_TRUE(RunExtensionTestIncognito("preference/onchange")) <<
-      message_;
+  EXPECT_TRUE(RunExtensionTest({.name = "preference/onchange"},
+                               {.allow_in_incognito = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {

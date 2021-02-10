@@ -266,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(GcmApiTest, Incognito) {
   ResultCatcher incognito_catcher;
   incognito_catcher.RestrictToBrowserContext(profile()->GetPrimaryOTRProfile());
 
-  ASSERT_TRUE(RunExtensionTestIncognito("gcm/functions/incognito"));
+  ASSERT_TRUE(RunExtensionTest({.name = "gcm/functions/incognito"},
+                               {.allow_in_incognito = true}));
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(incognito_catcher.GetNextResult()) << incognito_catcher.message();

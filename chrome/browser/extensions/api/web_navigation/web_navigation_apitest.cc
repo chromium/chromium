@@ -219,14 +219,12 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, GetFrame) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ClientRedirect) {
-  ASSERT_TRUE(RunExtensionTest("webnavigation/clientRedirect"))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webnavigation/clientRedirect")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirect) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webnavigation/serverRedirect"))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webnavigation/serverRedirect")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, FormSubmission) {
@@ -253,8 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirectSingleProcess) {
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
   // Wait for the extension to set itself up and return control to us.
-  ASSERT_TRUE(
-      RunExtensionTest("webnavigation/serverRedirectSingleProcess"))
+  ASSERT_TRUE(RunExtensionTest("webnavigation/serverRedirectSingleProcess"))
       << message_;
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -353,8 +350,7 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, UserAction) {
 IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, RequestOpenTab) {
 
   // Wait for the extension to set itself up and return control to us.
-  ASSERT_TRUE(RunExtensionTest("webnavigation/requestOpenTab"))
-      << message_;
+  ASSERT_TRUE(RunExtensionTest("webnavigation/requestOpenTab")) << message_;
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
@@ -424,7 +420,8 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, TargetBlankIncognito) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Wait for the extension to set itself up and return control to us.
-  ASSERT_TRUE(RunExtensionTestIncognito("webnavigation/targetBlank"))
+  ASSERT_TRUE(RunExtensionTest({.name = "webnavigation/targetBlank"},
+                               {.allow_in_incognito = true}))
       << message_;
 
   ResultCatcher catcher;

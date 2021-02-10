@@ -32,7 +32,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginXHR, ContentScript) {
 // "<all_urls>" host permissions.
 IN_PROC_BROWSER_TEST_F(CrossOriginXHR, FileAccessAllURLs) {
   ASSERT_TRUE(
-      RunExtensionTestWithFileAccess("cross_origin_xhr/file_access_all_urls"))
+      RunExtensionTest({.name = "cross_origin_xhr/file_access_all_urls"},
+                       {.allow_file_access = true}))
       << message_;
 }
 
@@ -47,6 +48,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginXHR, NoFileAccessAllURLs) {
 // permissions to the file scheme even though it has file access.
 IN_PROC_BROWSER_TEST_F(CrossOriginXHR, FileAccessNoHosts) {
   ASSERT_TRUE(
-      RunExtensionTestWithFileAccess("cross_origin_xhr/file_access_no_hosts"))
+      RunExtensionTest({.name = "cross_origin_xhr/file_access_no_hosts"},
+                       {.allow_file_access = true}))
       << message_;
 }

@@ -50,11 +50,9 @@ class DeclarativeNetRequestAPItest
   }
 
   bool RunTest(const std::string& extension_path) {
-    if (GetParam() != ContextType::kServiceWorker) {
-      return RunExtensionTest(extension_path);
-    }
-    return RunExtensionTestWithFlags(
-        extension_path, kFlagRunAsServiceWorkerBasedExtension, kFlagNone);
+    return RunExtensionTest(
+        {.name = extension_path.c_str()},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 
  private:

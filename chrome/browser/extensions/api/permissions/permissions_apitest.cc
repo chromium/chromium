@@ -206,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiTest, OptionalPermissionsFileAccess) {
 
   EXPECT_TRUE(RunExtensionTest("permissions/file_access_no")) << message_;
   EXPECT_FALSE(prefs->AllowFileAccess(last_loaded_extension_id()));
-  EXPECT_TRUE(RunExtensionTestWithFileAccess("permissions/file_access_yes"))
+  EXPECT_TRUE(RunExtensionTest({.name = "permissions/file_access_yes"},
+                               {.allow_file_access = true}))
       << message_;
   EXPECT_TRUE(prefs->AllowFileAccess(last_loaded_extension_id()));
 }

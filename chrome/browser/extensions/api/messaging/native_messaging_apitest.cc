@@ -53,11 +53,9 @@ class NativeMessagingLazyApiTest
       public testing::WithParamInterface<ContextType> {
  protected:
   bool RunLazyTest(const std::string& extension_name) {
-    if (GetParam() == ContextType::kEventPage) {
-      return RunExtensionTest(extension_name);
-    }
-    return RunExtensionTestWithFlags(
-        extension_name, kFlagRunAsServiceWorkerBasedExtension, kFlagNone);
+    return RunExtensionTest(
+        {.name = extension_name.c_str()},
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };
 

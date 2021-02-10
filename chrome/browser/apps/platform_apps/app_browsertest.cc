@@ -525,7 +525,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, Restrictions) {
 
 // Tests that extensions can't use platform-app-only APIs.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PlatformAppsOnly) {
-  ASSERT_TRUE(RunExtensionTestIgnoreManifestWarnings("platform_apps/apps_only"))
+  ASSERT_TRUE(RunExtensionTest({.name = "platform_apps/apps_only"},
+                               {.ignore_manifest_warnings = true}))
       << message_;
 }
 

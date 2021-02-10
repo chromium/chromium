@@ -32,9 +32,8 @@ class ExtensionContextMenuApiTest : public ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ServiceWorkerContextMenus) {
-  ASSERT_TRUE(RunExtensionTestWithFlags("context_menus/event_page",
-                                        kFlagRunAsServiceWorkerBasedExtension,
-                                        kFlagNone))
+  ASSERT_TRUE(RunExtensionTest({.name = "context_menus/event_page"},
+                               {.load_as_service_worker = true}))
       << message_;
 }
 
