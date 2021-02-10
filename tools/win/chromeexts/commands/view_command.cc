@@ -8,10 +8,13 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <ostream>
+#include <streambuf>
 #include <string>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "ui/views/debug/debugger_utils.h"
 
 namespace tools {
 namespace win {
@@ -21,11 +24,30 @@ namespace {
 
 using Microsoft::WRL::ComPtr;
 
+class DebugOutputBuffer : public std::basic_streambuf<char> {
+ public:
+  DebugOutputBuffer(IDebugControl* debug_control)
+      : debug_control_(debug_control) {}
+  DebugOutputBuffer(const DebugOutputBuffer&) = delete;
+  DebugOutputBuffer& operator=(const DebugOutputBuffer&) = delete;
+  ~DebugOutputBuffer() override = default;
+
+  std::streamsize xsputn(const char* s, std::streamsize count) override {
+    std::string str(s, count);
+    debug_control_->Output(DEBUG_OUTPUT_NORMAL, str.c_str());
+    return count;
+  }
+
+ private:
+  ComPtr<IDebugControl> debug_control_;
+};
+
 class VirtualMemoryBlock {
  public:
   VirtualMemoryBlock(IDebugClient* debug_client,
                      const std::string symbol,
-                     uint64_t address) {
+                     uint64_t address)
+      : address_(address) {
     unsigned long type_size;
     if (FAILED(debug_client->QueryInterface(IID_PPV_ARGS(&symbols_))) ||
         FAILED(
@@ -40,10 +62,12 @@ class VirtualMemoryBlock {
     }
 
     storage_.resize(type_size);
-    data->ReadVirtual(address, storage_.data(), type_size, nullptr);
+    data->ReadVirtual(address_, storage_.data(), type_size, nullptr);
   }
 
   ~VirtualMemoryBlock() = default;
+
+  uint64_t address() const { return address_; }
 
   template <typename T>
   const T& As() const {
@@ -63,6 +87,11 @@ class VirtualMemoryBlock {
     }
 
     return *reinterpret_cast<const T*>(storage_.data() + field_offset);
+  }
+
+  template <typename T>
+  T GetValueFromOffset(size_t offset) const {
+    return *reinterpret_cast<const T*>(storage_.data() + offset);
   }
 
   VirtualMemoryBlock GetFieldMemoryBlock(std::string field_name) const {
@@ -88,6 +117,7 @@ class VirtualMemoryBlock {
  private:
   VirtualMemoryBlock() = default;
 
+  uint64_t address_;
   ComPtr<IDebugSymbols3> symbols_;
   std::vector<char> storage_;
   uint64_t module_ = 0;
@@ -104,6 +134,85 @@ std::vector<T> ReadVirtualVector(IDebugDataSpaces* data,
                     sizeof(T) * size, nullptr);
   return values;
 }
+
+class VirtualViewDebugWrapper : public views::debug::ViewDebugWrapper {
+ public:
+  VirtualViewDebugWrapper(VirtualMemoryBlock view_block,
+                          IDebugClient* debug_client)
+      : view_block_(view_block), debug_client_(debug_client) {}
+  VirtualViewDebugWrapper(const VirtualViewDebugWrapper&) = delete;
+  VirtualViewDebugWrapper& operator=(const VirtualViewDebugWrapper&) = delete;
+  ~VirtualViewDebugWrapper() override = default;
+
+  std::string GetViewClassName() override {
+    unsigned long vtable = view_block_.GetValueFromOffset<unsigned long>(0);
+
+    ComPtr<IDebugSymbols3> symbols;
+    debug_client_.As(&symbols);
+    // TODO: Handle cross-DLL references.
+    char buffer[255];
+    buffer[0] = '\0';
+    symbols->GetNameByOffset(vtable, buffer, ARRAYSIZE(buffer), nullptr,
+                             nullptr);
+    return buffer;
+  }
+
+  base::Optional<intptr_t> GetAddress() override {
+    return view_block_.address();
+  }
+
+  int GetID() override { return view_block_.GetFieldValue<int>("id_"); }
+  BoundsTuple GetBounds() override {
+    VirtualMemoryBlock bounds_block =
+        view_block_.GetFieldMemoryBlock("bounds_");
+    VirtualMemoryBlock origin_block =
+        bounds_block.GetFieldMemoryBlock("origin_");
+    VirtualMemoryBlock size_block = bounds_block.GetFieldMemoryBlock("size_");
+    return BoundsTuple(origin_block.GetFieldValue<int>("x_"),
+                       origin_block.GetFieldValue<int>("y_"),
+                       size_block.GetFieldValue<int>("height_"),
+                       size_block.GetFieldValue<int>("width_"));
+  }
+  bool GetVisible() override {
+    return view_block_.GetFieldValue<bool>("visible_");
+  }
+  bool GetNeedsLayout() override {
+    return view_block_.GetFieldValue<bool>("needs_layout_");
+  }
+  bool GetEnabled() override {
+    return view_block_.GetFieldValue<bool>("enabled_");
+  }
+  std::vector<ViewDebugWrapper*> GetChildren() override {
+    if (children_.empty()) {
+      auto children_block = view_block_.GetFieldMemoryBlock("children_");
+      auto& children = children_block.As<std::vector<intptr_t>>();
+      children_.reserve(children.size());
+
+      ComPtr<IDebugDataSpaces> debug_data_spaces;
+      debug_client_.As(&debug_data_spaces);
+      std::vector<intptr_t> virtual_children_ptrs =
+          ReadVirtualVector(debug_data_spaces.Get(), children);
+      for (intptr_t virtual_child_ptr : virtual_children_ptrs) {
+        VirtualMemoryBlock child_memory_block(
+            debug_client_.Get(), "views!views::View", virtual_child_ptr);
+        children_.push_back(std::make_unique<VirtualViewDebugWrapper>(
+            child_memory_block, debug_client_.Get()));
+      }
+    }
+
+    std::vector<ViewDebugWrapper*> child_ptrs;
+    child_ptrs.reserve(children_.size());
+    for (auto& child : children_) {
+      child_ptrs.push_back(child.get());
+    }
+    return child_ptrs;
+  }
+
+ private:
+  VirtualMemoryBlock view_block_;
+  ComPtr<IDebugClient> debug_client_;
+  std::vector<std::unique_ptr<VirtualViewDebugWrapper>> children_;
+};
 
 }  // namespace
 
@@ -137,10 +246,18 @@ HRESULT ViewCommand::Execute() {
     std::vector<intptr_t> children_ptrs =
         ReadVirtualVector(GetDebugClientAs<IDebugDataSpaces>().Get(), children);
 
-    for (auto val : children_ptrs) {
-      Printf("%x ", val);
+    if (command_line().HasSwitch("r")) {
+      DebugOutputBuffer buffer(GetDebugClientAs<IDebugControl>().Get());
+      std::ostream out(&buffer);
+      VirtualViewDebugWrapper root(view_block,
+                                   GetDebugClientAs<IDebugClient>().Get());
+      PrintViewHierarchy(&out, &root);
+    } else {
+      for (auto val : children_ptrs) {
+        Printf("%x ", val);
+      }
+      Printf("\n");
     }
-    Printf("\n");
   } else {
     VirtualMemoryBlock bounds_block = view_block.GetFieldMemoryBlock("bounds_");
     VirtualMemoryBlock origin_block =

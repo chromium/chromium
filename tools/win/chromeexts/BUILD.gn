@@ -14,5 +14,8 @@ shared_library("chromeexts") {
     "commands/view_command.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/views/debug:views_debug",
+  ]
 }

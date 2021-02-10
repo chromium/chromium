@@ -4,6 +4,8 @@
 
 #include "ui/views/debug/debugger_utils.h"
 
+#include <inttypes.h>
+
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -32,12 +34,26 @@ std::string ToString(ViewDebugWrapper::BoundsTuple bounds) {
                             std::get<3>(bounds));
 }
 
+// intptr_t can alias to int, preventing the use of overloading for ToString.
+std::string PtrToString(intptr_t val) {
+  return base::StringPrintf("0x%" PRIxPTR, val);
+}
+
 // Adds attribute string of the form <attribute_name>="<attribute_value>".
 template <typename T>
 void AddAttributeString(AttributeStrings& attributes,
                         const std::string& name,
                         const T& value) {
   attributes.push_back(name + "=\"" + ToString(value) + "\"");
+}
+
+void AddPtrAttributeString(AttributeStrings& attributes,
+                           const std::string& name,
+                           const base::Optional<intptr_t>& value) {
+  if (!value)
+    return;
+
+  attributes.push_back(name + "=\"" + PtrToString(value.value()) + "\"");
 }
 
 AttributeStrings GetAttributeStrings(ViewDebugWrapper* view, bool verbose) {
@@ -50,6 +66,7 @@ AttributeStrings GetAttributeStrings(ViewDebugWrapper* view, bool verbose) {
         },
         base::Unretained(&attributes)));
   } else {
+    AddPtrAttributeString(attributes, "address", view->GetAddress());
     AddAttributeString(attributes, "bounds", view->GetBounds());
     AddAttributeString(attributes, "enabled", view->GetNeedsLayout());
     AddAttributeString(attributes, "id", view->GetID());
@@ -113,6 +130,10 @@ void PrintViewHierarchyImpl(std::ostream* out,
 }
 
 }  // namespace
+
+base::Optional<intptr_t> ViewDebugWrapper::GetAddress() {
+  return base::nullopt;
+}
 
 void PrintViewHierarchy(std::ostream* out,
                         ViewDebugWrapper* view,
