@@ -5540,6 +5540,7 @@
 <translation id="7374376573160927383">USB 기기 관리</translation>
 <translation id="7375235221357833624">{0,plural, =1{1시간 내 기기 업데이트}other{#시간 내 기기 업데이트}}</translation>
 <translation id="7376553024552204454">이동 시 마우스 커서 강조표시</translation>
+<translation id="737728204345822099">이 사이트를 방문한 기록이 보안 키에 보관될 수 있습니다.</translation>
 <translation id="7377451353532943397">계속해서 센서 액세스 차단</translation>
 <translation id="7378611153938412599">취약한 비밀번호는 추측하기 쉽습니다. 안전한 비밀번호를 설정하세요. <ph name="BEGIN_LINK" />보안 도움말 더보기<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome 웹 스토어 열기</translation>

@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1450753235335490080">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të problemeve të serverit.</translation>
+<translation id="1497470209855416291">Prova është çaktivizuar</translation>
 <translation id="1506061864768559482">Motori i kërkimit</translation>
 <translation id="1513352483775369820">Faqeshënuesit dhe historiku i uebit</translation>
 <translation id="1513858653616922153">Fshi fjalëkalimin</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Shiko videon tjetër</translation>
 <translation id="2074143993849053708">Ndërfaqja e përdoruesit e miratimit të kërkimit zanor të "Asistentit" e mbyllur</translation>
 <translation id="2082238445998314030">Rezultati <ph name="RESULT_NUMBER" /> nga <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Prova është aktivizuar</translation>
 <translation id="2096012225669085171">Sinkronizo e personalizo përmes pajisjeve</translation>
 <translation id="2100273922101894616">Identifikohu automatikisht</translation>
 <translation id="2100314319871056947">Provo ta ndash tekstin në copëza më të vogla</translation>

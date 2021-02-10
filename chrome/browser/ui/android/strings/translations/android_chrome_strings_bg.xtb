@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1450753235335490080">Споделянето на <ph name="CONTENT_TYPE" /> не е възможно</translation>
 <translation id="1477626028522505441">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради проблеми в сървъра.</translation>
+<translation id="1497470209855416291">Пробният период е деактивиран</translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
 <translation id="1513858653616922153">Изтриване на паролата</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Гледане на следващия видеоклип</translation>
 <translation id="2074143993849053708">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е затворен</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Пробният период е активиран</translation>
 <translation id="2096012225669085171">Синхронизиране и персонализиране на всички устройства</translation>
 <translation id="2100273922101894616">Автоматичен вход</translation>
 <translation id="2100314319871056947">Опитайте да споделите текста на по-малки части</translation>

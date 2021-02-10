@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
+<translation id="1497470209855416291">Пробная версія выключана</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
 <translation id="1513352483775369820">Закладкі і гісторыя вэб-пошуку</translation>
 <translation id="1513858653616922153">Выдаліць пароль</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Глядзець наступнае відэа</translation>
 <translation id="2074143993849053708">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку закрыта</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Пробная версія ўключана</translation>
 <translation id="2096012225669085171">Сінхранізацыя і персаналізацыя на ўсіх прыладах</translation>
 <translation id="2100273922101894616">Аўтаматычны ўваход</translation>
 <translation id="2100314319871056947">Паспрабуйце абагуліць тэкст меншымі кавалкамі</translation>

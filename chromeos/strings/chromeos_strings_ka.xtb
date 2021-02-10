@@ -280,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{სკანირება დასრულდა. დასკანირდა 1 გვერდი.}other{სკანირება დასრულდა. დასკანირდა {NUMBER_OF_PAGES} გვერდი.}}</translation>
+<translation id="7449585358422953039">მართავს <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">აღმოჩენილია პორტალი</translation>
 <translation id="7487067081878637334">ტექნოლოგია</translation>
 <translation id="7490813197707563893">MAC მისამართი</translation>

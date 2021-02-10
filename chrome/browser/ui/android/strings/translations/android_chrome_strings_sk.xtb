@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> sa nedá zdieľať</translation>
 <translation id="1477626028522505441">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu problémov so serverom.</translation>
+<translation id="1497470209855416291">Skúšobné obdobie nie je aktívne</translation>
 <translation id="1506061864768559482">Vyhľadávač</translation>
 <translation id="1513352483775369820">Záložky a webová história</translation>
 <translation id="1513858653616922153">Odstrániť heslo</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Pozrieť ďalšie video</translation>
 <translation id="2074143993849053708">Používateľské rozhranie na udelenie súhlasu s hlasovým vyhľadávaním Asistentom je zatvorené</translation>
 <translation id="2082238445998314030">Výsledok <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Skúšobné obdobie je aktívne</translation>
 <translation id="2096012225669085171">Synchronizovať a prispôsobiť v rôznych zariadeniach</translation>
 <translation id="2100273922101894616">Automaticky prihlasovať</translation>
 <translation id="2100314319871056947">Skúste text zdieľať po menších častiach</translation>
