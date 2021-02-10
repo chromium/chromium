@@ -41,9 +41,6 @@ src:*third_party/spirv-cross/spirv-cross/spirv_cross_containers.hpp
 # Vulkan memory allocator
 src:*third_party/vulkan_memory_allocator/src/vk_mem_alloc.h
 
-# https://llvm.org/pr48993
-fun:*shared_ptr_emplace*__get_elem*
-
 #############################################################################
 # Base class's constructor accesses a derived class.
 

@@ -486,6 +486,11 @@ EXPORTS
     ??$__push_back_slow_path@AEBQEAUCordRep@cord_internal@absl@@@?$vector@PEAUCordRep@cord_internal@absl@@V?$allocator@PEAUCordRep@cord_internal@absl@@@__1@std@@@__1@std@@AEAAXAEBQEAUCordRep@cord_internal@absl@@@Z
     ??$__push_back_slow_path@AEBUTransition@cctz@time_internal@absl@@@?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@__1@std@@@__1@std@@AEAAXAEBUTransition@cctz@time_internal@absl@@@Z
     ??$__push_back_slow_path@UConversionItem@ParsedFormatBase@str_format_internal@absl@@@?$vector@UConversionItem@ParsedFormatBase@str_format_internal@absl@@V?$allocator@UConversionItem@ParsedFormatBase@str_format_internal@absl@@@__1@std@@@__1@std@@AEAAX$$QEAUConversionItem@ParsedFormatBase@str_format_internal@absl@@@Z
+    ??$__rewrap_iter@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@YAPEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@PEAPEAPEBV23456@0@Z
+    ??$__rewrap_iter@PEAUTransition@cctz@time_internal@absl@@@__1@std@@YAPEAUTransition@cctz@time_internal@absl@@PEAU2345@0@Z
+    ??$__rewrap_iter@PEAUTransitionType@cctz@time_internal@absl@@@__1@std@@YAPEAUTransitionType@cctz@time_internal@absl@@PEAU2345@0@Z
+    ??$__rewrap_iter@PEAVFormatArgImpl@str_format_internal@absl@@@__1@std@@YAPEAVFormatArgImpl@str_format_internal@absl@@PEAV234@0@Z
+    ??$__to_address@$$CBVFormatArgImpl@str_format_internal@absl@@@__1@std@@YAPEBVFormatArgImpl@str_format_internal@absl@@PEBV234@@Z
     ??$__to_address@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@YAPEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@PEAPEAPEBV23456@@Z
     ??$__to_address@PEAUCordRep@cord_internal@absl@@@__1@std@@YAPEAPEAUCordRep@cord_internal@absl@@PEAPEAU234@@Z
     ??$__to_address@UConversionItem@ParsedFormatBase@str_format_internal@absl@@@__1@std@@YAPEAUConversionItem@ParsedFormatBase@str_format_internal@absl@@PEAU2345@@Z
@@ -493,11 +498,11 @@ EXPORTS
     ??$__to_address@UTransitionType@cctz@time_internal@absl@@@__1@std@@YAPEAUTransitionType@cctz@time_internal@absl@@PEAU2345@@Z
     ??$__to_address@UViableSubstitution@strings_internal@absl@@@__1@std@@YAPEAUViableSubstitution@strings_internal@absl@@PEAU234@@Z
     ??$__to_address@VFormatArgImpl@str_format_internal@absl@@@__1@std@@YAPEAVFormatArgImpl@str_format_internal@absl@@PEAV234@@Z
-    ??$__unwrap_iter@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@YAPEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@PEAPEAPEBV23456@@Z
-    ??$__unwrap_iter@PEAUTransition@cctz@time_internal@absl@@@__1@std@@YAPEAUTransition@cctz@time_internal@absl@@PEAU2345@@Z
-    ??$__unwrap_iter@PEAUTransitionType@cctz@time_internal@absl@@@__1@std@@YAPEAUTransitionType@cctz@time_internal@absl@@PEAU2345@@Z
-    ??$__unwrap_iter@PEAVFormatArgImpl@str_format_internal@absl@@@__1@std@@YAPEAVFormatArgImpl@str_format_internal@absl@@PEAV234@@Z
-    ??$__unwrap_iter@PEBVFormatArgImpl@str_format_internal@absl@@@__1@std@@YAPEBVFormatArgImpl@str_format_internal@absl@@PEBV234@@Z
+    ??$__unwrap_iter@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@U?$__unwrap_iter_impl@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@$00@__1@std@@@__1@std@@YAPEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@PEAPEAPEBV23456@@Z
+    ??$__unwrap_iter@PEAUTransition@cctz@time_internal@absl@@U?$__unwrap_iter_impl@PEAUTransition@cctz@time_internal@absl@@$00@__1@std@@@__1@std@@YAPEAUTransition@cctz@time_internal@absl@@PEAU2345@@Z
+    ??$__unwrap_iter@PEAUTransitionType@cctz@time_internal@absl@@U?$__unwrap_iter_impl@PEAUTransitionType@cctz@time_internal@absl@@$00@__1@std@@@__1@std@@YAPEAUTransitionType@cctz@time_internal@absl@@PEAU2345@@Z
+    ??$__unwrap_iter@PEAVFormatArgImpl@str_format_internal@absl@@U?$__unwrap_iter_impl@PEAVFormatArgImpl@str_format_internal@absl@@$00@__1@std@@@__1@std@@YAPEAVFormatArgImpl@str_format_internal@absl@@PEAV234@@Z
+    ??$__unwrap_iter@PEBVFormatArgImpl@str_format_internal@absl@@U?$__unwrap_iter_impl@PEBVFormatArgImpl@str_format_internal@absl@@$00@__1@std@@@__1@std@@YAPEBVFormatArgImpl@str_format_internal@absl@@PEBV234@@Z
     ??$__upper_bound@AEAUByCivilTime@Transition@cctz@time_internal@absl@@PEBU2345@U2345@@__1@std@@YAPEBUTransition@cctz@time_internal@absl@@PEBU2345@0AEBU2345@AEAUByCivilTime@2345@@Z
     ??$__upper_bound@AEAUByUnixTime@Transition@cctz@time_internal@absl@@PEBU2345@U2345@@__1@std@@YAPEBUTransition@cctz@time_internal@absl@@PEBU2345@0AEBU2345@AEAUByUnixTime@2345@@Z
     ??$addressof@$$CBU?$__hash_value_type@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@@__1@std@@YAPEBU?$__hash_value_type@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PEBVImpl@time_zone@cctz@time_internal@absl@@@01@AEBU201@@Z
@@ -2440,6 +2445,11 @@ EXPORTS
     ?__annotate_shrink@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__1@std@@@__1@std@@AEBAX_K@Z
     ?__append@?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@__1@std@@@__1@std@@AEAAX_K@Z
     ?__append@?$vector@UTransitionType@cctz@time_internal@absl@@V?$allocator@UTransitionType@cctz@time_internal@absl@@@__1@std@@@__1@std@@AEAAX_K@Z
+    ?__apply@?$__unwrap_iter_impl@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@$00@__1@std@@SAPEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@PEAPEAPEBV45678@@Z
+    ?__apply@?$__unwrap_iter_impl@PEAUTransition@cctz@time_internal@absl@@$00@__1@std@@SAPEAUTransition@cctz@time_internal@absl@@PEAU4567@@Z
+    ?__apply@?$__unwrap_iter_impl@PEAUTransitionType@cctz@time_internal@absl@@$00@__1@std@@SAPEAUTransitionType@cctz@time_internal@absl@@PEAU4567@@Z
+    ?__apply@?$__unwrap_iter_impl@PEAVFormatArgImpl@str_format_internal@absl@@$00@__1@std@@SAPEAVFormatArgImpl@str_format_internal@absl@@PEAV456@@Z
+    ?__apply@?$__unwrap_iter_impl@PEBVFormatArgImpl@str_format_internal@absl@@$00@__1@std@@SAPEBVFormatArgImpl@str_format_internal@absl@@PEBV456@@Z
     ?__back_spare@?$__split_buffer@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@V?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEBA_KXZ
     ?__back_spare@?$deque@PEBVImpl@time_zone@cctz@time_internal@absl@@V?$allocator@PEBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEBA_KXZ
     ?__call_empty@?$__policy_invoker@$$A6A?AV?$unique_ptr@VZoneInfoSource@cctz@time_internal@absl@@U?$default_delete@VZoneInfoSource@cctz@time_internal@absl@@@__1@std@@@__1@std@@AEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@23@@Z@__function@__1@std@@CA?AV?$unique_ptr@VZoneInfoSource@cctz@time_internal@absl@@U?$default_delete@VZoneInfoSource@cctz@time_internal@absl@@@__1@std@@@34@PEBT__policy_storage@234@AEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@34@@Z

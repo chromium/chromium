@@ -31,3 +31,6 @@ Local Modifications:
 * All the BUILD.bazel files have been translated to BUILD.gn files.
 
 * Patches from //third_party/abseil-cpp/patches have been applied.
+
+* Increment this number to silence presubmits about modifying files in
+  third_party when regenerating absl .def files: 1
