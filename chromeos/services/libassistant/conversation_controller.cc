@@ -66,12 +66,12 @@ void ConversationController::StartEditReminderInteraction(
 }
 
 void ConversationController::RetrieveNotification(
-    mojom::AssistantNotificationPtr notification,
+    const AssistantNotification& notification,
     int32_t action_index) {
   const std::string request_interaction =
       assistant::SerializeNotificationRequestInteraction(
-          notification->server_id, notification->consistency_token,
-          notification->opaque_token, action_index);
+          notification.server_id, notification.consistency_token,
+          notification.opaque_token, action_index);
 
   SendVoicelessInteraction(request_interaction,
                            /*description=*/"RequestNotification",
@@ -79,7 +79,7 @@ void ConversationController::RetrieveNotification(
 }
 
 void ConversationController::DismissNotification(
-    mojom::AssistantNotificationPtr notification) {
+    const AssistantNotification& notification) {
   // |assistant_manager_internal()| may not exist if we are dismissing
   // notifications as part of a shutdown sequence.
   if (!assistant_manager_internal())
@@ -87,11 +87,11 @@ void ConversationController::DismissNotification(
 
   const std::string dismissed_interaction =
       assistant::SerializeNotificationDismissedInteraction(
-          notification->server_id, notification->consistency_token,
-          notification->opaque_token, {notification->grouping_key});
+          notification.server_id, notification.consistency_token,
+          notification.opaque_token, {notification.grouping_key});
 
   assistant_client::VoicelessOptions options;
-  options.obfuscated_gaia_id = notification->obfuscated_gaia_id;
+  options.obfuscated_gaia_id = notification.obfuscated_gaia_id;
 
   assistant_manager_internal()->SendVoicelessInteraction(
       dismissed_interaction, /*description=*/"DismissNotification", options,

@@ -41,6 +41,10 @@ mojom("mojom") {
           mojom = "chromeos.libassistant.mojom.AndroidAppStatus"
           cpp = "::chromeos::assistant::AppStatus"
         },
+        {
+          mojom = "chromeos.libassistant.mojom.AssistantNotification"
+          cpp = "::chromeos::assistant::AssistantNotification"
+        },
       ]
 
       traits_headers = [ "mojom_traits.h" ]
