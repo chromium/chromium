@@ -42,20 +42,15 @@ SRC_DIR = Path(__file__).parent.parent.resolve()
 DEPOT_TOOLS_DIR = SRC_DIR.joinpath('third_party', 'depot_tools')
 DEBUG = False
 
-_TEST_TARGET_SUFFIXES = [
-    '_browsertests',
-    '_junit_tests',
-    '_perftests',
-    '_test_apk',
-    '_unittests',
-]
-
 # Some test suites use suffixes that would also match non-test-suite targets.
 # Those test suites should be manually added here.
 _OTHER_TEST_TARGETS = [
     '//chrome/test:browser_tests',
     '//chrome/test:unit_tests',
 ]
+
+_TEST_TARGET_REGEX = re.compile(
+    r'(_browsertests|_junit_tests|_perftests|_test_.*apk|_unittests)$')
 
 TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)')
 
@@ -253,9 +248,8 @@ def FindMatchingTestFiles(target):
 
 
 def IsTestTarget(target):
-  for suffix in _TEST_TARGET_SUFFIXES:
-    if target.endswith(suffix):
-      return True
+  if _TEST_TARGET_REGEX.search(target):
+    return True
   return target in _OTHER_TEST_TARGETS
 
 
@@ -330,7 +324,7 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
   if not test_targets:
     ExitWithMessage(
         f'Target(s) "{paths}" did not match any test targets. Consider adding'
-        f' one of the following targets to the top of this file: {targets}')
+        f' one of the following targets to the top of {__file__}: {targets}')
 
   target_cache.Store(paths, test_targets)
   target_cache.Save()
