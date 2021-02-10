@@ -1139,9 +1139,8 @@ bool HTMLCanvasElement::ShouldAccelerate() const {
     return false;
 
   // The command line flag --disable-accelerated-2d-canvas toggles this option
-  if (!RuntimeEnabledFeatures::Accelerated2dCanvasEnabled()) {
+  if (!RuntimeEnabledFeatures::Accelerated2dCanvasEnabled())
     return false;
-  }
 
   // Webview crashes with accelerated small canvases (crbug.com/1004304)
   // Experimenting to see if this still causes crashes (crbug.com/1136603)

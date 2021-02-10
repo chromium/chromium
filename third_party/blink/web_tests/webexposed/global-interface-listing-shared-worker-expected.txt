@@ -931,6 +931,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method lineTo
 [Worker]     method measureText
 [Worker]     method moveTo
+[Worker]     method perspective
 [Worker]     method putImageData
 [Worker]     method quadraticCurveTo
 [Worker]     method rect

@@ -1044,6 +1044,7 @@ interface CanvasRenderingContext2D
     method lineTo
     method measureText
     method moveTo
+    method perspective
     method putImageData
     method quadraticCurveTo
     method rect
@@ -5763,6 +5764,7 @@ interface OffscreenCanvasRenderingContext2D
     method lineTo
     method measureText
     method moveTo
+    method perspective
     method putImageData
     method quadraticCurveTo
     method rect

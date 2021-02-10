@@ -25,12 +25,10 @@ const axis = {x: 1, y: 2, z: 3}
 const domMatrix = new DOMMatrix();
 ctx.rotateAxis(axis.x, axis.y, axis.z, angle);
 domMatrix.rotateAxisAngleSelf(axis.x, axis.y, axis.z, rad2deg(angle));
-let canvasMatrix = ctx.getTransform();
-_assertMatricesApproxEqual(domMatrix, canvasMatrix);
+_assertMatricesApproxEqual(domMatrix, ctx.getTransform());
 ctx.rotateAxis(axis.x, axis.y, axis.z, angle);
 domMatrix.rotateAxisAngleSelf(axis.x, axis.y, axis.z, rad2deg(angle));
-canvasMatrix = ctx.getTransform();
-_assertMatricesApproxEqual(domMatrix, canvasMatrix);
+_assertMatricesApproxEqual(domMatrix, ctx.getTransform());
 
 
 });

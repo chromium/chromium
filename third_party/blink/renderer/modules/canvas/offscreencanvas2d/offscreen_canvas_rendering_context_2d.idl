@@ -27,6 +27,7 @@
     [RuntimeEnabled=NewCanvas2DAPI] void rotateAxis(unrestricted double axisX, unrestricted double axisY, unrestricted double axisZ, unrestricted double angle);
     void translate(unrestricted double x, unrestricted double y);
     [RuntimeEnabled=NewCanvas2DAPI] void translate(unrestricted double x, unrestricted double y, unrestricted double z);
+    [RuntimeEnabled=NewCanvas2DAPI] void perspective(unrestricted double length);
     void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
     [RuntimeEnabled=NewCanvas2DAPI] void transform(
         unrestricted double m11, unrestricted double m12, unrestricted double m13, unrestricted double m14,

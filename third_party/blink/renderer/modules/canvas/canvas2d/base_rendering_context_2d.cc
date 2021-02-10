@@ -674,13 +674,41 @@ void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
   if (GetState().GetTransform() == new_transform)
     return;
 
-  // Must call setTransform to set the IsTransformInvertible flag.
+  // We need to call SetTransform() to set the IsTransformInvertible flag.
   ModifiableState().SetTransform(new_transform);
   if (!GetState().IsTransformInvertible())
     return;
 
   c->concat(TransformationMatrix::ToSkM44(translation_matrix));
   path_.Transform(translation_matrix.Inverse());
+}
+
+void BaseRenderingContext2D::perspective(double length) {
+  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
+  if (!c)
+    return;
+
+  if (length == 0 || !std::isfinite(length))
+    return;
+
+  float flength = clampTo<float>(length);
+
+  TransformationMatrix perspective_matrix =
+      TransformationMatrix().ApplyPerspective(flength);
+
+  // Check if the transformation is a no-op and early out if that is the case.
+  TransformationMatrix new_transform =
+      GetState().GetTransform().ApplyPerspective(flength);
+  if (GetState().GetTransform() == new_transform)
+    return;
+
+  // We need to call SetTransform() to set the IsTransformInvertible flag.
+  ModifiableState().SetTransform(new_transform);
+  if (!GetState().IsTransformInvertible())
+    return;
+
+  c->concat(TransformationMatrix::ToSkM44(perspective_matrix));
+  path_.Transform(perspective_matrix.Inverse());
 }
 
 void BaseRenderingContext2D::transform(double m11,

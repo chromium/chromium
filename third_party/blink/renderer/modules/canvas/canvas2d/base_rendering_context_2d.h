@@ -91,6 +91,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                   double angle_in_radians);
   void translate(double tx, double ty);
   void translate(double tx, double ty, double tz);
+  void perspective(double length);
   void transform(double m11,
                  double m12,
                  double m21,

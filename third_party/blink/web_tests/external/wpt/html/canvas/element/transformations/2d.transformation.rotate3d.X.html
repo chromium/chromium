@@ -24,12 +24,10 @@ const angle = 2;
 const domMatrix = new DOMMatrix();
 ctx.rotate3d(angle, 0, 0);
 domMatrix.rotateAxisAngleSelf(1, 0, 0, rad2deg(angle));
-let canvasMatrix = ctx.getTransform();
-_assertMatricesApproxEqual(domMatrix, canvasMatrix)
+_assertMatricesApproxEqual(domMatrix, ctx.getTransform())
 ctx.rotate3d(angle, 0, 0);
 domMatrix.rotateAxisAngleSelf(1, 0, 0, rad2deg(angle));
-canvasMatrix = ctx.getTransform();
-_assertMatricesApproxEqual(domMatrix, canvasMatrix)
+_assertMatricesApproxEqual(domMatrix, ctx.getTransform())
 
 
 });

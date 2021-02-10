@@ -473,12 +473,10 @@
     const domMatrix = new DOMMatrix();
     ctx.rotate3d(angle, 0, 0);
     domMatrix.rotateAxisAngleSelf(1, 0, 0, rad2deg(angle));
-    let canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix)
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform())
     ctx.rotate3d(angle, 0, 0);
     domMatrix.rotateAxisAngleSelf(1, 0, 0, rad2deg(angle));
-    canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix)
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform())
 
 - name: 2d.transformation.rotate3d.Y
   desc: rotate3d() around the y axis results in the correct transformation matrix
@@ -490,12 +488,10 @@
     const domMatrix = new DOMMatrix();
     ctx.rotate3d(0, angle, 0);
     domMatrix.rotateAxisAngleSelf(0, 1, 0, rad2deg(angle));
-    let canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix)
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform())
     ctx.rotate3d(0, angle, 0);
     domMatrix.rotateAxisAngleSelf(0, 1, 0, rad2deg(angle));
-    canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix)
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform())
 
 - name: 2d.transformation.rotate3d.Z
   desc: rotate3d() around the z axis results in the correct transformation matrix
@@ -507,12 +503,10 @@
     const domMatrix = new DOMMatrix();
     ctx.rotate3d(0, 0, angle);
     domMatrix.rotateAxisAngleSelf(0, 0, 1, rad2deg(angle));
-    let canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix)
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform())
     ctx.rotate3d(0, 0, angle);
     domMatrix.rotateAxisAngleSelf(0, 0, 1, rad2deg(angle));
-    canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix)
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform())
 
 - name: 2d.transformation.rotate3d
   desc: rotate3d() results in the correct transformation matrix
@@ -526,12 +520,10 @@
     const domMatrix = new DOMMatrix();
     ctx.rotate3d(angleX, angleY, angleZ);
     domMatrix.rotateSelf(rad2deg(angleX), rad2deg(angleY), rad2deg(angleZ));
-    let canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix);
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform());
     ctx.rotate3d(angleX, angleY, angleZ);
     domMatrix.rotateSelf(rad2deg(angleX), rad2deg(angleY), rad2deg(angleZ));
-    canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix);
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform());
 
 - name: 2d.transformation.rotateAxis
   desc: rotateAxis() results in the correct transformation matrix
@@ -544,9 +536,21 @@
     const domMatrix = new DOMMatrix();
     ctx.rotateAxis(axis.x, axis.y, axis.z, angle);
     domMatrix.rotateAxisAngleSelf(axis.x, axis.y, axis.z, rad2deg(angle));
-    let canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix);
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform());
     ctx.rotateAxis(axis.x, axis.y, axis.z, angle);
     domMatrix.rotateAxisAngleSelf(axis.x, axis.y, axis.z, rad2deg(angle));
-    canvasMatrix = ctx.getTransform();
-    _assertMatricesApproxEqual(domMatrix, canvasMatrix);
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform());
+
+- name: 2d.transformation.perspective
+  desc: perspective() results in the correct transformation matrix
+  testing:
+  - 2d.transformation.perspective
+  code: |
+    const length = 100;
+    ctx.perspective(length);
+    const domMatrix = new DOMMatrix();
+    domMatrix.m34 = -1/length;
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform());
+    ctx.rotateAxis(1, 2, 3, 4);
+    domMatrix.rotateAxisAngleSelf(1, 2, 3, rad2deg(4));
+    _assertMatricesApproxEqual(domMatrix, ctx.getTransform());
