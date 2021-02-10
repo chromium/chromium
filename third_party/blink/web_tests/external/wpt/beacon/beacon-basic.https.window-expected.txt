@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+FAIL simple case: with no payload assert_equals: content-type expected "(missing)" but got "text/plain;charset=UTF-8"
+FAIL simple case: with null payload assert_equals: content-type expected "(missing)" but got "text/plain;charset=UTF-8"
+PASS simple case: type = string and size = empty
+PASS simple case: type = arraybuffer and size = empty
+PASS simple case: type = form and size = empty
+PASS simple case: type = blob and size = empty
+PASS simple case: type = string and size = small
+PASS simple case: type = arraybuffer and size = small
+PASS simple case: type = form and size = small
+PASS simple case: type = blob and size = small
+PASS simple case: type = string and size = large
+PASS simple case: type = arraybuffer and size = large
+PASS simple case: type = form and size = large
+PASS simple case: type = blob and size = large
+PASS simple case: type = string and size = max
+PASS simple case: type = arraybuffer and size = max
+PASS simple case: type = blob and size = max
+PASS Too large payload should be rejected: type = string
+PASS Too large payload should be rejected: type = arraybuffer
+PASS Too large payload should be rejected: type = form
+PASS Too large payload should be rejected: type = blob
+PASS Payload size restriction should be accumulated: type = string
+PASS Payload size restriction should be accumulated: type = arraybuffer
+PASS Payload size restriction should be accumulated: type = blob
+PASS sendBeacon() with a stream does not work due to the keepalive flag being set
+Harness: the test ran to completion.
+

@@ -1,9 +1,0 @@
-<!DOCTYPE HTML>
-<script src="/js-test-resources/testharness.js"></script>
-<script src="/js-test-resources/testharnessreport.js"></script>
-<script>
-test(() => {
-  assert_true(navigator.sendBeacon("/", new Blob(["X"], {type: "image/png"})));
-}, "navigator.sendBeacon() to a cross-origin target with a Blob body with " +
-   "non-simple type should not throw.");
-</script>
