@@ -11,12 +11,11 @@
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 
 namespace syncer {
 
 namespace {
-
-const char kSecurityDomainName[] = "chromesync";
 
 struct ExtractedSharedKey {
   int version;
@@ -30,7 +29,7 @@ const sync_pb::SecurityDomain* FindSyncSecurityDomain(
     const sync_pb::ListSecurityDomainsResponse& response) {
   for (const sync_pb::SecurityDomain& security_domain :
        response.security_domains()) {
-    if (security_domain.name() == kSecurityDomainName) {
+    if (security_domain.name() == kSyncSecurityDomainName) {
       return &security_domain;
     }
   }

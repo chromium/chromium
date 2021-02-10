@@ -18,6 +18,7 @@
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -38,11 +39,6 @@ using testing::SizeIs;
 const char kAccessToken[] = "access_token";
 const char kEncodedPrivateKey[] =
     "49e052293c29b5a50b0013eec9d030ac2ad70a42fe093be084264647cb04e16f";
-const char kTestURL[] = "https://test.com/test";
-const char kTestJoinSecurityDomainsURL[] =
-    "https://test.com/test/domain:join?alt=proto";
-const char kTestListSecurityDomainsURL[] =
-    "https://test.com/test/domain:list?view=1&alt=proto";
 
 std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   std::vector<uint8_t> private_key_bytes;
@@ -82,7 +78,7 @@ class TrustedVaultConnectionImplTest : public testing::Test {
  public:
   TrustedVaultConnectionImplTest()
       : connection_(
-            GURL(kTestURL),
+            kTestURL,
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)
                 ->Clone(),
@@ -98,7 +94,7 @@ class TrustedVaultConnectionImplTest : public testing::Test {
   std::unique_ptr<TrustedVaultConnectionImpl> CreateConnectionWithAccessToken(
       base::Optional<std::string> access_token) {
     return std::make_unique<TrustedVaultConnectionImpl>(
-        GURL(kTestURL),
+        kTestURL,
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_)
             ->Clone(),
@@ -116,7 +112,7 @@ class TrustedVaultConnectionImplTest : public testing::Test {
     // Allow request to reach |test_url_loader_factory_|.
     base::RunLoop().RunUntilIdle();
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kTestJoinSecurityDomainsURL,
+        GetFullJoinSecurityDomainsURLForTesting(kTestURL).spec(),
         /*content=*/std::string(), response_http_code);
   }
 
@@ -125,11 +121,12 @@ class TrustedVaultConnectionImplTest : public testing::Test {
     // Allow request to reach |test_url_loader_factory_|.
     base::RunLoop().RunUntilIdle();
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kTestListSecurityDomainsURL, /*content=*/std::string(),
-        response_http_code);
+        GetFullListSecurityDomainsURLForTesting(kTestURL).spec(),
+        /*content=*/std::string(), response_http_code);
   }
 
   const std::vector<uint8_t> kTrustedVaultKey = {1, 2, 3, 4};
+  const GURL kTestURL = GURL("https://test.com/test");
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -161,7 +158,7 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
       pending_http_request->request;
   EXPECT_THAT(resource_request.method, Eq("POST"));
   EXPECT_THAT(resource_request.url,
-              Eq(GURL(std::string(kTestURL) + "/domain:join?alt=proto")));
+              Eq(GetFullJoinSecurityDomainsURLForTesting(kTestURL)));
 
   sync_pb::JoinSecurityDomainsRequest deserialized_body;
   deserialized_body.ParseFromString(network::GetUploadData(resource_request));
@@ -169,7 +166,7 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendJoinSecurityDomainsRequest) {
   ASSERT_THAT(deserialized_body.security_domains(), SizeIs(1));
   const sync_pb::SecurityDomain& security_domain =
       deserialized_body.security_domains(0);
-  EXPECT_THAT(security_domain.name(), Eq("chromesync"));
+  EXPECT_THAT(security_domain.name(), Eq(kSyncSecurityDomainName));
 
   ASSERT_THAT(security_domain.members(), SizeIs(1));
   const sync_pb::SecurityDomain::Member& member = security_domain.members(0);
@@ -327,7 +324,8 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendListSecurityDomainsRequest) {
   const network::ResourceRequest& resource_request =
       pending_http_request->request;
   EXPECT_THAT(resource_request.method, Eq("GET"));
-  EXPECT_THAT(resource_request.url, Eq(GURL(kTestListSecurityDomainsURL)));
+  EXPECT_THAT(resource_request.url,
+              Eq(GetFullListSecurityDomainsURLForTesting(kTestURL)));
 }
 
 // TODO(crbug.com/1113598): add coverage for at least one successful case

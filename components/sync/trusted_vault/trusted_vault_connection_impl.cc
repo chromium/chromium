@@ -16,14 +16,12 @@
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace syncer {
 
 namespace {
-
-const char kJoinSecurityDomainsURLPath[] = "/domain:join";
-const char kListSecurityDomainsURLPathAndQuery[] = "/domain:list?view=1";
 
 void ProcessDownloadKeysResponse(
     std::unique_ptr<DownloadKeysResponseHandler> response_handler,

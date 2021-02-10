@@ -14,6 +14,7 @@
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -31,22 +32,13 @@ using testing::Pointee;
 const char kAccessToken[] = "access_token";
 const char kEncodedPrivateKey[] =
     "49e052293c29b5a50b0013eec9d030ac2ad70a42fe093be084264647cb04e16f";
-const char kJoinSecurityDomainsURL[] = "https://test.org/test/domain:join";
-const char kListSecurityDomainsURL[] = "https://test.org/test/domain:list";
-
-std::vector<uint8_t> GetConstantKey() {
-  return std::vector<uint8_t>(16, 0);
-}
+const char kTestURL[] = "https://test.com/test";
 
 std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   std::vector<uint8_t> private_key_bytes;
   bool success = base::HexStringToBytes(kEncodedPrivateKey, &private_key_bytes);
   DCHECK(success);
   return SecureBoxKeyPair::CreateByPrivateKeyImport(private_key_bytes);
-}
-
-GURL GetUrlWithAlternateProtoParam(const std::string& url) {
-  return GURL(url + "?alt=proto");
 }
 
 MATCHER(IsValidListSecurityDomainsRequest, "") {
@@ -56,7 +48,7 @@ MATCHER(IsValidListSecurityDomainsRequest, "") {
       pending_http_request.request;
   return resource_request.method == "GET" &&
          resource_request.url ==
-             GetUrlWithAlternateProtoParam(kListSecurityDomainsURL);
+             GetFullListSecurityDomainsURLForTesting(GURL(kTestURL));
 }
 
 MATCHER_P(IsValidJoinSecurityDomainsRequestWithSharedKey,
@@ -68,7 +60,7 @@ MATCHER_P(IsValidJoinSecurityDomainsRequestWithSharedKey,
       pending_http_request.request;
   if (resource_request.method != "POST" ||
       resource_request.url !=
-          GetUrlWithAlternateProtoParam(kJoinSecurityDomainsURL)) {
+          GetFullJoinSecurityDomainsURLForTesting(GURL(kTestURL))) {
     return false;
   }
 
@@ -80,7 +72,7 @@ MATCHER_P(IsValidJoinSecurityDomainsRequestWithSharedKey,
 
   sync_pb::SecurityDomain security_domain =
       deserialized_body.security_domains(0);
-  if (security_domain.name() != "chromesync" ||
+  if (security_domain.name() != kSyncSecurityDomainName ||
       security_domain.members_size() != 1) {
     return false;
   }
@@ -132,8 +124,10 @@ class RegisterAuthenticationFactorRequestTest : public testing::Test {
  public:
   RegisterAuthenticationFactorRequestTest()
       : request_(
-            GURL(kJoinSecurityDomainsURL),
-            GURL(kListSecurityDomainsURL),
+            /*join_security_domains_url=*/GURL(std::string(kTestURL) +
+                                               kJoinSecurityDomainsURLPath),
+            /*list_security_domains_url=*/
+            GURL(std::string(kTestURL) + kListSecurityDomainsURLPathAndQuery),
             /*url_loader_factory=*/
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
@@ -147,14 +141,14 @@ class RegisterAuthenticationFactorRequestTest : public testing::Test {
 
   bool RespondToJoinSecurityDomainsRequest() {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        GetUrlWithAlternateProtoParam(kJoinSecurityDomainsURL).spec(),
+        GetFullJoinSecurityDomainsURLForTesting(GURL(kTestURL)).spec(),
         /*content=*/std::string(), net::HttpStatusCode::HTTP_OK);
   }
 
   bool RespondToListSecurityDomainsRequest(
       const sync_pb::ListSecurityDomainsResponse& response) {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        GetUrlWithAlternateProtoParam(kListSecurityDomainsURL).spec(),
+        GetFullListSecurityDomainsURLForTesting(GURL(kTestURL)).spec(),
         /*content=*/response.SerializeAsString(), net::HttpStatusCode::HTTP_OK);
   }
 
@@ -199,10 +193,10 @@ TEST_F(RegisterAuthenticationFactorRequestTest,
 
   EXPECT_TRUE(RespondToListSecurityDomainsRequest(
       sync_pb::ListSecurityDomainsResponse()));
-  EXPECT_THAT(
-      GetPendingHTTPRequest(),
-      Pointee(IsValidJoinSecurityDomainsRequestWithSharedKey(
-          TrustedVaultKeyAndVersion(/*key=*/GetConstantKey(), /*version=*/0))));
+  EXPECT_THAT(GetPendingHTTPRequest(),
+              Pointee(IsValidJoinSecurityDomainsRequestWithSharedKey(
+                  TrustedVaultKeyAndVersion(
+                      /*key=*/GetConstantTrustedVaultKey(), /*version=*/0))));
 
   EXPECT_CALL(callback, Run(TrustedVaultRequestStatus::kSuccess));
   EXPECT_TRUE(RespondToJoinSecurityDomainsRequest());

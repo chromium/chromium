@@ -11,6 +11,7 @@
 #include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +25,6 @@ using testing::IsEmpty;
 
 const char kEncodedPrivateKey[] =
     "49e052293c29b5a50b0013eec9d030ac2ad70a42fe093be084264647cb04e16f";
-const char kSecurityDomainName[] = "chromesync";
 
 std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   std::vector<uint8_t> private_key_bytes;
@@ -69,7 +69,7 @@ std::string CreateListSecurityDomainsResponseWithSingleSyncMember(
     const std::vector<std::vector<uint8_t>>& signing_keys) {
   sync_pb::ListSecurityDomainsResponse response;
   sync_pb::SecurityDomain* security_domain = response.add_security_domains();
-  security_domain->set_name(kSecurityDomainName);
+  security_domain->set_name(kSyncSecurityDomainName);
   FillSecurityDomainMember(MakeTestKeyPair()->public_key(), trusted_vault_keys,
                            trusted_vault_keys_versions, signing_keys,
                            security_domain->add_members());
@@ -252,7 +252,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleUndecryptableKey) {
   sync_pb::ListSecurityDomainsResponse response;
   sync_pb::SecurityDomain* security_domain = response.add_security_domains();
-  security_domain->set_name(kSecurityDomainName);
+  security_domain->set_name(kSyncSecurityDomainName);
   sync_pb::SecurityDomain::Member* member = security_domain->add_members();
   FillSecurityDomainMember(
       MakeTestKeyPair()->public_key(),
@@ -376,7 +376,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
   other_domain->set_name("other_domain");
 
   sync_pb::SecurityDomain* sync_domain = response.add_security_domains();
-  sync_domain->set_name(kSecurityDomainName);
+  sync_domain->set_name(kSyncSecurityDomainName);
   FillSecurityDomainMember(
       /*public_key=*/MakeTestKeyPair()->public_key(),
       /*trusted_vault_keys=*/{kKnownTrustedVaultKey, kTrustedVaultKey1},
@@ -401,7 +401,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMember) {
   sync_pb::ListSecurityDomainsResponse response;
   sync_pb::SecurityDomain* security_domain = response.add_security_domains();
-  security_domain->set_name(kSecurityDomainName);
+  security_domain->set_name(kSyncSecurityDomainName);
 
   FillSecurityDomainMember(
       /*public_key=*/SecureBoxKeyPair::GenerateRandom()->public_key(),
@@ -423,7 +423,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMember) {
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleMembers) {
   sync_pb::ListSecurityDomainsResponse response;
   sync_pb::SecurityDomain* security_domain = response.add_security_domains();
-  security_domain->set_name(kSecurityDomainName);
+  security_domain->set_name(kSyncSecurityDomainName);
 
   // Other member.
   FillSecurityDomainMember(

@@ -13,19 +13,12 @@
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_crypto.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace syncer {
 
 namespace {
-
-// TODO(crbug.com/1113598): Find a good place for kSecurityDomainName constant,
-// which is used in several files.
-const char kSecurityDomainName[] = "chromesync";
-
-std::vector<uint8_t> CreateConstantTrustedVaultKey() {
-  return std::vector<uint8_t>(16, 0);
-}
 
 // Returns pointer to sync security domain in |response|. Returns nullptr if
 // there is no sync security domain.
@@ -33,7 +26,7 @@ const sync_pb::SecurityDomain* FindSyncSecurityDomain(
     const sync_pb::ListSecurityDomainsResponse& response) {
   for (const sync_pb::SecurityDomain& security_domain :
        response.security_domains()) {
-    if (security_domain.name() == kSecurityDomainName) {
+    if (security_domain.name() == kSyncSecurityDomainName) {
       return &security_domain;
     }
   }
@@ -66,7 +59,7 @@ sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
       CreateMemberSharedKey(last_trusted_vault_key_and_version, public_key);
 
   sync_pb::SecurityDomain security_domain;
-  security_domain.set_name(kSecurityDomainName);
+  security_domain.set_name(kSyncSecurityDomainName);
   *security_domain.add_members() = member;
 
   sync_pb::JoinSecurityDomainsRequest result;
@@ -172,7 +165,7 @@ void RegisterAuthenticationFactorRequest::OnListSecurityDomainsCompleted(
   if (!sync_security_domain) {
     // Sync security domain doesn't exist yet, |version| should be set to 0.
     StartJoinSecurityDomainsRequest(TrustedVaultKeyAndVersion(
-        /*key=*/CreateConstantTrustedVaultKey(), /*version=*/0));
+        /*key=*/GetConstantTrustedVaultKey(), /*version=*/0));
     return;
   }
 
@@ -194,13 +187,13 @@ void RegisterAuthenticationFactorRequest::OnListSecurityDomainsCompleted(
     // Security domain doesn't contain any member with a valid shared key,
     // |version| should be set to 0.
     StartJoinSecurityDomainsRequest(TrustedVaultKeyAndVersion(
-        /*key=*/CreateConstantTrustedVaultKey(), /*version=*/0));
+        /*key=*/GetConstantTrustedVaultKey(), /*version=*/0));
     return;
   }
 
   DCHECK(shared_key_with_largest_epoch);
   if (!VerifyTrustedVaultHMAC(
-          /*key=*/CreateConstantTrustedVaultKey(),
+          /*key=*/GetConstantTrustedVaultKey(),
           /*data=*/ProtoStringToBytes(member_with_largest_epoch->public_key()),
           /*digest=*/
           ProtoStringToBytes(shared_key_with_largest_epoch->member_proof()))) {
@@ -211,7 +204,7 @@ void RegisterAuthenticationFactorRequest::OnListSecurityDomainsCompleted(
   }
 
   StartJoinSecurityDomainsRequest(TrustedVaultKeyAndVersion(
-      /*key=*/CreateConstantTrustedVaultKey(),
+      /*key=*/GetConstantTrustedVaultKey(),
       /*version=*/shared_key_with_largest_epoch->epoch()));
 }
 
