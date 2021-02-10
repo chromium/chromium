@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "chromeos/network/cellular_esim_profile.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
@@ -77,17 +78,16 @@ void Euicc::InstallProfileFromActivationCode(
   }
 
   // Try installing directly with activation code.
-  HermesEuiccClient::Get()->InstallProfileFromActivationCode(
-      path_, activation_code, confirmation_code,
-      base::BindOnce(&Euicc::OnProfileInstallResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
+      base::BindOnce(&Euicc::PerformInstallProfileFromActivationCode,
+                     weak_ptr_factory_.GetWeakPtr(), activation_code,
+                     confirmation_code, std::move(callback)));
 }
 
 void Euicc::RequestPendingProfiles(RequestPendingProfilesCallback callback) {
   NET_LOG(EVENT) << "Requesting Pending profiles";
-  HermesEuiccClient::Get()->RequestPendingProfiles(
-      path_, /*root_smds=*/std::string(),
-      base::BindOnce(&Euicc::OnRequestPendingEventsResult,
+  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
+      base::BindOnce(&Euicc::PerformRequestPendingProfiles,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -175,8 +175,28 @@ ESimProfile* Euicc::GetProfileFromPath(const dbus::ObjectPath& path) {
   return nullptr;
 }
 
+void Euicc::PerformInstallProfileFromActivationCode(
+    const std::string& activation_code,
+    const std::string& confirmation_code,
+    InstallProfileFromActivationCodeCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Error inhibiting cellular device";
+    std::move(callback).Run(mojom::ProfileInstallResult::kFailure,
+                            mojo::NullRemote());
+    return;
+  }
+
+  HermesEuiccClient::Get()->InstallProfileFromActivationCode(
+      path_, activation_code, confirmation_code,
+      base::BindOnce(&Euicc::OnProfileInstallResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(inhibit_lock)));
+}
+
 void Euicc::OnProfileInstallResult(
     InstallProfileFromActivationCodeCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status,
     const dbus::ObjectPath* object_path) {
   if (status != HermesResponseStatus::kSuccess) {
@@ -198,10 +218,28 @@ void Euicc::OnProfileInstallResult(
   }
   std::move(callback).Run(mojom::ProfileInstallResult::kSuccess,
                           esim_profile->CreateRemote());
+  // inhibit_lock goes out of scope and will uninhibit automatically.
 }
 
-void Euicc::OnRequestPendingEventsResult(
+void Euicc::PerformRequestPendingProfiles(
     RequestPendingProfilesCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Error inhibiting cellular device";
+    std::move(callback).Run(mojom::ESimOperationResult::kFailure);
+    return;
+  }
+
+  HermesEuiccClient::Get()->RequestPendingProfiles(
+      path_, /*root_smds=*/std::string(),
+      base::BindOnce(&Euicc::OnRequestPendingProfilesResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(inhibit_lock)));
+}
+
+void Euicc::OnRequestPendingProfilesResult(
+    RequestPendingProfilesCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status) {
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Request Pending events failed status="
@@ -210,6 +248,7 @@ void Euicc::OnRequestPendingEventsResult(
   std::move(callback).Run(status == HermesResponseStatus::kSuccess
                               ? mojom::ESimOperationResult::kSuccess
                               : mojom::ESimOperationResult::kFailure);
+  // inhibit_lock goes out of scope and will uninhibit automatically.
 }
 
 mojom::ProfileInstallResult Euicc::GetPendingProfileInfoFromActivationCode(

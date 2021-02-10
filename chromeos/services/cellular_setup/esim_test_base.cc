@@ -62,9 +62,9 @@ void ESimTestBase::SetUp() {
       std::make_unique<TestCellularESimProfileHandler>();
   cellular_esim_profile_handler_->Init();
 
-  esim_manager_ =
-      std::make_unique<ESimManager>(cellular_esim_profile_handler_.get(),
-                                    cellular_esim_uninstall_handler_.get());
+  esim_manager_ = std::make_unique<ESimManager>(
+      cellular_esim_profile_handler_.get(),
+      cellular_esim_uninstall_handler_.get(), cellular_inhibitor_.get());
   observer_ = std::make_unique<ESimManagerTestObserver>();
   esim_manager_->AddObserver(observer_->GenerateRemote());
 }

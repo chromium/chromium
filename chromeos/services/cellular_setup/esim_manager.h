@@ -22,6 +22,7 @@ class ObjectPath;
 namespace chromeos {
 
 class CellularESimUninstallHandler;
+class CellularInhibitor;
 
 namespace cellular_setup {
 
@@ -39,7 +40,8 @@ class ESimManager : public mojom::ESimManager,
  public:
   ESimManager();
   ESimManager(CellularESimProfileHandler* cellular_esim_profile_handler,
-              CellularESimUninstallHandler* cellular_esim_uninstall_handler);
+              CellularESimUninstallHandler* cellular_esim_uninstall_handler,
+              CellularInhibitor* cellular_inhibitor);
   ESimManager(const ESimManager&) = delete;
   ESimManager& operator=(const ESimManager&) = delete;
   ~ESimManager() override;
@@ -72,6 +74,8 @@ class ESimManager : public mojom::ESimManager,
     return cellular_esim_uninstall_handler_;
   }
 
+  CellularInhibitor* cellular_inhibitor() { return cellular_inhibitor_; }
+
  private:
   void UpdateAvailableEuiccs();
   // Removes Euicc objects in |available_euiiccs_| that are not in
@@ -84,6 +88,7 @@ class ESimManager : public mojom::ESimManager,
 
   CellularESimProfileHandler* cellular_esim_profile_handler_;
   CellularESimUninstallHandler* cellular_esim_uninstall_handler_;
+  CellularInhibitor* cellular_inhibitor_;
   std::vector<std::unique_ptr<Euicc>> available_euiccs_;
   mojo::RemoteSet<mojom::ESimManagerObserver> observers_;
   mojo::ReceiverSet<mojom::ESimManager> receivers_;

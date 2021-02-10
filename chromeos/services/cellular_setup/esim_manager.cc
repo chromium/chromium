@@ -19,13 +19,16 @@ namespace cellular_setup {
 
 ESimManager::ESimManager()
     : ESimManager(NetworkHandler::Get()->cellular_esim_profile_handler(),
-                  NetworkHandler::Get()->cellular_esim_uninstall_handler()) {}
+                  NetworkHandler::Get()->cellular_esim_uninstall_handler(),
+                  NetworkHandler::Get()->cellular_inhibitor()) {}
 
 ESimManager::ESimManager(
     CellularESimProfileHandler* cellular_esim_profile_handler,
-    CellularESimUninstallHandler* cellular_esim_uninstall_handler)
+    CellularESimUninstallHandler* cellular_esim_uninstall_handler,
+    CellularInhibitor* cellular_inhibitor)
     : cellular_esim_profile_handler_(cellular_esim_profile_handler),
-      cellular_esim_uninstall_handler_(cellular_esim_uninstall_handler) {
+      cellular_esim_uninstall_handler_(cellular_esim_uninstall_handler),
+      cellular_inhibitor_(cellular_inhibitor) {
   HermesManagerClient::Get()->AddObserver(this);
   HermesEuiccClient::Get()->AddObserver(this);
   cellular_esim_profile_handler_->AddObserver(this);

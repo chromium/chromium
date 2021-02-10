@@ -7,6 +7,7 @@
 
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -64,11 +65,23 @@ class Euicc : public mojom::Euicc {
   using ProfileInstallResultCallback =
       base::OnceCallback<void(mojom::ProfileInstallResult)>;
 
-  void OnProfileInstallResult(InstallProfileFromActivationCodeCallback callback,
-                              HermesResponseStatus status,
-                              const dbus::ObjectPath* object_path);
-  void OnRequestPendingEventsResult(RequestPendingProfilesCallback callback,
-                                    HermesResponseStatus status);
+  void PerformInstallProfileFromActivationCode(
+      const std::string& activation_code,
+      const std::string& confirmation_code,
+      InstallProfileFromActivationCodeCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnProfileInstallResult(
+      InstallProfileFromActivationCodeCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status,
+      const dbus::ObjectPath* object_path);
+  void PerformRequestPendingProfiles(
+      RequestPendingProfilesCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRequestPendingProfilesResult(
+      RequestPendingProfilesCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status);
   mojom::ProfileInstallResult GetPendingProfileInfoFromActivationCode(
       const std::string& activation_code,
       ESimProfile** profile_info);
