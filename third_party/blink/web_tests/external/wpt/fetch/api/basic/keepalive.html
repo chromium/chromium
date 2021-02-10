@@ -42,7 +42,7 @@ async function queryToken(token) {
 // an async_test.
 function checkToken(testName, token) {
   async_test((test) => {
-    new Promise((resolve) => test.step_timeout(resolve, 1000)).then(() => {
+    new Promise((resolve) => test.step_timeout(resolve, 3000)).then(() => {
       return queryToken(token);
     }).then((result) => {
       assert_equals(result, 'on');
