@@ -67,11 +67,6 @@ class ExtensionResource {
 
   bool empty() const { return relative_path_.empty(); }
 
-  // Unit test helpers.
-  base::FilePath::StringType NormalizeSeperators(
-      const base::FilePath::StringType& path) const;
-  bool ComparePathWithDefault(const base::FilePath& path) const;
-
  private:
   // The id of the extension that this resource is associated with.
   ExtensionId extension_id_;

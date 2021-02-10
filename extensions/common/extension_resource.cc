@@ -4,11 +4,8 @@
 
 #include "extensions/common/extension_resource.h"
 
-#include <stddef.h>
-
 #include "base/check.h"
 #include "base/files/file_util.h"
-#include "base/threading/thread_restrictions.h"
 
 namespace extensions {
 
@@ -100,34 +97,6 @@ base::FilePath ExtensionResource::GetFilePath(
   }
 
   return base::FilePath();
-}
-
-// Unit-testing helpers.
-base::FilePath::StringType ExtensionResource::NormalizeSeperators(
-    const base::FilePath::StringType& path) const {
-#if defined(FILE_PATH_USES_WIN_SEPARATORS)
-  base::FilePath::StringType win_path = path;
-  for (size_t i = 0; i < win_path.length(); i++) {
-    if (base::FilePath::IsSeparator(win_path[i]))
-      win_path[i] = base::FilePath::kSeparators[0];
-  }
-  return win_path;
-#else
-  return path;
-#endif  // FILE_PATH_USES_WIN_SEPARATORS
-}
-
-bool ExtensionResource::ComparePathWithDefault(
-    const base::FilePath& path) const {
-  // Make sure we have a cached value to test against...
-  if (full_resource_path_.empty())
-    GetFilePath();
-  if (NormalizeSeperators(path.value()) ==
-    NormalizeSeperators(full_resource_path_.value())) {
-    return true;
-  } else {
-    return false;
-  }
 }
 
 }  // namespace extensions
