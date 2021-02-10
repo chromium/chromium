@@ -1179,7 +1179,7 @@ if (!is_android) {
       "../browser/net/network_quality_tracker_browsertest.cc",
       "../browser/net/network_request_metrics_browsertest.cc",
       "../browser/net/nss_context_chromeos_browsertest.cc",
-      "../browser/net/private_network_request_browsertest.cc",
+      "../browser/net/private_network_access_browsertest.cc",
       "../browser/net/profile_network_context_service_browsertest.cc",
       "../browser/net/profile_network_context_service_test_utils.cc",
       "../browser/net/profile_network_context_service_test_utils.h",
