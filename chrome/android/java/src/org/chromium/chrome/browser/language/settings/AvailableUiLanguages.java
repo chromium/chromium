@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.language.settings;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.LocaleUtils;
-import org.chromium.chrome.browser.ProductConfig;
+import org.chromium.ui.base.ResourceBundle;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -19,23 +18,14 @@ public class AvailableUiLanguages {
     private AvailableUiLanguages() {}
 
     /**
-     * Get available language set from {@link ProductConfig}, which is a sorted
-     * array of language tags included in this build.
-     */
-    private static String[] getLanguageList() {
-        if (BundleUtils.isBundle()) {
-            return ProductConfig.UNCOMPRESSED_LOCALES;
-        }
-        return ProductConfig.COMPRESSED_LOCALES;
-    }
-
-    /**
      * Return true if the language is available as the UI language. This is used to disable
      * the overflow option when selecting a UI language.
      * @param language BCP-47 language tag representing a locale (e.g. "en-US")
      */
     public static boolean isAvailable(String language) {
-        return Arrays.binarySearch(getLanguageList(), language, LANGUAGE_COMPARATOR) >= 0;
+        return Arrays.binarySearch(
+                       ResourceBundle.getAvailableLocales(), language, LANGUAGE_COMPARATOR)
+                >= 0;
     }
 
     /**

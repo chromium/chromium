@@ -1264,6 +1264,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.Language.UiIsSystemLanguage" enum="BooleanMatched"
     expires_after="2021-12-01">
+  <obsolete>
+    Replaced by LanguageUsage.UI.Android.* Feb 2021.
+  </obsolete>
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -1274,6 +1277,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.Language.WrongLanguageAfterResume" enum="Boolean"
     expires_after="2021-12-01">
+  <obsolete>
+    Replaced by LanguageUsage.UI.Android.* Feb 2021.
+  </obsolete>
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

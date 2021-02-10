@@ -7,6 +7,7 @@ package org.chromium.ui.base;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
@@ -60,6 +61,20 @@ public final class ResourceBundle {
      */
     public static String[] getAvailableCompressedPakLocales() {
         assert sCompressedLocales != null;
+        return sCompressedLocales;
+    }
+
+    /**
+     * Return the list of available locales. For bundle builds this is the uncompressed locales list
+     * and for apk builds this is the compressed locales list.
+     * @return The correct locale list for this build.
+     */
+    public static String[] getAvailableLocales() {
+        assert sCompressedLocales != null;
+        assert sUncompressedLocales != null;
+        if (BundleUtils.isBundle()) {
+            return sUncompressedLocales;
+        }
         return sCompressedLocales;
     }
 

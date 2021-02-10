@@ -8,14 +8,12 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import com.google.android.play.core.splitcompat.SplitCompat;
 import com.google.android.play.core.splitinstall.SplitInstallManager;
 import com.google.android.play.core.splitinstall.SplitInstallManagerFactory;
 import com.google.android.play.core.splitinstall.SplitInstallRequest;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -77,21 +75,6 @@ public class AppLocaleUtils {
     }
 
     /**
-     * Enable access to language split for bundle builds with an override language set.
-     * @param context Activity context to enable downloaded language splits on.
-     */
-    public static void maybeInstallActivitySplitCompat(Context context) {
-        if (GlobalAppLocaleController.getInstance().isOverridden() && BundleUtils.isBundle()) {
-            Log.i(TAG, "maybeInstallActivitySplit isOverridden: %s  isBundle: %s",
-                    GlobalAppLocaleController.getInstance().isOverridden(), BundleUtils.isBundle());
-            Log.i(TAG, "Override Locale: %s", getAppLanguagePref());
-            logInstalledLanguages(context);
-            SplitCompat.installActivity(context);
-            logInstalledLanguages(context);
-        }
-    }
-
-    /**
      * For bundle builds ensure that the language split for languageName is downloaded.
      */
     private static void ensureLanguageSplitInstalled(String languageName) {
@@ -105,20 +88,6 @@ public class AppLocaleUtils {
                             .addLanguage(Locale.forLanguageTag(languageName))
                             .build();
             splitInstallManager.startInstall(installRequest);
-        }
-    }
-
-    /**
-     * Log list of installed languages for context.
-     * @param context Context to log installed languages on.
-     */
-    private static void logInstalledLanguages(Context context) {
-        if (BundleUtils.isBundle()) {
-            SplitInstallManager splitInstallManager = SplitInstallManagerFactory.create(context);
-            Log.i(TAG, "Installed Languages: %s",
-                    TextUtils.join(", ", splitInstallManager.getInstalledLanguages()));
-        } else {
-            Log.i(TAG, "Installed Languages: None - not a bundle");
         }
     }
 }

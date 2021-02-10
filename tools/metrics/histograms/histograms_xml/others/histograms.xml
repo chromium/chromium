@@ -7870,7 +7870,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageSettings.PageImpression"
-    enum="LanguageSettingsPageType" expires_after="2021-07-11">
+    enum="LanguageSettingsPageType" expires_after="2021-12-01">
   <owner>googleo@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -7881,7 +7881,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageCode"
-    expires_after="2021-06-06">
+    expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -7891,7 +7891,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.Count" units="units"
-    expires_after="2021-08-01">
+    expires_after="2021-12-01">
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -7901,7 +7901,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageCode"
-    expires_after="2021-06-06">
+    expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -7911,13 +7911,70 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageCode"
-    expires_after="2021-06-20">
+    expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Source page language from UrlLanguageHistogram recorded one per profile
     during initialization. Each language with a frequency over 5% is recorded
     once. Incognito profiles are ignored and not recorded on ChromeOS.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.Availability"
+    enum="LanguageUsage.UI.Android.Availability" expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The availability status of Android system languages for use as the Chromium
+    UI language. If the Chromium UI language is overridden, it must be
+    avaliable. The default language is the one used by the JVM for localization.
+    This will be different from the top Android language if the top Android
+    language is not available for localization in Chromium. For more info, see
+    the Android documentation on LocaleList.getDefault().
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.Correctness"
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The status of the current Chromium UI. It is correct when the UI matches
+    what the JVM default language is set to.
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.Correctness.NoOverride"
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The status of the current Chromium UI when the UI language is not
+    overridden. The UI language is correct when it matches the default Android
+    system language. If no Android language is available as the Chromium
+    language, then the UI is by definition incorrect.
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.Correctness.Override"
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The status of the current Chromium UI when the UI language is overridden.
+    The UI language is correct when it matches the override UI value set as the
+    default locale. The Native UI language can be different from the Java UI
+    language if Play Store daily hygiene has not run since an override language
+    was set.
+
+    This histogram is recorded during onForgroundStart() for Android.
   </summary>
 </histogram>
 

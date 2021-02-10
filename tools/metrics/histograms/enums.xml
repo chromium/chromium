@@ -41581,6 +41581,28 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Target Language"/>
 </enum>
 
+<enum name="LanguageUsage.UI.Android.Availability">
+  <int value="0" label="Top Available">Top Android language is available.</int>
+  <int value="1" label="Only Default Available">
+    Top Android language is not available but another one is.
+  </int>
+  <int value="2" label="None Available"/>
+  <int value="3" label="Overridden">
+    Overridden languages must be avaliable.
+  </int>
+</enum>
+
+<enum name="LanguageUsage.UI.Android.Correctness">
+  <int value="0" label="Correct"/>
+  <int value="1" label="Incorrect"/>
+  <int value="2" label="Not Available">
+    Languages that are not available cannot be correct.
+  </int>
+  <int value="3" label="Only Java Correct">
+    The Java UI language is correct but native UI language not.
+  </int>
+</enum>
+
 <enum name="LargestContentfulPaint.TerminationState">
   <summary>
     The state of the largest contentful paint algorithm at the time of

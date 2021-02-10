@@ -233,8 +233,8 @@ public class ChromeBrowserInitializer {
         // be on first run when we need to extract all the .pak files we need, or after
         // the user has switched locale, in which case we want new locale resources.
         ResourceExtractor.get().setResultTraits(UiThreadTaskTraits.BOOTSTRAP);
-        ResourceExtractor.get().startExtractingResources(LocaleUtils.toLanguage(
-                ChromeLocalizationUtils.getUiLocaleStringForCompressedPak()));
+        ResourceExtractor.get().startExtractingResources(
+                LocaleUtils.toLanguage(ChromeLocalizationUtils.getJavaUiLocale()));
 
         mPostInflationStartupComplete = true;
     }
