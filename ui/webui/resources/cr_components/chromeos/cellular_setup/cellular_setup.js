@@ -24,10 +24,7 @@ Polymer({
      * Name of the currently displayed sub-page.
      * @private {!cellularSetup.CellularSetupPageName|null}
      */
-    currentPageName: {
-      type: String,
-      value: cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION,
-    },
+    currentPageName: String,
 
     /**
      * Current user selected setup flow page name.
@@ -72,6 +69,57 @@ Polymer({
     'retry-requested': 'onRetryRequested_',
     'forward-nav-requested': 'onForwardNavRequested_',
     'cancel-requested': 'onCancelRequested_',
+  },
+
+
+  /** @override */
+  attached() {
+    if (!this.currentPageName) {
+      const networkConfig =
+          network_config.MojoInterfaceProviderImpl.getInstance()
+              .getMojoServiceRemote();
+      networkConfig.getDeviceStateList().then(response => {
+        this.setCurrentPage_(response.result);
+      });
+    }
+  },
+
+  /**
+   * @param {!Array<!chromeos.networkConfig.mojom.DeviceStateProperties>}
+   *     deviceStateList
+   * @private
+   */
+  setCurrentPage_(deviceStateList) {
+    let pSimSlots = 0;
+    let eSimSlots = 0;
+
+    const device = deviceStateList.find(
+        (device) =>
+            device.type === chromeos.networkConfig.mojom.NetworkType.kCellular);
+
+    if (!device || !device.simInfos) {
+      this.currentPageName =
+          cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
+      return;
+    }
+
+    for (const simInfo of device.simInfos) {
+      if (simInfo.eid) {
+        eSimSlots++;
+        continue;
+      }
+      pSimSlots++;
+    }
+
+    if (pSimSlots > 0 && eSimSlots === 0) {
+      this.currentPageName = cellularSetup.CellularSetupPageName.PSIM_FLOW_UI;
+      return;
+    } else if (pSimSlots === 0 && eSimSlots > 0) {
+      this.currentPageName = cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
+      return;
+    }
+    this.currentPageName =
+        cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION;
   },
 
   /** @private */

@@ -71,6 +71,8 @@ GEN('#include "content/public/test/browser_test.h"');
   ['ButtonBar', 'cellular_setup/button_bar_test.js',[]],
   ['CellularSetup', 'cellular_setup/cellular_setup_test.js', [
     './cellular_setup/fake_cellular_setup_delegate.js',
+    './cellular_setup/fake_esim_manager_remote.js',
+    '../../chromeos/fake_network_config_mojom.js',
   ]],
   ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.js',[
     './cellular_setup/fake_cellular_setup_delegate.js',

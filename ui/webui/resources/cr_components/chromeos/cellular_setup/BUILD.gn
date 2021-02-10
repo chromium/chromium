@@ -165,6 +165,7 @@ js_library("cellular_setup") {
     ":esim_flow_ui",
     ":psim_flow_ui",
     ":setup_selection_flow",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
     "//ui/webui/resources/js:i18n_behavior",
   ]
 }
@@ -418,6 +419,7 @@ js_library("cellular_setup.m") {
     ":esim_flow_ui.m",
     ":psim_flow_ui.m",
     ":setup_selection_flow.m",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":cellular_setup_module" ]
