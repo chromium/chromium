@@ -59,6 +59,7 @@ const base::Feature kProminentDarkModeActiveTabTitle{
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 
 // Enables buttons to permanently appear on the tabstrip when
 // scrollable-tabstrip is enabled. https://crbug.com/1116118

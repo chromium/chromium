@@ -1459,6 +1459,25 @@ const FeatureEntry::FeatureVariation kTabHoverCardsFeatureVariations[] = {
     {"B", kTabHoverCardsSettingB, base::size(kTabHoverCardsSettingB), nullptr},
     {"C", kTabHoverCardsSettingC, base::size(kTabHoverCardsSettingC), nullptr}};
 
+const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
+    {features::kMinimumTabWidthFeatureParameterName, "54"}};
+const FeatureEntry::FeatureParam kMinimumTabWidthSettingMedium[] = {
+    {features::kMinimumTabWidthFeatureParameterName, "72"}};
+const FeatureEntry::FeatureParam kMinimumTabWidthSettingLarge[] = {
+    {features::kMinimumTabWidthFeatureParameterName, "140"}};
+const FeatureEntry::FeatureParam kMinimumTabWidthSettingFull[] = {
+    {features::kMinimumTabWidthFeatureParameterName, "256"}};
+
+const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
+    {" - tabs shrink to pinned tab width", kMinimumTabWidthSettingPinned,
+     base::size(kMinimumTabWidthSettingPinned), nullptr},
+    {" - tabs shrink to a medium width", kMinimumTabWidthSettingMedium,
+     base::size(kMinimumTabWidthSettingMedium), nullptr},
+    {" - tabs shrink to a large width", kMinimumTabWidthSettingLarge,
+     base::size(kMinimumTabWidthSettingLarge), nullptr},
+    {" - tabs do not shrink", kMinimumTabWidthSettingFull,
+     base::size(kMinimumTabWidthSettingFull), nullptr}};
+
 const FeatureEntry::FeatureParam kPromoBrowserCommandUnknownCommandParam[] = {
     {features::kPromoBrowserCommandIdParam, "0"}};
 const FeatureEntry::FeatureParam
@@ -4523,7 +4542,9 @@ const FeatureEntry kFeatureEntries[] = {
     {flag_descriptions::kScrollableTabStripFlagId,
      flag_descriptions::kScrollableTabStripName,
      flag_descriptions::kScrollableTabStripDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kScrollableTabStrip)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollableTabStrip,
+                                    kTabScrollingVariations,
+                                    "TabScrolling")},
 
     {"scrollable-tabstrip-buttons",
      flag_descriptions::kScrollableTabStripButtonsName,
