@@ -18,6 +18,7 @@ import org.chromium.base.EarlyTraceEvent.AsyncEvent;
 import org.chromium.base.EarlyTraceEvent.Event;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class EarlyTraceEventTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
+    @DisabledTest(message = "https://crbug.com/1173968")
     public void testCanRecordEvent() {
         EarlyTraceEvent.enable();
         long myThreadId = Process.myTid();
