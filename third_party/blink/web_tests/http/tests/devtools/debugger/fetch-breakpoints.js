@@ -12,6 +12,7 @@
       }
   `);
 
+  await TestRunner.showPanel('sources');
   SourcesTestRunner.runDebuggerTestSuite([
     function testFetchBreakpoint(next) {
       SDK.domDebuggerManager.addXHRBreakpoint('foo', true);
