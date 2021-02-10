@@ -50,9 +50,6 @@ const test::UIPath kDoneDialog = {kDebuggingScreenId, "doneDialog"};
 const test::UIPath kErrorDialog = {kDebuggingScreenId, "errorDialog"};
 
 const test::UIPath kHelpLink = {kDebuggingScreenId, "help-link"};
-const test::UIPath kSetUpDetails = {kDebuggingScreenId, "setup-details"};
-const test::UIPath kPasswordContainer = {kDebuggingScreenId,
-                                         "password-container"};
 const test::UIPath kPasswordInput = {kDebuggingScreenId, "password"};
 const test::UIPath kPassword2Input = {kDebuggingScreenId, "passwordRepeat"};
 const test::UIPath kPasswordNote = {kDebuggingScreenId, "password-note"};
@@ -235,10 +232,8 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     debug_daemon_client_->WaitUntilCalled();
     base::RunLoop().RunUntilIdle();
 
-    test::OobeJS().ExpectVisiblePath(kPasswordContainer);
     test::OobeJS().ExpectVisiblePath(kPasswordInput);
     test::OobeJS().ExpectVisiblePath(kPassword2Input);
-    test::OobeJS().ExpectVisiblePath(kSetUpDetails);
     test::OobeJS().ExpectVisiblePath(kPasswordNote);
   }
 

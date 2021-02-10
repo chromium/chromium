@@ -26,7 +26,7 @@ const UI_STATE = {
 };
 
 Polymer({
-  is: 'oobe-debugging',
+  is: 'oobe-debugging-element',
 
   behaviors: [
     OobeI18nBehavior,

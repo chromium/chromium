@@ -68,8 +68,6 @@ void EnableDebuggingScreenHandler::DeclareLocalizedValues(
                IDS_ENABLE_DEBUGGING_LEARN_MORE);
   builder->Add("enableDebuggingSetupMessage",
                IDS_ENABLE_DEBUGGING_SETUP_MESSAGE);
-  builder->Add("enableDebuggingWaitMessage",
-               IDS_ENABLE_DEBUGGING_WAIT_MESSAGE);
   builder->AddF("enableDebuggingWarningTitle",
                 IDS_ENABLE_DEBUGGING_SCREEN_WARNING_MSG,
                 IDS_SHORT_PRODUCT_NAME);

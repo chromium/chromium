@@ -8,162 +8,72 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="/components/common_styles.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
+<link rel="import" href="/components/oobe_loading_dialog.html">
 
-<dom-module id="oobe-debugging">
+<dom-module id="oobe-debugging-element">
   <template>
     <style include="oobe-common action-link">
-      .enable-debugging-dialog {
-        display: flex;
-        flex-flow: column;
-        font-size: 16px;
-        min-height: 423px;
-        text-align: center;
-        width: 722px;
-      }
-
-      .step-contents {
-        margin: 80px 100px;
-      }
-
-      #setupDialog .step-contents {
-        margin-bottom: 40px;
-        margin-top: 40px;
-      }
-
-      #doneDialog .step-contents,
-      #errorDialog .step-contents {
-        margin: 80px;
-      }
-
-      .step-controls {
-        bottom: 21px;
-        box-sizing: border-box;
-        display: flex;
-        height: 28px;
-        justify-content: flex-end;
-        min-height: 0;
-        padding-inline-end: 34px;  /* Double the padding of .step */
-        position: absolute;
-        width: 100%;
-      }
-
-      .warning-icon {
-        height: 72px;
-      }
-
-      .success-icon,
-      .error-icon {
-        height: 66px;
-      }
-
-      .enable-debugging-title {
-        color: #464646;
-        font-size: 24px;
-        font-weight: bold;
-        padding: 30px 45px;
-      }
-
-      .enable-debugging-text {
-        color: #606060;
-      }
-
-      #wait-details {
-        display: inline-block;
-        padding: 25px 0;
-        vertical-align: middle;
-      }
-
-      #password-container {
-        font-style: italic;
-        margin-bottom: 10px;
-        margin-top: 20px;
-      }
-
       #password-note {
         color: #c6c6c6;
         font-size: 12px;
       }
-
-      .password-input {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        margin: 10px 0;
-        min-height: 0;
-      }
-
-      .password-input input[type=password] {
-        margin: 5px 0;
-        width: 300px;
-      }
-
-      .password-input
-          input[type=password]::-webkit-input-placeholder {
-        font-size: 14px;
-        font-style: normal;
-      }
     </style>
-    <div id="removeProtectionDialog" class="enable-debugging-dialog"
-        role="group" for-step="remove-protection"
+    <oobe-adaptive-dialog id="removeProtectionDialog" role="dialog"
+        for-step="remove-protection"
         aria-label$="[[i18nDynamic(locale,
-                    'enableDebuggingScreenAccessibleTitle')]]">
-      <div class="step-contents" aria-live="polite" aria-atomic="true">
-        <img class="warning-icon" src="chrome://theme/IDR_RESET_WARNING">
-        <div class="enable-debugging-title">
-          [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
-        </div>
-        <div id="remove-protection-details" class="enable-debugging-text">
-          <span>
-            [[i18nDynamic(locale, 'enableDebuggingRemveRootfsMessage')]]
-          </span>
-          <a id="help-link" class="oobe-local-link"
-              is="action-link" on-click="onHelpLinkClicked_">
-            [[i18nDynamic(locale, 'enableDebuggingLearnMore')]]
-          </a>
-        </div>
+                     'enableDebuggingScreenAccessibleTitle')]]">
+      <hd-iron-icon slot="icon" icon1x="oobe-32:alert" icon2x="oobe-64:alert">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'enableDebuggingRemveRootfsMessage')]]
+        <a id="help-link" class="oobe-local-link" is="action-link"
+            on-click="onHelpLinkClicked_">
+          [[i18nDynamic(locale, 'enableDebuggingLearnMore')]]
+        </a>
       </div>
-      <div class="step-controls">
+      <div slot="bottom-buttons">
         <oobe-text-button id="removeProtectionCancelButton"
             text-key="enableDebuggingCancelButton" on-click="cancel">
         </oobe-text-button>
         <oobe-text-button id="removeProtectionProceedButton" inverse
-            text-key="enableDebuggingRemoveButton"
+            text-key="enableDebuggingRemoveButton" class="focus-on-show"
             on-click="onRemoveButtonClicked_">
         </oobe-text-button>
       </div>
-    </div>
+    </oobe-adaptive-dialog>
 
-    <div id="setupDialog" class="enable-debugging-dialog"
-        role="group" for-step="setup"
+    <oobe-adaptive-dialog id="setupDialog" for-step="setup" role="dialog"
         aria-label$="[[i18nDynamic(locale,
                     'enableDebuggingScreenAccessibleTitle')]]">
-      <div class="step-contents" aria-live="polite" aria-atomic="true">
-        <img class="warning-icon" src="chrome://theme/IDR_RESET_WARNING">
-        <div class="enable-debugging-title">
-          [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
-        </div>
-        <div id="setup-details" class="enable-debugging-text">
-          <div>
-            [[i18nDynamic(locale, 'enableDebuggingSetupMessage')]]
-          </div>
-          <div id="password-container">
-            <div class="password-input">
-              <input id="password" type="password" value="{{password_::input}}"
+      <hd-iron-icon slot="icon" icon1x="oobe-32:alert" icon2x="oobe-64:alert">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'enableDebuggingSetupMessage')]]
+      </div>
+      <div slot="content">
+        <cr-input id="password" type="password" value="{{password_}}"
                   placeholder="[[i18nDynamic(locale,
-                                'enableDebuggingPasswordLabel')]]">
-              <input id="passwordRepeat" type="password"
-                  value="{{passwordRepeat_::input}}"
-                  placeholder="[[i18nDynamic(locale,
-                                'enableDebuggingConfirmPasswordLabel')]]">
-            </div>
-            <div id="password-note">
-              [[i18nDynamic(locale, 'enableDebuggingPasswordLengthNote')]]
-            </div>
-          </div>
+                                'enableDebuggingPasswordLabel')]]"
+                  class="focus-on-show">
+        </cr-input>
+        <cr-input id="passwordRepeat" type="password"
+            value="{{passwordRepeat_}}"
+            placeholder="[[i18nDynamic(locale,
+                        'enableDebuggingConfirmPasswordLabel')]]">
+        </cr-input>
+        <div id="password-note">
+          [[i18nDynamic(locale, 'enableDebuggingPasswordLengthNote')]]
         </div>
       </div>
-      <div class="step-controls">
+      <div slot="bottom-buttons">
         <oobe-text-button id="setupCancelButton"
             text-key="enableDebuggingCancelButton" on-click="cancel">
         </oobe-text-button>
@@ -173,63 +83,56 @@
             for-step="setup" disabled="[[!passwordsMatch_]]">
         </oobe-text-button>
       </div>
-    </div>
+    </oobe-adaptive-dialog>
 
-    <div id="waitDialog" class="enable-debugging-dialog"
-        role="group" for-step="wait"
+    <oobe-loading-dialog id="waitDialog" for-step="wait"
+        text-key="enableDebuggingScreenTitle"
         aria-label$="[[i18nDynamic(locale,
                     'enableDebuggingScreenAccessibleTitle')]]">
-      <div class="step-contents" aria-live="polite" aria-atomic="true">
-        <img class="warning-icon" src="chrome://theme/IDR_RESET_WARNING">
-        <div class="enable-debugging-title">
-          [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
-        </div>
-        <div id="wait-details" class="enable-debugging-text">
-          [[i18nDynamic(locale, 'enableDebuggingWaitMessage')]]
-        </div>
+    </oobe-loading-dialog>
+
+    <oobe-adaptive-dialog id="doneDialog" role="dialog" for-step="done"
+        aria-label$="[[i18nDynamic(locale,
+                    'enableDebuggingScreenAccessibleTitle')]]">
+      <hd-iron-icon slot="icon" icon1x="oobe-32:alert" icon2x="oobe-64:alert">
+      </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
+      </h1>
+      <div slot="subtitle" id="done-details">
+        [[i18nDynamic(locale, 'enableDebuggingDoneMessage')]]
       </div>
-    </div>
-
-    <div id="doneDialog" class="enable-debugging-dialog"
-        role="group" for-step="done"
-        aria-label$="[[i18nDynamic(locale,
-                    'enableDebuggingScreenAccessibleTitle')]]">
-      <div class="step-contents" aria-live="polite" aria-atomic="true">
+      <div slot="content" class="flex layout vertical center center-justified">
         <img class="success-icon"
             src="chrome://theme/IDR_ENABLE_DEBUGGING_SUCCESS">
-        <div class="enable-debugging-title">
-          [[i18nDynamic(locale, 'enableDebuggingScreenTitle')]]
-        </div>
-        <div id="done-details" class="enable-debugging-text">
-          [[i18nDynamic(locale, 'enableDebuggingDoneMessage')]]
-        </div>
       </div>
-      <div class="step-controls">
-        <oobe-text-button id="okButton" inverse
+      <div slot="bottom-buttons">
+        <oobe-text-button id="okButton" inverse class="focus-on-show"
             text-key="enableDebuggingOKButton" on-click="onOKButtonClicked_">
         </oobe-text-button>
       </div>
-    </div>
+    </oobe-adaptive-dialog>
 
-    <div id="errorDialog" class="enable-debugging-dialog"
-        role="group" for-step="error"
+    <oobe-adaptive-dialog id="errorDialog" role="dialog" for-step="error"
         aria-label$="[[i18nDynamic(locale,
                     'enableDebuggingScreenAccessibleTitle')]]">
-      <div class="step-contents" aria-live="polite" aria-atomic="true">
-        <img class="error-icon"
-            src="chrome://theme/IDR_ENABLE_DEBUGGING_FAILURE">
-        <div class="enable-debugging-title">
-          [[i18nDynamic(locale, 'enableDebuggingErrorTitle')]]
-        </div>
-        <div id="error-details" class="enable-debugging-text">
-          [[i18nDynamic(locale, 'enableDebuggingErrorMessage')]]
-        </div>
+      <hd-iron-icon slot="icon" icon1x="oobe-32:warning"
+          icon2x="oobe-64:warning"></hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'enableDebuggingErrorTitle')]]
+      </h1>
+      <div slot="subtitle" id="error-details">
+        [[i18nDynamic(locale, 'enableDebuggingErrorMessage')]]
       </div>
-      <div class="step-controls">
-        <oobe-text-button id="errorOkButton" inverse
+      <div slot="content" class="flex layout vertical center center-justified">
+        <img srcset="images/1x/error.svg 1x, images/2x/error.svg 2x"
+            class="oobe-illustration">
+      </div>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="errorOkButton" inverse class="focus-on-show"
             text-key="enableDebuggingOKButton" on-click="onOKButtonClicked_">
         </oobe-text-button>
       </div>
-    </div>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>
