@@ -249,6 +249,26 @@ public class PasswordChangeFixtureSingleRunTest
         logPasswordStoreCredentials(mPasswordStoreBridge, "Final password store state");
     }
 
+    /**
+     * Runs the password change flow for all credentials in the store and validates the changes.
+     */
+    @Test
+    @Manual
+    public void testMultipleCredentials() throws Exception {
+        for (int run = 0; run < mParameters.getNumRuns(); run++) {
+            // Maintain a reference to the current set of credentials.
+            PasswordStoreCredential[] initialCredentials = mCredentials;
+            // Run password change for all credentials.
+            for (int i = 0; i < initialCredentials.length; i++) {
+                // Run and test script.
+                testSingleRun(initialCredentials[i].getUsername());
+            }
+            Log.i(TAG, "[EVENT: Run #%s succeded]", String.valueOf(run + 1));
+        }
+
+        logPasswordStoreCredentials(mPasswordStoreBridge, "Final password store state");
+    }
+
     @Override
     public void onSavedPasswordsChanged(int count) {
         logPasswordStoreCredentials(
