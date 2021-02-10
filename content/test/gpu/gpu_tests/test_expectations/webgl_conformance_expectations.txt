@@ -174,6 +174,8 @@ crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/text
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Skip ]
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
+# Need to adjust tolerances of this test.
+crbug.com/1165751 [ fuchsia fuchsia-board-astro ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 # Flaky on Fuchsia hardware devices
 [ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Skip ]
