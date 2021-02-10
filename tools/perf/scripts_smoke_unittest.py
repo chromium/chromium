@@ -286,8 +286,11 @@ class ScriptsSmokeTest(unittest.TestCase):
 
   def testRunPerformanceTestsShardedArgsParser(self):
     options = run_performance_tests.parse_arguments([
-        '../../tools/perf/run_benchmark', '-v', '--browser=release_x64',
-        '--upload-results', '--run-ref-build',
+        '../../tools/perf/run_benchmark',
+        '-v',
+        '--browser=release',
+        '--upload-results',
+        '--run-ref-build',
         '--test-shard-map-filename=win-10-perf_map.json',
         '--assert-gpu-compositing',
         r'--isolated-script-test-output=c:\a\b\c\output.json',
@@ -295,7 +298,7 @@ class ScriptsSmokeTest(unittest.TestCase):
         '--passthrough-arg=--a=b',
     ])
     self.assertIn('--assert-gpu-compositing', options.passthrough_args)
-    self.assertIn('--browser=release_x64', options.passthrough_args)
+    self.assertIn('--browser=release', options.passthrough_args)
     self.assertIn('-v', options.passthrough_args)
     self.assertIn('--a=b', options.passthrough_args)
     self.assertEqual(options.executable, '../../tools/perf/run_benchmark')
@@ -305,22 +308,24 @@ class ScriptsSmokeTest(unittest.TestCase):
   def testRunPerformanceTestsTelemetryCommandGenerator_ReferenceBrowserComeLast(self):
     """This tests for crbug.com/928928."""
     options = run_performance_tests.parse_arguments([
-        '../../tools/perf/run_benchmark', '--browser=release_x64',
+        '../../tools/perf/run_benchmark',
+        '--browser=release',
         '--run-ref-build',
         '--test-shard-map-filename=win-10-perf_map.json',
         r'--isolated-script-test-output=c:\a\b\c\output.json',
     ])
-    self.assertIn('--browser=release_x64', options.passthrough_args)
+    self.assertIn('--browser=release', options.passthrough_args)
     command = run_performance_tests.TelemetryCommandGenerator(
         'fake_benchmark_name', options, is_reference=True).generate(
             'fake_output_dir')
-    original_browser_arg_index = command.index('--browser=release_x64')
+    original_browser_arg_index = command.index('--browser=release')
     reference_browser_arg_index = command.index('--browser=reference')
     self.assertTrue(reference_browser_arg_index > original_browser_arg_index)
 
   def testRunPerformanceTestsTelemetryCommandGenerator_StorySelectionConfig_Unabridged(self):
     options = run_performance_tests.parse_arguments([
-        '../../tools/perf/run_benchmark', '--browser=release_x64',
+        '../../tools/perf/run_benchmark',
+        '--browser=release',
         '--run-ref-build',
         r'--isolated-script-test-output=c:\a\b\c\output.json',
     ])
@@ -338,7 +343,8 @@ class ScriptsSmokeTest(unittest.TestCase):
 
   def testRunPerformanceTestsTelemetryCommandGenerator_StorySelectionConfig_Abridged(self):
     options = run_performance_tests.parse_arguments([
-        '../../tools/perf/run_benchmark', '--browser=release_x64',
+        '../../tools/perf/run_benchmark',
+        '--browser=release',
         '--run-ref-build',
         r'--isolated-script-test-output=c:\a\b\c\output.json',
     ])

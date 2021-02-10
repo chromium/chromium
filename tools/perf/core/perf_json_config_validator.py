@@ -116,12 +116,6 @@ def _ValidateBrowserType(builder_name, test_config):
     if browser_options.browser != 'lacros-chrome':
       raise ValueError("%s must use 'lacros-chrome' browser type" %
                        builder_name)
-  elif builder_name in ('win-10-perf', 'Win 7 Nvidia GPU Perf',
-                        'win-10_laptop_low_end-perf_HP-Candidate',
-                        'win-10_laptop_low_end-perf'):
-    if browser_options.browser != 'release_x64':
-      raise ValueError("%s must use 'release_x64' browser type" %
-                       builder_name)
   else:  # The rest must be desktop/laptop builders
     if browser_options.browser != 'release':
       raise ValueError("%s must use 'release' browser type" %

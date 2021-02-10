@@ -100,7 +100,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=release",
           "--upload-results",
           "--test-shard-map-filename=win_7_nvidia_gpu_perf_map.json",
           "--assert-gpu-compositing"
@@ -1437,7 +1437,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=release",
           "--upload-results",
           "--test-shard-map-filename=win-10-perf_map.json",
           "--assert-gpu-compositing"
@@ -1495,7 +1495,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=release",
           "--upload-results",
           "--test-shard-map-filename=win-10_laptop_low_end-perf_map.json",
           "--assert-gpu-compositing"

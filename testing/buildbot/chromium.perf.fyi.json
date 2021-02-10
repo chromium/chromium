@@ -373,7 +373,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=release",
           "--upload-results",
           "--test-shard-map-filename=win-10_laptop_low_end-perf_hp-candidate_map.json",
           "--output-format=histograms",

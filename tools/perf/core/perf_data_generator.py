@@ -1251,9 +1251,6 @@ def generate_telemetry_args(tester_config, platform):
     browser_name = 'cros-chrome'
   elif tester_config['platform'] == 'lacros':
     browser_name = 'lacros-chrome'
-  elif (tester_config['platform'] == 'win'
-    and tester_config['target_bits'] == 64):
-    browser_name = 'release_x64'
   else:
     browser_name ='release'
   test_args = [
