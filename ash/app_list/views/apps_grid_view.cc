@@ -1825,10 +1825,8 @@ void AppsGridView::UpdateDragStateInsideFolder(Pointer pointer,
 
   // Calculate if the drag_view_ is dragged out of the folder's container
   // ink bubble.
-  gfx::Rect bounds_to_folder_view = ConvertRectToParent(drag_view_->bounds());
-  gfx::Point pt = bounds_to_folder_view.CenterPoint();
   bool is_item_dragged_out_of_folder =
-      folder_delegate_->IsPointOutsideOfFolderBoundary(pt);
+      folder_delegate_->IsViewOutsideOfFolder(drag_view_);
   if (is_item_dragged_out_of_folder) {
     if (!drag_out_of_folder_container_) {
       folder_item_reparent_timer_.Start(

@@ -148,7 +148,7 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
       const gfx::Point& drag_point_in_folder_grid) override;
   void DispatchEndDragEventForReparent(bool events_forwarded_to_drag_drop_host,
                                        bool cancel_drag) override;
-  bool IsPointOutsideOfFolderBoundary(const gfx::Point& point) override;
+  bool IsViewOutsideOfFolder(AppListItemView* view) override;
   bool IsOEMFolder() const override;
   void SetRootLevelDragViewVisible(bool visible) override;
   void HandleKeyboardReparent(AppListItemView* reparented_view,

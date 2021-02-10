@@ -744,8 +744,9 @@ void AppListFolderView::StartSetupDragInRootLevelAppsGridView(
           has_native_drag);
 }
 
-bool AppListFolderView::IsPointOutsideOfFolderBoundary(
-    const gfx::Point& point) {
+bool AppListFolderView::IsViewOutsideOfFolder(AppListItemView* view) {
+  gfx::Point point = view->GetLocalBounds().CenterPoint();
+  ConvertPointToTarget(view, this, &point);
   return !GetLocalBounds().Contains(point);
 }
 

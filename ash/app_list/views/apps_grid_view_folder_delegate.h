@@ -42,8 +42,9 @@ class APP_LIST_EXPORT AppsGridViewFolderDelegate {
       bool events_forwarded_to_drag_drop_host,
       bool cancel_drag) = 0;
 
-  // Returns true if |point| falls outside of the folder container ink bubble.
-  virtual bool IsPointOutsideOfFolderBoundary(const gfx::Point& point) = 0;
+  // Returns whether the |view| is within the folder view's bounds.
+  // The |view| is expected to be in the folder's apps grid view hierarchy.
+  virtual bool IsViewOutsideOfFolder(AppListItemView* view) = 0;
 
   // Returns true if the associated folder item is an OEM folder.
   virtual bool IsOEMFolder() const = 0;

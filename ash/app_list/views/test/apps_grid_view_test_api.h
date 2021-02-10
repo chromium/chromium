@@ -50,6 +50,10 @@ class AppsGridViewTestApi {
 
   void WaitForItemMoveAnimationDone();
 
+  void Update() { view_->Update(); }
+
+  AppListItemList* GetItemList() { return view_->item_list_; }
+
  private:
   AppsGridView* view_;
 
