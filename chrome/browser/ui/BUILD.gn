@@ -3532,6 +3532,8 @@ static_library("ui") {
       "views/bookmarks/bookmark_menu_delegate.h",
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
+      "views/bubble/bubble_contents_wrapper.cc",
+      "views/bubble/bubble_contents_wrapper.h",
       "views/bubble/webui_bubble_dialog_view.cc",
       "views/bubble/webui_bubble_dialog_view.h",
       "views/bubble/webui_bubble_manager.cc",
