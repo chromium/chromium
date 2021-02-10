@@ -622,7 +622,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // Delete a RenderFrameProxyHost owned by this object.
   void DeleteRenderFrameProxyHost(SiteInstance* site_instance);
 
-  // Returns true if for the navigation from |current_effective_url| to
+  // Returns kYes_* if for the navigation from |current_effective_url| to
   // |destination_url_info|, a new SiteInstance and BrowsingInstance should be
   // created (even if we are in a process model that doesn't usually swap).
   // This forces a process swap and severs script connections with existing
