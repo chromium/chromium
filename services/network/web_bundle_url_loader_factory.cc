@@ -429,15 +429,11 @@ WebBundleURLLoaderFactory::WrapURLLoaderClient(
   return client;
 }
 
-void WebBundleURLLoaderFactory::CreateLoaderAndStart(
+void WebBundleURLLoaderFactory::StartSubresourceRequest(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
-    int32_t routing_id,
-    int32_t request_id,
-    uint32_t options,
     const ResourceRequest& url_request,
-    mojo::PendingRemote<mojom::URLLoaderClient> client,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::CreateLoaderAndStart");
+    mojo::PendingRemote<mojom::URLLoaderClient> client) {
+  TRACE_EVENT0("loading", "WebBundleURLLoaderFactory::StartSubresourceRequest");
   URLLoader* loader =
       new URLLoader(std::move(receiver), url_request, std::move(client),
                     request_initiator_origin_lock_);
@@ -454,11 +450,6 @@ void WebBundleURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
   StartLoad(loader);
-}
-
-void WebBundleURLLoaderFactory::Clone(
-    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
-  NOTREACHED();
 }
 
 void WebBundleURLLoaderFactory::StartLoad(URLLoader* loader) {

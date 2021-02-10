@@ -135,20 +135,9 @@ void URLLoaderFactory::CreateLoaderAndStart(
       url_request.destination !=
           network::mojom::RequestDestination::kWebBundle) {
     // Load a subresource from a WebBundle.
-    base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
-        context_->GetWebBundleManager().GetWebBundleURLLoaderFactory(
-            *url_request.web_bundle_token_params, params_->process_id);
-    if (web_bundle_url_loader_factory) {
-      web_bundle_url_loader_factory->CreateLoaderAndStart(
-          std::move(receiver), routing_id, request_id, options, url_request,
-          std::move(client), traffic_annotation);
-      return;
-    }
-    // A request for subresource arrives earlier than a request for a webbundle.
-    context_->GetWebBundleManager().AddPendingSubresouceRequest(
-        url_request.web_bundle_token_params->token, params_->process_id,
-        std::move(receiver), routing_id, request_id, options, url_request,
-        std::move(client), traffic_annotation);
+    context_->GetWebBundleManager().StartSubresourceRequest(
+        std::move(receiver), url_request, std::move(client),
+        params_->process_id);
     return;
   }
 
@@ -287,7 +276,8 @@ void URLLoaderFactory::CreateLoaderAndStart(
     DCHECK(url_request.web_bundle_token_params.has_value());
     base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
         context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
-            url_request.url, *url_request.web_bundle_token_params, params_);
+            url_request.url, *url_request.web_bundle_token_params,
+            params_->process_id, params_->request_initiator_origin_lock);
     client =
         web_bundle_url_loader_factory->WrapURLLoaderClient(std::move(client));
   }

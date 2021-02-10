@@ -17,8 +17,7 @@ namespace network {
 
 class WebBundleMemoryQuotaConsumer;
 
-class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
-    : public mojom::URLLoaderFactory {
+class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
  public:
   WebBundleURLLoaderFactory(
       const GURL& bundle_url,
@@ -26,7 +25,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
       const base::Optional<url::Origin>& request_initiator_origin_lock,
       std::unique_ptr<WebBundleMemoryQuotaConsumer>
           web_bundle_memory_quota_consumer);
-  ~WebBundleURLLoaderFactory() override;
+  ~WebBundleURLLoaderFactory();
   WebBundleURLLoaderFactory(const WebBundleURLLoaderFactory&) = delete;
   WebBundleURLLoaderFactory& operator=(const WebBundleURLLoaderFactory&) =
       delete;
@@ -37,17 +36,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory
   mojo::PendingRemote<mojom::URLLoaderClient> WrapURLLoaderClient(
       mojo::PendingRemote<mojom::URLLoaderClient> wrapped);
 
-  // mojom::URLLoaderFactory implementation.
-  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const ResourceRequest& url_request,
-                            mojo::PendingRemote<mojom::URLLoaderClient> client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override;
-
-  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
+  void StartSubresourceRequest(
+      mojo::PendingReceiver<mojom::URLLoader> receiver,
+      const ResourceRequest& url_request,
+      mojo::PendingRemote<mojom::URLLoaderClient> client);
 
  private:
   class BundleDataSource;

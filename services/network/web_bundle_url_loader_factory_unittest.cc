@@ -151,11 +151,9 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
 
     StartRequestResult result;
     result.client = std::make_unique<network::TestURLLoaderClient>();
-    factory_->CreateLoaderAndStart(
-        result.loader.BindNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, 0 /* options */, request,
-        result.client->CreateRemote(),
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    factory_->StartSubresourceRequest(
+        result.loader.BindNewPipeAndPassReceiver(), request,
+        result.client->CreateRemote());
     return result;
   }
 

@@ -87,8 +87,6 @@ std::tuple<base::WeakPtr<WebBundleURLLoaderFactory>,
            std::unique_ptr<TestWebBundleHandle>>
 CreateWebBundleLoaderFactory(WebBundleManager& manager, int32_t process_id) {
   base::UnguessableToken token = base::UnguessableToken::Create();
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = process_id;
   mojo::PendingRemote<mojom::WebBundleHandle> remote_handle;
   std::unique_ptr<TestWebBundleHandle> handle =
       std::make_unique<TestWebBundleHandle>(
@@ -96,8 +94,9 @@ CreateWebBundleLoaderFactory(WebBundleManager& manager, int32_t process_id) {
   ResourceRequest::WebBundleTokenParams create_params(token,
                                                       std::move(remote_handle));
   base::WeakPtr<WebBundleURLLoaderFactory> factory =
-      manager.CreateWebBundleURLLoaderFactory(GURL(kBundleUrl), create_params,
-                                              factory_params);
+      manager.CreateWebBundleURLLoaderFactory(
+          GURL(kBundleUrl), create_params, process_id,
+          /*request_initiator_origin_lock=*/base::nullopt);
 
   return std::forward_as_tuple(std::move(factory), std::move(handle));
 }
@@ -120,10 +119,8 @@ StartSubresourceLoad(WebBundleURLLoaderFactory& factory) {
   request.url = GURL(kResourceUrl);
   request.method = "GET";
   request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
-  factory.CreateLoaderAndStart(
-      loader.BindNewPipeAndPassReceiver(), 0 /* routing_id */,
-      0 /* request_id */, 0 /* options */, request, client->CreateRemote(),
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  factory.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
+                                  client->CreateRemote());
   return std::forward_as_tuple(std::move(loader), std::move(client));
 }
 
@@ -140,6 +137,13 @@ class WebBundleManagerTest : public testing::Test {
     manager.set_max_memory_per_process_for_testing(max_memory_per_process);
   }
 
+  base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
+      WebBundleManager& manager,
+      const ResourceRequest::WebBundleTokenParams& params,
+      int32_t process_id) {
+    return manager.GetWebBundleURLLoaderFactory(params, process_id);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
 };
@@ -147,45 +151,43 @@ class WebBundleManagerTest : public testing::Test {
 TEST_F(WebBundleManagerTest, NoFactoryExistsForDifferentProcessId) {
   WebBundleManager manager;
   base::UnguessableToken token = base::UnguessableToken::Create();
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = process_id1;
   mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
   mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver =
       handle.InitWithNewPipeAndPassReceiver();
   ResourceRequest::WebBundleTokenParams create_params(token, std::move(handle));
 
   auto factory = manager.CreateWebBundleURLLoaderFactory(
-      GURL(kBundleUrl), create_params, factory_params);
+      GURL(kBundleUrl), create_params, process_id1,
+      /*request_initiator_origin_lock=*/base::nullopt);
   ASSERT_TRUE(factory);
 
   ResourceRequest::WebBundleTokenParams find_params(token,
                                                     mojom::kInvalidProcessId);
-  ASSERT_TRUE(manager.GetWebBundleURLLoaderFactory(find_params,
-                                                   factory_params->process_id));
-  ASSERT_FALSE(manager.GetWebBundleURLLoaderFactory(find_params, process_id2));
+  ASSERT_TRUE(GetWebBundleURLLoaderFactory(manager, find_params, process_id1));
+  ASSERT_FALSE(GetWebBundleURLLoaderFactory(manager, find_params, process_id2));
 }
 
 TEST_F(WebBundleManagerTest, UseProcesIdInTokenParamsForRequestsFromBrowser) {
   WebBundleManager manager;
   base::UnguessableToken token = base::UnguessableToken::Create();
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = process_id1;
   mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
   mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver =
       handle.InitWithNewPipeAndPassReceiver();
   ResourceRequest::WebBundleTokenParams create_params(token, std::move(handle));
 
   auto factory = manager.CreateWebBundleURLLoaderFactory(
-      GURL(kBundleUrl), create_params, factory_params);
+      GURL(kBundleUrl), create_params, process_id1,
+      /*request_initiator_origin_lock=*/base::nullopt);
   ASSERT_TRUE(factory);
 
   ResourceRequest::WebBundleTokenParams find_params1(token, process_id1);
-  ASSERT_TRUE(manager.GetWebBundleURLLoaderFactory(find_params1,
-                                                   mojom::kBrowserProcessId));
-  ASSERT_FALSE(manager.GetWebBundleURLLoaderFactory(find_params1, process_id2));
+  ASSERT_TRUE(GetWebBundleURLLoaderFactory(manager, find_params1,
+                                           mojom::kBrowserProcessId));
+  ASSERT_FALSE(
+      GetWebBundleURLLoaderFactory(manager, find_params1, process_id2));
   ResourceRequest::WebBundleTokenParams find_params2(token, process_id2);
-  ASSERT_FALSE(manager.GetWebBundleURLLoaderFactory(find_params2,
-                                                    mojom::kBrowserProcessId));
+  ASSERT_FALSE(GetWebBundleURLLoaderFactory(manager, find_params2,
+                                            mojom::kBrowserProcessId));
 }
 
 TEST_F(WebBundleManagerTest, RemoveFactoryWhenDisconnected) {
@@ -193,8 +195,6 @@ TEST_F(WebBundleManagerTest, RemoveFactoryWhenDisconnected) {
   base::UnguessableToken token = base::UnguessableToken::Create();
   ResourceRequest::WebBundleTokenParams find_params(token,
                                                     mojom::kInvalidProcessId);
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = 123;
   {
     mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
     mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver =
@@ -203,15 +203,15 @@ TEST_F(WebBundleManagerTest, RemoveFactoryWhenDisconnected) {
                                                         std::move(handle));
 
     auto factory = manager.CreateWebBundleURLLoaderFactory(
-        GURL(kBundleUrl), create_params, factory_params);
+        GURL(kBundleUrl), create_params, process_id1,
+        /*request_initiator_origin_lock=*/base::nullopt);
     ASSERT_TRUE(factory);
-    ASSERT_TRUE(manager.GetWebBundleURLLoaderFactory(
-        find_params, factory_params->process_id));
+    ASSERT_TRUE(
+        GetWebBundleURLLoaderFactory(manager, find_params, process_id1));
     // Getting out of scope to delete |receiver|.
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(manager.GetWebBundleURLLoaderFactory(find_params,
-                                                    factory_params->process_id))
+  EXPECT_FALSE(GetWebBundleURLLoaderFactory(manager, find_params, process_id1))
       << "The manager should remove a factory when the handle is disconnected.";
 }
 
@@ -247,21 +247,20 @@ TEST_F(WebBundleManagerTest,
   WebBundleManager manager;
 
   // Simulate that a subresource request arrives at first,
-  // calling WebBundleManager::AddPendingSubresouceRequest.
+  // calling WebBundleManager::StartSubresourceRequest.
   base::UnguessableToken token = base::UnguessableToken::Create();
   network::ResourceRequest request;
   request.url = GURL(kResourceUrl);
   request.method = "GET";
   request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
+  request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams();
+  request.web_bundle_token_params->token = token;
 
   mojo::Remote<network::mojom::URLLoader> loader;
   auto client = std::make_unique<network::TestURLLoaderClient>();
 
-  manager.AddPendingSubresouceRequest(
-      token, 123 /* process id */, loader.BindNewPipeAndPassReceiver(),
-      0 /* routing_id */, 0 /* request_id */, 0 /* options */, request,
-      client->CreateRemote(),
-      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  manager.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
+                                  client->CreateRemote(), process_id1);
 
   // Simulate that a webbundle request arrives, calling
   // WebBundleManager::CreateWebBundleURLLoaderFactory.
@@ -271,11 +270,9 @@ TEST_F(WebBundleManagerTest,
   mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver =
       token_params.handle.InitWithNewPipeAndPassReceiver();
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = 123;
-
   auto factory = manager.CreateWebBundleURLLoaderFactory(
-      GURL(kBundleUrl), token_params, factory_params);
+      GURL(kBundleUrl), token_params, process_id1,
+      /*request_initiator_origin_lock=*/base::nullopt);
 
   // Then, simulate that the bundle is loaded from the network, calling
   // SetBundleStream manually.

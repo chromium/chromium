@@ -35,22 +35,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
   base::WeakPtr<WebBundleURLLoaderFactory> CreateWebBundleURLLoaderFactory(
       const GURL& bundle_url,
       const ResourceRequest::WebBundleTokenParams& params,
-      const mojom::URLLoaderFactoryParamsPtr& factory_params);
-
-  base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
-      const ResourceRequest::WebBundleTokenParams& params,
-      int32_t process_id);
-
-  void AddPendingSubresouceRequest(
-      base::UnguessableToken token,
       int32_t process_id,
+      const base::Optional<url::Origin>& request_initiator_origin_lock);
+
+  void StartSubresourceRequest(
       mojo::PendingReceiver<mojom::URLLoader> receiver,
-      int32_t routing_id,
-      int32_t request_id,
-      uint32_t options,
       const ResourceRequest& url_request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+      int32_t process_id);
 
  private:
   friend class WebBundleManagerTest;
@@ -59,6 +51,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
 
   // Key is a tuple of (Process id, WebBundle token)
   using Key = std::pair<int32_t, base::UnguessableToken>;
+
+  base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
+      const ResourceRequest::WebBundleTokenParams& params,
+      int32_t process_id);
 
   void DisconnectHandler(base::UnguessableToken token, int32_t process_id);
 
