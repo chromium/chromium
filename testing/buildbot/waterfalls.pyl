@@ -5109,7 +5109,7 @@
       },
       'Mac10.13 Tests (dbg)': {
         'mixins': [
-            'mac_10.13',
+            'mac_10.15',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
