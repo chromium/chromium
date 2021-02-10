@@ -9,6 +9,7 @@
 
 #include "ash/accelerometer/accelerometer_constants.h"
 #include "ash/accelerometer/accelerometer_reader.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,7 +34,6 @@ constexpr int64_t kFakeSampleData[] = {1, 2, 3};
 class FakeObserver : public AccelerometerReader::Observer {
  public:
   void OnECLidAngleDriverStatusChanged(bool is_supported) override {
-    CHECK(!is_supported_.has_value());
     is_supported_ = is_supported;
   }
   void OnAccelerometerUpdated(const AccelerometerUpdate& update) override {
@@ -54,9 +54,15 @@ class FakeObserver : public AccelerometerReader::Observer {
   AccelerometerUpdate update_;
 };
 
+}  // namespace
+
 class AccelerometerProviderMojoTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    ash::AshTestHelper::InitParams init_params;
+    init_params.start_session = false;
+    ash_test_helper_.SetUp(std::move(init_params));
+
     sensor_hal_server_ =
         std::make_unique<chromeos::sensors::FakeSensorHalServer>();
     provider_ = new AccelerometerProviderMojo();
@@ -64,11 +70,6 @@ class AccelerometerProviderMojoTest : public ::testing::Test {
     chromeos::sensors::SensorHalDispatcher::Initialize();
     provider_->PrepareAndInitialize();
     provider_->AddObserver(&observer_);
-
-    AddDevice(kFakeLidAccelerometerId,
-              chromeos::sensors::mojom::DeviceType::ACCEL,
-              base::NumberToString(kFakeScaleValue),
-              kLocationStrings[ACCELEROMETER_SOURCE_SCREEN]);
   }
 
   void TearDown() override {
@@ -104,15 +105,46 @@ class AccelerometerProviderMojoTest : public ::testing::Test {
         iio_device_id, std::move(types), std::move(sensor_device));
   }
 
+  void AddLidAccelerometer() {
+    AddDevice(kFakeLidAccelerometerId,
+              chromeos::sensors::mojom::DeviceType::ACCEL,
+              base::NumberToString(kFakeScaleValue),
+              kLocationStrings[ACCELEROMETER_SOURCE_SCREEN]);
+  }
+
+  void TriggerNewDevicesTimeout() {
+    provider_->OnNewDevicesTimeout();
+
+    // Wait until task |OnECLidAngleDriverStatusChanged| arrives at |observer_|.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void TriggerSamples() {
+    // Simulate a disconnection of IIO Service.
+    sensor_hal_server_->GetSensorService()->ClearReceivers();
+    sensor_hal_server_->OnServerDisconnect();
+
+    // Wait until the disconnect arrives at the dispatcher.
+    base::RunLoop().RunUntilIdle();
+
+    chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
+        sensor_hal_server_->PassRemote());
+
+    // Wait until a sample is received.
+    base::RunLoop().RunUntilIdle();
+  }
+
   FakeObserver observer_;
   std::unique_ptr<chromeos::sensors::FakeSensorHalServer> sensor_hal_server_;
   scoped_refptr<AccelerometerProviderMojo> provider_;
 
-  base::test::SingleThreadTaskEnvironment task_environment{
+  base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::UI};
+  ash::AshTestHelper ash_test_helper_;
 };
 
 TEST_F(AccelerometerProviderMojoTest, CheckNoScale) {
+  AddLidAccelerometer();
   AddDevice(kFakeBaseAccelerometerId,
             chromeos::sensors::mojom::DeviceType::ACCEL, base::nullopt,
             kLocationStrings[ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD]);
@@ -120,15 +152,19 @@ TEST_F(AccelerometerProviderMojoTest, CheckNoScale) {
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
       sensor_hal_server_->PassRemote());
 
-  // Wait until initialization failed.
+  // Wait until all tasks done and no samples updated.
   base::RunLoop().RunUntilIdle();
+
+  // Simulate timeout to check |ec_lid_angle_driver_status_|.
+  TriggerNewDevicesTimeout();
 
   EXPECT_TRUE(observer_.is_supported_.has_value());
   EXPECT_FALSE(observer_.is_supported_.value());
-  EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::FAILED);
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::LID);
 }
 
 TEST_F(AccelerometerProviderMojoTest, CheckNoLocation) {
+  AddLidAccelerometer();
   AddDevice(kFakeBaseAccelerometerId,
             chromeos::sensors::mojom::DeviceType::ACCEL,
             base::NumberToString(kFakeScaleValue), base::nullopt);
@@ -136,30 +172,38 @@ TEST_F(AccelerometerProviderMojoTest, CheckNoLocation) {
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
       sensor_hal_server_->PassRemote());
 
-  // Wait until initialization failed.
+  // Wait until all tasks done and no samples updated.
   base::RunLoop().RunUntilIdle();
+
+  // Simulate timeout to check |ec_lid_angle_driver_status_|.
+  TriggerNewDevicesTimeout();
 
   EXPECT_TRUE(observer_.is_supported_.has_value());
   EXPECT_FALSE(observer_.is_supported_.value());
-  EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::LID);
 }
 
 TEST_F(AccelerometerProviderMojoTest, GetSamplesOfOneAccel) {
+  AddLidAccelerometer();
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
       sensor_hal_server_->PassRemote());
 
   // Wait until a sample is received.
   base::RunLoop().RunUntilIdle();
 
+  // Simulate timeout to check |ec_lid_angle_driver_status_|.
+  TriggerNewDevicesTimeout();
+
   EXPECT_TRUE(observer_.is_supported_.has_value());
   EXPECT_FALSE(observer_.is_supported_.value());
-  EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::LID);
 
   EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
   EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 }
 
 TEST_F(AccelerometerProviderMojoTest, GetSamplesWithNoLidAngle) {
+  AddLidAccelerometer();
   AddDevice(kFakeBaseAccelerometerId,
             chromeos::sensors::mojom::DeviceType::ACCEL,
             base::NumberToString(kFakeScaleValue),
@@ -171,9 +215,12 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithNoLidAngle) {
   // Wait until samples are received.
   base::RunLoop().RunUntilIdle();
 
+  // Simulate timeout to check |ec_lid_angle_driver_status_|.
+  TriggerNewDevicesTimeout();
+
   EXPECT_TRUE(observer_.is_supported_.has_value());
   EXPECT_FALSE(observer_.is_supported_.value());
-  EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::LID_BASE);
 
   EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
   EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
@@ -182,18 +229,16 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithNoLidAngle) {
 
   // Simulate a disconnection of the accelerometer's mojo channel in IIO
   // Service.
-  AddDevice(kFakeLidAccelerometerId,
-            chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kFakeScaleValue),
-            kLocationStrings[ACCELEROMETER_SOURCE_SCREEN]);
+  AddLidAccelerometer();
 
   // Wait until the disconnection is done.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(sensor_hal_server_->GetSensorService()->is_bound());
+  EXPECT_FALSE(sensor_hal_server_->GetSensorService()->HasReceivers());
 }
 
 TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
+  AddLidAccelerometer();
   AddDevice(kFakeBaseAccelerometerId,
             chromeos::sensors::mojom::DeviceType::ACCEL,
             base::NumberToString(kFakeScaleValue),
@@ -209,7 +254,7 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
 
   EXPECT_TRUE(observer_.is_supported_.has_value());
   EXPECT_TRUE(observer_.is_supported_.value());
-  EXPECT_EQ(provider_->GetInitializationStateForTesting(), State::SUCCESS);
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::ANGL_LID);
   EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
   EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 
@@ -226,7 +271,7 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
   observer_.update_.Reset();
 
   // Simulate a disconnection of IIO Service.
-  sensor_hal_server_->GetSensorService()->OnServiceDisconnect();
+  sensor_hal_server_->GetSensorService()->ClearReceivers();
   sensor_hal_server_->OnServerDisconnect();
 
   // Wait until the disconnect arrives at the dispatcher.
@@ -242,6 +287,157 @@ TEST_F(AccelerometerProviderMojoTest, GetSamplesWithLidAngle) {
   EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
 }
 
-}  // namespace
+TEST_F(AccelerometerProviderMojoTest, GetSamplesOfNewDevices) {
+  // New device: lid-accelerometer.
+  AddLidAccelerometer();
+  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
+      sensor_hal_server_->PassRemote());
+
+  // Wait until a sample is received.
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate timeout to check |ec_lid_angle_driver_status_|.
+  TriggerNewDevicesTimeout();
+
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::LID);
+
+  EXPECT_TRUE(observer_.is_supported_.has_value());
+  EXPECT_FALSE(observer_.is_supported_.value());
+
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+
+  observer_.update_.Reset();
+
+  // New device: base-accelerometer.
+  AddDevice(kFakeBaseAccelerometerId,
+            chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kFakeScaleValue),
+            kLocationStrings[ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD]);
+
+  TriggerSamples();
+
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::LID_BASE);
+
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+
+  observer_.update_.Reset();
+
+  // New device: EC Lid Angle Driver.
+  AddDevice(kFakeLidAngleId, chromeos::sensors::mojom::DeviceType::ANGL,
+            base::nullopt, base::nullopt);
+
+  TriggerSamples();
+
+  EXPECT_TRUE(observer_.is_supported_.value());
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::ANGL_LID);
+
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+}
+
+TEST_F(AccelerometerProviderMojoTest, NoSamplesFromBaseOnly) {
+  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
+      sensor_hal_server_->PassRemote());
+
+  // Wait until a sample is received.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(),
+            MojoState::INITIALIZING);
+
+  EXPECT_FALSE(observer_.is_supported_.has_value());
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+
+  // New device: base-accelerometer.
+  AddDevice(kFakeBaseAccelerometerId,
+            chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kFakeScaleValue),
+            kLocationStrings[ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD]);
+
+  // Wait until all setups are finished and no samples updated.
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate timeout to check |ec_lid_angle_driver_status_|.
+  TriggerNewDevicesTimeout();
+
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::BASE);
+
+  EXPECT_TRUE(observer_.is_supported_.has_value());
+  EXPECT_FALSE(observer_.is_supported_.value());
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+
+  // New device: lid-accelerometer.
+  AddLidAccelerometer();
+
+  TriggerSamples();
+
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::LID_BASE);
+
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+
+  observer_.update_.Reset();
+
+  // New device: EC Lid Angle Driver.
+  AddDevice(kFakeLidAngleId, chromeos::sensors::mojom::DeviceType::ANGL,
+            base::nullopt, base::nullopt);
+
+  TriggerSamples();
+
+  EXPECT_TRUE(observer_.is_supported_.value());
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::ANGL_LID);
+
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+}
+
+TEST_F(AccelerometerProviderMojoTest, NoSamplesFromLidAngle) {
+  // New device: EC Lid Angle Driver.
+  AddDevice(kFakeLidAngleId, chromeos::sensors::mojom::DeviceType::ANGL,
+            base::nullopt, base::nullopt);
+
+  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
+      sensor_hal_server_->PassRemote());
+
+  // Wait until all setups are finished and no samples updated.
+  base::RunLoop().RunUntilIdle();
+
+  provider_->TriggerRead();
+
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::ANGL);
+
+  EXPECT_TRUE(observer_.is_supported_.has_value());
+  EXPECT_TRUE(observer_.is_supported_.value());
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+
+  // New device: base-accelerometer.
+  AddDevice(kFakeBaseAccelerometerId,
+            chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kFakeScaleValue),
+            kLocationStrings[ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD]);
+
+  // Wait until all setups are finished and no samples updated.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::ANGL);
+
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+
+  // New device: lid-accelerometer.
+  AddLidAccelerometer();
+
+  TriggerSamples();
+
+  EXPECT_EQ(provider_->GetInitializationStateForTesting(), MojoState::ANGL_LID);
+
+  EXPECT_TRUE(observer_.update_.has(ACCELEROMETER_SOURCE_SCREEN));
+  EXPECT_FALSE(observer_.update_.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD));
+}
 
 }  // namespace ash

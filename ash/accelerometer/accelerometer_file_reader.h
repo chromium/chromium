@@ -15,6 +15,8 @@
 
 namespace ash {
 
+enum class State { INITIALIZING, SUCCESS, FAILED };
+
 // Work that runs on a base::TaskRunner. It determines the accelerometer
 // configuration, and reads the data. Upon a successful read it will notify
 // all observers.
@@ -114,6 +116,9 @@ class AccelerometerFileReader : public AccelerometerProviderInterface {
   // Controls accelerometer reading.
   void EnableAccelerometerReading();
   void DisableAccelerometerReading();
+
+  // The current initialization state of reader.
+  State initialization_state_ = State::INITIALIZING;
 
   // Attempts to read the accelerometer data in |blocking_task_runner_|. Upon a
   // success, converts the raw reading to an AccelerometerUpdate and notifies

@@ -21,8 +21,6 @@ class SequencedTaskRunner;
 
 namespace ash {
 
-enum class State { INITIALIZING, SUCCESS, FAILED };
-
 enum class ECLidAngleDriverStatus { UNKNOWN, SUPPORTED, NOT_SUPPORTED };
 
 class AccelerometerProviderInterface;
@@ -41,10 +39,12 @@ class ASH_EXPORT AccelerometerReader {
   // An interface to receive data from the AccelerometerReader.
   class Observer {
    public:
-    // Called only once, when
+    // Normally called only once, when
     // |AcceleromterProviderInterface::ec_lid_angle_driver_status_| is set to
-    // either SUPPORTED or NOT_SUPPORTED.
-    // It's also guaranteed to be called before |OnAccelerometerUpdated|.
+    // either SUPPORTED or NOT_SUPPORTED, unless the lid angle driver is
+    // late-present after timed out, which will be called twice with
+    // |is_supported| being false and true respectively.
+    // It's guaranteed to be called before |OnAccelerometerUpdated|.
     virtual void OnECLidAngleDriverStatusChanged(bool is_supported) = 0;
     virtual void OnAccelerometerUpdated(const AccelerometerUpdate& update) = 0;
 
@@ -136,9 +136,6 @@ class ASH_EXPORT AccelerometerProviderInterface
 
   // Set in the constructor.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-
-  // The current initialization state of reader.
-  State initialization_state_ = State::INITIALIZING;
 
  private:
   // State of ChromeOS EC lid angle driver, if SUPPORTED, it means EC can handle
