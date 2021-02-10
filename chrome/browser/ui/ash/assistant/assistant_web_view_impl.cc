@@ -131,6 +131,13 @@ void AssistantWebViewImpl::DidStopLoading() {
 
 void AssistantWebViewImpl::OnFocusChangedInPage(
     content::FocusedNodeDetails* details) {
+  // When navigating to the |web_contents_|, it may not focus it. Request focus
+  // as needed. This is a workaround to get a non-empty rect of the focused
+  // node. See details in b/177047240.
+  auto* native_view = web_contents_->GetContentNativeView();
+  if (native_view && !native_view->HasFocus())
+    web_contents_->Focus();
+
   for (auto& observer : observers_)
     observer.DidChangeFocusedNode(details->node_bounds_in_screen);
 }
