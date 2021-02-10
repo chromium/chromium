@@ -301,6 +301,9 @@ class PCScan<thread_safe>::PCScanTask final {
   size_t SweepQuarantine();
 
   PCScan<thread_safe>& pcscan_;
+  // Cache the pcscan epoch to avoid the compiler loading the atomic
+  // QuarantineData::epoch_ on each access.
+  const size_t pcscan_epoch_;
 
   ScanAreas scan_areas_;
   LargeScanAreas large_scan_areas_;
@@ -323,7 +326,7 @@ PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
     return nullptr;
   // We are certain here that |maybe_ptr| points to the super page payload.
   return QuarantineBitmapFromPointer(QuarantineBitmapType::kScanner,
-                                     pcscan_.quarantine_data_.epoch(),
+                                     pcscan_epoch_,
                                      reinterpret_cast<char*>(maybe_ptr));
 }
 
@@ -374,8 +377,7 @@ PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
   // PCScan has exclusive access to the scanner bitmap, we can avoid atomic rmw
   // operation for it.
   scanner_bitmap->template ClearBit<AccessType::kNonAtomic>(base);
-  QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
-                              pcscan_.quarantine_data_.epoch(),
+  QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator, pcscan_epoch_,
                               reinterpret_cast<char*>(base))
       ->template SetBit<AccessType::kAtomic>(base);
   return target_slot_span->bucket->slot_size;
@@ -389,7 +391,7 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
 
   for (auto super_page : super_pages_) {
     auto* bitmap = QuarantineBitmapFromPointer(
-        QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
+        QuarantineBitmapType::kScanner, pcscan_epoch_,
         reinterpret_cast<char*>(super_page));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
     bitmap->template Iterate<AccessType::kNonAtomic>([root](uintptr_t ptr) {
@@ -593,11 +595,11 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     return quarantine_size;
   }
 
-  // Keep this constant so that the compiler can remove redundant loads for
-  // the base of the normal bucket pool and hoist them out of the loops.
   const ScanFunction scan_function_;
   const PCScanTask& pcscan_task_;
 #if defined(PA_HAS_64_BITS_POINTERS)
+  // Keep this a constant so that the compiler can remove redundant loads for
+  // the base of the normal bucket pool and hoist them out of the loops.
   const uintptr_t normal_bucket_pool_base_;
 #endif
 };
@@ -618,7 +620,7 @@ size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
     // TODO(chromium:1129751): Check mutator bitmap as well if performance
     // allows.
     auto* bitmap = QuarantineBitmapFromPointer(
-        QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
+        QuarantineBitmapType::kScanner, pcscan_epoch_,
         reinterpret_cast<char*>(scan_area.begin));
     for (uintptr_t* current_slot = scan_area.begin;
          current_slot < scan_area.end;
@@ -649,7 +651,7 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
 
   for (auto super_page : super_pages_) {
     auto* bitmap = QuarantineBitmapFromPointer(
-        QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
+        QuarantineBitmapType::kScanner, pcscan_epoch_,
         reinterpret_cast<char*>(super_page));
     auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
     bitmap->template IterateAndClear<AccessType::kNonAtomic>(
@@ -665,7 +667,8 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
 }
 
 template <bool thread_safe>
-PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan) : pcscan_(pcscan) {
+PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
+    : pcscan_(pcscan), pcscan_epoch_(pcscan.quarantine_data_.epoch()) {
   // Threshold for which bucket size it is worthwhile in checking whether the
   // object is a quarantined object and can be skipped.
   static constexpr size_t kLargeScanAreaThreshold = 8192;
@@ -710,8 +713,7 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan) : pcscan_(pcscan) {
           super_pages_.insert(reinterpret_cast<uintptr_t>(super_page));
         } else {
 #if DCHECK_IS_ON()
-          PA_CHECK(IsScannerQuarantineBitmapEmpty(
-              super_page, pcscan_.quarantine_data_.epoch()));
+          PA_CHECK(IsScannerQuarantineBitmapEmpty(super_page, pcscan_epoch_));
 #endif
         }
       }
