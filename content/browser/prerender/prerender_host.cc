@@ -101,9 +101,6 @@ bool PrerenderHost::ActivatePrerenderedContents(
   // TODO(https://crbug.com/1142658): Notify renderer processes that the
   // contents get activated.
 
-  // TODO(https://crbug.com/1132752): Notify the mojo capability controller that
-  // the prerendered contents get activated.
-
   RecordFinalStatus(FinalStatus::kActivated);
   return true;
 }

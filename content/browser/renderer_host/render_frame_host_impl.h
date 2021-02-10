@@ -3129,9 +3129,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently
   // active document in the corresponding RenderFrame.
-  // TODO(crbug.com/1132752): Enable capability control for Prerender2 by
-  // initializing BrowserInterfaceBrokerImpl with a non-null
-  // MojoBinderPolicyApplier pointer.
   BrowserInterfaceBrokerImpl<RenderFrameHostImpl, RenderFrameHost*> broker_{
       this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{

@@ -35,7 +35,6 @@ void MojoBinderPolicyApplier::ApplyPolicyToBinder(
       std::move(binder_callback).Run();
       break;
     case MojoBinderPolicy::kCancel:
-      // TODO(crbug.com/1132752): Integrate with `PrerenderHostRegistry`.
       if (cancel_closure_)
         std::move(cancel_closure_).Run();
       break;
