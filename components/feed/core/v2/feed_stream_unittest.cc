@@ -1348,11 +1348,12 @@ TEST_F(FeedStreamTest, ShouldMakeFeedQueryRequestConsumesQuota) {
 TEST_F(FeedStreamTest, LoadStreamFromStore) {
   // Fill the store with stream data that is just barely fresh, and verify it
   // loads.
-  store_->OverwriteStream(MakeTypicalInitialModelState(
-                              /*first_cluster_id=*/0,
-                              kTestTimeEpoch - base::TimeDelta::FromHours(12) +
-                                  base::TimeDelta::FromMinutes(1)),
-                          base::DoNothing());
+  store_->OverwriteStream(
+      MakeTypicalInitialModelState(
+          /*first_cluster_id=*/0, kTestTimeEpoch -
+                                      GetFeedConfig().stale_content_threshold +
+                                      base::TimeDelta::FromMinutes(1)),
+      base::DoNothing());
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 

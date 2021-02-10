@@ -16,7 +16,7 @@ const base::Feature kInterestFeedContentSuggestions{
 // InterestFeedV2 is cached in ChromeCachedFlags. If the default value here is
 // changed, please update the cached one's default value in CachedFeatureFlags.
 const base::Feature kInterestFeedV2{"InterestFeedV2",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kInterestFeedV2Hearts{"InterestFeedV2Hearts",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -55,8 +55,7 @@ const base::Feature kWebFeed{"WebFeed", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kXsurfaceMetricsReporting{
     "XsurfaceMetricsReporting", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const char kDefaultReferrerUrl[] =
-    "https://www.googleapis.com/auth/chrome-content-suggestions";
+const char kDefaultReferrerUrl[] = "https://www.google.com/";
 
 std::string GetFeedReferrerUrl() {
   const base::Feature* feature = base::FeatureList::IsEnabled(kInterestFeedV2)
