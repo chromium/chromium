@@ -613,6 +613,68 @@ class MockRuntime {
     this.hit_test_source_creation_callback_ = callback;
   }
 
+  setLightEstimate(fakeXrLightEstimateInit) {
+    if (!fakeXrLightEstimateInit.sphericalHarmonicsCoefficients) {
+      throw new TypeError("sphericalHarmonicsCoefficients must be set");
+    }
+
+    if (fakeXrLightEstimateInit.sphericalHarmonicsCoefficients.length != 27) {
+      throw new TypeError("Must supply all 27 sphericalHarmonicsCoefficients");
+    }
+
+    if (fakeXrLightEstimateInit.primaryLightDirection && fakeXrLightEstimateInit.primaryLightDirection.w != 0) {
+      throw new TypeError("W component of primaryLightDirection must be 0");
+    }
+
+    if (fakeXrLightEstimateInit.primaryLightIntensity && fakeXrLightEstimateInit.primaryLightIntensity.w != 1) {
+      throw new TypeError("W component of primaryLightIntensity must be 1");
+    }
+
+    // If the primaryLightDirection or primaryLightIntensity aren't set, we need to set them
+    // to the defaults that the spec expects. ArCore will either give us everything or nothing,
+    // so these aren't nullable on the mojom.
+    if (!fakeXrLightEstimateInit.primaryLightDirection) {
+      fakeXrLightEstimateInit.primaryLightDirection = { x: 0.0, y: 1.0, z: 0.0, w: 0.0 };
+    }
+
+    if (!fakeXrLightEstimateInit.primaryLightIntensity) {
+      fakeXrLightEstimateInit.primaryLightIntensity = { x: 0.0, y: 0.0, z: 0.0, w: 1.0 };
+    }
+
+    let c = fakeXrLightEstimateInit.sphericalHarmonicsCoefficients;
+
+    this.light_estimate_ = {
+      lightProbe: {
+        // XRSphereicalHarmonics
+        sphericalHarmonics: {
+          coefficients: [
+            { red: c[0],  green: c[1],  blue: c[2] },
+            { red: c[3],  green: c[4],  blue: c[5] },
+            { red: c[6],  green: c[7],  blue: c[8] },
+            { red: c[9],  green: c[10], blue: c[11] },
+            { red: c[12], green: c[13], blue: c[14] },
+            { red: c[15], green: c[16], blue: c[17] },
+            { red: c[18], green: c[19], blue: c[20] },
+            { red: c[21], green: c[22], blue: c[23] },
+            { red: c[24], green: c[25], blue: c[26] }
+          ]
+        },
+        // Vector3dF
+        mainLightDirection: {
+          x: fakeXrLightEstimateInit.primaryLightDirection.x,
+          y: fakeXrLightEstimateInit.primaryLightDirection.y,
+          z: fakeXrLightEstimateInit.primaryLightDirection.z
+        },
+        // RgbTupleF32
+        mainLightIntensity: {
+          red:   fakeXrLightEstimateInit.primaryLightIntensity.x,
+          green: fakeXrLightEstimateInit.primaryLightIntensity.y,
+          blue:  fakeXrLightEstimateInit.primaryLightIntensity.z
+        }
+      }
+    }
+  }
+
   // Helper methods
   getNonImmersiveDisplayInfo() {
     const displayInfo = this.getImmersiveDisplayInfo();
@@ -786,6 +848,7 @@ class MockRuntime {
           renderingTimeRatio: 0,
           stageParameters: this.stageParameters_,
           stageParametersId: this.stageParametersId_,
+          lightEstimationData: this.light_estimate_
         };
 
         this.next_frame_id_++;
