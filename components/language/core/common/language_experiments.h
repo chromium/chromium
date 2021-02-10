@@ -43,6 +43,9 @@ extern const base::Feature kDetailedLanguageSettings;
 // layout.
 extern const base::Feature kDesktopRestructuredLanguageSettings;
 
+// This feature enables setting the application language on Desktop.
+extern const base::Feature kDesktopDetailedLanguageSettings;
+
 // This feature enables providing Translate data to Assistant.
 extern const base::Feature kTranslateAssistContent;
 

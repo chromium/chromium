@@ -6745,6 +6745,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopRestructuredLanguageSettingsDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(language::kDesktopRestructuredLanguageSettings)},
+
+    {"desktop-detailed-language-settings",
+     flag_descriptions::kDesktopDetailedLanguageSettingsName,
+     flag_descriptions::kDesktopDetailedLanguageSettingsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(language::kDesktopDetailedLanguageSettings)},
 #endif
 
     {"sync-autofill-wallet-offer-data",

@@ -34,6 +34,8 @@ const base::Feature kDetailedLanguageSettings{
     "DetailedLanguageSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kDesktopRestructuredLanguageSettings{
     "DesktopRestructuredLanguageSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDesktopDetailedLanguageSettings{
+    "DesktopDetailedLanguageSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kTranslateAssistContent{"TranslateAssistContent",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kTranslateIntent{"TranslateIntent",

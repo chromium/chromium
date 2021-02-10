@@ -2876,6 +2876,9 @@ extern const char kDirectManipulationStylusDescription[];
 extern const char kDesktopRestructuredLanguageSettingsName[];
 extern const char kDesktopRestructuredLanguageSettingsDescription[];
 
+extern const char kDesktopDetailedLanguageSettingsName[];
+extern const char kDesktopDetailedLanguageSettingsDescription[];
+
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)

@@ -4919,6 +4919,11 @@ const char kDesktopRestructuredLanguageSettingsName[] =
 const char kDesktopRestructuredLanguageSettingsDescription[] =
     "Enable the new restructured language settings page";
 
+const char kDesktopDetailedLanguageSettingsName[] =
+    "Detailed Language Settings (Desktop)";
+const char kDesktopDetailedLanguageSettingsDescription[] =
+    "Enable the new detailed language settings page";
+
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)

@@ -43221,6 +43221,7 @@ from previous Chrome versions.
   <int value="-1753458842" label="OfflinePagesLivePageSharing:disabled"/>
   <int value="-1752853388"
       label="OmniboxUIExperimentElideToRegistrableDomain:enabled"/>
+  <int value="-1752118355" label="DesktopDetailedLanguageSettings:enabled"/>
   <int value="-1751928267" label="disable-icon-ntp"/>
   <int value="-1750008152" label="UsernameFirstFlow:enabled"/>
   <int value="-1749689559" label="SelectToSpeakNavigationControl:disabled"/>
@@ -46839,6 +46840,7 @@ from previous Chrome versions.
       label="AutofillSendExperimentIdsInPaymentsRPCs:enabled"/>
   <int value="1590300329" label="CCTModulePostMessage:enabled"/>
   <int value="1591653786" label="SpeculativePreconnect:enabled"/>
+  <int value="1592391721" label="DesktopDetailedLanguageSettings:disabled"/>
   <int value="1593720927" label="GamepadVibration:disabled"/>
   <int value="1593883073" label="OfflineIndicatorV2:disabled"/>
   <int value="1593917165" label="SimplifiedNTP:disabled"/>

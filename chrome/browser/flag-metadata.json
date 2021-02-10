@@ -870,6 +870,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "desktop-detailed-language-settings",
+    "owners": [ "joshsantana", "chrome-langauge@google.com" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "desktop-in-product-help-snooze",
     "owners": [ "collinbaker", "kerenzhu", "chrome-desktop-ui@google.com" ],
     "expiry_milestone": 90
