@@ -224,6 +224,8 @@ const gfx::VectorIcon& PermissionChip::GetPermissionIconId() const {
 }
 
 base::string16 PermissionChip::GetPermissionMessage() const {
+  if (!delegate_)
+    return base::string16();
   auto requests = delegate_->Requests();
 
   return requests.size() == 1
