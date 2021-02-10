@@ -73,6 +73,7 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
   source->AddResourcePath("signin_error_app.js", IDR_SIGNIN_ERROR_APP_JS);
   source->AddResourcePath("signin_error.js", IDR_SIGNIN_ERROR_JS);
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
+  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
   source->AddBoolean("isSystemProfile", is_system_profile);
 
   // Retrieve the last signin error message and email used.

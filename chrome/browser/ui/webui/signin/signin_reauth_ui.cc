@@ -69,6 +69,7 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_reauth_browser_proxy.js",
                           IDR_SIGNIN_REAUTH_BROWSER_PROXY_JS);
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
+  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
 
   // Resources for the account passwords reauth.

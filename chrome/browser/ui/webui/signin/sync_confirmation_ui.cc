@@ -61,6 +61,7 @@ void SyncConfirmationUI::Initialize(
   source->EnableReplaceI18nInJS();
 
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
+  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
   source->AddResourcePath("sync_confirmation_browser_proxy.js",
                           IDR_SYNC_CONFIRMATION_BROWSER_PROXY_JS);
   source->AddResourcePath("sync_confirmation.js", IDR_SYNC_CONFIRMATION_JS);

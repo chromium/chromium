@@ -12,12 +12,6 @@
     color: var(--cr-secondary-text-color);
   }
 
-  /* Old design */
-  .action-container cr-button {
-    padding-inline-end: 16px;
-    padding-inline-start: 16px;
-  }
-
   .action-container {
     bottom: 0;
     box-sizing: border-box;
@@ -25,6 +19,17 @@
     width: 100%;
   }
 
+  .action-container #settingsButton {
+    left: var(--action-container-padding);
+    position: absolute;
+  }
+
+  :host-context([dir='rtl']) .action-container #settingsButton {
+    left: auto;
+    right: var(--action-container-padding);
+  }
+
+  /* Old design */
   #illustration-container {
     height: 168px;
     margin-bottom: 32px;
@@ -86,16 +91,6 @@
     padding-top: 12px;
   }
 
-  .action-container #settingsButton {
-    left: 16px;
-    position: absolute;
-  }
-
-  :host-context([dir='rtl']) .action-container #settingsButton {
-    left: auto;
-    right: 16px;
-  }
-
   /* New design */
   #headerContainer {
     background-color: var(--theme-frame-color);
@@ -149,37 +144,20 @@
     margin-top: 16px;
   }
 
-  #footer {
-    bottom: 0;
-    display: flex;
+  #buttonsContainer {
+    --action-container-padding: var(--footer-margin);
+  }
+
+  #buttonsContainer cr-button {
     font-size: var(--text-font-size);
-    margin-bottom: var(--footer-margin);
-    position: absolute;
-    width: 100%;
-  }
-
-  #actionContainer {
-    display: flex;
-    flex-flow: row-reverse;
-    justify-content: flex-start;
-    width: 100%;
-  }
-
-  #actionContainer cr-button {
     min-width: 111px;
   }
 
-  #actionContainer #settingsButton {
+  #buttonsContainer #notNowButton {
     font-weight: normal;
-    margin-inline-end: auto;
-    margin-inline-start: var(--footer-margin);
   }
 
-  #actionContainer #confirmButton {
-    margin-inline-end: var(--footer-margin);
-  }
-
-  #actionContainer #notNowButton {
+  #buttonsContainer #settingsButton {
     font-weight: normal;
   }
 
@@ -257,19 +235,17 @@
       $i18n{syncConfirmationSyncInfoDesc}
     </div>
   </div>
-  <div id="footer">
-    <div id="actionContainer">
-      <cr-button class="action-button" id="confirmButton"
-          on-click="onConfirm_" consent-confirmation autofocus>
-        $i18n{syncConfirmationConfirmLabel}
-      </cr-button>
-      <cr-button id="notNowButton" on-click="onUndo_">
-        $i18n{syncConfirmationUndoLabel}
-      </cr-button>
-      <cr-button id="settingsButton" on-click="onGoToSettings_"
-          consent-confirmation>
-        $i18n{syncConfirmationSettingsLabel}
-      </cr-button>
-    </div>
+  <div id="buttonsContainer" class="action-container">
+    <cr-button class="action-button" id="confirmButton"
+        on-click="onConfirm_" consent-confirmation autofocus>
+      $i18n{syncConfirmationConfirmLabel}
+    </cr-button>
+    <cr-button id="notNowButton" on-click="onUndo_">
+      $i18n{syncConfirmationUndoLabel}
+    </cr-button>
+    <cr-button id="settingsButton" on-click="onGoToSettings_"
+        consent-confirmation>
+      $i18n{syncConfirmationSettingsLabel}
+    </cr-button>
   </div>
 </template>

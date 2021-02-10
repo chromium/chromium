@@ -30,6 +30,7 @@ SigninEmailConfirmationUI::SigninEmailConfirmationUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_email_confirmation_app.js",
                           IDR_SIGNIN_EMAIL_CONFIRMATION_APP_JS);
   source->AddResourcePath("signin_shared_css.js", IDR_SIGNIN_SHARED_CSS_JS);
+  source->AddResourcePath("signin_vars_css.js", IDR_SIGNIN_VARS_CSS_JS);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"signinEmailConfirmationTitle", IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE},
