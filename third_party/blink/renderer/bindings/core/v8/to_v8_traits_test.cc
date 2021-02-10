@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/core/geometry/dom_point.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 
 namespace blink {
 
@@ -194,6 +194,47 @@ TEST(ToV8TraitsTest, NullStringInputForNoneNullableType) {
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", null_atomic_string);
   const char* const null = nullptr;
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", null);
+}
+
+TEST(ToV8TraitsTest, Nullable) {
+  const V8TestingScope scope;
+  // Nullable Boolean
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLBoolean>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLBoolean>, "true", true);
+  // Nullable Integer
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLByte>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLUnsignedLong>, "0",
+                   base::Optional<uint32_t>(0));
+  // Nullable Float
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLFloat>, "0.5",
+                   base::Optional<float>(0.5));
+  // Nullable Double
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "null", base::nullopt);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLDouble>, "3.14",
+                   base::Optional<double>(3.14));
+}
+
+TEST(ToV8TraitsTest, NullableString) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "null", String());
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "string", String("string"));
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "", String(""));
+  const char* const null = nullptr;
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "null", null);
+  const char* const charptr_string = "charptrString";
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "charptrString",
+                   charptr_string);
+  const char* const charptr_empty_string = "";
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLStringV2>, "", charptr_empty_string);
+}
+
+TEST(ToV8TraitsTest, NullableScriptWrappable) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLNullable<EventTarget>, "null", nullptr);
+  EventTarget* event_target = EventTarget::Create(scope.GetScriptState());
+  TEST_TOV8_TRAITS(scope, IDLNullable<EventTarget>, "[object EventTarget]",
+                   event_target);
 }
 
 }  // namespace

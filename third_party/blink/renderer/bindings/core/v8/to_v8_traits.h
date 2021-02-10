@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_dictionary_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
@@ -290,6 +291,113 @@ struct ToV8Traits<T,
       ScriptState* script_state,
       const bindings::EnumerationBase& enumeration) WARN_UNUSED_RESULT {
     return V8String(script_state->GetIsolate(), enumeration.AsCStr());
+  }
+};
+
+// Nullable
+
+// IDLNullable<IDLNullable<T>> must not be used.
+template <typename T>
+struct ToV8Traits<IDLNullable<IDLNullable<T>>>;
+
+// Nullable Boolean
+template <>
+struct ToV8Traits<IDLNullable<IDLBoolean>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const base::Optional<bool>& value)
+      WARN_UNUSED_RESULT {
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<IDLBoolean>::ToV8(script_state, *value);
+  }
+};
+
+// Nullable Integers
+template <typename T, bindings::IDLIntegerConvMode mode>
+struct ToV8Traits<IDLNullable<IDLIntegerTypeBase<T, mode>>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const base::Optional<T>& value)
+      WARN_UNUSED_RESULT {
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<IDLIntegerTypeBase<T, mode>>::ToV8(script_state, *value);
+  }
+};
+
+// Nullable Float
+template <typename T>
+struct ToV8Traits<IDLNullable<T>,
+                  typename std::enable_if_t<
+                      std::is_base_of<IDLBaseHelper<float>, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const base::Optional<float>& value)
+      WARN_UNUSED_RESULT {
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, *value);
+  }
+};
+
+// Nullable Double
+template <typename T>
+struct ToV8Traits<IDLNullable<T>,
+                  typename std::enable_if_t<
+                      std::is_base_of<IDLBaseHelper<double>, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const base::Optional<double>& value)
+      WARN_UNUSED_RESULT {
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, *value);
+  }
+};
+
+// Nullable Strings
+template <typename T>
+struct ToV8Traits<
+    IDLNullable<T>,
+    typename std::enable_if_t<
+        std::is_same<IDLByteStringV2, T>::value ||
+        std::is_same<IDLStringV2, T>::value ||
+        std::is_same<IDLStringTreatNullAsEmptyStringV2, T>::value ||
+        std::is_same<IDLUSVStringV2, T>::value ||
+        std::is_same<IDLStringStringContextTrustedHTMLV2, T>::value ||
+        std::is_same<IDLStringStringContextTrustedHTMLTreatNullAsEmptyStringV2,
+                     T>::value ||
+        std::is_same<IDLStringStringContextTrustedScriptV2, T>::value ||
+        std::is_same<
+            IDLStringStringContextTrustedScriptTreatNullAsEmptyStringV2,
+            T>::value ||
+        std::is_same<IDLUSVStringStringContextTrustedScriptURLV2, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const String& value)
+      WARN_UNUSED_RESULT {
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, value);
+  }
+};
+
+// Nullable ScriptWrappable
+template <typename T>
+struct ToV8Traits<
+    IDLNullable<T>,
+    typename std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        ScriptWrappable* script_wrappable)
+      WARN_UNUSED_RESULT {
+    if (!script_wrappable)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, script_wrappable);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(v8::Isolate* isolate,
+                                        ScriptWrappable* script_wrappable,
+                                        v8::Local<v8::Object> creation_context)
+      WARN_UNUSED_RESULT {
+    if (!script_wrappable)
+      return v8::Null(isolate);
+    return ToV8Traits<T>::ToV8(isolate, script_wrappable, creation_context);
   }
 };
 
