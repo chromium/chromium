@@ -2988,6 +2988,14 @@ void RenderFrameHostManager::CommitPending(
   TRACE_EVENT1("navigation", "RenderFrameHostManager::CommitPending",
                "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
   CHECK(pending_rfh);
+  // We either come here with a `pending_rfh` that is
+  // 1) a speculative RenderFrameHost, which would have been deleted
+  //    immediately upon renderer process exit, so it must still have a live
+  //    connection to its renderer frame.
+  // 2) a current RenderFrameHost which has just received a commit IPC from the
+  //    renderer, so it must have a live connection to its renderer frame in
+  //    order to receive the IPC.
+  DCHECK(pending_rfh->IsRenderFrameCreated());
 
   // We should never have a pending bfcache entry if bfcache is disabled.
   DCHECK(!pending_bfcache_entry || IsBackForwardCacheEnabled());
@@ -3104,8 +3112,13 @@ void RenderFrameHostManager::CommitPending(
   }
 
   RenderWidgetHostView* new_view = render_frame_host_->GetView();
+  // Since the committing renderer frame is live, the RenderWidgetHostView must
+  // also exist. For a local root frame, they share lifetimes exactly. For
+  // another child frame, the RenderWidgetHostView comes from a parent, but if
+  // this renderer frame is live its ancestors must be as well.
+  DCHECK(new_view);
 
-  if (focus_render_view && new_view) {
+  if (focus_render_view) {
     if (is_main_frame) {
       new_view->Focus();
     } else {
@@ -3135,7 +3148,7 @@ void RenderFrameHostManager::CommitPending(
 
   // Make the new view show the contents of old view until it has something
   // useful to show.
-  if (is_main_frame && old_view && new_view && old_view != new_view)
+  if (is_main_frame && old_view && old_view != new_view)
     new_view->TakeFallbackContentFrom(old_view);
 
   // The RenderViewHost keeps track of the main RenderFrameHost routing id.
@@ -3214,7 +3227,7 @@ void RenderFrameHostManager::CommitPending(
   if (proxy_to_parent)
     proxy_to_parent->SetChildRWHView(new_view, old_size ? &*old_size : nullptr);
 
-  if (render_frame_host_->is_local_root() && new_view) {
+  if (render_frame_host_->is_local_root()) {
     // RenderFrames are created with a hidden RenderWidgetHost. When navigation
     // finishes, we show it if the delegate is shown.
     if (!frame_tree_node_->frame_tree()->IsHidden())
@@ -3223,17 +3236,6 @@ void RenderFrameHostManager::CommitPending(
 
   // The process will no longer try to exit, so we can decrement the count.
   render_frame_host_->GetProcess()->RemovePendingView();
-
-  // If there's no RenderWidgetHostView on this frame's local root (or itself
-  // if it is a local root), then this RenderViewHost died while it was hidden.
-  // We ignored the RenderProcessGone call at the time, so we should send it now
-  // to make sure the sad tab shows up, etc.
-  if (!new_view) {
-    DCHECK(!render_frame_host_->IsRenderFrameLive());
-    DCHECK(!new_rvh->IsRenderViewLive());
-    render_frame_host_->ResetLoadingState();
-    delegate_->RenderProcessGoneFromRenderManager(new_rvh);
-  }
 
   // After all is done, there must never be a proxy in the list which has the
   // same SiteInstance as the current RenderFrameHost.

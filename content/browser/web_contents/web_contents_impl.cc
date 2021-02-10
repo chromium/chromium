@@ -7531,12 +7531,6 @@ void WebContentsImpl::BeforeUnloadFiredFromRenderManager(
   // Note: |this| might be deleted at this point.
 }
 
-void WebContentsImpl::RenderProcessGoneFromRenderManager(
-    RenderViewHost* render_view_host) {
-  DCHECK(crashed_status_ != base::TERMINATION_STATUS_STILL_RUNNING);
-  RenderViewTerminated(render_view_host, crashed_status_, crashed_error_code_);
-}
-
 void WebContentsImpl::CancelModalDialogsForRenderManager() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::CancelModalDialogsForRenderManager");

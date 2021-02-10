@@ -972,8 +972,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       bool proceed,
       const base::TimeTicks& proceed_time,
       bool* proceed_to_fire_unload) override;
-  void RenderProcessGoneFromRenderManager(
-      RenderViewHost* render_view_host) override;
   void CancelModalDialogsForRenderManager() override;
   void NotifySwappedFromRenderManager(RenderFrameHost* old_frame,
                                       RenderFrameHost* new_frame,

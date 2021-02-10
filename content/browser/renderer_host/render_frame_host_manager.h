@@ -133,8 +133,6 @@ class CONTENT_EXPORT RenderFrameHostManager
         bool proceed,
         const base::TimeTicks& proceed_time,
         bool* proceed_to_fire_unload) = 0;
-    virtual void RenderProcessGoneFromRenderManager(
-        RenderViewHost* render_view_host) = 0;
     virtual void CancelModalDialogsForRenderManager() = 0;
     virtual void NotifySwappedFromRenderManager(RenderFrameHost* old_frame,
                                                 RenderFrameHost* new_frame,
