@@ -198,6 +198,18 @@ GetTouchpadScrollAccelerationSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetMouseScrollAccelerationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
+       mojom::kPointersSubpagePath,
+       mojom::SearchResultIcon::kMouse,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kMouseScrollAcceleration}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetMouseSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_MOUSE_ACCELERATION,
@@ -230,12 +242,6 @@ const std::vector<SearchConcept>& GetMouseSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kPointers}},
-      {IDS_OS_SETTINGS_TAG_MOUSE_SCROLL_ACCELERATION,
-       mojom::kPointersSubpagePath,
-       mojom::SearchResultIcon::kMouse,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kMouseScrollAcceleration}},
   });
   return *tags;
 }
@@ -470,6 +476,11 @@ const std::vector<SearchConcept>& GetPowerWithLaptopLidSearchConcepts() {
         SearchConcept::kAltTagEnd}},
   });
   return *tags;
+}
+
+bool AreScrollSettingsAllowed() {
+  return base::FeatureList::IsEnabled(
+      ::chromeos::features::kAllowScrollSettings);
 }
 
 bool IsUnifiedDesktopAvailable() {
@@ -1020,11 +1031,14 @@ void DeviceSection::TouchpadExists(bool exists) {
 
 void DeviceSection::MouseExists(bool exists) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetMouseSearchConcepts());
+  updater.RemoveSearchTags(GetMouseScrollAccelerationSearchConcepts());
 
-  if (exists)
+  if (exists) {
     updater.AddSearchTags(GetMouseSearchConcepts());
-  else
-    updater.RemoveSearchTags(GetMouseSearchConcepts());
+    if (AreScrollSettingsAllowed())
+      updater.AddSearchTags(GetMouseScrollAccelerationSearchConcepts());
+  }
 }
 
 void DeviceSection::PointingStickExists(bool exists) {
@@ -1213,9 +1227,7 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddBoolean(
       "allowDisableMouseAcceleration",
       base::FeatureList::IsEnabled(::features::kAllowDisableMouseAcceleration));
-  html_source->AddBoolean(
-      "allowScrollSettings",
-      base::FeatureList::IsEnabled(::chromeos::features::kAllowScrollSettings));
+  html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
   html_source->AddBoolean(
       "separatePointingStickSettings",
       base::FeatureList::IsEnabled(::features::kSeparatePointingStickSettings));
