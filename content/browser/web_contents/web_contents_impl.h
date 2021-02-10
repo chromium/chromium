@@ -402,7 +402,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HasFileSystemAccessHandles() override;
   bool HasPictureInPictureVideo() override;
   bool IsCrashed() override;
-  void SetIsCrashed(base::TerminationStatus status, int error_code) override;
   base::TerminationStatus GetCrashedStatus() override;
   int GetCrashedErrorCode() override;
   bool IsBeingDestroyed() override;
@@ -428,7 +427,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   WebContentsImpl* GetResponsibleWebContents() override;
   void DidChangeVisibleSecurityState() override;
   void SyncRendererPrefs() override;
-
   void Stop() override;
   void SetPageFrozen(bool frozen) override;
   std::unique_ptr<WebContents> Clone() override;
@@ -540,7 +538,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   gfx::Size GetSize() override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect,
                                    const gfx::Insets& insets) override;
-
 #if defined(OS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents() override;
   WebContentsAndroid* GetWebContentsAndroid();
@@ -549,7 +546,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void RequestFindMatchRects(int current_version) override;
   service_manager::InterfaceProvider* GetJavaInterfaces() override;
 #endif
-
   bool HasRecentInteractiveInputEvent() override;
   void SetIgnoreInputEvents(bool ignore_input_events) override;
 
@@ -1449,6 +1445,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void AddObserver(WebContentsObserver* observer);
   void RemoveObserver(WebContentsObserver* observer);
 
+  // Indicates whether this tab should be considered crashed. The setter will
+  // also notify the delegate when the flag is changed.
+  void SetMainFrameProcessStatus(base::TerminationStatus status,
+                                 int error_code);
+
   // Clears a pending contents that has been closed before being shown.
   void OnWebContentsDestroyed(WebContentsImpl* web_contents);
 
@@ -1762,9 +1763,15 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // TODO(pbos): Check navigation requests and handles instead of caching this.
   bool is_load_to_different_document_;
 
-  // Indicates if the tab is considered crashed.
-  base::TerminationStatus crashed_status_;
-  int crashed_error_code_;
+  // Indicates the process state of the primary main frame's renderer process.
+  // If the process is not live due to a crash, this will be reflected by
+  // IsCrashed(), though it's possible to not be live while not indicating a
+  // crash occurred.
+  // TODO(crbug.com/1164280): Under MPArch, with multiple frame trees in a
+  // WebContents, this just tracks the renderer process of the main frame of the
+  // root page. It should be named appropriately.
+  base::TerminationStatus main_frame_process_status_;
+  int main_frame_process_error_code_;
 
   // Whether this WebContents is waiting for a first-response for the
   // main resource of the page. This controls whether the throbber state is

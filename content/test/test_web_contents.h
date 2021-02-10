@@ -75,6 +75,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void NavigateAndFail(const GURL& url, int error_code) override;
   void TestSetIsLoading(bool value) override;
   void SetOpener(WebContents* opener) override;
+  void SetIsCrashed(base::TerminationStatus status, int error_code) override;
   const std::string& GetSaveFrameHeaders() override;
   const base::string16& GetSuggestedFileName() override;
   bool HasPendingDownloadImage(const GURL& url) override;

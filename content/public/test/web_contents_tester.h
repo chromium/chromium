@@ -96,6 +96,9 @@ class WebContentsTester {
   // main frame of |opener|.
   virtual void SetOpener(WebContents* opener) = 0;
 
+  // Sets the process state for the primary main frame renderer.
+  virtual void SetIsCrashed(base::TerminationStatus status, int error_code) = 0;
+
   // Returns headers that were passed in the previous SaveFrameWithHeaders(...)
   // call.
   virtual const std::string& GetSaveFrameHeaders() = 0;

@@ -39,6 +39,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -397,7 +398,13 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_TRUE(pwa_install_view_->GetVisible());
 
-  web_contents_->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    content::RenderFrameDeletedObserver crash_observer(
+        web_contents_->GetMainFrame());
+    web_contents_->GetMainFrame()->GetProcess()->Shutdown(1);
+    crash_observer.WaitUntilDeleted();
+  }
   ASSERT_TRUE(web_contents_->IsCrashed());
   PwaInstallIconChangeWaiter::VerifyIconVisibility(pwa_install_view_, false);
 }

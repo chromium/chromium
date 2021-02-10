@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
-#include "content/public/test/browser_test.h"
 
 #include <memory>
 
@@ -46,9 +45,11 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
@@ -1368,9 +1369,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // This test makes sure a crashed singleton tab reloads from a new navigation.
-// TODO(https://crbug.com/396371): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       DISABLED_NavigateToCrashedSingletonTab) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateToCrashedSingletonTab) {
   const GURL singleton_url(GetContentSettingsURL());
   WebContents* web_contents = chrome::AddSelectedTabWithURL(
       browser(), singleton_url, ui::PAGE_TRANSITION_LINK);
@@ -1381,7 +1380,14 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
   // Kill the singleton tab.
-  web_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+    content::RenderFrameDeletedObserver crash_observer(
+        web_contents->GetMainFrame());
+    web_contents->GetMainFrame()->GetProcess()->Shutdown(1);
+    crash_observer.WaitUntilDeleted();
+  }
   EXPECT_TRUE(web_contents->IsCrashed());
 
   NavigateParams params(MakeNavigateParams());

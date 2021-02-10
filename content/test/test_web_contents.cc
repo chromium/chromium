@@ -302,6 +302,11 @@ void TestWebContents::SetOpener(WebContents* opener) {
       static_cast<WebContentsImpl*>(opener)->GetFrameTree()->root());
 }
 
+void TestWebContents::SetIsCrashed(base::TerminationStatus status,
+                                   int error_code) {
+  SetMainFrameProcessStatus(status, error_code);
+}
+
 void TestWebContents::AddPendingContents(
     std::unique_ptr<WebContentsImpl> contents,
     const GURL& target_url) {

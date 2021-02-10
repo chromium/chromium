@@ -69,7 +69,8 @@ TEST_F(BrowserUnitTest, ReloadCrashedTab) {
   EXPECT_FALSE(raw_contents2->IsLoading());
 
   // Simulate the second tab crashing.
-  raw_contents2->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+  WebContentsTester::For(raw_contents2)
+      ->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
   EXPECT_TRUE(raw_contents2->IsCrashed());
 
   // Selecting the second tab does not cause a load or clear the crash.
@@ -125,7 +126,8 @@ TEST_F(BrowserUnitTest, DisablePrintOnCrashedTab) {
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_PRINT));
   EXPECT_TRUE(chrome::CanPrint(browser()));
 
-  raw_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+  WebContentsTester::For(raw_contents)
+      ->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
 
   EXPECT_TRUE(raw_contents->IsCrashed());
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_PRINT));
@@ -154,7 +156,8 @@ TEST_F(BrowserUnitTest, DisableZoomOnCrashedTab) {
   EXPECT_TRUE(chrome::CanZoomIn(raw_contents));
   EXPECT_TRUE(chrome::CanZoomOut(raw_contents));
 
-  raw_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+  WebContentsTester::For(raw_contents)
+      ->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
 
   EXPECT_TRUE(raw_contents->IsCrashed());
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_ZOOM_PLUS));

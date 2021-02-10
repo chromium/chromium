@@ -830,8 +830,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       node_(this),
       frame_tree_(browser_context, this, this, this, this, this, this, this),
       is_load_to_different_document_(false),
-      crashed_status_(base::TERMINATION_STATUS_STILL_RUNNING),
-      crashed_error_code_(0),
+      main_frame_process_status_(base::TERMINATION_STATUS_STILL_RUNNING),
+      main_frame_process_error_code_(0),
       waiting_for_response_(false),
       load_state_(net::LOAD_STATE_IDLE, base::string16()),
       upload_size_(0),
@@ -1919,7 +1919,7 @@ void WebContentsImpl::SetHasPictureInPictureVideo(
 }
 
 bool WebContentsImpl::IsCrashed() {
-  switch (crashed_status_) {
+  switch (main_frame_process_status_) {
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
@@ -1947,25 +1947,25 @@ bool WebContentsImpl::IsCrashed() {
   return false;
 }
 
-void WebContentsImpl::SetIsCrashed(base::TerminationStatus status,
-                                   int error_code) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetIsCrashed", "status",
-                        static_cast<int>(status), "old_status",
-                        static_cast<int>(crashed_status_));
-  if (status == crashed_status_)
+void WebContentsImpl::SetMainFrameProcessStatus(base::TerminationStatus status,
+                                                int error_code) {
+  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetMainFrameProcessStatus",
+                        "status", static_cast<int>(status), "old_status",
+                        static_cast<int>(main_frame_process_status_));
+  if (status == main_frame_process_status_)
     return;
 
-  crashed_status_ = status;
-  crashed_error_code_ = error_code;
+  main_frame_process_status_ = status;
+  main_frame_process_error_code_ = error_code;
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
 }
 
 base::TerminationStatus WebContentsImpl::GetCrashedStatus() {
-  return crashed_status_;
+  return main_frame_process_status_;
 }
 
 int WebContentsImpl::GetCrashedErrorCode() {
-  return crashed_error_code_;
+  return main_frame_process_error_code_;
 }
 
 bool WebContentsImpl::IsBeingDestroyed() {
@@ -6298,6 +6298,23 @@ const GURL& WebContentsImpl::GetMainFrameLastCommittedURL() {
 void WebContentsImpl::RenderFrameCreated(RenderFrameHost* render_frame_host) {
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameCreated",
                "render_frame_host", static_cast<void*>(render_frame_host));
+  // The WebContents tracks the process state for the main frame's renderer.
+  // TODO(crbug.com/1164280): Under MPArch, with multiple frame trees in a
+  // WebContents, this is intended to just track the main frame of the root
+  // page.
+  if (!render_frame_host->GetParent()) {
+    bool was_crashed = IsCrashed();
+    SetMainFrameProcessStatus(base::TERMINATION_STATUS_STILL_RUNNING, 0);
+
+    // Restore the focus to the tab (otherwise the focus will be on the top
+    // window).
+    if (was_crashed && !FocusLocationBarByDefault()) {
+      if (!delegate_ || delegate_->ShouldFocusPageAfterCrash()) {
+        view_->Focus();
+      }
+    }
+  }
+
   observers_.NotifyObservers(&WebContentsObserver::RenderFrameCreated,
                              render_frame_host);
   UpdateAccessibilityModeOnFrame(render_frame_host);
@@ -6798,16 +6815,6 @@ void WebContentsImpl::RenderViewReady(RenderViewHost* rvh) {
 
   notify_disconnection_ = true;
 
-  bool was_crashed = IsCrashed();
-  SetIsCrashed(base::TERMINATION_STATUS_STILL_RUNNING, 0);
-
-  // Restore the focus to the tab (otherwise the focus will be on the top
-  // window).
-  if (was_crashed && !FocusLocationBarByDefault() &&
-      (!delegate_ || delegate_->ShouldFocusPageAfterCrash())) {
-    view_->Focus();
-  }
-
   observers_.NotifyObservers(&WebContentsObserver::RenderViewReady);
   view_->RenderViewReady();
 }
@@ -6855,15 +6862,14 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // probably will need to more granularly reset the state here.
   ResetLoadProgressState();
   NotifyDisconnected();
-  SetIsCrashed(status, error_code);
+  SetMainFrameProcessStatus(status, error_code);
 
   TRACE_EVENT0("content",
                "Dispatching WebContentsObserver::RenderViewTerminated");
   // Some observers might destroy WebContents in RenderViewTerminated.
   base::WeakPtr<WebContentsImpl> weak_ptr = weak_factory_.GetWeakPtr();
-  auto crashed_status = GetCrashedStatus();
   for (auto& observer : observers_.observer_list()) {
-    observer.RenderProcessGone(crashed_status);
+    observer.RenderProcessGone(status);
     if (!weak_ptr)
       return;
   }

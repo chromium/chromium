@@ -777,7 +777,14 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutMenuOptionsForCrashedTab) {
       NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL()));
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  tab_contents->SetIsCrashed(base::TERMINATION_STATUS_PROCESS_CRASHED, -1);
+
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    content::RenderFrameDeletedObserver crash_observer(
+        tab_contents->GetMainFrame());
+    tab_contents->GetMainFrame()->GetProcess()->Shutdown(1);
+    crash_observer.WaitUntilDeleted();
+  }
   ASSERT_TRUE(tab_contents->IsCrashed());
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kDisabled);

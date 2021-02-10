@@ -590,10 +590,10 @@ class WebContents : public PageNavigator,
   // Indicates whether a video is in Picture-in-Picture for |this|.
   virtual bool HasPictureInPictureVideo() = 0;
 
-  // Indicates whether this tab should be considered crashed. The setter will
-  // also notify the delegate when the flag is changed.
+  // Indicates whether this tab should be considered crashed. This becomes false
+  // again when the renderer process is recreated after a crash in order to
+  // recreate the main frame.
   virtual bool IsCrashed() = 0;
-  virtual void SetIsCrashed(base::TerminationStatus status, int error_code) = 0;
 
   virtual base::TerminationStatus GetCrashedStatus() = 0;
   virtual int GetCrashedErrorCode() = 0;
