@@ -882,6 +882,12 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  # Dependency for ChromeVox.
+  'src/third_party/chromevox/third_party/sre/src': {
+      'url': Var('chromium_git') + '/external/github.com/zorkow/speech-rule-engine.git' + '@' + '5a56d4d33d67dc7c692da032d2ebbdefd7de780e',
+      'condition': 'checkout_chromeos',
+  },
+
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {

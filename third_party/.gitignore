@@ -56,6 +56,7 @@
 /checkstyle/*.jar
 /chromeos_login_manager
 /chromeos_text_input
+/chromevox/third_party/sre/src
 /chromite
 /cld_2/src
 /cld_3/src
