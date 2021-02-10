@@ -1590,11 +1590,6 @@ void HostProcess::StartHost() {
 
   host_->AddExtension(std::make_unique<TestEchoExtension>());
 
-  // TODO(joedow): Remove in M90.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  host_->SetMaximumSessionDuration(base::TimeDelta::FromHours(20));
-#endif
-
   if (max_session_duration_minutes_ > 0) {
     host_->SetMaximumSessionDuration(
         base::TimeDelta::FromMinutes(max_session_duration_minutes_));
