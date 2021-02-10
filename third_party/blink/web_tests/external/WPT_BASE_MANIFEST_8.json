@@ -74848,6 +74848,19 @@
        {}
       ]
      ],
+     "percentage-descendant-of-anonymous-flex-item.html": [
+      "592b5212ea6e5bd787aa9aab0d7f1c16c78bc134",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/reference/percentage-descendant-of-anonymous-flex-item-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "percentage-heights-002.html": [
       "cfdf5be2ff536fad657d762cc20577a168cbec01",
       [
@@ -180693,8 +180706,12 @@
      "c82b6c02247630966ddd2c05b0db1c9321350d20",
      []
     ],
+    "beacon-basic.https.window-expected.txt": [
+     "05875121a70c56c891cb0a135166b30a71db2934",
+     []
+    ],
     "beacon-common.sub.js": [
-     "279ad2229ba3e9f4c343733809c60e31fcd492e9",
+     "46994954608410c56c56edb2becce8f388ef7d2a",
      []
     ],
     "headers": {
@@ -180705,7 +180722,7 @@
     },
     "resources": {
      "beacon.py": [
-      "f5caaf4b8d3d64a8016b080c110414f9cb1eb3f7",
+      "d81bfb1ac68084f619027a869c491d6188fe0c63",
       []
      ],
      "content-type-and-body.py": [
@@ -194911,6 +194928,10 @@
       ],
       "overflow-auto-007-ref.html": [
        "1cf9eea0e99bfe4a9bcc2999898315611d197f02",
+       []
+      ],
+      "percentage-descendant-of-anonymous-flex-item-ref.html": [
+       "5f72540799a1b52c5205d709f1f44465e54f6725",
        []
       ],
       "percentage-size-subitems-001-ref.html": [
@@ -277803,82 +277824,10 @@
     ]
    },
    "beacon": {
-    "beacon-basic-blob.html": [
-     "805ea63be252b1087aedffbc20beaa765aedbc9a",
+    "beacon-basic.https.window.js": [
+     "47117716a28d564653653831e90d1da8c075c7af",
      [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "beacon-basic-blobMax.html": [
-     "e18b163d6300cdb3f58ea03e1a912bac5043627a",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "beacon-basic-buffersource.html": [
-     "14c7a4f30f857af205dc5c289e643b43735609ae",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "beacon-basic-buffersourceMax.html": [
-     "5163ecd75a907e79d584ba42e458f22cfe32adbf",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "beacon-basic-formdata.html": [
-     "9f46cf6a79356d7d324538173f76ee710b9273f0",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "beacon-basic-formdataMax.html": [
-     "2c7e0fa805ccb645687f01e301cefa892f9fe233",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "beacon-basic-string.html": [
-     "cba65dade98d435052f141fecd09cdf24d164c3b",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "beacon-basic-stringMax.html": [
-     "005e9f5ce889532cdf35459386fa1b2895786ad0",
-     [
-      null,
-      {
-       "timeout": "long"
-      }
-     ]
-    ],
-    "beacon-cors.sub.window.js": [
-     "5543bddc5f66b3a09c54937c0cf665d2d25ea8d6",
-     [
-      "beacon/beacon-cors.sub.window.html",
+      "beacon/beacon-basic.https.window.html",
       {
        "script_metadata": [
         [
@@ -277898,12 +277847,20 @@
       }
      ]
     ],
-    "beacon-error.sub.window.js": [
-     "499fa3b27213f2b5958c0c90cd76eaa382bb0bee",
+    "beacon-cors.https.window.js": [
+     "6f282a23b153d512f5cf51b1daf25529d5128185",
      [
-      "beacon/beacon-error.sub.window.html",
+      "beacon/beacon-cors.https.window.html",
       {
        "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
         [
          "script",
          "/common/utils.js"
@@ -277912,25 +277869,21 @@
          "script",
          "beacon-common.sub.js"
         ]
-       ]
-      }
-     ]
-    ],
-    "beacon-navigate.html": [
-     "5df13905978dad65dea1f42606317897061d4aa4",
-     [
-      null,
-      {
+       ],
        "timeout": "long"
       }
      ]
     ],
-    "beacon-preflight-failure.sub.window.js": [
-     "c5a2d813f176adc42d3ce3b6feeea2b6e34e9c69",
+    "beacon-navigate.https.window.js": [
+     "8b42a47cd9886af4e6b2a074ee8578295f4a3289",
      [
-      "beacon/beacon-preflight-failure.sub.window.html",
+      "beacon/beacon-navigate.https.window.html",
       {
        "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
         [
          "script",
          "/common/utils.js"
@@ -277938,27 +277891,29 @@
         [
          "script",
          "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "beacon-common.sub.js"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
-    "beacon-readablestream.window.js": [
-     "46e30fcda5cc85f94d08b612236d952cb316dfb8",
+    "beacon-redirect.https.window.js": [
+     "16a2545527ef7c1350544f789f6775c8cacb5b73",
      [
-      "beacon/beacon-readablestream.window.html",
-      {}
-     ]
-    ],
-    "beacon-redirect.sub.window.js": [
-     "fd23a45f86badfc1d540de414cb351c4e5ef06bb",
-     [
-      "beacon/beacon-redirect.sub.window.html",
+      "beacon/beacon-redirect.https.window.html",
       {
        "script_metadata": [
         [
          "timeout",
          "long"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
         ],
         [
          "script",
