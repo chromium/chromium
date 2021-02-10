@@ -241,7 +241,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       override;
   const base::TimeTicks& GetInitTimeForNavigationMetrics() override;
   bool IsProcessBackgrounded() override;
-  void IncrementKeepAliveRefCount(KeepAliveSource source) override;
+  void IncrementKeepAliveRefCount() override;
   void DecrementKeepAliveRefCount() override;
   void DisableKeepAliveRefCount() override;
   bool IsKeepAliveRefCountDisabled() override;
@@ -656,10 +656,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   }
 
   size_t keep_alive_ref_count() const { return keep_alive_ref_count_; }
-  // TODO(wjmaclean): remove this when the experiment is done.
-  KeepAliveSource keep_alive_last_source() const {
-    return keep_alive_last_source_;
-  }
 
   PeerConnectionTrackerHost* GetPeerConnectionTrackerHost();
 
@@ -931,7 +927,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   mojo::OutgoingInvitation mojo_invitation_;
 
   size_t keep_alive_ref_count_;
-  KeepAliveSource keep_alive_last_source_ = KeepAliveSource::KEEP_ALIVE_NONE;
 
   // Set in DisableKeepAliveRefCount(). When true, |keep_alive_ref_count_| must
   // no longer be modified.

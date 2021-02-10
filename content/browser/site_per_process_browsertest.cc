@@ -7697,8 +7697,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // termination.
   RenderProcessHost* subframe_process =
       root->child_at(0)->current_frame_host()->GetProcess();
-  subframe_process->IncrementKeepAliveRefCount(
-      RenderProcessHost::KeepAliveSource::KEEP_ALIVE_SUBFRAME_UNLOAD);
+  subframe_process->IncrementKeepAliveRefCount();
 
   // Navigate the subframe away from b.com.  Since this is the last active
   // frame in the b.com process, this causes the RenderWidget and RenderView to
