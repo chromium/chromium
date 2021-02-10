@@ -63,6 +63,9 @@ constexpr size_t kPixelBufferPoolSize = 10;
 
 namespace media {
 
+const base::Feature kInCapturerScaling{"InCapturerScaling",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 AVCaptureDeviceFormat* FindBestCaptureFormat(
     NSArray<AVCaptureDeviceFormat*>* formats,
     int width,
@@ -332,6 +335,39 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   return YES;
 }
 
+- (void)setScaledResolutions:(std::vector<gfx::Size>)resolutions {
+  if (!base::FeatureList::IsEnabled(media::kInCapturerScaling)) {
+    return;
+  }
+  // The lock is needed for |_scaledFrameTransformers|.
+  base::AutoLock lock(_lock);
+  bool reconfigureScaledFrameTransformers = false;
+  if (resolutions.size() != _scaledFrameTransformers.size()) {
+    reconfigureScaledFrameTransformers = true;
+  } else {
+    for (size_t i = 0; i < resolutions.size(); ++i) {
+      if (resolutions[i] != _scaledFrameTransformers[i]->destination_size()) {
+        reconfigureScaledFrameTransformers = true;
+        break;
+      }
+    }
+  }
+  if (!reconfigureScaledFrameTransformers)
+    return;
+  _scaledFrameTransformers.clear();
+  for (const auto& resolution : resolutions) {
+    // Configure the transformer to and from NV12 pixel buffers - we only want
+    // to pay scaling costs, not conversion costs.
+    auto scaledFrameTransformer = media::SampleBufferTransformer::Create();
+    scaledFrameTransformer->Reconfigure(
+        media::SampleBufferTransformer::
+            kBestTransformerForPixelBufferToNv12Output,
+        kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, resolution,
+        kPixelBufferPoolSize);
+    _scaledFrameTransformers.push_back(std::move(scaledFrameTransformer));
+  }
+}
+
 - (BOOL)startCapture {
   DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
   if (!_captureSession) {
@@ -563,10 +599,10 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                timestamp);
 }
 
-- (BOOL)processPixelBuffer:(CVImageBufferRef)pixelBuffer
-             captureFormat:(const media::VideoCaptureFormat&)captureFormat
-                colorSpace:(const gfx::ColorSpace&)colorSpace
-                 timestamp:(const base::TimeDelta)timestamp {
+- (BOOL)processPixelBufferPlanes:(CVImageBufferRef)pixelBuffer
+                   captureFormat:(const media::VideoCaptureFormat&)captureFormat
+                      colorSpace:(const gfx::ColorSpace&)colorSpace
+                       timestamp:(const base::TimeDelta)timestamp {
   VLOG(3) << __func__;
   if (CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly) !=
       kCVReturnSuccess) {
@@ -675,12 +711,68 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   return YES;
 }
 
-- (void)processNV12IOSurface:(IOSurfaceRef)ioSurface
-               captureFormat:(const media::VideoCaptureFormat&)captureFormat
-                  colorSpace:(const gfx::ColorSpace&)colorSpace
-                   timestamp:(const base::TimeDelta)timestamp {
+- (void)processPixelBufferNV12IOSurface:(CVPixelBufferRef)pixelBuffer
+                          captureFormat:
+                              (const media::VideoCaptureFormat&)captureFormat
+                             colorSpace:(const gfx::ColorSpace&)colorSpace
+                              timestamp:(const base::TimeDelta)timestamp {
   VLOG(3) << __func__;
   DCHECK_EQ(captureFormat.pixel_format, media::PIXEL_FORMAT_NV12);
+
+  IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
+  DCHECK(ioSurface);
+  media::CapturedExternalVideoBuffer externalBuffer =
+      [self capturedExternalVideoBufferFromNV12IOSurface:ioSurface
+                                           captureFormat:captureFormat
+                                              colorSpace:colorSpace];
+
+  // The lock is needed for |_scaledFrameTransformers| and |_frameReceiver|.
+  _lock.AssertAcquired();
+  std::vector<media::CapturedExternalVideoBuffer> scaledExternalBuffers;
+  scaledExternalBuffers.reserve(_scaledFrameTransformers.size());
+  for (auto& scaledFrameTransformer : _scaledFrameTransformers) {
+    gfx::Size scaledFrameSize = scaledFrameTransformer->destination_size();
+    // Only proceed if this results in downscaling in one or both dimensions.
+    //
+    // It is not clear that we want to continue to allow changing the aspect
+    // ratio like this since this causes visible stretching in the image if the
+    // stretch is significantly large.
+    // TODO(https://crbug.com/1157072): When we know what to do about aspect
+    // ratios, consider adding a DCHECK here or otherwise ignore wrong aspect
+    // ratios (within some fault tolerance).
+    if (scaledFrameSize.width() > captureFormat.frame_size.width() ||
+        scaledFrameSize.height() > captureFormat.frame_size.height() ||
+        scaledFrameSize == captureFormat.frame_size) {
+      continue;
+    }
+    base::ScopedCFTypeRef<CVPixelBufferRef> scaledPixelBuffer =
+        scaledFrameTransformer->Transform(pixelBuffer);
+    if (!scaledPixelBuffer) {
+      LOG(ERROR) << "Failed to downscale frame, skipping resolution "
+                 << scaledFrameSize.ToString();
+      continue;
+    }
+    IOSurfaceRef scaledIoSurface = CVPixelBufferGetIOSurface(scaledPixelBuffer);
+    media::VideoCaptureFormat scaledCaptureFormat = captureFormat;
+    scaledCaptureFormat.frame_size = scaledFrameSize;
+    scaledExternalBuffers.push_back([self
+        capturedExternalVideoBufferFromNV12IOSurface:scaledIoSurface
+                                       captureFormat:scaledCaptureFormat
+                                          colorSpace:colorSpace]);
+  }
+
+  _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
+      std::move(externalBuffer), std::move(scaledExternalBuffers), timestamp);
+}
+
+- (media::CapturedExternalVideoBuffer)
+    capturedExternalVideoBufferFromNV12IOSurface:(IOSurfaceRef)ioSurface
+                                   captureFormat:
+                                       (const media::VideoCaptureFormat&)
+                                           captureFormat
+                                      colorSpace:
+                                          (const gfx::ColorSpace&)colorSpace {
+  DCHECK(ioSurface);
   gfx::GpuMemoryBufferHandle handle;
   handle.id.id = -1;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
@@ -699,11 +791,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                       kCGColorSpaceSRGB);
   }
 
-  _lock.AssertAcquired();
-  _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
-      media::CapturedExternalVideoBuffer(std::move(handle), captureFormat,
-                                         overriddenColorSpace),
-      {}, timestamp);
+  return media::CapturedExternalVideoBuffer(std::move(handle), captureFormat,
+                                            overriddenColorSpace);
 }
 
 // |captureOutput| is called by the capture device to deliver a new frame.
@@ -756,10 +845,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       LOG(ERROR) << "Failed to transform captured frame. Dropping frame.";
       return;
     }
-    IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
-    CHECK(ioSurface);
-    CHECK_EQ(CVPixelBufferGetPixelFormatType(pixelBuffer),
-             kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);
     const media::VideoCaptureFormat captureFormat(
         gfx::Size(CVPixelBufferGetWidth(pixelBuffer),
                   CVPixelBufferGetHeight(pixelBuffer)),
@@ -770,14 +855,14 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // results in log spam and a default color space format is returned. To
     // avoid this, we pretend the color space is kColorSpaceRec709Apple which
     // triggers a path that avoids color space parsing inside of
-    // processNV12IOSurface.
+    // processPixelBufferNV12IOSurface.
     // TODO(hbos): Investigate how to successfully parse and/or configure the
     // color space correctly. The implications of this hack is not fully
     // understood.
-    [self processNV12IOSurface:ioSurface
-                 captureFormat:captureFormat
-                    colorSpace:kColorSpaceRec709Apple
-                     timestamp:timestamp];
+    [self processPixelBufferNV12IOSurface:pixelBuffer
+                            captureFormat:captureFormat
+                               colorSpace:kColorSpaceRec709Apple
+                                timestamp:timestamp];
     return;
   }
 
@@ -813,21 +898,21 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     static const bool kEnableGpuMemoryBuffers =
         base::FeatureList::IsEnabled(media::kAVFoundationCaptureV2ZeroCopy);
     if (kEnableGpuMemoryBuffers) {
-      IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
-      if (ioSurface && videoPixelFormat == media::PIXEL_FORMAT_NV12) {
-        [self processNV12IOSurface:ioSurface
-                     captureFormat:captureFormat
-                        colorSpace:colorSpace
-                         timestamp:timestamp];
+      if (CVPixelBufferGetIOSurface(pixelBuffer) &&
+          videoPixelFormat == media::PIXEL_FORMAT_NV12) {
+        [self processPixelBufferNV12IOSurface:pixelBuffer
+                                captureFormat:captureFormat
+                                   colorSpace:colorSpace
+                                    timestamp:timestamp];
         return;
       }
     }
 
-    // Second preference is to read the CVPixelBuffer.
-    if ([self processPixelBuffer:pixelBuffer
-                   captureFormat:captureFormat
-                      colorSpace:colorSpace
-                       timestamp:timestamp]) {
+    // Second preference is to read the CVPixelBuffer's planes.
+    if ([self processPixelBufferPlanes:pixelBuffer
+                         captureFormat:captureFormat
+                            colorSpace:colorSpace
+                             timestamp:timestamp]) {
       return;
     }
   }

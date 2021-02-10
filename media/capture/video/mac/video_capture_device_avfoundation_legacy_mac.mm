@@ -405,6 +405,10 @@ void ExtractBaseAddressAndLength(char** base_address,
   return YES;
 }
 
+- (void)setScaledResolutions:(std::vector<gfx::Size>)resolutions {
+  // The legacy capturer does not implement in-capturer scaling.
+}
+
 - (BOOL)startCapture {
   DCHECK(_main_thread_checker.CalledOnValidThread());
   if (!_captureSession) {
