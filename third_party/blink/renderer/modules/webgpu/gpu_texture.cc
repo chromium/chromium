@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 
-#include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 
 namespace blink {
 
@@ -125,8 +125,6 @@ GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
 
   // Create a CanvasResourceProvider for producing WebGPU-compatible shared
   // images.
-  // TODO(crbug.com/1174809): This should recycle resources instead of creating
-  // a new shared image every time.
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateWebGPUImageProvider(
           IntSize(video->videoWidth(), video->videoHeight()),
@@ -154,11 +152,19 @@ GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
   DCHECK(canvas_resource->IsValid());
   DCHECK(canvas_resource->IsAccelerated());
 
+  scoped_refptr<StaticBitmapImage> image = canvas_resource->Bitmap();
+
+  // Set origin to be clean. This was checked above.
+  image->SetOriginClean(true);
+
+  DCHECK(image->IsTextureBacked());
+  SkImageInfo image_info = image->PaintImageForCurrentFrame().GetSkImageInfo();
+
   // Extract the format. This is only used to validate copyImageBitmapToTexture
   // right now. We may want to reflect it from this function or validate it
   // against some input parameters.
   WGPUTextureFormat format;
-  switch (canvas_resource->CreateSkImageInfo().colorType()) {
+  switch (image_info.colorType()) {
     case SkColorType::kRGBA_8888_SkColorType:
       format = WGPUTextureFormat_RGBA8Unorm;
       break;
@@ -187,10 +193,9 @@ GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
       return nullptr;
   }
 
-  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
-      WebGPUMailboxTexture::FromCanvasResource(device->GetDawnControlClient(),
-                                               device->GetHandle(), usage,
-                                               std::move(canvas_resource));
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture = base::AdoptRef(
+      new WebGPUMailboxTexture(device->GetDawnControlClient(),
+                               device->GetHandle(), image.get(), usage));
   DCHECK(mailbox_texture->GetTexture() != nullptr);
 
   return MakeGarbageCollected<GPUTexture>(device, format,

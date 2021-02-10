@@ -471,10 +471,9 @@ bool GPUQueue::CopyContentFromGPU(StaticBitmapImage* image,
                                   const WGPUOrigin3D& origin,
                                   const WGPUExtent3D& copy_size,
                                   const WGPUTextureCopyView& destination) {
-  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
-      WebGPUMailboxTexture::FromStaticBitmapImage(
-          GetDawnControlClient(), device_->GetHandle(),
-          WGPUTextureUsage_CopySrc, image);
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture = base::AdoptRef(
+      new WebGPUMailboxTexture(GetDawnControlClient(), device_->GetHandle(),
+                               image, WGPUTextureUsage_CopySrc));
 
   WGPUTexture src_texture = mailbox_texture->GetTexture();
   DCHECK(src_texture != nullptr);
