@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/audio_media_data_source.h"
+#include "chromeos/services/libassistant/audio/audio_media_data_source.h"
 
 #include <algorithm>
 
@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 namespace {
 
@@ -22,7 +22,7 @@ constexpr uint32_t kMaxBytesToDecode = 512;
 }  // namespace
 
 AudioMediaDataSource::AudioMediaDataSource(
-    mojo::PendingReceiver<mojom::AssistantMediaDataSource> receiver,
+    mojo::PendingReceiver<AssistantMediaDataSource> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : receiver_(this, std::move(receiver)),
       task_runner_(task_runner),
@@ -37,9 +37,7 @@ AudioMediaDataSource::~AudioMediaDataSource() {
   }
 }
 
-void AudioMediaDataSource::Read(
-    uint32_t size,
-    mojom::AssistantMediaDataSource::ReadCallback callback) {
+void AudioMediaDataSource::Read(uint32_t size, ReadCallback callback) {
   // Note: mojom calls are sequenced, so we should not receive a second call to
   // Read() before we consumed the previous |read_callback_|.
   DCHECK(!read_callback_);
@@ -74,5 +72,5 @@ void AudioMediaDataSource::OnFillBuffer(int bytes_filled) {
   std::move(read_callback_).Run(source_buffer_);
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_VOLUME_CONTROL_IMPL_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_VOLUME_CONTROL_IMPL_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_VOLUME_CONTROL_IMPL_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_VOLUME_CONTROL_IMPL_H_
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "base/macros.h"
@@ -14,15 +14,16 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 class VolumeControlImpl : public assistant_client::VolumeControl,
                           public ash::mojom::VolumeObserver {
  public:
-  VolumeControlImpl(
-      chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
+  VolumeControlImpl();
   ~VolumeControlImpl() override;
+
+  void Initialize(mojom::AudioOutputDelegate* audio_output_delegate,
+                  mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::VolumeControl overrides:
   void SetAudioFocus(
@@ -45,8 +46,7 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   void SetSystemMutedOnMainThread(bool muted);
 
   // Owned by |AudioOutputProviderImpl|.
-  chromeos::libassistant::mojom::AudioOutputDelegate* const
-      audio_output_delegate_;
+  mojom::AudioOutputDelegate* audio_output_delegate_ = nullptr;
   mojo::Remote<ash::mojom::AssistantVolumeControl> volume_control_;
   mojo::Receiver<ash::mojom::VolumeObserver> receiver_{this};
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
@@ -59,7 +59,7 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   DISALLOW_COPY_AND_ASSIGN(VolumeControlImpl);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_VOLUME_CONTROL_IMPL_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_VOLUME_CONTROL_IMPL_H_

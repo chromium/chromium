@@ -8,7 +8,10 @@
 #include <memory>
 
 #include "base/threading/thread.h"
+#include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/media_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -70,6 +73,8 @@ class AssistantProxy {
 
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
   ExtractAudioInputController();
+  mojo::PendingReceiver<chromeos::libassistant::mojom::AudioOutputDelegate>
+  ExtractAudioOutputDelegate();
   mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
   ExtractMediaDelegate();
   mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
@@ -79,6 +84,8 @@ class AssistantProxy {
   using AudioInputControllerMojom =
       chromeos::libassistant::mojom::AudioInputController;
   using PlatformDelegateMojom = chromeos::libassistant::mojom::PlatformDelegate;
+  using AudioOutputDelegateMojom =
+      chromeos::libassistant::mojom::AudioOutputDelegate;
   using ConversationControllerMojom =
       chromeos::libassistant::mojom::ConversationController;
   using DisplayControllerMojom =
@@ -116,7 +123,8 @@ class AssistantProxy {
   mojo::PendingRemote<AudioInputControllerMojom> audio_input_controller_;
   mojo::PendingReceiver<MediaDelegateMojom> media_delegate_;
   mojo::PendingReceiver<PlatformDelegateMojom> platform_delegate_;
-
+  mojo::PendingReceiver<AudioOutputDelegateMojom>
+      pending_audio_output_delegate_receiver_;
 
   // The thread on which the Libassistant service runs.
   // Warning: must be the last object, so it is destroyed (and flushed) first.

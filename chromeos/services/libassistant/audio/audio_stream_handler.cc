@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/audio_stream_handler.h"
+#include "chromeos/services/libassistant/audio/audio_stream_handler.h"
 
 #include "base/bind.h"
-#include "chromeos/services/assistant/platform/audio_media_data_source.h"
+#include "chromeos/services/libassistant/audio/audio_media_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 AudioStreamHandler::AudioStreamHandler(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
@@ -19,13 +19,15 @@ AudioStreamHandler::AudioStreamHandler(
 AudioStreamHandler::~AudioStreamHandler() = default;
 
 void AudioStreamHandler::StartAudioDecoder(
-    mojom::AssistantAudioDecoderFactory* audio_decoder_factory,
+    chromeos::assistant::mojom::AssistantAudioDecoderFactory*
+        audio_decoder_factory,
     assistant_client::AudioOutput::Delegate* delegate,
     InitCB on_inited) {
-  mojo::PendingRemote<mojom::AssistantAudioDecoderClient> client;
+  mojo::PendingRemote<AssistantAudioDecoderClient> client;
   client_receiver_.Bind(client.InitWithNewPipeAndPassReceiver());
 
-  mojo::PendingRemote<mojom::AssistantMediaDataSource> data_source;
+  mojo::PendingRemote<chromeos::assistant::mojom::AssistantMediaDataSource>
+      data_source;
   media_data_source_ = std::make_unique<AudioMediaDataSource>(
       data_source.InitWithNewPipeAndPassReceiver(), task_runner_);
 
@@ -180,5 +182,5 @@ void AudioStreamHandler::DecodeOnThread() {
   audio_decoder_->Decode();
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

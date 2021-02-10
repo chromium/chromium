@@ -47,6 +47,8 @@ class FakeLibassistantService
           media_controller,
       mojo::PendingReceiver<libassistant::mojom::ServiceController>
           service_controller,
+      mojo::PendingRemote<libassistant::mojom::AudioOutputDelegate>
+          audio_output_delegate,
       mojo::PendingRemote<libassistant::mojom::MediaDelegate> media_delegate,
       mojo::PendingRemote<libassistant::mojom::PlatformDelegate>
           platform_delegate) override;

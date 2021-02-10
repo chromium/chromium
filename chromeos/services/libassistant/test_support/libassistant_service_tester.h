@@ -8,6 +8,7 @@
 #include "chromeos/services/assistant/public/cpp/migration/fake_assistant_manager_service_delegate.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/display_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
@@ -68,8 +69,10 @@ class LibassistantServiceTester {
   mojo::Remote<mojom::DisplayController> display_controller_;
   mojo::Remote<mojom::MediaController> media_controller_;
   mojo::Remote<mojom::ServiceController> service_controller_;
-  mojo::PendingReceiver<mojom::PlatformDelegate> pending_platform_delegate_;
+  mojo::PendingReceiver<mojom::AudioOutputDelegate>
+      pending_audio_output_delegate_;
   mojo::PendingReceiver<mojom::MediaDelegate> pending_media_delegate_;
+  mojo::PendingReceiver<mojom::PlatformDelegate> pending_platform_delegate_;
 
   mojo::Remote<mojom::LibassistantService> service_remote_;
   assistant::FakeAssistantManagerServiceDelegate

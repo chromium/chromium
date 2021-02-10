@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/volume_control_impl.h"
+#include "chromeos/services/libassistant/audio/volume_control_impl.h"
 
 #include <utility>
 
@@ -34,15 +34,18 @@ struct TypeConverter<AudioOutputStreamType,
 };
 
 }  // namespace mojo
-namespace chromeos {
-namespace assistant {
 
-VolumeControlImpl::VolumeControlImpl(
-    chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
-    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate)
-    : audio_output_delegate_(audio_output_delegate),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      weak_factory_(this) {
+namespace chromeos {
+namespace libassistant {
+
+VolumeControlImpl::VolumeControlImpl()
+    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      weak_factory_(this) {}
+
+void VolumeControlImpl::Initialize(
+    mojom::AudioOutputDelegate* audio_output_delegate,
+    mojom::PlatformDelegate* platform_delegate) {
+  audio_output_delegate_ = audio_output_delegate;
   platform_delegate->BindAssistantVolumeControl(
       volume_control_.BindNewPipeAndPassReceiver());
   mojo::PendingRemote<ash::mojom::VolumeObserver> observer;
@@ -115,5 +118,5 @@ void VolumeControlImpl::SetSystemMutedOnMainThread(bool muted) {
   volume_control_->SetMuted(muted);
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

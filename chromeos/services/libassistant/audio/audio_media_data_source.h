@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_MEDIA_DATA_SOURCE_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_MEDIA_DATA_SOURCE_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_MEDIA_DATA_SOURCE_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_MEDIA_DATA_SOURCE_H_
 
 #include <vector>
 
@@ -16,22 +16,23 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 // Class to provide media data source for audio stream decoder.
 // Internally it will read media data from |delegate_|.
-class AudioMediaDataSource : public mojom::AssistantMediaDataSource {
+class AudioMediaDataSource
+    : public chromeos::assistant::mojom::AssistantMediaDataSource {
  public:
   AudioMediaDataSource(
-      mojo::PendingReceiver<mojom::AssistantMediaDataSource> receiver,
+      mojo::PendingReceiver<
+          chromeos::assistant::mojom::AssistantMediaDataSource> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~AudioMediaDataSource() override;
 
-  // mojom::MediaDataSource implementation.
+  // chromeos::assistant::mojom::MediaDataSource implementation.
   // Called by utility process. Must be called after |set_delegate()|.
   // The caller must wait for callback to finish before issuing the next read.
-  void Read(uint32_t size,
-            mojom::AssistantMediaDataSource::ReadCallback callback) override;
+  void Read(uint32_t size, ReadCallback callback) override;
 
   // Called by AudioStreamHandler on main thread.
   void set_delegate(assistant_client::AudioOutput::Delegate* delegate) {
@@ -42,7 +43,7 @@ class AudioMediaDataSource : public mojom::AssistantMediaDataSource {
   // Called on main thread.
   void OnFillBuffer(int bytes_filled);
 
-  mojo::Receiver<mojom::AssistantMediaDataSource> receiver_;
+  mojo::Receiver<AssistantMediaDataSource> receiver_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -50,14 +51,14 @@ class AudioMediaDataSource : public mojom::AssistantMediaDataSource {
 
   std::vector<uint8_t> source_buffer_;
 
-  mojom::AssistantMediaDataSource::ReadCallback read_callback_;
+  ReadCallback read_callback_;
 
   base::WeakPtrFactory<AudioMediaDataSource> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioMediaDataSource);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_MEDIA_DATA_SOURCE_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_MEDIA_DATA_SOURCE_H_

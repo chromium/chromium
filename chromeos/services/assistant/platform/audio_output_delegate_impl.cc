@@ -14,6 +14,11 @@ AudioOutputDelegateImpl::AudioOutputDelegateImpl(
 
 AudioOutputDelegateImpl::~AudioOutputDelegateImpl() = default;
 
+void AudioOutputDelegateImpl::Bind(
+    mojo::PendingReceiver<AudioOutputDelegate> pending_receiver) {
+  receiver_.Bind(std::move(pending_receiver));
+}
+
 void AudioOutputDelegateImpl::RequestAudioFocus(
     libassistant::mojom::AudioOutputStreamType stream_type) {
   // TODO(wutao): Fix the libassistant behavior.
@@ -43,11 +48,6 @@ void AudioOutputDelegateImpl::AddMediaSessionObserver(
     mojo::PendingRemote<::media_session::mojom::MediaSessionObserver>
         observer) {
   media_session_->AddObserver(std::move(observer));
-}
-
-mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
-AudioOutputDelegateImpl::BindNewPipeAndPassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
 }
 
 }  // namespace assistant

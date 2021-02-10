@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/audio_output_provider_impl.h"
+#include "chromeos/services/libassistant/audio/audio_output_provider_impl.h"
 
 #include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/assistant/platform/audio_stream_handler.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/services/libassistant/audio/audio_stream_handler.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
 #include "libassistant/shared/public/platform_audio_buffer.h"
 #include "media/audio/audio_device_description.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 namespace {
 
@@ -33,8 +33,9 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
       mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      mojom::AssistantAudioDecoderFactory* audio_decoder_factory,
-      chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
+      chromeos::assistant::mojom::AssistantAudioDecoderFactory*
+          audio_decoder_factory,
+      mojom::AudioOutputDelegate* audio_output_delegate,
       assistant_client::OutputStreamType type,
       assistant_client::OutputStreamFormat format,
       const std::string& device_id)
@@ -86,7 +87,7 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
     // acquiring audio focus for the internal media player.
     if (stream_type_ == assistant_client::OutputStreamType::STREAM_MEDIA) {
       audio_output_delegate_->RequestAudioFocus(
-          chromeos::libassistant::mojom::AudioOutputStreamType::kMediaStream);
+          mojom::AudioOutputStreamType::kMediaStream);
     }
 
     if (IsEncodedFormat(format_)) {
@@ -122,9 +123,9 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
   mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> background_thread_task_runner_;
-  mojom::AssistantAudioDecoderFactory* audio_decoder_factory_;
-  chromeos::libassistant::mojom::AudioOutputDelegate* const
-      audio_output_delegate_;
+  chromeos::assistant::mojom::AssistantAudioDecoderFactory*
+      audio_decoder_factory_;
+  mojom::AudioOutputDelegate* const audio_output_delegate_;
 
   const assistant_client::OutputStreamType stream_type_;
   assistant_client::OutputStreamFormat format_;
@@ -140,21 +141,26 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
 }  // namespace
 
 AudioOutputProviderImpl::AudioOutputProviderImpl(
-    mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
-        audio_output_delegate,
-    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const std::string& device_id)
-    : platform_delegate_(platform_delegate),
-      audio_output_delegate_(std::move(audio_output_delegate)),
-      loop_back_input_(platform_delegate_,
-                       media::AudioDeviceDescription::kLoopbackInputDeviceId),
-      volume_control_impl_(audio_output_delegate_.get(), platform_delegate),
+    : loop_back_input_(media::AudioDeviceDescription::kLoopbackInputDeviceId),
+      volume_control_impl_(),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       background_task_runner_(background_task_runner),
-      device_id_(device_id) {
+      device_id_(device_id) {}
+
+void AudioOutputProviderImpl::Bind(
+    mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+    mojom::PlatformDelegate* platform_delegate) {
+  platform_delegate_ = platform_delegate;
   platform_delegate_->BindAudioDecoderFactory(
       audio_decoder_factory_.BindNewPipeAndPassReceiver());
+
+  audio_output_delegate_.Bind(std::move(audio_output_delegate));
+
+  volume_control_impl_.Initialize(audio_output_delegate_.get(),
+                                  platform_delegate);
+  loop_back_input_.Initialize(platform_delegate);
 }
 
 AudioOutputProviderImpl::~AudioOutputProviderImpl() = default;
@@ -210,5 +216,5 @@ void AudioOutputProviderImpl::BindStreamFactory(
   platform_delegate_->BindAudioStreamFactory(std::move(receiver));
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

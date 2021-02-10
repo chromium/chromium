@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/audio_device_owner.h"
+#include "chromeos/services/libassistant/audio/audio_device_owner.h"
 
 #include <algorithm>
 #include <utility>
@@ -13,7 +13,7 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 // A macro which ensures we are running on the background thread.
 #define ENSURE_BACKGROUND_THREAD(method, ...)                               \
@@ -94,7 +94,7 @@ AudioDeviceOwner::~AudioDeviceOwner() {
 }
 
 void AudioDeviceOwner::StartOnMainThread(
-    chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
+    mojom::AudioOutputDelegate* audio_output_delegate,
     assistant_client::AudioOutput::Delegate* delegate,
     mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
     const assistant_client::OutputStreamFormat& format) {
@@ -253,5 +253,5 @@ void AudioDeviceOwner::BufferFillDone(int num_bytes) {
     ScheduleFillLocked(base::TimeTicks::Now());
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

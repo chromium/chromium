@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_STREAM_HANDLER_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_STREAM_HANDLER_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
@@ -14,12 +14,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 class AudioMediaDataSource;
 
-class AudioStreamHandler : public mojom::AssistantAudioDecoderClient,
-                           public assistant_client::AudioOutput::Delegate {
+class AudioStreamHandler
+    : public chromeos::assistant::mojom::AssistantAudioDecoderClient,
+      public assistant_client::AudioOutput::Delegate {
  public:
   using InitCB =
       base::OnceCallback<void(const assistant_client::OutputStreamFormat&)>;
@@ -30,11 +31,12 @@ class AudioStreamHandler : public mojom::AssistantAudioDecoderClient,
 
   // Called on main thread.
   void StartAudioDecoder(
-      mojom::AssistantAudioDecoderFactory* audio_decoder_factory,
+      chromeos::assistant::mojom::AssistantAudioDecoderFactory*
+          audio_decoder_factory,
       assistant_client::AudioOutput::Delegate* delegate,
       InitCB start_device_owner_on_main_thread);
 
-  // mojom::AssistantAudioDecoderClient overrides:
+  // chromeos::assistant::mojom::AssistantAudioDecoderClient overrides:
   // Called by |audio_decoder_| on utility thread.
   void OnNewBuffers(const std::vector<std::vector<uint8_t>>& buffers) override;
 
@@ -74,9 +76,10 @@ class AudioStreamHandler : public mojom::AssistantAudioDecoderClient,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   assistant_client::AudioOutput::Delegate* delegate_;
 
-  mojo::Receiver<mojom::AssistantAudioDecoderClient> client_receiver_{this};
+  mojo::Receiver<AssistantAudioDecoderClient> client_receiver_{this};
   std::unique_ptr<AudioMediaDataSource> media_data_source_;
-  mojo::Remote<mojom::AssistantAudioDecoder> audio_decoder_;
+  mojo::Remote<chromeos::assistant::mojom::AssistantAudioDecoder>
+      audio_decoder_;
 
   // True when there is more decoded data.
   bool no_more_data_ = false;
@@ -102,7 +105,7 @@ class AudioStreamHandler : public mojom::AssistantAudioDecoderClient,
   DISALLOW_COPY_AND_ASSIGN(AudioStreamHandler);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_STREAM_HANDLER_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_STREAM_HANDLER_H_

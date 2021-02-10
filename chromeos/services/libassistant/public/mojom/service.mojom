@@ -6,6 +6,7 @@ module chromeos.libassistant.mojom;
 
 import "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/conversation_controller.mojom";
+import "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom";
 import "chromeos/services/libassistant/public/mojom/display_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/platform_delegate.mojom";
 import "chromeos/services/libassistant/public/mojom/service_controller.mojom";
@@ -27,6 +28,7 @@ interface LibassistantService {
     pending_receiver<DisplayController> display_controller,
     pending_receiver<MediaController> media_controller,
     pending_receiver<ServiceController> service_controller,
+    pending_remote<AudioOutputDelegate> audio_output_delegate,
     pending_remote<MediaDelegate> media_delegate,
     pending_remote<PlatformDelegate> platform_delegate
   );

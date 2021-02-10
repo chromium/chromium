@@ -244,10 +244,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
           device_id_override,
           ShouldPutLogsInHomeDirectory())),
       weak_factory_(this) {
-  platform_api_ = delegate_->CreatePlatformApi(
-      audio_output_delegate_->BindNewPipeAndPassRemote(),
-      platform_delegate_.get(),
-      assistant_proxy_->background_thread().task_runner());
+  platform_api_ = delegate_->CreatePlatformApi(platform_delegate_.get());
 
   if (libassistant_service_host) {
     // During unittests a custom host is passed in, so we'll use that one.
@@ -271,8 +268,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   assistant_proxy_->AddSpeechRecognitionObserver(
       speech_recognition_observer_->BindNewPipeAndPassRemote());
 
+  audio_output_delegate_->Bind(assistant_proxy_->ExtractAudioOutputDelegate());
   platform_delegate_->Bind(assistant_proxy_->ExtractPlatformDelegate());
-
   audio_input_host_ = delegate_->CreateAudioInputHost(
       assistant_proxy_->ExtractAudioInputController());
 

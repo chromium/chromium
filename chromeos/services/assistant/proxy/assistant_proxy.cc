@@ -80,6 +80,8 @@ void AssistantProxy::BindControllers(
         pending_url_loader_factory) {
   mojo::PendingRemote<AudioInputControllerMojom>
       pending_audio_input_controller_remote;
+  mojo::PendingRemote<AudioOutputDelegateMojom>
+      pending_audio_output_delegate_remote;
   mojo::PendingRemote<ConversationControllerMojom>
       pending_conversation_controller_remote;
   mojo::PendingRemote<MediaDelegateMojom> pending_media_delegate_remote;
@@ -90,13 +92,15 @@ void AssistantProxy::BindControllers(
       pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingReceiver<PlatformDelegateMojom> pending_platform_delegate =
       pending_platform_delegate_remote.InitWithNewPipeAndPassReceiver();
-
+  pending_audio_output_delegate_receiver_ =
+      pending_audio_output_delegate_remote.InitWithNewPipeAndPassReceiver();
   libassistant_service_remote_->Bind(
       pending_audio_input_controller_remote.InitWithNewPipeAndPassReceiver(),
       pending_conversation_controller_remote.InitWithNewPipeAndPassReceiver(),
       display_controller_remote_.BindNewPipeAndPassReceiver(),
       media_controller_remote_.BindNewPipeAndPassReceiver(),
       pending_service_controller_remote.InitWithNewPipeAndPassReceiver(),
+      std::move(pending_audio_output_delegate_remote),
       std::move(pending_media_delegate_remote),
       std::move(pending_platform_delegate_remote));
 
@@ -126,6 +130,12 @@ mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
 AssistantProxy::ExtractAudioInputController() {
   DCHECK(audio_input_controller_.is_valid());
   return std::move(audio_input_controller_);
+}
+
+mojo::PendingReceiver<chromeos::libassistant::mojom::AudioOutputDelegate>
+AssistantProxy::ExtractAudioOutputDelegate() {
+  DCHECK(pending_audio_output_delegate_receiver_.is_valid());
+  return std::move(pending_audio_output_delegate_receiver_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>

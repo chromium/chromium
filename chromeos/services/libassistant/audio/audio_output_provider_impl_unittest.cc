@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/audio_output_provider_impl.h"
+#include "chromeos/services/libassistant/audio/audio_output_provider_impl.h"
 
 #include <memory>
 #include <utility>
@@ -13,14 +13,13 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "chromeos/services/assistant/platform/audio_output_delegate_impl.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 #include "media/base/audio_bus.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
  public:
@@ -149,5 +148,5 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   EXPECT_TRUE(audio_output_delegate.end_of_stream());
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

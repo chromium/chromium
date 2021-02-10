@@ -8,7 +8,6 @@
 #include "base/macros.h"
 
 namespace assistant_client {
-class AudioOutputProvider;
 class FileProvider;
 class NetworkProvider;
 }  // namespace assistant_client
@@ -24,9 +23,6 @@ class CrosPlatformApi {
  public:
   CrosPlatformApi() = default;
   virtual ~CrosPlatformApi() = default;
-
-  // Returns the platform's audio output provider.
-  virtual assistant_client::AudioOutputProvider& GetAudioOutputProvider() = 0;
 
   // Returns the file provider to be used by libassistant.
   virtual assistant_client::FileProvider& GetFileProvider() = 0;

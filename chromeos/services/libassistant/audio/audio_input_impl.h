@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -29,8 +28,7 @@ namespace libassistant {
 class AudioInputStream;
 class AudioCapturer;
 
-class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AudioInputImpl
-    : public assistant_client::AudioInput {
+class AudioInputImpl : public assistant_client::AudioInput {
  public:
   explicit AudioInputImpl(const base::Optional<std::string>& device_id);
   AudioInputImpl(const AudioInputImpl&) = delete;

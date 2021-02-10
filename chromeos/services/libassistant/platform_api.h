@@ -9,11 +9,14 @@
 
 #include <memory>
 
+#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
 namespace libassistant {
 
+class AudioOutputProviderImpl;
 class SystemProviderImpl;
 
 // Implementation of the Libassistant PlatformApi.
@@ -26,10 +29,11 @@ class PlatformApi : public assistant_client::PlatformApi {
   PlatformApi& operator=(const PlatformApi&) = delete;
   ~PlatformApi() override;
 
-  void Initialize(chromeos::libassistant::mojom::PlatformDelegate* delegate);
+  void Bind(
+      mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+      mojom::PlatformDelegate* platform_delegate);
 
   PlatformApi& SetAudioInputProvider(assistant_client::AudioInputProvider*);
-  PlatformApi& SetAudioOutputProvider(assistant_client::AudioOutputProvider*);
   PlatformApi& SetAuthProvider(assistant_client::AuthProvider*);
   PlatformApi& SetFileProvider(assistant_client::FileProvider*);
   PlatformApi& SetNetworkProvider(assistant_client::NetworkProvider*);
@@ -46,11 +50,11 @@ class PlatformApi : public assistant_client::PlatformApi {
   // The below are all owned by the browser side |PlatformApiImpl|,
   // which outlives us.
   assistant_client::AudioInputProvider* audio_input_provider_ = nullptr;
-  assistant_client::AudioOutputProvider* audio_output_provider_ = nullptr;
   assistant_client::AuthProvider* auth_provider_ = nullptr;
   assistant_client::FileProvider* file_provider_ = nullptr;
   assistant_client::NetworkProvider* network_provider_ = nullptr;
 
+  std::unique_ptr<AudioOutputProviderImpl> audio_output_provider_;
   std::unique_ptr<SystemProviderImpl> system_provider_;
 };
 

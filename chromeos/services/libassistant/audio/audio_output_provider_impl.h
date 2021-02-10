@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_OUTPUT_PROVIDER_IMPL_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_OUTPUT_PROVIDER_IMPL_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_OUTPUT_PROVIDER_IMPL_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_OUTPUT_PROVIDER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -13,11 +13,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "chromeos/services/assistant/platform/audio_device_owner.h"
-#include "chromeos/services/assistant/platform/audio_input_impl.h"
-#include "chromeos/services/assistant/platform/volume_control_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/services/libassistant/audio/audio_device_owner.h"
+#include "chromeos/services/libassistant/audio/audio_input_impl.h"
+#include "chromeos/services/libassistant/audio/volume_control_impl.h"
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_output.h"
@@ -27,17 +27,18 @@
 
 namespace chromeos {
 
-namespace assistant {
+namespace libassistant {
 
 class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
  public:
   AudioOutputProviderImpl(
-      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
-          audio_output_delegate,
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const std::string& device_id);
   ~AudioOutputProviderImpl() override;
+
+  void Bind(
+      mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+      mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::AudioOutputProvider overrides:
   assistant_client::AudioOutput* CreateAudioOutput(
@@ -61,23 +62,23 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
       mojo::PendingReceiver<audio::mojom::StreamFactory> receiver);
 
   // Owned by |AssistantManagerServiceImpl|.
-  chromeos::libassistant::mojom::PlatformDelegate* const platform_delegate_;
+  mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
-  mojo::Remote<chromeos::libassistant::mojom::AudioOutputDelegate>
-      audio_output_delegate_;
+  mojo::Remote<mojom::AudioOutputDelegate> audio_output_delegate_;
 
   AudioInputImpl loop_back_input_;
   VolumeControlImpl volume_control_impl_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-  mojo::Remote<mojom::AssistantAudioDecoderFactory> audio_decoder_factory_;
+  mojo::Remote<chromeos::assistant::mojom::AssistantAudioDecoderFactory>
+      audio_decoder_factory_;
   std::string device_id_;
   base::WeakPtrFactory<AudioOutputProviderImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioOutputProviderImpl);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_OUTPUT_PROVIDER_IMPL_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_OUTPUT_PROVIDER_IMPL_H_

@@ -9,12 +9,10 @@
 #include <utility>
 #include <vector>
 
-#include "chromeos/services/assistant/platform/audio_output_provider_impl.h"
 #include "chromeos/services/assistant/platform/file_provider_impl.h"
 #include "chromeos/services/assistant/platform/network_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
-#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_auth.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,20 +26,15 @@ namespace assistant {
 class PlatformApiImpl : public CrosPlatformApi {
  public:
   PlatformApiImpl(
-      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
-          audio_output_delegate,
       chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       PowerManagerClient* power_manager_client,
-      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner);
   ~PlatformApiImpl() override;
 
-  assistant_client::AudioOutputProvider& GetAudioOutputProvider() override;
   assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
 
  private:
-  AudioOutputProviderImpl audio_output_provider_;
   FileProviderImpl file_provider_;
   NetworkProviderImpl network_provider_;
 

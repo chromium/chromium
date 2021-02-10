@@ -34,12 +34,6 @@ source_set("internal") {
 
   sources = [
     "assistant_manager_observer.h",
-    "audio/audio_input_impl.cc",
-    "audio/audio_input_impl.h",
-    "audio/audio_input_provider_impl.cc",
-    "audio/audio_input_provider_impl.h",
-    "audio/audio_input_stream.cc",
-    "audio/audio_input_stream.h",
     "audio_input_controller.cc",
     "audio_input_controller.h",
     "chromium_api_delegate.cc",
@@ -71,8 +65,7 @@ source_set("internal") {
   ]
 
   deps = [
-    ":buildflags",
-    ":fake_input_device",
+    ":audio",
     "//build/util:webkit_version",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:libassistant",
@@ -87,13 +80,50 @@ source_set("internal") {
     "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",
     "//libassistant/shared/public",
     "//libassistant/shared/public:export",
-    "//media",
-    "//services/audio/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
 
   defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
+}
+
+source_set("audio") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "audio/audio_device_owner.cc",
+    "audio/audio_device_owner.h",
+    "audio/audio_input_impl.cc",
+    "audio/audio_input_impl.h",
+    "audio/audio_input_provider_impl.cc",
+    "audio/audio_input_provider_impl.h",
+    "audio/audio_input_stream.cc",
+    "audio/audio_input_stream.h",
+    "audio/audio_media_data_source.cc",
+    "audio/audio_media_data_source.h",
+    "audio/audio_output_provider_impl.cc",
+    "audio/audio_output_provider_impl.h",
+    "audio/audio_stream_handler.cc",
+    "audio/audio_stream_handler.h",
+    "audio/volume_control_impl.cc",
+    "audio/volume_control_impl.h",
+  ]
+
+  deps = [
+    ":buildflags",
+    ":fake_input_device",
+    "//ash/public/mojom",
+    "//base",
+    "//chromeos/services/assistant/public/cpp",
+    "//chromeos/services/libassistant/public/mojom",
+    "//libassistant/shared/internal_api/c:api_wrappers_entrypoint",
+    "//libassistant/shared/public",
+    "//libassistant/shared/public:export",
+    "//media",
+    "//services/audio/public/cpp",
+    "//services/audio/public/mojom",
+    "//services/media_session/public/mojom",
+  ]
 }
 
 source_set("fake_input_device") {
@@ -130,6 +160,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "audio/audio_output_provider_impl_unittest.cc",
     "audio_input_controller_unittest.cc",
     "media_controller_unittest.cc",
     "power_manager_provider_impl_unittest.cc",
@@ -139,6 +170,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":audio",
     ":internal",
     ":libassistant",
     ":test_support",

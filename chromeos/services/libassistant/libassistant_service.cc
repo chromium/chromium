@@ -52,7 +52,6 @@ LibassistantService::LibassistantService(
     platform_api_
         ->SetAudioInputProvider(
             &audio_input_controller_->audio_input_provider())
-        .SetAudioOutputProvider(&platform_api->GetAudioOutputProvider())
         .SetAuthProvider(fake_auth_provider_.get())
         .SetFileProvider(&platform_api->GetFileProvider())
         .SetNetworkProvider(&platform_api->GetNetworkProvider());
@@ -77,6 +76,7 @@ void LibassistantService::Bind(
     mojo::PendingReceiver<mojom::DisplayController> display_controller,
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingReceiver<mojom::ServiceController> service_controller,
+    mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
     mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
     mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate) {
   platform_delegate_.Bind(std::move(platform_delegate));
@@ -86,9 +86,9 @@ void LibassistantService::Bind(
   display_controller_->Bind(std::move(display_controller));
   media_controller_->Bind(std::move(media_controller),
                           std::move(media_delegate));
+  platform_api_->Bind(std::move(audio_output_delegate),
+                      platform_delegate_.get());
   service_controller_->Bind(std::move(service_controller));
-
-  platform_api_->Initialize(platform_delegate_.get());
 }
 
 void LibassistantService::SetInitializeCallback(InitializeCallback callback) {

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_DEVICE_OWNER_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_DEVICE_OWNER_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_DEVICE_OWNER_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_DEVICE_OWNER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/macros.h"
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_output.h"
@@ -22,11 +21,10 @@
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
-class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDeviceOwner
-    : public media::AudioRendererSink::RenderCallback,
-      media_session::mojom::MediaSessionObserver {
+class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
+                         media_session::mojom::MediaSessionObserver {
  public:
   AudioDeviceOwner(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -107,7 +105,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDeviceOwner
   DISALLOW_COPY_AND_ASSIGN(AudioDeviceOwner);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_AUDIO_DEVICE_OWNER_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_AUDIO_AUDIO_DEVICE_OWNER_H_

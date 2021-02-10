@@ -57,7 +57,6 @@ component("lib") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
-    "//media",
     "//services/media_session/public/cpp",
     "//ui/accessibility:ax_assistant",
   ]
@@ -67,8 +66,8 @@ component("lib") {
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/assistant/public/shared",
-    "//mojo/public/cpp/bindings:bindings",
-    "//services/audio/public/cpp:cpp",
+    "//mojo/public/cpp/bindings",
+    "//services/audio/public/cpp",
   ]
 
   if (enable_cros_libassistant) {
@@ -83,24 +82,10 @@ component("lib") {
       "assistant_settings_impl.h",
       "libassistant_service_host_impl.cc",
       "libassistant_service_host_impl.h",
-      "platform/audio_device_owner.cc",
-      "platform/audio_device_owner.h",
-      "platform/audio_input_impl.cc",
-      "platform/audio_input_impl.h",
-      "platform/audio_media_data_source.cc",
-      "platform/audio_media_data_source.h",
-      "platform/audio_output_provider_impl.cc",
-      "platform/audio_output_provider_impl.h",
-      "platform/audio_stream.cc",
-      "platform/audio_stream.h",
-      "platform/audio_stream_handler.cc",
-      "platform/audio_stream_handler.h",
       "platform/file_provider_impl.cc",
       "platform/file_provider_impl.h",
       "platform/network_provider_impl.cc",
       "platform/network_provider_impl.h",
-      "platform/volume_control_impl.cc",
-      "platform/volume_control_impl.h",
       "platform_api_impl.cc",
       "platform_api_impl.h",
       "utils.cc",
@@ -144,7 +129,6 @@ source_set("tests") {
     ":test_support",
     "//ash/constants",
     "//ash/public/cpp/assistant/test_support",
-    "//ash/public/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/audio",
@@ -184,7 +168,6 @@ source_set("tests") {
     sources += [
       "assistant_device_settings_delegate_unittest.cc",
       "assistant_manager_service_impl_unittest.cc",
-      "platform/audio_output_provider_impl_unittest.cc",
       "platform/network_provider_impl_unittest.cc",
       "test_support/fake_service_context.cc",
       "test_support/fake_service_context.h",
@@ -200,7 +183,6 @@ source_set("tests") {
       "//chromeos/services/assistant/public/cpp/migration",
       "//chromeos/services/assistant/public/cpp/migration:test_support",
       "//chromeos/services/network_config/public/mojom",
-      "//services/audio/public/cpp:test_support",
     ]
   }
 }

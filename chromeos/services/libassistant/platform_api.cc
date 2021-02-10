@@ -3,15 +3,21 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/libassistant/platform_api.h"
+
 #include "base/check.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/audio/audio_output_provider_impl.h"
 #include "chromeos/services/libassistant/power_manager_provider_impl.h"
 #include "chromeos/services/libassistant/system_provider_impl.h"
+#include "media/audio/audio_device_description.h"
 
 namespace chromeos {
 namespace libassistant {
 
-PlatformApi::PlatformApi() {
+PlatformApi::PlatformApi()
+    : audio_output_provider_(std::make_unique<AudioOutputProviderImpl>(
+          /*background_task_runner=*/base::SequencedTaskRunnerHandle::Get(),
+          media::AudioDeviceDescription::kDefaultDeviceId)) {
   // Only enable native power features if they are supported by the UI.
   std::unique_ptr<PowerManagerProviderImpl> provider;
   if (assistant::features::IsPowerManagerEnabled()) {
@@ -22,20 +28,17 @@ PlatformApi::PlatformApi() {
 
 PlatformApi::~PlatformApi() = default;
 
-void PlatformApi::Initialize(
-    chromeos::libassistant::mojom::PlatformDelegate* delegate) {
-  system_provider_->Initialize(delegate);
+void PlatformApi::Bind(
+    mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+    mojom::PlatformDelegate* platform_delegate) {
+  audio_output_provider_->Bind(std::move(audio_output_delegate),
+                               platform_delegate);
+  system_provider_->Initialize(platform_delegate);
 }
 
 PlatformApi& PlatformApi::SetAudioInputProvider(
     assistant_client::AudioInputProvider* provider) {
   audio_input_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetAudioOutputProvider(
-    assistant_client::AudioOutputProvider* provider) {
-  audio_output_provider_ = provider;
   return *this;
 }
 

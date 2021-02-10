@@ -23,12 +23,8 @@ class FakePlatformApi : public CrosPlatformApi {
   ~FakePlatformApi() override;
 
   // CrosPlatformApi implementation:
-  assistant_client::AudioOutputProvider& GetAudioOutputProvider() override;
   assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
-
- private:
-  std::unique_ptr<assistant_client::AudioOutputProvider> audio_output_provider_;
 };
 
 }  // namespace assistant
