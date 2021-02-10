@@ -89,6 +89,8 @@
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_scene_agent.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator.h"
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
@@ -283,6 +285,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
         addAgent:[[IncognitoReauthSceneAgent alloc]
                      initWithReauthModule:[[ReauthenticationModule alloc]
                                               init]]];
+    [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
   }
   return self;
 }
@@ -389,6 +392,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       [applicationHandler openURLInNewTab:command];
       [self finishActivatingBrowserDismissingTabSwitcher:YES];
     }
+
+    [self handleShowStartSurfaceIfNecessary];
   }
 
   [self recordWindowCreationForSceneState:sceneState];
@@ -499,6 +504,41 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                  startupInformation:self.sceneState.appState.startupInformation
                            appState:self.sceneState.appState];
   }
+}
+
+// TODO(crbug.com/1173160): Split and move to the StartSurfaceSceneAgent after
+// refactoring the scene states.
+- (void)handleShowStartSurfaceIfNecessary {
+  // Keep showing the last active NTP tab no matter whether the Start Surface is
+  // enabled or not by design.
+  web::WebState* currentWebState =
+      self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
+  if (IsURLNtp(currentWebState->GetVisibleURL())) {
+    return;
+  }
+
+  if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
+    return;
+  }
+  self.sceneState.modifytVisibleNTPForStartSurface = YES;
+
+  // Activate the existing NTP tab for the Start surface.
+  WebStateList* webStateList = self.currentInterface.browser->GetWebStateList();
+  for (int i = 0; i < webStateList->count(); i++) {
+    if (IsURLNtp(webStateList->GetWebStateAt(i)->GetVisibleURL())) {
+      webStateList->ActivateWebStateAt(i);
+      return;
+    }
+  }
+
+  // Open a new NTP tab if there is no existing NTP tab for the Start Surface.
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithIncognito:self.currentInterface.incognito];
+  command.userInitiated = NO;
+  Browser* browser = self.currentInterface.browser;
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationHandler openURLInNewTab:command];
 }
 
 - (void)recordWindowCreationForSceneState:(SceneState*)sceneState {

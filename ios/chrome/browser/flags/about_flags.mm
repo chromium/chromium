@@ -224,6 +224,16 @@ const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
     {"Native UI", kDiscoverFeedInNtpEnableNativeUI,
      base::size(kDiscoverFeedInNtpEnableNativeUI), nullptr}};
 
+const FeatureEntry::FeatureParam kStartSurfaceReturnImmediately[] = {
+    {kReturnToStartSurfaceInactiveDurationInSeconds, "0"}};
+const FeatureEntry::FeatureParam kStartSurfaceReturnInOneHour[] = {
+    {kReturnToStartSurfaceInactiveDurationInSeconds, "3600"}};
+const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
+    {"Return immediately", kStartSurfaceReturnImmediately,
+     base::size(kStartSurfaceReturnImmediately), nullptr},
+    {"Return in one hour", kStartSurfaceReturnInOneHour,
+     base::size(kStartSurfaceReturnInOneHour), nullptr}};
+
 const FeatureEntry::FeatureParam kWebViewNativeContextMenuWeb[] = {
     {web::features::kWebViewNativeContextMenuName,
      web::features::kWebViewNativeContextMenuParameterWeb}};
@@ -610,7 +620,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingUseBlocklist)},
     {"start-surface", flag_descriptions::kStartSurfaceName,
      flag_descriptions::kStartSurfaceDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kStartSurface)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kStartSurface,
+                                    kStartSurfaceVariations,
+                                    "StartSurface")},
     {"ios-crashpad", flag_descriptions::kCrashpadIOSName,
      flag_descriptions::kCrashpadIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kCrashpadIOS)},

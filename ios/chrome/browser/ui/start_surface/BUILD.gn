@@ -10,5 +10,26 @@ source_set("feature_flags") {
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/base",
+  ]
+}
+
+source_set("start_surface") {
+  sources = [
+    "start_surface_scene_agent.h",
+    "start_surface_scene_agent.mm",
+    "start_surface_util.h",
+    "start_surface_util.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":feature_flags",
+    "//base",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+  ]
 }
