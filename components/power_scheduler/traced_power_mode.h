@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POWER_SCHEDULER_POWER_MODE_TRACER_H_
-#define COMPONENTS_POWER_SCHEDULER_POWER_MODE_TRACER_H_
+#ifndef COMPONENTS_POWER_SCHEDULER_TRACED_POWER_MODE_H_
+#define COMPONENTS_POWER_SCHEDULER_TRACED_POWER_MODE_H_
 
 #include <atomic>
 
@@ -15,8 +15,11 @@ namespace power_scheduler {
 // Keeps track of a PowerMode and traces its value transitions. Not thread-safe.
 class TracedPowerMode {
  public:
-  explicit TracedPowerMode(const char* name, const void* trace_id);
+  TracedPowerMode(const char* name, const void* trace_id);
   ~TracedPowerMode();
+
+  TracedPowerMode(const TracedPowerMode&) = delete;
+  TracedPowerMode(TracedPowerMode&&);
 
   void OnTraceLogEnabled() const;
 
@@ -31,4 +34,4 @@ class TracedPowerMode {
 
 }  // namespace power_scheduler
 
-#endif  // COMPONENTS_POWER_SCHEDULER_POWER_MODE_TRACER_H_
+#endif  // COMPONENTS_POWER_SCHEDULER_TRACED_POWER_MODE_H_

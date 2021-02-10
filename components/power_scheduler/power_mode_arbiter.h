@@ -18,8 +18,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_tracer.h"
 #include "components/power_scheduler/power_mode_voter.h"
+#include "components/power_scheduler/traced_power_mode.h"
 
 namespace power_scheduler {
 

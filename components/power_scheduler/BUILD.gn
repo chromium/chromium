@@ -8,10 +8,10 @@ component("power_scheduler") {
     "power_mode.h",
     "power_mode_arbiter.cc",
     "power_mode_arbiter.h",
-    "power_mode_tracer.cc",
-    "power_mode_tracer.h",
     "power_mode_voter.cc",
     "power_mode_voter.h",
+    "traced_power_mode.cc",
+    "traced_power_mode.h",
   ]
 
   defines = [ "IS_POWER_SCHEDULER_IMPL" ]
