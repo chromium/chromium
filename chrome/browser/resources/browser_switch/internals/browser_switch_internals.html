@@ -34,6 +34,8 @@
     }
 
     #url-checker-input {
+      display: block;
+      margin: 1em 0;
       width: 400px;
     }
 
@@ -51,15 +53,12 @@
 
   <h2>URL Checker</h2>
 
-  <p>
+  <label>
     Enter a complete URL (with the http:// part) to see what LBS would do
     with it.
-  </p>
-
-  <p>
     <input type="text" id="url-checker-input"
         placeholder="http://example.com/">
-  </p>
+  </label>
 
   <pre id=output></pre>
 
