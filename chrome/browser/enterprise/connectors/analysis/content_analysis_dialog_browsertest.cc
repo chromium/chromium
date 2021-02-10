@@ -56,6 +56,22 @@ constexpr char kBlockingScansForDlp[] = R"(
   "block_until_verdict": 1
 })";
 
+constexpr char kBlockingScansForDlpAndMalwareWithCustomMessage[] = R"(
+{
+  "service_provider": "google",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "tags": ["dlp", "malware"]
+    }
+  ],
+  "block_until_verdict": 1,
+  "custom_messages": [{
+    "message": "Custom message",
+    "learn_more_url": "http://www.example.com/"
+  }]
+})";
+
 base::string16 text() {
   return base::UTF8ToUTF16(std::string(100, 'a'));
 }
@@ -364,13 +380,8 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // The dialog shows the failure or success message for the appropriate
     // access point and scan type.
     base::string16 final_message = dialog->GetMessageForTesting()->GetText();
-    int files_count = file_scan() ? 1 : 0;
-    base::string16 expected_message =
-        success()
-            ? l10n_util::GetPluralStringFUTF16(
-                  IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE, files_count)
-            : l10n_util::GetPluralStringFUTF16(
-                  IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAILURE_MESSAGE, files_count);
+    base::string16 expected_message = GetExpectedMessage();
+
     ASSERT_EQ(final_message, expected_message);
 
     // The top image is the failure/success one corresponding to the access
@@ -404,6 +415,16 @@ class ContentAnalysisDialogAppearanceBrowserTest
     ASSERT_FALSE(dialog->GetSideIconSpinnerForTesting());
   }
 
+  virtual base::string16 GetExpectedMessage() {
+    int files_count = file_scan() ? 1 : 0;
+    return success()
+               ? l10n_util::GetPluralStringFUTF16(
+                     IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE, files_count)
+               : l10n_util::GetPluralStringFUTF16(
+                     IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAILURE_MESSAGE,
+                     files_count);
+  }
+
   void DestructorCalled(ContentAnalysisDialog* dialog) override {
     // End the test once the dialog gets destroyed.
     CallQuitClosure();
@@ -415,6 +436,23 @@ class ContentAnalysisDialogAppearanceBrowserTest
 
   safe_browsing::DeepScanAccessPoint access_point() const {
     return std::get<2>(GetParam());
+  }
+};
+
+// Tests the behavior of the dialog in the same way as
+// ContentAnalysisDialogAppearanceBrowserTest but with a custom message set by
+// the admin.
+class ContentAnalysisDialogCustomMessageAppearanceBrowserTest
+    : public ContentAnalysisDialogAppearanceBrowserTest {
+ private:
+  base::string16 GetExpectedMessage() override {
+    int files_count = file_scan() ? 1 : 0;
+    return success()
+               ? l10n_util::GetPluralStringFUTF16(
+                     IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE, files_count)
+               : l10n_util::GetStringFUTF16(
+                     IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                     base::ASCIIToUTF16("Custom message"));
   }
 };
 
@@ -636,6 +674,65 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ContentAnalysisDialogAppearanceBrowserTest,
+    testing::Combine(
+        /*file_scan=*/testing::Bool(),
+        /*success=*/testing::Bool(),
+        /*access_point=*/
+        testing::Values(safe_browsing::DeepScanAccessPoint::UPLOAD,
+                        safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP,
+                        safe_browsing::DeepScanAccessPoint::PASTE)));
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageAppearanceBrowserTest,
+                       Test) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Setup policies to enable deep scanning, its UI and the responses to be
+  // simulated.
+  safe_browsing::SetAnalysisConnector(
+      browser()->profile()->GetPrefs(), FILE_ATTACHED,
+      kBlockingScansForDlpAndMalwareWithCustomMessage);
+
+  SetStatusCallbackResponse(
+      safe_browsing::SimpleContentAnalysisResponseForTesting(success(),
+                                                             success()));
+
+  // Set up delegate test values.
+  FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
+  SetUpDelegate();
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  ContentAnalysisDelegate::Data data;
+
+  // Use a file path or text to validate the appearance of the dialog for both
+  // types of scans.
+  if (file_scan())
+    CreateFilesForTest({"foo.doc"}, {"content"}, &data);
+  else
+    data.text.emplace_back(text());
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->profile(), GURL(kTestUrl), &data,
+      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [this, &called](const ContentAnalysisDelegate::Data& data,
+                          const ContentAnalysisDelegate::Result& result) {
+            for (bool result : result.paths_results)
+              ASSERT_EQ(result, success());
+            called = true;
+          }),
+      access_point());
+  run_loop.Run();
+  EXPECT_TRUE(called);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ContentAnalysisDialogCustomMessageAppearanceBrowserTest,
     testing::Combine(
         /*file_scan=*/testing::Bool(),
         /*success=*/testing::Bool(),
