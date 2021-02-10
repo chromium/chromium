@@ -301,13 +301,13 @@ cr.define('cr.ui.dialogs', function() {
     this.tabIndexes_ = null;
 
     this.container.classList.remove('shown');
+    this.container.classList.remove('pulse');
 
     if (this.previousActiveElement_) {
       this.previousActiveElement_.focus();
     } else {
       this.document_.body.focus();
     }
-    this.frame.classList.remove('pulse');
 
     const self = this;
     setTimeout(function() {
