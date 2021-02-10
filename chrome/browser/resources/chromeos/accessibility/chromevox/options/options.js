@@ -22,6 +22,12 @@ goog.require('ChromeVoxKbHandler');
 goog.require('ChromeVoxPrefs');
 goog.require('ExtensionBridge');
 
+/** @const {string} */
+const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
+
+/** @const {string} */
+const ESPEAK_TTS_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
+
 /**
  * Class to manage the options page.
  */
@@ -278,7 +284,24 @@ OptionsPage = class {
           voice.voiceName = voice.voiceName || '';
         });
         voices.sort(function(a, b) {
-          return a.voiceName.localeCompare(b.voiceName);
+          // Prefer Google tts voices over all others.
+          if (a.extensionId === GOOGLE_TTS_EXTENSION_ID &&
+              b.extensionId !== GOOGLE_TTS_EXTENSION_ID) {
+            return -1;
+          }
+
+          // Next, prefer Espeak tts voices.
+          if (a.extensionId === ESPEAK_TTS_EXTENSION_ID &&
+              b.extensionId !== ESPEAK_TTS_EXTENSION_ID) {
+            return -1;
+          }
+
+          // Finally, prefer local over remote voices.
+          if (!a['remote'] && b['remote']) {
+            return -1;
+          }
+
+          return 0;
         });
         addVoiceOption(Msgs.getMsg('system_voice'), constants.SYSTEM_VOICE);
         voices.forEach((voice) => {
