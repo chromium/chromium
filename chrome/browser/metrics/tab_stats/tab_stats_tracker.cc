@@ -314,6 +314,14 @@ class TabStatsTracker::WebContentsUsageObserver
     // object starting from here.
   }
 
+  void MediaEffectivelyFullscreenChanged(bool is_fullscreen) override {
+    for (TabStatsObserver& tab_stats_observer :
+         tab_stats_tracker_->tab_stats_observers_) {
+      tab_stats_observer.OnMediaEffectivelyFullscreenChanged(web_contents(),
+                                                             is_fullscreen);
+    }
+  }
+
  private:
   TabStatsTracker* tab_stats_tracker_;
   // The last navigation time associated with this tab.

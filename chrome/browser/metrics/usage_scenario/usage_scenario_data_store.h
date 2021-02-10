@@ -117,6 +117,10 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   void OnUkmSourceBecameHidden(const ukm::SourceId& source,
                                const url::Origin& origin);
 
+  base::TimeTicks is_playing_full_screen_video_single_monitor_since() {
+    return is_playing_full_screen_video_single_monitor_since_;
+  }
+
   const IntervalData& GetIntervalDataForTesting() { return interval_data_; }
 
   base::WeakPtr<UsageScenarioDataStore> GetWeakPtr() {

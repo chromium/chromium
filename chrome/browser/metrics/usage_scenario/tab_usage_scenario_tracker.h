@@ -9,6 +9,7 @@
 #include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "content/public/browser/visibility.h"
+#include "ui/display/display_observer.h"
 
 namespace content {
 class WebContents;
@@ -18,7 +19,8 @@ namespace metrics {
 
 // Used to relay information gathered from TabStatsTracker to
 // UsageScenarioDataStore. No information is stored in this class.
-class TabUsageScenarioTracker : public TabStatsObserver {
+class TabUsageScenarioTracker : public TabStatsObserver,
+                                public display::DisplayObserver {
  public:
   // This class will not own |usage_scenario_data_store| so it needs to be
   // outlived by it.
@@ -35,6 +37,12 @@ class TabUsageScenarioTracker : public TabStatsObserver {
   void OnTabVisibilityChanged(content::WebContents* web_contents,
                               content::Visibility visibility) override;
   void OnTabInteraction(content::WebContents* web_contents) override;
+  void OnMediaEffectivelyFullscreenChanged(content::WebContents* web_contents,
+                                           bool is_fullscreen) override;
+
+  // display::DisplayObserver:
+  void OnDisplayAdded(const display::Display& new_display) override;
+  void OnDisplayRemoved(const display::Display& new_display) override;
 
   // Testing trampolines:
   void OnTabAddedForTesting(content::WebContents* web_contents,
@@ -52,6 +60,9 @@ class TabUsageScenarioTracker : public TabStatsObserver {
 
   // Keep track of the visible web-contents.
   base::flat_set<content::WebContents*> visible_contents_;
+
+  // Indicates if there's a media currently playing fullscreen.
+  bool media_playing_fullscreen_ = false;
 
   // Used to verify that all access to |usage_scenario_data_store_| goes through
   // the same sequence as the one that created this object.
