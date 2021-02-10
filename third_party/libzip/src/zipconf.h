@@ -15,9 +15,7 @@
 #define LIBZIP_VERSION_MINOR 7
 #define LIBZIP_VERSION_MICRO 3
 
-#if defined(OS_WIN)
 #define ZIP_STATIC
-#endif
 
 #define _Nullable
 #define _Nonnull

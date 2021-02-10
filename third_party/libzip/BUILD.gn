@@ -17,6 +17,10 @@ source_set("libzip_public_headers") {
     "src/zip_err_str.c",
     "src/zipconf.h",
   ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  public_configs = [ ":libzip_config" ]
 }
 
 static_library("libzip") {

@@ -18,7 +18,7 @@ Modifications:
 - Add static file config.h that is generated normally by the build system (patches/0001-add-built-config.h.patch)
 - Add static file zipconfig.h that is generated normally by the build system (patches/0001-add-built-zip_err_str.c.patch)
 - Add static file zip_err_str.c that is generated normally by the build system (patches/0001-add-built-zipconf.h.patch)
-- Modify config.h and zipconfig.h to handle Windows build (patches/0001-patch-configs-for-windows.patch)
+- Modify config.h and zipconfig.h to handle multi-platform build (patches/0001-patch-configs.patch)
 
 Update Process:
 1) Clone the libzip github repo at the desired commit into src/
