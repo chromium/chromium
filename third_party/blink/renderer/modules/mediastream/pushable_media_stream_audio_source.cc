@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/pushable_media_stream_audio_source.h"
 
+#include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -78,7 +79,13 @@ void PushableMediaStreamAudioSource::DeliverData(
     last_frames_ = audio_bus.frames();
   }
 
-  DeliverDataToTracks(audio_bus, base::TimeTicks() + data->timestamp());
+  // data->timestamp() is the time at the beginning of the |data| audio piece.
+  // |capture_time| is the time at the end of the |data| audio piece.
+  base::TimeTicks capture_time = base::TimeTicks() + data->timestamp() +
+                                 media::AudioTimestampHelper::FramesToTime(
+                                     audio_bus.frames(), sample_rate);
+
+  DeliverDataToTracks(audio_bus, capture_time);
 }
 
 bool PushableMediaStreamAudioSource::EnsureSourceIsStarted() {
