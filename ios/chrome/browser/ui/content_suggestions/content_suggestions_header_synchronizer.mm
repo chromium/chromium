@@ -122,7 +122,8 @@ initWithCollectionController:
   if (self.collectionView.decelerating) {
     // Stop the scrolling if the scroll view is decelerating to prevent the
     // focus to be immediately lost.
-    [self.collectionView setContentOffset:[self adjustedOffset] animated:NO];
+    [self.collectionView setContentOffset:self.collectionView.contentOffset
+                                 animated:NO];
   }
 
   if (self.collectionController.scrolledToTop) {
@@ -137,7 +138,7 @@ initWithCollectionController:
 
   CGFloat pinnedOffsetY = [self.headerController pinnedOffsetY];
   self.collectionShiftingOffset =
-      MAX(0, pinnedOffsetY - [self adjustedOffset].y);
+      MAX(-self.additionalOffset, pinnedOffsetY - [self adjustedOffset].y);
 
   self.collectionController.scrolledToTop = YES;
   self.shouldAnimateHeader = YES;
@@ -152,14 +153,14 @@ initWithCollectionController:
                 return;
 
               __typeof(weakSelf) strongSelf = weakSelf;
-              if ((strongSelf.collectionView.contentOffset.y +
-                   self.additionalOffset) < pinnedOffsetY) {
+              if (strongSelf.collectionView.contentOffset.y <
+                  [self pinnedOffsetY]) {
                 if (animations)
                   animations();
                 // Changing the contentOffset of the collection results in a
                 // scroll and a change in the constraints of the header.
                 strongSelf.collectionView.contentOffset =
-                    CGPointMake(0, pinnedOffsetY - self.additionalOffset);
+                    CGPointMake(0, [self pinnedOffsetY]);
                 // Layout the header for the constraints to be animated.
                 [strongSelf.headerController layoutHeader];
                 [strongSelf.collectionView
@@ -313,11 +314,10 @@ initWithCollectionController:
     percentComplete = 1.0;
 
   // Find how much the collection view should be scrolled up in the next frame.
-  CGFloat yOffset =
-      (1.0 - percentComplete) * [self.headerController pinnedOffsetY] +
-      percentComplete * MAX([self.headerController pinnedOffsetY] -
-                                self.collectionShiftingOffset,
-                            0);
+  CGFloat yOffset = (1.0 - percentComplete) * [self pinnedOffsetY] +
+                    percentComplete * MAX([self pinnedOffsetY] -
+                                              self.collectionShiftingOffset,
+                                          -self.additionalOffset);
   self.collectionView.contentOffset = CGPointMake(0, yOffset);
 
   if (percentComplete == 1.0) {
