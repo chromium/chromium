@@ -277,8 +277,6 @@
 #include "chrome/browser/chromeos/extensions/printing/printing_api_handler.h"
 #endif
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
-#include "chrome/browser/ash/system/automatic_reboot_manager.h"
-#include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/chromeos/borealis/borealis_prefs.h"
 #include "chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/chromeos/file_system_provider/registry.h"
@@ -327,6 +325,8 @@
 #include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/chromeos/settings/device_settings_cache.h"
+#include "chrome/browser/chromeos/system/automatic_reboot_manager.h"
+#include "chrome/browser/chromeos/system/input_device_settings.h"
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"

@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "base/macros.h"
-#include "chrome/browser/ash/system/system_clock_observer.h"
+#include "chrome/browser/chromeos/system/system_clock_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 

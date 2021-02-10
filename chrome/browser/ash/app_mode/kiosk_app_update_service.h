@@ -14,8 +14,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 // TODO(https://crbug.com/1164001): forward declare when moved to
 // chrome/browser/ash/.
-#include "chrome/browser/ash/system/automatic_reboot_manager.h"
-#include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
+#include "chrome/browser/chromeos/system/automatic_reboot_manager.h"
+#include "chrome/browser/chromeos/system/automatic_reboot_manager_observer.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/update_observer.h"

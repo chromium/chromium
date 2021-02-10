@@ -9,7 +9,7 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/system/procfs_util.h"
+#include "chrome/browser/chromeos/system/procfs_util.h"
 
 namespace crostini {
 
