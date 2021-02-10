@@ -668,7 +668,7 @@ static SMILRepeatCount ParseRepeatCount(const AtomicString& value) {
     return SMILRepeatCount::Indefinite();
   bool ok;
   double result = value.ToDouble(&ok);
-  if (ok && result > 0)
+  if (ok && result > 0 && std::isfinite(result))
     return SMILRepeatCount::Numeric(result);
   return SMILRepeatCount::Unspecified();
 }
