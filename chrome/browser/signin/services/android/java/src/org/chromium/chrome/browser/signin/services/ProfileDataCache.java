@@ -265,14 +265,9 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     @Override
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
         final String accountEmail = accountInfo.getEmail();
-        DisplayableProfileData profileData = mCachedProfileData.get(accountEmail);
-        // if profileData is null, we will fetch monogram when generating
-        // the cache so that different sources will be handled in order.
-        if (profileData != null && profileData.getImage() == mPlaceholderImage) {
-            updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(accountEmail,
-                    prepareAvatar(accountInfo.getAccountImage(), accountEmail),
-                    profileData.getFullName(), profileData.getGivenName()));
-        }
+        updateCachedProfileDataAndNotifyObservers(new DisplayableProfileData(accountEmail,
+                prepareAvatar(accountInfo.getAccountImage(), accountEmail),
+                accountInfo.getFullName(), accountInfo.getGivenName()));
     }
 
     /**

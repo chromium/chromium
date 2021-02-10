@@ -303,8 +303,8 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testAccountDisappearedOnCollapsedSheet() {
         buildAndShowCollapsedBottomSheet();
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountEmail());
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA2.getAccountEmail());
+        mAccountManagerTestRule.removeAccount(PROFILE_DATA1.getAccountEmail());
+        mAccountManagerTestRule.removeAccount(PROFILE_DATA2.getAccountEmail());
         CriteriaHelper.pollUiThread(() -> {
             return !mCoordinator.getBottomSheetViewForTesting()
                             .findViewById(R.id.account_picker_selected_account)
@@ -317,8 +317,8 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testAccountDisappearedOnExpandedSheet() {
         buildAndShowExpandedBottomSheet();
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountEmail());
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA2.getAccountEmail());
+        mAccountManagerTestRule.removeAccount(PROFILE_DATA1.getAccountEmail());
+        mAccountManagerTestRule.removeAccount(PROFILE_DATA2.getAccountEmail());
         CriteriaHelper.pollUiThread(() -> {
             return !mCoordinator.getBottomSheetViewForTesting()
                             .findViewById(R.id.account_picker_account_list)
@@ -330,8 +330,8 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     public void testAccountReappearedOnCollapsedSheet() {
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountEmail());
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA2.getAccountEmail());
+        mAccountManagerTestRule.removeAccount(PROFILE_DATA1.getAccountEmail());
+        mAccountManagerTestRule.removeAccount(PROFILE_DATA2.getAccountEmail());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
                     getBottomSheetController(), mAccountPickerDelegateMock,
@@ -348,7 +348,7 @@ public class AccountPickerBottomSheetTest {
     public void testOtherAccountsChangeOnCollapsedSheet() {
         buildAndShowCollapsedBottomSheet();
         checkCollapsedAccountList(PROFILE_DATA1);
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA2.getAccountEmail());
+        mAccountManagerTestRule.removeAccount(PROFILE_DATA2.getAccountEmail());
         checkCollapsedAccountList(PROFILE_DATA1);
     }
 
@@ -356,7 +356,7 @@ public class AccountPickerBottomSheetTest {
     @MediumTest
     public void testSelectedAccountChangeOnCollapsedSheet() {
         buildAndShowCollapsedBottomSheet();
-        mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountEmail());
+        mAccountManagerTestRule.removeAccount(PROFILE_DATA1.getAccountEmail());
         checkCollapsedAccountList(PROFILE_DATA2);
     }
 

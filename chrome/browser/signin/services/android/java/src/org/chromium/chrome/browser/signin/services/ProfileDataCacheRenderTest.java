@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.signin.services;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -136,16 +134,22 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testProfileDataUpdatedFromIdentityManager() throws IOException {
-        String accountEmail = "test@example.com";
-        when(mIdentityManagerNativeMock
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                anyLong(), eq(accountEmail)))
-                .thenReturn(new AccountInfo(new CoreAccountId("gaia-id-test"), accountEmail,
-                        "gaia-id-test", "full name", "given name", null));
-
+    public void testProfileDataUpdatedFromIdentityManagerObserver() throws IOException {
+        final String accountEmail = "test@example.com";
         mAccountManagerTestRule.addAccount(
                 new ProfileDataSource.ProfileData(accountEmail, null, "Full Name", "Given Name"));
+        mIdentityManager.onExtendedAccountInfoUpdated(
+                new AccountInfo(new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test",
+                        "full name", "given name", createAvatar()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> { checkImageIsScaled(accountEmail); });
+        mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testProfileDataPopulatedFromIdentityManagerObserver() throws IOException {
+        final String accountEmail = "test@example.com";
         mIdentityManager.onExtendedAccountInfoUpdated(
                 new AccountInfo(new CoreAccountId("gaia-id-test"), accountEmail, "gaia-id-test",
                         "full name", "given name", createAvatar()));
