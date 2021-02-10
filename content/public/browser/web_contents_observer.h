@@ -107,10 +107,6 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   // made the current host for a frame.
   virtual void FrameDeleted(RenderFrameHost* render_frame_host) {}
 
-  // This is called when a RVH is created for a WebContents, but not if it's an
-  // interstitial.
-  virtual void RenderViewCreated(RenderViewHost* render_view_host) {}
-
   // This method is invoked when the RenderView of the current RenderViewHost
   // is ready, e.g. because we recreated it after a crash.
   virtual void RenderViewReady() {}

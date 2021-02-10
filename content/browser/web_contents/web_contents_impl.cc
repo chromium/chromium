@@ -6778,8 +6778,6 @@ void WebContentsImpl::RenderViewCreated(RenderViewHost* render_view_host) {
       Source<WebContents>(this),
       Details<RenderViewHost>(render_view_host));
 
-  observers_.NotifyObservers(&WebContentsObserver::RenderViewCreated,
-                             render_view_host);
   if (delegate_)
     RenderFrameDevToolsAgentHost::WebContentsCreated(this);
 }
