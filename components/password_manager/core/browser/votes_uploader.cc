@@ -528,8 +528,6 @@ void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
   AutofillUploadContents::Field::PasswordGenerationType type =
       AutofillUploadContents::Field::NO_GENERATION;
   if (has_generated_password_) {
-    UMA_HISTOGRAM_BOOLEAN("PasswordGeneration.IsTriggeredManually",
-                          is_manual_generation_);
     if (is_manual_generation_) {
       type = is_possible_change_password_form_
                  ? AutofillUploadContents::Field::

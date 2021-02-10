@@ -77,6 +77,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordGeneration.IsTriggeredManually"
     enum="BooleanIsGenerationTriggeredManually" expires_after="M81">
+  <obsolete>
+    Expired in M82; deleted in M90.
+  </obsolete>
   <owner>kolos@chromium.org</owner>
   <summary>
     Measures the frequency of manually triggered password generations.
