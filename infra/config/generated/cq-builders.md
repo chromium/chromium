@@ -86,6 +86,11 @@ which touches `//gpu/BUILD.gn` would trigger the builder
 `android_optional_gpu_tests_rel`, due to the `location_regexp` values for that
 builder.
 
+* [3pp-linux-amd64-packager](https://ci.chromium.org/p/chromium/builders/try/3pp-linux-amd64-packager) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+3pp-linux-amd64-packager)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+3pp-linux-amd64-packager))
+
+  Path regular expressions:
+  * [`//.+/3pp/.+`](https://cs.chromium.org/search?q=package:%5Echromium$+file:.+/3pp/)
+
 * [android-cronet-arm-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm-dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-cronet-arm-dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-cronet-arm-dbg))
 
   Path regular expressions:

@@ -1627,6 +1627,13 @@ try_.cipd_3pp_builder(
         "platform": "linux-amd64",
         "package_prefix": "chromium_3pp",
     },
+    tryjob = try_.job(
+        location_regexp = [
+            # Enable for CLs touching files under "3pp" directories which are
+            # two level deep or more from the repo root.
+            ".+/[+]/.+/3pp/.+",
+        ],
+    ),
 )
 
 try_.gpu_chromium_android_builder(
