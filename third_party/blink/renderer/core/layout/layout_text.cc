@@ -843,29 +843,33 @@ PositionWithAffinity LayoutText::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    // TODO(crbug.com/1150362): The optimized codepath below does not support
-    // the block fragmentation yet. Use the slow codepath for now if block
-    // fragmented.
-    const LayoutBlockFlow* containing_block_flow = ContainingNGBlockFlow();
-    if (UNLIKELY(containing_block_flow->PhysicalFragmentCount() > 1))
-      return containing_block_flow->PositionForPoint(point);
-
     // Because of Texts in "position:relative" can be outside of line box, we
     // attempt to find a fragment containing |point|.
     // See All/LayoutViewHitTestTest.HitTestHorizontal/* and
     // All/LayoutViewHitTestTest.HitTestVerticalRL/*
     NGInlineCursor cursor;
+    cursor.MoveTo(*this);
+    const LayoutBlockFlow* containing_block_flow = cursor.GetLayoutBlockFlow();
+    DCHECK(containing_block_flow);
     PhysicalOffset point_in_contents = point;
     if (containing_block_flow->IsScrollContainer()) {
       point_in_contents += PhysicalOffset(
           containing_block_flow->PixelSnappedScrolledContentOffset());
     }
-    for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
+    const NGPhysicalBoxFragment* container_fragment = nullptr;
+    PhysicalOffset point_in_container_fragment;
+    for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+      DCHECK(&cursor.ContainerFragment());
+      if (container_fragment != &cursor.ContainerFragment()) {
+        container_fragment = &cursor.ContainerFragment();
+        point_in_container_fragment =
+            point_in_contents - container_fragment->OffsetFromOwnerLayoutBox();
+      }
       if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
-               .Contains(FlooredIntPoint(point_in_contents)))
+               .Contains(FlooredIntPoint(point_in_container_fragment)))
         continue;
       if (auto position_with_affinity =
-              cursor.PositionForPointInChild(point_in_contents)) {
+              cursor.PositionForPointInChild(point_in_container_fragment)) {
         // Note: Due by Bidi adjustment, |position| isn't relative to this.
         const Position& position = position_with_affinity.GetPosition();
         DCHECK(position.IsOffsetInAnchor()) << position;
