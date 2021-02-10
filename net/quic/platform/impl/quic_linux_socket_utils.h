@@ -98,7 +98,7 @@ class QuicMMsgHdr {
       return;
     }
 
-    storage_.reset(new char[StorageSize()]);
+    storage_ = std::make_unique<char[]>(StorageSize());
     memset(&storage_[0], 0, StorageSize());
 
     int i = -1;

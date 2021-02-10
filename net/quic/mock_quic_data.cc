@@ -14,7 +14,7 @@ MockQuicData::MockQuicData(quic::ParsedQuicVersion version)
 MockQuicData::~MockQuicData() {}
 
 void MockQuicData::AddConnect(IoMode mode, int rv) {
-  connect_.reset(new MockConnect(mode, rv));
+  connect_ = std::make_unique<MockConnect>(mode, rv);
 }
 
 void MockQuicData::AddRead(IoMode mode,
@@ -62,7 +62,7 @@ void MockQuicData::Resume() {
 }
 
 SequencedSocketData* MockQuicData::InitializeAndGetSequencedSocketData() {
-  socket_data_.reset(new SequencedSocketData(reads_, writes_));
+  socket_data_ = std::make_unique<SequencedSocketData>(reads_, writes_);
   socket_data_->set_printer(&printer_);
   if (connect_ != nullptr)
     socket_data_->set_connect_data(*connect_);

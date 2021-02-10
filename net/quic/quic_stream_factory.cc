@@ -1737,12 +1737,13 @@ int QuicStreamFactory::CreateSession(
   }
 
   if (!helper_.get()) {
-    helper_.reset(new QuicChromiumConnectionHelper(clock_, random_generator_));
+    helper_ = std::make_unique<QuicChromiumConnectionHelper>(clock_,
+                                                             random_generator_);
   }
 
   if (!alarm_factory_.get()) {
-    alarm_factory_.reset(new QuicChromiumAlarmFactory(
-        base::ThreadTaskRunnerHandle::Get().get(), clock_));
+    alarm_factory_ = std::make_unique<QuicChromiumAlarmFactory>(
+        base::ThreadTaskRunnerHandle::Get().get(), clock_);
   }
 
   quic::QuicConnectionId connection_id =
