@@ -2797,7 +2797,7 @@
   },
   {
     "name": "focus-mode",
-    "owners": [ "dfried", "pbos", "yiningwang@google.com" ],
+    "owners": [ "dfried", "pbos" ],
     "expiry_milestone": 82
   },
   {
