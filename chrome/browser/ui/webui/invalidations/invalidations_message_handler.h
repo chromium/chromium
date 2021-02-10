@@ -42,6 +42,7 @@ class InvalidationsMessageHandler
 
   // Implementation of WebUIMessageHandler.
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
   // Triggers the logger to send the current state and objects ids.
   void UpdateContent(const base::ListValue* args);

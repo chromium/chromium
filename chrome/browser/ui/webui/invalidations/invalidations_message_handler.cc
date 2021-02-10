@@ -33,10 +33,7 @@ invalidation::ProfileInvalidationProvider* GetInvalidationProvider(
 
 InvalidationsMessageHandler::InvalidationsMessageHandler() : logger_(nullptr) {}
 
-InvalidationsMessageHandler::~InvalidationsMessageHandler() {
-  if (logger_)
-    logger_->UnregisterObserver(this);
-}
+InvalidationsMessageHandler::~InvalidationsMessageHandler() = default;
 
 void InvalidationsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -49,7 +46,13 @@ void InvalidationsMessageHandler::RegisterMessages() {
           base::Unretained(this)));
 }
 
+void InvalidationsMessageHandler::OnJavascriptDisallowed() {
+  if (logger_)
+    logger_->UnregisterObserver(this);
+}
+
 void InvalidationsMessageHandler::UIReady(const base::ListValue* args) {
+  AllowJavascript();
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(Profile::FromWebUI(web_ui()));
   if (invalidation_provider) {
@@ -84,17 +87,15 @@ void InvalidationsMessageHandler::OnRegistrationChange(
        ++it) {
     list_of_handlers.AppendString(*it);
   }
-  web_ui()->CallJavascriptFunctionUnsafe("chrome.invalidations.updateHandlers",
-                                         list_of_handlers);
+  FireWebUIListener("handlers-updated", list_of_handlers);
 }
 
 void InvalidationsMessageHandler::OnStateChange(
     const invalidation::InvalidatorState& new_state,
     const base::Time& last_changed_timestamp) {
   std::string state(invalidation::InvalidatorStateToString(new_state));
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.invalidations.updateInvalidatorState", base::Value(state),
-      base::Value(last_changed_timestamp.ToJsTime()));
+  FireWebUIListener("state-updated", base::Value(state),
+                    base::Value(last_changed_timestamp.ToJsTime()));
 }
 
 void InvalidationsMessageHandler::OnUpdatedTopics(
@@ -112,9 +113,7 @@ void InvalidationsMessageHandler::OnUpdatedTopics(
     dic->SetInteger("totalCount", topic_item.second);
     list_of_objects.Append(std::move(dic));
   }
-  web_ui()->CallJavascriptFunctionUnsafe("chrome.invalidations.updateIds",
-                                         base::Value(handler_name),
-                                         list_of_objects);
+  FireWebUIListener("update-ids", base::Value(handler_name), list_of_objects);
 }
 void InvalidationsMessageHandler::OnDebugMessage(
     const base::DictionaryValue& details) {}
@@ -123,12 +122,10 @@ void InvalidationsMessageHandler::OnInvalidation(
     const invalidation::TopicInvalidationMap& new_invalidations) {
   std::unique_ptr<base::ListValue> invalidations_list =
       new_invalidations.ToValue();
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.invalidations.logInvalidations", *invalidations_list);
+  FireWebUIListener("log-invalidations", *invalidations_list);
 }
 
 void InvalidationsMessageHandler::OnDetailedStatus(
     const base::DictionaryValue& network_details) {
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.invalidations.updateDetailedStatus", network_details);
+  FireWebUIListener("detailed-status-updated", network_details);
 }

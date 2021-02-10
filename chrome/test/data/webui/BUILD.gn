@@ -76,7 +76,6 @@ if (include_js_tests) {
     sources = [
       "../../../browser/ui/webui/identity_internals_ui_browsertest.js",
       "../../../browser/ui/webui/sync_internals/sync_internals_browsertest.js",
-      "about_invalidations_browsertest.js",
       "assertions.js",
       "async_gen.js",
       "bookmarks/bookmarks_browsertest.js",
@@ -86,6 +85,7 @@ if (include_js_tests) {
       "cr_elements/cr_elements_v3_browsertest.js",
       "histograms/histograms_internals_ui_browsertest.js",
       "history/history_browsertest.js",
+      "invalidations/about_invalidations_browsertest.js",
       "js/webui_resource_module_async_browsertest.js",
       "js2gtest_browsertest.js",
       "load_time_data_browsertest.js",
