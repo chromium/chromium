@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 
 @class NSString;
 @class WKScriptMessage;
@@ -131,17 +132,16 @@ class JavaScriptFeature {
   virtual const std::vector<const JavaScriptFeature*> GetDependentFeatures()
       const;
 
-  // Returns the script message handler names which this feature will receive
-  // messages from JavaScript. Returning an empty vector will not register any
-  // handlers.
-  virtual std::vector<std::string> GetScriptMessageHandlerNames() const;
+  // Returns the script message handler name which this feature will receive
+  // messages from JavaScript. Returning null will not register any handler.
+  virtual base::Optional<std::string> GetScriptMessageHandlerName() const;
 
   using ScriptMessageHandler =
       base::RepeatingCallback<void(BrowserState* browser_state,
                                    WKScriptMessage* message)>;
-  // Returns the names from |GetScriptMessageHandlerNames| mapped to handler
-  // callbacks.
-  std::map<std::string, ScriptMessageHandler> GetScriptMessageHandlers() const;
+  // Returns the script message handler callback if
+  // |GetScriptMessageHandlerName()| returns a handler name.
+  base::Optional<ScriptMessageHandler> GetScriptMessageHandler() const;
 
   JavaScriptFeature(const JavaScriptFeature&) = delete;
 
@@ -159,7 +159,7 @@ class JavaScriptFeature {
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout);
 
-  // Callback for script messages registered through |GetScriptMessageHandlers|.
+  // Callback for script messages registered through |GetScriptMessageHandler|.
   // Called when a web view associated with |browser_state| sent |message|.
   virtual void ScriptMessageReceived(BrowserState* browser_state,
                                      WKScriptMessage* message);

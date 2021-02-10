@@ -9,7 +9,6 @@
 
 #include <map>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/supports_user_data.h"
@@ -45,7 +44,7 @@ class ContextMenuJavaScriptFeature : public JavaScriptFeature,
                          ElementDetailsCallback callback);
 
   // JavaScriptFeature:
-  std::vector<std::string> GetScriptMessageHandlerNames() const override;
+  base::Optional<std::string> GetScriptMessageHandlerName() const override;
   void ScriptMessageReceived(BrowserState* browser_state,
                              WKScriptMessage* message) override;
 

@@ -132,21 +132,19 @@ JavaScriptFeature::GetDependentFeatures() const {
   return dependent_features_;
 }
 
-std::vector<std::string> JavaScriptFeature::GetScriptMessageHandlerNames()
+base::Optional<std::string> JavaScriptFeature::GetScriptMessageHandlerName()
     const {
-  return {};
+  return base::nullopt;
 }
 
-std::map<std::string, JavaScriptFeature::ScriptMessageHandler>
-JavaScriptFeature::GetScriptMessageHandlers() const {
-  auto handler = base::BindRepeating(&JavaScriptFeature::ScriptMessageReceived,
-                                     weak_factory_.GetWeakPtr());
-  auto handlers =
-      std::map<std::string, JavaScriptFeature::ScriptMessageHandler>();
-  for (auto handler_name : GetScriptMessageHandlerNames()) {
-    handlers[handler_name] = handler;
+base::Optional<JavaScriptFeature::ScriptMessageHandler>
+JavaScriptFeature::GetScriptMessageHandler() const {
+  if (!GetScriptMessageHandlerName()) {
+    return base::nullopt;
   }
-  return handlers;
+
+  return base::BindRepeating(&JavaScriptFeature::ScriptMessageReceived,
+                             weak_factory_.GetWeakPtr());
 }
 
 void JavaScriptFeature::ScriptMessageReceived(BrowserState* browser_state,

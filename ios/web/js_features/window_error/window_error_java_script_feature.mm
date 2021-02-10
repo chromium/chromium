@@ -45,9 +45,9 @@ WindowErrorJavaScriptFeature::WindowErrorJavaScriptFeature(
 }
 WindowErrorJavaScriptFeature::~WindowErrorJavaScriptFeature() = default;
 
-std::vector<std::string>
-WindowErrorJavaScriptFeature::GetScriptMessageHandlerNames() const {
-  return {kWindowErrorResultHandlerName};
+base::Optional<std::string>
+WindowErrorJavaScriptFeature::GetScriptMessageHandlerName() const {
+  return kWindowErrorResultHandlerName;
 }
 
 void WindowErrorJavaScriptFeature::ScriptMessageReceived(

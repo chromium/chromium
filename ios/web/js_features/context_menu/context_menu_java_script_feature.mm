@@ -78,9 +78,9 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
   CallJavaScriptFunction(main_frame, "findElementAtPoint", parameters);
 }
 
-std::vector<std::string>
-ContextMenuJavaScriptFeature::GetScriptMessageHandlerNames() const {
-  return {kFindElementResultHandlerName};
+base::Optional<std::string>
+ContextMenuJavaScriptFeature::GetScriptMessageHandlerName() const {
+  return kFindElementResultHandlerName;
 }
 
 void ContextMenuJavaScriptFeature::ScriptMessageReceived(
