@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("../os_settings.gni")
 
 js_type_check("closure_compile") {
   uses_legacy_modules = true
@@ -16,18 +17,19 @@ js_library("os_toolbar") {
   ]
 }
 
-# TODO: Uncomment as the Polymer3 migration makes progress.
-#js_type_check("closure_compile_module") {
-#  is_polymer3 = true
-#  deps = [
-#    ":os_toolbar.m"
-#  ]
-#}
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [ ":os_toolbar.m" ]
+}
 
 js_library("os_toolbar.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_toolbar/os_toolbar.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    "../os_settings_search_box:os_settings_search_box.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":os_toolbar_module" ]
 }
@@ -42,4 +44,6 @@ polymer_modulizer("os_toolbar") {
   js_file = "os_toolbar.js"
   html_file = "os_toolbar.html"
   html_type = "dom-module"
+  auto_imports = os_settings_auto_imports
+  namespace_rewrites = os_settings_namespace_rewrites
 }

@@ -507,6 +507,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_settings_routes.m.js",
     "chromeos/os_settings_search_box/os_search_result_row.m.js",
     "chromeos/os_settings_search_box/os_settings_search_box.m.js",
+    "chromeos/os_toolbar/os_toolbar.m.js",
     "chromeos/parental_controls_page/parental_controls_browser_proxy.m.js",
     "chromeos/parental_controls_page/parental_controls_page.m.js",
     "chromeos/personalization_page/change_picture.m.js",
@@ -1245,7 +1246,7 @@ group("closure_compile_module") {
     "os_settings_search_box:closure_compile_module",
 
     #"os_settings_ui:closure_compile_module",
-    #"os_toolbar:closure_compile_module",
+    "os_toolbar:closure_compile_module",
     "parental_controls_page:closure_compile_module",
     "personalization_page:closure_compile_module",
   ]
