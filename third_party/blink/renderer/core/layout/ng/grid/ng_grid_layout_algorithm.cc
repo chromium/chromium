@@ -1612,11 +1612,24 @@ void NGGridLayoutAlgorithm::MaximizeTracks(
 void NGGridLayoutAlgorithm::StretchAutoTracks(
     SizingConstraint sizing_constraint,
     NGGridLayoutAlgorithmTrackCollection* track_collection) const {
+  const GridTrackSizingDirection track_direction =
+      track_collection->Direction();
+
+  // Stretching auto tracks should only occur if we have a "stretch" (or
+  // default) content distribution.
+  const auto& content_alignment = (track_direction == kForColumns)
+                                      ? Style().JustifyContent()
+                                      : Style().AlignContent();
+  bool has_stretch_distribution =
+      content_alignment.Distribution() == ContentDistributionType::kStretch ||
+      (content_alignment.GetPosition() == ContentPosition::kNormal &&
+       content_alignment.Distribution() == ContentDistributionType::kDefault);
+  if (!has_stretch_distribution)
+    return;
+
   LayoutUnit free_space =
       DetermineFreeSpace(sizing_constraint, *track_collection);
 
-  const GridTrackSizingDirection track_direction =
-      track_collection->Direction();
   // If the free space is indefinite, but the grid container has a definite
   // min-width/height, use that size to calculate the free space for this step
   // instead.
