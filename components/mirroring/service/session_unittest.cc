@@ -111,6 +111,8 @@ class SessionTest : public mojom::ResourceProvider,
   MOCK_METHOD1(OnError, void(SessionError));
   MOCK_METHOD0(DidStart, void());
   MOCK_METHOD0(DidStop, void());
+  MOCK_METHOD1(LogInfoMessage, void(const std::string&));
+  MOCK_METHOD1(LogErrorMessage, void(const std::string&));
 
   MOCK_METHOD0(OnGetVideoCaptureHost, void());
   MOCK_METHOD0(OnGetNetworkContext, void());

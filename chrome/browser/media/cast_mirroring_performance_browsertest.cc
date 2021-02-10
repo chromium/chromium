@@ -895,6 +895,8 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
 
   void DidStart() override {}
   void DidStop() override {}
+  void LogInfoMessage(const std::string& message) override {}
+  void LogErrorMessage(const std::string& message) override {}
 
   // CastMessageChannel implementation
   void Send(mirroring::mojom::CastMessagePtr message) override {

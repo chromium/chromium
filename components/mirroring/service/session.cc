@@ -19,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -469,6 +470,17 @@ void Session::ReportError(SessionError error) {
   StopSession();
 }
 
+void Session::LogInfoMessage(const std::string& message) {
+  if (observer_) {
+    observer_->LogInfoMessage(message);
+  }
+}
+
+void Session::LogErrorMessage(const std::string& message) {
+  if (observer_) {
+    observer_->LogErrorMessage(message);
+  }
+}
 void Session::StopStreaming() {
   DVLOG(2) << __func__ << " state=" << state_;
   if (!cast_environment_)
@@ -828,6 +840,10 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
                           base::CompareCase::SENSITIVE))) {
       QueryCapabilitiesForRemoting();
     }
+  } else {
+    LogInfoMessage(
+        base::StrCat({"Remoting is not supported on this receiver model: ",
+                      session_params_.receiver_model_name}));
   }
 
   if (initially_starting_session && observer_)
@@ -835,8 +851,7 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
 }
 
 void Session::OnResponseParsingError(const std::string& error_message) {
-  // TODO(crbug.com/1117673): Add MR-internals logging:
-  //   VLOG(2) << "[REJECT] " << error_message;
+  LogErrorMessage(base::StrCat({"MessageDispatcher error: ", error_message}));
 }
 
 void Session::CreateAudioStream(
@@ -1007,11 +1022,14 @@ void Session::OnCapabilitiesResponse(const ReceiverResponse& response) {
     return;
 
   if (!response.valid()) {
-    VLOG(1) << "Bad CAPABILITIES_RESPONSE. Remoting disabled.";
     if (response.error()) {
-      VLOG(1) << " error code=" << response.error()->code
-              << " description=" << response.error()->description
-              << " details=" << response.error()->details;
+      LogErrorMessage(base::StringPrintf(
+          "Remoting is not supported. Error code: %d, description: %s, "
+          "details: %s",
+          response.error()->code, response.error()->description.c_str(),
+          response.error()->details.c_str()));
+    } else {
+      LogErrorMessage("Remoting is not supported. Bad CAPABILITIES_RESPONSE.");
     }
     return;
   }
@@ -1026,8 +1044,10 @@ void Session::OnCapabilitiesResponse(const ReceiverResponse& response) {
   }
 
   if (remoting_version > kSupportedRemotingVersion) {
-    VLOG(1) << "Unsupported remoting version (" << remoting_version << " > "
-            << kSupportedRemotingVersion << ')';
+    LogErrorMessage(
+        base::StringPrintf("Remoting is not supported. The receiver's remoting "
+                           "version (%d) is not supported by the sender (%d).",
+                           remoting_version, kSupportedRemotingVersion));
     return;
   }
 

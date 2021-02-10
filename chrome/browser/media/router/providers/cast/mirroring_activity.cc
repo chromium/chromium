@@ -208,6 +208,13 @@ void MirroringActivity::CreateMojoBindings(mojom::MediaRouter* media_router) {
 }
 
 void MirroringActivity::OnError(SessionError error) {
+  logger_->LogError(
+      media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
+      base::StringPrintf(
+          "Mirroring will stop. MirroringService.SessionError: %d",
+          static_cast<int>(error)),
+      route_.media_sink_id(), route_.media_source().id(),
+      route_.presentation_id());
   if (will_start_mirroring_timestamp_) {
     // An error was encountered while attempting to start mirroring.
     base::UmaHistogramEnumeration(kHistogramStartFailureNative, error);
@@ -234,6 +241,18 @@ void MirroringActivity::DidStart() {
 
 void MirroringActivity::DidStop() {
   StopMirroring();
+}
+
+void MirroringActivity::LogInfoMessage(const std::string& message) {
+  logger_->LogInfo(media_router::mojom::LogCategory::kMirroring,
+                   kLoggerComponent, message, route_.media_sink_id(),
+                   route_.media_source().id(), route_.presentation_id());
+}
+
+void MirroringActivity::LogErrorMessage(const std::string& message) {
+  logger_->LogError(media_router::mojom::LogCategory::kMirroring,
+                    kLoggerComponent, message, route_.media_sink_id(),
+                    route_.media_source().id(), route_.presentation_id());
 }
 
 void MirroringActivity::Send(mirroring::mojom::CastMessagePtr message) {
