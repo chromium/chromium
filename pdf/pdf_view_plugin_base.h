@@ -110,6 +110,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Returns the plugin-specific image data buffer.
   virtual Image GetPluginImageData() const;
 
+  // Updates the geometry of the plugin and its image data if the view's
+  // size or scale has changed.
+  void UpdateGeometryOnViewChanged(const gfx::Rect& new_view_rect,
+                                   float new_device_scale);
+
   // A helper of OnGeometryChanged() which updates the available area and
   // the background parts, and notifies the PDF engine of geometry changes.
   void RecalculateAreas(double old_zoom, float old_device_scale);
@@ -132,13 +137,10 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
   const gfx::Size& plugin_size() const { return plugin_size_; }
-  void set_plugin_size(const gfx::Size& size) { plugin_size_ = size; }
 
   const gfx::Size& plugin_dip_size() const { return plugin_dip_size_; }
-  void set_plugin_dip_size(const gfx::Size& size) { plugin_dip_size_ = size; }
 
   const gfx::Point& plugin_offset() const { return plugin_offset_; }
-  void set_plugin_offset(const gfx::Point& offset) { plugin_offset_ = offset; }
 
   void SetBackgroundColor(SkColor background_color) {
     background_color_ = background_color;
@@ -150,9 +152,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   double zoom() const { return zoom_; }
 
   float device_scale() const { return device_scale_; }
-  void set_device_scale(float device_scale) { device_scale_ = device_scale; }
-
-  void set_first_paint(bool first_paint) { first_paint_ = first_paint; }
 
   void set_needs_reraster(bool needs_reraster) {
     needs_reraster_ = needs_reraster;

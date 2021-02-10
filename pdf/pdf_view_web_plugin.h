@@ -144,6 +144,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Call `Destroy()` instead.
   ~PdfViewWebPlugin() override;
 
+  void OnViewportChanged(gfx::Rect view_rect, float new_device_scale);
+
   blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;
 

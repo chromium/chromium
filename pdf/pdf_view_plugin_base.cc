@@ -33,6 +33,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
 
 namespace chrome_pdf {
@@ -153,6 +154,43 @@ void PdfViewPluginBase::InvalidateAfterPaintDone() {
       base::BindOnce(&PdfViewPluginBase::ClearDeferredInvalidates,
                      GetWeakPtr()),
       0);
+}
+
+void PdfViewPluginBase::UpdateGeometryOnViewChanged(
+    const gfx::Rect& new_view_rect,
+    float new_device_scale) {
+  const gfx::Size view_device_size(new_view_rect.width() * new_device_scale,
+                                   new_view_rect.height() * new_device_scale);
+
+  if (view_device_size == plugin_size_ && new_device_scale == device_scale_ &&
+      new_view_rect.origin() == plugin_offset_) {
+    return;
+  }
+
+  const float old_device_scale = device_scale_;
+  device_scale_ = new_device_scale;
+  plugin_dip_size_ = new_view_rect.size();
+  plugin_size_ = view_device_size;
+  plugin_offset_ = new_view_rect.origin();
+
+  paint_manager().SetSize(plugin_size_, device_scale_);
+
+  // Initialize the image data buffer if the context size changes.
+  const gfx::Size old_image_size = gfx::SkISizeToSize(image_data_.dimensions());
+  const gfx::Size new_image_size =
+      PaintManager::GetNewContextSize(old_image_size, plugin_size_);
+  if (new_image_size != old_image_size) {
+    InitImageData(new_image_size);
+    first_paint_ = true;
+  }
+
+  // Skip updating the geometry if the new image data buffer is empty.
+  if (image_data_.drawsNothing()) {
+    DCHECK(plugin_size_.IsEmpty());
+    return;
+  }
+
+  OnGeometryChanged(zoom_, old_device_scale);
 }
 
 Image PdfViewPluginBase::GetPluginImageData() const {

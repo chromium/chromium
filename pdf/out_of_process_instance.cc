@@ -74,7 +74,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
 namespace chrome_pdf {
@@ -835,37 +834,8 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
 }
 
 void OutOfProcessInstance::DidChangeView(const pp::View& view) {
-  gfx::Rect view_rect = RectFromPPRect(view.GetRect());
-  float old_device_scale = device_scale();
-  float new_device_scale = view.GetDeviceScale();
-  gfx::Size view_device_size(view_rect.width() * new_device_scale,
-                             view_rect.height() * new_device_scale);
-
-  if (view_device_size != plugin_size() || new_device_scale != device_scale() ||
-      view_rect.origin() != plugin_offset()) {
-    set_device_scale(new_device_scale);
-    set_plugin_dip_size(view_rect.size());
-    set_plugin_size(view_device_size);
-    set_plugin_offset(view_rect.origin());
-
-    paint_manager().SetSize(view_device_size, device_scale());
-
-    const gfx::Size old_image_data_size =
-        gfx::SkISizeToSize(image_data().dimensions());
-    gfx::Size new_image_data_size =
-        PaintManager::GetNewContextSize(old_image_data_size, plugin_size());
-    if (new_image_data_size != old_image_data_size) {
-      InitImageData(new_image_data_size);
-      set_first_paint(true);
-    }
-
-    if (image_data().drawsNothing()) {
-      DCHECK(plugin_size().IsEmpty());
-      return;
-    }
-
-    OnGeometryChanged(zoom(), old_device_scale);
-  }
+  UpdateGeometryOnViewChanged(RectFromPPRect(view.GetRect()),
+                              view.GetDeviceScale());
 
   if (is_print_preview_ && !stop_scrolling_) {
     scroll_position_ = PointFromPPPoint(view.GetScrollOffset());

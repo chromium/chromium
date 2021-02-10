@@ -416,4 +416,12 @@ void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
   // accessibility information in the viewport.
 }
 
+void PdfViewWebPlugin::OnViewportChanged(gfx::Rect view_rect,
+                                         float new_device_scale) {
+  UpdateGeometryOnViewChanged(view_rect, new_device_scale);
+
+  // TODO(http://crbug.com/1099020): Update scroll position for painting the
+  // print preview plugin.
+}
+
 }  // namespace chrome_pdf
