@@ -610,7 +610,9 @@ class TabStripModel : public TabGroupController {
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents);
   bool ShouldRunUnloadListenerBeforeClosing(content::WebContents* contents);
 
-  int ConstrainInsertionIndex(int index, bool pinned_tab);
+  int ConstrainInsertionIndex(int index, bool pinned_tab) const;
+
+  int ConstrainMoveIndex(int index, bool pinned_tab) const;
 
   // If |index| is selected all the selected indices are returned, otherwise a
   // vector with |index| is returned. This is used when executing commands to

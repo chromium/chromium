@@ -611,11 +611,7 @@ int TabStripModel::MoveWebContentsAt(int index,
 
   DCHECK(ContainsIndex(index));
 
-  // Ensure pinned and non-pinned tabs do not mix.
-  const int first_non_pinned_tab = IndexOfFirstNonPinnedTab();
-  to_position = IsTabPinned(index)
-                    ? std::min(first_non_pinned_tab - 1, to_position)
-                    : std::max(first_non_pinned_tab, to_position);
+  to_position = ConstrainMoveIndex(to_position, IsTabPinned(index));
 
   if (index == to_position)
     return to_position;
@@ -1606,10 +1602,17 @@ bool TabStripModel::ShouldRunUnloadListenerBeforeClosing(
          delegate_->ShouldRunUnloadListenerBeforeClosing(contents);
 }
 
-int TabStripModel::ConstrainInsertionIndex(int index, bool pinned_tab) {
+int TabStripModel::ConstrainInsertionIndex(int index, bool pinned_tab) const {
   return pinned_tab
              ? base::ClampToRange(index, 0, IndexOfFirstNonPinnedTab())
              : base::ClampToRange(index, IndexOfFirstNonPinnedTab(), count());
+}
+
+int TabStripModel::ConstrainMoveIndex(int index, bool pinned_tab) const {
+  return pinned_tab
+             ? base::ClampToRange(index, 0, IndexOfFirstNonPinnedTab() - 1)
+             : base::ClampToRange(index, IndexOfFirstNonPinnedTab(),
+                                  count() - 1);
 }
 
 std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {
