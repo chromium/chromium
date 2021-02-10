@@ -81,9 +81,6 @@ Polymer({
 
     this.webview_.addEventListener('contentload', () => {
       this.loading_ = false;
-    });
-
-    this.webview_.addEventListener('loadcommit', (e) => {
       this.configureUiForGaiaFlow();
     });
   },
