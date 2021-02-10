@@ -194,6 +194,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   void IncreaseTrackSizesToAccommodateGridItems(
       ReorderedGridItems::Iterator group_begin,
       ReorderedGridItems::Iterator group_end,
+      const bool is_group_spanning_flex_track,
       GridItemContributionType contribution_type,
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
