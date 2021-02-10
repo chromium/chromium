@@ -4517,7 +4517,7 @@
   },
   {
     "name": "select-to-speak-navigation-control",
-    "owners": [ "joelriley" ],
+    "owners": [ "joelriley@google.com" ],
     "expiry_milestone": 89
   },
   {
