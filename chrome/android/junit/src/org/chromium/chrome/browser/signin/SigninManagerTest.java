@@ -155,7 +155,7 @@ public class SigninManagerTest {
     }
 
     @Test
-    public void signOutFromJavaWithManagedDomain() {
+    public void signOutNonSyncingAccountFromJavaWithManagedDomain() {
         // See verification of nativeWipeProfileData below.
         doReturn("TestDomain").when(mNativeMock).getManagementDomain(anyLong());
 
@@ -163,7 +163,7 @@ public class SigninManagerTest {
         // Trigger the sign out flow!
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
 
-        // PrimaryAccountCleared should be called *before* clearing any account data.
+        // PrimaryAccountChanged should be called *before* clearing any account data.
         // http://crbug.com/589028
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
@@ -178,9 +178,56 @@ public class SigninManagerTest {
     }
 
     @Test
-    public void signOutFromJavaWithNullDomain() {
+    public void signOutSyncingAccountFromJavaWithManagedDomain() {
+        // See verification of nativeWipeProfileData below.
+        doReturn("TestDomain").when(mNativeMock).getManagementDomain(anyLong());
+
+        createSigninManager();
+        // Trigger the sign out flow!
+        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+
+        // PrimaryAccountChanged should be called *before* clearing any account data.
+        // http://crbug.com/589028
+        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
+        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
+
+        // Simulate native callback to trigger clearing of account data.
+        mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.CLEARED));
+
+        // Sign-out should only clear the profile when the user is managed.
+        verify(mNativeMock, times(1)).wipeProfileData(anyLong(), any());
+        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
+    }
+
+    @Test
+    public void signOutNonSyncingAccountFromJavaWithNullDomain() {
         // Simulate sign-out with non-managed account.
         doReturn(null).when(mNativeMock).getManagementDomain(anyLong());
+
+        createSigninManager();
+        mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
+
+        // PrimaryAccountChanged should be called *before* clearing any account data.
+        // http://crbug.com/589028
+        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
+        verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
+
+        // Simulate native callback to trigger clearing of account data.
+        mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
+
+        // Sign-out should only clear the service worker cache when the user is neither managed or
+        // syncing.
+        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
+        verify(mNativeMock, times(1)).wipeGoogleServiceWorkerCaches(anyLong(), any());
+    }
+
+    @Test
+    public void signOutSyncingAccountFromJavaWithNullDomain() {
+        // Simulate sign-out with non-managed account.
+        doReturn(null).when(mNativeMock).getManagementDomain(anyLong());
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
 
         createSigninManager();
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
@@ -192,17 +239,19 @@ public class SigninManagerTest {
 
         // Simulate native callback to trigger clearing of account data.
         mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
-                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.CLEARED));
 
-        // Sign-out should only clear the service worker cache when the user is not managed.
+        // Sign-out should only clear the service worker cache when the user has decided not to
+        // wipe data.
         verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
         verify(mNativeMock, times(1)).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
 
     @Test
-    public void signOutFromJavaWithNullDomainAndForceWipe() {
+    public void signOutSyncingAccountFromJavaWithNullDomainAndForceWipe() {
         // See verification of nativeWipeGoogleServiceWorkerCaches below.
         doReturn(null).when(mNativeMock).getManagementDomain(anyLong());
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount();
 
         createSigninManager();
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST, null, true);
@@ -213,22 +262,37 @@ public class SigninManagerTest {
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
 
         // Simulate native callback to trigger clearing of account data.
+        // Not possible to wipe data if sync account is not cleared.
         mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
-                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.CLEARED));
 
-        // Sign-out should only clear the service worker cache when the user is not managed.
+        // Sign-out should only clear the profile when the user is syncing and has decided to
+        // wipe data.
         verify(mNativeMock, times(1)).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }
 
     @Test
-    public void signOutFromNative() {
+    public void signOutNonSyncingAccountFromNative() {
         createSigninManager();
         // Simulate native initiating the sign-out.
         mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
                 PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.NONE));
 
-        // Sign-out should only clear the profile when the user is managed.
+        // Sign-out should only clear the service worker cache when the user is not syncing.
+        verify(mNativeMock, never()).wipeProfileData(anyLong(), any());
+        verify(mNativeMock, times(1)).wipeGoogleServiceWorkerCaches(anyLong(), any());
+    }
+
+    @Test
+    public void signOutSyncingAccountFromNative() {
+        createSigninManager();
+        // Simulate native initiating the sign-out.
+        mIdentityManager.onPrimaryAccountChanged(new PrimaryAccountChangeEvent(
+                PrimaryAccountChangeEvent.Type.CLEARED, PrimaryAccountChangeEvent.Type.CLEARED));
+
+        // Sign-out should only clear the profile in case of native sign-out when the user is
+        // syncing.
         verify(mNativeMock, times(1)).wipeProfileData(anyLong(), any());
         verify(mNativeMock, never()).wipeGoogleServiceWorkerCaches(anyLong(), any());
     }

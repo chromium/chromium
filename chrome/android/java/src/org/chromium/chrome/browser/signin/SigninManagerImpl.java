@@ -476,7 +476,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
      */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        switch (eventDetails.getEventTypeFor(ConsentLevel.NOT_REQUIRED)) {
+        switch (eventDetails.getEventTypeFor(ConsentLevel.SYNC)) {
             case PrimaryAccountChangeEvent.Type.SET:
                 // Simply verify that the request is ongoing (mSignInState != null), as only
                 // SigninManager should update IdentityManager. This is triggered by the call to
@@ -484,29 +484,34 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
                 assert mSignInState != null;
                 break;
             case PrimaryAccountChangeEvent.Type.CLEARED:
+                // This event can occur in two cases:
+                // - Syncing account is signed out. User may choose to delete data from UI prompt
+                //   if account is not managed.
+                // - RevokeSyncConsent() is called in native code. In this case the user may still
+                //   be signed in with Consentlevel::NOT_REQUIRED and just lose sync privileges.
+                //   Currently it is not possible to reach this flow from java code. If the account
+                //   is managed then data should be deleted. But it may not be possible to know if
+                //   the account is managed or not as nativeSignOut() may potentially clear it.
+                //   So data is deleted regardless of the account being managed or not.
                 if (mSignOutState == null) {
-                    // mSignOutState can only be null when the sign out is triggered by
-                    // native (since otherwise SigninManager.signOut would have created
-                    // it). As sign out from native can only happen from policy code,
-                    // the account is managed and the user data must be wiped.
                     mSignOutState = new SignOutState(null, true);
                 }
-
-                Log.d(TAG,
-                        "On native signout, wipe user data: " + mSignOutState.mShouldWipeUserData);
 
                 // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
                 //                                  uses the sync account before the native is
                 //                                  loaded.
                 SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(null);
-
-                if (mSignOutState.mSignOutCallback != null) {
-                    mSignOutState.mSignOutCallback.preWipeData();
-                }
                 disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
-                mAccountTrackerService.invalidateAccountSeedStatus(true);
                 break;
             case PrimaryAccountChangeEvent.Type.NONE:
+                if (eventDetails.getEventTypeFor(ConsentLevel.NOT_REQUIRED)
+                        == PrimaryAccountChangeEvent.Type.CLEARED) {
+                    if (mSignOutState == null) {
+                        // Don't wipe data as the user is not syncing.
+                        mSignOutState = new SignOutState(null, false);
+                    }
+                    disableSyncAndWipeData(mSignOutState.mShouldWipeUserData, this::finishSignOut);
+                }
                 break;
         }
     }
@@ -560,6 +565,8 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
             boolean forceWipeUserData) {
         // Only one signOut at a time!
         assert mSignOutState == null;
+        // User data should not be wiped if the user is not syncing.
+        assert mIdentityManager.hasPrimaryAccount() || !forceWipeUserData;
 
         // Grab the management domain before nativeSignOut() potentially clears it.
         String managementDomain = getManagementDomain();
@@ -685,6 +692,11 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
     private void disableSyncAndWipeData(
             boolean shouldWipeUserData, final Runnable wipeDataCallback) {
+        Log.d(TAG, "On native signout, wipe user data: " + mSignOutState.mShouldWipeUserData);
+
+        if (mSignOutState.mSignOutCallback != null) {
+            mSignOutState.mSignOutCallback.preWipeData();
+        }
         mAndroidSyncSettings.updateAccount(null);
         if (shouldWipeUserData) {
             SigninManagerImplJni.get().wipeProfileData(
@@ -693,6 +705,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
             SigninManagerImplJni.get().wipeGoogleServiceWorkerCaches(
                     mNativeSigninManagerAndroid, wipeDataCallback);
         }
+        mAccountTrackerService.invalidateAccountSeedStatus(true);
     }
 
     @VisibleForTesting
