@@ -166,6 +166,7 @@ V8MemoryPerformanceManagerTestHarness::V8MemoryPerformanceManagerTestHarness()
           // Use MOCK_TIME so that ExpectQueryAndDelayReply can be used.
           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+  GetGraphFeaturesHelper().EnableV8ContextTracker();
 }
 
 V8MemoryPerformanceManagerTestHarness::

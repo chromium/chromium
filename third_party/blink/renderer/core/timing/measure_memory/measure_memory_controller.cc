@@ -85,12 +85,6 @@ ApiStatus CheckMeasureMemoryAvailability(LocalDOMWindow* window) {
       local_frame->GetSettings()->GetWebSecurityEnabled()) {
     return ApiStatus::kNotAvailableDueToCrossOriginIsolation;
   }
-  // CrossOriginIsolated is also set for same-agent cross-origin iframe.
-  // Allow only iframes that have the same origin as the main frame.
-  // Note that COOP guarantees that all main frames have the same origin.
-  if (local_frame->IsCrossOriginToMainFrame()) {
-    return ApiStatus::kNotAvailableDueToCrossOriginContext;
-  }
 
   // We need DocumentResourceCoordinator to query PerformanceManager.
   if (!window->document()) {

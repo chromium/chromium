@@ -167,16 +167,6 @@ void WebMeasureMemorySecurityCheckerImpl::CheckMeasureMemoryIsAllowed(
         .Run("WebMeasureMemoryViaPerformanceManager feature is disabled");
     return;
   }
-  // "Memory measurement allowed" predicate from
-  // https://wicg.github.io/performance-measure-memory/ section 3.2.
-  if (url::Origin::Create(frame->GetURL()) !=
-      url::Origin::Create(frame->GetPageNode()->GetMainFrameNode()->GetURL())) {
-    std::move(bad_message_callback)
-        .Run(
-            "performance.measureUserAgentSpecificMemory called from "
-            "a cross-origin subframe");
-    return;
-  }
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CheckIsCrossOriginIsolatedOnUISeq,
                                 frame->GetRenderFrameHostProxy(),
