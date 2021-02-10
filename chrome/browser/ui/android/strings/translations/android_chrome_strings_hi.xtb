@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">प्रिंट करें</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सकता</translation>
 <translation id="1477626028522505441">सर्वर संबधी समस्‍याओं के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
+<translation id="1497470209855416291">ट्रायल बंद है</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
 <translation id="1513352483775369820">बुकमार्क और वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मिटाएं</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">अगला वीडियो देखें</translation>
 <translation id="2074143993849053708">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति अब नहीं है</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> में से <ph name="RESULT_NUMBER" /> परिणाम</translation>
+<translation id="2083113399121613785">ट्रायल चालू है</translation>
 <translation id="2096012225669085171">सभी डिवाइस में सिंक करना और मनमुताबिक बनाना</translation>
 <translation id="2100273922101894616">अपने आप साइन इन करने की सुविधा</translation>
 <translation id="2100314319871056947">टेक्स्ट को छोटे-छोटे हिस्सों में शेयर करने की कोशिश करें</translation>
@@ -964,7 +966,6 @@
 <translation id="7704317875155739195">खोजों और यूआरएल को अपने आप पूरा करें</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="7725024127233776428">आप जो पेज बुकमार्क करते हैं वे यहां दिखाई देंगे</translation>
-<translation id="7735637452482172701">स्क्रीन लॉक की मदद से अनलॉक करें</translation>
 <translation id="7746457520633464754">खतरनाक ऐप्लिकेशन और साइटों का पता लगाने के लिए, Chrome ऐसे कुछ पेज का यूआरएल Google को भेजता है जिन पर आप जाते हैं. साथ ही, वह सिस्टम की सीमित जानकारी और पेज की कुछ सामग्री भी Google को भेजता है</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> से टेक्स्ट शेयर किया गया</translation>
 <translation id="7761849928583394409">तारीख और समय चुनें</translation>

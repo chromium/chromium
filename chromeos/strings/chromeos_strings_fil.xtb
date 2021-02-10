@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="39823212440917567">Aalisin ang mga pag-print na lampas <ph name="NUMBER_OF_DAYS" /> (na) araw na</translation>
 <translation id="4003384961948020559">Hindi na-print - Puno ang output</translation>
@@ -279,6 +280,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
+<translation id="7449585358422953039">Pinapamahalaan ng <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">May na-detect na portal</translation>
 <translation id="7487067081878637334">Teknolohiya</translation>
 <translation id="7490813197707563893">MAC address</translation>
@@ -303,6 +305,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
+<translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="808894953321890993">Palitan ang password</translation>

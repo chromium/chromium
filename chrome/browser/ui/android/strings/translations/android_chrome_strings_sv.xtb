@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1450753235335490080">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av serverfel.</translation>
+<translation id="1497470209855416291">Provperioden har inaktiverats</translation>
 <translation id="1506061864768559482">Sökmotor</translation>
 <translation id="1513352483775369820">Bokmärken och webbhistorik</translation>
 <translation id="1513858653616922153">Radera lösenord</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Titta på nästa video</translation>
 <translation id="2074143993849053708">Användargränssnittet för samtycke till röstsökning med assistenten har stängts</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Provperioden har aktiverats</translation>
 <translation id="2096012225669085171">Synkronisera och anpassa på alla enheter</translation>
 <translation id="2100273922101894616">Automatisk inloggning</translation>
 <translation id="2100314319871056947">Testa att dela upp texten i mindre bitar</translation>
@@ -964,7 +966,6 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="7704317875155739195">Autoslutför sökningar och webbadresser</translation>
 <translation id="7707922173985738739">Mobildata används</translation>
 <translation id="7725024127233776428">Sidor som infogats som bokmärke visas här</translation>
-<translation id="7735637452482172701">Lås upp med skärmlås</translation>
 <translation id="7746457520633464754">För att kunna upptäcka farliga appar och webbplatser skickar Chrome webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google</translation>
 <translation id="7757787379047923882">Texten delades från <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Välj datum och tid</translation>

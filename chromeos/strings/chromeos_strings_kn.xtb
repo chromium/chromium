@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">ರೆಸಲ್ಯೂಶನ್</translation>
 <translation id="3941014780699102620">ಹೋಸ್ಟ್ ಅನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="3942420633017001071">ತಪಾಸಣೆಗಳು</translation>
+<translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="4003384961948020559">ವಿಫಲವಾಗಿದೆ - ಔಟ್‌ಪುಟ್ ಭರ್ತಿಯಾಗಿದೆ</translation>
@@ -278,6 +279,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="7469648432129124067">ಪೋರ್ಟಲ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7487067081878637334">ತಂತ್ರಜ್ಞಾನ</translation>
 <translation id="7490813197707563893">MAC ವಿಳಾಸ</translation>
@@ -302,6 +304,7 @@
 <translation id="7936303884198020182">ಹೆಸರು ಇಲ್ಲದ ಸರ್ವರ್‌ಗಳು ಕಂಡುಬಂದಿವೆ.</translation>
 <translation id="7960831585769876809">ತಾಪಮಾನ</translation>
 <translation id="7994702968232966508">EAP ವಿಧಾನ</translation>
+<translation id="802154636333426148">ಡೌನ್‌ಲೋಡ್‌ ವಿಫಲಗೊಂಡಿದೆ</translation>
 <translation id="8041089156583427627">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8075838845814659848">ಉಳಿದಿರುವ ಚಾರ್ಜ್</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>

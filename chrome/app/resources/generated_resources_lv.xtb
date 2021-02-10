@@ -2970,7 +2970,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4364567974334641491">Lietotne <ph name="APP_NAME" /> koplieto logu.</translation>
 <translation id="4364830672918311045">Parādīt paziņojumus</translation>
 <translation id="4366138410738374926">Drukāšana ir sākta</translation>
-<translation id="437004882363131692">Saņemiet <ph name="DEVICE_TYPE" /> padomus, piedāvājumus un jaunumus, kā arī sniedziet atsauksmes. Varat anulēt abonementu jebkurā laikā.</translation>
 <translation id="4370425812909262207">Iepirkumu grozi paslēpti. Ja ieviesīsiet izmaiņas, tie tiks rādīti atkārtoti.</translation>
 <translation id="4370975561335139969">Ievadītā e-pasta adrese un parole neatbilst.</translation>
 <translation id="4374831787438678295">Linux instalēšanas programma</translation>
@@ -3123,6 +3122,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4538417792467843292">Dzēst vārdu</translation>
 <translation id="4538684596480161368">Vienmēr bloķēt smilškastē neievietotos spraudņus vietnē <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Instalēts atbilstoši uzņēmuma politikai.</translation>
+<translation id="4541123282641193691">Nevarēja verificēt kontu. Mēģiniet vēlreiz vai restartējiet Chromebook datoru.</translation>
 <translation id="4541662893742891060">Nevar izveidot savienojumu ar šo profilu. Lai saņemtu tehnisko atbalstu, sazinieties ar mobilo sakaru operatoru.</translation>
 <translation id="4542520061254486227">Lasīt jūsu datus vietnēs <ph name="WEBSITE_1" /> un <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Sertifikātu pārvaldnieks</translation>
@@ -4141,6 +4141,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="574209121243317957">Tonis</translation>
 <translation id="5742505912938664543">Ja šeit pievienosiet sekundāro kontu, varēsiet to lietot, lai pārlūkotu tīmekļa saturu, lejupielādētu lietotnes, skatītu Gmail iesūtni un izmantotu citus Google pakalpojumus.</translation>
 <translation id="5746169159649715125">Saglabāt kā PDF failu</translation>
+<translation id="5746261205461426123">Atvērt iestatīšanas ceļvedi</translation>
 <translation id="5747552184818312860">Termiņš</translation>
 <translation id="5747785204778348146">Izstrādātāju — nav stabila</translation>
 <translation id="5747809636523347288">Ielīmēt un doties uz <ph name="URL" /></translation>
@@ -5292,6 +5293,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="708278670402572152">Atvienojiet, lai iespējotu skenēšanu</translation>
 <translation id="7084321615353200053">Atļaut vietnēm pieprasīt atļauju piekļūt jūsu kamerai (ieteicams)</translation>
 <translation id="7085389578340536476">Vai atļaut pārlūkam Chrome ierakstīt audio?</translation>
+<translation id="7085805695634549980">Nevarēja izveidot savienojumu ar Google pakalpojumiem. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Iekļaut Chrome žurnālfailus arhīvā.</translation>
 <translation id="7088434364990739311">Neizdevās palaist atjauninājumu pārbaudi (kļūdas kods: <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip arhivētājs — atveriet un pakojiet ZIP failus lietotnē Faili.</translation>
@@ -5529,6 +5531,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7374376573160927383">Pārvaldīt USB ierīces</translation>
 <translation id="7375235221357833624">{0,plural, =1{Ierīce jāatjaunina stundas laikā}zero{Ierīce jāatjaunina # stundu laikā}one{Ierīce jāatjaunina # stundas laikā}other{Ierīce jāatjaunina # stundu laikā}}</translation>
 <translation id="7376553024552204454">Izcelt peles kursoru, kad tas tiek kustināts</translation>
+<translation id="737728204345822099">Ieraksts par jūsu apmeklējumu šajā vietnē var tikt reģistrēts jūsu drošības atslēgā.</translation>
 <translation id="7377451353532943397">Turpināt bloķēt piekļuvi sensoriem</translation>
 <translation id="7378611153938412599">Nedrošas paroles ir viegli uzminēt. Noteikti izveidojiet drošas paroles. <ph name="BEGIN_LINK" />Skatiet vairāk drošības padomu.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Atveriet Chrome interneta veikalu</translation>

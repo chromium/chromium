@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">ຄວາມລະອຽດ</translation>
 <translation id="3941014780699102620">ແກ້ໄຂບັນຫາໂຮສບໍ່ສຳເລັດ</translation>
 <translation id="3942420633017001071">ການກວດວິເຄາະບັນຫາ</translation>
+<translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="39823212440917567">ວຽກພິມທີ່ເກົ່າກວ່າ <ph name="NUMBER_OF_DAYS" /> ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="4003384961948020559">ບໍ່ສຳເລັດ, ເອົ້າພຸດເຕັມ</translation>
@@ -280,6 +281,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
+<translation id="7449585358422953039">ຈັດການໂດຍ <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">ກວດພົບໜ້າເວັບ</translation>
 <translation id="7487067081878637334">​ເທັກ​ໂນ​ໂລ​ຢີ</translation>
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>
@@ -304,6 +306,7 @@
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7960831585769876809">ອຸນຫະພູມ</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
+<translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>

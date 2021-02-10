@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Resolusi</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
 <translation id="3942420633017001071">Diagnosis</translation>
+<translation id="3967822245660637423">Download selesai</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
@@ -279,6 +280,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
+<translation id="7449585358422953039">Dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portal terdeteksi</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">Alamat MAC</translation>
@@ -303,6 +305,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7936303884198020182">Tidak ada server nama yang ditemukan</translation>
 <translation id="7960831585769876809">Suhu</translation>
 <translation id="7994702968232966508">Metode EAP</translation>
+<translation id="802154636333426148">Download gagal</translation>
 <translation id="8041089156583427627">Kirim Masukan</translation>
 <translation id="8075838845814659848">Sisa daya baterai</translation>
 <translation id="808894953321890993">Ubah sandi</translation>

@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">เข้าถึงอุปกรณ์บลูทูธและอุปกรณ์ซีเรียล</translation>
 <translation id="114036956334641753">เสียงและคำบรรยายวิดีโอ</translation>
 <translation id="1140746652461896221">บล็อกเนื้อหาในหน้าเว็บที่คุณเข้าชม</translation>
+<translation id="1141953877381847186">อนุญาตให้ Assistant ใช้ข้อมูลบนหน้าจอเพื่อให้คำตอบด่วน เช่น คำแปล ความหมาย การแปลงหน่วย และอื่นๆ
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />โปรดทราบว่า<ph name="END_BOLD" /> คุณจะเปลี่ยนแปลงในภายหลังได้เสมอในการตั้งค่า Google Assistant &gt; ข้อมูลที่เกี่ยวข้อง</translation>
 <translation id="1143142264369994168">ผู้เซ็นชื่อในใบรับรอง</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ • ตรวจสอบเมื่อ 1 นาทีที่ผ่านมา}other{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ • ตรวจสอบเมื่อ {NUM_MINS} นาทีที่ผ่านมา}}</translation>
 <translation id="1145593918056169051">เครื่องพิมพ์หยุดทำงาน</translation>
@@ -1432,7 +1435,9 @@
 <translation id="2594999711683503743">ค้นหาด้วย Google หรือพิมพ์ URL</translation>
 <translation id="2602501489742255173">เลื่อนขึ้นเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="2603115962224169880">ล้างข้อมูลในคอมพิวเตอร์</translation>
+<translation id="2603355571917519942">Voice Match พร้อมใช้งานแล้ว</translation>
 <translation id="2603463522847370204">เปิดใน&amp;หน้าต่างที่ไม่ระบุตัวตน</translation>
+<translation id="2604138917550693049">ค้นหารูปภาพด้วย Google Lens</translation>
 <translation id="2604255671529671813">ข้อผิดพลาดในการเชื่อมต่อเครือข่าย</translation>
 <translation id="2606246518223360146">ลิงก์ข้อมูล</translation>
 <translation id="2606454609872547359">ไม่ ดำเนินการต่อโดยไม่ใช้ ChromeVox</translation>
@@ -1774,6 +1779,7 @@
 <translation id="2963151496262057773">ปลั๊กอินต่อไปนี้ไม่ตอบสนอง: <ph name="PLUGIN_NAME" />คุณต้องการหยุดปลั๊กอินดังกล่าวไหม</translation>
 <translation id="2964193600955408481">ปิดใช้งาน WiFi</translation>
 <translation id="2964245677645334031">ระดับการเข้าถึงของการแชร์ใกล้เคียง</translation>
+<translation id="2966216232069818096">อนุญาตให้ Assistant ใช้ข้อมูลบนหน้าจอเพื่อช่วยเหลือ</translation>
 <translation id="2966937470348689686">จัดการค่ากำหนด Android</translation>
 <translation id="2972581237482394796">&amp;ทำซ้ำ</translation>
 <translation id="2973324205039581528">ปิดเสียงเว็บไซต์</translation>
@@ -1869,6 +1875,7 @@
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">แท็บนี้กำลังใช้กล้องถ่ายรูปหรือไมโครโฟนของคุณ</translation>
 <translation id="3083193146044397360">ถูกบล็อกชั่วคราวเพื่อรักษาความปลอดภัยให้คุณ</translation>
+<translation id="3083899879156272923">เลื่อนหน้าจอโดยให้เมาส์อยู่ตรงกลางหน้าจอเสมอ</translation>
 <translation id="3084548735795614657">วางเพื่อติดตั้ง</translation>
 <translation id="3084771660770137092">ไม่ว่า Chrome จะมีหน่วยความจำไม่เพียงพอหรือกระบวนการของหน้าเว็บถูกยกเลิกด้วยเหตุใดก็ตาม หากต้องการดำเนินการต่อ ให้โหลดซ้ำหรือไปที่หน้าเว็บอื่น</translation>
 <translation id="3084958266922136097">ปิดใช้โปรแกรมรักษาหน้าจอ</translation>
@@ -2362,6 +2369,9 @@
 <translation id="3654045516529121250">อ่านการตั้งค่าการเข้าถึง</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{แอปมีการเข้าถึงอย่างถาวรไปยัง 1 ไฟล์}other{แอปมีการเข้าถึงอย่างถาวรไปยัง # ไฟล์}}</translation>
 <translation id="3658871634334445293">การเร่งความเร็วของ TrackPoint</translation>
+<translation id="3659830472545192450">Voice Match ช่วยให้ Google Assistant ระบุเสียงของคุณใน Chromebook และแยกความแตกต่างจากเสียงของคนอื่นๆ ได้
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />โปรดทราบว่า<ph name="END_BOLD" /> บุคคลหรือเสียงบันทึกที่มีเสียงคล้ายกับคุณอาจเข้าถึงผลการค้นหาเฉพาะบุคคลของคุณได้เช่นกัน คุณจะนำสิทธิ์ Voice Match ออกได้ในภายหลังโดยปิดใช้ในการตั้งค่า Assistant</translation>
 <translation id="3660234220361471169">ไม่น่าเชื่อถือ</translation>
 <translation id="3664511988987167893">ไอคอนส่วนขยาย</translation>
 <translation id="3665589677786828986">Chrome ตรวจพบว่าการตั้งค่าของคุณบางส่วนได้รับความเสียหายจากโปรแกรมอื่น และรีเซ็ตการตั้งค่าเป็นค่าเริ่มต้นเดิม</translation>
@@ -2968,7 +2978,6 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> กำลังแชร์หน้าต่าง</translation>
 <translation id="4364830672918311045">แสดงการแจ้งเตือน</translation>
 <translation id="4366138410738374926">เริ่มการพิมพ์แล้ว</translation>
-<translation id="437004882363131692">รับเคล็ดลับการใช้งาน ข้อเสนอ และข้อมูลอัปเดต รวมถึงแชร์ความคิดเห็นสำหรับ <ph name="DEVICE_TYPE" /> ยกเลิกการรับข่าวสารได้ทุกเมื่อ</translation>
 <translation id="4370425812909262207">ซ่อนรถเข็นแล้ว รถเข็นจะปรากฏอีกครั้งเมื่อคุณทำการเปลี่ยนแปลง</translation>
 <translation id="4370975561335139969">อีเมลและรหัสผ่านที่คุณป้อนไม่ตรงกัน</translation>
 <translation id="4374831787438678295">โปรแกรมติดตั้ง Linux</translation>
@@ -3545,6 +3554,7 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">การตรวจตัวสะกดไม่รองรับภาษาที่คุณเลือก</translation>
 <translation id="5052499409147950210">แก้ไขเว็บไซต์</translation>
+<translation id="5053962746715621840">ค้นหารูปภาพด้วย Google Lens</translation>
 <translation id="5057110919553308744">เมื่อคุณคลิกส่วนขยาย</translation>
 <translation id="5057403786441168405">จัดการบัญชีที่ลงชื่อเข้าใช้ เว็บไซต์ แอป และส่วนขยายใน Chrome และ Google Play อาจใช้บัญชีเหล่านี้เพื่อปรับแต่งประสบการณ์การใช้งานของคุณ ทั้งนี้ขึ้นอยู่กับสิทธิ์ต่างๆ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">จำกัดการลงชื่อเข้าใช้</translation>
@@ -4027,6 +4037,9 @@
 <translation id="5610038042047936818">เปลี่ยนเป็นโหมดกล้อง</translation>
 <translation id="561030196642865721">เว็บไซต์นี้อนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="5612734644261457353">ขออภัย ยังคงไม่สามารถยืนยันรหัสผ่านของคุณได้ หมายเหตุ: หากเมื่อเร็วๆ นี้คุณเปลี่ยนแปลงรหัสผ่าน รหัสผ่านใหม่ของคุณจะมีผลเมื่อคุณออกจากระบบ โปรดใช้รหัสผ่านเดิมที่นี่</translation>
+<translation id="561308544008485315">Voice Match ช่วยให้ Google Assistant ระบุเสียงของคุณใน Chromebook และแยกความแตกต่างจากเสียงของคนอื่นๆ ได้ “Ok Google” จะใช้งานได้เฉพาะเมื่ออุปกรณ์เชื่อมต่อกับแหล่งจ่ายไฟเท่านั้นเพื่อประหยัดแบตเตอรี่ หากต้องการเปลี่ยนแปลง ให้ไปที่การตั้งค่า
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />โปรดทราบว่า<ph name="END_BOLD" /> บุคคลหรือเสียงบันทึกที่มีเสียงคล้ายกับคุณอาจเข้าถึงผลการค้นหาเฉพาะบุคคลของคุณได้เช่นกัน คุณจะนำสิทธิ์ Voice Match ออกได้ในภายหลังโดยปิดใช้ในการตั้งค่า Assistant</translation>
 <translation id="5614190747811328134">ประกาศสำหรับผู้ใช้</translation>
 <translation id="5614553682702429503">บันทึกรหัสผ่านไหม</translation>
 <translation id="5616726534702877126">สำรองพื้นที่</translation>
@@ -5050,6 +5063,7 @@
 <translation id="6824584962142919697">&amp;ตรวจสอบองค์ประกอบ</translation>
 <translation id="6825184156888454064">จัดเรียงตามชื่อ</translation>
 <translation id="6826872289184051766">ยืนยันผ่าน USB</translation>
+<translation id="6827604573767207488">ดูเหมือนว่าคุณตั้งค่า Assistant ที่ปรับเปลี่ยนในแบบของคุณไว้แล้วในอุปกรณ์อื่น ใช้ประโยชน์จาก Assistant ให้มากยิ่งขึ้นด้วยการเปิดการตั้งค่าต่อไปนี้</translation>
 <translation id="6828153365543658583">จำกัดการลงชื่อเข้าใช้ของผู้ใช้ต่อไปนี้:</translation>
 <translation id="6828182567531805778">ป้อนรหัสผ่านเพื่อซิงค์ข้อมูล</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5484,6 +5498,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> ปิดใช้การแก้ไขข้อบกพร่อง ADB เมื่อรีสตาร์ท <ph name="DEVICE_TYPE" /> คุณจะโหลดแอปจากแหล่งที่ไม่รู้จักไม่ได้</translation>
 <translation id="7328867076235380839">ชุดค่าผสมไม่ถูกต้อง</translation>
 <translation id="7329154610228416156">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากมีการกำหนดค่าให้ใช้ URL ที่ไม่ปลอดภัย (<ph name="BLOCKED_URL" />) โปรดติดต่อผู้ดูแลระบบของคุณ</translation>
+<translation id="7329932885428707942">การดำเนินการนี้อาจทำให้เครือข่ายมือถือขาดการเชื่อมต่อเป็นเวลาสั้นๆ</translation>
 <translation id="7332053360324989309">ผู้ปฏิบัติงานเฉพาะอย่าง: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">เปิดใช้แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="7335974957018254119">ใช้การตรวจตัวสะกดสำหรับ</translation>
@@ -6153,6 +6168,7 @@
 <translation id="8059417245945632445">&amp;ตรวจสอบอุปกรณ์</translation>
 <translation id="8059456211585183827">ไม่มีเครื่องพิมพ์ให้บันทึก</translation>
 <translation id="8061091456562007989">เปลี่ยนกลับ</translation>
+<translation id="8061991877177392872">ดูเหมือนว่าคุณได้ตั้งค่า Voice Match กับ Assistant ในอุปกรณ์อื่นไว้แล้ว ระบบใช้เสียงบันทึกที่มีอยู่ก่อนแล้วดังกล่าวในการสร้างรูปแบบเสียงในอุปกรณ์นี้</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 แผ่น}other{{COUNT} แผ่น}}</translation>
 <translation id="8062879968880283306">สแกนคิวอาร์โค้ดโดยใช้กล้องของอุปกรณ์หรือป้อนรหัสเปิดใช้งานที่ผู้ให้บริการให้มา</translation>
 <translation id="8063235345342641131">รูปโปรไฟล์เริ่มต้นสีเขียว</translation>
@@ -6422,6 +6438,7 @@
 <translation id="8379991678458444070">บุ๊กมาร์กแท็บนี้ไว้เพื่อให้กลับมาได้อย่างรวดเร็ว</translation>
 <translation id="8382913212082956454">คัดลอก&amp;ที่อยู่อีเมล</translation>
 <translation id="8386091599636877289">ไม่พบนโยบาย</translation>
+<translation id="8386819192691131213">อนุญาตให้ Assistant ใช้ข้อมูลบนหน้าจอเพื่อให้คำตอบด่วน เช่น คำแปล ความหมาย การแปลงหน่วย และอื่นๆ</translation>
 <translation id="8386903983509584791">สแกนเสร็จแล้ว</translation>
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
 <translation id="8389264703141926739">บล็อกการแจ้งเตือน</translation>
@@ -6899,6 +6916,7 @@
 <translation id="8915370057835397490">กำลังโหลดคำแนะนำ</translation>
 <translation id="8916476537757519021">เฟรมย่อยแบบไม่ระบุตัวตน: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ของ <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">เลื่อนหน้าจอเมื่อเมาส์แตะขอบหน้าจอ</translation>
 <translation id="8923880975836399332">สีน้ำเงินอมเขียวเข้ม</translation>
 <translation id="8925458182817574960">&amp;การตั้งค่า</translation>
 <translation id="8926389886865778422">ไม่ต้องถามอีก</translation>
@@ -6976,6 +6994,7 @@
 <translation id="9009708085379296446">คุณต้องการเปลี่ยนแปลงหน้านี้ใช่ไหม</translation>
 <translation id="9011163749350026987">แสดงไอคอนเสมอ</translation>
 <translation id="9011393886518328654">บันทึกประจำรุ่น</translation>
+<translation id="9012122671773859802">เลื่อนหน้าจออย่างต่อเนื่องขณะเลื่อนเมาส์</translation>
 <translation id="9013037634206938463">การติดตั้ง Linux ต้องใช้พื้นที่ว่าง <ph name="INSTALL_SIZE" /> หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากอุปกรณ์</translation>
 <translation id="9013707997379828817">ผู้ดูแลระบบได้คืนค่าสถานะของอุปกรณ์เครื่องนี้แล้ว โปรดบันทึกไฟล์สำคัญแล้วรีสตาร์ทเครื่อง ข้อมูลทั้งหมดในอุปกรณ์จะถูกลบออกไป</translation>
 <translation id="901668144954885282">สำรองข้อมูลไปยัง Google ไดรฟ์</translation>
@@ -7020,6 +7039,7 @@
 <translation id="9052404922357793350">บล็อกต่อไป</translation>
 <translation id="9053563360605707198">พิมพ์ทั้ง 2 ด้าน</translation>
 <translation id="9053893665344928494">จดจำตัวเลือกของฉัน</translation>
+<translation id="9055278955535611574">เข้าถึง Assistant โดยพูดว่า "Ok Google"</translation>
 <translation id="9055636786322918818">บังคับใช้การเข้ารหัส RC4 การใช้ตัวเลือกนี้เป็นการเพิ่มความเสี่ยงเนื่องจากการเข้ารหัส RC4 นั้นไม่ปลอดภัย</translation>
 <translation id="9056810968620647706">ไม่พบรายการที่ตรงกัน</translation>
 <translation id="9057354806206861646">อัปเดตกำหนดการ</translation>

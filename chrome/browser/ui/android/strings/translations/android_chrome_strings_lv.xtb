@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1450753235335490080">Nevar kopīgot: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās servera problēmas.</translation>
+<translation id="1497470209855416291">Izmēģinājuma periods ir atspējots.</translation>
 <translation id="1506061864768559482">Meklētājprogramma</translation>
 <translation id="1513352483775369820">Grāmatzīmes un tīmekļa vēsture</translation>
 <translation id="1513858653616922153">Dzēst paroli</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Skatīties nākamo videoklipu</translation>
 <translation id="2074143993849053708">Piekrišanas lietotāja saskarne Asistenta izmantošanai meklēšanā ar balsi (aizvērta)</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultāts no <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Izmēģinājuma periods ir iespējots.</translation>
 <translation id="2096012225669085171">Sinhronizējiet un personalizējiet vairākās ierīcēs</translation>
 <translation id="2100273922101894616">Automātiski pierakstīties</translation>
 <translation id="2100314319871056947">Kopīgojiet mazākus teksta fragmentus</translation>
@@ -591,6 +593,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> vēlas meklēt tuvumā esošas Bluetooth ierīces. Ir atrastas šīs ierīces:</translation>
 <translation id="5233638681132016545">Jauna cilne</translation>
+<translation id="5250483651202458397">Ekrānuzņēmums. Pieskarieties, lai to aizvērtu.</translation>
 <translation id="526421993248218238">Šo lapu nevar ielādēt</translation>
 <translation id="5271967389191913893">Ierīcē nevar atvērt lejupielādējamo saturu.</translation>
 <translation id="5292796745632149097">Sūtīt uz:</translation>
@@ -836,6 +839,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6767294960381293877">Ierīču saraksts, ar ko kopīgot cilni, ir atvērts pusekrāna augstumā.</translation>
 <translation id="6783942555455976443">Saglabājiet šo lapu lasīšanai vēlāk un saņemiet atgādinājumu</translation>
 <translation id="6811034713472274749">Lapu var skatīt</translation>
+<translation id="6813446258015311409">Lapa “Pierakstīšanās pārlūkā Chrome”, atvērta.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, cilne, atlasīta</translation>
 <translation id="6833996806551876956">Privacy Sandbox izmēģinājuma periods</translation>
@@ -964,7 +968,6 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="7704317875155739195">Automātiski pabeigt meklēšanas vaicājumus un vietrāžus URL</translation>
 <translation id="7707922173985738739">Izmantot mobilos datus</translation>
 <translation id="7725024127233776428">Šeit tiek rādītas ar grāmatzīmēm atzīmētās lapas</translation>
-<translation id="7735637452482172701">Atbloķēt, izmantojot ekrāna bloķēšanu</translation>
 <translation id="7746457520633464754">Lai noteiktu bīstamas lietotnes un vietnes, pārlūkā Chrome dažu jūsu apmeklēto lapu saturs, ierobežots sistēmas informācijas apjoms un daļa lapu satura tiek nosūtīta uzņēmumam Google</translation>
 <translation id="7757787379047923882">Kopīgots teksts no ierīces <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Datuma un laika izvēle</translation>
@@ -1097,6 +1100,7 @@ No jūsu inkognito sesijas iegūtie dati tiks dzēsti no Chrome tikai tad, kad <
 <translation id="8583805026567836021">Konta datu dzēšana</translation>
 <translation id="8587585930972369234">Lai meklētu, pieskarieties un turiet</translation>
 <translation id="860043288473659153">Bankas kartes īpašnieka vārds</translation>
+<translation id="8602358303461588329">Lapa “Pierakstīšanās pārlūkā Chrome”, aizvērta.</translation>
 <translation id="860282621117673749">Brīdinājumi par cenu kritumu</translation>
 <translation id="8616006591992756292">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Vai atvērt lejupielādētajā saturā norādīto ieteikto URL?</translation>

@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">I-access ang iyong mga Bluetooth at Serial device</translation>
 <translation id="114036956334641753">Audio at mga caption</translation>
 <translation id="1140746652461896221">I-block ang content sa anumang page na binibisita mo</translation>
+<translation id="1141953877381847186">Payagan ang Assistant na gamitin ang impormasyon sa screen para makapagbigay ng mga mabilisang sagot gaya ng pagsasalin, kahulugan, conversion ng yunit, at higit pa.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Puwede mo itong baguhin anumang oras sa ibang pagkakataon sa Mga Setting ng Google Assistant &gt; Nauugnay na impormasyon.</translation>
 <translation id="1143142264369994168">Tagapaglagda ng Certificate</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Walang nakitang mapaminsalang software ang Chrome sa iyong computer • Tiningnan 1 minuto ang nakalipas}one{Walang nakitang mapaminsalang software ang Chrome sa iyong computer • Tiningnan {NUM_MINS} minuto ang nakalipas}other{Walang nakitang mapaminsalang software ang Chrome sa iyong computer • Tiningnan {NUM_MINS} na minuto ang nakalipas}}</translation>
 <translation id="1145593918056169051">Huminto ang printer</translation>
@@ -1433,7 +1436,9 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2594999711683503743">Hanapin sa Google o i-type ang URL</translation>
 <translation id="2602501489742255173">Mag-swipe pataas para makapagsimula</translation>
 <translation id="2603115962224169880">Linisin ang computer</translation>
+<translation id="2603355571917519942">Handa na ang Voice Match</translation>
 <translation id="2603463522847370204">Buksan sa &amp;incognito window</translation>
+<translation id="2604138917550693049">Maghanap ng larawan gamit ang Google Lens</translation>
 <translation id="2604255671529671813">Error sa koneksyon ng network</translation>
 <translation id="2606246518223360146">I-link ang Data</translation>
 <translation id="2606454609872547359">Hindi, magpatuloy nang walang ChromeVox</translation>
@@ -1775,6 +1780,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2963151496262057773">Hindi tumutugon ang sumusunod na plugin: <ph name="PLUGIN_NAME" />Gusto mo bang ihinto ito?</translation>
 <translation id="2964193600955408481">Huwag paganahin ang Wi-Fi</translation>
 <translation id="2964245677645334031">Visibility sa Nearby Share</translation>
+<translation id="2966216232069818096">Hayaan ang iyong Assistant na gamitin ang impormasyon sa iyong screen para makatulong</translation>
 <translation id="2966937470348689686">Pamahalaan ang mga kagustuhan sa Android</translation>
 <translation id="2972581237482394796">&amp;I-redo</translation>
 <translation id="2973324205039581528">I-mute ang Site</translation>
@@ -1870,6 +1876,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Ginagamit ng tab na ito ang iyong camera o mikropono.</translation>
 <translation id="3083193146044397360">Pansamantalang na-block upang protektahan ang iyong seguridad</translation>
+<translation id="3083899879156272923">Igalaw ang screen habang pinapanatili ang mouse sa gitna ng screen</translation>
 <translation id="3084548735795614657">I-drop upang i-install</translation>
 <translation id="3084771660770137092">Naubusan ng memorya ang Chrome o winakasan ang proseso para sa webpage dahil sa ilang kadahilanan. Upang magpatuloy, mag-reload o pumunta sa isa pang pahina.</translation>
 <translation id="3084958266922136097">I-disable ang screen saver</translation>
@@ -2363,6 +2370,9 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3654045516529121250">Basahin ang iyong mga setting ng pagiging naa-access</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{May permanenteng access ito sa isang file.}one{May permanenteng access ito sa # file.}other{May permanenteng access ito sa # na file.}}</translation>
 <translation id="3658871634334445293">Pag-accelerate ng TrackPoint</translation>
+<translation id="3659830472545192450">Tinutulungan ng Voice Match ang iyong Google Assistant na tukuyin ang boses mo sa iyong Chromebook at makilala ka mula sa iba.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang iyong mga personal na resulta. Puwede mong alisin ang pahintulot sa Voice Match sa ibang pagkakataon sa pamamagitan ng pag-off nito sa Mga Setting ng Assistant.</translation>
 <translation id="3660234220361471169">Hindi pinagkakatiwalaan</translation>
 <translation id="3664511988987167893">Icon ng Extension</translation>
 <translation id="3665589677786828986">Natunton ng Chrome na ilan sa iyong mga setting ay nasira ng isa pang program at ni-reset ang mga ito sa kanilang mga orihinal na default.</translation>
@@ -2969,7 +2979,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4364567974334641491">Nagbabahagi ng window ang <ph name="APP_NAME" />.</translation>
 <translation id="4364830672918311045">Ipakita ang mga notification</translation>
 <translation id="4366138410738374926">Nagsimula ang pag-print</translation>
-<translation id="437004882363131692">Makatanggap ng mga tip, alok, at update sa <ph name="DEVICE_TYPE" />, at magbahagi ng feedback. Mag-unsubscribe anumang oras.</translation>
 <translation id="4370425812909262207">Itinago ang mga cart. Lalabas ulit ang mga ito kapag gumawa ka ng mga pagbabago.</translation>
 <translation id="4370975561335139969">Hindi nagtutugma ang inilagay mong email at password</translation>
 <translation id="4374831787438678295">Installer ng Linux</translation>
@@ -3546,6 +3555,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Hindi sinusuportahan ang spellcheck para sa mga pinili mong wika</translation>
 <translation id="5052499409147950210">I-edit ang site</translation>
+<translation id="5053962746715621840">Maghanap ng Larawan gamit ang Google Lens</translation>
 <translation id="5057110919553308744">Kapag iki-click mo ang extension</translation>
 <translation id="5057403786441168405">Pamahalaan ang iyong mga naka-sign in na account. Puwedeng gamitin ng mga website, app, at extension sa Chrome at Google Play ang mga account na ito para i-customize ang iyong karanasan, depende sa mga pahintulot. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Paghigpitan ang pag-sign in</translation>
@@ -4028,6 +4038,9 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5610038042047936818">Lumipat sa camera mode</translation>
 <translation id="561030196642865721">Pinapayagan ang third-party na cookies sa site na ito</translation>
 <translation id="5612734644261457353">Paumanhin, hindi pa rin ma-verify ang iyong password. Tandaan: kung pinalitan mo kamakailan ang iyong password, malalapat ang iyong bagong password sa sandaling mag-sign out ka, pakigamit ang lumang password dito.</translation>
+<translation id="561308544008485315">Tinutulungan ng Voice Match ang iyong Google Assistant na tukuyin ang boses mo sa iyong Chromebook at makilala ka mula sa iba. Para makatipid ng baterya, naka-on lang ang "Hey Google" kapag nakakonekta ang iyong device sa isang source ng kuryente. Para gumawa ng mga pagbabago, pumunta sa Mga Setting.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> Posibleng ma-access din ng katulad na boses o recording ang iyong mga personal na resulta. Puwede mong alisin ang pahintulot sa Voice Match sa ibang pagkakataon sa pamamagitan ng pag-off nito sa Mga Setting ng Assistant.</translation>
 <translation id="5614190747811328134">Notice sa User</translation>
 <translation id="5614553682702429503">I-save ang password?</translation>
 <translation id="5616726534702877126">Magreserba ng espasyo</translation>
@@ -5051,6 +5064,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6824584962142919697">&amp;Siyasatin ang mga element</translation>
 <translation id="6825184156888454064">Uriin ayon sa pangalan</translation>
 <translation id="6826872289184051766">I-verify sa pamamagitan ng USB</translation>
+<translation id="6827604573767207488">Mukhang na-set up mo na ang naka-personalize na Assistant sa ibang device. Mas sulitin ang iyong Assistant sa pamamagitan ng pag-on sa sumusunod na setting.</translation>
 <translation id="6828153365543658583">Higpitan ang pag-sign-in sa mga sumusunod na user:</translation>
 <translation id="6828182567531805778">Ilagay ang iyong passphrase para i-sync ang data mo</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5485,6 +5499,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7327989755579928735">Na-disable ng <ph name="MANAGER" /> ang pag-debug ng ADB. Kapag na-restart mo ang iyong <ph name="DEVICE_TYPE" />, hindi ka makakapag-sideload ng mga app.</translation>
 <translation id="7328867076235380839">Invalid ang kumbinasyon</translation>
 <translation id="7329154610228416156">Hindi nakapag-sign in dahil naka-configure ito sa paggamit ng isang hindi secure na URL (<ph name="BLOCKED_URL" />). Mangyaring makipag-ugnayan sa iyong administrator.</translation>
+<translation id="7329932885428707942">Posible itong magdulot ng maikling pagdiskonekta ng cellular network.</translation>
 <translation id="7332053360324989309">Nakalaang Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">I-enable ang naka-dock na magnifier</translation>
 <translation id="7335974957018254119">Gumamit ng pang-check ng pagbabaybay para sa</translation>
@@ -5528,6 +5543,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7374376573160927383">Pamahalaan ang mga USB device</translation>
 <translation id="7375235221357833624">{0,plural, =1{I-update ang device sa loob ng isang oras}one{I-update ang device sa loob ng # oras}other{I-update ang device sa loob ng # na oras}}</translation>
 <translation id="7376553024552204454">I-highlight ang cursor ng mouse kapag gumagalaw ito</translation>
+<translation id="737728204345822099">Posibleng papanatilihin sa iyong security key ang tala ng pagbisita mo sa site na ito.</translation>
 <translation id="7377451353532943397">Patuloy na i-block ang access sa sensor</translation>
 <translation id="7378611153938412599">Madaling hulaan ang mahihinang password. Tiyaking malalakas na password ang gagawin mo. <ph name="BEGIN_LINK" />Tumingin pa ng mga tip sa seguridad.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Buksan ang Chrome Web Store</translation>
@@ -6154,6 +6170,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8059417245945632445">&amp;Inspeksyunin ang mga device</translation>
 <translation id="8059456211585183827">Walang printer na available na i-save.</translation>
 <translation id="8061091456562007989">Ibalik ito sa dati</translation>
+<translation id="8061991877177392872">Mukhang na-set up mo na ang Voice Match sa iyong Assistant sa isa pang device. Ginamit ang mga nakaraang recording na ito para gumawa ng voice model sa device na ito.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 pirasong papel}one{{COUNT} pirasong papel}other{{COUNT} na pirasong papel}}</translation>
 <translation id="8062879968880283306">I-scan ang QR code gamit ang camera ng device o ilagay ang code sa pag-activate na ibinigay ng iyong carrier.</translation>
 <translation id="8063235345342641131">Default na berdeng avatar</translation>
@@ -6423,6 +6440,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8379991678458444070">Makabalik kaagad dito sa pamamagitan ng pag-bookmark sa tab na ito</translation>
 <translation id="8382913212082956454">Kopyahin ang &amp;email address</translation>
 <translation id="8386091599636877289">Hindi nakita ang patakaran.</translation>
+<translation id="8386819192691131213">Payagan ang Assistant na gamitin ang impormasyon sa screen para makapagbigay ng mga mabilisang sagot gaya ng pagsasalin, kahulugan, conversion ng yunit, at higit pa</translation>
 <translation id="8386903983509584791">Nakumpleto ang pag-scan</translation>
 <translation id="8387361103813440603">Hindi pinapayagang makita ang iyong lokasyon</translation>
 <translation id="8389264703141926739">I-block ang mga notification</translation>
@@ -6903,6 +6921,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8915370057835397490">Nilo-load ang suhestiyon</translation>
 <translation id="8916476537757519021">Incognito na Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ni <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Igalaw ang screen kapag napunta ang mouse sa mga gilid ng screen</translation>
 <translation id="8923880975836399332">Dark teal</translation>
 <translation id="8925458182817574960">&amp;Mga Setting</translation>
 <translation id="8926389886865778422">Huwag nang itanong ulit</translation>
@@ -6980,6 +6999,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9009708085379296446">Gusto mo bang baguhin ang page na ito?</translation>
 <translation id="9011163749350026987">Palaging ipakita ang icon</translation>
 <translation id="9011393886518328654">Mga tala sa pag-release</translation>
+<translation id="9012122671773859802">Tuloy-tuloy na igalaw ang screen habang gumagalaw ang mouse</translation>
 <translation id="9013037634206938463">Kinakailangan ng <ph name="INSTALL_SIZE" /> na bakanteng espasyo para ma-install ang Linux. Para madagdagan ang bakanteng espasyo, mag-delete ng mga file sa iyong device.</translation>
 <translation id="9013707997379828817">Na-roll back ng iyong administrator ang device na ito. Paki-save ang mahahalagang file, pagkatapos ay mag-restart. Made-delete ang lahat ng data sa device.</translation>
 <translation id="901668144954885282">I-back up sa Google Drive</translation>
@@ -7024,6 +7044,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9052404922357793350">Patuloy na i-block</translation>
 <translation id="9053563360605707198">Mag-print sa magkabilang bahagi</translation>
 <translation id="9053893665344928494">Tandaan ang aking pinili</translation>
+<translation id="9055278955535611574">I-access ang iyong Assistant gamit ang "Hey Google"</translation>
 <translation id="9055636786322918818">Ipatupad ang RC4 encryption. Magiging mas mapanganib para sa iyo kapag ginamit ang opsyong ito, dahil hindi secure ang mga RC4 cipher.</translation>
 <translation id="9056810968620647706">Walang nakitang tugma.</translation>
 <translation id="9057354806206861646">I-update ang iskedyul</translation>

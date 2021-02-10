@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Opløsning</translation>
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
+<translation id="3967822245660637423">Download fuldført</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="4003384961948020559">Handlingen mislykkedes – Fuld udskriftsbakke</translation>
@@ -278,6 +279,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
+<translation id="7449585358422953039">Administreres af <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
 <translation id="7487067081878637334">Teknologi</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
@@ -302,6 +304,7 @@
 <translation id="7936303884198020182">Der blev ikke fundet nogen navneservere</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
+<translation id="802154636333426148">Download mislykkedes</translation>
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>

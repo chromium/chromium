@@ -90,6 +90,7 @@
 <translation id="315738237743207937">क्याप्टिभ पोर्टल भेटियो</translation>
 <translation id="3188257591659621405">मेरा फाइलहरू</translation>
 <translation id="3199982728237701504">डकुमेन्ट फिडर (दुईतर्फी)</translation>
+<translation id="3226405216343213872">स्क्यानरहरू खोजिँदै छ</translation>
 <translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
 <translation id="3268178239013324452">प्रिन्ट गर्न सकिएन - प्रिन्टरको कभर खुला छ</translation>
 <translation id="3310640316857623290">DNS को विलम्बता तोकिएको समयसीमाभन्दा अत्याधिक मात्रामा बढी छ</translation>
@@ -117,6 +118,7 @@
 <translation id="3865414814144988605">रिजोलुसन</translation>
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छ</translation>
 <translation id="4003384961948020559">प्रिन्ट गर्न सकिएन - ट्रे भरियो</translation>
@@ -278,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ।</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
 <translation id="7490813197707563893">MAC ठेगाना</translation>
@@ -302,6 +305,7 @@
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
 <translation id="7960831585769876809">तापक्रम</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
+<translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8075838845814659848">बाँकी ब्याट्री</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>

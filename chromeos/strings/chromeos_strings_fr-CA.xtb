@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
@@ -279,6 +280,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée.}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée.}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées.}}</translation>
+<translation id="7449585358422953039">Géré par <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresse MAC</translation>
@@ -303,6 +305,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7936303884198020182">Aucun serveur de nom n'a été trouvé</translation>
 <translation id="7960831585769876809">Température</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
+<translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8075838845814659848">Charge restante</translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>

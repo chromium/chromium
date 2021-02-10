@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Upplausn</translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
 <translation id="3942420633017001071">Greining</translation>
+<translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="397105322502079400">Reiknar...</translation>
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
@@ -279,6 +280,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skönnun lokið. 1 síða skönnuð}one{Skönnun lokið. {NUMBER_OF_PAGES} síða skönnuð}other{Skönnun lokið. {NUMBER_OF_PAGES} síður skannaðar}}</translation>
+<translation id="7449585358422953039">Stjórnað af <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Gátt greind</translation>
 <translation id="7487067081878637334">Tækni</translation>
 <translation id="7490813197707563893">MAC-vistfang</translation>
@@ -303,6 +305,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7936303884198020182">Engir nafnaþjónar fundust</translation>
 <translation id="7960831585769876809">Hitastig</translation>
 <translation id="7994702968232966508">EAP-aðferð</translation>
+<translation id="802154636333426148">Niðurhal mistókst</translation>
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>

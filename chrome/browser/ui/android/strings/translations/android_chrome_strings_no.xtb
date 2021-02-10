@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1450753235335490080">Kan ikke dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av tjenerproblemer.</translation>
+<translation id="1497470209855416291">Prøveperioden er deaktivert</translation>
 <translation id="1506061864768559482">Søkemotor</translation>
 <translation id="1513352483775369820">Bokmerker og nettlogg</translation>
 <translation id="1513858653616922153">Slett passordet</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Se neste video</translation>
 <translation id="2074143993849053708">UI for samtykke til talesøk med assistenten er lukket</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Prøveperioden er aktivert</translation>
 <translation id="2096012225669085171">Synkronisering og personlig tilpasning på alle enheter</translation>
 <translation id="2100273922101894616">Automatisk pålogging</translation>
 <translation id="2100314319871056947">Prøv å dele teksten i mindre deler</translation>
@@ -964,7 +966,6 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7704317875155739195">Autofullfør søk og nettadresser</translation>
 <translation id="7707922173985738739">Bruk mobildata</translation>
 <translation id="7725024127233776428">Sider du setter som bokmerker, vises her</translation>
-<translation id="7735637452482172701">Lås opp med skjermlås</translation>
 <translation id="7746457520633464754">For å oppdage farlige apper og nettsteder sender Chrome nettadressene til noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold til Google.</translation>
 <translation id="7757787379047923882">Tekst delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Velg dato og klokkeslett</translation>

@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">درجة الدقة</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
 <translation id="3942420633017001071">بيانات التشخيص</translation>
+<translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
+<translation id="7449585358422953039">تتم إدارة الجهاز من خلال <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7487067081878637334">التقنية</translation>
 <translation id="7490813197707563893">‏عنوان MAC</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
 <translation id="7960831585769876809">درجة الحرارة</translation>
 <translation id="7994702968232966508">‏طريقة EAP</translation>
+<translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>

@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">해상도</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
 <translation id="3942420633017001071">진단</translation>
+<translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{스캔이 완료되었습니다. 1페이지가 스캔되었습니다}other{스캔이 완료되었습니다. {NUMBER_OF_PAGES}페이지가 스캔되었습니다}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
 <translation id="7487067081878637334">테크놀로지</translation>
 <translation id="7490813197707563893">MAC 주소</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
 <translation id="7960831585769876809">온도</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
+<translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>

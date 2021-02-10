@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="3941014780699102620">未能解析主机</translation>
 <translation id="3942420633017001071">诊断</translation>
+<translation id="3967822245660637423">下载完毕</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
@@ -303,6 +304,7 @@
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7960831585769876809">温度</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
+<translation id="802154636333426148">下载失败</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="808894953321890993">更改密码</translation>

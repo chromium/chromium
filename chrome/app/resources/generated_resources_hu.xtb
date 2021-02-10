@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Hozzáférés a Bluetooth- és a soros eszközökhöz</translation>
 <translation id="114036956334641753">Hang és feliratok</translation>
 <translation id="1140746652461896221">Tartalom letiltása minden felkeresett oldalon</translation>
+<translation id="1141953877381847186">Ha engedélyezi a Segéd számára a képernyőn megjelenő információk használatát, akkor gyors válaszokat kaphat tőle (például fordítást, meghatározást, mértékegység-átváltást és egyebeket).
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ne feledje:<ph name="END_BOLD" /> Ezt a beállítást később bármikor módosíthatja a Google Segéd-beállítások &gt; Kapcsolódó információk menüpontban.</translation>
 <translation id="1143142264369994168">Tanúsítvány aláírója</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{A Chrome nem talált kártékony szoftvert az Ön számítógépén • 1 perce ellenőrizve}other{A Chrome nem talált kártékony szoftvert az Ön számítógépén • {NUM_MINS} perce ellenőrizve}}</translation>
 <translation id="1145593918056169051">A nyomtató leállt</translation>
@@ -1436,7 +1439,9 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2594999711683503743">Keressen a Google-lal, vagy írja be az URL-t</translation>
 <translation id="2602501489742255173">Az indításhoz csúsztasson felfelé</translation>
 <translation id="2603115962224169880">A számítógép megtisztítása</translation>
+<translation id="2603355571917519942">A Voice Match készen áll</translation>
 <translation id="2603463522847370204">Megnyitás &amp;inkognitóablakban</translation>
+<translation id="2604138917550693049">Képek keresése a Google Lens segítségével</translation>
 <translation id="2604255671529671813">Hálózati kapcsolati hiba</translation>
 <translation id="2606246518223360146">Adatok összekapcsolása</translation>
 <translation id="2606454609872547359">Nem, a ChromeVox nélkül folytatom</translation>
@@ -1779,6 +1784,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2963151496262057773">Az alábbi beépülő modulok nem válaszolnak: <ph name="PLUGIN_NAME" />. Szeretné leállítani?</translation>
 <translation id="2964193600955408481">Wi-Fi letiltása</translation>
 <translation id="2964245677645334031">Közeli megosztás láthatóság</translation>
+<translation id="2966216232069818096">Segítséget kérhet Segédjétől, ha engedélyezi számára, hogy használja a képernyőn megjelenő információkat</translation>
 <translation id="2966937470348689686">Android-beállítások kezelése</translation>
 <translation id="2972581237482394796">&amp;Újra</translation>
 <translation id="2973324205039581528">Webhely némítása</translation>
@@ -1875,6 +1881,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Ez a lap használja a kamerát vagy a mikrofont.</translation>
 <translation id="3083193146044397360">Biztonsága érdekében a rendszer ideiglenesen letiltotta</translation>
+<translation id="3083899879156272923">Képernyő mozgatása úgy, hogy az egér a képernyő közepén maradjon</translation>
 <translation id="3084548735795614657">Húzza rá a telepítéshez.</translation>
 <translation id="3084771660770137092">Vagy a Chrome fogyott ki a memóriából, vagy a weboldal folyamata szűnt meg valamilyen más ok miatt. A folytatáshoz töltse be újra, vagy keressen fel egy másik oldalt.</translation>
 <translation id="3084958266922136097">Képernyővédő letiltása</translation>
@@ -2370,6 +2377,9 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3654045516529121250">A kisegítő lehetőségek beállításainak áttekintése</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Állandó hozzáférése van egy fájlhoz.}other{Állandó hozzáférése van # fájlhoz.}}</translation>
 <translation id="3658871634334445293">TrackPoint gyorsítása</translation>
+<translation id="3659830472545192450">A Voice Match segítségével Google Segédje felismeri az Ön hangját a Chromebookon, és meg tudja különböztetni másokétól.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Fontos megjegyzés:<ph name="END_BOLD" /> Előfordulhat, hogy hasonló hangú személy vagy hangfelvétel segítségével is hozzá lehet férni az Ön személyes találataihoz. A Voice Match engedélyét bármikor visszavonhatja úgy, hogy kikapcsolja a Segéd beállításaiban.</translation>
 <translation id="3660234220361471169">Nem megbízható</translation>
 <translation id="3664511988987167893">Bővítmény ikonja</translation>
 <translation id="3665589677786828986">A Chrome azt észlelte, hogy egy másik program miatt megsérült néhány beállítás, ezért visszaállítja őket az eredeti alapértelmezett értékekre.</translation>
@@ -2977,7 +2987,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4364567974334641491">A(z) <ph name="APP_NAME" /> megoszt egy ablakot.</translation>
 <translation id="4364830672918311045">Értesítések megjelenítése</translation>
 <translation id="4366138410738374926">Nyomtatás megkezdve</translation>
-<translation id="437004882363131692"><ph name="DEVICE_TYPE" />-tippeket és -ajánlatokat, valamint friss híreket kaphat, ezenkívül visszajelzést is küldhet. Bármikor leiratkozhat.</translation>
 <translation id="4370425812909262207">A kosarakat a rendszer elrejti. Újra megjelennek, ha módosítást hajt végre.</translation>
 <translation id="4370975561335139969">A megadott e-mail-cím és jelszó nem egyezik</translation>
 <translation id="4374831787438678295">Linux-telepítő</translation>
@@ -3557,6 +3566,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">A helyesírás-ellenőrzés nem támogatott a kiválasztott nyelveken</translation>
 <translation id="5052499409147950210">Webhely szerkesztése</translation>
+<translation id="5053962746715621840">Képek keresése a Google Lens segítségével</translation>
 <translation id="5057110919553308744">Amikor a bővítményre kattint</translation>
 <translation id="5057403786441168405">Kezelheti a bejelentkezett fiókjait. A webhelyek, az alkalmazások, a Chrome-bővítmények és a Google Play – az engedélyektől függően – ezeket a fiókokat használhatják az élmény személyre szabására. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="5059241099014281248">Korlátozott bejelentkezés</translation>
@@ -4042,6 +4052,9 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5610038042047936818">Váltás kamera módra</translation>
 <translation id="561030196642865721">Ezen a webhelyen engedélyezett a harmadik felektől származó cookie-k használata</translation>
 <translation id="5612734644261457353">Sajnos a jelszó ellenőrzése még mindig nem sikerült. Megjegyzés: ha a közelmúltban módosította jelszavát, az új jelszó kijelentkezés után kerül beállításra, ezért kérjük, itt a régi jelszót használja.</translation>
+<translation id="561308544008485315">A Voice Match segítségével Google Segédje felismeri az Ön hangját a Chromebookon, és meg tudja különböztetni másokétól. Az akkumulátor üzemidejének növelése érdekében az „Ok Google” csak akkor van bekapcsolva, amikor az eszköz áramforrásra csatlakozik. Módosításához nyissa meg a Beállításokat.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Fontos megjegyzés:<ph name="END_BOLD" /> Előfordulhat, hogy hasonló hangú személy vagy hangfelvétel segítségével is hozzá lehet férni az Ön személyes találataihoz. A Voice Match engedélyét bármikor visszavonhatja úgy, hogy kikapcsolja a Segéd beállításaiban.</translation>
 <translation id="5614190747811328134">Felhasználói értesítés</translation>
 <translation id="5614553682702429503">Szeretné elmenteni a jelszót?</translation>
 <translation id="5616726534702877126">Méret lefoglalása</translation>
@@ -5073,6 +5086,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6824584962142919697">&amp;Elemek vizsgálata</translation>
 <translation id="6825184156888454064">Rendezés név szerint</translation>
 <translation id="6826872289184051766">Igazolás USB-n keresztül</translation>
+<translation id="6827604573767207488">Úgy tűnik, hogy egy másik eszközön már beállította a személyre szabott Segédet. Még többet kihozhat Segédjéből, ha bekapcsolja a következő beállítást.</translation>
 <translation id="6828153365543658583">Bejelentkezés korlátozása a következő felhasználókra:</translation>
 <translation id="6828182567531805778">Az adatok szinkronizálásához adja meg az összetett jelszavát</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5508,6 +5522,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7327989755579928735">A(z) <ph name="MANAGER" /> letiltotta az ADB-hibakeresést. Miután újraindítja <ph name="DEVICE_TYPE" /> eszközét, nem tud külső forrásból alkalmazásokat telepíteni.</translation>
 <translation id="7328867076235380839">Érvénytelen kombináció</translation>
 <translation id="7329154610228416156">A bejelentkezés nem sikerült, mert azt egy nem biztonságos URL használatára állították be (<ph name="BLOCKED_URL" />). Kérjük, forduljon rendszergazdájához.</translation>
+<translation id="7329932885428707942">Ez rövid kiesést okozhat a mobilhálózatban.</translation>
 <translation id="7332053360324989309">Dedicated worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Dokkolt nagyító engedélyezése</translation>
 <translation id="7335974957018254119">Helyesírás-ellenőrzés használata a következő nyelveknél:</translation>
@@ -5551,6 +5566,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7374376573160927383">USB-eszközök kezelése</translation>
 <translation id="7375235221357833624">{0,plural, =1{Egy órán belül frissítse az eszközt}other{# órán belül frissítse az eszközt}}</translation>
 <translation id="7376553024552204454">Az egérmutató kiemelése mozgás közben</translation>
+<translation id="737728204345822099">A biztonsági kulcs tárolhatja, hogy Ön felkereste ezt a webhelyet.</translation>
 <translation id="7377451353532943397">Érzékelő-hozzáférés tiltásának fenntartása</translation>
 <translation id="7378611153938412599">A gyenge jelszavakat könnyű kitalálni. Figyeljen arra, hogy erős jelszavakat hozzon létre. <ph name="BEGIN_LINK" />Itt további biztonsági tippeket talál.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">A Chrome Internetes áruház megnyitása</translation>
@@ -6178,6 +6194,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8059417245945632445">&amp;Eszközök vizsgálata</translation>
 <translation id="8059456211585183827">Nincsenek menthető nyomtatók.</translation>
 <translation id="8061091456562007989">Visszaállítás</translation>
+<translation id="8061991877177392872">Úgy tűnik, hogy Google Segédjéhez már beállította a Voice Match funkciót valamelyik másik eszközön. Korábbi felvételeiből ezen az eszközön is létrehozott hangmintát.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 papírlap}other{{COUNT} papírlap}}</translation>
 <translation id="8062879968880283306">Olvassa be a QR-kódot az eszköz kamerájával, vagy adja meg a szolgáltatótól kapott aktivációs kódot.</translation>
 <translation id="8063235345342641131">Alapértelmezett zöld avatar</translation>
@@ -6449,6 +6466,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8379991678458444070">Gyorsan visszajuthat ide, ha hozzáadja a lapot a könyvjelzőkhöz</translation>
 <translation id="8382913212082956454">&amp;E-mail cím másolása</translation>
 <translation id="8386091599636877289">Az irányelv nem található.</translation>
+<translation id="8386819192691131213">Ha engedélyezi a Segéd számára a képernyőn megjelenő információk használatát, akkor gyors válaszokat kaphat tőle (például fordítást, meghatározást, mértékegység-átváltást és egyebeket).</translation>
 <translation id="8386903983509584791">Keresés befejezve</translation>
 <translation id="8387361103813440603">Nem láthatják az Ön tartózkodási helyét</translation>
 <translation id="8389264703141926739">Értesítések letiltása</translation>
@@ -6931,6 +6949,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8915370057835397490">Javaslatok betöltése</translation>
 <translation id="8916476537757519021">Inkognitó subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>
+<translation id="8922624386829239660">Képernyő mozgatása, amikor az egérmutató érinti a képernyő széleit</translation>
 <translation id="8923880975836399332">Sötét pávakék</translation>
 <translation id="8925458182817574960">&amp;Beállítások</translation>
 <translation id="8926389886865778422">Többször ne figyelmeztessen</translation>
@@ -7009,6 +7028,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9009708085379296446">Szándékosan változtatta meg ezt az oldalt?</translation>
 <translation id="9011163749350026987">Mindig mutassa az ikont</translation>
 <translation id="9011393886518328654">Kibocsátási megjegyzések</translation>
+<translation id="9012122671773859802">Képernyő folyamatos mozgatása az egérmutató mozgatásával együtt</translation>
 <translation id="9013037634206938463">A Linux telepítéséhez <ph name="INSTALL_SIZE" /> szabad terület szükséges. Tárhely felszabadításához töröljön fájlokat az eszközről.</translation>
 <translation id="9013707997379828817">Eszközét adminisztrátora visszaállította. Mentse a fontos fájlokat, majd indítsa újra az eszközt. Minden tárolt adat törlődni fog.</translation>
 <translation id="901668144954885282">Biztonsági mentés a Google Drive-ra</translation>
@@ -7053,6 +7073,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9052404922357793350">Letiltás fenntartása</translation>
 <translation id="9053563360605707198">Nyomtatás mindkét oldalra</translation>
 <translation id="9053893665344928494">Jegyezze meg a döntésemet</translation>
+<translation id="9055278955535611574">Hozzáférés Segédjéhez az „Ok Google” paranccsal</translation>
 <translation id="9055636786322918818">Az RC4 titkosítás kényszerítése. A beállítás használata növeli a kockázatot, mivel az RC4-kódok nem biztonságosak.</translation>
 <translation id="9056810968620647706">Nincs találat.</translation>
 <translation id="9057354806206861646">Ütemezés frissítése</translation>

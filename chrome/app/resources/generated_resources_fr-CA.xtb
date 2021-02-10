@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Accéder à vos appareils connectés par Bluetooth et en série</translation>
 <translation id="114036956334641753">Audio et sous-titres</translation>
 <translation id="1140746652461896221">Bloquer du contenu sur n'importe quelle page que vous consultez</translation>
+<translation id="1141953877381847186">Autorisez l'Assistant à utiliser l'information sur l'écran pour vous présenter des réponses rapides comme des traductions, des définitions, des conversions d'unités et plus encore.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Gardez à l'esprit :<ph name="END_BOLD" /> Vous pourrez toujours modifier cette option plus tard sous Paramètres de l'Assistant Google &gt; Données connexes.</translation>
 <translation id="1143142264369994168">Signataire du certificat</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome n'a détecté aucun logiciel malveillant sur votre ordinateur • Vérification effectuée il y a 1 minute}one{Chrome n'a détecté aucun logiciel malveillant sur votre ordinateur • Vérification effectuée il y a {NUM_MINS} minute}other{Chrome n'a détecté aucun logiciel malveillant sur votre ordinateur • Vérification effectuée il y a {NUM_MINS} minutes}}</translation>
 <translation id="1145593918056169051">L'imprimante s'est arrêtée</translation>
@@ -1434,7 +1437,9 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2594999711683503743">Effectuez une recherche sur Google ou entrez une adresse URL</translation>
 <translation id="2602501489742255173">Glissez votre doigt vers le haut pour commencer</translation>
 <translation id="2603115962224169880">Nettoyer l'ordinateur</translation>
+<translation id="2603355571917519942">Voice Match est prête à être utilisée</translation>
 <translation id="2603463522847370204">Ouvrir dans une fenêtre de &amp;navigation privée</translation>
+<translation id="2604138917550693049">Rechercher l'image avec Lentille Google</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2606246518223360146">Associer les données</translation>
 <translation id="2606454609872547359">Non, continuer sans ChromeVox</translation>
@@ -1776,6 +1781,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2963151496262057773">Le plugiciel suivant ne répond pas : <ph name="PLUGIN_NAME" />. Voulez-vous l'arrêter?</translation>
 <translation id="2964193600955408481">Désactiver le réseau Wi-Fi</translation>
 <translation id="2964245677645334031">Visibilité pour le partage à proximité</translation>
+<translation id="2966216232069818096">Autoriser votre Assistant à utiliser l'information à l'écran pour vous aider</translation>
 <translation id="2966937470348689686">Gérer les préférences Android</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2973324205039581528">Désactiver le son sur le site</translation>
@@ -1871,6 +1877,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Cet onglet utilise votre caméra ou votre microphone.</translation>
 <translation id="3083193146044397360">Bloquée temporairement afin de protéger votre confidentialité</translation>
+<translation id="3083899879156272923">Déplacer l'écran pour laisser le pointeur de la souris au centre de l'écran</translation>
 <translation id="3084548735795614657">Déposer pour installer</translation>
 <translation id="3084771660770137092">Google Chrome n'avait pas suffisamment de mémoire ou le processus de la page Web a été arrêté pour une autre raison. Pour continuer, actualisez la page ou ouvrez-en une autre.</translation>
 <translation id="3084958266922136097">Désactiver l'écran de veille</translation>
@@ -2364,6 +2371,9 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3654045516529121250">Lire vos paramètres d'accessibilité</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Elle dispose d'un accès permanent à un fichier.}one{Elle dispose d'un accès permanent à # fichier.}other{Elle dispose d'un accès permanent à # fichiers.}}</translation>
 <translation id="3658871634334445293">Accélération TrackPoint</translation>
+<translation id="3659830472545192450">Voice Match aide votre Assistant Google à reconnaître votre voix sur votre Chromebook et à vous distinguer des autres.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Gardez à l'esprit :<ph name="END_BOLD" /> Une voix similaire ou un enregistrement pourrait aussi être en mesure d'accéder à vos résultats personnalisés. Vous pouvez retirer l'autorisation de Voice Match plus tard en la désactivant dans les paramètres de l'Assistant.</translation>
 <translation id="3660234220361471169">Non fiable</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains paramètres de votre navigateur ont été corrompus par un autre programme, et les a réinitialisé à leurs valeurs par défaut.</translation>
@@ -2970,7 +2980,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4366138410738374926">L'impression a commencé</translation>
-<translation id="437004882363131692">Obtenez des conseils sur votre <ph name="DEVICE_TYPE" />, des offres et des mises à jour, et transmettez vos commentaires. Vous pouvez vous désabonner à tout moment.</translation>
 <translation id="4370425812909262207">Paniers masqués. Ils s'afficheront de nouveau lorsque vous effectuerez des changements.</translation>
 <translation id="4370975561335139969">L’adresse de courriel et le mot de passe que vous avez entrés ne correspondent pas</translation>
 <translation id="4374831787438678295">Installateur Linux</translation>
@@ -3547,6 +3556,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
 <translation id="5051836348807686060">Le correcteur orthographique n'est pas pris en charge pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
+<translation id="5053962746715621840">Rechercher l'image avec Lentille Google</translation>
 <translation id="5057110919553308744">Lorsque vous cliquez sur l'extension</translation>
 <translation id="5057403786441168405">Gérez les comptes auxquels vous êtes connecté. Les sites Web, les applications et les extensions dans Chrome et dans Google Play peuvent utiliser ces comptes pour personnaliser votre expérience, selon les autorisations accordées. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restreindre les connexions</translation>
@@ -4028,6 +4038,9 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5610038042047936818">Passer en mode appareil photo</translation>
 <translation id="561030196642865721">Les témoins tiers sont autorisés sur ce site</translation>
 <translation id="5612734644261457353">Désolés, nous ne pouvons toujours pas valider votre mot de passe. Remarque : si vous l'avez modifié dernièrement, votre nouveau mot de passe ne sera mis à jour qu'une fois que vous vous serez déconnecté. Veuillez donc utiliser votre ancien mot de passe.</translation>
+<translation id="561308544008485315">Voice Match aide votre Assistant Google à reconnaître votre voix sur votre Chromebook et à vous distinguer des autres. Pour économiser la pile, « Ok Google » est activé seulement quand votre appareil est connecté à une source d'alimentation. Pour apporter des modifications, accédez au menu Paramètres.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Gardez à l'esprit :<ph name="END_BOLD" /> Une voix similaire ou un enregistrement pourrait aussi être en mesure d'accéder à vos résultats personnalisés. Vous pouvez retirer l'autorisation de Voice Match plus tard en la désactivant dans les paramètres de l'Assistant.</translation>
 <translation id="5614190747811328134">Avis pour les utilisateurs</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
 <translation id="5616726534702877126">Réserver l'espace</translation>
@@ -5051,6 +5064,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6824584962142919697">&amp;Inspecter des éléments</translation>
 <translation id="6825184156888454064">Trier par nom</translation>
 <translation id="6826872289184051766">Vérifier par l'intermédiaire de la technologie USB</translation>
+<translation id="6827604573767207488">On dirait que vous avez déjà configuré et personnalisé l'Assistant sur un autre appareil. Profitez davantage de votre Assistant en activant le paramètre suivant.</translation>
 <translation id="6828153365543658583">Autoriser uniquement les utilisateurs suivants à se connecter :</translation>
 <translation id="6828182567531805778">Entrez votre phrase de passe pour synchroniser vos données</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5485,6 +5499,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> a désactivé le débogage PDA. Après avoir redémarré votre <ph name="DEVICE_TYPE" />, vous ne pourrez plus télécharger d'applications d'une source tierce.</translation>
 <translation id="7328867076235380839">Combinaison incorrecte</translation>
 <translation id="7329154610228416156">La connexion a échoué, car elle a été configurée pour utiliser une adresse URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez communiquer avec votre administrateur.</translation>
+<translation id="7329932885428707942">Cette action pourrait entraîner une brève déconnexion du réseau cellulaire.</translation>
 <translation id="7332053360324989309">Traitement dédié : <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Activer la loupe en mode ancré</translation>
 <translation id="7335974957018254119">Utiliser le correcteur orthographique pour</translation>
@@ -6153,6 +6168,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8059417245945632445">&amp;Inspecter les appareils</translation>
 <translation id="8059456211585183827">Il n'y a aucune imprimante à enregistrer.</translation>
 <translation id="8061091456562007989">Rétablir</translation>
+<translation id="8061991877177392872">On dirait que vous avez déjà configuré Voice Match avec votre Assistant sur un autre appareil. Ces enregistrements précédents ont été utilisés pour créer un modèle vocal sur cet appareil.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 feuille de papier}one{{COUNT} feuille de papier}other{{COUNT} feuilles de papier}}</translation>
 <translation id="8062879968880283306">Numérisez le code QR à l'aide de l'appareil photo de votre appareil ou entrez le code d'activation fourni par votre fournisseur de services.</translation>
 <translation id="8063235345342641131">Avatar vert par défaut</translation>
@@ -6422,6 +6438,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8379991678458444070">Revenez ici rapidement en ajoutant cet onglet aux favoris</translation>
 <translation id="8382913212082956454">Copier l'adresse de courri&amp;el</translation>
 <translation id="8386091599636877289">Politique introuvable.</translation>
+<translation id="8386819192691131213">Autorisez l'Assistant à utiliser l'information sur l'écran pour vous présenter des réponses rapides comme des traductions, des définitions, des conversions d'unités et plus encore</translation>
 <translation id="8386903983509584791">Recherche terminée</translation>
 <translation id="8387361103813440603">Non autorisés à consulter votre position</translation>
 <translation id="8389264703141926739">Bloquer les notifications</translation>
@@ -6900,6 +6917,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8915370057835397490">Chargement des suggestions en cours…</translation>
 <translation id="8916476537757519021">Sous-cadre de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Déplacer l'écran lorsque le pointeur de la souris touche les rebords de l'écran</translation>
 <translation id="8923880975836399332">Turquoise foncé</translation>
 <translation id="8925458182817574960">Paramètre&amp;s</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
@@ -6977,6 +6995,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9009708085379296446">Vouliez-vous modifier cette page?</translation>
 <translation id="9011163749350026987">Toujours afficher l'icône</translation>
 <translation id="9011393886518328654">Notes de version</translation>
+<translation id="9012122671773859802">Déplacer l'écran en continu pour suivre le mouvement du pointeur de la souris</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> d'espace libre est nécessaire pour utiliser Linux. Pour libérer de l'espace, supprimez des fichiers sur votre appareil.</translation>
 <translation id="9013707997379828817">Votre administrateur a restauré cet appareil. Veuillez enregistrer les fichiers importants, puis redémarrer. Toutes les données sur l'appareil seront supprimées.</translation>
 <translation id="901668144954885282">Sauvegarder sur Google Disque</translation>
@@ -7021,6 +7040,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9052404922357793350">Continuer le blocage</translation>
 <translation id="9053563360605707198">Imprimer sur les deux côtés</translation>
 <translation id="9053893665344928494">Se souvenir de mon choix</translation>
+<translation id="9055278955535611574">Accéder à votre Assistant en disant « Ok Google »</translation>
 <translation id="9055636786322918818">Appliquer le chiffrement RC4. L'utilisation de cette option augmente les risques, car les chiffrements RC4 ne sont pas sécurisés.</translation>
 <translation id="9056810968620647706">Aucune correspondance trouvée</translation>
 <translation id="9057354806206861646">Mettre à jour le calendrier</translation>

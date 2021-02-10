@@ -453,6 +453,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan ini disetel ke Salah (False), pengguna tidak akan dapat menambahkan dan mengonfigurasi printernya sendiri. Pengguna juga tidak akan dapat mencetak menggunakan printer yang telah dikonfigurasikan sebelumnya.
       </translation>
 <translation id="1615221548356595305">Izinkan koneksi HTTP/2 bergabung untuk host ini bahkan saat sertifikat klien digunakan</translation>
+<translation id="1616280227447957376">Mengizinkan untuk melanjutkan dari halaman peringatan SSL di asal tertentu</translation>
 <translation id="1617235075406854669">Aktifkan penghapusan histori download atau browser</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1626379196197114720">Izinkan penggunaan back-forward cache</translation>
@@ -1007,6 +1008,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Periksa ejaan dapat selalu menggunakan kamus yang didownload secara lokal, kecuali jika fitur ini dinonaktifkan oleh <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> sehingga kebijakan ini tidak akan berpengaruh.</translation>
 <translation id="2433516903565257847">Persentase fleet perangkat yang harus diperbarui setelah sejumlah hari tertentu.</translation>
 <translation id="2435052056904485763">Daftar server delegasi Kerberos yang diizinkan</translation>
+<translation id="2435232509335686514">Kebijakan konfigurasi untuk <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> yang menangani file yang didownload</translation>
 <translation id="2448315169529769573">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan melaporkan kembali metrik penggunaan dan data diagnostik, termasuk laporan kerusakan, ke Google. Jika kebijakan disetel ke Nonaktif, pelaporan metrik dan data diagnostik akan dinonaktifkan.
 
        Jika kebijakan tidak disetel, pelaporan metrik dan data diagnostik akan dinonaktifkan di perangkat yang tidak terkelola dan akan diaktifkan di perangkat terkelola.</translation>
@@ -1249,6 +1251,15 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2757054304033424106">Ketik ekstensi/aplikasi yang diizinkan untuk dipasang</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
+<translation id="2764165704281937018">Daftar setelan yang akan diterapkan ke <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, yang aktif saat file didownload.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file ke penyedia layanan saat mendownload dari halaman web. URL halaman web harus cocok dengan pola yang terkait ke pola 'enable' dan tidak terkait ke pola 'disable'.  Jenis MIME file juga harus cocok dengan pola yang terkait ke pola 'enable' dan tidak terkait ke pola 'disable'.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> akan mengidentifikasi perusahaan dengan penyedia layanan.  Jika pengguna diminta login sebagai bagian dari penyiapan <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, hanya akun pengguna yang terkait dengan perusahaan ini yang akan diizinkan.
+
+      Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2769952903507981510">Mengonfigurasi nama domain yang dibutuhkan untuk hosting akses jarak jauh</translation>
 <translation id="2772955711376920612">Menyetel kebijakan ke Aktif serta menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> dan <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> akan terus memicu pengaktifan daya baterai, jika didukung di perangkat. Kebijakan manajemen pengaktifan daya baterai adalah kebijakan penghematan daya yang meminimalkan penggunaan arus listrik AC selama waktu penggunaan puncak. Untuk setiap hari kerja, Anda dapat menyetel waktu mulai dan waktu akhir untuk menjalankan sistem dalam mode pengaktifan daya baterai. Selama baterai tetap berada di atas nilai minimum yang ditentukan, perangkat akan berjalan menggunakan daya baterai (meski arus listrik AC terhubung) selama waktu tersebut. Setelah waktu akhir yang ditentukan, perangkat akan berjalan menggunakan arus listrik AC (jika terhubung), tetapi tidak akan mengisi daya baterai. Perangkat akan berfungsi normal kembali menggunakan arus listrik AC dan mengisi ulang daya baterai setelah waktu mulai pengisian daya yang ditentukan.
 
@@ -1331,6 +1342,23 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan informasi status Android</translation>
 <translation id="288923520817177650">Izinkan pembuatan sesi <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Otomatis berikan izin ke situs ini untuk terhubung ke perangkat USB dengan ID produk dan vendor yang ditentukan.</translation>
+<translation id="2892041629748346178">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat file didownload di Chrome.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file untuk dianalisis saat didownload dari halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis untuk file tersebut. Tag yang sesuai dengan pola 'enable' akan disertakan dalam permintaan analisis jika URL halaman cocok dengan pola yang terkait dengan tag tersebut, selama tidak ada pola 'disable' ber-tag sama yang cocok dengan URL halaman. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
+
+      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, Chrome akan menunggu untuk mendapatkan respons dari layanan analisis sebelum memberikan akses pengguna ke file yang didownload. Jika nilai berupa bilangan bulat lainnya, Chrome akan langsung memberikan akses pengguna ke file.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> mengontrol apakah Chrome akan memblokir atau mengizinkan file yang dilindungi sandi.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> mengontrol apakah Chrome akan memblokir atau mengizinkan file yang berukuran terlalu besar untuk dianalisis (lebih dari 50 MB).
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, saat muncul peringatan ketika hasil pemindaian masih menunjukkan ada masalah. Kolom pesan berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom learn_more_url berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom bahasa bersifat opsional dan berisi bahasa pesan. Kolom bahasa yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar custom_messages dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki pesan yang bukan kosong dan kolom tag.
+
+      Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2893546967669465276">Mengirim log sistem ke server pengelolaan</translation>
 <translation id="2899002520262095963">Aplikasi Android dapat menggunakan konfigurasi jaringan dan sertifikat CA yang disetel melalui kebijakan ini, namun tidak memiliki akses ke beberapa opsi konfigurasi.</translation>
 <translation id="2899213072616346687">Membatasi mode pencetakan grafis latar belakang. Kebijakan yang tidak ditetapkan dianggap sebagai tidak ada batasan.</translation>
@@ -1736,6 +1764,21 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 <translation id="3412937883532015092">Jika kebijakan disetel ke angka, <ph name="PRODUCT_NAME" /> akan menampilkan pesan untuk angka milidetik tersebut, kemudian membuka browser alternatif.
 
       Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan akan segera membuka kebijakan tersebut di browser alternatif.</translation>
+<translation id="3413215487296688603">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat data dimasukkan ke Chrome dari papan klip atau dengan menarik lalu melepas konten web.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan data untuk dianalisis saat dimasukkan ke halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis untuk data tersebut. Tag yang sesuai dengan pola 'enable' akan disertakan dalam permintaan analisis jika URL halaman cocok dengan pola yang terkait dengan tag tersebut, selama tidak ada pola 'disable' ber-tag sama yang cocok dengan URL halaman. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
+
+      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, Chrome akan menunggu untuk mendapatkan respons dari layanan analisis sebelum memberikan akses halaman ke data tersebut. Jika nilai berupa bilangan bulat lainnya, Chrome akan langsung memberikan akses halaman ke data.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> menunjukkan bahwa ukuran minimum data (dalam byte) yang dimasukkan di Chrome harus sama atau lebih besar agar dapat dipindai. Nilai defaultnya adalah 100 byte jika kolom tidak disetel.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, saat muncul peringatan ketika hasil pemindaian masih menunjukkan ada masalah. Kolom pesan berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom learn_more_url berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom bahasa bersifat opsional dan berisi bahasa pesan. Kolom bahasa yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar custom_messages dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki pesan yang bukan kosong dan kolom tag.
+
+      Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="3415954062311826850">Kebijakan ini tidak didukung dalam ARC.</translation>
 <translation id="34160070798637152">Mengontrol konfigurasi jaringan tingkat perangkat.</translation>
 <translation id="3417130629744653218">Izinkan situs membuat kueri untuk metode pembayaran yang tersedia.</translation>
@@ -2360,6 +2403,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4377599627073874279">Izinkan semua situs menampilkan semua gambar</translation>
 <translation id="437791893267799639">Kebijakan tidak disetel, jangan izinkan migrasi data dan ARC</translation>
 <translation id="4382413175336720282">Pemeriksaan URL secara real time dinonaktifkan.</translation>
+<translation id="4387741272680827493">Menyetel kebijakan akan menentukan daftar nama host yang mengabaikan upgrade HSTS yang dipramuat dari HTTP menjadi HTTPS.
+
+      Hanya nama host berlabel tunggal yang diizinkan di kebijakan ini, dan kebijakan ini hanya berlaku pada entri HSTS yang dipramuat "statis" (contohnya, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Kebijakan ini tidak mencegah upgrade HSTS untuk server yang memiliki upgrade HSTS yang diminta "secara dinamis" menggunakan header respons <ph name="HSTS_HEADER_NAME" />.
+
+      Nama host yang diberikan harus dikanonikalisasi: Semua IDN harus dikonversi ke format berlabel A, dan semua huruf ASCII harus berupa huruf kecil. Kebijakan ini hanya berlaku untuk nama host berlabel tunggal spesifik yang telah ditentukan, bukan subdomain dari nama host tersebut.</translation>
 <translation id="4387922553629365459">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat membuka pop-up.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -2976,6 +3024,11 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
           * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, kolom <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" /> dan <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> akan digunakan.
 
       Catatan: Untuk contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="5266173014392157048">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />'.
+
+      Menyetel kebijakan akan menetapkan server mana yang menjadi tujuan delegasi <ph name="PRODUCT_NAME" />. Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+      Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> tidak akan mendelegasikan kredensial pengguna, meskipun server terdeteksi sebagai intranet.</translation>
 <translation id="5273744932022326215">Mengaktifkan fitur aksesibilitas sorotan kursor di layar login.
 
           Jika kebijakan ini ditetapkan ke true, sorotan kursor akan selalu diaktifkan di layar login.
@@ -3507,6 +3560,11 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menukarkan penawaran ini.</translation>
 <translation id="6048199181629830227">Mengaktifkan fitur manajemen pengaktifan daya baterai</translation>
 <translation id="6053681087509103368">Izinkan WebRTC menggunakan versi protokol TLS/DTLS yang usang</translation>
+<translation id="605543517695935623">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat terjadi peristiwa keamanan di Chrome. Ini termasuk keputusan negatif dari analisis Enterprise Connector, penggunaan ulang sandi, navigasi ke halaman yang tidak aman, dan tindakan pengguna lainnya yang sensitif terhadap keamanan.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan laporan yang sesuai dengan setelan dan kolom <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> akan mengidentifikasi peristiwa yang diaktifkan untuk penyedia ini.
+
+      Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="6058879286588763839">Menyetel <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> akan menentukan kebijakan pengelolaan daya mode pengisian daya baterai (jika didukung di perangkat), kecuali <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> yang menggantikan <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> ditentukan. Untuk memperpanjang masa pakai baterai, kebijakan secara dinamis mengontrol pengisian daya baterai dengan meminimalkan ketegangan dan keausan.
 
       Tidak menyetel kebijakan (jika didukung di perangkat) akan menerapkan mode pengisian daya baterai standar, dan pengguna tidak dapat mengubahnya.
@@ -4390,6 +4448,23 @@ Error yang sesuai ditampilkan jika pengguna mencoba untuk menyetel akun utama br
 Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Google apa pun sebagai akun utama browser di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Setel panjang minimum PIN layar kunci.</translation>
 <translation id="7234280155140786597">Nama hosting perpesanan asli yang dilarang (atau * untuk semua)</translation>
+<translation id="72369543045636739">Daftar setelan layanan Chrome Enterprise Connectors yang akan diterapkan ke <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise Connector, yang aktif saat file dilampirkan ke Chrome.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file untuk dianalisis saat dilampirkan ke halaman tertentu, dan jenis tag yang perlu disertakan dalam permintaan analisis untuk file tersebut. Tag yang sesuai dengan pola 'enable' akan disertakan dalam permintaan analisis jika URL halaman cocok dengan pola yang terkait dengan tag tersebut, selama tidak ada pola 'disable' ber-tag sama yang cocok dengan URL halaman. Analisis dilakukan jika terdapat minimal 1 tag yang disertakan dalam permintaan.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
+
+      Jika kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> disetel ke 1, Chrome akan menunggu untuk mendapatkan respons dari layanan analisis sebelum memberikan akses halaman ke file tersebut. Jika nilai berupa bilangan bulat lainnya, Chrome akan langsung memberikan akses halaman ke file.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> mengontrol apakah Chrome akan memblokir atau mengizinkan file yang dilindungi sandi.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> mengontrol apakah Chrome akan memblokir atau mengizinkan file yang berukuran terlalu besar untuk dianalisis (lebih dari 50 MB).
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> digunakan untuk menentukan tag mana yang diperlukan saat konektor mewajibkan pengguna memasukkan justifikasi agar dapat mengabaikan pemindaian yang menghasilkan peringatan yang dapat diabaikan. Jika kolom tidak disetel, tidak perlu justifikasi.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> digunakan untuk mengonfigurasi pesan yang akan ditampilkan kepada pengguna, saat muncul peringatan ketika hasil pemindaian masih menunjukkan ada masalah. Kolom pesan berisi teks yang akan ditampilkan kepada pengguna dan tidak boleh melebihi 200 karakter. Kolom learn_more_url berisi URL yang disediakan oleh admin. Pengguna dapat mengklik URL untuk mengetahui lebih lanjut penyebab diblokirnya tindakan tersebut. Kolom bahasa bersifat opsional dan berisi bahasa pesan. Kolom bahasa yang kosong atau nilai 'default' menunjukkan pesan yang akan digunakan saat bahasa pengguna tidak memiliki pesan. Kolom tag menentukan jenis pemindaian yang akan menampilkan pesan. Daftar custom_messages dapat memiliki nol atau beberapa entri, dengan tiap entri perlu memiliki pesan yang bukan kosong dan kolom tag.
+
+      Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Izinkan pengaktifan notifikasi Phone Hub.</translation>
 <translation id="7249828445670652637">Mengaktifkan sertifikat CA <ph name="PRODUCT_OS_NAME" /> untuk aplikasi ARC</translation>
 <translation id="7252681704926980614">Kirimkan nama pengguna dan nama file ke server printer native beserta setiap pekerjaan cetak. Setelan defaultnya bukan untuk mengirim.
@@ -4760,6 +4835,13 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="780629758750905699">Mengizinkan penambahan akun Family Link ke perangkat</translation>
 <translation id="7807139251387225825">Daftar jenis yang harus dikecualikan dari sinkronisasi</translation>
 <translation id="781268256210530471">Setelan plugin</translation>
+<translation id="7814528532170362496">Kebijakan ini mengontrol pemeriksaan URL secara real time untuk mengidentifikasi URL yang tidak aman.
+
+      Jika kebijakan ini tidak disetel atau disetel ke ‘Nonaktif’, pemeriksaan Safe Browsing default akan diterapkan. Pemeriksaan Safe Browsing default tetap dapat disertai pencarian real-time, bergantung pada nilai setelan "Jadikan penelusuran dan penjelajahan lebih baik" dan nilai kebijakan UrlKeyedAnonymizedDataCollectionEnabled.
+
+      Jika kebijakan ini disetel ke ‘Aktif’, URL akan dikirimkan untuk dipindai secara real-time sesuai Persyaratan Layanan perusahaan. Ini akan membuat Chrome mengirimkan URL ke Google Cloud atau pihak ketiga pilihan Anda untuk memeriksa URL secara real-time. Pencarian real-time Safe Browsing versi default akan dinonaktifkan.
+
+      Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7816326058023670173">Rahasia dibagikan antara perangkat anak dan orang tua.</translation>
 <translation id="7818131573217430250">Menyetel status default mode kontras tinggi di layar masuk</translation>
 <translation id="7823902813460802031">Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan menghentikan perangkat beralih ke mode Developer.
@@ -5567,6 +5649,13 @@ Kebijakan akan dihapus pada M75.</translation>
        Jika kebijakan disetel ke salah (false), upgrade otomatis akan dinonaktifkan untuk audio dan video, dan tidak ada peringatan yang akan ditampilkan untuk gambar.
        Kebijakan ini tidak memengaruhi jenis konten campuran selain audio, video, dan gambar.
        Kebijakan ini tidak akan berpengaruh lagi mulai <ph name="PRODUCT_NAME" /> 84.</translation>
+<translation id="9009505213521705952">Jika <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> disetel ke Nonaktif, menyetel kebijakan akan memungkinkan Anda menetapkan daftar pola asal yang menentukan situs tempat pengguna dapat mengklik semua halaman peringatan yang ditampilkan <ph name="PRODUCT_NAME" /> saat pengguna membuka situs yang menampilkan error SSL. Pengguna tidak akan dapat mengklik halaman peringatan SSL di asal yang tidak ada di daftar ini.
+
+      Jika <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> disetel ke Aktif atau tidak disetel, kebijakan ini tidak akan berpengaruh.
+
+      Jika kebijakan tidak disetel, <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> akan berlaku untuk semua situs.
+
+      Untuk informasi selengkapnya tentang pola input yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini. Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="9010080992450148617">Mengaktifkan pengiriman download ke Google untuk pemindaian mendalam bagi pengguna yang terdaftar di Program Perlindungan Lanjutan</translation>
 <translation id="9013875414788074110">Selama proses login, <ph name="PRODUCT_OS_NAME" /> dapat melakukan autentikasi terhadap server (online) atau menggunakan sandi yang tersimpan di cache (offline).
 

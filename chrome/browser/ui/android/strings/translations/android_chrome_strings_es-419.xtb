@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1450753235335490080">No se puede compartir <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> no se pudo descargar debido a problemas del servidor.</translation>
+<translation id="1497470209855416291">La prueba está inhabilitada</translation>
 <translation id="1506061864768559482">Motor de búsqueda</translation>
 <translation id="1513352483775369820">Favoritos e historial web</translation>
 <translation id="1513858653616922153">Borrar contraseña</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Mirar el próximo video</translation>
 <translation id="2074143993849053708">La IU de consentimiento de la búsqueda por voz de Asistente está cerrada</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">La prueba está habilitada</translation>
 <translation id="2096012225669085171">Sincroniza y personaliza contenido en diferentes dispositivos</translation>
 <translation id="2100273922101894616">Acceso automático</translation>
 <translation id="2100314319871056947">Intenta compartir el texto en fragmentos más pequeños</translation>
@@ -591,6 +593,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> quiere detectar dispositivos Bluetooth cercanos. Se encontraron los siguientes dispositivos:</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
+<translation id="5250483651202458397">Captura de pantalla. Presionar para cerrar.</translation>
 <translation id="526421993248218238">No se puede cargar esta página</translation>
 <translation id="5271967389191913893">El dispositivo no puede abrir el contenido que se descargará.</translation>
 <translation id="5292796745632149097">Enviar a</translation>
@@ -836,6 +839,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6767294960381293877">La lista de dispositivos con los que se puede compartir una pestaña está abierta a media altura.</translation>
 <translation id="6783942555455976443">Guarda esta página para verla más tarde y establece un recordatorio.</translation>
 <translation id="6811034713472274749">Ya puedes ver la página</translation>
+<translation id="6813446258015311409">Acceder a Chrome, abierto.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, pestaña, seleccionada</translation>
 <translation id="6833996806551876956">Prueba de Privacy Sandbox</translation>
@@ -964,7 +968,6 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="7704317875155739195">Autocompletar búsquedas y URL</translation>
 <translation id="7707922173985738739">Usa los datos móviles.</translation>
 <translation id="7725024127233776428">Las páginas que agregues a favoritos aparecerán aquí</translation>
-<translation id="7735637452482172701">Desbloquear con el bloqueo de pantalla</translation>
 <translation id="7746457520633464754">Para detectar apps y sitios peligrosos, Chrome envía a Google URL de algunas páginas que visitas, información limitada sobre el sistema y contenido de algunas páginas</translation>
 <translation id="7757787379047923882">Texto compartido de <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Elegir fecha y hora</translation>
@@ -1097,6 +1100,7 @@ Solo se borran de Chrome los datos de las sesiones de incógnito cuando <ph name
 <translation id="8583805026567836021">Borrando datos de cuenta</translation>
 <translation id="8587585930972369234">Mantén presionado para buscar</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
+<translation id="8602358303461588329">Acceder a Chrome, cerrado.</translation>
 <translation id="860282621117673749">Alertas de descuentos</translation>
 <translation id="8616006591992756292">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">¿Quieres abrir la URL sugerida que se especifica en el contenido descargado?</translation>

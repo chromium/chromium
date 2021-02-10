@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">ৰিজ'লিউশ্বন</translation>
 <translation id="3941014780699102620">হ’ষ্ট সম্পৰ্কীয় সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="3942420633017001071">ডায়েগনষ্টিক্স</translation>
+<translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনতকৈ পুৰণি প্ৰিণ্টৰ কামসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="4003384961948020559">বিফল হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হ’ল। ১ খন পৃষ্ঠা স্কেন কৰা হ’ল}one{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}other{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" />এ পৰিচালনা কৰে।</translation>
 <translation id="7469648432129124067">প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="7487067081878637334">প্ৰযুক্তিবিদ্যা</translation>
 <translation id="7490813197707563893">MAC ঠিকনা</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">ড’মেইন নাম থকা কোনো ছাৰ্ভাৰ পোৱা নগ'ল</translation>
 <translation id="7960831585769876809">তাপমান</translation>
 <translation id="7994702968232966508">ই.এ.পি. পদ্ধতি</translation>
+<translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
 <translation id="8075838845814659848">বাকী থকা চাৰ্জ</translation>
 <translation id="808894953321890993">পাছৱৰ্ড সলনি কৰক</translation>

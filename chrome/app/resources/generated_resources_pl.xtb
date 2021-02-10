@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Dostęp do urządzeń Bluetooth i szeregowych</translation>
 <translation id="114036956334641753">Dźwięk i napisy</translation>
 <translation id="1140746652461896221">Blokuj treść na każdej odwiedzanej stronie</translation>
+<translation id="1141953877381847186">Zezwól Asystentowi na korzystanie z informacji na ekranie, aby mógł podawać szybkie odpowiedzi, takie jak tłumaczenia, definicje czy przeliczenia jednostek.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Pamiętaj:<ph name="END_BOLD" /> zawsze możesz zmienić to później, wybierając Ustawienia Asystenta Google &gt; Powiązane informacje.</translation>
 <translation id="1143142264369994168">Podmiot podpisujący certyfikat</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Szkodliwe oprogramowanie nie zostało znalezione przez Chrome na komputerze • Sprawdzono minutę temu}few{Szkodliwe oprogramowanie nie zostało znalezione przez Chrome na komputerze • Sprawdzono {NUM_MINS} minuty temu}many{Szkodliwe oprogramowanie nie zostało znalezione przez Chrome na komputerze • Sprawdzono {NUM_MINS} minut temu}other{Szkodliwe oprogramowanie nie zostało znalezione przez Chrome na komputerze • Sprawdzono {NUM_MINS} minuty temu}}</translation>
 <translation id="1145593918056169051">Drukarka przestała działać</translation>
@@ -1433,7 +1436,9 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2594999711683503743">Wyszukaj w Google lub wpisz URL</translation>
 <translation id="2602501489742255173">Przesuń palcem w górę, by rozpocząć</translation>
 <translation id="2603115962224169880">Oczyść komputer</translation>
+<translation id="2603355571917519942">Funkcja Voice Match jest gotowa</translation>
 <translation id="2603463522847370204">Otwórz w oknie &amp;incognito</translation>
+<translation id="2604138917550693049">Szukaj grafiki za pomocą Obiektywu Google</translation>
 <translation id="2604255671529671813">Błąd połączenia z siecią</translation>
 <translation id="2606246518223360146">Połącz dane</translation>
 <translation id="2606454609872547359">Nie, kontynuuj bez ChromeVoksa</translation>
@@ -1776,6 +1781,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2963151496262057773">Ta wtyczka nie odpowiada: <ph name="PLUGIN_NAME" />Chcesz ją zatrzymać?</translation>
 <translation id="2964193600955408481">Wyłącz Wi-Fi</translation>
 <translation id="2964245677645334031">Udostępnianie w pobliżu widoczność</translation>
+<translation id="2966216232069818096">Aby korzystać z pomocy Asystenta, zezwól mu na dostęp do informacji na ekranie</translation>
 <translation id="2966937470348689686">Zarządzaj ustawieniami Androida</translation>
 <translation id="2972581237482394796">&amp;Ponów</translation>
 <translation id="2973324205039581528">Wycisz stronę</translation>
@@ -1872,6 +1878,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="308268297242056490">Identyfikator URI</translation>
 <translation id="3082780749197361769">Ta karta używa Twojej kamery lub mikrofonu.</translation>
 <translation id="3083193146044397360">Tymczasowo zablokowano, by chronić Twoje bezpieczeństwo</translation>
+<translation id="3083899879156272923">Przesuwaj ekran, pozostawiając mysz na środku</translation>
 <translation id="3084548735795614657">Przeciągnij tutaj, by zainstalować</translation>
 <translation id="3084771660770137092">W przeglądarce Chrome zabrakło pamięci albo proces strony internetowej został zakończony z innego powodu. Aby kontynuować, załaduj stronę ponownie lub przejdź do innej strony.</translation>
 <translation id="3084958266922136097">Wyłącz wygaszacz ekranu</translation>
@@ -2367,6 +2374,9 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3654045516529121250">Odczyt ustawień ułatwień dostępu</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ma stały dostęp do jednego pliku.}few{Ma stały dostęp do # plików.}many{Ma stały dostęp do # plików.}other{Ma stały dostęp do # pliku.}}</translation>
 <translation id="3658871634334445293">Przyspieszenie TrackPointa</translation>
+<translation id="3659830472545192450">Voice Match pomaga Asystentowi Google rozpoznawać Twój głos na Chromebooku i odróżniać Cię od innych osób.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Pamiętaj:<ph name="END_BOLD" /> osoby, które mają podobny głos lub użyją nagrania, również będą mogły uzyskać dostęp do Twoich wyników. Uprawnienie do używania funkcji Voice Match możesz później wyłączyć w ustawieniach Asystenta.</translation>
 <translation id="3660234220361471169">Niezaufany</translation>
 <translation id="3664511988987167893">Ikona rozszerzenia</translation>
 <translation id="3665589677786828986">Przeglądarka Chrome wykryła, że niektóre z jej ustawień zostały zmodyfikowane przez inny program, i przywróciła im pierwotne wartości domyślne.</translation>
@@ -2975,7 +2985,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4364567974334641491"><ph name="APP_NAME" /> udostępnia okno.</translation>
 <translation id="4364830672918311045">Wyświetlanie powiadomień</translation>
 <translation id="4366138410738374926">Rozpoczęto drukowanie</translation>
-<translation id="437004882363131692">Otrzymuj wskazówki na temat urządzeń <ph name="DEVICE_TYPE" /> oraz najnowsze wiadomości i oferty. Dziel się swoją opinią. W dowolnej chwili możesz zrezygnować z subskrypcji.</translation>
 <translation id="4370425812909262207">Koszyki zostały ukryte. Pojawią się z powrotem, gdy wprowadzisz zmiany.</translation>
 <translation id="4370975561335139969">Podany adres e-mail i hasło nie pasują do siebie</translation>
 <translation id="4374831787438678295">Instalator Linuksa</translation>
@@ -3555,6 +3564,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Sprawdzanie pisowni w wybranych językach nie jest obsługiwane</translation>
 <translation id="5052499409147950210">Edytowanie strony internetowej</translation>
+<translation id="5053962746715621840">Szukanie grafiki za pomocą Obiektywu Google</translation>
 <translation id="5057110919553308744">Gdy klikniesz rozszerzenie</translation>
 <translation id="5057403786441168405">Zarządzanie kontami zalogowanych użytkowników. Witryny, aplikacje i rozszerzenia w Chrome i Google Play mogą używać tych kont do dostosowywania swojego wyglądu i działania (jeśli mają odpowiednie uprawnienia). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ograniczanie logowania się</translation>
@@ -4038,6 +4048,9 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5610038042047936818">Przełącz na tryb aparatu</translation>
 <translation id="561030196642865721">Pliki cookie innych firm są dozwolone na tej stronie</translation>
 <translation id="5612734644261457353">Nadal nie można zweryfikować Twojego hasła. Uwaga: jeśli ostatnio hasło było zmieniane, nowe hasło zostanie zastosowane, gdy się wylogujesz. Tu podaj stare hasło.</translation>
+<translation id="561308544008485315">Voice Match pomaga Asystentowi Google rozpoznawać Twój głos na Chromebooku i odróżniać Cię od innych osób. Aby oszczędzać baterię, polecenie „OK Google” jest włączone tylko wtedy, gdy urządzenie jest podłączone do zasilania. Możesz to zmienić w Ustawieniach.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Pamiętaj:<ph name="END_BOLD" /> osoby, które mają podobny głos lub użyją nagrania, również będą mogły uzyskać dostęp do Twoich wyników. Uprawnienie do używania funkcji Voice Match możesz później wyłączyć w ustawieniach Asystenta.</translation>
 <translation id="5614190747811328134">Informacje dla użytkownika</translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
 <translation id="5616726534702877126">Zarezerwuj rozmiar</translation>
@@ -5066,6 +5079,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6824584962142919697">&amp;Sprawdź elementy</translation>
 <translation id="6825184156888454064">Sortuj według nazwy</translation>
 <translation id="6826872289184051766">Zweryfikuj przez USB</translation>
+<translation id="6827604573767207488">Wygląda na to, że masz już spersonalizowanego Asystenta na innym urządzeniu. Wykorzystaj go jeszcze lepiej, włączając poniższe ustawienie.</translation>
 <translation id="6828153365543658583">Ogranicz logowanie do następujących użytkowników:</translation>
 <translation id="6828182567531805778">Aby synchronizować dane, wpisz hasło</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5500,6 +5514,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7327989755579928735">Domena <ph name="MANAGER" /> wyłączyła debugowanie ADB. Po zrestartowaniu urządzenia <ph name="DEVICE_TYPE" /> nie będzie można instalować aplikacji z innych urządzeń.</translation>
 <translation id="7328867076235380839">Niepoprawna kombinacja</translation>
 <translation id="7329154610228416156">Nie udało się zalogować, bo mechanizm logowania korzysta z niezabezpieczonego URL-a (<ph name="BLOCKED_URL" />). Skontaktuj się z administratorem.</translation>
+<translation id="7329932885428707942">Może to spowodować krótką przerwę w połączeniu z siecią komórkową.</translation>
 <translation id="7332053360324989309">Dedykowana instancja robocza: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Włącz lupę zadokowaną</translation>
 <translation id="7335974957018254119">Używaj sprawdzania pisowni dla języka:</translation>
@@ -5543,6 +5558,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7374376573160927383">Zarządzanie urządzeniami USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu godziny}few{Aktualizacja urządzenia nastąpi w ciągu # godzin}many{Aktualizacja urządzenia nastąpi w ciągu # godzin}other{Aktualizacja urządzenia nastąpi w ciągu # godziny}}</translation>
 <translation id="7376553024552204454">Podświetlaj wskaźnik myszy, gdy się porusza</translation>
+<translation id="737728204345822099">Wizyta na tej stronie może zostać zarejestrowana na Twoim kluczu bezpieczeństwa.</translation>
 <translation id="7377451353532943397">Nadal blokuj dostęp do czujników</translation>
 <translation id="7378611153938412599">Słabe hasła są łatwe do odgadnięcia. Pamiętaj, by używać tylko silnych haseł. <ph name="BEGIN_LINK" />Więcej wskazówek dotyczących bezpieczeństwa<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otwórz Chrome Web Store</translation>
@@ -6169,6 +6185,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8059417245945632445">&amp;Sprawdź urządzenia</translation>
 <translation id="8059456211585183827">Nie ma dostępnych drukarek do zapisania.</translation>
 <translation id="8061091456562007989">Cofnij zmiany</translation>
+<translation id="8061991877177392872">Wygląda na to, że Asystent zna już Twój głos z innego urządzenia, na którym masz ustawioną funkcję Voice Match. Zapisane tam nagrania zostały użyte do utworzenia modelu głosu na tym urządzeniu.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 kartka}few{{COUNT} kartki}many{{COUNT} kartek}other{{COUNT} kartki}}</translation>
 <translation id="8062879968880283306">Zeskanuj kod QR, używając aparatu urządzenia, lub wpisz kod aktywacyjny podany przez operatora.</translation>
 <translation id="8063235345342641131">Domyślny zielony awatar</translation>
@@ -6440,6 +6457,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8379991678458444070">Dodaj tę stronę do zakładek, by szybko na nią wrócić</translation>
 <translation id="8382913212082956454">Kopiuj adres &amp;e-mail</translation>
 <translation id="8386091599636877289">Nie znaleziono zasady.</translation>
+<translation id="8386819192691131213">Zezwól Asystentowi na korzystanie z informacji na ekranie, aby mógł podawać szybkie odpowiedzi, takie jak tłumaczenia, definicje czy przeliczenia jednostek</translation>
 <translation id="8386903983509584791">Skanowanie ukończone</translation>
 <translation id="8387361103813440603">Nie zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="8389264703141926739">Blokuj powiadomienia</translation>
@@ -6924,6 +6942,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8915370057835397490">Ładuję sugestie</translation>
 <translation id="8916476537757519021">Ramka podrzędna incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
+<translation id="8922624386829239660">Przesuwaj ekran, gdy mysz dotyka krawędzi ekranu</translation>
 <translation id="8923880975836399332">Ciemny morski</translation>
 <translation id="8925458182817574960">&amp;Ustawienia</translation>
 <translation id="8926389886865778422">Nie pytaj ponownie</translation>
@@ -7001,6 +7020,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9009708085379296446">Czy ta strona miała zostać zmieniona?</translation>
 <translation id="9011163749350026987">Zawsze pokazuj ikonę</translation>
 <translation id="9011393886518328654">Informacje o wersji</translation>
+<translation id="9012122671773859802">Przesuwaj ekran razem z ruchem myszy</translation>
 <translation id="9013037634206938463">Do korzystania z Linuksa wymagane jest <ph name="INSTALL_SIZE" /> wolnego miejsca. Aby zwolnić miejsce, usuń pliki z urządzenia.</translation>
 <translation id="9013707997379828817">Administrator przywrócił wcześniejszą wersję oprogramowania na tym urządzeniu. Zapisz ważne pliki, a następnie uruchom ponownie urządzenie. Wszystkie dane zostaną usunięte z pamięci.</translation>
 <translation id="901668144954885282">Tworzenie kopii zapasowej na Dysku Google</translation>
@@ -7045,6 +7065,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9052404922357793350">Nadal blokuj</translation>
 <translation id="9053563360605707198">Drukuj obustronnie</translation>
 <translation id="9053893665344928494">Zapamiętaj mój wybór</translation>
+<translation id="9055278955535611574">Uruchamiaj Asystenta, mówiąc „OK Google”.</translation>
 <translation id="9055636786322918818">Wymusza szyfrowanie RC4. Używanie tej opcji jest ryzykowne, ponieważ szyfrowanie RC4 nie zapewnia bezpieczeństwa.</translation>
 <translation id="9056810968620647706">Nie znaleziono żadnych dopasowań.</translation>
 <translation id="9057354806206861646">Harmonogram aktualizacji</translation>

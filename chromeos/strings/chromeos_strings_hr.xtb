@@ -115,6 +115,7 @@
 <translation id="3865414814144988605">Razlučivost</translation>
 <translation id="3941014780699102620">Razrješavanje hosta nije uspjelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
+<translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="397105322502079400">Izračun u tijeku…</translation>
 <translation id="39823212440917567">Uklonit će se zadaci ispisa stariji od <ph name="NUMBER_OF_DAYS" /> dana</translation>
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
@@ -277,6 +278,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je dovršeno. Skenirana je jedna stranica}one{Skeniranje je dovršeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je dovršeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je dovršeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
+<translation id="7449585358422953039">Uređajem upravlja <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
@@ -301,6 +303,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan poslužitelj naziva</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
+<translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="8075838845814659848">Preostala razina napunjenosti</translation>
 <translation id="808894953321890993">Promjena zaporke</translation>

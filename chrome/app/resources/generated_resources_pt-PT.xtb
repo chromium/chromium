@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Aceder aos dispositivos Bluetooth e de série</translation>
 <translation id="114036956334641753">Áudio e legendas</translation>
 <translation id="1140746652461896221">Bloquear conteúdo em qualquer página visitada</translation>
+<translation id="1141953877381847186">Permita que o Assistente utilize informações no ecrã para fornecer respostas rápidas, como tradução, definição, conversão de unidades e muito mais.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tenha em atenção o seguinte:<ph name="END_BOLD" /> pode sempre alterar esta opção mais tarde nas Definições do Assistente Google &gt; Informações relacionadas.</translation>
 <translation id="1143142264369994168">Signatário do certificado</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{O Chrome não encontrou software prejudicial no seu computador • Última verificação há 1 minuto}other{O Chrome não encontrou software prejudicial no seu computador • Última verificação há {NUM_MINS} minutos}}</translation>
 <translation id="1145593918056169051">A impressora parou</translation>
@@ -1435,7 +1438,9 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2594999711683503743">Pesquise no Google ou escreva o URL</translation>
 <translation id="2602501489742255173">Deslize rapidamente para cima para começar.</translation>
 <translation id="2603115962224169880">Limpar o computador</translation>
+<translation id="2603355571917519942">O Voice Match está pronto</translation>
 <translation id="2603463522847370204">Abrir na janela de &amp;navegação anónima</translation>
+<translation id="2604138917550693049">Pesquisar imagem com o Google Lens</translation>
 <translation id="2604255671529671813">Erro de ligação à rede</translation>
 <translation id="2606246518223360146">Associar dados</translation>
 <translation id="2606454609872547359">Não, continuar com o ChromeVox</translation>
@@ -1779,6 +1784,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 Pretende pará-lo?</translation>
 <translation id="2964193600955408481">Desativar Wi-Fi</translation>
 <translation id="2964245677645334031">Visibilidade da funcionalidade Partilhar na proximidade</translation>
+<translation id="2966216232069818096">Permita que o Assistente utilize informações no seu ecrã para ajudar</translation>
 <translation id="2966937470348689686">Gerir as preferências do Android</translation>
 <translation id="2972581237482394796">&amp;Repetir</translation>
 <translation id="2973324205039581528">Desativar som do site</translation>
@@ -1875,6 +1881,7 @@ Pretende pará-lo?</translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Este separador está a utilizar a sua câmara ou microfone.</translation>
 <translation id="3083193146044397360">Foi bloqueado temporariamente para proteger a sua segurança</translation>
+<translation id="3083899879156272923">Mover o ecrã mantendo o rato no centro do ecrã</translation>
 <translation id="3084548735795614657">Largar para instalar</translation>
 <translation id="3084771660770137092">O Chrome ficou sem memória ou o processo para a página Web foi terminado por qualquer outro motivo. Para continuar, atualize ou aceda a outra página.</translation>
 <translation id="3084958266922136097">Desativar proteção de ecrã</translation>
@@ -2370,6 +2377,9 @@ Pretende pará-lo?</translation>
 <translation id="3654045516529121250">Ler definições de acessibilidade</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tem acesso permanente a um ficheiro.}other{Tem acesso permanente a # ficheiros.}}</translation>
 <translation id="3658871634334445293">Aceleração do TrackPoint</translation>
+<translation id="3659830472545192450">O Voice Match ajuda o Assistente Google a identificar a sua voz no Chromebook e a distingui-lo de outras pessoas.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tenha em atenção o seguinte:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação também pode conseguir aceder aos seus resultados pessoais. Pode remover a autorização do Voice Match mais tarde ao desativá-la nas Definições do Assistente.</translation>
 <translation id="3660234220361471169">Não fidedigno</translation>
 <translation id="3664511988987167893">Ícone da extensão</translation>
 <translation id="3665589677786828986">O Chrome detetou que algumas das suas definições foram danificadas por outro programa e repôs as respetivas predefinições originais.</translation>
@@ -2978,7 +2988,6 @@ Pretende pará-lo?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> está a partilhar uma janela.</translation>
 <translation id="4364830672918311045">Apresentar notificações</translation>
 <translation id="4366138410738374926">Impressão iniciada</translation>
-<translation id="437004882363131692">Obtenha sugestões, ofertas e atualizações do <ph name="DEVICE_TYPE" /> e partilhe feedback. Anule a subscrição em qualquer altura.</translation>
 <translation id="4370425812909262207">Carrinhos ocultos. Serão apresentados novamente quando fizer alterações.</translation>
 <translation id="4370975561335139969">O email e a palavra-passe introduzidos não coincidem.</translation>
 <translation id="4374831787438678295">Instalador para o Linux</translation>
@@ -3558,6 +3567,7 @@ Pretende pará-lo?</translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">A verificação ortográfica não é suportada para os idiomas selecionados</translation>
 <translation id="5052499409147950210">Editar site</translation>
+<translation id="5053962746715621840">Pesquisar imagem com o Google Lens</translation>
 <translation id="5057110919553308744">Quando clica na extensão</translation>
 <translation id="5057403786441168405">Faça a gestão das suas contas com sessão iniciada. Os Websites, as apps e as extensões no Chrome e Google Play podem utilizar estas contas para personalizar a sua experiência, consoante as autorizações. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringir início de sessão</translation>
@@ -4042,6 +4052,9 @@ Pretende pará-lo?</translation>
 <translation id="5610038042047936818">Mudar para modo de câmara</translation>
 <translation id="561030196642865721">São permitidos cookies de terceiros neste site</translation>
 <translation id="5612734644261457353">Lamentamos, mas não foi possível confirmar a sua palavra-passe. Nota: se alterou a palavra-passe recentemente, a nova palavra-passe será aplicada quando terminar sessão. Utilize a palavra-passe antiga aqui.</translation>
+<translation id="561308544008485315">O Voice Match ajuda o Assistente Google a identificar a sua voz no Chromebook e a distingui-lo de outras pessoas. Para poupar bateria, a funcionalidade "Ok Google" só é ativada quando o dispositivo estiver ligado a uma fonte de alimentação. Para efetuar alterações, aceda a Definições.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Tenha em atenção o seguinte:<ph name="END_BOLD" /> uma voz semelhante ou uma gravação também pode conseguir aceder aos seus resultados pessoais. Pode remover a autorização do Voice Match mais tarde ao desativá-la nas Definições do Assistente.</translation>
 <translation id="5614190747811328134">Aviso ao utilizador</translation>
 <translation id="5614553682702429503">Pretende guardar a palavra-passe?</translation>
 <translation id="5616726534702877126">Reservar tamanho</translation>
@@ -5073,6 +5086,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6824584962142919697">&amp;Inspecionar elementos</translation>
 <translation id="6825184156888454064">Ordenar por nome</translation>
 <translation id="6826872289184051766">Validar através de USB</translation>
+<translation id="6827604573767207488">Já configurou o Assistente personalizado num dispositivo diferente. Obtenha ainda mais com o Assistente ao ativar a seguinte definição.</translation>
 <translation id="6828153365543658583">Restringir início de sessão para os seguintes utilizadores:</translation>
 <translation id="6828182567531805778">Introduzir a frase de acesso para sincronizar os dados</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5508,6 +5522,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> desativou a depuração do ADB. Quando reiniciar o seu dispositivo <ph name="DEVICE_TYPE" />, não poderá fazer sideload de apps.</translation>
 <translation id="7328867076235380839">Combinação inválida.</translation>
 <translation id="7329154610228416156">O início de sessão falhou porque foi configurado para utilizar um URL não seguro (<ph name="BLOCKED_URL" />). Contacte o gestor.</translation>
+<translation id="7329932885428707942">Isto pode provocar uma breve interrupção da ligação à rede móvel.</translation>
 <translation id="7332053360324989309">Trabalhador dedicado: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Ativar lupa ancorada</translation>
 <translation id="7335974957018254119">Utilizar o corretor ortográfico para</translation>
@@ -5551,6 +5566,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7374376573160927383">Gerir dispositivos USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Atualize o dispositivo dentro de uma hora}other{Atualize o dispositivo dentro de # horas}}</translation>
 <translation id="7376553024552204454">Realçar o cursor do rato ao ser movido</translation>
+<translation id="737728204345822099">Poderá ser mantido um registo da sua visita a este site na sua chave de segurança.</translation>
 <translation id="7377451353532943397">Continuar a impedir o acesso aos sensores</translation>
 <translation id="7378611153938412599">As palavras-passe fracas são fáceis de adivinhar. Certifique-se de que cria palavras-passe fortes. <ph name="BEGIN_LINK" />Veja mais sugestões de segurança.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Abrir a Web Store do Chrome</translation>
@@ -6178,6 +6194,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8059417245945632445">&amp;Inspecionar dispositivos</translation>
 <translation id="8059456211585183827">Não existem impressoras disponíveis para guardar.</translation>
 <translation id="8061091456562007989">Repor</translation>
+<translation id="8061991877177392872">Já configurou o Voice Match com o Assistente noutro dispositivo. Estas gravações anteriores foram utilizadas para criar um modelo de voz neste dispositivo.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 folha de papel}other{{COUNT} folhas de papel}}</translation>
 <translation id="8062879968880283306">Leia o código QR com a câmara do dispositivo ou introduza o código de ativação fornecido pelo seu operador.</translation>
 <translation id="8063235345342641131">Avatar verde predefinido</translation>
@@ -6448,6 +6465,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8379991678458444070">Volte aqui rapidamente ao adicionar este separador aos marcadores</translation>
 <translation id="8382913212082956454">Copiar &amp;endereço de email</translation>
 <translation id="8386091599636877289">A política não foi encontrada.</translation>
+<translation id="8386819192691131213">Permita que o Assistente utilize informações no ecrã para fornecer respostas rápidas, como tradução, definição, conversão de unidades e muito mais.</translation>
 <translation id="8386903983509584791">Análise concluída</translation>
 <translation id="8387361103813440603">Sem autorização para ver a sua localização</translation>
 <translation id="8389264703141926739">Bloquear notificações</translation>
@@ -6930,6 +6948,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="8915370057835397490">A carregar sugestão</translation>
 <translation id="8916476537757519021">Subestrutura da navegação anónima: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Mover o ecrã quando o rato tocar nos limites do ecrã</translation>
 <translation id="8923880975836399332">Azul esverdeado escuro</translation>
 <translation id="8925458182817574960">&amp;Definições</translation>
 <translation id="8926389886865778422">Não voltar a perguntar</translation>
@@ -7008,6 +7027,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9009708085379296446">Pretendia alterar esta página?</translation>
 <translation id="9011163749350026987">Mostrar o ícone sempre</translation>
 <translation id="9011393886518328654">Notas de lançamento</translation>
+<translation id="9012122671773859802">Mover o ecrã continuamente à medida que o rato se move</translation>
 <translation id="9013037634206938463">É necessário <ph name="INSTALL_SIZE" /> de espaço livre para instalar o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="9013707997379828817">O administrador reverteu este dispositivo. Guarde os ficheiros importantes e reinicie. Todos os dados no dispositivo serão eliminados.</translation>
 <translation id="901668144954885282">Faça uma cópia de segurança para o Google Drive</translation>
@@ -7052,6 +7072,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9052404922357793350">Continuar a bloquear</translation>
 <translation id="9053563360605707198">Imprimir de ambos os lados</translation>
 <translation id="9053893665344928494">Memorizar a minha escolha</translation>
+<translation id="9055278955535611574">Aceda ao Assistente com "Ok Google"</translation>
 <translation id="9055636786322918818">Aplicar a encriptação RC4. A utilização desta opção aumenta o seu risco, uma vez que as cifras RC4 são inseguras.</translation>
 <translation id="9056810968620647706">Não foram encontradas correspondências.</translation>
 <translation id="9057354806206861646">Atualizar programação</translation>

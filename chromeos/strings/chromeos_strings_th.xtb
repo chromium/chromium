@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">ความละเอียด</translation>
 <translation id="3941014780699102620">แก้ไขโฮสต์ไม่สำเร็จ</translation>
 <translation id="3942420633017001071">การวินิจฉัย</translation>
+<translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="39823212440917567">ระบบจะนำงานพิมพ์ที่เก่ากว่า <ph name="NUMBER_OF_DAYS" /> วันออก</translation>
 <translation id="4003384961948020559">ไม่สำเร็จ - ถาดกระดาษขาออกเต็ม</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
+<translation id="7449585358422953039">จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
 <translation id="7487067081878637334">เทคโนโลยี</translation>
 <translation id="7490813197707563893">ที่อยู่ MAC</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7960831585769876809">อุณหภูมิ</translation>
 <translation id="7994702968232966508">วิธีการ EAP</translation>
+<translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>

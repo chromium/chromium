@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">הורדת <ph name="FILE_NAME" /> נכשלה עקב בעיות בשרת.</translation>
+<translation id="1497470209855416291">תקופת הניסיון הושבתה</translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
 <translation id="1513352483775369820">סימניות והיסטוריית אתרים</translation>
 <translation id="1513858653616922153">מחיקת סיסמה</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">לצפייה בסרטון הבא</translation>
 <translation id="2074143993849053708">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נסגרה</translation>
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">תקופת הניסיון הופעלה</translation>
 <translation id="2096012225669085171">סנכרון והתאמה אישית במכשירים שונים</translation>
 <translation id="2100273922101894616">כניסה אוטומטית</translation>
 <translation id="2100314319871056947">כדאי לשתף את הטקסט במקטעים קטנים יותר</translation>
@@ -964,7 +966,6 @@
 <translation id="7704317875155739195">השלמה אוטומטית של חיפושים וכתובות אתרים</translation>
 <translation id="7707922173985738739">שימוש בחבילת הגלישה</translation>
 <translation id="7725024127233776428">הדפים שהוספת לסימניות מופיעים כאן</translation>
-<translation id="7735637452482172701">ביטול נעילה באמצעות נעילת מסך</translation>
 <translation id="7746457520633464754">‏כדי לזהות אפליקציות ואתרים מסוכנים, Chrome שולח אל Google כתובות URL של חלק מהדפים שאליהם נכנסת, מידע מוגבל לגבי המערכת וחלק מתוכן הדפים</translation>
 <translation id="7757787379047923882">הטקסט שותף דרך <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">בחירת תאריך ושעה</translation>

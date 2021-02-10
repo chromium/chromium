@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Felbontás</translation>
 <translation id="3941014780699102620">Nem sikerült a gazdagép feloldása</translation>
 <translation id="3942420633017001071">Diagnosztika</translation>
+<translation id="3967822245660637423">A letöltés sikeres</translation>
 <translation id="397105322502079400">Számítás…</translation>
 <translation id="39823212440917567">A(z) <ph name="NUMBER_OF_DAYS" /> napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
@@ -279,6 +280,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Szkennelés kész. 1 oldal beolvasva}other{Szkennelés kész. {NUMBER_OF_PAGES} oldal beolvasva}}</translation>
+<translation id="7449585358422953039">Kezelő: <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7487067081878637334">Technológia</translation>
 <translation id="7490813197707563893">MAC-cím</translation>
@@ -303,6 +305,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7936303884198020182">Nem találhatók névszerverek</translation>
 <translation id="7960831585769876809">Hőmérséklet</translation>
 <translation id="7994702968232966508">EAP módszer</translation>
+<translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8041089156583427627">Visszajelzés küldése</translation>
 <translation id="8075838845814659848">Töltöttségi szint</translation>
 <translation id="808894953321890993">Jelszó módosítása</translation>

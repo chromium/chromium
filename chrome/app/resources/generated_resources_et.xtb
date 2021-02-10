@@ -2978,7 +2978,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4364567974334641491"><ph name="APP_NAME" /> jagab akent.</translation>
 <translation id="4364830672918311045">Kuva märguanded</translation>
 <translation id="4366138410738374926">Alustati printimist</translation>
-<translation id="437004882363131692">Hankige seadme <ph name="DEVICE_TYPE" /> nõuandeid, pakkumisi ja värskendusi ning jagage tagasisidet. Saate tellimuse alati tühistada.</translation>
 <translation id="4370425812909262207">Ostukorvid on peidetud. Need kuvatakse uuesti, kui muudatused teete.</translation>
 <translation id="4370975561335139969">Sisestatud e-posti aadress ja parool ei ühildu</translation>
 <translation id="4374831787438678295">Linuxi installiprogramm</translation>
@@ -5550,6 +5549,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7374376573160927383">USB-seadmete haldamine</translation>
 <translation id="7375235221357833624">{0,plural, =1{Värskendage seadet tunni jooksul}other{Värskendage seadet # tunni jooksul}}</translation>
 <translation id="7376553024552204454">Tõsta hiirekursor esile, kui see liigub</translation>
+<translation id="737728204345822099">Kirje teie külastusest sellele saidile võidakse säilitada teie turvavõtmes.</translation>
 <translation id="7377451353532943397">Blokeeri ka edaspidi juurdepääs anduritele</translation>
 <translation id="7378611153938412599">Nõrku paroole on lihtne ära arvata. Veenduge, et looksite tugevad paroolid. <ph name="BEGIN_LINK" />Vaadake rohkem turvanõuandeid.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Ava Chrome'i veebipood</translation>

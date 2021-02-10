@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3967822245660637423">Descarga completa</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Quitaranse os traballos de impresión de máis de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="4003384961948020559">Produciuse un erro: a saída da impresora está chea</translation>
@@ -279,6 +280,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Escaneouse 1 páxina}other{A operación rematou. Escaneáronse {NUMBER_OF_PAGES} páxinas}}</translation>
+<translation id="7449585358422953039">Xestionado por <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Detectouse un portal</translation>
 <translation id="7487067081878637334">Tecnoloxía</translation>
 <translation id="7490813197707563893">Enderezo MAC</translation>
@@ -303,6 +305,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7994702968232966508">Método EAP</translation>
+<translation id="802154636333426148">Produciuse un erro na descarga</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>

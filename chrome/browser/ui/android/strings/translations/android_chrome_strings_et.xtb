@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1450753235335490080">Üksust <ph name="CONTENT_TYPE" /> ei saa jagada</translation>
 <translation id="1477626028522505441">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus serveriprobleemide tõttu.</translation>
+<translation id="1497470209855416291">Prooviperiood on keelatud</translation>
 <translation id="1506061864768559482">Otsingumootor</translation>
 <translation id="1513352483775369820">Järjehoidjad ja veebiajalugu</translation>
 <translation id="1513858653616922153">Kustuta parool</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Vaadake järgmist videot</translation>
 <translation id="2074143993849053708">Assistendi häälotsingu sisu kasutajaliides on suletud</translation>
 <translation id="2082238445998314030">Tulemus <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Prooviperiood on lubatud</translation>
 <translation id="2096012225669085171">Seadmete vahel sünkroonimine ja isikupärastamine</translation>
 <translation id="2100273922101894616">Automaatne sisselogimine</translation>
 <translation id="2100314319871056947">Proovige teksti jagada väiksemate lõikudena</translation>
@@ -964,7 +966,6 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7704317875155739195">Otsingute ja URL-ide automaatne täitmine</translation>
 <translation id="7707922173985738739">Kasuta mobiilset andmesidet</translation>
 <translation id="7725024127233776428">Järjehoidjatesse lisatud lehed kuvatakse siin</translation>
-<translation id="7735637452482172701">Ava ekraanilukuga</translation>
 <translation id="7746457520633464754">Ohtlike rakenduste ja saitide tuvastamiseks saadab Chrome mõnede teie külastatud lehtede URL-id, piiratud süsteemiteabe ja mõne lehe sisu Google'ile</translation>
 <translation id="7757787379047923882">Teksti jagati seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Kuupäeva ja kellaaja valimine</translation>

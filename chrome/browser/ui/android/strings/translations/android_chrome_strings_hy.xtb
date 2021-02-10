@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1450753235335490080">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
+<translation id="1497470209855416291">Փորձնական տարբերակն անջատված է</translation>
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
 <translation id="1513858653616922153">Ջնջել գաղտնաբառը</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Դիտել հաջորդ տեսանյութը</translation>
 <translation id="2074143993849053708">Օգնականի միջոցով ձայնային որոնման միջերեսը փակվել է</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
+<translation id="2083113399121613785">Փորձնական տարբերակը միացված է</translation>
 <translation id="2096012225669085171">Համաժամացում և անհատականացում բոլոր սարքերում</translation>
 <translation id="2100273922101894616">Ավտոմատ մուտք</translation>
 <translation id="2100314319871056947">Փորձեք ուղարկել տեքստը մաս-մաս</translation>
@@ -964,7 +966,6 @@
 <translation id="7704317875155739195">Ավտոմատ լրացնել որոնման հարցումները և URL-ները</translation>
 <translation id="7707922173985738739">Օգտագործել բջջային ինտերնետ</translation>
 <translation id="7725024127233776428">Ձեր էջանշած էջերը կցուցադրվեն այստեղ</translation>
-<translation id="7735637452482172701">Ապակողպել էկրանի կողպման միջոցով</translation>
 <translation id="7746457520633464754">Վտանգավոր կայքերն ու հավելվածները հայտնաբերելու համար Chrome-ը Google-ին է ուղարկում ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և որոշակի տեղեկություններ համակարգի մասին։</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> սարքից ուղարկված հաղորդագրություն</translation>
 <translation id="7761849928583394409">Ընտրեք ամսաթիվը և ժամը</translation>

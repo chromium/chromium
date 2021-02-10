@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3967822245660637423">Descarga completa</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
 <translation id="4003384961948020559">No se ha podido imprimir - Salida llena</translation>
@@ -302,6 +303,7 @@
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7994702968232966508">Método EAP</translation>
+<translation id="802154636333426148">No se ha podido descargar el archivo</translation>
 <translation id="8041089156583427627">Enviar</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>

@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1450753235335490080">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el servidor.</translation>
+<translation id="1497470209855416291">Demostración inhabilitada</translation>
 <translation id="1506061864768559482">Buscador</translation>
 <translation id="1513352483775369820">Historial web y marcadores</translation>
 <translation id="1513858653616922153">Eliminar contraseña</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Ver el siguiente vídeo</translation>
 <translation id="2074143993849053708">Interfaz de consentimiento de la búsqueda por voz del Asistente cerrada</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Demostración habilitada</translation>
 <translation id="2096012225669085171">Sincroniza y personaliza todos tus dispositivos</translation>
 <translation id="2100273922101894616">Iniciar sesión automáticamente</translation>
 <translation id="2100314319871056947">Prueba a compartir el texto dividiéndolo en partes más pequeñas</translation>
@@ -964,7 +966,6 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7704317875155739195">Autocompletar búsquedas y URLs</translation>
 <translation id="7707922173985738739">Se utilizarán datos móviles</translation>
 <translation id="7725024127233776428">Las páginas que añadas a marcadores aparecerán aquí</translation>
-<translation id="7735637452482172701">Desbloquear con bloqueo de pantalla</translation>
 <translation id="7746457520633464754">Para detectar aplicaciones y sitios peligrosos, Chrome envía a Google las URL de algunas de las páginas que visitas, información limitada del sistema y parte del contenido de las páginas.</translation>
 <translation id="7757787379047923882">Texto compartido desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Elegir fecha y hora</translation>

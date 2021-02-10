@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍ မရပါ</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ အကြောင်း အမျိုးမျိုးကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
+<translation id="1497470209855416291">အစမ်းသုံးကာလ ပိတ်ထားသည်</translation>
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="1513352483775369820">စာညှပ်များ နှင့် ဝဘ် မှတ်တမ်း</translation>
 <translation id="1513858653616922153">စကားဝှက်ကို ဖျက်ရန်</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">နောက်ဗီဒီယို ကြည့်ရန်</translation>
 <translation id="2074143993849053708">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui ကို ပိတ်ထားသည်</translation>
 <translation id="2082238445998314030">အဖြေ <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">အစမ်းသုံးကာလ ဖွင့်ထားသည်</translation>
 <translation id="2096012225669085171">စက်ပစ္စည်းများအားလုံးတွင် စင့်ခ်လုပ်ပြီး ပုဂ္ဂိုလ်ရေးသီးသန့် ပြင်ဆင်ပါ</translation>
 <translation id="2100273922101894616">အလိုအလျောက် ဝင်ရောက်ရန်</translation>
 <translation id="2100314319871056947">စာသားကို ပိုသေးသော အပိုင်းများအဖြစ် မျှဝေကြည့်ပါ</translation>
@@ -963,7 +965,6 @@
 <translation id="7704317875155739195">ရှာဖွေမှုများနှင့် URL များကို အလိုအလျောက်ဖြည့်ခြင်း</translation>
 <translation id="7707922173985738739">မိုဘိုင်းဒေတာကို သုံးရန်</translation>
 <translation id="7725024127233776428">သင်သိမ်းဆည်းထားသည့် လိပ်စာ၏ စာမျက်နှာများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
-<translation id="7735637452482172701">ဖန်သားပြင် လော့ခ်ချခြင်းဖြင့် ဖွင့်ရန်</translation>
 <translation id="7746457520633464754">အန္တရာယ်ရှိသော အက်ပ်နှင့် ဝဘ်ဆိုက်များကို သိရှိရန် Chrome က သင်ဝင်ကြည့်ထားသော စာမျက်နှာအချို့၏ URL များ၊ ကန့်သတ်ထားသော စနစ် အချက်အလက်များနှင့် စာမျက်နှာ အကြောင်းအရာအချို့ကို Google သို့ ပို့ပါသည်</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> မှ မျှဝေထားသော စာသား</translation>
 <translation id="7761849928583394409">ရက်စွဲနှင့် အချိန်ရွေးရန်</translation>

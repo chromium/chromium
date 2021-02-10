@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />-г хуваалцах боломжгүй байна</translation>
 <translation id="1477626028522505441">Серверийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
+<translation id="1497470209855416291">Туршилтыг идэвхгүй болгосон</translation>
 <translation id="1506061864768559482">Хайлтын хэрэгсэл</translation>
 <translation id="1513352483775369820">Хавчуурга болон веб түүх</translation>
 <translation id="1513858653616922153">Нууц үг устгах</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Дараагийн видеог үзэх</translation>
 <translation id="2074143993849053708">Туслахын дуут хайлтын зөвшөөрлийн ui-г хаасан</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />-ын <ph name="RESULT_NUMBER" /> илэрц байна</translation>
+<translation id="2083113399121613785">Tуршилтыг идэвхжүүлсэн</translation>
 <translation id="2096012225669085171">Төхөөрөмжүүдийг синк хийж хувийн болгох</translation>
 <translation id="2100273922101894616">Автоматаар нэвтэх</translation>
 <translation id="2100314319871056947">Текстийг жижиг хэсгээр хуваалцахыг оролдоно уу</translation>
@@ -963,7 +965,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7704317875155739195">Хайлт болон URL-г автоматаар гүйцээх</translation>
 <translation id="7707922173985738739">Мобайл дата ашиглах</translation>
 <translation id="7725024127233776428">Таны хавчуурга хийсэн хуудас энд харагдана</translation>
-<translation id="7735637452482172701">Дэлгэцийн түгжээ ашиглан түгжээг тайлах</translation>
 <translation id="7746457520633464754">Chrome аюултай апп болон сайт илрүүлэхийн тулд таны зочилдог зарим хуудасны URL, хязгаарлагдмал системийн мэдээлэл болон зарим хуудасны контентыг Google-д илгээдэг</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />-с текстийг хуваалцсан</translation>
 <translation id="7761849928583394409">Огноо болон цаг сонгох</translation>

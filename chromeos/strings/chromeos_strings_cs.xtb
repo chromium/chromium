@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Rozlišení</translation>
 <translation id="3941014780699102620">Hostitele se nepodařilo vyřešit</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3967822245660637423">Stahování bylo dokončeno</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="39823212440917567">Tiskové úlohy starší než <ph name="NUMBER_OF_DAYS" /> dní budou odstraněny</translation>
 <translation id="4003384961948020559">Tisk selhal – výstupní zásobník je plný</translation>
@@ -279,6 +280,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenování bylo dokončeno. Naskenována 1 stránka}few{Skenování bylo dokončeno. Naskenovány {NUMBER_OF_PAGES} stránky}many{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránky}other{Skenování bylo dokončeno. Naskenováno {NUMBER_OF_PAGES} stránek}}</translation>
+<translation id="7449585358422953039">Spravováno administrátorem <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Byl zjištěn portál</translation>
 <translation id="7487067081878637334">Technologie</translation>
 <translation id="7490813197707563893">Adresa MAC</translation>
@@ -303,6 +305,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7936303884198020182">Nebyly nalezeny žádné názvové servery</translation>
 <translation id="7960831585769876809">Teplota</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
+<translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8041089156583427627">Odeslat svůj názor</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="808894953321890993">Změnit heslo</translation>

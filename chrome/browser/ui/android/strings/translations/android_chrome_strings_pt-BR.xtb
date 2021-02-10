@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1450753235335490080">Falha no compartilhamento de <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Falha no download do arquivo <ph name="FILE_NAME" /> devido a problemas de servidor.</translation>
+<translation id="1497470209855416291">O teste está desativado</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1513352483775369820">Favoritos e histórico da Web</translation>
 <translation id="1513858653616922153">Excluir senha</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Assistir ao próximo vídeo</translation>
 <translation id="2074143993849053708">IU de consentimento para a pesquisa por voz do Assistente fechada</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">O teste está ativado</translation>
 <translation id="2096012225669085171">Sincronizar e personalizar vários dispositivos</translation>
 <translation id="2100273922101894616">Login automático</translation>
 <translation id="2100314319871056947">Tente compartilhar o texto em segmentos menores</translation>
@@ -965,7 +967,6 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="7704317875155739195">Preencher automaticamente pesquisas e URLs</translation>
 <translation id="7707922173985738739">Usar dados móveis</translation>
 <translation id="7725024127233776428">As páginas favoritas são exibidas aqui</translation>
-<translation id="7735637452482172701">Desbloquear com o bloqueio de tela</translation>
 <translation id="7746457520633464754">Para detectar apps e sites perigosos, o Chrome envia para o Google URLs de algumas páginas visitadas, informações limitadas do sistema e um pouco do conteúdo da página</translation>
 <translation id="7757787379047923882">Texto compartilhado por <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Escolher data e hora</translation>

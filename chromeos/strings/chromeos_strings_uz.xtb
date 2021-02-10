@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="3967822245660637423">Yuklab olindi</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="4003384961948020559">Bajarilmadi - Boʻsh joy qolmadi</translation>
@@ -279,6 +280,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanerlandi. 1 ta sahifa skanerlandi}other{Skanerlandi. {NUMBER_OF_PAGES} ta sahifa skanerlandi}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> tomonidan boshqariladi.</translation>
 <translation id="7469648432129124067">Portal aniqlandi</translation>
 <translation id="7487067081878637334">Texnologiya</translation>
 <translation id="7490813197707563893">MAC manzil</translation>
@@ -303,6 +305,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="7960831585769876809">Harorat</translation>
 <translation id="7994702968232966508">EAP usuli</translation>
+<translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
 <translation id="8041089156583427627">Fikr-mulohaza</translation>
 <translation id="8075838845814659848">Batareya quvvati</translation>
 <translation id="808894953321890993">Parolni almashtirish</translation>

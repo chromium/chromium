@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">In</translation>
 <translation id="1450753235335490080">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Tải xuống <ph name="FILE_NAME" /> không thành công do sự cố máy chủ.</translation>
+<translation id="1497470209855416291">Bản dùng thử đang tắt</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1513352483775369820">Dấu trang và lịch sử web</translation>
 <translation id="1513858653616922153">Xóa mật khẩu</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Xem video tiếp theo</translation>
 <translation id="2074143993849053708">Giao diện người dùng cho phép sử dụng Trợ lý để tìm kiếm bằng giọng nói đã đóng</translation>
 <translation id="2082238445998314030">Kết quả <ph name="RESULT_NUMBER" /> trong tổng số <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Bản dùng thử đang bật</translation>
 <translation id="2096012225669085171">Đồng bộ hóa và cá nhân hóa trên các thiết bị</translation>
 <translation id="2100273922101894616">Tự động đăng nhập</translation>
 <translation id="2100314319871056947">Hãy thử chia sẻ văn bản theo các đoạn nhỏ hơn</translation>
@@ -964,7 +966,6 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7704317875155739195">Tự động hoàn thành cụm từ tìm kiếm và URL</translation>
 <translation id="7707922173985738739">Sử dụng dữ liệu di động</translation>
 <translation id="7725024127233776428">Các trang mà bạn đánh dấu sẽ xuất hiện tại đây</translation>
-<translation id="7735637452482172701">Mở khóa bằng phương thức khóa màn hình</translation>
 <translation id="7746457520633464754">Để phát hiện các ứng dụng và trang web nguy hiểm, Chrome sẽ gửi URL của một số trang mà bạn truy cập, thông tin hệ thống giới hạn và một số nội dung trang cho Google</translation>
 <translation id="7757787379047923882">Văn bản được chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Chọn ngày và giờ</translation>

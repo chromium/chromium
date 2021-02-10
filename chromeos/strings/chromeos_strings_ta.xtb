@@ -90,6 +90,7 @@
 <translation id="315738237743207937">கேப்டிவ் போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="3188257591659621405">எனது கோப்புகள்</translation>
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
+<translation id="3226405216343213872">ஸ்கேனர்களைத் தேடுகிறது</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3268178239013324452">பிரிண்டரின் மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
 <translation id="3310640316857623290">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடக் குறிப்பிடத்தக்க அளவு அதிகமாக உள்ளது</translation>
@@ -117,6 +118,7 @@
 <translation id="3865414814144988605">தெளிவு</translation>
 <translation id="3941014780699102620">ஹோஸ்ட்டைச் சரிசெய்ய முடியவில்லை</translation>
 <translation id="3942420633017001071">கண்டறிதல்</translation>
+<translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> நாட்களுக்கும் மேலாக இருக்கும் பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="4003384961948020559">பிரிண்ட் வெளியே வரும் டிரே நிரம்பி விட்டதால் அச்சிட முடியவில்லை</translation>
@@ -279,6 +281,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> நிர்வகிக்கிறது.</translation>
 <translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="7487067081878637334">தொழில்நுட்பம்</translation>
 <translation id="7490813197707563893">MAC முகவரி</translation>
@@ -303,6 +306,7 @@
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="7960831585769876809">வெப்பநிலை</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
+<translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>

@@ -591,6 +591,7 @@
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> సమీపంలోని బ్లూటూత్ పరికరాల కోసం స్కాన్ చేయాలనుకుంటోంది. కింది పరికరాలు కనుగొనబడ్డాయి:</translation>
 <translation id="5233638681132016545">కొత్త‌ టాబ్</translation>
+<translation id="5250483651202458397">స్క్రీన్‌షాట్. మూసివేయడానికి ట్యాప్ చేయండి.</translation>
 <translation id="526421993248218238">ఈ పేజీని లోడ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="5271967389191913893">పరికరం డౌన్‌లోడ్ చేయాల్సిన కంటెంట్‌ను తెరవలేదు.</translation>
 <translation id="5292796745632149097">ఈ పరికరానికి పంపండి</translation>
@@ -836,6 +837,7 @@
 <translation id="6767294960381293877">ట్యాబ్‌ను షేర్ చేయాల్సిన పరికరాల జాబితా సగం ఎత్తులో తెరవబడింది.</translation>
 <translation id="6783942555455976443">ఈ పేజీని తర్వాత కోసం సేవ్ చేసి, ఒక రిమైండర్‌ను పొందండి</translation>
 <translation id="6811034713472274749">పేజీ వీక్షించడానికి సిద్ధంగా ఉంది</translation>
+<translation id="6813446258015311409">Chromeకు సైన్ ఇన్ చేయండి, తెరవబడింది.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ట్యాబ్‌ను ఎంచుకున్నారు</translation>
 <translation id="6833996806551876956">గోప్యతా శాండ్‌బాక్స్ ట్రయల్</translation>
@@ -964,7 +966,6 @@
 <translation id="7704317875155739195">ఆటో-ఫిల్ సెర్చ్‌లు, URLలు</translation>
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7725024127233776428">మీరు బుక్‌మార్క్ చేసే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
-<translation id="7735637452482172701">స్క్రీన్ లాక్‌తో అన్‌లాక్ చేయి</translation>
 <translation id="7746457520633464754">Chrome ప్రమాదకరమైన యాప్‌లు, సైట్‌లను గుర్తించడానికి, మీరు సందర్శించే కొన్ని పేజీల URLలు, పరిమిత సిస్టమ్ సమాచారం, కొంత పేజీ కంటెంట్‌ను Googleకు పంపుతుంది</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడిన వచనం</translation>
 <translation id="7761849928583394409">తేదీ, సమయం ఎంచుకోండి</translation>
@@ -1097,6 +1098,7 @@
 <translation id="8583805026567836021">ఖాతా డేటాను క్లియర్ చేస్తోంది</translation>
 <translation id="8587585930972369234">సెర్చ్ చేయడానికి నొక్కి, పట్టుకోండి</translation>
 <translation id="860043288473659153">కార్డుదారుని పేరు</translation>
+<translation id="8602358303461588329">Chromeకు సైన్ ఇన్ చేయండి, మూసివేయబడింది.</translation>
 <translation id="860282621117673749">ధర తగ్గింపు అలర్ట్‌లు</translation>
 <translation id="8616006591992756292">మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />లో ఇతర రూపాల్లో ఉన్న బ్రౌజింగ్ చరిత్రను కలిగి ఉండవచ్చు.</translation>
 <translation id="8617240290563765734">డౌన్‌లోడ్ చేసిన కంటెంట్‌లో పేర్కొన్న సూచిత URLని తెరవాలా?</translation>

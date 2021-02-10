@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">存取你的藍牙和序列裝置</translation>
 <translation id="114036956334641753">音訊和字幕</translation>
 <translation id="1140746652461896221">封鎖你造訪的任何網頁所含內容</translation>
+<translation id="1141953877381847186">允許 Google 助理使用畫面上的資訊提供快速解答，例如翻譯、定義、單位轉換等等。
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />注意事項：<ph name="END_BOLD" />之後可隨時在 Google 助理設定的「相關資訊」中變更設定。</translation>
 <translation id="1143142264369994168">憑證簽署者</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome 並未在電腦上發現任何有害軟體 • 上次檢查時間：1 分鐘前}other{Chrome 並未在電腦上發現任何有害軟體 • 上次檢查時間：{NUM_MINS} 分鐘前}}</translation>
 <translation id="1145593918056169051">印表機已停止運作</translation>
@@ -1431,7 +1434,9 @@
 <translation id="2594999711683503743">搜尋 Google 或輸入網址</translation>
 <translation id="2602501489742255173">向上滑動即可開始使用</translation>
 <translation id="2603115962224169880">清理電腦</translation>
+<translation id="2603355571917519942">現在可以使用 Voice Match 了</translation>
 <translation id="2603463522847370204">在無痕式視窗中開啟(&amp;I)</translation>
+<translation id="2604138917550693049">使用 Google 智慧鏡頭搜尋圖片</translation>
 <translation id="2604255671529671813">網路連線錯誤</translation>
 <translation id="2606246518223360146">連結資料</translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
@@ -1773,6 +1778,7 @@
 <translation id="2963151496262057773">下列外掛程式無回應：<ph name="PLUGIN_NAME" /> 您要停止執行嗎？</translation>
 <translation id="2964193600955408481">停用 WiFi</translation>
 <translation id="2964245677645334031">鄰近分享瀏覽權限</translation>
+<translation id="2966216232069818096">讓 Google 助理使用畫面上的資訊提供協助</translation>
 <translation id="2966937470348689686">管理 Android 偏好設定</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">關閉網站音訊</translation>
@@ -1868,6 +1874,7 @@
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">這個分頁正在使用你的相機和/或麥克風。</translation>
 <translation id="3083193146044397360">已暫時封鎖權限，保護你的安全</translation>
+<translation id="3083899879156272923">以滑鼠游標為中心移動畫面</translation>
 <translation id="3084548735795614657">拖曳即可安裝</translation>
 <translation id="3084771660770137092">Chrome 記憶體不足或其他某些原因導致網頁處理程序終止。如要繼續執行，請重新載入或前往其他網頁。</translation>
 <translation id="3084958266922136097">停用螢幕保護程式</translation>
@@ -2361,6 +2368,9 @@
 <translation id="3654045516529121250">讀取你的無障礙設定</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{應用程式可永久存取 1 個檔案。}other{應用程式可永久存取 # 個檔案。}}</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
+<translation id="3659830472545192450">Voice Match 可協助 Google 助理在 Chromebook 上辨識你的聲音，區分你和其他人。
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />注意事項：<ph name="END_BOLD" />如果有人聲音與你相似或擁有你的聲音錄音檔，或許也能存取你的個人化搜尋結果。之後如需移除 Voice Match 權限，只要前往 Google 助理設定頁面關閉 Voice Match 功能即可。</translation>
 <translation id="3660234220361471169">不受信任</translation>
 <translation id="3664511988987167893">擴充功能圖示</translation>
 <translation id="3665589677786828986">Chrome 偵測到另一個程式竄改了部分瀏覽器設定，現已將這些設定重設為原始預設值。</translation>
@@ -2966,7 +2976,6 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4366138410738374926">已開始列印</translation>
-<translation id="437004882363131692">你可以取得 <ph name="DEVICE_TYPE" />的實用提示、優惠資訊與最新消息，並提供意見回饋。你隨時可以取消訂閱。</translation>
 <translation id="4370425812909262207">已隱藏購物車。變更設定即可讓購物車再次出現。</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
 <translation id="4374831787438678295">Linux 安裝程式</translation>
@@ -3543,6 +3552,7 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">你選取的語言不支援拼字檢查功能</translation>
 <translation id="5052499409147950210">編輯網站</translation>
+<translation id="5053962746715621840">使用 Google 智慧鏡頭搜尋圖片</translation>
 <translation id="5057110919553308744">當你點選擴充功能時</translation>
 <translation id="5057403786441168405">管理已登入的帳戶。Chrome 和 Google Play 的網站、應用程式和擴充功能可能會使用這些帳戶為你提供個人化的使用體驗 (依權限而定)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">限制登入</translation>
@@ -4025,6 +4035,9 @@
 <translation id="5610038042047936818">切換至相機模式</translation>
 <translation id="561030196642865721">這個網站允許第三方 Cookie</translation>
 <translation id="5612734644261457353">很抱歉，系統仍然無法驗證你的密碼。注意：如果你的密碼最近有所異動，新密碼會在你登出後立即生效，目前請在這裡使用舊密碼。</translation>
+<translation id="561308544008485315">Voice Match 可協助 Google 助理在 Chromebook 上辨識你的聲音，區分你和其他人。為了節省電力，系統只在裝置接上電源時才會啟動「Ok Google」。如要進行變更，請前往「設定」。
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />注意事項：<ph name="END_BOLD" />如果有人聲音與你相似或擁有你的聲音錄音檔，或許也能存取你的個人化搜尋結果。之後如需移除 Voice Match 權限，只要前往 Google 助理設定頁面關閉 Voice Match 功能即可。</translation>
 <translation id="5614190747811328134">使用者通知</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5616726534702877126">預留大小</translation>
@@ -5048,6 +5061,7 @@
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
 <translation id="6825184156888454064">依名稱排序</translation>
 <translation id="6826872289184051766">透過 USB 進行驗證</translation>
+<translation id="6827604573767207488">你似乎已在其他裝置上設定個人化的 Google 助理。開啟下列設定即可運用 Google 助理的更多功能。</translation>
 <translation id="6828153365543658583">只允許下列使用者登入：</translation>
 <translation id="6828182567531805778">如果要同步處理資料，請輸入你的通關密語</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5482,6 +5496,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，你將無法側載應用程式。</translation>
 <translation id="7328867076235380839">按鍵組合無效</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
+<translation id="7329932885428707942">這可能會導致行動網路連線短暫中斷。</translation>
 <translation id="7332053360324989309">專有 Worker：<ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">啟用停駐放大鏡</translation>
 <translation id="7335974957018254119">使用拼字檢查的語言：</translation>
@@ -5525,6 +5540,7 @@
 <translation id="7374376573160927383">管理 USB 裝置</translation>
 <translation id="7375235221357833624">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>
 <translation id="7376553024552204454">滑鼠游標移動時醒目顯示</translation>
+<translation id="737728204345822099">安全金鑰可能保留你造訪這個網站的記錄。</translation>
 <translation id="7377451353532943397">繼續禁止存取感應器</translation>
 <translation id="7378611153938412599">低強度密碼很容易讓有心人士猜中，請務必建立高強度密碼。<ph name="BEGIN_LINK" />查看更多安全性提示。<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">開啟 Chrome 線上應用程式商店</translation>
@@ -6151,6 +6167,7 @@
 <translation id="8059417245945632445">檢查裝置 (&amp;I)</translation>
 <translation id="8059456211585183827">沒有可供儲存的印表機。</translation>
 <translation id="8061091456562007989">還原設定</translation>
+<translation id="8061991877177392872">你似乎已在其他裝置上設定 Google 助理的 Voice Match 功能。系統已使用先前的錄音檔在這部裝置上建立語音模型。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 張紙}other{{COUNT} 張紙}}</translation>
 <translation id="8062879968880283306">請使用裝置相機掃描 QR 圖碼，或輸入電信業者提供的啟用代碼。</translation>
 <translation id="8063235345342641131">預設的綠色顯示圖片</translation>
@@ -6419,6 +6436,7 @@
 <translation id="8379991678458444070">將此分頁加入書籤，日後便能快速開啟這個頁面</translation>
 <translation id="8382913212082956454">複製電子郵件地址(&amp;E)</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
+<translation id="8386819192691131213">允許 Google 助理使用畫面上的資訊提供快速解答，例如翻譯、定義、單位轉換等等</translation>
 <translation id="8386903983509584791">掃描完成</translation>
 <translation id="8387361103813440603">不得查看你的位置資訊</translation>
 <translation id="8389264703141926739">封鎖通知</translation>
@@ -6896,6 +6914,7 @@
 <translation id="8915370057835397490">正在載入建議</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
+<translation id="8922624386829239660">在滑鼠輕觸畫面邊緣時移動畫面</translation>
 <translation id="8923880975836399332">深藍綠色</translation>
 <translation id="8925458182817574960">設定(&amp;S)</translation>
 <translation id="8926389886865778422">不再詢問這個問題</translation>
@@ -6973,6 +6992,7 @@
 <translation id="9009708085379296446">你要變更這個頁面嗎？</translation>
 <translation id="9011163749350026987">一律顯示圖示</translation>
 <translation id="9011393886518328654">版本資訊</translation>
+<translation id="9012122671773859802">跟著滑鼠游標持續移動畫面</translation>
 <translation id="9013037634206938463">安裝 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空間。如要增加可用空間，請刪除裝置中的檔案。</translation>
 <translation id="9013707997379828817">你的管理員已復原這個裝置。請儲存重要檔案後再重新啟動。重新啟動後，裝置上的資料將全數刪除。</translation>
 <translation id="901668144954885282">備份到 Google 雲端硬碟</translation>
@@ -7017,6 +7037,7 @@
 <translation id="9052404922357793350">繼續封鎖</translation>
 <translation id="9053563360605707198">雙面列印</translation>
 <translation id="9053893665344928494">記住我的選擇</translation>
+<translation id="9055278955535611574">說出「Ok Google」即可存取 Google 助理</translation>
 <translation id="9055636786322918818">強制執行 RC4 加密。由於 RC4 加密不安全，使用這個加密選項會提高風險。</translation>
 <translation id="9056810968620647706">找不到相符項目。</translation>
 <translation id="9057354806206861646">更新時間表</translation>

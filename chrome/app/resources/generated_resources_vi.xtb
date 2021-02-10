@@ -2968,7 +2968,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4364567974334641491"><ph name="APP_NAME" /> đang chia sẻ một cửa sổ.</translation>
 <translation id="4364830672918311045">Hiển thị thông báo</translation>
 <translation id="4366138410738374926">Đã bắt đầu in</translation>
-<translation id="437004882363131692">Nhận các mẹo, ưu đãi và thông tin cập nhật về <ph name="DEVICE_TYPE" />, cũng như chia sẻ ý kiến phản hồi. Bạn có thể hủy đăng ký bất kỳ lúc nào.</translation>
 <translation id="4370425812909262207">Đã ẩn các giỏ hàng. Các giỏ hàng sẽ xuất hiện trở lại khi bạn thay đổi.</translation>
 <translation id="4370975561335139969">Email và mật khẩu bạn nhập không khớp</translation>
 <translation id="4374831787438678295">Trình cài đặt Linux</translation>
@@ -5527,6 +5526,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7374376573160927383">Quản lý các thiết bị USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Cập nhật thiết bị trong vòng một giờ}other{Cập nhật thiết bị trong vòng # giờ}}</translation>
 <translation id="7376553024552204454">Đánh dấu con trỏ chuột khi đang di chuyển</translation>
+<translation id="737728204345822099">Khóa bảo mật có thể lưu giữ bản ghi lượt truy cập của bạn vào trang web này.</translation>
 <translation id="7377451353532943397">Tiếp tục chặn quyền sử dụng cảm biến</translation>
 <translation id="7378611153938412599">Mật khẩu yếu thường dễ đoán. Hãy nhớ tạo mật khẩu mạnh. <ph name="BEGIN_LINK" />Xem các mẹo bảo mật khác.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Mở cửa hàng Chrome trực tuyến</translation>

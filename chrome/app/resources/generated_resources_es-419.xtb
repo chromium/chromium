@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Acceder a los dispositivos en serie y Bluetooth</translation>
 <translation id="114036956334641753">Audio y subtítulos</translation>
 <translation id="1140746652461896221">Bloquear contenido en cualquier página que visites</translation>
+<translation id="1141953877381847186">Permite que Asistente use la información en pantalla para proporcionar respuestas rápidas, como una traducción, definición, conversión de unidades y mucho más.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ten en cuenta<ph name="END_BOLD" /> que puedes cambiar esta configuración en cualquier momento desde Configuración del Asistente de Google &gt; Información relacionada.</translation>
 <translation id="1143142264369994168">Firmante del certificado</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome no encontró software dañino en la computadora • Se verificó hace 1 minuto}other{Chrome no encontró software dañino en la computadora • Se verificó hace {NUM_MINS} minutos}}</translation>
 <translation id="1145593918056169051">Se detuvo la impresora</translation>
@@ -1429,7 +1432,9 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2594999711683503743">Buscar en Google o escribir una URL</translation>
 <translation id="2602501489742255173">Desliza hacia arriba para comenzar</translation>
 <translation id="2603115962224169880">Limpiar la computadora</translation>
+<translation id="2603355571917519942">Voice Match está listo</translation>
 <translation id="2603463522847370204">Abrir en una ventana de &amp;incógnito</translation>
+<translation id="2604138917550693049">Buscar imagen con Google Lens</translation>
 <translation id="2604255671529671813">Error de conexión de red</translation>
 <translation id="2606246518223360146">Vincular datos</translation>
 <translation id="2606454609872547359">No, continuar sin ChromeVox</translation>
@@ -1771,6 +1776,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2963151496262057773">El siguiente complemento no responde: <ph name="PLUGIN_NAME" /> ¿Quieres detenerlo?</translation>
 <translation id="2964193600955408481">Desactivar Wi-Fi</translation>
 <translation id="2964245677645334031">Visibilidad de Compartir con Nearby</translation>
+<translation id="2966216232069818096">Permite que tu Asistente use la información que aparece en pantalla para ayudarte</translation>
 <translation id="2966937470348689686">Administrar las preferencias de Android</translation>
 <translation id="2972581237482394796">&amp;Rehacer</translation>
 <translation id="2973324205039581528">Silenciar el sitio</translation>
@@ -1866,6 +1872,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Esta pestaña está utilizando tu cámara o micrófono.</translation>
 <translation id="3083193146044397360">Se bloqueó temporalmente para proteger tu seguridad</translation>
+<translation id="3083899879156272923">Mover pantalla mientras el mouse se mantiene en el centro</translation>
 <translation id="3084548735795614657">Soltar para instalar</translation>
 <translation id="3084771660770137092">El proceso de la página web puede haber finalizado por agotamiento de la memoria de Chrome o por algún otro motivo. Para continuar, reinicia la página o accede a otra página.</translation>
 <translation id="3084958266922136097">Inhabilitar el protector de pantalla</translation>
@@ -2359,6 +2366,9 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3654045516529121250">Leer la configuración de accesibilidad</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tiene acceso permanente a un archivo.}other{Tiene acceso permanente a # archivos.}}</translation>
 <translation id="3658871634334445293">Aceleración del TrackPoint</translation>
+<translation id="3659830472545192450">Voice Match permite que Asistente de Google identifique tu voz en la Chromebook y te distinga de otras personas.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ten en cuenta<ph name="END_BOLD" /> que una voz o grabación similar también podría acceder a tus resultados personales. Para quitar el permiso de Voice Match, desactívalo desde Configuración del Asistente.</translation>
 <translation id="3660234220361471169">No es de confianza</translation>
 <translation id="3664511988987167893">Ícono de extensión</translation>
 <translation id="3665589677786828986">Chrome detectó que otro programa dañó algunas opciones de configuración, por lo que la restableció a los valores predeterminados.</translation>
@@ -2965,7 +2975,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4364567974334641491"><ph name="APP_NAME" /> comparte una ventana.</translation>
 <translation id="4364830672918311045">Mostrar notificaciones</translation>
 <translation id="4366138410738374926">Se inició la impresión</translation>
-<translation id="437004882363131692">Obtén sugerencias, ofertas y actualizaciones relacionadas con <ph name="DEVICE_TYPE" />, y comparte tus comentarios. Puedes anular la suscripción en cualquier momento.</translation>
 <translation id="4370425812909262207">Se ocultaron los carritos. Se volverán a mostrar cuando realices cambios.</translation>
 <translation id="4370975561335139969">El correo electrónico y la contraseña que ingresaste no coinciden.</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
@@ -3118,6 +3127,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4538417792467843292">Eliminar palabra</translation>
 <translation id="4538684596480161368">Siempre bloquear los complementos no incluidos en la zona de pruebas en <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
+<translation id="4541123282641193691">No se pudo verificar la cuenta. Vuelve a intentarlo o reinicia la Chromebook.</translation>
 <translation id="4541662893742891060">No se pudo conectar a este perfil. Para obtener asistencia técnica, comunícate con tu proveedor.</translation>
 <translation id="4542520061254486227">Leer los datos en <ph name="WEBSITE_1" /> y <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Administrador de certificados</translation>
@@ -3542,6 +3552,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5050330054928994520">Texto a voz</translation>
 <translation id="5051836348807686060">Los idiomas seleccionados no son compatibles con el corrector ortográfico</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
+<translation id="5053962746715621840">Buscar imagen con Google Lens</translation>
 <translation id="5057110919553308744">Cuando haces clic en la extensión</translation>
 <translation id="5057403786441168405">Administra las cuentas en las que accediste. En función de los permisos, es posible que los sitios web, las apps y las extensiones en Chrome y Google Play usen estas cuentas para personalizar tu experiencia. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringir el acceso</translation>
@@ -4024,6 +4035,9 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5610038042047936818">Cambiar al modo de cámara</translation>
 <translation id="561030196642865721">Se permiten cookies de terceros en este sitio</translation>
 <translation id="5612734644261457353">Aún no se pudo verificar tu contraseña. Ten en cuenta que si cambiaste tu contraseña recientemente, podrás usar tu nueva contraseña cuando salgas. Usa la contraseña antigua aquí.</translation>
+<translation id="561308544008485315">Voice Match permite que Asistente de Google identifique tu voz en la Chromebook y te distinga de otras personas. Para ahorrar batería, "Hey Google" solo se activa cuando tu dispositivo está conectado a una fuente de alimentación. Para hacer cambios, ve a Configuración.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ten en cuenta<ph name="END_BOLD" /> que una voz o grabación similar también podría acceder a tus resultados personales. Para quitar el permiso de Voice Match, desactívalo desde Configuración del Asistente.</translation>
 <translation id="5614190747811328134">Aviso de usuario</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
 <translation id="5616726534702877126">Reservar espacio</translation>
@@ -4136,6 +4150,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="574209121243317957">Tono</translation>
 <translation id="5742505912938664543">Si agregas una cuenta secundaria aquí, podrás navegar por la Web, descargar apps, revisar tu Cuenta de Gmail y usar otros servicios de Google.</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
+<translation id="5746261205461426123">Abrir guía de configuración</translation>
 <translation id="5747552184818312860">Caduca</translation>
 <translation id="5747785204778348146">Programador: versión inestable</translation>
 <translation id="5747809636523347288">&amp;Pegar y dirigirse a <ph name="URL" /></translation>
@@ -5047,6 +5062,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6824584962142919697">Analizar elementos</translation>
 <translation id="6825184156888454064">Ordenar por nombre</translation>
 <translation id="6826872289184051766">Verificar mediante USB</translation>
+<translation id="6827604573767207488">Al parecer, ya configuraste el Asistente personalizado en otro dispositivo. Activa la siguiente configuración para sacarle aún más provecho a tu Asistente.</translation>
 <translation id="6828153365543658583">Restringir el inicio de sesión a los siguientes usuarios:</translation>
 <translation id="6828182567531805778">Ingresa la frase de contraseña para sincronizar tus datos</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5287,6 +5303,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="708278670402572152">Desactiva la conexión para habilitar el análisis</translation>
 <translation id="7084321615353200053">Permitir que los sitios soliciten permiso para usar la cámara (recomendado)</translation>
 <translation id="7085389578340536476">¿Permitir que Chrome grabe audio?</translation>
+<translation id="7085805695634549980">No se pudo establecer conexión con los servicios de Google. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Incluye los archivos de registro de Chrome en el archivo.</translation>
 <translation id="7088434364990739311">Error al iniciar la verificación de actualizaciones (código de error <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver: Abre y crea archivos ZIP en la app de Archivos.</translation>
@@ -5481,6 +5498,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7327989755579928735"><ph name="MANAGER" /> inhabilitó la depuración de ADB. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás transferir apps.</translation>
 <translation id="7328867076235380839">La combinación no es válida</translation>
 <translation id="7329154610228416156">Se produjo un error de acceso porque está configurado para usar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
+<translation id="7329932885428707942">Esto puede ocasionar una breve desconexión de la red móvil.</translation>
 <translation id="7332053360324989309">Trabajador dedicado: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Habilitar lupa con vista acoplada</translation>
 <translation id="7335974957018254119">Usar el corrector ortográfico para</translation>
@@ -5524,6 +5542,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7374376573160927383">Administrar dispositivos USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Actualiza el dispositivo en el transcurso de una hora}other{Actualiza el dispositivo en el transcurso de # horas}}</translation>
 <translation id="7376553024552204454">Resaltar el cursor del mouse cuando se mueve</translation>
+<translation id="737728204345822099">Es posible que se guarde un registro de tu visita a este sitio en tu llave de seguridad.</translation>
 <translation id="7377451353532943397">Seguir bloqueando el acceso a los sensores</translation>
 <translation id="7378611153938412599">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de crear contraseñas seguras. <ph name="BEGIN_LINK" />Obtén más sugerencias de seguridad.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
@@ -6150,6 +6169,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8059417245945632445">&amp;Inspeccionar dispositivos</translation>
 <translation id="8059456211585183827">No hay impresoras disponibles para guardar.</translation>
 <translation id="8061091456562007989">Deshacer el cambio</translation>
+<translation id="8061991877177392872">Parece que ya configuraste Voice Match con tu Asistente en otro dispositivo. Se usaron las grabaciones anteriores para crear un modelo de voz en este dispositivo.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 hoja de papel}other{{COUNT} hojas de papel}}</translation>
 <translation id="8062879968880283306">Escanea el código QR con la cámara del dispositivo o ingresa el código de activación que te brindó tu proveedor.</translation>
 <translation id="8063235345342641131">Avatar verde predeterminado</translation>
@@ -6419,6 +6439,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8379991678458444070">Para regresar aquí rápidamente, agrega esta pestaña a favoritos</translation>
 <translation id="8382913212082956454">Copiar dir&amp;ección de correo electrónico</translation>
 <translation id="8386091599636877289">No se encontró la política.</translation>
+<translation id="8386819192691131213">Permite que Asistente use la información en pantalla para proporcionar respuestas rápidas, como una traducción, definición, conversión de unidades y mucho más.</translation>
 <translation id="8386903983509584791">Finalizó la búsqueda</translation>
 <translation id="8387361103813440603">No puede ver tu ubicación</translation>
 <translation id="8389264703141926739">Bloquear las notificaciones</translation>
@@ -6896,6 +6917,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8915370057835397490">Cargando sugerencia</translation>
 <translation id="8916476537757519021">Submarco incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Mover la pantalla cuando el mouse toca los bordes</translation>
 <translation id="8923880975836399332">Verde azulado oscuro</translation>
 <translation id="8925458182817574960">&amp;Configuración</translation>
 <translation id="8926389886865778422">No volver a preguntar</translation>
@@ -6973,6 +6995,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9009708085379296446">¿Querías cambiar esta página?</translation>
 <translation id="9011163749350026987">Mostrar siempre el ícono</translation>
 <translation id="9011393886518328654">Notas de la versión</translation>
+<translation id="9012122671773859802">Mover la pantalla continuamente mientras se mueve el mouse</translation>
 <translation id="9013037634206938463">Se necesitan <ph name="INSTALL_SIZE" /> de espacio libre para instalar Linux. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
 <translation id="9013707997379828817">El administrador restableció este dispositivo. Antes de reiniciarlo, guarda los archivos importantes, ya que se borrarán todos los datos.</translation>
 <translation id="901668144954885282">Crear una copia de seguridad en Google Drive</translation>
@@ -7017,6 +7040,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9052404922357793350">Seguir bloqueando</translation>
 <translation id="9053563360605707198">Imprimir de ambos lados</translation>
 <translation id="9053893665344928494">Recordar mi selección</translation>
+<translation id="9055278955535611574">Accede a tu Asistente mediante "Hey Google"</translation>
 <translation id="9055636786322918818">Aplica la encriptación RC4. Esta opción es riesgosa, ya que los cifrados RC4 son inseguros.</translation>
 <translation id="9056810968620647706">No se encontraron coincidencias.</translation>
 <translation id="9057354806206861646">Cronograma de actualizaciones</translation>

@@ -2967,7 +2967,6 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> একটি উইন্ডো শেয়ার করছে।</translation>
 <translation id="4364830672918311045">বিজ্ঞপ্তিগুলি প্রদর্শন করুন</translation>
 <translation id="4366138410738374926">প্রিন্ট করার প্রক্রিয়া শুরু করা হয়েছে</translation>
-<translation id="437004882363131692"><ph name="DEVICE_TYPE" />-এর থেকে পরামর্শ, অফার ও বিভিন্ন আপডেট পান এবং মতামত শেয়ার করুন। যেকোনও সময় আনসাবস্ক্রাইব করুন।</translation>
 <translation id="4370425812909262207">কার্ট লুকানো হয়েছে। কোনও পরিবর্তন করলে তবেই সেটি দেখা যাবে।</translation>
 <translation id="4370975561335139969">আপনার লেখা ইমেল আইডি এবং পাসওয়ার্ড মিলছে না</translation>
 <translation id="4374831787438678295">Linux ইনস্টলার</translation>
@@ -3120,6 +3119,7 @@
 <translation id="4538417792467843292">শব্দ মুছুন </translation>
 <translation id="4538684596480161368"><ph name="HOST" /> এ সর্বদা আনস্যান্ডবক্সড প্লাগ ইন অবরুদ্ধ করুন</translation>
 <translation id="4538792345715658285">এন্টারপ্রাইজ নীতি দ্বারা ইনস্টল করা হয়েছে৷</translation>
+<translation id="4541123282641193691">আপনার অ্যাকাউন্ট যাচাই করা যায়নি। আবার চেষ্টা করুন অথবা Chromebook রিস্টার্ট করুন।</translation>
 <translation id="4541662893742891060">এই প্রোফাইলে কানেক্ট করা যায়নি। প্রযুক্তিগত সহায়তা পেতে, আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> এবং <ph name="WEBSITE_2" /> আপনার ডেটা পড়ে</translation>
 <translation id="4543778593405494224">সার্টিফিকেট ম্যানেজার</translation>
@@ -4139,6 +4139,7 @@
 <translation id="574209121243317957">পিচ</translation>
 <translation id="5742505912938664543">আপনি এখানে সেকেন্ডারি অ্যাকাউন্ট যোগ করলে সেটির মাধ্যমে ওয়েব ব্রাউজ, অ্যাপ ডাউনলোড, Gmail চেক ও অন্যান্য Google পরিষেবা ব্যবহার করতে পারবেন।</translation>
 <translation id="5746169159649715125">পিডিএফ হিসেবে সেভ করুন</translation>
+<translation id="5746261205461426123">সেট আপ গাইড খুলুন</translation>
 <translation id="5747552184818312860">মেয়াদ শেষ হবে</translation>
 <translation id="5747785204778348146">ডেভেলপার - অস্থায়ী</translation>
 <translation id="5747809636523347288"><ph name="URL" /> পে&amp;স্ট করে সেখানে যান</translation>
@@ -5290,6 +5291,7 @@
 <translation id="708278670402572152">স্ক্যানিং সক্রিয় করতে সংযোগ বিচ্ছিন্ন করুন</translation>
 <translation id="7084321615353200053">সাইট আপনার ক্যামেরা ব্যবহারের অনুমতি চাইতে পারে (সাজেস্ট করা হয়েছে)</translation>
 <translation id="7085389578340536476">Chrome কে অডিও রেকর্ড করার অনুমতি দেবেন?</translation>
+<translation id="7085805695634549980">Google পরিষেবার সাথে কানেক্ট করা যায়নি। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="7086672505018440886">আর্কাইভে Chrome লগ ফাইল অন্তর্ভুক্ত করুন।</translation>
 <translation id="7088434364990739311">আপডেট চেক শুরু করা যায়নি (এরর কোড <ph name="ERROR" />)৷</translation>
 <translation id="7088561041432335295">জিপ আর্কাইভার - Files অ্যাপে জিপ ফাইলগুলি খুলুন ও প্যাক করুন</translation>

@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1450753235335490080">Delingen af <ph name="CONTENT_TYPE" /> mislykkedes</translation>
 <translation id="1477626028522505441">Download af <ph name="FILE_NAME" /> mislykkedes på grund af serverproblemer.</translation>
+<translation id="1497470209855416291">Prøveversion er deaktiveret</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
 <translation id="1513352483775369820">Bogmærker og webhistorik</translation>
 <translation id="1513858653616922153">Slet adgangskoden</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Se næste video</translation>
 <translation id="2074143993849053708">Brugerfladen for samtykke i forbindelse med stemmesøgning i Assistent er lukket</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Prøveversion af aktiveret</translation>
 <translation id="2096012225669085171">Synkroniser og tilpas på flere enheder</translation>
 <translation id="2100273922101894616">Automatisk login</translation>
 <translation id="2100314319871056947">Prøv at opdele teksten i mindre stykker</translation>
@@ -964,7 +966,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7704317875155739195">Autofuldfør søgninger og webadresser</translation>
 <translation id="7707922173985738739">Brug mobildata</translation>
 <translation id="7725024127233776428">De sider, du føjer et bogmærke til, vises her</translation>
-<translation id="7735637452482172701">Lås op med skærmlås</translation>
 <translation id="7746457520633464754">Chrome sender webadresser på nogle sider, du besøger, begrænsede systemoplysninger og noget sideindhold til Google med henblik på at registrere farlige apps og websites.</translation>
 <translation id="7757787379047923882">Tekst, der deles fra <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Vælg dato og tidspunkt</translation>

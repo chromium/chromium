@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">ਆਪਣੀ ਬਲੂਟੁੱਥ ਅਤੇ ਸੀਰੀਅਲ ਡਿਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="114036956334641753">ਆਡੀਓ ਅਤੇ ਸੁਰਖੀਆਂ</translation>
 <translation id="1140746652461896221">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਜਾਂਦੇ ਕਿਸੇ ਵੀ ਪੰਨੇ 'ਤੇ ਸਮੱਗਰੀ ਨੂੰ ਬਲਾਕ ਕਰੋ</translation>
+<translation id="1141953877381847186">ਤਤਕਾਲ ਜਵਾਬ, ਜਿਵੇਂ ਕਿ ਅਨੁਵਾਦ, ਪਰਿਭਾਸ਼ਾ, ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ, Assistant ਨੂੰ ਸਕ੍ਰੀਨ 'ਤੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />ਧਿਆਨ ਵਿੱਚ ਰੱਖੋ:<ph name="END_BOLD" /> ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਕਦੇ ਵੀ ਇਸ ਨੂੰ Google Assistant ਸੈਟਿੰਗਾਂ &gt; ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1143142264369994168">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਾਈਨਰ</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • 1 ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_MINS} ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਕੋਈ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਨਹੀਂ ਲੱਭਿਆ • {NUM_MINS} ਮਿੰਟ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="1145593918056169051">ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
@@ -1432,7 +1435,9 @@
 <translation id="2594999711683503743">Google ਖੋਜੋ ਜਾਂ URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2602501489742255173">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2603115962224169880">ਕੰਪਿਊਟਰ ਸਾਫ਼ ਕਰੋ</translation>
+<translation id="2603355571917519942">Voice Match ਤਿਆਰ ਹੈ</translation>
 <translation id="2603463522847370204">&amp;ਗੁਮਨਾਮ window ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
+<translation id="2604138917550693049">Google Lens ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>
 <translation id="2604255671529671813">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="2606246518223360146">ਡਾਟਾ ਲਿੰਕ ਕਰੋ</translation>
 <translation id="2606454609872547359">ਨਹੀਂ, ChromeVox ਦੇ ਬਿਨਾਂ ਜਾਰੀ ਰੱਖੋ</translation>
@@ -1773,6 +1778,7 @@
 <translation id="2963151496262057773">ਹੇਠਾਂ ਦਿੱਤਾ ਪਲੱਗਇਨ ਜਵਾਬ ਨਹੀਂ ਦੇ ਰਿਹਾ ਹੈ: <ph name="PLUGIN_NAME" />ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਰੋਕਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2964193600955408481">Wi-Fi ਨੂੰ ਅਸਮਰੱਥ ਬਣਾਓ</translation>
 <translation id="2964245677645334031">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਦੀ ਦਿਖਣਯੋਗਤਾ</translation>
+<translation id="2966216232069818096">ਮਦਦ ਕਰਨ ਲਈ ਆਪਣੀ Assistant ਨੂੰ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ 'ਤੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਵਰਤਣ ਦਿਓ</translation>
 <translation id="2966937470348689686">Android ਤਰਜੀਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2972581237482394796">&amp;ਰੀਡੂ</translation>
 <translation id="2973324205039581528">ਸਾਈਟ ਮਿਊਟ ਕਰੋ</translation>
@@ -1868,6 +1874,7 @@
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">ਇਹ ਟੈਬ ਤੁਹਾਡਾ ਕੈਮਰਾ ਜਾਂ ਮਾਈਕ੍ਰੋਫੋਨ ਵਰਤ ਰਹੀ ਹੈ।</translation>
 <translation id="3083193146044397360">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਲਈ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਬਲੌਕ ਕੀਤੀ ਗਈ</translation>
+<translation id="3083899879156272923">ਮਾਊਸ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਵਿਚਾਲੇ ਰੱਖ ਕੇ ਸਕ੍ਰੀਨ ਨੂੰ ਹਿਲਾਓ</translation>
 <translation id="3084548735795614657">ਸਥਾਪਤ ਕਰਨ ਲਈ ਡ੍ਰੌਪ ਕਰੋ</translation>
 <translation id="3084771660770137092">Chrome ਦੀ ਮੈਮਰੀ ਖਤਮ ਹੋ ਗਈ ਜਾਂ ਵੈੱਬ-ਪੰਨਾ ਦੀ ਪ੍ਰਕਿਰਿਆ ਕਿਸੇ ਕਾਰਨ ਕਰਕੇ ਖਤਮ ਕਰ ਦਿੱਤੀ ਗਈ ਸੀ। ਜਾਰੀ ਰੱਖਣ ਲਈ, ਰੀਲੋੱਡ ਕਰੋ ਜਾਂ ਕਿਸੇ ਹੋਰ ਪੰਨੇ 'ਤੇ ਜਾਓ।</translation>
 <translation id="3084958266922136097">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੰਦ ਕਰੋ</translation>
@@ -2361,6 +2368,9 @@
 <translation id="3654045516529121250">ਆਪਣੀਆਂ ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਪੜ੍ਹੋ</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{ਇਸਦੀ ਇੱਕ ਫਾਈਲ ਤੱਕ ਸਥਾਈ ਪਹੁੰਚ ਹੈ।}one{ਇਸਦੀ # ਫਾਈਲਾਂ ਤੱਕ ਸਥਾਈ ਪਹੁੰਚ ਹੈ।}other{ਇਸਦੀ # ਫਾਈਲਾਂ ਤੱਕ ਸਥਾਈ ਪਹੁੰਚ ਹੈ।}}</translation>
 <translation id="3658871634334445293">TrackPoint ਐਕਸੈੱਲਰੇਸ਼ਨ</translation>
+<translation id="3659830472545192450">Voice Match ਤੁਹਾਡੀ Chromebook 'ਤੇ ਤੁਹਾਡੀ ਅਵਾਜ਼ ਦੀ ਪਛਾਣ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ Google Assistant ਦੀ ਮਦਦ ਕਰਦੀ ਹੈ ਅਤੇ ਤੁਹਾਨੂੰ ਹੋਰਾਂ ਲੋਕਾਂ ਤੋਂ ਵੱਖ ਕਰਦੀ ਹੈ।
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />ਧਿਆਨ ਵਿੱਚ ਰੱਖੋ:<ph name="END_BOLD" /> ਕਿਸੇ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਅਵਾਜ਼ ਦੀ ਰਿਕਾਰਡਿੰਗ ਨਾਲ ਵੀ ਤੁਹਾਡੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ Assistant ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਬੰਦ ਕਰਕੇ Voice Match ਇਜਾਜ਼ਤ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3660234220361471169">ਭਰੋਸੇਯੋਗ ਨਹੀਂ</translation>
 <translation id="3664511988987167893">ਐਕਟੈਂਸ਼ਨ ਪ੍ਰਤੀਕ</translation>
 <translation id="3665589677786828986">Chrome ਨੇ ਪਤਾ ਲਗਾਇਆ ਕਿ ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਗਰਾਮ ਨਾ ਤੁਹਾਡੀਆਂ ਕੁਝ ਸੈਟਿੰਗਾਂ ਨੂੰ ਖਰਾਬ ਕਰ ਦਿੱਤਾ ਹੈ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਮੂਲ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕੀਤਾ ਗਿਆ ਸੀ।</translation>
@@ -2967,7 +2977,6 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4364830672918311045">ਡਿਸਪਲੇ ਸੂਚਨਾਵਾਂ</translation>
 <translation id="4366138410738374926">ਪ੍ਰਿੰਟ ਕਰਨਾ ਸ਼ੁਰੂ ਹੋ ਗਿਆ</translation>
-<translation id="437004882363131692"><ph name="DEVICE_TYPE" /> ਨੁਕਤੇ, ਪੇਸ਼ਕਸ਼ਾਂ ਅਤੇ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰੋ ਅਤੇ ਵਿਚਾਰ ਸਾਂਝਾ ਕਰੋ। ਕਿਸੇ ਵੀ ਵੇਲੇ ਗਾਹਕੀ ਹਟਾਓ।</translation>
 <translation id="4370425812909262207">ਕਾਰਟ ਲੁਕਾਏ ਗਏ। ਜਦੋਂ ਤੁਸੀਂ ਤਬਦੀਲੀਆਂ ਕਰਦੇ ਹੋ ਤਾਂ ਉਹ ਦੁਬਾਰਾ ਦਿਖਾਈ ਦੇਣਗੇ।</translation>
 <translation id="4370975561335139969">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਰਜ ਕੀਤਾ ਈਮੇਲ ਅਤੇ ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
 <translation id="4374831787438678295">Linux ਸਥਾਪਨਾਕਾਰ</translation>
@@ -3120,6 +3129,7 @@
 <translation id="4538417792467843292">ਸ਼ਬਦ ਮਿਟਾਓ</translation>
 <translation id="4538684596480161368">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਤੇ ਅਨਸੈਂਡਬੌਕਸਿਡ ਪਲਗਇੰਸ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="4538792345715658285">ਐਂਟਰਪ੍ਰਾਈਜ ਨੀਤੀ ਵੱਲੋਂ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ।</translation>
+<translation id="4541123282641193691">ਤੁਹਾਡੇ ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਆਪਣੀ Chromebook ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="4541662893742891060">ਇਸ ਪ੍ਰੋਫਾਈਲ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਤਕਨੀਕੀ ਸਹਾਇਤਾ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕੈਰੀਅਰ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> ਅਤੇ <ph name="WEBSITE_2" /> ਤੇ ਆਪਣਾ ਡਾਟਾ ਪੜ੍ਹੋ</translation>
 <translation id="4543778593405494224">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪ੍ਰਬੰਧਕ</translation>
@@ -3544,6 +3554,7 @@
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਦੀ ਸੁਵਿਧਾ ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣੀਆਂ ਭਾਸ਼ਾਵਾਂ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="5052499409147950210">ਸਾਈਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="5053962746715621840">Google Lens ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>
 <translation id="5057110919553308744">ਜਦੋਂ ਤੁਸੀਂ ਐਕਸਟੈਂਸ਼ਨ 'ਤੇ ਕਲਿੱਕ ਕਰਦੇ ਹੋ</translation>
 <translation id="5057403786441168405">ਆਪਣੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ। Chrome ਅਤੇ Google Play ਵਿੱਚ ਵੈੱਬਸਾਈਟਾਂ, ਐਪਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਇਜਾਜ਼ਤਾਂ ਦੇ ਆਧਾਰ 'ਤੇ ਤੁਹਾਡੇ ਅਨੁਭਵ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਇਹਨਾਂ ਖਾਤਿਆਂ ਨੂੰ ਵਰਤ ਸਕਦੀਆਂ ਹਨ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">ਸਾਈਨ-ਇਨ 'ਤੇ ਪਾਬੰਦੀ ਲਗਾਓ</translation>
@@ -4025,6 +4036,9 @@
 <translation id="5610038042047936818">ਕੈਮਰਾ ਮੋਡ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="561030196642865721">ਇਸ ਸਾਈਟ 'ਤੇ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="5612734644261457353">ਮਾਫ਼ ਕਰਨਾ, ਅਜੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ: ਜੇਕਰ ਤੁਸੀਂ ਹੁਣੇ ਹੀ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਤੁਹਾਡੇ ਸਾਈਨ ਆਉਟ ਕਰਨ ਤੋਂ ਬਾਅਦ ਲਾਗੂ ਹੋਵੇਗਾ, ਕਿਰਪਾ ਕਰਕੇ ਇੱਥੇ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ।</translation>
+<translation id="561308544008485315">Voice Match ਤੁਹਾਡੀ Chromebook 'ਤੇ ਤੁਹਾਡੀ ਅਵਾਜ਼ ਦੀ ਪਛਾਣ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ Google Assistant ਦੀ ਮਦਦ ਕਰਦੀ ਹੈ ਅਤੇ ਤੁਹਾਨੂੰ ਹੋਰਾਂ ਲੋਕਾਂ ਤੋਂ ਵੱਖ ਕਰਦੀ ਹੈ। ਬੈਟਰੀ ਬਚਾਉਣ ਲਈ, "Ok Google" ਸਿਰਫ਼ ਉਦੋਂ ਹੀ ਚਾਲੂ ਹੁੰਦਾ ਹੈ ਜਦੋਂ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਕਿਸੇ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਹੋਵੇ। ਤਬਦੀਲੀਆਂ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />ਧਿਆਨ ਵਿੱਚ ਰੱਖੋ:<ph name="END_BOLD" /> ਕਿਸੇ ਮਿਲਦੀ-ਜੁਲਦੀ ਅਵਾਜ਼ ਜਾਂ ਅਵਾਜ਼ ਦੀ ਰਿਕਾਰਡਿੰਗ ਨਾਲ ਵੀ ਤੁਹਾਡੇ ਨਿੱਜੀ ਨਤੀਜਿਆਂ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ Assistant ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਬੰਦ ਕਰਕੇ Voice Match ਇਜਾਜ਼ਤ ਨੂੰ ਹਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5614190747811328134">ਵਰਤੋਂਕਾਰ ਨੋਟਿਸ</translation>
 <translation id="5614553682702429503">ਕੀ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5616726534702877126">ਆਕਾਰ ਰਾਖਵਾਂ ਕਰੋ</translation>
@@ -4137,6 +4151,7 @@
 <translation id="574209121243317957">ਪਿਚ</translation>
 <translation id="5742505912938664543">ਜਦੋਂ ਤੁਸੀਂ ਇੱਥੇ ਕੋਈ ਸੈਕੰਡਰੀ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਦੇ ਹੋ, ਤਾਂ ਉਸ ਖਾਤੇ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਤੁਸੀਂ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹੋ, ਐਪਾਂ ਡਾਊਨਲੋਡ ਕਰ ਸਕਦੇ ਹੋ, ਆਪਣੀ Gmail ਦੀ ਜਾਂਚ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਹੋਰ Google ਸੇਵਾਵਾਂ ਵਰਤ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5746169159649715125">PDF ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="5746261205461426123">ਸੈੱਟਅੱਪ ਗਾਈਡ ਖੋਲ੍ਹੋ</translation>
 <translation id="5747552184818312860">ਮਿਆਦ ਸਮਾਪਤ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="5747785204778348146">ਵਿਕਾਸਕਾਰ - ਅਸਥਿਰ</translation>
 <translation id="5747809636523347288"><ph name="URL" /> ਪੇਸਟ ਕਰਕੇ ਉਸ 'ਤੇ ਜਾਓ</translation>
@@ -5048,6 +5063,7 @@
 <translation id="6824584962142919697">&amp;ਅੰਸ਼ਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="6825184156888454064">ਨਾਮ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="6826872289184051766">USB ਰਾਹੀਂ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
+<translation id="6827604573767207488">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਵਿਅਕਤੀਗਤ ਬਣਾਈ Assistant ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਅੱਗੇ ਦਿੱਤੀ ਗਈ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਕੇ ਆਪਣੀ Assistant ਦਾ ਹੋਰ ਜ਼ਿਆਦਾ ਲਾਹਾ ਲਓ।</translation>
 <translation id="6828153365543658583">ਇਹਨਾਂ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਸਾਈਨ-ਇਨ 'ਤੇ ਪਾਬੰਦੀ ਲਗਾਓ:</translation>
 <translation id="6828182567531805778">ਆਪਣੇ ਡਾਟੇ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰਨ ਲਈ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="682871081149631693">ਝੱਟ ਹੱਲ ਵਾਲਾ ਬਿਲਡ</translation>
@@ -5288,6 +5304,7 @@
 <translation id="708278670402572152">ਸਕੈਨ ਕਰਨਾ ਚਾਲੂ ਕਰਨ ਲਈ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7084321615353200053">ਸਾਈਟਾਂ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="7085389578340536476">ਕੀ Chrome ਨੂੰ ਆਡੀਓ ਰਿਕਾਰਡ ਕਰਨ ਦੇਣਾ ਹੈ?</translation>
+<translation id="7085805695634549980">Google ਸੇਵਾਵਾਂ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />।</translation>
 <translation id="7086672505018440886">Chrome ਲੌਗ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪੁਰਾਲੇਖ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="7088434364990739311">ਅੱਪਡੇਟ ਜਾਂਚ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ (ਗੜਬੜ ਕੋਡ <ph name="ERROR" />)।</translation>
 <translation id="7088561041432335295">Zip Archiver - ਫ਼ਾਈਲ ਐਪ ਵਿੱਚ ਜ਼ਿਪ ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹੋ ਅਤੇ ਪੈਕ ਕਰੋ।</translation>
@@ -5482,6 +5499,7 @@
 <translation id="7327989755579928735"><ph name="MANAGER" /> ਨੇ ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਇੱਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ 'ਤੇ, ਤੁਸੀਂ ਅਗਿਆਤ ਸਰੋਤ ਤੋਂ ਐਪਾਂ ਸਥਾਪਤ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="7328867076235380839">ਅਵੈਧ ਸੁਮੇਲ</translation>
 <translation id="7329154610228416156">ਸਾਈਨ-ਇਨ ਅਸਫਲ ਹੋ ਗਿਆ ਕਿਉਂਕਿ ਇਹ ਕਿਸੇ ਗੈਰ-ਸੁਰੱਖਿਅਤ URL (<ph name="BLOCKED_URL" />) ਨਾਲ ਸੰਰੂਪਿਤ ਕੀਤਾ ਗਿਆ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
+<translation id="7329932885428707942">ਇਸ ਨਾਲ ਥੋੜ੍ਹੇ ਸਮੇਂ ਲਈ ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਡਿਸਕਨੈਕਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7332053360324989309">ਸਮਰਪਿਤ ਕਰਮਚਾਰੀ: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">ਡੌਕ ਕੀਤਾ ਵਿਸਤਾਰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7335974957018254119">ਇਹਨਾਂ ਲਈ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਵਰਤੋ</translation>
@@ -6149,6 +6167,7 @@
 <translation id="8059417245945632445">&amp;ਡਿਵਾਈਸਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="8059456211585183827">ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਪ੍ਰਿੰਟਰ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8061091456562007989">ਇਸਨੂੰ ਵਾਪਸ ਬਦਲੋ</translation>
+<translation id="8061991877177392872">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੀ Assistant ਨਾਲ ਪਹਿਲਾਂ ਹੀ Voice Match ਦਾ ਸੈੱਟਅੱਪ ਕਰ ਲਿਆ ਹੈ। ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਇਹਨਾਂ ਪਿਛਲੀਆਂ ਰਿਕਾਰਡਿੰਗਾਂ ਨੂੰ ਅਵਾਜ਼ੀ ਮਾਡਲ ਬਣਾਉਣ ਲਈ ਵਰਤਿਆ ਗਿਆ ਸੀ।</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ}one{{COUNT} ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ}other{{COUNT} ਕਾਗਜ਼ ਦੀਆਂ ਸ਼ੀਟਾਂ}}</translation>
 <translation id="8062879968880283306">ਡੀਵਾਈਸ ਕੈਮਰਾ ਵਰਤ ਕੇ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ ਜਾਂ ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਇਆ ਗਿਆ 'ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੋਡ' ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="8063235345342641131">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਹਰਾ ਅਵਤਾਰ</translation>
@@ -6417,6 +6436,7 @@
 <translation id="8379991678458444070">ਇਸ ਟੈਬ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ ਤਾਂ ਕਿ ਤੁਸੀਂ ਇੱਥੇ ਤੇਜ਼ੀ ਨਾਲ ਵਾਪਸ ਆ ਸਕੋ</translation>
 <translation id="8382913212082956454">&amp;ਈਮੇਲ ਪਤਾ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="8386091599636877289">ਨੀਤੀ ਨਹੀਂ ਮਿਲੀ।</translation>
+<translation id="8386819192691131213">ਤਤਕਾਲ ਜਵਾਬ, ਜਿਵੇਂ ਕਿ ਅਨੁਵਾਦ, ਪਰਿਭਾਸ਼ਾ, ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ, Assistant ਨੂੰ ਸਕ੍ਰੀਨ 'ਤੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="8386903983509584791">ਸਕੈਨ ਪੂਰਾ ਹੋਈ</translation>
 <translation id="8387361103813440603">ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਨੂੰ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="8389264703141926739">ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ</translation>
@@ -6895,6 +6915,7 @@
 <translation id="8915370057835397490">ਸੁਝਾਅ ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="8916476537757519021">ਗੁਮਨਾਮ ਸਬਫ੍ਰੇਮ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> ਦਾ <ph name="DEVICE_TYPE" /></translation>
+<translation id="8922624386829239660">ਮਾਊਸ ਵੱਲੋਂ ਸਕ੍ਰੀਨ ਦੇ ਕਿਨਾਰਿਆਂ ਨੂੰ ਸਪਰਸ਼ ਕਰਨ 'ਤੇ ਸਕ੍ਰੀਨ ਨੂੰ ਹਿਲਾਓ</translation>
 <translation id="8923880975836399332">ਗੂੜ੍ਹਾ ਹਰਾ-ਨੀਲਾ</translation>
 <translation id="8925458182817574960">&amp;ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8926389886865778422">ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ</translation>
@@ -6972,6 +6993,7 @@
 <translation id="9009708085379296446">ਕੀ ਤੁਸੀਂ ਇਹ ਪੰਨਾ ਬਦਲਣਾ ਸੀ?</translation>
 <translation id="9011163749350026987">ਹਮੇਸ਼ਾਂ ਚਿੰਨ੍ਹ ਦਿਖਾਓ</translation>
 <translation id="9011393886518328654">ਰਿਲੀਜ਼ ਨੋਟ-ਕਥਨ</translation>
+<translation id="9012122671773859802">ਮਾਊਸ ਦੀ ਹਲਚਲ ਮੁਤਾਬਕ ਲਗਾਤਾਰ ਸਕ੍ਰੀਨ ਨੂੰ ਹਿਲਾਓ</translation>
 <translation id="9013037634206938463">Linux ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਲਈ <ph name="INSTALL_SIZE" /> ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਲੋੜ ਹੈ। ਖਾਲੀ ਜਗ੍ਹਾ ਨੂੰ ਵਧਾਉਣ ਲਈ, ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ।</translation>
 <translation id="9013707997379828817">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਲੈ ਆਇਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਜ਼ਰੂਰੀ ਫ਼ਾਈਲਾਂ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਫਿਰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ। ਡੀਵਾਈਸ 'ਤੇ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="901668144954885282">'Google ਡਰਾਈਵ' ਵਿੱਚ ਬੈਕਅੱਪ ਲਓ</translation>
@@ -7016,6 +7038,7 @@
 <translation id="9052404922357793350">ਬਲਾਕ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="9053563360605707198">ਦੋਵੇਂ ਪਾਸੇ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="9053893665344928494">ਮੇਰੀ ਪਸੰਦ ਯਾਦ ਰੱਖੋ</translation>
+<translation id="9055278955535611574">"Ok Google" ਨਾਲ ਆਪਣੀ Assistant ਤੱਕ ਪਹੁੰਚ ਕਰੋ</translation>
 <translation id="9055636786322918818">RC4 ਇਨਕ੍ਰਿਪਸ਼ਨ ਲਾਜ਼ਮੀ ਬਣਾਓ। ਇਸ ਵਿਕਲਪ ਦੀ ਵਰਤੋਂ ਕਰਨਾ, RC4 ciphers ਦੇ ਅਸੁਰੱਖਿਅਤ ਹੋਣ ਕਰਕੇ ਤੁਹਾਡੇ ਜੋਖਮ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ।</translation>
 <translation id="9056810968620647706">ਕੋਈ ਮੇਲ ਨਹੀਂ ਮਿਲੇ ਸਨ।</translation>
 <translation id="9057354806206861646">ਅੱਪਡੇਟਾਂ ਦੀ ਸਮਾਂ-ਸੂਚੀ</translation>

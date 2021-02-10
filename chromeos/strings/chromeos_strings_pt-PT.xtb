@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
 <translation id="4003384961948020559">Falha – Saída cheia</translation>
@@ -279,6 +280,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
+<translation id="7449585358422953039">Gerido por <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Endereço MAC</translation>
@@ -303,6 +305,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7936303884198020182">Não foram encontrados servidores de nomes.</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7994702968232966508">Método EAP</translation>
+<translation id="802154636333426148">Falha ao transferir</translation>
 <translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>

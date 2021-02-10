@@ -2978,7 +2978,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4364567974334641491"><ph name="APP_NAME" /> delar ett fönster.</translation>
 <translation id="4364830672918311045">Visa aviseringar</translation>
 <translation id="4366138410738374926">Utskrift har påbörjats</translation>
-<translation id="437004882363131692">Få tips, erbjudanden och uppdateringar för <ph name="DEVICE_TYPE" /> och dela din feedback. Du kan avsluta prenumerationen när du vill.</translation>
 <translation id="4370425812909262207">Kundvagnarna har dolts. De visas igen när du ändrar något.</translation>
 <translation id="4370975561335139969">E-postadressen och lösenordet matchar inte</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
@@ -5550,6 +5549,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7374376573160927383">Hantera USB-enheter</translation>
 <translation id="7375235221357833624">{0,plural, =1{Uppdatera enheten inom en timme}other{Uppdatera enheten inom # timmar}}</translation>
 <translation id="7376553024552204454">Markera muspekaren när den är i rörelse</translation>
+<translation id="737728204345822099">Ditt besök på webbplatsen kan sparas i säkerhetsnyckeln.</translation>
 <translation id="7377451353532943397">Fortsätt att blockera sensoråtkomst</translation>
 <translation id="7378611153938412599">Svaga lösenord är lätta att lista ut. Använd alltid starka lösenord. <ph name="BEGIN_LINK" />Här hittar du fler säkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Öppna Chrome Web Store</translation>

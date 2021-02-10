@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">አትም</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ን ማጋራት አይቻልም</translation>
 <translation id="1477626028522505441">በአገልጋይ ችግሮች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
+<translation id="1497470209855416291">ሙከራ ተሰናክሏል</translation>
 <translation id="1506061864768559482">የፍለጋ ፕሮግራም</translation>
 <translation id="1513352483775369820">ዕልባቶች እና የድር ታሪክ</translation>
 <translation id="1513858653616922153">የይለፍ ቃል ሰርዝ</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">የሚቀጥለውን ቪዲዮ ይመልከቱ</translation>
 <translation id="2074143993849053708">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ ተዘግቷል</translation>
 <translation id="2082238445998314030">ውጤት <ph name="RESULT_NUMBER" /> ከ<ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">ሙከራ ነቅቷል</translation>
 <translation id="2096012225669085171">በመላ መሣሪያዎች ላይ ያመሳስሉ እና ግላዊነት ያላብሱ</translation>
 <translation id="2100273922101894616">በራስ-ግባ</translation>
 <translation id="2100314319871056947">በትናንሽ ክፍሎች ጽሑፉን ለማጋራት ይሞክሩ</translation>
@@ -964,7 +966,6 @@
 <translation id="7704317875155739195">ፍለጋዎችን እና ዩአርኤልዎችን በራስ-አጠናቅቅ</translation>
 <translation id="7707922173985738739">የተንቀሳቃሽ ስልክ ውሂብ</translation>
 <translation id="7725024127233776428">እርስዎ ዕልባት ያደረጉባቸው ገጾች እዚህ ላይ ብቅ ይላሉ</translation>
-<translation id="7735637452482172701">በማያ ገጽ መቆለፊያ አማካኝነት ክፈት</translation>
 <translation id="7746457520633464754">አደገኛ መተግበሪያዎችን እና ጣቢያዎችን ፈልጎ ለማግኘት፣ Chrome እርስዎ የጎበኟቸውን አንዳንድ ገጾች ዩአርኤሎች፣ የተወሰነ የሥርዓት መረጃ እና አንዳንድ የገጽ ይዘት ወደ Google ይልካል</translation>
 <translation id="7757787379047923882">ከ<ph name="DEVICE_NAME" /> የተጋራ ጽሑፍ</translation>
 <translation id="7761849928583394409">ቀን እና ሰዓት ይምረጡ</translation>

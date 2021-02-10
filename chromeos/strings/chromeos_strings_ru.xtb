@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Разрешение</translation>
 <translation id="3941014780699102620">Не удалось преобразовать имя хоста.</translation>
 <translation id="3942420633017001071">Диагностика</translation>
+<translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дн., будут удалены</translation>
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
+<translation id="7449585358422953039">Устройством управляет <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC-адрес</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
+<translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="8075838845814659848">Уровень заряда</translation>
 <translation id="808894953321890993">Сменить пароль</translation>

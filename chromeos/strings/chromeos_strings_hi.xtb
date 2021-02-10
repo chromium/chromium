@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">रिज़ॉल्यूशन</translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="4003384961948020559">प्रिंट नहीं हो पाया - प्रिंटर आउटपुट फ़ुल है</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> मैनेज करता है.</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7487067081878637334">तकनीक</translation>
 <translation id="7490813197707563893">MAC पता</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">कोई भी नाम सर्वर नहीं मिला</translation>
 <translation id="7960831585769876809">तापमान</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
+<translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>

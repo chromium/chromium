@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="3941014780699102620">Разрешење хоста није успело</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
+<translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="39823212440917567">Задаци штампања старији од <ph name="NUMBER_OF_DAYS" /> дана се уклањају</translation>
 <translation id="4003384961948020559">Није успело – излаз је пун</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирање је завршено. Скенирана је 1 страница}one{Скенирање је завршено. Скенирана је {NUMBER_OF_PAGES} страница}few{Скенирање је завршено. Скениране су {NUMBER_OF_PAGES} странице}other{Скенирање је завршено. Скенирано је {NUMBER_OF_PAGES} страница}}</translation>
+<translation id="7449585358422953039">Овим управља <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Откривен је портал</translation>
 <translation id="7487067081878637334">Технологија</translation>
 <translation id="7490813197707563893">MAC адреса</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">Није пронађен ниједан сервер за имена</translation>
 <translation id="7960831585769876809">Температура</translation>
 <translation id="7994702968232966508">EAP метод</translation>
+<translation id="802154636333426148">Преузимање није успело</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="808894953321890993">Промени лозинку</translation>

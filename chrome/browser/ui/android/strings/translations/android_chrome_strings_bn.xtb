@@ -593,6 +593,7 @@
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5230560987958996918">কাছাকাছি থাকা ব্লুটুথ ডিভাইসগুলিকে <ph name="SITE" /> স্ক্যান করতে চায়, এই ডিভাইসগুলি পাওয়া গেছে:</translation>
 <translation id="5233638681132016545">নতুন ট্যাব</translation>
+<translation id="5250483651202458397">স্ক্রিনশট। বন্ধ করতে ট্যাপ করুন।</translation>
 <translation id="526421993248218238">পৃষ্ঠাটি লোড করা যাচ্ছে না</translation>
 <translation id="5271967389191913893">ডাউনলোড করা কন্টেন্ট ডিভাইস খুলতে পারবে না৷</translation>
 <translation id="5292796745632149097">এতে পাঠান:</translation>
@@ -838,6 +839,7 @@
 <translation id="6767294960381293877">ট্যাব শেয়ার করা যাবে এমন ডিভাইসের সূচি অর্ধেক স্ক্রিন জুড়ে খোলা হয়েছে।</translation>
 <translation id="6783942555455976443">পরে দেখার জন্য এই পৃষ্ঠা সেভ করে রাখুন ও রিমাইন্ডার পান</translation>
 <translation id="6811034713472274749">পৃষ্ঠাটি এখন দেখতে পাবেন</translation>
+<translation id="6813446258015311409">Chrome-এ সাইন-ইন করার পৃষ্ঠা খোলা আছে।</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ট্যাব বেছে নেওয়া হয়েছে</translation>
 <translation id="6833996806551876956">গোপনীয়তা স্যান্ডবক্স ট্রায়াল</translation>
@@ -966,7 +968,6 @@
 <translation id="7704317875155739195">সার্চ এবং ইউআরএলগুলি নিজে থেকে সম্পূর্ণ হতে দিন</translation>
 <translation id="7707922173985738739">মোবাইল ডেটা ব্যবহার করুন</translation>
 <translation id="7725024127233776428">আপনার বুকমার্ক করা পৃষ্ঠা এখানে দেখানো হয়</translation>
-<translation id="7735637452482172701">স্ক্রিন লকের সাহায্যে আনলক করুন</translation>
 <translation id="7746457520633464754">বিপজ্জনক অ্যাপ ও সাইট শনাক্ত করতে Chrome আপনার দেখা পৃষ্ঠাগুলির ইউআরএল, সিস্টেমের কিছু তথ্য ও কিছু পৃষ্ঠার কন্টেন্ট Google-কে পাঠায়</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="7761849928583394409">তারিখ ও সময় বেছে নিন</translation>
@@ -1099,6 +1100,7 @@
 <translation id="8583805026567836021">অ্যাকাউন্টের ডেটা সাফ করা হচ্ছে</translation>
 <translation id="8587585930972369234">সার্চ করতে টাচ করে ধরে থাকুন</translation>
 <translation id="860043288473659153">কার্ডধারকের নাম</translation>
+<translation id="8602358303461588329">Chrome-এ সাইন-ইন করার পৃষ্ঠা বন্ধ করা আছে।</translation>
 <translation id="860282621117673749">দাম কমার বিজ্ঞপ্তি</translation>
 <translation id="8616006591992756292"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-এ আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিংয়ের ইতিহাস থাকতে পারে।</translation>
 <translation id="8617240290563765734">ডাউনলোড হওয়া কন্টেন্টতে নির্দিষ্ট করা প্রস্তাবিত URLটি খুলবেন?</translation>

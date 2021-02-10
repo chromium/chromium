@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Çözünürlük</translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
 <translation id="3942420633017001071">Teşhis</translation>
+<translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> günden eski yazdırma işleri silinir</translation>
 <translation id="4003384961948020559">İşlem başarısız - Çıkış dolu</translation>
@@ -279,6 +280,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tarama işlemi tamamlandı. 1 sayfa tarandı}other{Tarama işlemi tamamlandı. {NUMBER_OF_PAGES} sayfa tarandı}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7487067081878637334">Teknoloji</translation>
 <translation id="7490813197707563893">MAC adresi</translation>
@@ -303,6 +305,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7936303884198020182">Alan adı sunucusu bulunamadı</translation>
 <translation id="7960831585769876809">Sıcaklık</translation>
 <translation id="7994702968232966508">EAP yöntemi</translation>
+<translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8041089156583427627">Görüş bildirin</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>

@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="3941014780699102620">Failed to resolve host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="3967822245660637423">Download complete</translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="39823212440917567">Print jobs older than <ph name="NUMBER_OF_DAYS" /> days will be removed</translation>
 <translation id="4003384961948020559">Failed – Output full</translation>
@@ -303,6 +304,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="7960831585769876809">Temperature</translation>
 <translation id="7994702968232966508">EAP method</translation>
+<translation id="802154636333426148">Download failed</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="808894953321890993">Change password</translation>

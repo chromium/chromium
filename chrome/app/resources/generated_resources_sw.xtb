@@ -2963,7 +2963,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> inashiriki dirisha.</translation>
 <translation id="4364830672918311045">Onyesha arifa</translation>
 <translation id="4366138410738374926">Imeanza kuchapisha</translation>
-<translation id="437004882363131692">Pata taarifa, ofa na vidokezo kuhusu <ph name="DEVICE_TYPE" /> na ushiriki maoni. Jiondoe wakati wowote.</translation>
 <translation id="4370425812909262207">Vikapu vimefichwa. Vitaonekana tena ukifanya mabadiliko.</translation>
 <translation id="4370975561335139969">Anwani ya barua pepe na nenosiri uliloweka havilingani</translation>
 <translation id="4374831787438678295">Kisakinishaji cha Linux</translation>
@@ -5522,6 +5521,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7374376573160927383">Dhibiti vifaa vya USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Sasisha kifaa ndani ya saa moja}other{Sasisha kifaa ndani ya saa #}}</translation>
 <translation id="7376553024552204454">Angazia kiteuzi cha kipanya kinaposonga</translation>
+<translation id="737728204345822099">Huenda rekodi ya jinsi ulivyotembelea tovuti hii ikahifadhiwa kwenye ufunguo wako wa usalama.</translation>
 <translation id="7377451353532943397">Endelea kuzuia idhini ya kufikia kitambuzi</translation>
 <translation id="7378611153938412599">Ni rahisi kukisia manenosiri dhaifu. Hakikisha kuwa unatunga manenosiri thabiti. <ph name="BEGIN_LINK" />Angalia vidokezo zaidi vya usalama.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Fungua Duka la Chrome kwenye Wavuti</translation>

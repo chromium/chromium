@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Файл <ph name="FILE_NAME" /> не завантажено через проблеми із сервером.</translation>
+<translation id="1497470209855416291">Пробну версію вимкнено</translation>
 <translation id="1506061864768559482">Пошукова система</translation>
 <translation id="1513352483775369820">Закладки й історія веб-пошуку</translation>
 <translation id="1513858653616922153">Видалити пароль</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Дивитися наступне відео</translation>
 <translation id="2074143993849053708">Інтерфейс надання згоди на голосовий пошук через Асистента закрито</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Пробну версію ввімкнено</translation>
 <translation id="2096012225669085171">Синхронізація та персоналізація на всіх пристроях</translation>
 <translation id="2100273922101894616">Автоматичний вхід</translation>
 <translation id="2100314319871056947">Спробуйте надіслати текст меншими частинами</translation>
@@ -964,7 +966,6 @@
 <translation id="7704317875155739195">Автоматично завершувати пошукові запити та URL-адреси</translation>
 <translation id="7707922173985738739">Використовувати мобільне передавання даних</translation>
 <translation id="7725024127233776428">Сторінки, для яких ви робите закладки, з'являються тут</translation>
-<translation id="7735637452482172701">Розблокувати через функцію блокування екрана</translation>
 <translation id="7746457520633464754">Щоб виявляти небезпечні додатки й сайти, Chrome надсилає URL-адреси певних відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок у Google</translation>
 <translation id="7757787379047923882">Текст, надісланий із пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Вибрати дату й час</translation>

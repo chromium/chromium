@@ -591,6 +591,7 @@
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> ਦੀ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ, ਅੱਗੇ ਦਿੱਤੇ ਡੀਵਾਈਸ ਮਿਲੇ ਹਨ:</translation>
 <translation id="5233638681132016545">ਨਵੀਂ ਟੈਬ</translation>
+<translation id="5250483651202458397">ਸਕ੍ਰੀਨਸ਼ਾਟ। ਬੰਦ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।</translation>
 <translation id="526421993248218238">ਇਸ ਪੰਨੇ ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="5271967389191913893">ਡੀਵਾਈਸ ਡਾਊਨਲੋਡ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਸਮੱਗਰੀ ਨੂੰ ਨਹੀਂ ਖੋਲ੍ਹ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5292796745632149097">ਇਸ 'ਤੇ ਭੇਜੋ</translation>
@@ -836,6 +837,7 @@
 <translation id="6767294960381293877">ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਵਾਲੇ ਡੀਵਾਈਸਾਂ ਦੀ ਸੂਚੀ ਅੱਧੀ ਉਚਾਈ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="6783942555455976443">ਇਸ ਪੰਨੇ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਪੜ੍ਹਣ ਲਈ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਇਸ ਲਈ ਇੱਕ ਯਾਦ-ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6811034713472274749">ਦੇਖਣ ਲਈ ਪੰਨਾ ਤਿਆਰ ਹੈ</translation>
+<translation id="6813446258015311409">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ, ਖੋਲ੍ਹਿਆ ਗਿਆ।</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> ਟੈਬ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="6833996806551876956">ਪਰਦੇਦਾਰੀ ਸੈਂਡਬਾਕਸ ਪਰਖ</translation>
@@ -964,7 +966,6 @@
 <translation id="7704317875155739195">ਸਵੈ-ਮੁਕੰਮਲ ਖੋਜਾਂ ਅਤੇ URLs</translation>
 <translation id="7707922173985738739">ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤੋ</translation>
 <translation id="7725024127233776428">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬੁੱਕਮਾਰਕ ਕੀਤੇ ਪੰਨੇ ਇੱਥੇ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ</translation>
-<translation id="7735637452482172701">ਸਕ੍ਰੀਨ ਲਾਕ ਨਾਲ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="7746457520633464754">ਖਤਰਨਾਕ ਐਪਾਂ ਅਤੇ ਸਾਈਟਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ, Chrome ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਕੁਝ ਪੰਨਿਆਂ ਦੇ URL, ਸੀਮਤ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਅਤੇ ਕੁਝ ਪੰਨਾ ਸਮੱਗਰੀ Google ਨੂੰ ਭੇਜਦਾ ਹੈ</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਲਿਖਤ</translation>
 <translation id="7761849928583394409">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਚੁਣੋ</translation>
@@ -1097,6 +1098,7 @@
 <translation id="8583805026567836021">ਖਾਤੇ ਦਾ ਡਾਟਾ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8587585930972369234">ਖੋਜਣ ਲਈ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ</translation>
 <translation id="860043288473659153">ਕਾਰਡਧਾਰਕ ਦਾ ਨਾਮ</translation>
+<translation id="8602358303461588329">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ, ਬੰਦ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="860282621117673749">ਕੀਮਤ ਘਟਣ ਦੀਆਂ ਸੁਚੇਤਨਾਵਾਂ</translation>
 <translation id="8616006591992756292">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="8617240290563765734">ਕੀ ਡਾਊਨਲੋਡ ਕੀਤੀ ਸਮੱਗਰੀ ਵਿੱਚ ਦੱਸੇ ਗਏ ਸੁਝਾਏ URLਖੋਲ੍ਹਣੇ ਹਨ?</translation>

@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1450753235335490080">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a problemas co servidor.</translation>
+<translation id="1497470209855416291">A proba está desactivada</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1513352483775369820">Marcadores e historial web</translation>
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Ver vídeo seguinte</translation>
 <translation id="2074143993849053708">A interface de consentimento para a busca por voz a través do Asistente está pechada</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">A proba está activada</translation>
 <translation id="2096012225669085171">Sincroniza e personaliza o contido en todos os dispositivos</translation>
 <translation id="2100273922101894616">Inicio de sesión automático</translation>
 <translation id="2100314319871056947">Proba a compartir o texto dividíndoo en fragmentos máis pequenos</translation>
@@ -964,7 +966,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7704317875155739195">Completar buscas e URL automaticamente</translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7725024127233776428">As páxinas que engadas aos marcadores aparecerán aquí</translation>
-<translation id="7735637452482172701">Desbloquear con bloqueo de pantalla</translation>
 <translation id="7746457520633464754">Para detectar aplicacións e sitios perigosos, Chrome envíalle a Google os URL dalgunhas das páxinas que visitas, parte da información do sistema e parte do contido das páxinas</translation>
 <translation id="7757787379047923882">O texto compartiuse desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Seleccionar data e hora</translation>

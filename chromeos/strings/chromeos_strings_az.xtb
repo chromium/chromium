@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Avtorizasiya portalı aşkarlanıb</translation>
 <translation id="3188257591659621405">Fayllarım</translation>
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
+<translation id="3226405216343213872">Skanerlər axtarılır</translation>
 <translation id="3246869037381808805">1 gündən köhnə çap işləri silinəcək</translation>
 <translation id="3268178239013324452">Alınmadı - Qapı açıqdır</translation>
 <translation id="3310640316857623290">DNS gecikməsi icazə verilən həddən xeyli yuxarıdır</translation>
@@ -117,6 +118,7 @@
 <translation id="3865414814144988605">Dəqiqlik</translation>
 <translation id="3941014780699102620">Hostu həll etmək alınmadı</translation>
 <translation id="3942420633017001071">Diaqnostika</translation>
+<translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> gündən köhnə çap işləri silinəcək</translation>
 <translation id="4003384961948020559">Alınmadı - Çap xidməti doludur</translation>
@@ -302,6 +304,7 @@
 <translation id="7936303884198020182">Ad serveri tapılmadı</translation>
 <translation id="7960831585769876809">Temperatur</translation>
 <translation id="7994702968232966508">EAP üsulu</translation>
+<translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>

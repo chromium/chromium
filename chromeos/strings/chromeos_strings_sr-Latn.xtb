@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Rezolucija</translation>
 <translation id="3941014780699102620">Razrešenje hosta nije uspelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
+<translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
 <translation id="39823212440917567">Zadaci štampanja stariji od <ph name="NUMBER_OF_DAYS" /> dana se uklanjaju</translation>
 <translation id="4003384961948020559">Nije uspelo – izlaz je pun</translation>
@@ -279,6 +280,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
+<translation id="7449585358422953039">Ovim upravlja <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
@@ -303,6 +305,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7994702968232966508">EAP metod</translation>
+<translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>

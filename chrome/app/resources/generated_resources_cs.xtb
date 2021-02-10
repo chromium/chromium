@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Přistupovat k zařízením připojeným přes Bluetooth a sériový port</translation>
 <translation id="114036956334641753">Zvuk a titulky</translation>
 <translation id="1140746652461896221">Blokovat obsah na každé navštívené stránce</translation>
+<translation id="1141953877381847186">Povolí Asistentovi využívat informace na obrazovce k poskytování rychlých odpovědí, jako jsou překlady, definice, převody jednotek apod.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Mějte na paměti:<ph name="END_BOLD" /> Toto nastavení můžete později kdykoliv změnit v sekci Nastavení Asistenta Google &gt; Související informace.</translation>
 <translation id="1143142264369994168">Autor podpisu certifikátu</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome v počítači nenašel žádný škodlivý software • Zkontrolováno před minutou}few{Chrome v počítači nenašel žádný známý škodlivý software • Zkontrolováno před {NUM_MINS} minutami}many{Chrome v počítači nenašel žádný známý škodlivý software • Zkontrolováno před {NUM_MINS} minuty}other{Chrome v počítači nenašel žádný známý škodlivý software • Zkontrolováno před {NUM_MINS} minutami}}</translation>
 <translation id="1145593918056169051">Tiskárna přestala fungovat</translation>
@@ -1437,7 +1440,9 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2594999711683503743">Vyhledávejte na Googlu nebo zadejte adresu URL</translation>
 <translation id="2602501489742255173">Začněte přejetím nahoru</translation>
 <translation id="2603115962224169880">Vyčištění počítače</translation>
+<translation id="2603355571917519942">Funkce Voice Match je připravena</translation>
 <translation id="2603463522847370204">Otevřít v &amp;anonymním okně</translation>
+<translation id="2604138917550693049">Vyhledat obrázek pomocí Google Lens</translation>
 <translation id="2604255671529671813">Chyba připojení k síti</translation>
 <translation id="2606246518223360146">Propojit data</translation>
 <translation id="2606454609872547359">Ne, pokračovat bez čtečky ChromeVox</translation>
@@ -1780,6 +1785,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2963151496262057773">Následující plugin nereaguje: <ph name="PLUGIN_NAME" /> Chcete jej zastavit?</translation>
 <translation id="2964193600955408481">Vypnout Wi-Fi</translation>
 <translation id="2964245677645334031">Viditelnost pro sdílení na blízko</translation>
+<translation id="2966216232069818096">Povolit Asistentovi číst informace na obrazovce, aby vám mohl pomáhat</translation>
 <translation id="2966937470348689686">Spravovat nastavení aplikací Android</translation>
 <translation id="2972581237482394796">&amp;Opakovat</translation>
 <translation id="2973324205039581528">Ztlumit web</translation>
@@ -1876,6 +1882,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Tato karta používá vaši kameru nebo mikrofon.</translation>
 <translation id="3083193146044397360">Dočasně zablokováno z důvodu ochrany vaší bezpečnosti</translation>
+<translation id="3083899879156272923">Posouvat obrazovku tak, aby ukazatel myši zůstal uprostřed obrazovky</translation>
 <translation id="3084548735795614657">Nainstalujte přetažením</translation>
 <translation id="3084771660770137092">Buď má Google Chrome nedostatek paměti, nebo byl proces načítání webové stránky ukončen z jiného důvodu. Chcete-li pokračovat, načtěte stránku znovu, nebo přejděte na jinou stránku.</translation>
 <translation id="3084958266922136097">Deaktivovat spořič obrazovky</translation>
@@ -2371,6 +2378,9 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3654045516529121250">Čtení nastavení usnadnění přístupu</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Má trvalý přístup k jednomu souboru.}few{Má trvalý přístup ke # souborům.}many{Má trvalý přístup k # souboru.}other{Má trvalý přístup k # souborům.}}</translation>
 <translation id="3658871634334445293">Akcelerace TrackPointu</translation>
+<translation id="3659830472545192450">Voice Match pomáhá Asistentovi Google identifikovat váš hlas a rozpoznat vás od ostatních.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Mějte na paměti:<ph name="END_BOLD" /> K vašim osobním výsledkům může získat přístup také někdo s podobným hlasem nebo nahrávkou vašeho hlasu. Oprávnění k rozpoznávání hlasu Voice Match můžete později odebrat tím, že je vypnete v nastavení Asistenta.</translation>
 <translation id="3660234220361471169">Nedůvěryhodný</translation>
 <translation id="3664511988987167893">Ikona rozšíření</translation>
 <translation id="3665589677786828986">Prohlížeč Chrome zjistil, že některá z vašich nastavení byla upravena jiným programem, a obnovil je na původní výchozí hodnoty.</translation>
@@ -2978,7 +2988,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> sdílí okno.</translation>
 <translation id="4364830672918311045">Zobrazování oznámení</translation>
 <translation id="4366138410738374926">Tisk byl zahájen</translation>
-<translation id="437004882363131692">Nechte si zasílat tipy, nabídky a aktuality týkající se zařízení <ph name="DEVICE_TYPE" /> a poskytujte nám zpětnou vazbu. Můžete se kdykoli odhlásit.</translation>
 <translation id="4370425812909262207">Nákupní košíky byly skryty. Znovu se objeví, když provedete změny.</translation>
 <translation id="4370975561335139969">Zadaný e-mail a heslo se neshodují.</translation>
 <translation id="4374831787438678295">Instalační program Linuxu</translation>
@@ -3558,6 +3567,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">V jazycích, které jste zadali, není kontrola pravopisu podporována</translation>
 <translation id="5052499409147950210">Upravit web</translation>
+<translation id="5053962746715621840">Vyhledat obrázek pomocí Google Lens</translation>
 <translation id="5057110919553308744">Když kliknete na rozšíření</translation>
 <translation id="5057403786441168405">Spravujte účty, ve kterých jste přihlášeni. V závislosti na oprávněních vám weby, aplikace a rozšíření v Chromu a na Google Play pomocí těchto účtů mohou přizpůsobovat prostředí. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Omezit přihlášení</translation>
@@ -4042,6 +4052,9 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5610038042047936818">Přepnout na režim fotoaparátu</translation>
 <translation id="561030196642865721">Soubory cookie třetích stran jsou na tomto webu povoleny</translation>
 <translation id="5612734644261457353">Je nám líto, vaše heslo se stále nedaří ověřit. Poznámka: Pokud jste heslo nedávno změnili, vaše nové heslo bude použitelné až po odhlášení. Použijte své staré heslo.</translation>
+<translation id="561308544008485315">Voice Match pomáhá Asistentovi Google identifikovat váš hlas a rozpoznat vás od ostatních. Kvůli úspoře baterie je příkaz „Ok Google“ zapnutý, jen když je zařízení připojené ke zdroji napájení. Pokud chcete provést změny, přejděte do Nastavení.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Mějte na paměti:<ph name="END_BOLD" /> K vašim osobním výsledkům může získat přístup také někdo s podobným hlasem nebo nahrávkou vašeho hlasu. Oprávnění k rozpoznávání hlasu Voice Match můžete později odebrat tím, že je vypnete v nastavení Asistenta.</translation>
 <translation id="5614190747811328134">Sdělení pro uživatele</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
 <translation id="5616726534702877126">Rezervovat</translation>
@@ -5072,6 +5085,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6824584962142919697">&amp;Prozkoumat prvky</translation>
 <translation id="6825184156888454064">Seřadit podle názvu</translation>
 <translation id="6826872289184051766">Ověřit přes USB</translation>
+<translation id="6827604573767207488">Zdá se, že už jste si personalizovaného Asistenta nastavili na jiném zařízení. Když zapnete následující nastavení, Asistent bude ještě užitečnější.</translation>
 <translation id="6828153365543658583">Omezit přihlášení na následující uživatele:</translation>
 <translation id="6828182567531805778">Chcete-li synchronizovat data, zadejte heslovou frázi</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5507,6 +5521,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7327989755579928735">Web <ph name="MANAGER" /> deaktivoval ladění ADB. Až zařízení <ph name="DEVICE_TYPE" /> restartujete, nebudete moci instalovat aplikace z neznámého zdroje.</translation>
 <translation id="7328867076235380839">Neplatná kombinace</translation>
 <translation id="7329154610228416156">Přihlášení se nezdařilo, protože bylo nakonfigurováno k použití nezabezpečené adresy URL (<ph name="BLOCKED_URL" />). Obraťte se na svého administrátora.</translation>
+<translation id="7329932885428707942">Tato akce může vést ke krátkému odpojení od mobilní sítě.</translation>
 <translation id="7332053360324989309">Vyhrazený pracovník: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Zapnout zabudovanou lupu</translation>
 <translation id="7335974957018254119">Používat kontrolu pravopisu pro</translation>
@@ -5550,6 +5565,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7374376573160927383">Spravovat zařízení USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Do hodiny zařízení aktualizujte}few{Do # hodin zařízení aktualizujte}many{Do # hodiny zařízení aktualizujte}other{Do # hodin zařízení aktualizujte}}</translation>
 <translation id="7376553024552204454">Zvýraznit ukazatel myši, když se pohybuje.</translation>
+<translation id="737728204345822099">Na bezpečnostním klíči zůstane záznam o návštěvě tohoto webu.</translation>
 <translation id="7377451353532943397">I nadále blokovat přístup k senzorům</translation>
 <translation id="7378611153938412599">Slabá hesla lze snadno uhodnout. Vždy se snažte vytvářet silná hesla. <ph name="BEGIN_LINK" />Další tipy k zabezpečení<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Otevřít Internetový obchod Chrome</translation>
@@ -6177,6 +6193,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8059417245945632445">&amp;Zkontrolovat zařízení</translation>
 <translation id="8059456211585183827">Nejsou k dispozici žádné tiskárny k uložení.</translation>
 <translation id="8061091456562007989">Vrátit změnu</translation>
+<translation id="8061991877177392872">Funkci rozpoznání hlasu Voice Match jste u Asistenta už zřejmě nastavili v jiném zařízení. Dřívější nahrávky byly použity k vytvoření hlasového modelu v tomto zařízení.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 list papíru}few{{COUNT} listy papíru}many{{COUNT} listu papíru}other{{COUNT} listů papíru}}</translation>
 <translation id="8062879968880283306">Pomocí fotoaparátu zařízení naskenujte QR kód nebo zadejte aktivační kód, který vám poskytl operátor.</translation>
 <translation id="8063235345342641131">Výchozí zelený avatar</translation>
@@ -6447,6 +6464,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8379991678458444070">Přidejte si tuto kartu do záložek, abyste se sem mohli rychle vrátit</translation>
 <translation id="8382913212082956454">Kopírovat &amp;e-mailovou adresu</translation>
 <translation id="8386091599636877289">Zásady nebyly nalezeny.</translation>
+<translation id="8386819192691131213">Povolí Asistentovi využívat informace na obrazovce k poskytování rychlých odpovědí, jako jsou překlady, definice, převody jednotek apod.</translation>
 <translation id="8386903983509584791">Vyhledávání je dokončeno</translation>
 <translation id="8387361103813440603">Zákaz přístupu k vaší poloze</translation>
 <translation id="8389264703141926739">Blokovat oznámení</translation>
@@ -6931,6 +6949,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="8915370057835397490">Načítá se návrh</translation>
 <translation id="8916476537757519021">Anonymní podrámec: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
+<translation id="8922624386829239660">Posunout obrazovku, když se myš dotkne okraje obrazovky</translation>
 <translation id="8923880975836399332">Tmavě tyrkysová</translation>
 <translation id="8925458182817574960">&amp;Nastavení</translation>
 <translation id="8926389886865778422">Dotaz již nezobrazovat</translation>
@@ -7009,6 +7028,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="9009708085379296446">Chtěli jste tuto stránku změnit?</translation>
 <translation id="9011163749350026987">Vždy zobrazovat ikonu</translation>
 <translation id="9011393886518328654">Poznámky k vydání</translation>
+<translation id="9012122671773859802">Při pohybu myši posouvat obrazovku souvisle</translation>
 <translation id="9013037634206938463">K instalaci Linuxu je potřeba <ph name="INSTALL_SIZE" /> volného místa. Místo uvolníte smazáním souborů ze zařízení.</translation>
 <translation id="9013707997379828817">Administrátor v tomto zařízení obnovil předchozí verzi systému. Uložte důležité soubory a poté zařízení restartujte. Veškerá data v zařízení budou ztracena.</translation>
 <translation id="901668144954885282">Zálohovat na Disk Google</translation>
@@ -7053,6 +7073,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="9052404922357793350">Pokračovat v blokování</translation>
 <translation id="9053563360605707198">Oboustranný tisk</translation>
 <translation id="9053893665344928494">Zapamatovat si výběr</translation>
+<translation id="9055278955535611574">Aktivovat Asistenta povelem „Ok Google“</translation>
 <translation id="9055636786322918818">Vynutit šifrování RC4. Použití této možnosti zvyšuje riziko, protože šifry RC4 nejsou bezpečné.</translation>
 <translation id="9056810968620647706">Nebyly nalezeny žádné shody.</translation>
 <translation id="9057354806206861646">Plán aktualizací</translation>

@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1450753235335490080">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de problèmes liés au serveur.</translation>
+<translation id="1497470209855416291">L'essai est désactivé</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1513352483775369820">Favoris et historique Web</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Regarder la vidéo suivante</translation>
 <translation id="2074143993849053708">Interface d'autorisation pour la recherche vocale de l'Assistant fermée</translation>
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">L'essai est activé</translation>
 <translation id="2096012225669085171">Synchroniser et personnaliser les données sur tous les appareils</translation>
 <translation id="2100273922101894616">Connexion automatique</translation>
 <translation id="2100314319871056947">Essayez de scinder le texte pour le partager en plusieurs fois</translation>
@@ -964,7 +966,6 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7704317875155739195">Saisir semi-automatiquement les recherches et les URL</translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
 <translation id="7725024127233776428">Les pages que vous ajoutez aux favoris sont répertoriées ici</translation>
-<translation id="7735637452482172701">Déverrouiller avec le verrouillage de l'écran</translation>
 <translation id="7746457520633464754">Pour détecter les applications et sites dangereux, Chrome envoie à Google l'URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages.</translation>
 <translation id="7757787379047923882">Texte partagé par <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Sélectionner une date et une heure</translation>

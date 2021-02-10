@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1450753235335490080">Nu se poate trimite <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor probleme de server.</translation>
+<translation id="1497470209855416291">Versiunea de încercare este dezactivată</translation>
 <translation id="1506061864768559482">Motor de căutare</translation>
 <translation id="1513352483775369820">Marcaje și istoric web</translation>
 <translation id="1513858653616922153">Șterge parola</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Urmărește videoclipul următor</translation>
 <translation id="2074143993849053708">IU pentru consimțirea la căutarea vocală cu ajutorul Asistentului, închisă</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Versiunea de încercare este activată</translation>
 <translation id="2096012225669085171">Sincronizează și personalizează pe toate dispozitivele</translation>
 <translation id="2100273922101894616">Conectare automată</translation>
 <translation id="2100314319871056947">Împarte textul în fragmente mai mici</translation>
@@ -964,7 +966,6 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="7704317875155739195">Completează automat căutările și adresele URL</translation>
 <translation id="7707922173985738739">va folosi datele mobile;</translation>
 <translation id="7725024127233776428">Paginile pe care le marchezi apar aici</translation>
-<translation id="7735637452482172701">Deblochează folosind blocarea ecranului</translation>
 <translation id="7746457520633464754">Pentru a detecta aplicațiile și site-urile periculoase, Chrome trimite la Google adresele URL ale unor pagini pe care le accesezi, informații de sistem limitate și o parte din conținutul paginii</translation>
 <translation id="7757787379047923882">Text trimis de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Alege data și ora</translation>

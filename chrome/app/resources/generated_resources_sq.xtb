@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Qasu në pajisjet e tua me Bluetooth dhe Serial</translation>
 <translation id="114036956334641753">Audioja dhe titrat</translation>
 <translation id="1140746652461896221">Blloko përmbajtjen në çdo faqe që viziton</translation>
+<translation id="1141953877381847186">Lejoje "Asistentin" të përdorë informacionet në ekran për të dhënë përgjigje të shpejta, si përkthim, përkufizim, konvertim njësish etj.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ki parasysh:<ph name="END_BOLD" /> Këtë mund ta ndryshosh gjithmonë më vonë te Cilësimet e "Asistentit të Google" &gt; Informacionet e lidhura.</translation>
 <translation id="1143142264369994168">Nënshkruesi i certifikatës</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome nuk gjeti softuerë të dëmshëm në kompjuterin tënd • Kontrolluar 1 minutë më parë}other{Chrome nuk gjeti softuerë të dëmshëm në kompjuterin tënd • Kontrolluar {NUM_MINS} minuta më parë}}</translation>
 <translation id="1145593918056169051">Printeri ka ndaluar</translation>
@@ -1433,7 +1436,9 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2594999711683503743">Kërko në Google ose shkruaj URL-në</translation>
 <translation id="2602501489742255173">Rrëshqit shpejt lart për të filluar</translation>
 <translation id="2603115962224169880">Pastro kompjuterin</translation>
+<translation id="2603355571917519942">Voice Match është gati</translation>
 <translation id="2603463522847370204">Hape në &amp;dritare "të fshehtë"</translation>
+<translation id="2604138917550693049">Kërko imazhin me "Lenten e Google"</translation>
 <translation id="2604255671529671813">Gabim në lidhjen e rrjetit</translation>
 <translation id="2606246518223360146">Lidh të dhënat</translation>
 <translation id="2606454609872547359">Jo, vazhdo me ChromeVox</translation>
@@ -1776,6 +1781,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2963151496262057773">Përbërësi shtesë i mëposhtëm nuk përgjigjet: <ph name="PLUGIN_NAME" />Dëshiron ta ndalosh?</translation>
 <translation id="2964193600955408481">Çaktivizo Wi-Fi</translation>
 <translation id="2964245677645334031">Dukshmëria e "Ndarjes në afërsi"</translation>
+<translation id="2966216232069818096">Lejoje "Asistentin" të përdorë informacionet në ekran për të të ndihmuar</translation>
 <translation id="2966937470348689686">Menaxho preferencat e Android</translation>
 <translation id="2972581237482394796">&amp;Ribëje</translation>
 <translation id="2973324205039581528">Hiq zërin e sajtit</translation>
@@ -1872,6 +1878,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Kjo skedë po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="3083193146044397360">U bllokua përkohësisht për të mbrojtur sigurinë tënde</translation>
+<translation id="3083899879156272923">Lëvize ekranin duke e mbajtur miun në qendër të ekranit</translation>
 <translation id="3084548735795614657">Lëshoje për ta instaluar</translation>
 <translation id="3084771660770137092">Chrome nuk ka më memorie ose procesi për faqen e uebit u ndërpre për disa arsye. Për të vazhduar, ngarkoje përsëri ose shko te një faqe tjetër.</translation>
 <translation id="3084958266922136097">Çaktivizo mbrojtësin e ekranit</translation>
@@ -2367,6 +2374,9 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3654045516529121250">Lexo cilësimet e qasjes</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ka qasje të përhershme te një skedar.}other{Ka qasje të përhershme te # skedarë.}}</translation>
 <translation id="3658871634334445293">Përshpejtimi i TrackPoint</translation>
+<translation id="3659830472545192450">Voice Match e ndihmon "Asistentin e Google" të identifikojë zërin tënd në pajisjen tënde Chromebook dhe të të dallojë nga të tjerët.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ki parasysh:<ph name="END_BOLD" /> Edhe një zë i ngjashëm ose një regjistrim mund të jetë në gjendje të ketë qasje në rezultatet e tua personale. Mund të heqësh më vonë autorizimin e Voice Match duke e çaktivizuar te "Cilësimet" e "Asistentit".</translation>
 <translation id="3660234220361471169">Jo e besuar</translation>
 <translation id="3664511988987167893">Ikona e shtesës</translation>
 <translation id="3665589677786828986">Chrome zbuloi se disa prej cilësimeve të tua ishin të dëmtuara nga një program tjetër dhe i rivendosi ato në vlerat fillestare.</translation>
@@ -2975,7 +2985,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4364567974334641491"><ph name="APP_NAME" /> po ndan një dritare.</translation>
 <translation id="4364830672918311045">Shfaq njoftimet</translation>
 <translation id="4366138410738374926">Filloi printimi</translation>
-<translation id="437004882363131692">Merr këshilla, oferta dhe përditësime për <ph name="DEVICE_TYPE" /> dhe ndaj komentet e tua. Çregjistrohu në çdo kohë.</translation>
 <translation id="4370425812909262207">Karrocat janë të fshehura. Ato do të rishfaqen kur të bësh ndryshimet.</translation>
 <translation id="4370975561335139969">Mail-i dhe fjalëkalimi që ke futur nuk përputhen</translation>
 <translation id="4374831787438678295">Instaluesi për Linux</translation>
@@ -3555,6 +3564,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Kontrolli drejtshkrimor nuk mbështetet për gjuhët që zgjodhe</translation>
 <translation id="5052499409147950210">Modifiko sajtin</translation>
+<translation id="5053962746715621840">Kërko imazhin me "Lenten e Google"</translation>
 <translation id="5057110919553308744">Kur klikon te shtesa</translation>
 <translation id="5057403786441168405">Menaxho llogaritë ku je identifikuar. Sajtet e uebit, aplikacionet dhe shtesat në Chrome dhe Google Play mund t'i përdorin këto llogari për të personalizuar përvojën tënde, në varësi të lejeve. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Kufizo identifikimin</translation>
@@ -4038,6 +4048,9 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5610038042047936818">Kalo te modaliteti i kamerës</translation>
 <translation id="561030196642865721">Kukit e palëve të treta lejohen në këtë sajt</translation>
 <translation id="5612734644261457353">Na vjen keq, por fjalëkalimi sërish nuk mund të verifikohet. Shënim. Nëse ke ndryshuar fjalëkalimin së fundi, fjalëkalimi i ri do të zbatohet pasi të dalësh nga llogaria, prandaj përdor këtu fjalëkalimin e vjetër.</translation>
+<translation id="561308544008485315">Voice Match e ndihmon "Asistentin e Google" të identifikojë zërin tënd në pajisjen tënde Chromebook dhe të të dallojë nga të tjerët. Për të kursyer bateri, “Ok Google” është aktiv vetëm kur pajisja jote është lidhur me një burim energjie. Për të bërë ndryshime, shko te "Cilësimet".
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Ki parasysh:<ph name="END_BOLD" /> Edhe një zë i ngjashëm ose një regjistrim mund të jetë në gjendje të ketë qasje në rezultatet e tua personale. Mund të heqësh më vonë autorizimin e Voice Match duke e çaktivizuar te "Cilësimet" e "Asistentit".</translation>
 <translation id="5614190747811328134">Njoftimi i përdoruesit</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
 <translation id="5616726534702877126">Rezervo madhësinë</translation>
@@ -5068,6 +5081,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6824584962142919697">&amp;Inspekto elementet</translation>
 <translation id="6825184156888454064">Rendit sipas emrit</translation>
 <translation id="6826872289184051766">Verifikohu nëpërmjet USB-së</translation>
+<translation id="6827604573767207488">Me sa duket e ke konfiguruar tashmë "Asistentin" e personalizuar në një pajisje tjetër. Përfito edhe më shumë nga "Asistenti" yt duke e aktivizuar këtë cilësim.</translation>
 <translation id="6828153365543658583">Kufizo identifikimin e përdoruesve të mëposhtëm:</translation>
 <translation id="6828182567531805778">Fut frazën e kalimit për të sinkronizuar të dhënat</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5503,6 +5517,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7327989755579928735"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së. Pasi ta rinisësh <ph name="DEVICE_TYPE" />, nuk do të mund të ngarkosh paralelisht aplikacione.</translation>
 <translation id="7328867076235380839">Kombinim i pavlefshëm</translation>
 <translation id="7329154610228416156">Identifikimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt <ph name="BLOCKED_URL" />. Kontakto me administratorin.</translation>
+<translation id="7329932885428707942">Kjo mund të shkaktojë një shkëputje të shkurtër të rrjetit celular.</translation>
 <translation id="7332053360324989309">Procesi i posaçëm i punës: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Aktivizo zmadhuesin e stacionuar</translation>
 <translation id="7335974957018254119">Përdor kontrollin drejtshkrimor për</translation>
@@ -6171,6 +6186,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8059417245945632445">&amp;Inspekto pajisjet</translation>
 <translation id="8059456211585183827">Nuk disponohen printerë për ruajtje.</translation>
 <translation id="8061091456562007989">Ndryshoje përsëri</translation>
+<translation id="8061991877177392872">Me sa duket e ke konfiguruar tashmë Voice Match me "Asistentin" tënd në një pajisje tjetër. Këto regjistrime të mëparshme janë përdorur për të krijuar një model zanor në këtë pajisje.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 fletë letre}other{{COUNT} fletë letre}}</translation>
 <translation id="8062879968880283306">Skano kodin QR duke përdorur kamerën e pajisjes ose fut kodin e aktivizimit të dhënë nga operatori yt.</translation>
 <translation id="8063235345342641131">Avatari i parazgjedhur i gjelbër</translation>
@@ -6442,6 +6458,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8379991678458444070">Kthehu këtu shpejt duke e shtuar këtë skedë te faqeshënuesit</translation>
 <translation id="8382913212082956454">Kopjo &amp;adresën e mail-it</translation>
 <translation id="8386091599636877289">Politika nuk u gjet.</translation>
+<translation id="8386819192691131213">Lejoje "Asistentin" të përdorë informacionet në ekran për të dhënë përgjigje të shpejta, si përkthim, përkufizim, konvertim njësish etj.</translation>
 <translation id="8386903983509584791">Skanimi përfundoi</translation>
 <translation id="8387361103813440603">Nuk lejohen të shikojnë vendndodhjen tënde</translation>
 <translation id="8389264703141926739">Blloko njoftimet</translation>
@@ -6924,6 +6941,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8915370057835397490">Po ngarkon sugjerimin</translation>
 <translation id="8916476537757519021">Nënkorniza "e fshehtë": <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> që ka <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Lëvize ekranin kur miu prek këndet e ekranit</translation>
 <translation id="8923880975836399332">Gurkali e errët</translation>
 <translation id="8925458182817574960">Cilësimet</translation>
 <translation id="8926389886865778422">Mos pyet përsëri</translation>
@@ -7002,6 +7020,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9009708085379296446">Dëshiroje ta ndryshoje këtë faqe?</translation>
 <translation id="9011163749350026987">Shfaq gjithmonë ikonën</translation>
 <translation id="9011393886518328654">Shënimet e versionit</translation>
+<translation id="9012122671773859802">Lëvize ekranin vazhdimisht ndërsa lëviz miu</translation>
 <translation id="9013037634206938463">Për instalimin e Linux kërkohet <ph name="INSTALL_SIZE" /> hapësirë e lirë. Për të rritur nivelin e hapësirës së lirë, fshi skedarë nga pajisja jote.</translation>
 <translation id="9013707997379828817">Administratori e ktheu prapa këtë pajisje. Ruaj skedarët e rëndësishëm, pastaj rinise. Do të fshihen të gjitha të dhënat në pajisje.</translation>
 <translation id="901668144954885282">Rezervo në "Diskun e Google"</translation>
@@ -7046,6 +7065,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9052404922357793350">Vazhdo bllokimin</translation>
 <translation id="9053563360605707198">Printo në të dyja anët</translation>
 <translation id="9053893665344928494">Kujtoje zgjedhjen time</translation>
+<translation id="9055278955535611574">Qasu tek "Asistenti" me "Ok Google"</translation>
 <translation id="9055636786322918818">Zbato enkriptimin RC4. Përdorimi i këtij opsioni rrit rrezikun për ty, pasi shifrat RC4 nuk janë të sigurta.</translation>
 <translation id="9056810968620647706">Nuk u gjet asnjë përputhje.</translation>
 <translation id="9057354806206861646">Përditëso orarin</translation>

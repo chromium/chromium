@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1450753235335490080">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga isyu sa server.</translation>
+<translation id="1497470209855416291">Naka-disable ang trial</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmark at history ng web</translation>
 <translation id="1513858653616922153">I-delete ang password</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Panoorin ang susunod na video</translation>
 <translation id="2074143993849053708">Nakasara ang ui ng pahintulot ng paghahanap gamit ang boses ng Assistant</translation>
 <translation id="2082238445998314030">Resulta <ph name="RESULT_NUMBER" /> sa <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Naka-enable ang trial</translation>
 <translation id="2096012225669085171">Mag-sync at mag-personalize sa lahat ng device</translation>
 <translation id="2100273922101894616">Awtomatikong Mag-sign in</translation>
 <translation id="2100314319871056947">Subukang ibahagi ang text sa mas maliliit na bahagi</translation>
@@ -964,7 +966,6 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="7704317875155739195">Awtomatikong kumpletuhin ang mga paghahanap at URL</translation>
 <translation id="7707922173985738739">Gumamit ng mobile data</translation>
 <translation id="7725024127233776428">Lalabas dito ang mga page na iyong.na-bookmark</translation>
-<translation id="7735637452482172701">I-unlock gamit ang Lock ng Screen</translation>
 <translation id="7746457520633464754">Para matukoy ang mapapanganib na app at site, nagpapadala ang Chrome ng mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page sa Google</translation>
 <translation id="7757787379047923882">Ibinahagi ang text mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Pumili ng petsa at oras</translation>

@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Få adgang til dine Bluetooth- og serieenheder</translation>
 <translation id="114036956334641753">Lyd og undertekster</translation>
 <translation id="1140746652461896221">Bloker indhold på en hvilken som helst side, du besøger</translation>
+<translation id="1141953877381847186">Giv Google Assistent tilladelse til at anvende oplysninger på skærmen til at give hurtige svar, f.eks. i forbindelse med oversættelse, definitioner og enhedsomregning.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Husk!<ph name="END_BOLD" /> Du kan altid ændre dette på et senere tidspunkt i indstillingerne for Google Assistent &gt; Relaterede oplysninger.</translation>
 <translation id="1143142264369994168">Certifikatunderskriver</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome registrerede ikke skadelig software på din computer • Tjekket for 1 minut siden}one{Chrome registrerede ikke skadelig software på din computer • Tjekket for {NUM_MINS} minut siden}other{Chrome registrerede ikke skadelig software på din computer • Tjekket for {NUM_MINS} minutter siden}}</translation>
 <translation id="1145593918056169051">Printeren er stoppet</translation>
@@ -1437,7 +1440,9 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2594999711683503743">Søg på Google, eller angiv webadressen</translation>
 <translation id="2602501489742255173">Stryg opad for at komme i gang</translation>
 <translation id="2603115962224169880">Ryd op på computeren</translation>
+<translation id="2603355571917519942">Voice Match er klar</translation>
 <translation id="2603463522847370204">Åbn i &amp;inkognitovindue</translation>
+<translation id="2604138917550693049">Søg efter billede med Google Lens</translation>
 <translation id="2604255671529671813">Fejl i netværksforbindelsen</translation>
 <translation id="2606246518223360146">Tilknyt data</translation>
 <translation id="2606454609872547359">Nej, fortsæt uden ChromeVox</translation>
@@ -1780,6 +1785,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2963151496262057773">Følgende plugins svarer ikke: <ph name="PLUGIN_NAME" />Vil du stoppe det?</translation>
 <translation id="2964193600955408481">Deaktiver Wi-Fi</translation>
 <translation id="2964245677645334031">Synlighed for Deling tæt på</translation>
+<translation id="2966216232069818096">Giv Google Assistent tilladelse til at anvende oplysninger på din skærm for at hjælpe dig</translation>
 <translation id="2966937470348689686">Administrer Android-præferencer</translation>
 <translation id="2972581237482394796">&amp;Annuller fortryd</translation>
 <translation id="2973324205039581528">Slå lyden fra på dette website</translation>
@@ -1876,6 +1882,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Denne fane anvender dit kamera eller din mikrofon.</translation>
 <translation id="3083193146044397360">Tilladelsen er midlertidigt blokeret for at beskytte dine personlige oplysninger</translation>
+<translation id="3083899879156272923">Flyt skærmen, mens markøren forbliver midt på skærmen</translation>
 <translation id="3084548735795614657">Slip for at installere</translation>
 <translation id="3084771660770137092">Chrome løb tør for hukommelse, eller processen for websiden blev afbrudt af en anden grund. Genindlæs eller gå til en anden side for at fortsætte.</translation>
 <translation id="3084958266922136097">Deaktiver Pauseskærm</translation>
@@ -2371,6 +2378,9 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3654045516529121250">Læse dine indstillinger for hjælpefunktioner</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent adgang til én fil.}one{Den har permanent adgang til # filer.}other{Den har permanent adgang til # filer.}}</translation>
 <translation id="3658871634334445293">TrackPoint-acceleration</translation>
+<translation id="3659830472545192450">Voice Match hjælper Google Assistent med at identificere din stemme på din Chromebook, så den undgår at forveksle dig med andre.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Husk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis også bruges til at få adgang til dit personlige indhold. Du kan fjerne tilladelsen til Voice Match på et senere tidspunkt ved at deaktivere funktionen i indstillingerne for Google Assistent.</translation>
 <translation id="3660234220361471169">Ikke pålidelig</translation>
 <translation id="3664511988987167893">Udvidelsesikon</translation>
 <translation id="3665589677786828986">Chrome har registreret, at nogle af dine indstillinger er blevet ændret af et andet program, og har derfor gendannet standardindstillingerne.</translation>
@@ -2979,7 +2989,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deler et vindue.</translation>
 <translation id="4364830672918311045">Vis notifikationer</translation>
 <translation id="4366138410738374926">Udskriver</translation>
-<translation id="437004882363131692">Få tips, tilbud og opdateringer i forbindelse med <ph name="DEVICE_TYPE" />, og giv feedback. Du kan til enhver tid afmelde dette.</translation>
 <translation id="4370425812909262207">Indkøbskurve er skjult. De vises igen, når du foretager ændringer.</translation>
 <translation id="4370975561335139969">Den mail og adgangskode, du indtastede, stemmer ikke overens</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
@@ -3559,6 +3568,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5050330054928994520">Oplæsning</translation>
 <translation id="5051836348807686060">Stavekontrol understøttes ikke for de sprog, du har valgt</translation>
 <translation id="5052499409147950210">Rediger website</translation>
+<translation id="5053962746715621840">Søg efter billede med Google Lens</translation>
 <translation id="5057110919553308744">Når du klikker på udvidelsen</translation>
 <translation id="5057403786441168405">Administrer de konti, hvor du er logget ind. Websites, apps og udvidelser i Chrome og Google Play kan bruge disse konti til at tilpasse din oplevelse afhængigt af tilladelserne. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Begræns login</translation>
@@ -4043,6 +4053,9 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5610038042047936818">Skift til kameratilstand</translation>
 <translation id="561030196642865721">Cookies fra tredjeparter er tilladt på dette website</translation>
 <translation id="5612734644261457353">Din adgangskode kunne desværre stadig ikke bekræftes. Bemærk! Hvis du har ændret din adgangskode for nylig, anvendes din nye adgangskode først, når du har logget ud. Du skal bruge den gamle adgangskode her.</translation>
+<translation id="561308544008485315">Voice Match hjælper Google Assistent med at identificere din stemme på din Chromebook, så den undgår at forveksle dig med andre. "Hey Google" er kun aktiveret, når din enhed er sluttet til en strømkilde, så du sparer på batteriet. Gå til Indstillinger for at foretage ændringer.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Husk!<ph name="END_BOLD" /> En lignende stemme eller en optagelse af din stemme kan muligvis også bruges til at få adgang til dit personlige indhold. Du kan fjerne tilladelsen til Voice Match på et senere tidspunkt ved at deaktivere funktionen i indstillingerne for Google Assistent.</translation>
 <translation id="5614190747811328134">Brugerbesked</translation>
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
 <translation id="5616726534702877126">Reservér størrelse</translation>
@@ -5073,6 +5086,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6824584962142919697">&amp;Inspect elements (Undersøg elementer)</translation>
 <translation id="6825184156888454064">Sorter efter navn</translation>
 <translation id="6826872289184051766">Bekræft via USB</translation>
+<translation id="6827604573767207488">Det ser ud til, at du allerede har konfigureret Google Assistent på en anden enhed. Du kan få endnu mere ud af Google Assistent ved at aktivere følgende indstilling.</translation>
 <translation id="6828153365543658583">Begræns login for følgende brugere:</translation>
 <translation id="6828182567531805778">Angiv din adgangssætning for at synkronisere dine data</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5508,6 +5522,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> har deaktiveret ADB-fejlretning. Når du har genstartet din <ph name="DEVICE_TYPE" />, vil du ikke kunne sideindlæse apps.</translation>
 <translation id="7328867076235380839">Ugyldig kombination</translation>
 <translation id="7329154610228416156">Login mislykkedes, da det er konfigureret til at anvende en webadresse, der ikke er sikker (<ph name="BLOCKED_URL" />). Kontakt din administrator.</translation>
+<translation id="7329932885428707942">Dette kan medføre en kort afbrydelse fra mobilnetværket.</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Aktivér fastgjort lupvindue</translation>
 <translation id="7335974957018254119">Brug stavekontrol for</translation>
@@ -5551,6 +5566,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7374376573160927383">Administrer USB-enheder</translation>
 <translation id="7375235221357833624">{0,plural, =1{Genstart enheden inden for en time}one{Genstart enheden inden for # time}other{Genstart enheden inden for # timer}}</translation>
 <translation id="7376553024552204454">Fremhæv musemarkøren, når den bevæger sig</translation>
+<translation id="737728204345822099">En registrering af dit besøg på dette website gemmes muligvis på din sikkerhedsnøgle.</translation>
 <translation id="7377451353532943397">Fortsæt blokering af adgang til sensorer</translation>
 <translation id="7378611153938412599">Svage adgangskoder er nemme at gætte. Sørg for at oprette en stærk adgangskode. <ph name="BEGIN_LINK" />Se flere sikkerhedstips<ph name="END_LINK" />.</translation>
 <translation id="73786666777299047">Åbn Chrome Webshop</translation>
@@ -6177,6 +6193,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8059417245945632445">&amp;Inspicer enheder</translation>
 <translation id="8059456211585183827">Der er ingen printere, som kan gemmes.</translation>
 <translation id="8061091456562007989">Skift tilbage</translation>
+<translation id="8061991877177392872">Det ser ud til, at du allerede har konfigureret Voice Match med Google-assistenten på en anden enhed. Disse tidligere optagelser blev brugt til at oprette en stemmemodel på denne enhed.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 ark papir}one{{COUNT} ark papir}other{{COUNT} ark papir}}</translation>
 <translation id="8062879968880283306">Scan QR-koden ved hjælp af kameraet på enheden, eller angiv aktiveringskoden fra dit mobilselskab.</translation>
 <translation id="8063235345342641131">Grøn standardavatar</translation>
@@ -6448,6 +6465,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8379991678458444070">Tilføj denne fane som bogmærke, så du hurtigt kan vende tilbage hertil</translation>
 <translation id="8382913212082956454">Kopier mailadress&amp;e</translation>
 <translation id="8386091599636877289">Politikken blev ikke fundet.</translation>
+<translation id="8386819192691131213">Giv Google Assistent tilladelse til at anvende oplysninger på skærmen til at give hurtige svar, f.eks. i forbindelse med oversættelse, definitioner og enhedsomregning</translation>
 <translation id="8386903983509584791">Scanningen er udført</translation>
 <translation id="8387361103813440603">Har ikke tilladelse til at se din placering</translation>
 <translation id="8389264703141926739">Bloker notifikationer</translation>
@@ -6932,6 +6950,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8915370057835397490">Indlæser forslag</translation>
 <translation id="8916476537757519021">Underramme for inkognitotilstand: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> tilhørende <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Flyt skærmen, når markøren rammer kanten af skærmen</translation>
 <translation id="8923880975836399332">Mørk turkis</translation>
 <translation id="8925458182817574960">&amp;Indstillinger</translation>
 <translation id="8926389886865778422">Spørg ikke igen</translation>
@@ -7010,6 +7029,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9009708085379296446">Ville du ændre denne side?</translation>
 <translation id="9011163749350026987">Vis altid ikon</translation>
 <translation id="9011393886518328654">Produktbemærkninger</translation>
+<translation id="9012122671773859802">Flyt skærmen kontinuerligt, samtidig med at markøren flyttes</translation>
 <translation id="9013037634206938463">Du skal have <ph name="INSTALL_SIZE" /> ledig plads for at installere Linux. Du kan frigøre plads ved at slette filer fra enheden.</translation>
 <translation id="9013707997379828817">Din administrator har gendannet en tidligere version på denne enhed. Gem vigtige filer, og genstart. Alle data på enheden slettes.</translation>
 <translation id="901668144954885282">Sikkerhedskopiér til Google Drev</translation>
@@ -7054,6 +7074,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9052404922357793350">Fortsæt blokering</translation>
 <translation id="9053563360605707198">Udskriv på begge sider</translation>
 <translation id="9053893665344928494">Husk mit valg</translation>
+<translation id="9055278955535611574">Få adgang til Google Assistent ved at sige "Hey Google"</translation>
 <translation id="9055636786322918818">Gennemtving RC4-kryptering. Du løber en større risiko, hvis du vælger denne mulighed, da RC4-krypteringsalgoritmerne er usikre.</translation>
 <translation id="9056810968620647706">Der blev ikke fundet resultater.</translation>
 <translation id="9057354806206861646">Tidsplan for opdateringer</translation>

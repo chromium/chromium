@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="1497470209855416291">試用功能已停用</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1513352483775369820">書籤與網頁記錄</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">觀看下一部影片</translation>
 <translation id="2074143993849053708">Google 助理語音搜尋的同意使用者介面已關閉</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
+<translation id="2083113399121613785">試用功能已啟用</translation>
 <translation id="2096012225669085171">讓多部裝置保持同步，並提供人化體驗</translation>
 <translation id="2100273922101894616">自動登入</translation>
 <translation id="2100314319871056947">請嘗試將要分享的文字分成多個片段</translation>
@@ -964,7 +966,6 @@
 <translation id="7704317875155739195">自動完成搜尋字詞與網址</translation>
 <translation id="7707922173985738739">使用行動數據</translation>
 <translation id="7725024127233776428">加入書籤的頁面會顯示在這裡</translation>
-<translation id="7735637452482172701">使用螢幕鎖定功能解鎖</translation>
 <translation id="7746457520633464754">為了偵測危險的應用程式和網站，Chrome 會將你造訪的部分網頁網址、部分系統資訊以及部分網頁內容傳送給 Google</translation>
 <translation id="7757787379047923882">透過「<ph name="DEVICE_NAME" />」分享的文字</translation>
 <translation id="7761849928583394409">選擇日期和時間</translation>

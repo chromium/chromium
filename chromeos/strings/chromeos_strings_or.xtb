@@ -116,6 +116,7 @@
 <translation id="3865414814144988605">ରିଜୋଲ୍ୟୁଶନ୍</translation>
 <translation id="3941014780699102620">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="3942420633017001071">ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ</translation>
+<translation id="3967822245660637423">ଡାଉନ୍‍‍‍ଲୋଡ୍ ଶେଷ ହୋଇଛି</translation>
 <translation id="397105322502079400">ଗଣନା କରାଯାଉଛି…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ଦିନରୁ ଅଧିକ ପୁରୁଣା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="4003384961948020559">ବିଫଳ ହୋଇଛି - ଆଉଟପୁଟ୍ ଟ୍ରେ ପୂର୍ଣ୍ଣ ଅଛି</translation>
@@ -277,6 +278,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}other{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="7469648432129124067">ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7487067081878637334">ଟେକ୍ନୋଲୋଜି</translation>
 <translation id="7490813197707563893">MAC ଠିକଣା</translation>
@@ -300,6 +302,7 @@
 <translation id="7936303884198020182">କୌଣସି ନେମ୍ ସର୍ଭର୍ ମିଳୁ ନାହିଁ</translation>
 <translation id="7960831585769876809">ତାପମାତ୍ରା</translation>
 <translation id="7994702968232966508">EAP ପଦ୍ଧତି</translation>
+<translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="8075838845814659848">ବାକି ଥିବା ଚାର୍ଜ</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>

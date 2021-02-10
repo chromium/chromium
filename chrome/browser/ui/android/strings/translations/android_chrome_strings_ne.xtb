@@ -590,6 +590,7 @@
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> वरपरका ब्लुटुथ यन्त्रहरू खोज्न स्क्यान गर्न चाहन्छ। निम्न यन्त्रहरू फेला परेका छन्:</translation>
 <translation id="5233638681132016545">नयाँ ट्याब</translation>
+<translation id="5250483651202458397">स्क्रिनसट। बन्द गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="526421993248218238">यो पृष्ठ लोड गर्न सकिएन</translation>
 <translation id="5271967389191913893">यन्त्रले डाउनलोड गर्नको लागि सामग्रीलाई खोल्न सक्दैन।</translation>
 <translation id="5292796745632149097">निम्न यन्त्रमा पठाउनुहोस्</translation>
@@ -835,6 +836,7 @@
 <translation id="6767294960381293877">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची आधा उचाइमा खोलिएको छ।</translation>
 <translation id="6783942555455976443">यो पृष्ठ पछि पढ्ने प्रयोजनका लागि सुरक्षित गर्नुहोस् र रिमाइन्डर प्राप्त गर्नुहोस्</translation>
 <translation id="6811034713472274749">पृष्ठ हेर्नका लागि तयार छ</translation>
+<translation id="6813446258015311409">Chrome मा साइन इन गर्ने पेज खोलियो।</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ट्याब, चयन गरियो</translation>
 <translation id="6833996806551876956">गोपनीयता स्यान्डबक्सको ट्रायल अवधि</translation>
@@ -963,7 +965,6 @@
 <translation id="7704317875155739195">खोज तथा URL हरू स्वतः पूर्ण गर्नुहोस्</translation>
 <translation id="7707922173985738739">मोबाइल डेटा प्रयोग गर्नुहोस्‌</translation>
 <translation id="7725024127233776428">तपाईंले पुस्तक चिन्ह लगाउनुभएका पृष्ठहरू यहाँ देखिन्छन्</translation>
-<translation id="7735637452482172701">स्क्रिन लक प्रयोग गरी अनलक गर्नुहोस्</translation>
 <translation id="7746457520633464754">Chrome ले खतरनाक एप र साइटहरू पत्ता लगाउने प्रयोजनका लागि तपाईंले भ्रमण गर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी सीमित जानकारी र केही पृष्ठका सामग्री Google मा पठाउँछ</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको पाठ</translation>
 <translation id="7761849928583394409">मिति र समय रोज्नुहोस्</translation>
@@ -1096,6 +1097,7 @@
 <translation id="8583805026567836021">खाता लगत खालि गर्दै</translation>
 <translation id="8587585930972369234">खोज्न टच एण्ड होल्ड गर्नुहोस्</translation>
 <translation id="860043288473659153">कार्डवालाको नाम</translation>
+<translation id="8602358303461588329">Chrome मा साइन इन गर्ने पेज बन्द गरियो।</translation>
 <translation id="860282621117673749">मूल्य घटेको कुरासम्बन्धी अलर्टहरू</translation>
 <translation id="8616006591992756292">तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य प्रकारका ब्राउजिङ इतिहास रहेका हुन सक्छन्।</translation>
 <translation id="8617240290563765734">डाउनलोड गरिएको सामग्रीमा सुझाव गरिएको निर्दिष्ट URL खोल्ने हो?</translation>

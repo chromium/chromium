@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Resolusie</translation>
 <translation id="3941014780699102620">Kon nie gasheer bepaal nie</translation>
 <translation id="3942420633017001071">Diagnostiese inligting</translation>
+<translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
 <translation id="39823212440917567">Druktake ouer as <ph name="NUMBER_OF_DAYS" /> dae sal verwyder word</translation>
 <translation id="4003384961948020559">Misluk – Uitvoer is vol</translation>
@@ -279,6 +280,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skandering is voltooi. 1 bladsy is geskandeer}other{Skandering is voltooi. {NUMBER_OF_PAGES} bladsye is geskandeer}}</translation>
+<translation id="7449585358422953039">Bestuur deur <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Portaal is bespeur</translation>
 <translation id="7487067081878637334">Tegnologie</translation>
 <translation id="7490813197707563893">MAC-adres</translation>
@@ -303,6 +305,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
+<translation id="802154636333426148">Kon nie aflaai nie</translation>
 <translation id="8041089156583427627">Stuur terugvoer</translation>
 <translation id="8075838845814659848">Oorblywende batterykrag</translation>
 <translation id="808894953321890993">Verander wagwoord</translation>

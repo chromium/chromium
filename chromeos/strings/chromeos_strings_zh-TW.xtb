@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">解析度</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
 <translation id="3942420633017001071">診斷</translation>
+<translation id="3967822245660637423">下載完成</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="39823212440917567">系統會移除 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
+<translation id="7449585358422953039">由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="7469648432129124067">已偵測到網路入口</translation>
 <translation id="7487067081878637334">科技資訊</translation>
 <translation id="7490813197707563893">MAC 位址</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">找不到任何名稱伺服器</translation>
 <translation id="7960831585769876809">溫度</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
+<translation id="802154636333426148">下載失敗</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="808894953321890993">變更密碼</translation>

@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Akses peranti Bluetooth dan Bersiri anda</translation>
 <translation id="114036956334641753">Audio dan kapsyen</translation>
 <translation id="1140746652461896221">Sekat kandungan pada mana-mana halaman yang anda lawati</translation>
+<translation id="1141953877381847186">Benarkan Assistant menggunakan maklumat pada skrin untuk memberikan jawapan pantas seperti terjemahan, takrif, penukaran unit dan pelbagai lagi.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Perlu diingat:<ph name="END_BOLD" /> Anda boleh menukar tetapan ini pada bila-bila masa kemudian dalam Tetapan Google Assistant &gt; Maklumat berkaitan.</translation>
 <translation id="1143142264369994168">Penandatangan Sijil</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome tidak menemukan perisian berbahaya pada komputer anda • Disemak seminit yang lalu}other{Chrome tidak menemukan perisian berbahaya pada komputer anda • Disemak {NUM_MINS} minit yang lalu}}</translation>
 <translation id="1145593918056169051">Pencetak telah dihentikan</translation>
@@ -1432,7 +1435,9 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2594999711683503743">Cari Google atau taipkan URL</translation>
 <translation id="2602501489742255173">Leret ke atas untuk memulakan</translation>
 <translation id="2603115962224169880">Bersihkan komputer</translation>
+<translation id="2603355571917519942">Voice Match sudah sedia</translation>
 <translation id="2603463522847370204">Buka dalam tetingkap &amp;inkognito</translation>
+<translation id="2604138917550693049">Cari imej dengan Google Lens</translation>
 <translation id="2604255671529671813">Ralat sambungan rangkaian</translation>
 <translation id="2606246518223360146">Pautkan Data</translation>
 <translation id="2606454609872547359">Tidak, teruskan tanpa ChromeVox</translation>
@@ -1774,6 +1779,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2963151496262057773">Pemalam berikut tidak responsif: <ph name="PLUGIN_NAME" />Adakah anda ingin menghentikannya?</translation>
 <translation id="2964193600955408481">Lumpuhkan Wi-Fi</translation>
 <translation id="2964245677645334031">Keterlihatan Kongsi Berdekatan</translation>
+<translation id="2966216232069818096">Benarkan Assistant menggunakan maklumat pada skrin anda untuk memberikan bantuan</translation>
 <translation id="2966937470348689686">Urus pilihan Android</translation>
 <translation id="2972581237482394796">&amp;Buat Semula</translation>
 <translation id="2973324205039581528">Redam Tapak</translation>
@@ -1869,6 +1875,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Tab ini menggunakan kamera atau mikrofon anda.</translation>
 <translation id="3083193146044397360">Disekat buat sementara waktu untuk melindungi keselamatan anda</translation>
+<translation id="3083899879156272923">Gerakkan skrin semasa tetikus dibiarkan di tengah-tengah skrin</translation>
 <translation id="3084548735795614657">Lepaskan untuk memasang</translation>
 <translation id="3084771660770137092">Sama ada Chrome kehabisan memori atau proses untuk halaman web dihentikan kerana beberapa sebab lain.  Untuk meneruskan, muatkan semula atau pergi ke halaman lain.</translation>
 <translation id="3084958266922136097">Lumpuhkan penyelamat skrin</translation>
@@ -2362,6 +2369,9 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3654045516529121250">Baca tetapan kebolehaksesan anda</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Apl mempunyai akses tetap kepada satu fail.}other{Apl mempunyai akses tetap kepada # fail.}}</translation>
 <translation id="3658871634334445293">Pemecutan TrackPoint</translation>
+<translation id="3659830472545192450">Voice Match membantu Google Assistant mengenal pasti suara anda pada Chromebook dan membezakan anda daripada orang lain.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Perlu diingat:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil carian peribadi anda juga. Anda boleh mengalih keluar kebenaran Voice Match kemudian dengan mematikannya dalam Tetapan Assistant.</translation>
 <translation id="3660234220361471169">Tidak Dipercayai</translation>
 <translation id="3664511988987167893">Ikon Sambungan</translation>
 <translation id="3665589677786828986">Chrome mengesan bahawa sesetengah tetapan anda telah terganggu oleh program lain dan menetapkannya semula kepada tetapan lalainya yang asal.</translation>
@@ -2968,7 +2978,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4364567974334641491"><ph name="APP_NAME" /> berkongsi tetingkap.</translation>
 <translation id="4364830672918311045">Paparkan pemberitahuan</translation>
 <translation id="4366138410738374926">Pencetakan dimulakan</translation>
-<translation id="437004882363131692">Dapatkan petua, tawaran dan kemaskinian <ph name="DEVICE_TYPE" />, serta kongsikan maklum balas. Hentikan langganan pada bila-bila masa.</translation>
 <translation id="4370425812909262207">Troli disembunyikan. Troli akan dipaparkan semula apabila anda membuat perubahan.</translation>
 <translation id="4370975561335139969">E-mel dan kata laluan yang anda masukkan tidak padan</translation>
 <translation id="4374831787438678295">Pemasang Linux</translation>
@@ -3545,6 +3554,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5050330054928994520">TTS</translation>
 <translation id="5051836348807686060">Semak ejaan tidak disokong untuk bahasa yang anda pilih</translation>
 <translation id="5052499409147950210">Edit tapak</translation>
+<translation id="5053962746715621840">Cari Imej dengan Google Lens</translation>
 <translation id="5057110919553308744">Apabila anda mengklik sambungan</translation>
 <translation id="5057403786441168405">Urus akaun log masuk anda. Tapak web, apl dan sambungan dalam Chrome dan Google Play mungkin menggunakan akaun ini untuk menyesuaikan pengalaman anda, bergantung pada kebenaran. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Sekat log masuk</translation>
@@ -4027,6 +4037,9 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5610038042047936818">Beralih ke mod kamera</translation>
 <translation id="561030196642865721">Kuki pihak ketiga dibenarkan di tapak ini</translation>
 <translation id="5612734644261457353">Maaf, kata laluan anda masih tidak dapat disahkan. Perhatian: jika anda menukar kata laluan anda baru-baru ini, kata laluan baharu anda akan digunakan apabila anda log keluar, sila gunakan kata laluan yang lama di sini.</translation>
+<translation id="561308544008485315">Voice Match membantu Google Assistant mengenal pasti suara anda pada Chromebook dan membezakan anda daripada orang lain. Untuk menjimatkan bateri, “Ok Google” hanya dihidupkan apabila peranti anda disambungkan kepada sumber kuasa. Untuk membuat perubahan, pergi ke Tetapan.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Perlu diingat:<ph name="END_BOLD" /> Suara yang serupa atau rakaman suara mungkin dapat mengakses hasil carian peribadi anda juga. Anda boleh mengalih keluar kebenaran Voice Match kemudian dengan mematikannya dalam Tetapan Assistant.</translation>
 <translation id="5614190747811328134">Notis Pengguna</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
 <translation id="5616726534702877126">Saiz rizab</translation>
@@ -5050,6 +5063,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6824584962142919697">&amp;Periksa unsur</translation>
 <translation id="6825184156888454064">Isih mengikut nama</translation>
 <translation id="6826872289184051766">Sahkan melalui USB</translation>
+<translation id="6827604573767207488">Nampaknya anda telah pun menyediakan Assistant yang diperibadikan pada peranti lain. Dapatkan pelbagai lagi manfaat daripada Assistant anda dengan menghidupkan tetapan berikut.</translation>
 <translation id="6828153365543658583">Hadkan log masuk bagi pengguna berikut:</translation>
 <translation id="6828182567531805778">Masukkan ungkapan laluan anda untuk menyegerakkan data anda</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5484,6 +5498,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7327989755579928735"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB. Sebaik sahaja anda memulakan semula <ph name="DEVICE_TYPE" />, anda tidak akan dapat memuat sisi apl.</translation>
 <translation id="7328867076235380839">Gabungan tidak sah</translation>
 <translation id="7329154610228416156">Log masuk gagal kerana telah dikonfigurasikan untuk menggunakan URL tidak selamat (<ph name="BLOCKED_URL" />). Sila hubungi pentadbir anda.</translation>
+<translation id="7329932885428707942">Tindakan ini mungkin mengakibatkan rangkaian selular terputus sambungan sebentar.</translation>
 <translation id="7332053360324989309">Pekerja Khusus: <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Dayakan penggadang yang didok</translation>
 <translation id="7335974957018254119">Gunakan semak ejaan untuk</translation>
@@ -5527,6 +5542,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7374376573160927383">Urus peranti USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Kemas kini peranti dalam masa sejam}other{Kemas kini peranti dalam masa # jam}}</translation>
 <translation id="7376553024552204454">Serlahkan kursor tetikus semasa kursor bergerak</translation>
+<translation id="737728204345822099">Rekod lawatan anda ke laman ini mungkin disimpan pada kunci keselamatan anda.</translation>
 <translation id="7377451353532943397">Teruskan menyekat akses penderia</translation>
 <translation id="7378611153938412599">Kata laluan lemah mudah diteka. Pastikan anda membuat kata laluan kukuh. <ph name="BEGIN_LINK" />Lihat pelbagai lagi petua keselamatan.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Buka Gedung Web Chrome</translation>
@@ -6153,6 +6169,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8059417245945632445">&amp;Periksa peranti</translation>
 <translation id="8059456211585183827">Tiada pencetak tersedia untuk disimpan.</translation>
 <translation id="8061091456562007989">Tukar kepada asal</translation>
+<translation id="8061991877177392872">Nampaknya anda telah pun menyediakan Voice Match dengan Assistant pada peranti lain. Rakaman terdahulu ini telah digunakan untuk membuat model suara pada peranti ini.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 helai kertas}other{{COUNT} helai kertas}}</translation>
 <translation id="8062879968880283306">Imbas kod QR menggunakan kamera peranti atau masukkan kod pengaktifan yang disediakan oleh pembawa anda.</translation>
 <translation id="8063235345342641131">Avatar hijau lalai</translation>
@@ -6423,6 +6440,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8379991678458444070">Tandai tab ini untuk kembali ke sini dengan cepat</translation>
 <translation id="8382913212082956454">Salin &amp;alamat e-mel</translation>
 <translation id="8386091599636877289">Dasar tidak ditemui.</translation>
+<translation id="8386819192691131213">Benarkan Assistant menggunakan maklumat pada skrin untuk memberikan jawapan pantas seperti terjemahan, takrif, penukaran unit dan pelbagai lagi</translation>
 <translation id="8386903983509584791">Pengimbasan selesai</translation>
 <translation id="8387361103813440603">Tidak dibenarkan untuk melihat lokasi anda</translation>
 <translation id="8389264703141926739">Sekat pemberitahuan</translation>
@@ -6900,6 +6918,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="8915370057835397490">Memuatkan cadangan</translation>
 <translation id="8916476537757519021">Subbingkai Inkognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Gerakkan skrin apabila tetikus menyentuh tepi skrin</translation>
 <translation id="8923880975836399332">Hijau kebiruan gelap</translation>
 <translation id="8925458182817574960">&amp;Tetapan</translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
@@ -6977,6 +6996,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="9009708085379296446">Adakah anda bermaksud untuk menukar halaman ini?</translation>
 <translation id="9011163749350026987">Sentiasa tunjukkan ikon</translation>
 <translation id="9011393886518328654">Nota keluaran</translation>
+<translation id="9012122671773859802">Gerakkan skrin secara berterusan semasa tetikus digerakkan</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> ruang kosong diperlukan untuk memasang Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="9013707997379828817">Pentadbir anda membalikkan peranti ini. Sila simpan fail penting, kemudian mulakan semula. Semua data pada peranti akan dipadamkan.</translation>
 <translation id="901668144954885282">Sandarkan pada Google Drive</translation>
@@ -7021,6 +7041,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="9052404922357793350">Teruskan menyekat</translation>
 <translation id="9053563360605707198">Cetak pada kedua-dua belah halaman</translation>
 <translation id="9053893665344928494">Ingat pilihan saya</translation>
+<translation id="9055278955535611574">Akses Assistant anda dengan "Ok Google"</translation>
 <translation id="9055636786322918818">Kuat kuasakan penyulitan RC4. Penggunaan pilihan ini akan meningkatkan risiko anda, kerana sifer RC4 tidak selamat.</translation>
 <translation id="9056810968620647706">Tiada padanan dijumpai.</translation>
 <translation id="9057354806206861646">Kemas kini jadual</translation>

@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
+<translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
@@ -279,6 +280,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat 1 pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines}}</translation>
+<translation id="7449585358422953039">Gestionat per <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Adreça MAC</translation>
@@ -303,6 +305,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7994702968232966508">Mètode EAP</translation>
+<translation id="802154636333426148">Error de baixada</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>

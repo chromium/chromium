@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Լուծաչափ</translation>
 <translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
 <translation id="3942420633017001071">Դիագնոստիկա</translation>
+<translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
@@ -279,6 +280,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Սկանավորումն ավարտվել է։ Սկանավորվել է 1 էջ։}one{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}other{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}}</translation>
+<translation id="7449585358422953039">Կառավարիչ՝ <ph name="MANAGER" />։</translation>
 <translation id="7469648432129124067">Հայտնաբերվել է ցանցային պորտալ</translation>
 <translation id="7487067081878637334">Տեխնոլոգիա</translation>
 <translation id="7490813197707563893">MAC հասցե</translation>
@@ -303,6 +305,7 @@
 <translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
 <translation id="7960831585769876809">Ջերմաստիճան</translation>
 <translation id="7994702968232966508">EAP եղանակ</translation>
+<translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>

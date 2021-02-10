@@ -2981,7 +2981,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4364567974334641491">Aplikacija <ph name="APP_NAME" /> je v skupno rabo dala okno.</translation>
 <translation id="4364830672918311045">Prikaz obvestil</translation>
 <translation id="4366138410738374926">Tiskanje se je začelo</translation>
-<translation id="437004882363131692">Prejmite nasvete, ponudbe in obvestila za napravo <ph name="DEVICE_TYPE" /> ter pošiljajte povratne informacije. Odjavite se lahko kadar koli.</translation>
 <translation id="4370425812909262207">Vozički so skriti. Znova bodo prikazani, ko naredite spremembe.</translation>
 <translation id="4370975561335139969">E-poštni naslov in geslo, ki ste ju vnesli, se ne ujemata.</translation>
 <translation id="4374831787438678295">Namestitveni program za Linux</translation>
@@ -5555,6 +5554,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7374376573160927383">Upravljanje naprav USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Posodobite napravo v eni uri}one{Posodobite napravo v # uri}two{Posodobite napravo v # urah}few{Posodobite napravo v # urah}other{Posodobite napravo v # urah}}</translation>
 <translation id="7376553024552204454">Označitev miškinega kazalca med premikanjem</translation>
+<translation id="737728204345822099">Na varnostnem ključu se bo morda zabeležil obisk tega spletnega mesta.</translation>
 <translation id="7377451353532943397">Še naprej preprečuj dostop do tipal</translation>
 <translation id="7378611153938412599">Šibka gesla je preprosto ugotoviti. Ustvarite zapletena gesla. <ph name="BEGIN_LINK" />Oglejte si več varnostnih nasvetov.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Odpiranje Spletne trgovine Chrome</translation>

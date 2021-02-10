@@ -127,6 +127,9 @@
 <translation id="1140351953533677694">Accéder à vos appareils reliés via le Bluetooth et le port série</translation>
 <translation id="114036956334641753">Audio et sous-titres</translation>
 <translation id="1140746652461896221">Bloquer le contenu sur toutes les pages visitées</translation>
+<translation id="1141953877381847186">Il pourra ainsi vous fournir des réponses rapides, comme des traductions, des définitions, des conversions d'unités, etc.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />À noter<ph name="END_BOLD" /> : Vous pourrez modifier ce paramètre plus tard dans Paramètres de l'Assistant Google &gt; Informations connexes.</translation>
 <translation id="1143142264369994168">Signataire du certificat </translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome n'a détecté aucun logiciel malveillant sur votre ordinateur • Vérification effectuée il y a 1 minute}one{Chrome n'a détecté aucun logiciel malveillant sur votre ordinateur • Vérification effectuée il y a {NUM_MINS} minute}other{Chrome n'a détecté aucun logiciel malveillant sur votre ordinateur • Vérification effectuée il y a {NUM_MINS} minutes}}</translation>
 <translation id="1145593918056169051">L'imprimante s'est arrêtée</translation>
@@ -1433,7 +1436,9 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2594999711683503743">Rechercher sur Google ou saisir une URL</translation>
 <translation id="2602501489742255173">Balayez l'écran vers le haut pour démarrer</translation>
 <translation id="2603115962224169880">Nettoyer l'ordinateur</translation>
+<translation id="2603355571917519942">Voice Match est prêt</translation>
 <translation id="2603463522847370204">Ouvrir dans une fenêtre de &amp;navigation privée</translation>
+<translation id="2604138917550693049">Rechercher l'image avec Google Lens</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2606246518223360146">Associer les données</translation>
 <translation id="2606454609872547359">Non, continuer sans ChromeVox</translation>
@@ -1775,6 +1780,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2963151496262057773">Le plug-in "<ph name="PLUGIN_NAME" />" ne répond pas. Voulez-vous l'interrompre ?</translation>
 <translation id="2964193600955408481">Désactiver le réseau Wi-Fi</translation>
 <translation id="2964245677645334031">Visibilité pour le partage à proximité</translation>
+<translation id="2966216232069818096">Autorisez l'Assistant à utiliser les informations à l'écran pour vous aider</translation>
 <translation id="2966937470348689686">Gérer les préférences Android</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2973324205039581528">Couper le son du site</translation>
@@ -1870,6 +1876,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="308268297242056490">URI</translation>
 <translation id="3082780749197361769">Cet onglet utilise votre caméra ou votre micro</translation>
 <translation id="3083193146044397360">Bloquée temporairement pour protéger votre sécurité</translation>
+<translation id="3083899879156272923">Déplacer l'écran en gardant le pointeur au milieu</translation>
 <translation id="3084548735795614657">Déposer pour installer</translation>
 <translation id="3084771660770137092">Google Chrome n'avait pas suffisamment de mémoire ou le processus de la page Web a été arrêté pour une autre raison. Pour continuer, actualisez la page ou ouvrez-en une autre.</translation>
 <translation id="3084958266922136097">Désactiver l'économiseur d'écran</translation>
@@ -2363,6 +2370,9 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3654045516529121250">Lire vos paramètres d'accessibilité</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{L'application possède un accès permanent à un fichier.}one{L'application possède un accès permanent à # fichier.}other{L'application possède un accès permanent à # fichiers.}}</translation>
 <translation id="3658871634334445293">Accélération de TrackPoint</translation>
+<translation id="3659830472545192450">Voice Match aide l'Assistant Google à identifier votre voix sur votre Chromebook et à vous distinguer.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />À noter<ph name="END_BOLD" /> : Il est possible qu'une personne ayant une voix similaire ou un enregistrement de votre voix puisse accéder à vos résultats personnalisés. Vous pourrez désactiver Voice Match plus tard dans les paramètres de l'Assistant.</translation>
 <translation id="3660234220361471169">Non approuvé</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains de vos paramètres ont été corrompus par un autre programme. Leurs valeurs par défaut ont été rétablies.</translation>
@@ -2969,7 +2979,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> partage une fenêtre.</translation>
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4366138410738374926">L'impression a commencé</translation>
-<translation id="437004882363131692">Recevez des conseils, des offres et des informations sur <ph name="DEVICE_TYPE" />, et partagez vos commentaires. Vous pouvez vous désabonner à tout moment.</translation>
 <translation id="4370425812909262207">Les paniers sont masqués. Ils s'afficheront de nouveau si vous effectuez des changements.</translation>
 <translation id="4370975561335139969">L'adresse e-mail et le mot de passe saisis ne correspondent pas.</translation>
 <translation id="4374831787438678295">Programme d'installation de Linux</translation>
@@ -3546,6 +3555,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5050330054928994520">Synthèse vocale</translation>
 <translation id="5051836348807686060">La vérification orthographique n'est pas disponible pour les langues que vous avez sélectionnées</translation>
 <translation id="5052499409147950210">Modifier le site</translation>
+<translation id="5053962746715621840">Rechercher l'image avec Google Lens</translation>
 <translation id="5057110919553308744">Lorsque vous cliquez sur l'extension</translation>
 <translation id="5057403786441168405">Gérez les comptes auxquels vous êtes connecté. Les sites Web, les applications ainsi que les extensions Chrome et Google Play peuvent utiliser ces comptes pour personnaliser votre expérience, en fonction des autorisations accordées. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restreindre les connexions</translation>
@@ -4028,6 +4038,9 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5610038042047936818">Passer en mode Appareil photo</translation>
 <translation id="561030196642865721">Les cookies tiers sont autorisés sur ce site</translation>
 <translation id="5612734644261457353">Désolé, nous ne pouvons toujours pas valider votre mot de passe. Remarque : si vous l'avez modifié dernièrement, votre nouveau mot de passe ne sera appliqué qu'une fois que vous vous serez déconnecté. Veuillez donc utiliser votre ancien mot de passe.</translation>
+<translation id="561308544008485315">Voice Match aide l'Assistant Google à identifier votre voix sur votre Chromebook et à vous distinguer. Pour économiser la batterie, "Hey Google" n'est activé que si votre appareil est branché sur une source d'alimentation. Pour modifier ce réglage, accédez aux paramètres.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />À noter<ph name="END_BOLD" /> : Il est possible qu'une personne ayant une voix similaire ou un enregistrement de votre voix puisse accéder à vos résultats personnalisés. Vous pourrez désactiver Voice Match plus tard dans les paramètres de l'Assistant.</translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
 <translation id="5616726534702877126">Conserver la taille</translation>
@@ -5052,6 +5065,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6824584962142919697">&amp;Examiner les éléments</translation>
 <translation id="6825184156888454064">Trier par nom</translation>
 <translation id="6826872289184051766">Valider via USB</translation>
+<translation id="6827604573767207488">Apparemment, vous avez déjà configuré l'Assistant personnalisé sur un autre appareil. Pour en profiter encore plus, activez le paramètre suivant.</translation>
 <translation id="6828153365543658583">Autoriser uniquement les utilisateurs suivants à se connecter :</translation>
 <translation id="6828182567531805778">Saisissez votre phrase secrète pour synchroniser vos données.</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -5486,6 +5500,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> a désactivé le débogage ADB. Après avoir redémarré votre <ph name="DEVICE_TYPE" />, vous ne pourrez plus télécharger d'applications indépendamment.</translation>
 <translation id="7328867076235380839">Combinaison non valide</translation>
 <translation id="7329154610228416156">La connexion a échoué, car elle a été configurée pour utiliser une URL non sécurisée (<ph name="BLOCKED_URL" />). Veuillez contacter votre administrateur.</translation>
+<translation id="7329932885428707942">Vous risquez d'être déconnecté brièvement du réseau mobile.</translation>
 <translation id="7332053360324989309">Nœud de calcul dédié : <ph name="SCRIPT_URL" /></translation>
 <translation id="7334274148831027933">Activer la loupe ancrée</translation>
 <translation id="7335974957018254119">Utiliser le correcteur orthographique</translation>
@@ -5529,6 +5544,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7374376573160927383">Gérer les appareils USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Mettre à jour l'appareil d'ici 1 heure}one{Mettre à jour l'appareil d'ici # heure}other{Mettre à jour l'appareil d'ici # heures}}</translation>
 <translation id="7376553024552204454">Mettre en surbrillance le curseur de la souris lorsqu'il se déplace</translation>
+<translation id="737728204345822099">Une trace de votre visite sur le site sera peut-être conservée sur votre clé de sécurité.</translation>
 <translation id="7377451353532943397">Continuer de bloquer l'accès aux capteurs</translation>
 <translation id="7378611153938412599">Les mots de passe peu sécurisés sont faciles à deviner. Assurez-vous de créer des mots de passe sécurisés. <ph name="BEGIN_LINK" />Découvrez d'autres conseils de sécurité.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Ouvrir le Chrome Web Store</translation>
@@ -6155,6 +6171,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8059417245945632445">&amp;Inspecter les appareils</translation>
 <translation id="8059456211585183827">Aucune imprimante ne peut être enregistrée.</translation>
 <translation id="8061091456562007989">Rétablir les anciens paramètres</translation>
+<translation id="8061991877177392872">Apparemment, vous avez déjà configuré Voice Match avec l'Assistant sur un autre appareil. Ces enregistrements précédents ont été utilisés pour créer une empreinte vocale sur cet appareil.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 feuille de papier}one{{COUNT} feuille de papier}other{{COUNT} feuilles de papier}}</translation>
 <translation id="8062879968880283306">Scannez le code QR à l'aide de l'appareil photo ou saisissez le code d'activation fourni par votre opérateur.</translation>
 <translation id="8063235345342641131">Avatar vert par défaut</translation>
@@ -6424,6 +6441,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8379991678458444070">Revenez facilement sur cet onglet en l'ajoutant à vos favoris</translation>
 <translation id="8382913212082956454">Copi&amp;er l'adresse e-mail</translation>
 <translation id="8386091599636877289">Règle introuvable.</translation>
+<translation id="8386819192691131213">Autorisez l'Assistant à utiliser les informations à l'écran pour vous fournir des réponses rapides, comme des traductions, des définitions, des conversions d'unités, etc.</translation>
 <translation id="8386903983509584791">Recherche terminée</translation>
 <translation id="8387361103813440603">Non autorisé à connaître votre position</translation>
 <translation id="8389264703141926739">Bloquer les notifications</translation>
@@ -6902,6 +6920,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8915370057835397490">Chargement des suggestions en cours…</translation>
 <translation id="8916476537757519021">Sous-cadre de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
+<translation id="8922624386829239660">Déplacer l'écran quand le pointeur touche les bords</translation>
 <translation id="8923880975836399332">Turquoise foncé</translation>
 <translation id="8925458182817574960">&amp;Paramètres</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
@@ -6979,6 +6998,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9009708085379296446">Vouliez-vous modifier cette page ?</translation>
 <translation id="9011163749350026987">Toujours afficher l'icône</translation>
 <translation id="9011393886518328654">Notes de version</translation>
+<translation id="9012122671773859802">Déplacer l'écran en continu selon les mouvements du pointeur</translation>
 <translation id="9013037634206938463">Espace libre requis pour installer Linux : <ph name="INSTALL_SIZE" />. Pour libérer de l'espace, supprimez des fichiers de votre appareil.</translation>
 <translation id="9013707997379828817">Votre administrateur a rétabli cet appareil. Veuillez enregistrer les fichiers importants, puis redémarrer. Toutes les données enregistrées sur cet appareil seront supprimées.</translation>
 <translation id="901668144954885282">Sauvegarder dans Google Drive</translation>
@@ -7023,6 +7043,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9052404922357793350">Continuer de bloquer</translation>
 <translation id="9053563360605707198">Impression recto verso</translation>
 <translation id="9053893665344928494">Mémoriser mon choix</translation>
+<translation id="9055278955535611574">Dites "Hey Google" pour parler à l'Assistant</translation>
 <translation id="9055636786322918818">Appliquez le chiffrement RC4. L'activation de cette option est risquée, car les algorithmes de chiffrement RC4 ne sont pas sécurisés.</translation>
 <translation id="9056810968620647706">Aucune correspondance trouvée</translation>
 <translation id="9057354806206861646">Calendrier des mises à jour</translation>

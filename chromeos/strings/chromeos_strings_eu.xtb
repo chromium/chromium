@@ -117,6 +117,7 @@
 <translation id="3865414814144988605">Bereizmena</translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
 <translation id="3942420633017001071">Diagnostikoak</translation>
+<translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
@@ -279,6 +280,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Amaitu da eskaneatzen. 1 orri eskaneatu da.}other{Amaitu da eskaneatzen. {NUMBER_OF_PAGES} orri eskaneatu dira.}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> da kudeatzailea.</translation>
 <translation id="7469648432129124067">Ataria hauteman da</translation>
 <translation id="7487067081878637334">Teknologia</translation>
 <translation id="7490813197707563893">MAC helbidea</translation>
@@ -303,6 +305,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7936303884198020182">Ez da aurkitu izenen zerbitzaririk</translation>
 <translation id="7960831585769876809">Tenperatura</translation>
 <translation id="7994702968232966508">EAP metodoa</translation>
+<translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8041089156583427627">Bidali oharrak</translation>
 <translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>

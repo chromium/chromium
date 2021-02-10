@@ -2967,7 +2967,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4364567974334641491"><ph name="APP_NAME" /> está compartiendo una ventana.</translation>
 <translation id="4364830672918311045">Mostrar notificaciones</translation>
 <translation id="4366138410738374926">Impresión iniciada</translation>
-<translation id="437004882363131692">Recibe consejos, ofertas y novedades sobre <ph name="DEVICE_TYPE" /> y comparte tu opinión. Puedes cancelar la suscripción en cualquier momento.</translation>
 <translation id="4370425812909262207">Carritos ocultos. Volverán a aparecer cuando hagas cambios.</translation>
 <translation id="4370975561335139969">La dirección de correo electrónico y la contraseña que has introducido no coinciden</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
@@ -5526,6 +5525,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7374376573160927383">Gestionar dispositivos USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Actualizar dispositivo dentro de 1 hora}other{Actualizar dispositivo dentro de # horas}}</translation>
 <translation id="7376553024552204454">Resaltar el cursor del ratón al moverlo</translation>
+<translation id="737728204345822099">Se guardará un registro de tu visita a este sitio web en tu llave de seguridad.</translation>
 <translation id="7377451353532943397">Seguir bloqueando el acceso a los sensores</translation>
 <translation id="7378611153938412599">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de que tus contraseñas sean seguras. <ph name="BEGIN_LINK" />Ver más consejos de seguridad<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>

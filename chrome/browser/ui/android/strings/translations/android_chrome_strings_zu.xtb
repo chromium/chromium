@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Phrinta</translation>
 <translation id="1450753235335490080">Ayikwazi ukwabelana nge-<ph name="CONTENT_TYPE" /></translation>
 <translation id="1477626028522505441">Ukulandwa kwe-<ph name="FILE_NAME" /> kuhlulekile ngenxa yezinkinga zeseva.</translation>
+<translation id="1497470209855416291">Ukuzama kukhutshaziwe</translation>
 <translation id="1506061864768559482">Injini yokusesha</translation>
 <translation id="1513352483775369820">Amabhukhimakhi nomlando wendawo</translation>
 <translation id="1513858653616922153">Susa iphasiwedi</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Buka ividiyo elandelayo</translation>
 <translation id="2074143993849053708">Imvume ye-ui yomsizi wokusesha ngezwi ivaliwe</translation>
 <translation id="2082238445998314030">Umphumela ongu-<ph name="RESULT_NUMBER" /> wokungu-<ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">Ukuzama kunikwe amandla</translation>
 <translation id="2096012225669085171">Vumelanisa uphinde wenze kube ngokwakho kumadivayisi onkana</translation>
 <translation id="2100273922101894616">Ngena ngemvume ngokuzenzakalela</translation>
 <translation id="2100314319871056947">Zama ukwabelana ngombhalo ngezingxenye ezincane</translation>
@@ -964,7 +966,6 @@ Idatha evela kuseshini yakho ye-Incognito izosulwa kusukela ku-Chrome uma <ph na
 <translation id="7704317875155739195">Qedela ngokuzenzakalela usesho nama-URL</translation>
 <translation id="7707922173985738739">Sebenzisa idatha yeselula</translation>
 <translation id="7725024127233776428">Amakhasi owafaka ibhukhimakhi avela lapha</translation>
-<translation id="7735637452482172701">Vula Ngokukhiya Isikrini</translation>
 <translation id="7746457520633464754">Ukuze uthole izinhlelo zokusebenza namasayithi ayingozi, i-Chrome ithumela ama-URL wamanye amakhasi owavakashelayo, ulwazi lwesistimu olukhawulelwe, kanye nokuqukethwe kwekhasi ku-Google</translation>
 <translation id="7757787379047923882">Umbhalo wabiwe kusuka ku-<ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Khetha idethi nesikhathi</translation>
