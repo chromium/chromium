@@ -275,14 +275,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   int time_to_live;
   if (ParseMintTokenResponse(&(*value), &access_token, &granted_scopes,
                              &time_to_live)) {
-    if (granted_scopes.empty()) {
-      granted_scopes.insert(parameters_.scopes.begin(),
-                            parameters_.scopes.end());
-      RecordApiCallResult(
-          OAuth2MintTokenApiCallResult::kMintTokenSuccessWithFallbackScopes);
-    } else {
-      RecordApiCallResult(OAuth2MintTokenApiCallResult::kMintTokenSuccess);
-    }
+    RecordApiCallResult(OAuth2MintTokenApiCallResult::kMintTokenSuccess);
     ReportSuccess(access_token, granted_scopes, time_to_live);
   } else {
     RecordApiCallResult(OAuth2MintTokenApiCallResult::kParseMintTokenFailure);
@@ -327,13 +320,8 @@ bool OAuth2MintTokenFlow::ParseMintTokenResponse(
   const std::string* granted_scopes_string =
       dict->FindStringKey(kGrantedScopesKey);
 
-  if (!granted_scopes_string) {
-    // TODO(https://crbug.com/1100535): Once unbundled consent has successfully
-    // launched, remove the fallback to the requested scopes when the
-    // grantedScopes parameter is missing from the response. After launch,
-    // ParseMintTokenResponse should return false in these situations.
-    return true;
-  }
+  if (!granted_scopes_string)
+    return false;
 
   const std::vector<std::string> granted_scopes_vector =
       base::SplitString(*granted_scopes_string, " ", base::TRIM_WHITESPACE,

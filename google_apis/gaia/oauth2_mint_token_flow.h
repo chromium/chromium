@@ -44,8 +44,9 @@ enum class OAuth2MintTokenApiCallResult {
   // DEPRECATED:
   // kRemoteConsentFallback = 8
   kParseRemoteConsentFailure = 9,
-  kMintTokenSuccessWithFallbackScopes = 10,
-  kMaxValue = kMintTokenSuccessWithFallbackScopes
+  // DEPRECATED:
+  // kMintTokenSuccessWithFallbackScopes = 10,
+  kMaxValue = kParseRemoteConsentFailure
 };
 
 // Data for the remote consent resolution:

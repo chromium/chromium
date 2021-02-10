@@ -367,10 +367,8 @@ TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponse) {
     std::string access_token;
     std::set<std::string> granted_scopes;
     int time_to_live;
-    EXPECT_TRUE(OAuth2MintTokenFlow::ParseMintTokenResponse(
+    EXPECT_FALSE(OAuth2MintTokenFlow::ParseMintTokenResponse(
         json.get(), &access_token, &granted_scopes, &time_to_live));
-    EXPECT_EQ("at1", access_token);
-    EXPECT_EQ(3600, time_to_live);
     EXPECT_TRUE(granted_scopes.empty());
   }
   {  // All good.
@@ -622,10 +620,10 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_NullHead) {
 TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoGrantedScopes) {
   CreateFlow(OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
   std::set<std::string> granted_scopes = {"http://scope1", "http://scope2"};
-  EXPECT_CALL(delegate_, OnMintTokenSuccess("at1", granted_scopes, 3600));
+  EXPECT_CALL(delegate_, OnMintTokenFailure(_));
   ProcessApiCallSuccess(head_200_.get(), std::make_unique<std::string>(
                                              kTokenResponseNoGrantedScopes));
   histogram_tester_.ExpectUniqueSample(
       kOAuth2MintTokenApiCallResultHistogram,
-      OAuth2MintTokenApiCallResult::kMintTokenSuccessWithFallbackScopes, 1);
+      OAuth2MintTokenApiCallResult::kParseMintTokenFailure, 1);
 }
