@@ -188,6 +188,71 @@ class InsertableStreamsVideoProcessing(WebrtcPage):
         description='Number of frames received at the sink video.')
 
 
+class NegotiateTiming(WebrtcPage):
+  """Why: Measure how long renegotiation takes with large SDP blobs."""
+
+  def __init__(self, page_set, tags):
+    super(NegotiateTiming,
+          self).__init__(url='file://webrtc_cases/negotiate-timing.html',
+                         name='negotiate-timing',
+                         page_set=page_set,
+                         tags=tags)
+
+  def ExecuteTest(self, action_runner):
+    action_runner.ExecuteJavaScript('start()')
+    action_runner.WaitForJavaScriptCondition('!callButton.disabled')
+    action_runner.ExecuteJavaScript('call()')
+    action_runner.WaitForJavaScriptCondition('!renegotiateButton.disabled')
+    # Due to suspicion of renegotiate activating too early:
+    action_runner.Wait(1)
+    # Negotiate 50 transceivers, then negotiate back to 1, simulating Meet "pin"
+    action_runner.ExecuteJavaScript('videoSectionsField.value = 50')
+    action_runner.ExecuteJavaScript('renegotiate()')
+    action_runner.WaitForJavaScriptCondition('!renegotiateButton.disabled')
+    action_runner.ExecuteJavaScript('videoSectionsField.value = 1')
+    action_runner.ExecuteJavaScript('renegotiate()')
+    action_runner.WaitForJavaScriptCondition('!renegotiateButton.disabled')
+    # Negotiate back up to 50, simulating Meet "unpin". This is what gets measured.
+    action_runner.ExecuteJavaScript('videoSectionsField.value = 50')
+    action_runner.ExecuteJavaScript('renegotiate()')
+    action_runner.WaitForJavaScriptCondition('!renegotiateButton.disabled')
+    result = action_runner.EvaluateJavaScript('result')
+
+    self.AddMeasurement('callerSetLocalDescription',
+                        'ms',
+                        result['callerSetLocalDescription'],
+                        description='Time for caller SetLocalDescription')
+    self.AddMeasurement('calleeSetLocalDescription',
+                        'ms',
+                        result['calleeSetLocalDescription'],
+                        description='Time for callee SetLocalDescription')
+    self.AddMeasurement('callerSetRemoteDescription',
+                        'ms',
+                        result['callerSetRemoteDescription'],
+                        description='Time for caller SetRemoteDescription')
+    self.AddMeasurement('calleeSetRemoteDescription',
+                        'ms',
+                        result['calleeSetRemoteDescription'],
+                        description='Time for callee SetRemoteDescription')
+    self.AddMeasurement('callerCreateOffer',
+                        'ms',
+                        result['callerCreateOffer'],
+                        description='Time for overall offer/answer handshake')
+    self.AddMeasurement('calleeCreateAnswer',
+                        'ms',
+                        result['calleeCreateAnswer'],
+                        description='Time for overall offer/answer handshake')
+    self.AddMeasurement('elapsedTime',
+                        'ms',
+                        result['elapsedTime'],
+                        description='Time for overall offer/answer handshake')
+    self.AddMeasurement(
+        'audioImpairment',
+        'count',
+        result['audioImpairment'],
+        description='Number of late audio samples concealed during negotiation')
+
+
 class WebrtcPageSet(story.StorySet):
   def __init__(self):
     super(WebrtcPageSet, self).__init__(
@@ -237,3 +302,4 @@ class WebrtcPageSet(story.StorySet):
                                          'webgl',
                                          'pc',
                                          tags=['insertableStreams']))
+    self.AddStory(NegotiateTiming(self, tags=['sdp']))

@@ -32,8 +32,9 @@ TEST_PAGES_LOCATION_BY_REPO = {
             'src/content/datachannel/datatransfer',
             'src/content/getusermedia/resolution',
             'src/content/insertable-streams/video-processing',
-        ],
-        'revision': '583fc1a6efacd19d9485be381a8698d12748b671',
+            'src/content/peerconnection/negotiate-timing',
+            ],
+        'revision': '4b198b679350f836809b40516c25d4b17eb22e9d',
     },
 }
 
