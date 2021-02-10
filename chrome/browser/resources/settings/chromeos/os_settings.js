@@ -61,6 +61,8 @@ import './os_about_page/channel_switcher_dialog.m.js';
 import './os_about_page/detailed_build_info.m.js';
 import './os_about_page/update_warning_dialog.m.js';
 import './os_search_page/os_search_page.m.js';
+import './os_settings_search_box/os_search_result_row.m.js';
+import './os_settings_search_box/os_settings_search_box.m.js';
 import './os_icons.m.js';
 import './os_settings_icons_css.m.js';
 import './os_apps_page/android_apps_subpage.m.js';

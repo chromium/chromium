@@ -505,6 +505,8 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_settings_icons_css.m.js",
     "chromeos/os_settings_page/main_page_behavior.m.js",
     "chromeos/os_settings_routes.m.js",
+    "chromeos/os_settings_search_box/os_search_result_row.m.js",
+    "chromeos/os_settings_search_box/os_settings_search_box.m.js",
     "chromeos/parental_controls_page/parental_controls_browser_proxy.m.js",
     "chromeos/parental_controls_page/parental_controls_page.m.js",
     "chromeos/personalization_page/change_picture.m.js",
@@ -1240,8 +1242,8 @@ group("closure_compile_module") {
     #"os_settings_main:closure_compile_module",
     #"os_settings_menu:closure_compile_module",
     "os_settings_page:closure_compile_module",
+    "os_settings_search_box:closure_compile_module",
 
-    #"os_settings_search_box:closure_compile_module",
     #"os_settings_ui:closure_compile_module",
     #"os_toolbar:closure_compile_module",
     "parental_controls_page:closure_compile_module",
@@ -1342,6 +1344,10 @@ js_library("route_origin_behavior.m") {
 
 js_library("search_handler.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/search_handler.m.js" ]
+  deps = [
+    "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
   extra_deps = [ ":modulize" ]
 }
 
