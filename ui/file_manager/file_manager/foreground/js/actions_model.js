@@ -299,13 +299,11 @@ class DriveToggleOfflineAction {
       },
 
       // Show an error.
+      // TODO(crbug.com/1138744): Migrate this error message to a visual signal.
       showError: size => {
-        this.ui_.alertDialog.showHtml(
-            str('DRIVE_OUT_OF_SPACE_HEADER'),
-            strf(
-                'DRIVE_OUT_OF_SPACE_MESSAGE', unescape(currentEntry.name),
-                util.bytesToString(size)),
-            null, null, null);
+        this.ui_.alertDialog.show(
+            strf('OFFLINE_FAILURE_MESSAGE', unescape(currentEntry.name)), null,
+            null, null);
       }
     };
     steps.start();

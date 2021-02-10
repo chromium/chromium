@@ -1167,6 +1167,9 @@
   <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL" desc="Message informing the user multiple Google Drive files are being downloaded for offline use.">
     Making <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> files available offline
   </message>
+  <message name="IDS_FILE_BROWSER_OFFLINE_FAILURE_MESSAGE" desc="Message informing the user a Google Drive file failed to be downloaded for offline use.">
+    Could not make <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
+  </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE" desc="Message informing the user that in order to make Docs, Sheets and Slides files available offline, they must enable Google Docs Offline.">
     Enable Google Docs Offline to make Docs, Sheets and Slides available offline.
   </message>
