@@ -23,7 +23,5 @@ def AssertHistogramSamplesAlmostEqual(test_ctx, v2_hist, v3_hist):
   test_ctx.assertEqual(len(v2_samples), len(v3_samples))
   v2_samples.sort()
   v3_samples.sort()
-  msg = ('Comparing TBMv2 histogram %s with TBMv3 hisogram %s.' %
-         (v2_hist.name, v3_hist.name))
   for v2_sample, v3_sample in zip(v2_samples, v3_samples):
-    test_ctx.assertAlmostEqual(v2_sample, v3_sample, places=3, msg=msg)
+    test_ctx.assertAlmostEqual(v2_sample, v3_sample, places=3)

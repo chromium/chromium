@@ -21,4 +21,14 @@
       'console:error:network': 'console_error::network_errors',
     },
   },
+  'reported_by_page': {
+    'v2_metric': 'reportedByPageMetric',
+    'v3_metric': 'reported_by_page',
+    'histogram_mappings': {
+      # mappings are 'v2_histogram: 'v3_histogram'.
+      'reported_by_page:time_to_viewable': 'reported_by_page::time_to_viewable',
+      'reported_by_page:time_to_interactive': 'reported_by_page::time_to_interactive',
+      'reported_by_page:benchmark_time': 'reported_by_page::benchmark_time',
+    },
+  },
 }

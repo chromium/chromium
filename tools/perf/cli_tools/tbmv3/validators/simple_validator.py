@@ -5,6 +5,7 @@
 Validates the rendering/frame_times metric.
 """
 
+import sys
 from cli_tools.tbmv3.validators import utils
 
 CONFIG_FORMAT = ('Config must contain "v2_metric", "v3_metric", and '
@@ -30,7 +31,7 @@ def GetHistogram(histogram_set, name, metric, version):
     msg = ('List of histograms produced by TBM%s metric %s:\n' %
            (version, metric))
     msg += '\n'.join([h.name for h in histogram_set])
-    raise Exception('Histgoram %s not found.\n%s' % (name, msg))
+    raise Exception('Histogram %s not found.\n%s' % (name, msg))
   if len(hists) > 1:
     raise Exception('Multiple histograms named %s found for TBM%s metric %s' %
                     (name, version, metric))
@@ -50,5 +51,11 @@ def CompareHistograms(test_ctx):
     v2_hist = GetHistogram(v2_histograms, v2_hist_name, v2_metric, 'v2')
     v3_hist = GetHistogram(v3_histograms, v3_hist_name, v3_metric, 'v3')
 
-    utils.AssertHistogramStatsAlmostEqual(test_ctx, v2_hist, v3_hist)
-    utils.AssertHistogramSamplesAlmostEqual(test_ctx, v2_hist, v3_hist)
+    try:
+      utils.AssertHistogramStatsAlmostEqual(test_ctx, v2_hist, v3_hist)
+      utils.AssertHistogramSamplesAlmostEqual(test_ctx, v2_hist, v3_hist)
+    except AssertionError as err:
+      message = (
+          'Error comparing TBMv2 histogram %s with TBMv3 histogram %s: %s' %
+          (v2_hist.name, v3_hist.name, err.message))
+      raise AssertionError, message, sys.exc_info()[2]
