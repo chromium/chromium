@@ -61,6 +61,9 @@ crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_backgrounded_high_performan
 crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_high_performance [ Skip ]
 crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
 
+# Dual-GPU problem with SkiaRenderer.
+crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
+
 # Android and Fuchsia do not support software fallback.
 [ android ] GpuProcess_disable_gpu [ Skip ]
 [ android ] GpuProcess_disable_gpu_and_swiftshader [ Skip ]

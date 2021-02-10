@@ -7123,6 +7123,7 @@
                 "android",
                 "android_weblayer",
                 "linux",
+                "mac",
                 "windows"
             ],
             "experiments": [

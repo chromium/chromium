@@ -2805,6 +2805,84 @@
       },
     },
 
+    # TODO(crbug.com/894929): remove it when SkiaRenderer is shipped on macOS.
+    'gpu_gl_renderer_full_telemetry_tests': {
+      'gl_renderer_context_lost_tests': {
+        'telemetry_test_name': 'context_lost',
+        'args': [
+          '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'gl_renderer_depth_capture_tests': {
+        'telemetry_test_name': 'depth_capture',
+        'args': [
+          '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'gl_renderer_gpu_process_launch_tests': {
+        'telemetry_test_name': 'gpu_process',
+        'args': [
+          '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'gl_renderer_hardware_accelerated_feature_tests': {
+        'telemetry_test_name': 'hardware_accelerated_feature',
+        'args': [
+          '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+      'gl_renderer_maps_pixel_tests': {
+        'telemetry_test_name': 'maps',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'chrome-gpu-gold-service-account',
+          'enable_resultdb',
+          'skia_gold_test',
+        ],
+      },
+      'gl_renderer_pixel_skia_gold_tests': {
+        'telemetry_test_name': 'pixel',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--test-machine-name',
+          '${buildername}',
+          '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'chrome-gpu-gold-service-account',
+          'enable_resultdb',
+          'skia_gold_test',
+        ],
+      },
+      'gl_renderer_screenshot_sync_tests': {
+        'telemetry_test_name': 'screenshot_sync',
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--extra-browser-args=--disable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'enable_resultdb',
+        ],
+      },
+    },
+
     # Very small set of test that exercise GLRenderer and produce pixels for CQ.
     # For use where SkiaRenderer is enabled by field trial or default.
     'gpu_gl_renderer_small_telemetry_tests': {
@@ -6154,6 +6232,8 @@
       'gpu_webgl_conformance_metal_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
       'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
+      # TODO(crbug.com/894929): remove it when SkiaRenderer is shipped on mac.
+      'gpu_gl_renderer_full_telemetry_tests',
     ],
 
     'gpu_fyi_optional_linux_telemetry_tests': [
