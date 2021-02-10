@@ -115,7 +115,8 @@ bool VP8VaapiVideoDecoderDelegate::OutputPicture(
 
 void VP8VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   // Destroy the member ScopedVABuffers below since they refer to a VAContextID
-  // that will be destroyed soon. iq_matrix_.reset();
+  // that will be destroyed soon.
+  iq_matrix_.reset();
   prob_buffer_.reset();
   picture_params_.reset();
   slice_params_.reset();
