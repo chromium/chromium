@@ -395,8 +395,9 @@ def CopyLibstdcpp(args, build_dir):
     for d in ['asan-i386-Linux', 'asan-x86_64-Linux', 'lsan-i386-Linux',
               'lsan-x86_64-Linux', 'msan-x86_64-Linux', 'tsan-x86_64-Linux',
               'ubsan-i386-Linux', 'ubsan-x86_64-Linux']:
-      EnsureDirExists(os.path.join(sanitizer_common_tests, d))
-      CopyFile(libstdcpp, os.path.join(sanitizer_common_tests, d))
+      libpath = os.path.join(sanitizer_common_tests, d, 'Output', 'lib')
+      EnsureDirExists(libpath)
+      CopyFile(libstdcpp, libpath)
 
 
 def gn_arg(v):
