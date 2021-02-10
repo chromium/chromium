@@ -100,7 +100,7 @@ const base::FilePath::CharType kPictureInPictureWindowSizePage[] =
 // Determines whether |control| is visible taking into account OverlayWindow's
 // custom control hiding that includes setting the size to 0x0.
 bool IsOverlayWindowControlVisible(views::View* control) {
-  return control->IsDrawn() && !control->size().IsEmpty();
+  return control->GetVisible() && !control->size().IsEmpty();
 }
 
 // An observer used to notify about control visibility changes.
@@ -885,11 +885,11 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
   EXPECT_TRUE(GetOverlayWindow()->video_layer_for_testing()->visible());
-  AssertControlsVisible(
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
       {GetOverlayWindow()->previous_track_controls_view_for_testing(),
        GetOverlayWindow()->play_pause_controls_view_for_testing(),
        GetOverlayWindow()->next_track_controls_view_for_testing()},
-      false);
+      false));
 }
 
 // Tests that we can enter Picture-in-Picture when a video is not preloaded,
@@ -1704,26 +1704,23 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_NE(nullptr, GetOverlayWindow());
 
   // Play/Pause button is displayed if video is not a mediastream.
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
 
   // Play/Pause button is hidden if video is a mediastream.
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "changeVideoSrcToMediaStream();", &result));
   EXPECT_TRUE(result);
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
 
   // Play/Pause button is not hidden anymore when video is not a mediastream.
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "changeVideoSrc();", &result));
   EXPECT_TRUE(result);
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
 }
 
 // Check that page visibility API events are fired when tab is hidden, shown,
@@ -1856,44 +1853,34 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   ASSERT_NE(GetOverlayWindow(), nullptr);
 
-  // Skip Ad button is not displayed initially when mouse is hovering over the
-  // window.
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, false);
+  // Skip Ad button is not displayed initially.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, false));
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Skip Ad button is not displayed if video is not playing even if mouse is
-  // hovering over the window and media session action handler has been set.
+  // Skip Ad button is not displayed if video is not playing even if media
+  // session action handler has been set.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "setMediaSessionActionHandler('skipad');"));
-  MoveMouseOverOverlayWindow();
-  // Wait for the controls to show if necessary, then verify the Skip Ad button
-  // is not among those shown.
-  AssertControlsVisible(
-      {GetOverlayWindow()->back_to_tab_controls_for_testing()}, true);
-  EXPECT_FALSE(IsOverlayWindowControlVisible(
-      GetOverlayWindow()->skip_ad_controls_view_for_testing()));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, false));
 
-  // Play video and check that Skip Ad button is now displayed when
-  // video plays and mouse is hovering over the window.
+  // Play video and check that Skip Ad button is now displayed when video plays.
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "ensureVideoIsPlaying();", &result));
   ASSERT_TRUE(result);
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, true);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, true));
 
   // Unset action handler and check that Skip Ad button is not displayed when
-  // video plays and mouse is hovering over the window.
+  // video plays.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "unsetMediaSessionActionHandler('skipad');"));
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, false);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->skip_ad_controls_view_for_testing()}, false));
 }
 
 // Tests that the Play/Plause button is displayed in the Picture-in-Picture
@@ -1909,179 +1896,128 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Play/Pause button is hidden if playing video is a mediastream and mouse is
-  // hovering over the window.
+  // Play/Pause button is hidden if playing video is a mediastream.
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "changeVideoSrcToMediaStream();", &result));
   EXPECT_TRUE(result);
-  MoveMouseOverOverlayWindow();
-  // Wait for the controls to show if necessary, then verify the Play/Pause
-  // button is not among those shown.
-  AssertControlsVisible(
-      {GetOverlayWindow()->back_to_tab_controls_for_testing()}, true);
-  EXPECT_FALSE(IsOverlayWindowControlVisible(
-      GetOverlayWindow()->play_pause_controls_view_for_testing()));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
 
   // Play second video (non-muted) so that Media Session becomes active.
   ASSERT_TRUE(
       content::ExecuteScript(active_web_contents, "secondVideo.play();"));
 
   // Set Media Session action "play" handler and check that Play/Pause button
-  // is still hidden when mouse is hovering over the window.
+  // is still hidden.
   ASSERT_TRUE(content::ExecuteScript(active_web_contents,
                                      "setMediaSessionActionHandler('play');"));
-  MoveMouseOverOverlayWindow();
-  // Wait for the controls to show if necessary, then verify the Play/Pause
-  // button is not among those shown.
-  AssertControlsVisible(
-      {GetOverlayWindow()->back_to_tab_controls_for_testing()}, true);
-  EXPECT_FALSE(IsOverlayWindowControlVisible(
-      GetOverlayWindow()->play_pause_controls_view_for_testing()));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
 
   // Set Media Session action "pause" handler and check that Play/Pause button
-  // is now displayed when mouse is hovering over the window.
+  // is now displayed.
   ASSERT_TRUE(content::ExecuteScript(active_web_contents,
                                      "setMediaSessionActionHandler('pause');"));
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
 
   // Unset Media Session action "pause" handler and check that Play/Pause button
-  // is hidden when mouse is hovering over the window.
+  // is hidden.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "unsetMediaSessionActionHandler('pause');"));
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, false));
 
   ASSERT_TRUE(
       content::ExecuteScript(active_web_contents, "exitPictureInPicture();"));
 
-  // Reset Media Session action "pause" handler and check that Play/Pause button
-  // is now displayed when mouse is hovering over the window when it enters
-  // Picture-in-Picture again.
+  // Reset Media Session action "pause" handler and check that Play/Pause
+  // button is now displayed Picture-in-Picture is entered again.
   ASSERT_TRUE(content::ExecuteScript(active_web_contents,
                                      "setMediaSessionActionHandler('pause');"));
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "enterPictureInPicture();", &result));
   EXPECT_TRUE(result);
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->play_pause_controls_view_for_testing()}, true));
 }
 
 // Tests that a Next Track button is displayed in the Picture-in-Picture window
 // when Media Session Action "nexttrack" is handled by the website.
-// TODO(crbug.com/1167236): Flaky on Linux.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NextTrackButtonVisibility DISABLED_NextTrackButtonVisibility
-#else
-#define MAYBE_NextTrackButtonVisibility NextTrackButtonVisibility
-#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       MAYBE_NextTrackButtonVisibility) {
+                       NextTrackButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   ASSERT_NE(GetOverlayWindow(), nullptr);
 
-  // Next Track button is not displayed initially when mouse is hovering over
-  // the window.
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->next_track_controls_view_for_testing()}, false);
+  // Next Track button is not displayed initially.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_track_controls_view_for_testing()}, false));
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Next Track button is not displayed if video is not playing even if mouse
-  // is hovering over the window and media session action handler has been set.
+  // Next Track button is not displayed if video is not playing even if media
+  // session action handler has been set.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "setMediaSessionActionHandler('nexttrack');"));
-  MoveMouseOverOverlayWindow();
-  // Wait for the controls to show if necessary, then verify the Next Track
-  // button is not among those shown.
-  AssertControlsVisible(
-      {GetOverlayWindow()->back_to_tab_controls_for_testing()}, true);
-  EXPECT_FALSE(IsOverlayWindowControlVisible(
-      GetOverlayWindow()->next_track_controls_view_for_testing()));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_track_controls_view_for_testing()}, false));
 
   // Play video and check that Next Track button is now displayed when video
-  // plays and mouse is hovering over the window.
+  // plays.
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "ensureVideoIsPlaying();", &result));
   ASSERT_TRUE(result);
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->next_track_controls_view_for_testing()}, true);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_track_controls_view_for_testing()}, true));
 
   // Unset action handler and check that Next Track button is not displayed
-  // when video plays and mouse is hovering over the window.
+  // when video plays.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "unsetMediaSessionActionHandler('nexttrack');"));
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->next_track_controls_view_for_testing()}, false);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_track_controls_view_for_testing()}, false));
 }
 
 // Tests that a Previous Track button is displayed in the Picture-in-Picture
 // window when Media Session Action "previoustrack" is handled by the website.
-// Flaky on Linux, see crbug.com/985303.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PreviousTrackButtonVisibility \
-  DISABLED_PreviousTrackButtonVisibility
-#else
-#define MAYBE_PreviousTrackButtonVisibility PreviousTrackButtonVisibility
-#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       MAYBE_PreviousTrackButtonVisibility) {
+                       PreviousTrackButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
-  // Previous Track button is not displayed initially when mouse is hovering
-  // over the window.
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, false);
+  // Previous Track button is not displayed initially.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, false));
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Previous Track button is not displayed if video is not playing even if
-  // mouse is hovering over the window and media session action handler has been
-  // set.
+  // media session action handler has been set.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "setMediaSessionActionHandler('previoustrack');"));
-  MoveMouseOverOverlayWindow();
-  // Wait for the controls to show if necessary, then verify the Previous Track
-  // button is not among those shown.
-  AssertControlsVisible(
-      {GetOverlayWindow()->back_to_tab_controls_for_testing()}, true);
-  EXPECT_FALSE(IsOverlayWindowControlVisible(
-      GetOverlayWindow()->previous_track_controls_view_for_testing()));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, false));
 
   // Play video and check that Previous Track button is now displayed when
-  // video plays and mouse is hovering over the window.
+  // video plays.
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       active_web_contents, "ensureVideoIsPlaying();", &result));
   ASSERT_TRUE(result);
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, true);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, true));
 
   // Unset action handler and check that Previous Track button is not displayed
-  // when video plays and mouse is hovering over the window.
+  // when video plays.
   ASSERT_TRUE(content::ExecuteScript(
       active_web_contents, "unsetMediaSessionActionHandler('previoustrack');"));
-  MoveMouseOverOverlayWindow();
-  AssertControlsVisible(
-      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, false);
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_track_controls_view_for_testing()}, false));
 }
 
 // Tests that clicking the Skip Ad button in the Picture-in-Picture window

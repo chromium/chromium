@@ -144,12 +144,6 @@ class OverlayWindowViews : public content::OverlayWindow,
   gfx::Rect CalculateControlsBounds(int x, const gfx::Size& size);
   void UpdateControlsPositions();
 
-  ui::Layer* GetControlsScrimLayer();
-  ui::Layer* GetBackToTabControlsLayer();
-  ui::Layer* GetCloseControlsLayer();
-  ui::Layer* GetResizeHandleLayer();
-  ui::Layer* GetControlsParentLayer();
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class OverlayWindowControl {
@@ -212,6 +206,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   views::View* window_background_view_ = nullptr;
   views::View* video_view_ = nullptr;
   views::View* controls_scrim_view_ = nullptr;
+  views::View* controls_container_view_ = nullptr;
   views::CloseImageButton* close_controls_view_ = nullptr;
   views::BackToTabImageButton* back_to_tab_controls_view_ = nullptr;
   views::TrackImageButton* previous_track_controls_view_ = nullptr;
