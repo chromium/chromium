@@ -45,12 +45,14 @@ class Storage {
  public:
   Storage() = delete;
 
-  Storage(Callback callback, bool engaged)
-      : callback_(std::move(callback)), engaged_(engaged) {}
+  Storage(Callback callback, bool is_callback_engaged)
+      : callback_(std::move(callback)),
+        is_callback_engaged_(is_callback_engaged) {}
 
   Storage(Storage&& other)
       : callback_(std::move(other.callback_)),
-        engaged_(absl::exchange(other.engaged_, false)) {}
+        is_callback_engaged_(
+            absl::exchange(other.is_callback_engaged_, false)) {}
 
   Storage(const Storage& other) = delete;
 
@@ -58,9 +60,9 @@ class Storage {
 
   Storage& operator=(const Storage& other) = delete;
 
-  bool IsCallbackEngaged() const { return engaged_; }
+  bool IsCallbackEngaged() const { return is_callback_engaged_; }
 
-  void DisengageCallback() { engaged_ = false; }
+  void DisengageCallback() { is_callback_engaged_ = false; }
 
   void InvokeCallback() ABSL_NO_THREAD_SAFETY_ANALYSIS {
     std::move(callback_)();
@@ -68,7 +70,7 @@ class Storage {
 
  private:
   Callback callback_;
-  bool engaged_;
+  bool is_callback_engaged_;
 };
 
 }  // namespace cleanup_internal

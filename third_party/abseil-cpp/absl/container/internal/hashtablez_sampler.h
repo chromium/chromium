@@ -78,6 +78,7 @@ struct HashtablezInfo {
   std::atomic<size_t> total_probe_length;
   std::atomic<size_t> hashes_bitwise_or;
   std::atomic<size_t> hashes_bitwise_and;
+  std::atomic<size_t> hashes_bitwise_xor;
 
   // `HashtablezSampler` maintains intrusive linked lists for all samples.  See
   // comments on `HashtablezSampler::all_` for details on these.  `init_mu`

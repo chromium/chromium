@@ -16,6 +16,7 @@
 #define ABSL_CONTAINER_INTERNAL_UNORDERED_MAP_CONSTRUCTOR_TEST_H_
 
 #include <algorithm>
+#include <unordered_map>
 #include <vector>
 
 #include "gmock/gmock.h"

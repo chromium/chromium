@@ -147,7 +147,7 @@ class ABSL_LOCKABLE Mutex {
   //
   // Example usage:
   //   namespace foo {
-  //   ABSL_CONST_INIT Mutex mu(absl::kConstInit);
+  //   ABSL_CONST_INIT absl::Mutex mu(absl::kConstInit);
   //   }
   explicit constexpr Mutex(absl::ConstInitType);
 

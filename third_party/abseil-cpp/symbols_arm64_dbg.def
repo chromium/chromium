@@ -1945,7 +1945,6 @@ EXPORTS
     ?LengthToTag@CordTestAccess@strings_internal@absl@@SAE_K@Z
     ?Load16@big_endian@absl@@YAGPEBX@Z
     ?Load32@big_endian@absl@@YAIPEBX@Z
-    ?Load32@little_endian@absl@@YAIPEBX@Z
     ?Load64@little_endian@absl@@YA_KPEBX@Z
     ?Load@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@absl@@Vstring_view@2@AEBVCord@2@@Z@base_internal@absl@@QEBAP6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@3@Vstring_view@3@AEBVCord@3@@ZXZ
     ?Load@?$AtomicHook@P6A_NW4LogSeverity@absl@@PEBDHPEAPEADPEAH@Z@base_internal@absl@@QEBAP6A_NW4LogSeverity@3@PEBDHPEAPEADPEAH@ZXZ
@@ -2278,7 +2277,6 @@ EXPORTS
     ?ToDoubleSeconds@absl@@YANVDuration@1@@Z
     ?ToHost16@big_endian@absl@@YAGG@Z
     ?ToHost32@big_endian@absl@@YAII@Z
-    ?ToHost32@little_endian@absl@@YAII@Z
     ?ToHost64@little_endian@absl@@YA_K_K@Z
     ?ToInt64@time_internal@absl@@YA_JVDuration@2@V?$ratio@$00$00@__1@std@@@Z
     ?ToInt64@time_internal@absl@@YA_JVDuration@2@V?$ratio@$00$0DLJKMKAA@@__1@std@@@Z
@@ -2733,6 +2731,8 @@ EXPORTS
     ?clear@?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@__1@std@@@__1@std@@QEAAXXZ
     ?clear@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__1@std@@@__1@std@@QEAAXXZ
     ?clear@InlineRep@Cord@absl@@QEAAPEAUCordRep@cord_internal@3@XZ
+    ?clear_cordz_info@InlineData@cord_internal@absl@@QEAAXXZ
+    ?clear_cordz_info@InlineRep@Cord@absl@@QEAAXXZ
     ?code@Status@absl@@QEBA?AW4StatusCode@2@XZ
     ?compare_exchange_weak@?$__atomic_base@PEAUHashtablezInfo@container_internal@absl@@$0A@@__1@std@@QEAA_NAEAPEAUHashtablezInfo@container_internal@absl@@PEAU456@W4memory_order@23@2@Z
     ?concat@CordRep@cord_internal@absl@@QEAAPEAUCordRepConcat@23@XZ
@@ -3179,6 +3179,7 @@ EXPORTS
     ?set_from_arg@InputValue@UnboundConversion@str_format_internal@absl@@QEAAXH@Z
     ?set_inline_size@InlineData@cord_internal@absl@@QEAAX_K@Z
     ?set_inline_size@InlineRep@Cord@absl@@AEAAX_K@Z
+    ?set_profiled@InlineData@cord_internal@absl@@QEAAX_N@Z
     ?set_tree@InlineData@cord_internal@absl@@QEAAXPEAUCordRep@23@@Z
     ?set_tree@InlineRep@Cord@absl@@QEAAXPEAUCordRep@cord_internal@3@@Z
     ?set_value@InputValue@UnboundConversion@str_format_internal@absl@@QEAAXH@Z

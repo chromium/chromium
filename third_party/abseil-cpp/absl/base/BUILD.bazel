@@ -479,6 +479,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
+        ":base",
         ":config",
         ":core_headers",
     ],

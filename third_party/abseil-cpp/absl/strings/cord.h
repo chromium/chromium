@@ -25,7 +25,7 @@
 //
 // Because a Cord consists of these chunks, data can be added to or removed from
 // a Cord during its lifetime. Chunks may also be shared between Cords. Unlike a
-// `std::string`, a Cord can therefore accomodate data that changes over its
+// `std::string`, a Cord can therefore accommodate data that changes over its
 // lifetime, though it's not quite "mutable"; it can change only in the
 // attachment, detachment, or rearrangement of chunks of its constituent data.
 //
@@ -755,6 +755,23 @@ class Cord {
 
     bool is_tree() const { return data_.is_tree(); }
 
+    // Returns true if the Cord is being profiled by cordz.
+    bool is_profiled() const { return data_.is_tree() && data_.is_profiled(); }
+
+    // Returns the profiled CordzInfo, or nullptr if not sampled.
+    absl::cord_internal::CordzInfo* cordz_info() const {
+      return data_.cordz_info();
+    }
+
+    // Sets the profiled CordzInfo. `cordz_info` must not be null.
+    void set_cordz_info(cord_internal::CordzInfo* cordz_info) {
+      assert(cordz_info != nullptr);
+      data_.set_cordz_info(cordz_info);
+    }
+
+    // Resets the current cordz_info to null / empty.
+    void clear_cordz_info() { data_.clear_cordz_info(); }
+
    private:
     friend class Cord;
 
@@ -921,8 +938,12 @@ Cord MakeCordFromExternal(absl::string_view data, Releaser&& releaser) {
 constexpr Cord::InlineRep::InlineRep(cord_internal::InlineData data)
     : data_(data) {}
 
-inline Cord::InlineRep::InlineRep(const Cord::InlineRep& src) {
-  data_ = src.data_;
+inline Cord::InlineRep::InlineRep(const Cord::InlineRep& src)
+    : data_(src.data_) {
+  if (is_tree()) {
+    data_.clear_cordz_info();
+    absl::cord_internal::CordRep::Ref(as_tree());
+  }
 }
 
 inline Cord::InlineRep::InlineRep(Cord::InlineRep&& src) {
@@ -956,7 +977,6 @@ inline void Cord::InlineRep::Swap(Cord::InlineRep* rhs) {
   if (rhs == this) {
     return;
   }
-
   std::swap(data_, rhs->data_);
 }
 
@@ -1036,6 +1056,8 @@ inline Cord& Cord::operator=(const Cord& x) {
   contents_ = x.contents_;
   return *this;
 }
+
+inline Cord::Cord(const Cord& src) : contents_(src.contents_) {}
 
 inline Cord::Cord(Cord&& src) noexcept : contents_(std::move(src.contents_)) {}
 

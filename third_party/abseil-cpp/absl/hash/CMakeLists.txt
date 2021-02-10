@@ -26,6 +26,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
     DEPS
     absl::city
+    absl::config
     absl::core_headers
     absl::endian
     absl::fixed_array

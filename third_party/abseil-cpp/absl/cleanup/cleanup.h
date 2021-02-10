@@ -41,7 +41,7 @@
 //
 //     Data data;
 //     while (ReadData(source_file, &data)) {
-//       if (data.IsBad()) {
+//       if (!data.IsGood()) {
 //         absl::Status result = absl::FailedPreconditionError("Read bad data");
 //         return result;  // Both cleanups execute
 //       }
@@ -87,7 +87,7 @@ class ABSL_MUST_USE_RESULT Cleanup {
 
  public:
   Cleanup(Callback callback)  // NOLINT
-      : storage_(std::move(callback), /*engaged=*/true) {}
+      : storage_(std::move(callback), /* is_callback_engaged = */ true) {}
 
   Cleanup(Cleanup&& other) = default;
 

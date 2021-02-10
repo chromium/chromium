@@ -495,7 +495,9 @@ void Cord::InlineRep::AssignSlow(const Cord::InlineRep& src) {
 
   data_ = src.data_;
   if (is_tree()) {
+    data_.set_profiled(false);
     CordRep::Ref(tree());
+    clear_cordz_info();
   }
 }
 
@@ -508,12 +510,6 @@ void Cord::InlineRep::ClearSlow() {
 
 // --------------------------------------------------------------------
 // Constructors and destructors
-
-Cord::Cord(const Cord& src) : contents_(src.contents_) {
-  if (CordRep* tree = contents_.tree()) {
-    CordRep::Ref(tree);
-  }
-}
 
 Cord::Cord(absl::string_view src) {
   const size_t n = src.size();

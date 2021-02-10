@@ -112,12 +112,22 @@ inline uint64_t DivideBy10WithCarry(uint64_t *v, uint64_t carry) {
   return next_carry % divisor;
 }
 
+constexpr bool IsDoubleDouble() {
+  // This is the `double-double` representation of `long double`.
+  // We do not handle it natively. Fallback to snprintf.
+  return std::numeric_limits<long double>::digits ==
+         2 * std::numeric_limits<double>::digits;
+}
+
+using MaxFloatType =
+    typename std::conditional<IsDoubleDouble(), double, long double>::type;
+
 // Generates the decimal representation for an integer of the form `v * 2^exp`,
 // where `v` and `exp` are both positive integers.
 // It generates the digits from the left (ie the most significant digit first)
 // to allow for direct printing into the sink.
 //
-// Requires `0 <= exp` and `exp <= numeric_limits<long double>::max_exponent`.
+// Requires `0 <= exp` and `exp <= numeric_limits<MaxFloatType>::max_exponent`.
 class BinaryToDecimal {
   static constexpr int ChunksNeeded(int exp) {
     // We will left shift a uint128 by `exp` bits, so we need `128+exp` total
@@ -132,10 +142,10 @@ class BinaryToDecimal {
   static void RunConversion(uint128 v, int exp,
                             absl::FunctionRef<void(BinaryToDecimal)> f) {
     assert(exp > 0);
-    assert(exp <= std::numeric_limits<long double>::max_exponent);
+    assert(exp <= std::numeric_limits<MaxFloatType>::max_exponent);
     static_assert(
         static_cast<int>(StackArray::kMaxCapacity) >=
-            ChunksNeeded(std::numeric_limits<long double>::max_exponent),
+            ChunksNeeded(std::numeric_limits<MaxFloatType>::max_exponent),
         "");
 
     StackArray::RunWithCapacity(
@@ -232,14 +242,14 @@ class BinaryToDecimal {
 
 // Converts a value of the form `x * 2^-exp` into a sequence of decimal digits.
 // Requires `-exp < 0` and
-// `-exp >= limits<long double>::min_exponent - limits<long double>::digits`.
+// `-exp >= limits<MaxFloatType>::min_exponent - limits<MaxFloatType>::digits`.
 class FractionalDigitGenerator {
  public:
   // Run the conversion for `v * 2^exp` and call `f(generator)`.
   // This function will allocate enough stack space to perform the conversion.
   static void RunConversion(
       uint128 v, int exp, absl::FunctionRef<void(FractionalDigitGenerator)> f) {
-    using Limits = std::numeric_limits<long double>;
+    using Limits = std::numeric_limits<MaxFloatType>;
     assert(-exp < 0);
     assert(-exp >= Limits::min_exponent - 128);
     static_assert(StackArray::kMaxCapacity >=
@@ -871,10 +881,10 @@ void FormatA(const HexFloatTypeParams float_traits, Int mantissa, int exp,
   // This buffer holds the "0x1.ab1de3" portion of "0x1.ab1de3pe+2". Compute the
   // size with long double which is the largest of the floats.
   constexpr size_t kBufSizeForHexFloatRepr =
-      2                                               // 0x
-      + std::numeric_limits<long double>::digits / 4  // number of hex digits
-      + 1                                             // round up
-      + 1;                                            // "." (dot)
+      2                                                // 0x
+      + std::numeric_limits<MaxFloatType>::digits / 4  // number of hex digits
+      + 1                                              // round up
+      + 1;                                             // "." (dot)
   char digits_buffer[kBufSizeForHexFloatRepr];
   char *digits_iter = digits_buffer;
   const char *const digits =
@@ -1393,10 +1403,7 @@ bool FloatToSink(const Float v, const FormatConversionSpecImpl &conv,
 
 bool ConvertFloatImpl(long double v, const FormatConversionSpecImpl &conv,
                       FormatSinkImpl *sink) {
-  if (std::numeric_limits<long double>::digits ==
-      2 * std::numeric_limits<double>::digits) {
-    // This is the `double-double` representation of `long double`.
-    // We do not handle it natively. Fallback to snprintf.
+  if (IsDoubleDouble()) {
     return FallbackToSnprintf(v, conv, sink);
   }
 

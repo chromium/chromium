@@ -1939,8 +1939,6 @@ EXPORTS
     ?LengthToTag@CordTestAccess@strings_internal@absl@@SAEI@Z
     ?Load16@big_endian@absl@@YAGPBX@Z
     ?Load32@big_endian@absl@@YAIPBX@Z
-    ?Load32@little_endian@absl@@YAIPBX@Z
-    ?Load64@little_endian@absl@@YA_KPBX@Z
     ?Load@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@absl@@Vstring_view@2@ABVCord@2@@Z@base_internal@absl@@QBEP6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@3@Vstring_view@3@ABVCord@3@@ZXZ
     ?Load@?$AtomicHook@P6A_NW4LogSeverity@absl@@PBDHPAPADPAH@Z@base_internal@absl@@QBEP6A_NW4LogSeverity@3@PBDHPAPADPAH@ZXZ
     ?Load@TimeZoneIf@cctz@time_internal@absl@@SA?AV?$unique_ptr@VTimeZoneIf@cctz@time_internal@absl@@U?$default_delete@VTimeZoneIf@cctz@time_internal@absl@@@__1@std@@@__1@std@@ABV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@67@@Z
@@ -2271,8 +2269,6 @@ EXPORTS
     ?ToDoubleSeconds@absl@@YANVDuration@1@@Z
     ?ToHost16@big_endian@absl@@YAGG@Z
     ?ToHost32@big_endian@absl@@YAII@Z
-    ?ToHost32@little_endian@absl@@YAII@Z
-    ?ToHost64@little_endian@absl@@YA_K_K@Z
     ?ToInt64@time_internal@absl@@YA_JVDuration@2@V?$ratio@$00$00@__1@std@@@Z
     ?ToInt64@time_internal@absl@@YA_JVDuration@2@V?$ratio@$00$0DLJKMKAA@@__1@std@@@Z
     ?ToInt64@time_internal@absl@@YA_JVDuration@2@V?$ratio@$00$0DOI@@__1@std@@@Z
@@ -2726,6 +2722,8 @@ EXPORTS
     ?clear@?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@__1@std@@@__1@std@@QAEXXZ
     ?clear@?$vector@VFormatArgImpl@str_format_internal@absl@@V?$allocator@VFormatArgImpl@str_format_internal@absl@@@__1@std@@@__1@std@@QAEXXZ
     ?clear@InlineRep@Cord@absl@@QAEPAUCordRep@cord_internal@3@XZ
+    ?clear_cordz_info@InlineData@cord_internal@absl@@QAEXXZ
+    ?clear_cordz_info@InlineRep@Cord@absl@@QAEXXZ
     ?code@Status@absl@@QBE?AW4StatusCode@2@XZ
     ?compare_exchange_weak@?$__atomic_base@PAUHashtablezInfo@container_internal@absl@@$0A@@__1@std@@QAE_NAAPAUHashtablezInfo@container_internal@absl@@PAU456@W4memory_order@23@2@Z
     ?concat@CordRep@cord_internal@absl@@QAEPAUCordRepConcat@23@XZ
@@ -3172,6 +3170,7 @@ EXPORTS
     ?set_from_arg@InputValue@UnboundConversion@str_format_internal@absl@@QAEXH@Z
     ?set_inline_size@InlineData@cord_internal@absl@@QAEXI@Z
     ?set_inline_size@InlineRep@Cord@absl@@AAEXI@Z
+    ?set_profiled@InlineData@cord_internal@absl@@QAEX_N@Z
     ?set_tree@InlineData@cord_internal@absl@@QAEXPAUCordRep@23@@Z
     ?set_tree@InlineRep@Cord@absl@@QAEXPAUCordRep@cord_internal@3@@Z
     ?set_value@InputValue@UnboundConversion@str_format_internal@absl@@QAEXH@Z

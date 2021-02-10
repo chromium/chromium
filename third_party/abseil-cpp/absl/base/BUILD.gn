@@ -225,6 +225,7 @@ absl_source_set("endian") {
     "internal/unaligned_access.h",
   ]
   public_deps = [
+    ":base",
     ":config",
     ":core_headers",
   ]

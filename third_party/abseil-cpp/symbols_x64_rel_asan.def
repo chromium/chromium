@@ -113,7 +113,6 @@ EXPORTS
     ??0Condition@absl@@AEAA@XZ
     ??0Condition@absl@@QEAA@P6A_NPEAX@Z0@Z
     ??0Condition@absl@@QEAA@PEB_N@Z
-    ??0Cord@absl@@QEAA@AEBV01@@Z
     ??0Cord@absl@@QEAA@Vstring_view@1@@Z
     ??0GraphCycles@synchronization_internal@absl@@QEAA@XZ
     ??0HashtablezInfo@container_internal@absl@@QEAA@XZ

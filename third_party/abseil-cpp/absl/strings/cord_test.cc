@@ -183,6 +183,10 @@ class CordTestPeer {
   }
 
   static bool IsTree(const Cord& c) { return c.contents_.is_tree(); }
+
+  static cord_internal::CordzInfo* GetCordzInfo(const Cord& c) {
+    return c.contents_.cordz_info();
+  }
 };
 
 ABSL_NAMESPACE_END

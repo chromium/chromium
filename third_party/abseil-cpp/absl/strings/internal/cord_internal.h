@@ -387,6 +387,12 @@ class InlineData {
     as_tree_.cordz_info = absl::big_endian::FromHost64(info);
   }
 
+  // Resets the current cordz_info to null / empty.
+  void clear_cordz_info() {
+    assert(is_tree());
+    as_tree_.cordz_info = kNullCordzInfo;
+  }
+
   // Returns a read only pointer to the character data inside this instance.
   // Requires the current instance to hold inline data.
   const char* as_chars() const {

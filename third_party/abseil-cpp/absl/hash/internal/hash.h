@@ -38,7 +38,8 @@
 #include <utility>
 #include <vector>
 
-#include "absl/base/internal/endian.h"
+#include "absl/base/config.h"
+#include "absl/base/internal/unaligned_access.h"
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
 #include "absl/hash/internal/wyhash.h"
@@ -804,26 +805,54 @@ class ABSL_DLL HashState : public HashStateBase<HashState> {
                                                size_t len);
 
   // Reads 9 to 16 bytes from p.
-  // The first 8 bytes are in .first, the rest (zero padded) bytes are in
-  // .second.
+  // The least significant 8 bytes are in .first, the rest (zero padded) bytes
+  // are in .second.
   static std::pair<uint64_t, uint64_t> Read9To16(const unsigned char* p,
                                                  size_t len) {
-    uint64_t high = little_endian::Load64(p + len - 8);
-    return {little_endian::Load64(p), high >> (128 - len * 8)};
+    uint64_t low_mem = absl::base_internal::UnalignedLoad64(p);
+    uint64_t high_mem = absl::base_internal::UnalignedLoad64(p + len - 8);
+#ifdef ABSL_IS_LITTLE_ENDIAN
+    uint64_t most_significant = high_mem;
+    uint64_t least_significant = low_mem;
+#else
+    uint64_t most_significant = low_mem;
+    uint64_t least_significant = high_mem;
+#endif
+    return {least_significant, most_significant >> (128 - len * 8)};
   }
 
   // Reads 4 to 8 bytes from p. Zero pads to fill uint64_t.
   static uint64_t Read4To8(const unsigned char* p, size_t len) {
-    return (static_cast<uint64_t>(little_endian::Load32(p + len - 4))
-            << (len - 4) * 8) |
-           little_endian::Load32(p);
+    uint32_t low_mem = absl::base_internal::UnalignedLoad32(p);
+    uint32_t high_mem = absl::base_internal::UnalignedLoad32(p + len - 4);
+#ifdef ABSL_IS_LITTLE_ENDIAN
+    uint32_t most_significant = high_mem;
+    uint32_t least_significant = low_mem;
+#else
+    uint32_t most_significant = low_mem;
+    uint32_t least_significant = high_mem;
+#endif
+    return (static_cast<uint64_t>(most_significant) << (len - 4) * 8) |
+           least_significant;
   }
 
   // Reads 1 to 3 bytes from p. Zero pads to fill uint32_t.
   static uint32_t Read1To3(const unsigned char* p, size_t len) {
-    return static_cast<uint32_t>((p[0]) |                         //
-                                 (p[len / 2] << (len / 2 * 8)) |  //
-                                 (p[len - 1] << ((len - 1) * 8)));
+    unsigned char mem0 = p[0];
+    unsigned char mem1 = p[len / 2];
+    unsigned char mem2 = p[len - 1];
+#ifdef ABSL_IS_LITTLE_ENDIAN
+    unsigned char significant2 = mem2;
+    unsigned char significant1 = mem1;
+    unsigned char significant0 = mem0;
+#else
+    unsigned char significant2 = mem0;
+    unsigned char significant1 = mem1;
+    unsigned char significant0 = mem2;
+#endif
+    return static_cast<uint32_t>(significant0 |                     //
+                                 (significant1 << (len / 2 * 8)) |  //
+                                 (significant2 << ((len - 1) * 8)));
   }
 
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t Mix(uint64_t state, uint64_t v) {

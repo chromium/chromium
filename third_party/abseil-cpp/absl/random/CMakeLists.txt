@@ -611,6 +611,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::config
+    absl::endian
   TESTONLY
 )
 
@@ -758,6 +759,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::endian
     absl::random_internal_iostream_state_saver
     absl::random_internal_randen
     absl::raw_logging_internal
@@ -1119,6 +1121,7 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::endian
     absl::random_internal_randen_slow
     gtest_main
 )
