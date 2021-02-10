@@ -58,8 +58,7 @@ constexpr WebUiResource kResources[] = {
 }  // namespace
 
 void AddResources(content::WebUIDataSource* html_source) {
-  for (const auto& str : kLocalizedStrings)
-    html_source->AddLocalizedString(str.name, str.id);
+  html_source->AddLocalizedStrings(kLocalizedStrings);
 
   for (const auto& resource : kResources)
     html_source->AddResourcePath(resource.name, resource.id);

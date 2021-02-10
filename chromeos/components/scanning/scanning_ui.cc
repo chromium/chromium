@@ -98,9 +98,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"twoSidedDocFeederOptionText",
        IDS_SCANNING_APP_TWO_SIDED_DOC_FEEDER_OPTION_TEXT}};
 
-  for (const auto& str : kLocalizedStrings)
-    html_source->AddLocalizedString(str.name, str.id);
-
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();
 }
 

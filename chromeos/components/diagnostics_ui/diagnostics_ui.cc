@@ -106,9 +106,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"testSuccess", IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT},
       {"testSucceededBadgeText", IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT},
   };
-  for (const auto& str : kLocalizedStrings) {
-    html_source->AddLocalizedString(str.name, str.id);
-  }
+  html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();
 }
 // TODO(jimmyxgong): Replace with webui::SetUpWebUIDataSource() once it no
