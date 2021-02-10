@@ -18,6 +18,18 @@ cr.define('cr.ui.dialogs', function() {
     // so we can restore it when we're hidden.
     this.previousActiveElement_ = null;
 
+    /**
+     * If set true, BaseDialog assumes that focus traversal of elements inside
+     * the dialog due to 'Tab' key events is handled by its container (and the
+     * practical example is this.parentNode_ is a modal <dialog> element).
+     *
+     * The default is false: BaseDialog handles focus traversal for the entire
+     * DOM document. See findFocusableElements_(), also crbug.com/1078300.
+     *
+     * @protected {boolean}
+     */
+    this.hasModalContainer = false;
+
     /** @private{boolean} */
     this.showing_ = false;
 
@@ -245,14 +257,21 @@ cr.define('cr.ui.dialogs', function() {
   BaseDialog.prototype.show_ = function(
       title, opt_onOk, opt_onCancel, opt_onShow) {
     this.showing_ = true;
-    // Make all outside nodes unfocusable while the dialog is active.
-    this.deactivatedNodes_ = this.findFocusableElements_(this.document_);
-    this.tabIndexes_ = this.deactivatedNodes_.map(function(n) {
-      return n.getAttribute('tabindex');
-    });
-    this.deactivatedNodes_.forEach(function(n) {
-      n.tabIndex = -1;
-    });
+
+    // Modal containers manage dialog focus traversal. Otherwise, the focus
+    // is managed by |this| dialog, by making all outside nodes unfocusable
+    // while the dialog is shown.
+    if (!this.hasModalContainer) {
+      this.deactivatedNodes_ = this.findFocusableElements_(this.document_);
+      this.tabIndexes_ = this.deactivatedNodes_.map(function(n) {
+        return n.getAttribute('tabindex');
+      });
+      this.deactivatedNodes_.forEach(function(n) {
+        n.tabIndex = -1;
+      });
+    } else {
+      this.deactivatedNodes_ = [];
+    }
 
     this.previousActiveElement_ = this.document_.activeElement;
     this.parentNode_.appendChild(this.container);
@@ -288,7 +307,8 @@ cr.define('cr.ui.dialogs', function() {
   /** @param {Function=} opt_onHide */
   BaseDialog.prototype.hide = function(opt_onHide) {
     this.showing_ = false;
-    // Restore focusability.
+
+    // Restore focusability for the non-modal container case.
     for (let i = 0; i < this.deactivatedNodes_.length; i++) {
       const node = this.deactivatedNodes_[i];
       if (this.tabIndexes_[i] === null) {
