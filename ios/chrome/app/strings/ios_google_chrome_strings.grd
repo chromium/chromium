@@ -203,7 +203,7 @@ locale.  The strings in this file are specific to iOS.
       By signing out, your bookmarks, history, passwords, and other Chrome data will no longer be synced to your Google Account.
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
-        When you were signed out of Chrome, your bookmarks, history, passwords and other settings were cleared from this device. Your synced Chrome data is still saved to your Google account.
+        You can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won't sync to your Google Account.
       </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chrome uses Face ID to ensure authorized access to your passwords.

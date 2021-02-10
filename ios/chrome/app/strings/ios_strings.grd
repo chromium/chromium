@@ -1731,7 +1731,7 @@ While in incognito, sites can't use cookies to see your browsing activity across
         This setting is enforced by your administrator.
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
-        Your organization signed you out.
+        Your organization signed you out
       </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE" desc="The text in the 'Continue' button, displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy.">
         Continue
