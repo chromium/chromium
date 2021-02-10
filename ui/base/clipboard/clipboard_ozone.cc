@@ -44,7 +44,10 @@ constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(10);
 
 // Depending on the backend, the platform clipboard may or may not be
 // available.  Should it be absent, we provide a dummy one.  It always calls
-// back immediately with empty data, and denies ownership of any buffer.
+// back immediately with empty data. It starts without ownership of any buffers
+// but will take and keep ownership after a call to OfferClipboardData(). By
+// taking ownership, we allow ClipboardOzone to return existing data in
+// ReadClipboardDataAndWait().
 class StubPlatformClipboard : public PlatformClipboard {
  public:
   StubPlatformClipboard() = default;
@@ -55,6 +58,7 @@ class StubPlatformClipboard : public PlatformClipboard {
       ClipboardBuffer buffer,
       const PlatformClipboard::DataMap& data_map,
       PlatformClipboard::OfferDataClosure callback) override {
+    is_owner_[buffer] = true;
     std::move(callback).Run();
   }
   void RequestClipboardData(
@@ -69,10 +73,15 @@ class StubPlatformClipboard : public PlatformClipboard {
       PlatformClipboard::GetMimeTypesClosure callback) override {
     std::move(callback).Run({});
   }
-  bool IsSelectionOwner(ClipboardBuffer buffer) override { return false; }
+  bool IsSelectionOwner(ClipboardBuffer buffer) override {
+    return is_owner_[buffer];
+  }
   void SetSequenceNumberUpdateCb(
       PlatformClipboard::SequenceNumberUpdateCb cb) override {}
   bool IsSelectionBufferAvailable() const override { return false; }
+
+ private:
+  base::flat_map<ClipboardBuffer, bool> is_owner_;
 };
 
 }  // namespace
