@@ -5,6 +5,7 @@
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
+import("//components/optimization_guide/features.gni")
 
 static_library("browser") {
   sources = [
@@ -12,6 +13,13 @@ static_library("browser") {
     "page_text_observer.cc",
     "page_text_observer.h",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "base_model_executor.h",
+      "base_model_executor_helpers.h",
+      "optimization_target_model_executor.h",
+    ]
+  }
 
   public_deps = [
     "//base",
@@ -20,6 +28,15 @@ static_library("browser") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
   ]
+  if (build_with_tflite_lib) {
+    public_deps += [
+      "//components/optimization_guide/core:machine_learning",
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite-support",
+      "//third_party/tflite-support:tflite-support-proto",
+    ]
+  }
 }
 
 static_library("test_support") {
@@ -38,12 +55,24 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "page_text_observer_unittest.cc" ]
+  if (build_with_tflite_lib) {
+    sources += [ "optimization_target_model_executor_unittest.cc" ]
+  }
   deps = [
     ":browser",
+    ":test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (build_with_tflite_lib) {
+    deps += [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite-support",
+      "//third_party/tflite-support:tflite-support-proto",
+    ]
+  }
 }
 
 if (is_android) {

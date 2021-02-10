@@ -17,8 +17,9 @@ if (current_toolchain == default_toolchain &&
   # * base_logging.cc
   # * iostream.cpp
   # * token.cc
+  # * tflite_engine.cc within third_party/tflite-support
   if (target_cpu == "arm" || target_cpu == "arm64") {
-    expected_static_initializer_count = 3
+    expected_static_initializer_count = 4
 
     # TODO(https://crbug.com/1172451): remove global variables from ANGLE:
     # * SPVRemapper.cpp
