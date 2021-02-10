@@ -60,7 +60,10 @@ public class StartSurfaceToolbarCoordinator {
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
-            Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled) {
+            Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
+            ObservableSupplier<Boolean> homepageEnabledSupplier,
+            ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
+            OnClickListener homeButtonOnClickHandler) {
         mStub = startSurfaceToolbarStub;
 
         layoutStateProviderSupplier.onAvailable(
@@ -92,7 +95,9 @@ public class StartSurfaceToolbarCoordinator {
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH.getValue(),
-                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier);
+                StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
+                menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
+                homepageEnabledSupplier, homepageManagedByPolicySupplier, homeButtonOnClickHandler);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

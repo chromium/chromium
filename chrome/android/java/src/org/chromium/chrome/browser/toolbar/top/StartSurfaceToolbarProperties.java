@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.top;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -71,11 +72,25 @@ class StartSurfaceToolbarProperties {
     public static final PropertyModel.WritableFloatPropertyKey TRANSLATION_Y =
             new PropertyModel.WritableFloatPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {NEW_TAB_CLICK_HANDLER,
-            IS_VISIBLE, LOGO_IS_VISIBLE, IS_INCOGNITO, INCOGNITO_STATE_PROVIDER,
-            ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE, NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE,
-            GRID_TAB_SWITCHER_ENABLED, IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE,
-            NEW_TAB_BUTTON_AT_START, IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER,
-            IDENTITY_DISC_IMAGE, IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE,
-            NEW_TAB_BUTTON_HIGHLIGHT, TRANSLATION_Y};
+    public static final PropertyModel.WritableBooleanPropertyKey HOME_BUTTON_IS_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel
+            .WritableObjectPropertyKey<ObservableSupplier<Boolean>> HOMEPAGE_ENABLED_SUPPLIER =
+            new PropertyModel.WritableObjectPropertyKey<ObservableSupplier<Boolean>>();
+    public static final PropertyModel.WritableObjectPropertyKey<ObservableSupplier<Boolean>>
+            HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER =
+            new PropertyModel.WritableObjectPropertyKey<ObservableSupplier<Boolean>>();
+    public static final PropertyModel
+            .WritableObjectPropertyKey<View.OnClickListener> HOME_BUTTON_CLICK_HANDLER =
+            new PropertyModel.WritableObjectPropertyKey<View.OnClickListener>();
+
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {NEW_TAB_CLICK_HANDLER, IS_VISIBLE, LOGO_IS_VISIBLE, IS_INCOGNITO,
+                    INCOGNITO_STATE_PROVIDER, ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE,
+                    NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE, GRID_TAB_SWITCHER_ENABLED,
+                    IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE, NEW_TAB_BUTTON_AT_START,
+                    IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER, IDENTITY_DISC_IMAGE,
+                    IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE, NEW_TAB_BUTTON_HIGHLIGHT,
+                    TRANSLATION_Y, HOME_BUTTON_IS_VISIBLE, HOMEPAGE_ENABLED_SUPPLIER,
+                    HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER, HOME_BUTTON_CLICK_HANDLER};
 }

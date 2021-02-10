@@ -13,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_DESCRIPTION;
@@ -693,14 +694,48 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertEquals(mPropertyModel.get(IS_VISIBLE), true);
     }
 
+    @Test
+    public void testShowHomeButtonInTabSwitcher() {
+        createMediator(false, false, true);
+        mMediator.setTabModelSelector(mTabModelSelector);
+        doReturn(0).when(mIncognitoTabModel).getCount();
+        mMediator.onNativeLibraryReady();
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserver.capture());
+        assertEquals(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE), false);
+
+        mMediator.setStartSurfaceMode(true);
+        mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
+        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
+        assertEquals(mPropertyModel.get(IN_START_SURFACE_MODE), true);
+        assertEquals(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE), false);
+
+        mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
+        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+        assertEquals(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE), true);
+
+        mMediator.setShowHomeButtonOnTabSwitcherForTesting(false);
+        mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
+        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+        assertEquals(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE), false);
+    }
+
     private void createMediator(
             boolean hideIncognitoSwitchWhenNoTabs, boolean hideIncognitoSwitchOnHomePage) {
+        createMediator(hideIncognitoSwitchWhenNoTabs, hideIncognitoSwitchOnHomePage, false);
+    }
+
+    private void createMediator(boolean hideIncognitoSwitchWhenNoTabs,
+            boolean hideIncognitoSwitchOnHomePage, boolean showHomeButtonOnTabSwitcher) {
         mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mMockCallback,
                 hideIncognitoSwitchWhenNoTabs, hideIncognitoSwitchOnHomePage,
-                mMenuButtonCoordinator, mIdentityDiscStateSupplier,
+                showHomeButtonOnTabSwitcher, mMenuButtonCoordinator, mIdentityDiscStateSupplier,
                 ()
                         -> mIdentityDiscController.getForStartSurface(
-                                mMediator.getOverviewModeStateForTesting()));
+                                mMediator.getOverviewModeStateForTesting()),
+                new ObservableSupplierImpl<>(), new ObservableSupplierImpl<>(), null);
 
         mMediator.setLayoutStateProvider(mLayoutStateProvider);
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());

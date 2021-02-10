@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.toolbar.top;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOMEPAGE_ENABLED_SUPPLIER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_CLICK_HANDLER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.HOME_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_DESCRIPTION;
@@ -72,6 +76,14 @@ class StartSurfaceToolbarViewBinder {
             view.setNewTabButtonVisibility(model.get(NEW_TAB_BUTTON_IS_VISIBLE));
         } else if (propertyKey == TRANSLATION_Y) {
             view.setTranslationY(model.get(TRANSLATION_Y));
+        } else if (propertyKey == HOME_BUTTON_IS_VISIBLE) {
+            view.setHomeButtonVisibility(model.get(HOME_BUTTON_IS_VISIBLE));
+        } else if (propertyKey == HOMEPAGE_ENABLED_SUPPLIER) {
+            view.setHomepageEnabledSupplier(model.get(HOMEPAGE_ENABLED_SUPPLIER));
+        } else if (propertyKey == HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER) {
+            view.setHomepageManagedByPolicySupplier(model.get(HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER));
+        } else if (propertyKey == HOME_BUTTON_CLICK_HANDLER) {
+            view.setHomeButtonClickHandler(model.get(HOME_BUTTON_CLICK_HANDLER));
         }
     }
 }
