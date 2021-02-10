@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.accessibility;
 
+import android.os.Bundle;
+
 /**
  * Interface for an implementation of ViewStructure that allows us
  * to print it out as a string and assert that the data in the
@@ -20,4 +22,19 @@ interface TestViewStructureInterface {
      * asyncNewChild has been balanced by a call to asyncCommit.
      */
     public boolean isDone();
+
+    /**
+     * Get the extras bundle for this ViewStructure node.
+     */
+    public Bundle getExtras();
+
+    /**
+     * Get the number of children.
+     */
+    public int getChildCount();
+
+    /**
+     * Get a child by index.
+     */
+    public TestViewStructureInterface getChild(int childIndex);
 }

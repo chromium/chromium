@@ -60,6 +60,7 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
             builder.append(mText);
             builder.append("'");
         }
+
         builder.append("\n");
 
         for (TestViewStructure child : mChildren) {
@@ -143,7 +144,8 @@ public class TestViewStructure extends ViewStructure implements TestViewStructur
         return viewStructure;
     }
 
-    public TestViewStructure getChild(int index) {
+    @Override
+    public TestViewStructureInterface getChild(int index) {
         return mChildren.get(index);
     }
 

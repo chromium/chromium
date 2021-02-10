@@ -565,6 +565,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
             public void onAccessibilitySnapshot(AccessibilitySnapshotNode root) {
                 viewRoot.setClassName("");
                 viewRoot.setHint(mProductVersion);
+
+                Bundle extras = viewRoot.getExtras();
+                extras.putCharSequence("url", mWebContents.getVisibleUrl().getSpec());
+
                 if (root == null) {
                     viewRoot.asyncCommit();
                     return;

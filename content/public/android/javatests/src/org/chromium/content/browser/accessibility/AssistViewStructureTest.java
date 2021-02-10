@@ -6,6 +6,7 @@ package org.chromium.content.browser.accessibility;
 
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.os.Bundle;
 
 import androidx.test.filters.MediumTest;
 
@@ -100,5 +101,28 @@ public class AssistViewStructureTest {
                         + "        android.view.View text='3. '\n"
                         + "          android.widget.TextView text='3. '\n"
                         + "        android.widget.TextView text='Janeway'\n");
+    }
+
+    /**
+     * Test that the snapshot contains the url.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
+    public void testUrl() throws Throwable {
+        TestViewStructureInterface root = getViewStructureFromHtml("<p>Hello World</p>");
+        Assert.assertEquals(1, root.getChildCount());
+        TestViewStructureInterface webview = root.getChild(0);
+        Assert.assertNotNull(webview);
+
+        Bundle extras = webview.getExtras();
+        String url = extras.getCharSequence("url").toString();
+        Assert.assertTrue(url.contains("data:"));
+        Assert.assertFalse(url.contains("http:"));
+        Assert.assertTrue(url.contains("text/html"));
+        Assert.assertTrue(url.contains("Hello"));
+        Assert.assertTrue(url.contains("World"));
     }
 }
