@@ -165,6 +165,10 @@ crbug.com/dawn/609 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,m
 # Dawn is missing several validation rules about depthReadOnly/stencilReadOnly.
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
 
+# Temporary suppressions while reducing maxVertexBuffers in both Dawn and the CTS>
+crbug.com/dawn/678 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:check_out_of_bounds_condition_on_total_number_of_vertex_buffers:* [ Failure ]
+crbug.com/dawn/678 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:check_out_of_bounds_on_number_of_vertex_attributes_across_vertex_buffers:* [ Failure ]
+
 # Crash with validation layer.
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pipeline,primitive_topology:* [ Failure Crash ]
 
