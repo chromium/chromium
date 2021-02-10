@@ -16,9 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1061,10 +1059,6 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
   if (!extension)
     return;
   DCHECK(!FromBookmark(extension));
-
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppInfoDialog.Launches",
-                            AppInfoLaunchSource::FROM_APPS_PAGE,
-                            AppInfoLaunchSource::NUM_LAUNCH_SOURCES);
 
   ShowAppInfoInNativeDialog(web_ui()->GetWebContents(),
                             Profile::FromWebUI(web_ui()), extension,

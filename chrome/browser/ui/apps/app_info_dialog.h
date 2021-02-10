@@ -28,15 +28,6 @@ namespace gfx {
 class Rect;
 }
 
-// Used for UMA to track where the App Info dialog is launched from.
-enum AppInfoLaunchSource {
-  FROM_APP_LIST,         // Launched from the app list context menu (ChromeOS).
-  FROM_EXTENSIONS_PAGE,  // Launched from the chrome://extensions page.
-  FROM_APPS_PAGE,        // Launched from chrome://apps context menu.
-  FROM_SHELF,            // Launched from chrome shelf.
-  NUM_LAUNCH_SOURCES,
-};
-
 // TODO(tsergeant): Move these methods into a class
 // Returns true if the app info dialog is available on the current platform.
 bool CanPlatformShowAppInfoDialog();

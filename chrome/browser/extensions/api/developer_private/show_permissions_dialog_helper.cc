@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "apps/saved_files_service.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
@@ -31,22 +30,14 @@ ShowPermissionsDialogHelper::~ShowPermissionsDialogHelper() = default;
 void ShowPermissionsDialogHelper::Show(content::BrowserContext* browser_context,
                                        content::WebContents* web_contents,
                                        const Extension* extension,
-                                       bool from_webui,
                                        base::OnceClosure on_complete) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   // Show the new-style extensions dialog when it is available. It is currently
   // unavailable by default on Mac.
   if (CanPlatformShowAppInfoDialog()) {
-    if (from_webui) {
-      UMA_HISTOGRAM_ENUMERATION("Apps.AppInfoDialog.Launches",
-                                AppInfoLaunchSource::FROM_EXTENSIONS_PAGE,
-                                AppInfoLaunchSource::NUM_LAUNCH_SOURCES);
-    }
-
     ShowAppInfoInNativeDialog(web_contents, profile, extension,
                               std::move(on_complete));
-
     return;  // All done.
   }
 

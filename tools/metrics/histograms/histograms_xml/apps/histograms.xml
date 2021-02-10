@@ -45,6 +45,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppInfoDialog.Launches" enum="AppInfoDialogLaunchOrigin"
     expires_after="M77">
+  <obsolete>
+    Removed February 2021.
+  </obsolete>
   <owner>sashab@chromium.org</owner>
   <summary>
     The number of times the app info dialog is launched. This is gathered each
@@ -55,6 +58,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppInfoDialog.OpenedForLocation" enum="AppLocation"
     expires_after="M85">
+  <obsolete>
+    Removed September 2016. Recorded as Apps.AppInfoDialogOpenedForLocation?
+  </obsolete>
   <owner>sashab@chromium.org</owner>
   <summary>
     The location of the app that the dialog was opened for. This is gathered
@@ -64,6 +70,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppInfoDialog.OpenedForType" enum="ExtensionType"
     expires_after="M85">
+  <obsolete>
+    Removed September 2016. Recorded as Apps.AppInfoDialogOpenedForType?
+  </obsolete>
   <owner>sashab@chromium.org</owner>
   <summary>
     The type of the app that the dialog was opened for. This is gathered each

@@ -29,7 +29,6 @@ class ShowPermissionsDialogHelper {
   static void Show(content::BrowserContext* browser_context,
                    content::WebContents* web_contents,
                    const Extension* extension,
-                   bool from_webui,
                    base::OnceClosure on_complete);
 
  private:

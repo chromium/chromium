@@ -1070,7 +1070,6 @@ DeveloperPrivateShowPermissionsDialogFunction::Run() {
 
   ShowPermissionsDialogHelper::Show(
       browser_context(), web_contents, target_extension,
-      source_context_type() == Feature::WEBUI_CONTEXT,
       base::BindOnce(&DeveloperPrivateShowPermissionsDialogFunction::Finish,
                      this));
   return RespondLater();
