@@ -43,7 +43,8 @@ class WebFontTypefaceFactory {
     kSuccessCff2Font = 4,
     kSuccessSbixFont = 5,
     kSuccessColrCpalFont = 6,
-    kMaxValue = kSuccessColrCpalFont,
+    kSuccessColrV1Font = 7,
+    kMaxValue = kSuccessColrV1Font
   };
 
   static sk_sp<SkFontMgr> DefaultFontManager();

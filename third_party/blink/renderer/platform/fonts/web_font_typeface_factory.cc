@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -34,11 +36,6 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
 
   std::unique_ptr<SkStreamAsset> stream(new SkMemoryStream(sk_data));
 
-  // Reject COLRv1 for now until we have a feature flag to gate them and control
-  // the release process.
-  if (format_check.IsColrCpalColorFontV1())
-    return false;
-
   if (!format_check.IsVariableFont() && !format_check.IsColorFont()) {
     typeface = DefaultFontManager()->makeFromStream(std::move(stream));
     if (typeface) {
@@ -58,6 +55,19 @@ bool WebFontTypefaceFactory::CreateTypeface(sk_sp<SkData> sk_data,
       ReportInstantiationResult(InstantiationResult::kSuccessCbdtCblcColorFont);
     }
     return typeface.get();
+  }
+
+  if (format_check.IsColrCpalColorFontV1()) {
+    if (RuntimeEnabledFeatures::COLRV1FontsEnabled()) {
+      typeface = FreeTypeFontManager()->makeFromStream(std::move(stream));
+      if (typeface) {
+        ReportInstantiationResult(InstantiationResult::kSuccessColrV1Font);
+      }
+      return typeface.get();
+    } else {
+      // Always reject COLRv1 fonts when the feature is off.
+      return false;
+    }
   }
 
   if (format_check.IsSbixColorFont()) {
@@ -147,8 +157,6 @@ sk_sp<SkFontMgr> WebFontTypefaceFactory::FontManagerForColrCpal() {
   if (!CoreTextVersionSupportsColrCpal())
     return FreeTypeFontManager();
 #endif
-  // TODO(https://crbug.com/882844): Check Mac OS version and use the FreeType
-  // font manager accordingly.
   return DefaultFontManager();
 }
 

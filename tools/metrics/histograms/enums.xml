@@ -45704,6 +45704,7 @@ from previous Chrome versions.
   <int value="535131384" label="OmniboxTailSuggestions:enabled"/>
   <int value="535194142" label="TemporaryHoldingSpacePreviews:enabled"/>
   <int value="535976218" label="enable-plugin-power-saver"/>
+  <int value="536948426" label="COLRV1Fonts:enabled"/>
   <int value="537857256" label="PipRoundedCorners:enabled"/>
   <int value="538468149" label="OfflinePagesCT:enabled"/>
   <int value="538600423" label="OmniboxDocumentProvider:enabled"/>
@@ -47230,6 +47231,7 @@ from previous Chrome versions.
   <int value="1951645673" label="PasswordsKeyboardAccessory:disabled"/>
   <int value="1952339754"
       label="SignedExchangePrefetchCacheForNavigations:enabled"/>
+  <int value="1954778883" label="COLRV1Fonts:disabled"/>
   <int value="1955238689" label="OmniboxMaxURLMatches:disabled"/>
   <int value="1957273171" label="PageAlmostIdle:disabled"/>
   <int value="1957358530" label="ContextualSearchSecondTap:enabled"/>
@@ -79290,6 +79292,7 @@ others/histograms.xml -->
   <int value="4" label="Success CFF2 outline font"/>
   <int value="5" label="Success Sbix color font"/>
   <int value="6" label="Success COLR/CPAL color font"/>
+  <int value="7" label="Success COLRv1 color font"/>
 </enum>
 
 <enum name="WebFontInterventionResult">

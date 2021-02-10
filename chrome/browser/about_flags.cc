@@ -2604,6 +2604,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHistoryManipulationIntervention,
      flag_descriptions::kHistoryManipulationInterventionDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kHistoryManipulationIntervention)},
+    {"colr-v1-fonts", flag_descriptions::kCOLRV1FontsName,
+     flag_descriptions::kCOLRV1FontsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCOLRV1Fonts)},
 #if defined(OS_ANDROID)
     {"contextual-search-debug", flag_descriptions::kContextualSearchDebugName,
      flag_descriptions::kContextualSearchDebugDescription, kOsAndroid,

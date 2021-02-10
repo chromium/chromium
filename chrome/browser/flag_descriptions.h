@@ -77,6 +77,9 @@ extern const char kAllowSyncXHRInPageDismissalDescription[];
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 
+extern const char kCOLRV1FontsName[];
+extern const char kCOLRV1FontsDescription[];
+
 extern const char kConversionMeasurementApiName[];
 extern const char kConversionMeasurementApiDescription[];
 

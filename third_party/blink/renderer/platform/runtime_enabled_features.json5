@@ -364,6 +364,10 @@
       status: "experimental",
     },
     {
+      name: "COLRV1Fonts",
+      status: "experimental",
+    },
+    {
       name: "CompositeAfterPaint",
     },
     {

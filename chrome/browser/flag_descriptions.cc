@@ -63,6 +63,10 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
+extern const char kCOLRV1FontsName[] = "COLR v1 Fonts";
+extern const char kCOLRV1FontsDescription[] =
+    "Display COLR v1 color gradient vector fonts.";
+
 const char kConditionalTabStripAndroidName[] = "Conditional Tab Strip";
 const char kConditionalTabStripAndroidDescription[] =
     "Allows users to access conditional tab strip.";

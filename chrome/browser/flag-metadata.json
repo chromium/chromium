@@ -594,6 +594,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "colr-v1-fonts",
+    "owners": [ "drott", "layout-dev@chromium.org" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "composited-layer-borders",
     "owners": [ "ccameron" ],
     "expiry_milestone": 76
