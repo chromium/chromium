@@ -213,6 +213,7 @@ FYI_BUILDERS = {
         'platform':
         'fuchsia',
         'dimension': {
+            'cpu': None,
             'device_type': 'Astro',
             'os': 'Fuchsia',
             'pool': 'chrome.tests',

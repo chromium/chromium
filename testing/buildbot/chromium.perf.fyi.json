@@ -253,6 +253,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": null,
               "device_type": "Astro",
               "os": "Fuchsia",
               "pool": "chrome.tests"
