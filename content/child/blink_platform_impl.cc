@@ -284,7 +284,9 @@ size_t BlinkPlatformImpl::MaxDecodedImageBytes() {
 }
 
 bool BlinkPlatformImpl::IsLowEndDevice() {
-  return base::SysInfo::IsLowEndDevice();
+  // This value is static for performance because calculating it is non-trivial.
+  static bool is_low_end_device = base::SysInfo::IsLowEndDevice();
+  return is_low_end_device;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> BlinkPlatformImpl::GetIOTaskRunner()
