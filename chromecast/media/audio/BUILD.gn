@@ -196,6 +196,18 @@ buildflag_header("audio_buildflags") {
   }
 }
 
+cast_source_set("rate_adjuster") {
+  sources = [
+    "rate_adjuster.cc",
+    "rate_adjuster.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/base",
+  ]
+}
+
 cast_source_set("test_support") {
   testonly = true
 
@@ -212,11 +224,13 @@ cast_source_set("unittests") {
     "audio_clock_simulator_unittest.cc",
     "audio_fader_unittest.cc",
     "interleaved_channel_mixer_unittest.cc",
+    "rate_adjuster_unittest.cc",
   ]
 
   deps = [
     ":interleaved_channel_mixer",
     ":processing",
+    ":rate_adjuster",
     "//base",
     "//media",
     "//testing/gmock",
