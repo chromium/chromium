@@ -44,33 +44,28 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   ~ViewAXPlatformNodeDelegate() override;
 
   // ViewAccessibility:
-  bool IsAccessibilityFocusable() const override;
-  bool IsFocusedForTesting() const override;
-  void SetPopupFocusOverride() override;
-  void EndPopupFocusOverride() override;
-  void FireFocusAfterMenuClose() override;
-  bool IsIgnored() const override;
   gfx::NativeViewAccessible GetNativeObject() const override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 #if defined(OS_APPLE)
   void AnnounceText(const base::string16& text) override;
 #endif
+  bool IsIgnored() const override;
+  bool IsInvisibleOrIgnored() const override;
+  void FireFocusAfterMenuClose() override;
 
-  // ui::AXPlatformNodeDelegate.
+  // ui::AXPlatformNodeDelegate
   const ui::AXNodeData& GetData() const override;
   int GetChildCount() const override;
   gfx::NativeViewAccessible ChildAtIndex(int index) override;
   bool HasModalDialog() const override;
-  // Also in |ViewAccessibility|.
-  bool IsChildOfLeaf() const override;
   gfx::NativeViewAccessible GetNSWindow() override;
   // TODO(nektar): Make "GetNativeViewAccessible" a const method throughout the
   // codebase.
   gfx::NativeViewAccessible GetNativeViewAccessible() const;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() override;
+  bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
-  bool IsInvisibleOrIgnored() const override;
   bool IsFocused() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::Rect GetBoundsRect(
@@ -100,17 +95,14 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   bool IsOrderedSet() const override;
   base::Optional<int> GetPosInSet() const override;
   base::Optional<int> GetSetSize() const override;
+  void SetPopupFocusOverride() override;
+  void EndPopupFocusOverride() override;
+  bool IsFocusedForTesting() const override;
 
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);
 
   ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
-
-  // We own this, but it is reference-counted on some platforms so we can't use
-  // a unique_ptr. It is destroyed in the destructor.
-  // TODO(nektar): Move this to the private section and turn it into a const
-  // pointer.
-  ui::AXPlatformNode* ax_platform_node_;
 
  private:
   struct ChildWidgetsResult final {
@@ -143,6 +135,10 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
 
   // Gets the real (non-virtual) TableView, otherwise nullptr.
   TableView* GetAncestorTableView() const;
+
+  // We own this, but it is reference-counted on some platforms so we can't use
+  // a unique_ptr. It is destroyed in the destructor.
+  ui::AXPlatformNode* ax_platform_node_;
 
   mutable ui::AXNodeData data_;
 };

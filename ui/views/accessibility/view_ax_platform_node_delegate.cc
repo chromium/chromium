@@ -131,6 +131,9 @@ ViewAXPlatformNodeDelegate::ChildWidgetsResult::operator=(
 
 ViewAXPlatformNodeDelegate::ViewAXPlatformNodeDelegate(View* view)
     : ViewAccessibility(view) {
+  ax_platform_node_ = ui::AXPlatformNode::Create(this);
+  DCHECK(ax_platform_node_);
+
   static bool first_time = true;
   if (first_time) {
     ui::AXPlatformNode::RegisterNativeWindowHandler(
@@ -145,19 +148,7 @@ ViewAXPlatformNodeDelegate::~ViewAXPlatformNodeDelegate() {
     ui::AXPlatformNode::SetPopupFocusOverride(nullptr);
   }
   ax_platform_node_->Destroy();
-}
-
-bool ViewAXPlatformNodeDelegate::IsAccessibilityFocusable() const {
-  return GetData().HasState(ax::mojom::State::kFocusable);
-}
-
-bool ViewAXPlatformNodeDelegate::IsFocusedForTesting() const {
-  if (ui::AXPlatformNode::GetPopupFocusOverride()) {
-    return ui::AXPlatformNode::GetPopupFocusOverride() ==
-           GetNativeViewAccessible();
-  }
-
-  return ViewAccessibility::IsFocusedForTesting();
+  ax_platform_node_ = nullptr;
 }
 
 void ViewAXPlatformNodeDelegate::SetPopupFocusOverride() {
@@ -168,36 +159,12 @@ void ViewAXPlatformNodeDelegate::EndPopupFocusOverride() {
   ui::AXPlatformNode::SetPopupFocusOverride(nullptr);
 }
 
-void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
-  ui::AXPlatformNodeBase* focused_node =
-      static_cast<ui::AXPlatformNodeBase*>(ax_platform_node_);
-  // Continue to drill down focused nodes to get to the "deepest" node that is
-  // focused. This is not necessarily a view - it could be web content.
-  while (focused_node) {
-    ui::AXPlatformNodeBase* deeper_focus = static_cast<ui::AXPlatformNodeBase*>(
-        ui::AXPlatformNode::FromNativeViewAccessible(focused_node->GetFocus()));
-    if (!deeper_focus || deeper_focus == focused_node)
-      break;
-    focused_node = deeper_focus;
-  }
-  if (focused_node) {
-    // Callback used for testing.
-    if (accessibility_events_callback_) {
-      accessibility_events_callback_.Run(
-          this, ax::mojom::Event::kFocusAfterMenuClose);
-    }
+bool ViewAXPlatformNodeDelegate::IsFocusedForTesting() const {
+  if (ui::AXPlatformNode::GetPopupFocusOverride())
+    return ui::AXPlatformNode::GetPopupFocusOverride() ==
+           GetNativeViewAccessible();
 
-    focused_node->NotifyAccessibilityEvent(
-        ax::mojom::Event::kFocusAfterMenuClose);
-  }
-}
-
-bool ViewAXPlatformNodeDelegate::IsIgnored() const {
-  // TODO(nektar): Make `ViewAccessibility::IsIgnored()` non-virtual and delete
-  // this method. For this to happen
-  // `IsViewUnfocusableDescendantOfFocusableAncestor()` needs to be moved to
-  // `ViewAccessibility`.
-  return GetData().IsIgnored();
+  return ViewAccessibility::IsFocusedForTesting();
 }
 
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNativeObject() const {
@@ -261,7 +228,32 @@ void ViewAXPlatformNodeDelegate::NotifyAccessibilityEvent(
 void ViewAXPlatformNodeDelegate::AnnounceText(const base::string16& text) {
   ax_platform_node_->AnnounceText(text);
 }
-#endif  // defined(OS_APPLE)
+#endif
+
+void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
+  ui::AXPlatformNodeBase* focused_node =
+      static_cast<ui::AXPlatformNodeBase*>(ax_platform_node_);
+  // Continue to drill down focused nodes to get to the "deepest" node that is
+  // focused, this is not necessarily a view. (It could be web content.)
+  while (focused_node) {
+    ui::AXPlatformNodeBase* deeper_focus = static_cast<ui::AXPlatformNodeBase*>(
+        ui::AXPlatformNode::FromNativeViewAccessible(focused_node->GetFocus()));
+    if (!deeper_focus || deeper_focus == focused_node)
+      break;
+    focused_node = deeper_focus;
+  }
+  if (focused_node) {
+    // callback used for testing
+    if (accessibility_events_callback_)
+      accessibility_events_callback_.Run(
+          this, ax::mojom::Event::kFocusAfterMenuClose);
+
+    focused_node->NotifyAccessibilityEvent(
+        ax::mojom::Event::kFocusAfterMenuClose);
+  }
+}
+
+// ui::AXPlatformNodeDelegate
 
 const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // Clear the data, then populate it.
@@ -292,10 +284,8 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
 }
 
 int ViewAXPlatformNodeDelegate::GetChildCount() const {
-  // We call `ViewAccessibility::IsLeaf` here instead of our own override
-  // because our class has an expanded definition of what a leaf node is, which
-  // includes all nodes with zero unignored children. Calling our own override
-  // would create a circular definition of what a "leaf node" is.
+  // We do not call "IsLeaf" here because "AXPlatformNodeDelegateBase::IsLeaf"
+  // calls "GetChildCount", and this will result in an infinit loop.
   if (ViewAccessibility::IsLeaf())
     return 0;
 
@@ -424,12 +414,8 @@ bool ViewAXPlatformNodeDelegate::HasModalDialog() const {
   return GetChildWidgets().is_tab_modal_showing;
 }
 
-bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
-  return AXPlatformNodeDelegateBase::IsChildOfLeaf();
-}
-
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNSWindow() {
-  NOTREACHED() << "Should only be called on Mac.";
+  NOTREACHED();
   return nullptr;
 }
 
@@ -469,12 +455,24 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetParent() {
   return nullptr;
 }
 
+bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
+  // Needed to prevent endless loops, see: http://crbug.com/1100047
+  return false;
+}
+
 bool ViewAXPlatformNodeDelegate::IsLeaf() const {
   return ViewAccessibility::IsLeaf() || AXPlatformNodeDelegateBase::IsLeaf();
 }
 
+bool ViewAXPlatformNodeDelegate::IsIgnored() const {
+  return ViewAccessibility::IsIgnored() || GetData().IsIgnored();
+}
+
 bool ViewAXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
-  return IsIgnored() || !view()->GetVisible();
+  if (IsIgnored())
+    return true;
+
+  return !view()->GetVisible();
 }
 
 bool ViewAXPlatformNodeDelegate::IsFocused() const {

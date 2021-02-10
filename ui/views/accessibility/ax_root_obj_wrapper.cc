@@ -35,6 +35,10 @@ bool AXRootObjWrapper::HasChild(views::AXAuraObjWrapper* child) {
   return base::Contains(children, child);
 }
 
+bool AXRootObjWrapper::IsIgnored() {
+  return false;
+}
+
 views::AXAuraObjWrapper* AXRootObjWrapper::GetParent() {
   return nullptr;
 }
@@ -67,7 +71,7 @@ void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
     out_node_data->AddState(ax::mojom::State::kVertical);
 }
 
-ui::AXNodeID AXRootObjWrapper::GetUniqueId() const {
+int32_t AXRootObjWrapper::GetUniqueId() const {
   return unique_id_.Get();
 }
 

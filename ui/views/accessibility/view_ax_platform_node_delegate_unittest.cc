@@ -353,7 +353,7 @@ TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
 
   // Since the label is a subview of |button_|, and the button is keyboard
   // focusable, the label is assumed to form part of the button and should be
-  // ignored, i.e. not visible in the accessibility tree that is available to
+  // ignored, i.e. no visible in the accessibility tree that is available to
   // platform APIs.
   EXPECT_NE(View::FocusBehavior::NEVER, button_->GetFocusBehavior());
   EXPECT_EQ(0, button_accessibility()->GetChildCount());
@@ -514,15 +514,13 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
   // view is added as the next sibling of the already present button view.
   //
   // Widget
-  // ++NonClientView
-  // ++NonClientFrameView
   // ++Button
   // ++++Label
   // 0 = ++ParentView
   // 1 = ++++ChildView1
   // 2 = ++++ChildView2
-  // 3 = ++++ChildView3
-  // 4 = ++++ChildView4
+  // 3 = ChildView3
+  // 4 = ChildView4
   View::Views extra_views = SetUpExtraViews();
   ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
   ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
@@ -574,126 +572,18 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {
             child_view_4->GetPreviousSibling());
 }
 
-TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithLeafViews) {
-  // Adds one extra parent view with four child views to our widget. The parent
-  // view is added as the next sibling of the already present button view.
-  //
-  // Widget
-  // ++NonClientView
-  // ++NonClientFrameView
-  // ++Button
-  // ++++Label
-  // 0 = ++ParentView
-  // 1 = ++++ChildView1
-  // 2 = ++++ChildView2
-  // 3 = ++++ChildView3
-  // 4 = ++++ChildView4
-  View::Views extra_views = SetUpExtraViews();
-  ViewAXPlatformNodeDelegate* contents_view =
-      view_accessibility(widget_->GetContentsView());
-  ViewAXPlatformNodeDelegate* parent_view = view_accessibility(extra_views[0]);
-  ViewAXPlatformNodeDelegate* child_view_1 = view_accessibility(extra_views[1]);
-  ViewAXPlatformNodeDelegate* child_view_2 = view_accessibility(extra_views[2]);
-  ViewAXPlatformNodeDelegate* child_view_3 = view_accessibility(extra_views[3]);
-  ViewAXPlatformNodeDelegate* child_view_4 = view_accessibility(extra_views[4]);
-
-  // Mark the parent view and the second child view as leafs. This should hide
-  // all four children, not only the second child. It should not hide the parent
-  // view. In this context, "hide" means that these views will be ignored (be
-  // invisible) by platform accessibility APIs.
-  parent_view->OverrideIsLeaf(true);
-  child_view_2->OverrideIsLeaf(true);
-
-  EXPECT_EQ(4, contents_view->GetChildCount());
-  EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
-  EXPECT_EQ(0, parent_view->GetChildCount());
-
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(3, parent_view->GetIndexInParent());
-
-  EXPECT_FALSE(contents_view->IsIgnored());
-  EXPECT_FALSE(parent_view->IsIgnored());
-  EXPECT_TRUE(child_view_1->IsIgnored());
-  EXPECT_TRUE(child_view_2->IsIgnored());
-  EXPECT_TRUE(child_view_3->IsIgnored());
-  EXPECT_TRUE(child_view_4->IsIgnored());
-
-  EXPECT_FALSE(contents_view->IsLeaf());
-  EXPECT_TRUE(parent_view->IsLeaf());
-
-  EXPECT_FALSE(contents_view->IsChildOfLeaf());
-  EXPECT_FALSE(parent_view->IsChildOfLeaf());
-#if !defined(OS_LINUX)
-  // TODO(crbug.com/1100047): IsChildOfLeaf always returns false on Linux.
-  EXPECT_TRUE(child_view_1->IsChildOfLeaf());
-  EXPECT_TRUE(child_view_2->IsChildOfLeaf());
-  EXPECT_TRUE(child_view_3->IsChildOfLeaf());
-  EXPECT_TRUE(child_view_4->IsChildOfLeaf());
-#endif  // defined(OS_LINUX)
-
-  EXPECT_EQ(parent_view->GetNativeObject(), child_view_1->GetParent());
-  EXPECT_EQ(parent_view->GetNativeObject(), child_view_2->GetParent());
-  EXPECT_EQ(parent_view->GetNativeObject(), child_view_3->GetParent());
-  EXPECT_EQ(parent_view->GetNativeObject(), child_view_4->GetParent());
-
-  // Try unhiding the parent view's descendants. Nothing should be hidden any
-  // more. The second child has no descendants so marking it as a leaf should
-  // have no effect.
-  parent_view->OverrideIsLeaf(false);
-
-  EXPECT_EQ(4, contents_view->GetChildCount());
-  EXPECT_EQ(contents_view->GetNativeObject(), parent_view->GetParent());
-  EXPECT_EQ(4, parent_view->GetChildCount());
-
-  EXPECT_EQ(2, button_accessibility()->GetIndexInParent());
-  EXPECT_EQ(3, parent_view->GetIndexInParent());
-
-  EXPECT_FALSE(contents_view->IsIgnored());
-  EXPECT_FALSE(parent_view->IsIgnored());
-  EXPECT_FALSE(child_view_1->IsIgnored());
-  EXPECT_FALSE(child_view_2->IsIgnored());
-  EXPECT_FALSE(child_view_3->IsIgnored());
-  EXPECT_FALSE(child_view_4->IsIgnored());
-
-  EXPECT_FALSE(contents_view->IsLeaf());
-  EXPECT_FALSE(parent_view->IsLeaf());
-  EXPECT_TRUE(child_view_1->IsLeaf());
-  EXPECT_TRUE(child_view_2->IsLeaf());
-  EXPECT_TRUE(child_view_3->IsLeaf());
-  EXPECT_TRUE(child_view_4->IsLeaf());
-
-  EXPECT_FALSE(contents_view->IsChildOfLeaf());
-  EXPECT_FALSE(parent_view->IsChildOfLeaf());
-  EXPECT_FALSE(child_view_1->IsChildOfLeaf());
-  EXPECT_FALSE(child_view_2->IsChildOfLeaf());
-  EXPECT_FALSE(child_view_3->IsChildOfLeaf());
-  EXPECT_FALSE(child_view_4->IsChildOfLeaf());
-
-  EXPECT_EQ(parent_view->GetNativeObject(), child_view_1->GetParent());
-  EXPECT_EQ(parent_view->GetNativeObject(), child_view_2->GetParent());
-  EXPECT_EQ(parent_view->GetNativeObject(), child_view_3->GetParent());
-  EXPECT_EQ(parent_view->GetNativeObject(), child_view_4->GetParent());
-
-  EXPECT_EQ(child_view_1->GetNativeObject(), parent_view->ChildAtIndex(0));
-  EXPECT_EQ(child_view_2->GetNativeObject(), parent_view->ChildAtIndex(1));
-  EXPECT_EQ(child_view_3->GetNativeObject(), parent_view->ChildAtIndex(2));
-  EXPECT_EQ(child_view_4->GetNativeObject(), parent_view->ChildAtIndex(3));
-}
-
 TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
   // Adds one extra parent view with four child views to our widget. The parent
   // view is added as the next sibling of the already present button view.
   //
   // Widget
-  // ++NonClientView
-  // ++NonClientFrameView
   // ++Button
   // ++++Label
   // 0 = ++ParentView
   // 1 = ++++ChildView1
   // 2 = ++++ChildView2
-  // 3 = ++++ChildView3
-  // 4 = ++++ChildView4
+  // 3 = ChildView3
+  // 4 = ChildView4
   View::Views extra_views = SetUpExtraViews();
   ViewAXPlatformNodeDelegate* contents_view =
       view_accessibility(widget_->GetContentsView());

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -19,11 +18,7 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
 }
 
 ViewAXPlatformNodeDelegateMac::ViewAXPlatformNodeDelegateMac(View* view)
-    : ViewAXPlatformNodeDelegate(view) {
-  // TODO(nektar): Move this to parent class.
-  ax_platform_node_ = ui::AXPlatformNode::Create(this);
-  DCHECK(ax_platform_node_);
-}
+    : ViewAXPlatformNodeDelegate(view) {}
 
 ViewAXPlatformNodeDelegateMac::~ViewAXPlatformNodeDelegateMac() = default;
 

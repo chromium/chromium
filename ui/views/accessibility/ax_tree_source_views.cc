@@ -101,11 +101,7 @@ AXAuraObjWrapper* AXTreeSourceViews::GetParent(AXAuraObjWrapper* node) const {
 }
 
 bool AXTreeSourceViews::IsIgnored(AXAuraObjWrapper* node) const {
-  if (!node)
-    return false;
-  ui::AXNodeData out_data;
-  node->Serialize(&out_data);
-  return out_data.IsIgnored();
+  return node && node->IsIgnored();
 }
 
 bool AXTreeSourceViews::IsValid(AXAuraObjWrapper* node) const {

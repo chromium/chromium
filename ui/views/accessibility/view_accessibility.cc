@@ -149,10 +149,44 @@ int ViewAccessibility::GetIndexOf(const AXVirtualView* virtual_view) const {
              : -1;
 }
 
+const ui::AXUniqueId& ViewAccessibility::GetUniqueId() const {
+  return unique_id_;
+}
+
+bool ViewAccessibility::IsLeaf() const {
+  return is_leaf_;
+}
+
+ViewsAXTreeManager* ViewAccessibility::AXTreeManager() const {
+  ViewsAXTreeManager* manager = nullptr;
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  Widget* widget = view_->GetWidget();
+
+  // Don't return managers for closing Widgets.
+  if (widget->IsClosed())
+    return nullptr;
+
+  manager = ax_tree_manager_.get();
+
+  // ViewsAXTreeManagers are only created for top-level windows (Widgets). For
+  // non top-level Views, look up the Widget's tree ID to retrieve the manager.
+  if (!manager) {
+    ui::AXTreeID tree_id =
+        WidgetAXTreeIDMap::GetInstance().GetWidgetTreeID(widget);
+    DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
+    manager = static_cast<views::ViewsAXTreeManager*>(
+        ui::AXTreeManagerMap::GetInstance().GetManager(tree_id));
+  }
+#endif
+  return manager;
+}
+
+bool ViewAccessibility::IsIgnored() const {
+  return is_ignored_;
+}
+
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   data->id = GetUniqueId().Get();
-  data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
-                           view_->GetClassName());
 
   // Views may misbehave if their widget is closed; return an unknown role
   // rather than possibly crashing.
@@ -160,17 +194,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (!widget || !widget->widget_delegate() || widget->IsClosed()) {
     data->role = ax::mojom::Role::kUnknown;
     data->SetRestriction(ax::mojom::Restriction::kDisabled);
-
-    // Ordinarily, a view cannot be focusable if its widget has already closed.
-    // So, it would have been appropriate to set the focusable state to false in
-    // this particular case. However, the `FocusManager` may sometimes try to
-    // retrieve the focusable state of this view via
-    // `View::IsAccessibilityFocusable()`, even after this view's widget has
-    // been closed. Returning the wrong result might cause a crash, because the
-    // focus manager might be expecting the result to be the same regardless of
-    // the state of the view's widget.
-    if (ViewAccessibility::IsAccessibilityFocusable())
-      data->AddState(ax::mojom::State::kFocusable);
     return;
   }
 
@@ -227,7 +250,8 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     // their screen reader is announcing the same thing twice.
     if (tooltip !=
         data->GetString16Attribute(ax::mojom::StringAttribute::kName)) {
-      data->SetDescription(base::UTF16ToUTF8(tooltip));
+      data->AddStringAttribute(ax::mojom::StringAttribute::kDescription,
+                               base::UTF16ToUTF8(tooltip));
     }
   }
 
@@ -235,19 +259,15 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (!custom_data_.relative_bounds.bounds.IsEmpty())
     data->relative_bounds.bounds = custom_data_.relative_bounds.bounds;
 
-  // We need to add the ignored state to all ignored Views, similar to how Blink
-  // exposes ignored DOM nodes. Calling AXNodeData::IsIgnored() would also check
-  // if the role is in the list of roles that are inherently ignored.
-  // Furthermore, we add the ignored state if this View is a descendant of a
-  // leaf View. We call this class's "IsChildOfLeaf" method instead of the one
-  // in our platform specific subclass because subclasses determine if a node is
-  // a leaf by (among other things) counting the number of unignored children,
-  // which would create a circular definition of the ignored state.
-  if (is_ignored_ || data->IsIgnored() || ViewAccessibility::IsChildOfLeaf())
-    data->AddState(ax::mojom::State::kIgnored);
+  data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
+                           view_->GetClassName());
 
-  if (ViewAccessibility::IsAccessibilityFocusable())
-    data->AddState(ax::mojom::State::kFocusable);
+  if (is_ignored_ || data->role == ax::mojom::Role::kIgnored) {
+    data->AddState(ax::mojom::State::kIgnored);
+  } else {
+    if (view_->IsAccessibilityFocusable() && !focused_virtual_child_)
+      data->AddState(ax::mojom::State::kFocusable);
+  }
 
   if (custom_data_.HasIntAttribute(ax::mojom::IntAttribute::kRestriction)) {
     data->SetRestriction(custom_data_.GetRestriction());
@@ -277,30 +297,12 @@ void ViewAccessibility::OverrideFocus(AXVirtualView* virtual_view) {
   }
 }
 
-bool ViewAccessibility::IsAccessibilityFocusable() const {
-  // Descendants of leaf nodes should not be reported as focusable, because all
-  // such descendants are not exposed to the accessibility APIs of any platform.
-  // (See `AXNode::IsLeaf()` for more information.) We avoid calling
-  // `IsChildOfLeaf()` for performance reasons, because `FocusManager` makes use
-  // of this method, which means that it would be called frequently. However,
-  // since all descendants of leaf nodes are ignored by default, and since our
-  // testing framework enforces the condition that all ignored nodes should not
-  // be focusable, if there is test coverage, such a situation will cause a test
-  // failure.
-  return view_->GetFocusBehavior() != View::FocusBehavior::NEVER &&
-         view_->GetEnabled() && view_->IsDrawn() && !is_ignored_;
-}
-
-bool ViewAccessibility::IsFocusedForTesting() const {
-  return view_->HasFocus() && !focused_virtual_child_;
-}
-
 void ViewAccessibility::SetPopupFocusOverride() {}
 
 void ViewAccessibility::EndPopupFocusOverride() {}
 
-void ViewAccessibility::FireFocusAfterMenuClose() {
-  NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose);
+bool ViewAccessibility::IsFocusedForTesting() const {
+  return view_->HasFocus() && !focused_virtual_child_;
 }
 
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
@@ -328,27 +330,6 @@ void ViewAccessibility::OverrideIsLeaf(bool value) {
   is_leaf_ = value;
 }
 
-bool ViewAccessibility::IsLeaf() const {
-  return is_leaf_;
-}
-
-bool ViewAccessibility::IsChildOfLeaf() const {
-  // Note to future developers: This method is called from
-  // "GetAccessibleNodeData". We should avoid calling any methods in any of our
-  // subclasses that might try and retrieve our AXNodeData, because this will
-  // cause an infinite loop.
-  // TODO(crbug.com/1100047): Make this method non-virtual and delete it from
-  // all subclasses.
-  if (const View* parent_view = view_->parent()) {
-    const ViewAccessibility& view_accessibility =
-        parent_view->GetViewAccessibility();
-    if (view_accessibility.ViewAccessibility::IsLeaf())
-      return true;
-    return view_accessibility.ViewAccessibility::IsChildOfLeaf();
-  }
-  return false;
-}
-
 void ViewAccessibility::OverrideIsIgnored(bool value) {
   is_ignored_ = value;
 }
@@ -364,14 +345,6 @@ void ViewAccessibility::OverrideViewEnablingState(bool enabled) {
       ax::mojom::IntAttribute::kRestriction,
       enabled ? static_cast<int>(ax::mojom::Restriction::kNone)
               : static_cast<int>(ax::mojom::Restriction::kDisabled));
-}
-
-bool ViewAccessibility::IsIgnored() const {
-  // TODO(nektar): Make this method non-virtual and implement as follows:
-  // ui::AXNodeData out_data;
-  // GetAccessibleNodeData(&out_data);
-  // return out_data.IsIgnored();
-  return is_ignored_;
 }
 
 void ViewAccessibility::OverrideBounds(const gfx::RectF& bounds) {
@@ -432,38 +405,14 @@ void ViewAccessibility::AnnounceText(const base::string16& text) {
   root_view->AnnounceText(text);
 }
 
-const ui::AXUniqueId& ViewAccessibility::GetUniqueId() const {
-  return unique_id_;
-}
-
-ViewsAXTreeManager* ViewAccessibility::AXTreeManager() const {
-  ViewsAXTreeManager* manager = nullptr;
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  Widget* widget = view_->GetWidget();
-
-  // Don't return managers for closing Widgets.
-  if (!widget || !widget->widget_delegate() || widget->IsClosed())
-    return nullptr;
-
-  manager = ax_tree_manager_.get();
-
-  // ViewsAXTreeManagers are only created for top-level windows (Widgets). For
-  // non top-level Views, look up the Widget's tree ID to retrieve the manager.
-  if (!manager) {
-    ui::AXTreeID tree_id =
-        WidgetAXTreeIDMap::GetInstance().GetWidgetTreeID(widget);
-    DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
-    manager = static_cast<views::ViewsAXTreeManager*>(
-        ui::AXTreeManagerMap::GetInstance().GetManager(tree_id));
-  }
-#endif
-  return manager;
-}
-
 gfx::NativeViewAccessible ViewAccessibility::GetFocusedDescendant() {
   if (focused_virtual_child_)
     return focused_virtual_child_->GetNativeObject();
   return view_->GetNativeViewAccessible();
+}
+
+void ViewAccessibility::FireFocusAfterMenuClose() {
+  NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose);
 }
 
 const ViewAccessibility::AccessibilityEventsCallback&

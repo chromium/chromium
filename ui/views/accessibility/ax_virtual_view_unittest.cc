@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -99,7 +98,19 @@ class AXVirtualViewTest : public ViewsTestBase {
   void ExpectReceivedAccessibilityEvents(
       const std::vector<std::pair<const ui::AXPlatformNodeDelegate*,
                                   const ax::mojom::Event>>& expected_events) {
-    EXPECT_THAT(accessibility_events_, testing::ContainerEq(expected_events));
+    EXPECT_EQ(accessibility_events_.size(), expected_events.size());
+
+    size_t i = 0;
+    for (const auto& actual_event : accessibility_events_) {
+      if (i >= expected_events.size())
+        break;
+
+      const auto& expected_event = expected_events[i];
+      EXPECT_EQ(actual_event.first, expected_event.first);
+      EXPECT_EQ(actual_event.second, expected_event.second);
+      ++i;
+    }
+
     accessibility_events_.clear();
   }
 
@@ -363,7 +374,9 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   button_->RequestFocus();
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus)});
+      {std::make_pair(GetButtonAccessibility(), ax::mojom::Event::kFocus),
+       std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kChildrenChanged)});
 
   EXPECT_EQ(button_accessibility.GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
@@ -426,7 +439,9 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   button_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   button_->RequestFocus();
   ExpectReceivedAccessibilityEvents(
-      {std::make_pair(virtual_child_3, ax::mojom::Event::kFocus)});
+      {std::make_pair(virtual_child_3, ax::mojom::Event::kFocus),
+       std::make_pair(GetButtonAccessibility(),
+                      ax::mojom::Event::kChildrenChanged)});
 
   // Test that calling GetFocus() from any object in the tree will return the
   // same result.

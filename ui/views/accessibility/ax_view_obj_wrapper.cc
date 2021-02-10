@@ -26,6 +26,10 @@ AXViewObjWrapper::AXViewObjWrapper(AXAuraObjCache* aura_obj_cache, View* view)
 
 AXViewObjWrapper::~AXViewObjWrapper() = default;
 
+bool AXViewObjWrapper::IsIgnored() {
+  return !view_ || view_->GetViewAccessibility().IsIgnored();
+}
+
 AXAuraObjWrapper* AXViewObjWrapper::GetParent() {
   if (!view_)
     return nullptr;
@@ -63,7 +67,9 @@ void AXViewObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
     return;
 
   ViewAccessibility& view_accessibility = view_->GetViewAccessibility();
+
   view_accessibility.GetAccessibleNodeData(out_node_data);
+  out_node_data->id = GetUniqueId();
 
   if (view_accessibility.GetNextFocus()) {
     out_node_data->AddIntAttribute(
@@ -78,7 +84,7 @@ void AXViewObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   }
 }
 
-ui::AXNodeID AXViewObjWrapper::GetUniqueId() const {
+int32_t AXViewObjWrapper::GetUniqueId() const {
   return view_ ? view_->GetViewAccessibility().GetUniqueId()
                : ui::kInvalidAXNodeID;
 }
