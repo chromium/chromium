@@ -43,8 +43,9 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
     content::WebContents* contents,
     SaveAddressProfileBubbleController* controller,
     bool is_user_gesture) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (!save_address_profile_bubble_view_)
+    save_address_profile_bubble_view_ = std::make_unique<TestAutofillBubble>();
+  return save_address_profile_bubble_view_.get();
 }
 
 void TestAutofillBubbleHandler::OnPasswordSaved() {}

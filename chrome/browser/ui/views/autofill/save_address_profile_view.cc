@@ -17,6 +17,14 @@ SaveAddressProfileView::SaveAddressProfileView(
       controller_(controller) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
+  SetAcceptCallback(base::BindOnce(
+      &SaveAddressProfileBubbleController::OnUserDecision,
+      base::Unretained(controller_),
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+  SetCancelCallback(base::BindOnce(
+      &SaveAddressProfileBubbleController::OnUserDecision,
+      base::Unretained(controller_),
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 }
 
 bool SaveAddressProfileView::ShouldShowCloseButton() const {

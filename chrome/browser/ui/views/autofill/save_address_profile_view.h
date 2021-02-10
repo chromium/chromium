@@ -28,6 +28,9 @@ class SaveAddressProfileView : public AutofillBubbleBase,
                          content::WebContents* web_contents,
                          SaveAddressProfileBubbleController* controller);
 
+  SaveAddressProfileView(const SaveAddressProfileView&) = delete;
+  SaveAddressProfileView& operator=(const SaveAddressProfileView&) = delete;
+
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
   base::string16 GetWindowTitle() const override;

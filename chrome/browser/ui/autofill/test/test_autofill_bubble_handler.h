@@ -49,6 +49,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   std::unique_ptr<TestAutofillBubble> local_card_migration_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_card_bubble_view_;
   std::unique_ptr<TestSaveUPIBubble> save_upi_bubble_;
+  std::unique_ptr<TestAutofillBubble> save_address_profile_bubble_view_;
 
   DISALLOW_COPY_AND_ASSIGN(TestAutofillBubbleHandler);
 };

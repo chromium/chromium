@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller_impl.h"
 
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,9 +14,9 @@
 
 namespace autofill {
 
-class SaveAddressProfileBubbleControllerTest : public DialogBrowserTest {
+class SaveAddressProfileBubbleControllerImplTest : public DialogBrowserTest {
  public:
-  SaveAddressProfileBubbleControllerTest() {
+  SaveAddressProfileBubbleControllerImplTest() {
     feature_list_.InitAndEnableFeature(
         features::kAutofillAddressProfileSavePrompt);
   }
@@ -34,29 +34,30 @@ class SaveAddressProfileBubbleControllerTest : public DialogBrowserTest {
     autofill_client->ConfirmSaveAddressProfile(test::GetFullProfile(),
                                                base::DoNothing());
     controller_ =
-        SaveAddressProfileBubbleController::FromWebContents(web_contents);
+        SaveAddressProfileBubbleControllerImpl::FromWebContents(web_contents);
     DCHECK(controller_);
   }
 
-  SaveAddressProfileBubbleController* controller() { return controller_; }
+  SaveAddressProfileBubbleControllerImpl* controller() { return controller_; }
 
  private:
-  SaveAddressProfileBubbleController* controller_ = nullptr;
+  SaveAddressProfileBubbleControllerImpl* controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SaveAddressProfileBubbleControllerTest, InvokeUi_Save) {
+IN_PROC_BROWSER_TEST_F(SaveAddressProfileBubbleControllerImplTest,
+                       InvokeUi_Save) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(SaveAddressProfileBubbleControllerTest,
+IN_PROC_BROWSER_TEST_F(SaveAddressProfileBubbleControllerImplTest,
                        InvokeUi_SaveCloseThenReopen) {
   ShowAndVerifyUi();
   controller()->OnBubbleClosed();
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(SaveAddressProfileBubbleControllerTest,
+IN_PROC_BROWSER_TEST_F(SaveAddressProfileBubbleControllerImplTest,
                        CloseTabWhileBubbleIsOpen) {
   ShowAndVerifyUi();
   content::WebContents* tab =

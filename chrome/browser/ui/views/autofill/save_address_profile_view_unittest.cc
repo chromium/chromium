@@ -5,13 +5,27 @@
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+class MockSaveAddressProfileBubbleController
+    : public SaveAddressProfileBubbleController {
+ public:
+  MOCK_METHOD(base::string16, GetWindowTitle, (), (const, override));
+  MOCK_METHOD(void,
+              OnUserDecision,
+              (AutofillClient::SaveAddressProfileOfferUserDecision decision),
+              (override));
+  MOCK_METHOD(void, OnBubbleClosed, (), (override));
+};
 
 class SaveAddressProfileViewTest : public ChromeViewsTestBase {
  public:
@@ -29,6 +43,9 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
   }
 
   SaveAddressProfileView* view() { return view_; }
+  MockSaveAddressProfileBubbleController* mock_controller() {
+    return &mock_controller_;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -38,6 +55,7 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
   SaveAddressProfileView* view_;
+  testing::NiceMock<MockSaveAddressProfileBubbleController> mock_controller_;
 };
 
 SaveAddressProfileViewTest::SaveAddressProfileViewTest() {
@@ -49,6 +67,9 @@ SaveAddressProfileViewTest::SaveAddressProfileViewTest() {
 }
 
 void SaveAddressProfileViewTest::CreateViewAndShow() {
+  ON_CALL(*mock_controller(), GetWindowTitle())
+      .WillByDefault(testing::Return(base::string16()));
+
   // The bubble needs the parent as an anchor.
   views::Widget::InitParams params =
       CreateParams(views::Widget::InitParams::TYPE_WINDOW);
@@ -58,15 +79,33 @@ void SaveAddressProfileViewTest::CreateViewAndShow() {
   anchor_widget_->Init(std::move(params));
   anchor_widget_->Show();
 
-  view_ = new SaveAddressProfileView(anchor_widget_->GetContentsView(),
-                                     test_web_contents_.get(),
-                                     /*controller=*/nullptr);
+  view_ =
+      new SaveAddressProfileView(anchor_widget_->GetContentsView(),
+                                 test_web_contents_.get(), mock_controller());
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 
 TEST_F(SaveAddressProfileViewTest, HasCloseButton) {
   CreateViewAndShow();
   EXPECT_TRUE(view()->ShouldShowCloseButton());
+}
+
+TEST_F(SaveAddressProfileViewTest, AcceptInvokesTheController) {
+  CreateViewAndShow();
+  EXPECT_CALL(
+      *mock_controller(),
+      OnUserDecision(
+          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+  view()->AcceptDialog();
+}
+
+TEST_F(SaveAddressProfileViewTest, CancelInvokesTheController) {
+  CreateViewAndShow();
+  EXPECT_CALL(
+      *mock_controller(),
+      OnUserDecision(
+          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+  view()->CancelDialog();
 }
 
 }  // namespace autofill
