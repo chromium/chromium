@@ -765,4 +765,25 @@ export function scanningAppTest() {
               /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
         });
   });
+
+  test('RetryClickLoadsScanners', () => {
+    return initializeScanningApp(/*scanners=*/[], /*capabilities=*/ new Map())
+        .then(() => {
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
+
+          fakeScanService_.setScanners(expectedScanners);
+          fakeScanService_.setCapabilities(capabilities);
+          scanningApp.$$('loading-page').$$('#retryButton').click();
+          return fakeScanService_.whenCalled('getScanners');
+        })
+        .then(() => {
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('loading-page'))));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
+        });
+  });
 }

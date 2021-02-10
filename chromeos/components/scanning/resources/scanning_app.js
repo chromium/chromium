@@ -43,6 +43,12 @@ import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser
 const DEFAULT_SAVE_DIRECTORY = '/home/chronos/user/MyFiles';
 
 /**
+ * URL for the Scanning help page.
+ * @const {string}
+ */
+const HELP_PAGE_LINK = 'http://support.google.com/chromebook?p=chrome_scanning';
+
+/**
  * @fileoverview
  * 'scanning-app' is used to interact with connected scanners.
  */
@@ -518,7 +524,9 @@ Polymer({
   setAppState_(newState) {
     switch (newState) {
       case (AppState.GETTING_SCANNERS):
-        assert(this.appState_ === AppState.GETTING_SCANNERS);
+        assert(
+            this.appState_ === AppState.GETTING_SCANNERS ||
+            this.appState_ === AppState.NO_SCANNERS);
         break;
       case (AppState.GOT_SCANNERS):
         assert(this.appState_ === AppState.GETTING_SCANNERS);
@@ -612,7 +620,7 @@ Polymer({
   onDialogGetHelpClick_() {
     this.$.scanFailedDialog.close();
     this.setAppState_(AppState.READY);
-    window.open('http://support.google.com/chromebook?p=chrome_scanning');
+    window.open(HELP_PAGE_LINK);
   },
 
   /**
@@ -624,5 +632,19 @@ Polymer({
             chromeos.scanning.mojom.FileType.kPdf.toString() ?
         1 :
         this.pageNumber_;
-  }
+  },
+
+  /** @private */
+  onRetryClick_() {
+    this.setAppState_(AppState.GETTING_SCANNERS);
+    this.scanService_.getScanners().then(
+        /*@type {!{scanners: !ScannerArr}}*/ (response) => {
+          this.onScannersReceived_(response);
+        });
+  },
+
+  /** @private */
+  onLearnMoreClick_() {
+    window.open(HELP_PAGE_LINK);
+  },
 });

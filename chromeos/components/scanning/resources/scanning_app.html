@@ -175,7 +175,8 @@
   }
 </style>
 <div id="scanningContainer">
-  <loading-page hidden="[[scannersLoaded_]]" app-state="[[appState_]]">
+  <loading-page hidden="[[scannersLoaded_]]" app-state="[[appState_]]"
+      on-retry-click="onRetryClick_" on-learn-more-click="onLearnMoreClick_">
   </loading-page>
   <div id="panelContainer" hidden="[[!scannersLoaded_]]">
     <div id="leftPanel">

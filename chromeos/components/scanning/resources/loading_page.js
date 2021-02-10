@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
@@ -37,5 +38,15 @@ Polymer({
   /** @private */
   onAppStateChange_() {
     this.noScannersAvailable_ = this.appState === AppState.NO_SCANNERS;
+  },
+
+  /** @private */
+  onRetryClick_() {
+    this.fire('retry-click');
+  },
+
+  /** @private */
+  onLearnMoreClick_() {
+    this.fire('learn-more-click');
   },
 });

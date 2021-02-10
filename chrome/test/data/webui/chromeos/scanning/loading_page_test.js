@@ -38,4 +38,28 @@ export function loadingPageTest() {
     assertTrue(isVisible(
         /** @type {!HTMLElement} */ (loadingPage.$$('#noScannersDiv'))));
   });
+
+  test('retryClick', () => {
+    loadingPage.appState = AppState.NO_SCANNERS;
+
+    let retryEventFired = false;
+    loadingPage.addEventListener('retry-click', function() {
+      retryEventFired = true;
+    });
+
+    loadingPage.$$('#retryButton').click();
+    assertTrue(retryEventFired);
+  });
+
+  test('learnMoreClick', () => {
+    loadingPage.appState = AppState.NO_SCANNERS;
+
+    let learnMoreEventFired = false;
+    loadingPage.addEventListener('learn-more-click', function() {
+      learnMoreEventFired = true;
+    });
+
+    loadingPage.$$('#learnMoreButton').click();
+    assertTrue(learnMoreEventFired);
+  });
 }

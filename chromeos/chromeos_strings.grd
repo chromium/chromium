@@ -615,6 +615,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_NO_SCANNERS_SUBTEXT" desc="The subtext displayed when there are no available scanners found for scanning">
         Make sure the scanner is turned on and connected
       </message>
+      <message name="IDS_SCANNING_APP_LEARN_MORE_BUTTON_LABEL" desc="The label for the button that leads to a help support article to learn more about scanning.">
+        Learn more
+      </message>
+      <message name="IDS_SCANNING_APP_RETRY_BUTTON_LABEL" desc="The label for the button that retries searching for available scanners.">
+        Retry
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

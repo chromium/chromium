@@ -33,6 +33,10 @@
     margin-top: 12px;
     width: 300px;
   }
+
+  #buttonDiv {
+    margin-top: 32px;
+  }
 </style>
 <div id="loadingContainer">
   <div id="loadingDiv" hidden="[[noScannersAvailable_]]">
@@ -42,5 +46,15 @@
   <div id="noScannersDiv" hidden="[[!noScannersAvailable_]]">
     <h1>[[i18n('noScannersText')]]</h1>
     <span id="noScannersSubtext">[[i18n('noScannersSubtext')]]</span>
+    <div id="buttonDiv">
+      <cr-button id="learnMoreButton" class="cancel-button"
+          on-click="onLearnMoreClick_">
+        [[i18n('learnMoreButtonLabel')]]
+      </cr-button>
+      <cr-button id="retryButton" class="action-button"
+          on-click="onRetryClick_">
+        [[i18n('retryButtonLabel')]]
+      </cr-button>
+    </div>
   </div>
 </div>
