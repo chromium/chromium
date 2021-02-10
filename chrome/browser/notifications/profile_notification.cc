@@ -44,6 +44,13 @@ ProfileNotification::ProfileNotification(
     notification_.set_profile_id(
         multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail());
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/2673648): Add a stable identifier to the
+  // notification that allows Lacros to be launched into the correct profile if
+  // it is not running.
+
+  // On Lacros notifications should not keep the browser alive, as they are
+  // persisted by the OS in a hidden tray.
 #else
   // These keepalives prevent the browser process from shutting down when
   // the last browser window is closed and there are open notifications. It's
