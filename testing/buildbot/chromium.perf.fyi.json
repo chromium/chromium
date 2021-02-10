@@ -285,13 +285,13 @@
           "--test-shard-map-filename=lacros-eve-perf-fyi_map.json",
           "--remote=variable_chromeos_device_hostname"
         ],
-        "isolate_name": "performance_test_suite",
+        "isolate_name": "performance_test_suite_eve",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite",
+        "name": "performance_test_suite_eve",
         "override_compile_targets": [
-          "performance_test_suite"
+          "performance_test_suite_eve"
         ],
         "swarming": {
           "can_use_on_swarming_builders": true,

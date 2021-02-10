@@ -363,7 +363,7 @@ class TelemetryCommandGenerator(object):
     Returns:
       list of strings, the executable and its arguments.
     """
-    return ([sys.executable, self._options.executable] +
+    return ([sys.executable] + self._options.executable.split(' ') +
             [self.benchmark] +
             self._generate_filter_args() +
             self._generate_also_run_disabled_tests_args() +

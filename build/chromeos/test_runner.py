@@ -740,11 +740,11 @@ def host_cmd(args, cmd_args):
 
   test_env = setup_env()
   if args.deploy_chrome:
+    # Mounting ash-chrome gives it enough disk space to not need stripping.
+    cros_run_test_cmd.extend(['--deploy-lacros'] if args.deploy_lacros else
+                             ['--deploy', '--mount', '--nostrip'])
+
     cros_run_test_cmd += [
-        '--deploy',
-        # Mounting ash-chrome gives it enough disk space to not need stripping.
-        '--mount',
-        '--nostrip',
         '--build-dir',
         os.path.abspath(args.path_to_outdir),
     ]
@@ -861,6 +861,10 @@ def main():
       action='store_true',
       help='Will deploy a locally built ash-chrome binary to the device before '
       'running the host-cmd.')
+  host_cmd_parser.add_argument(
+      '--deploy-lacros',
+      action='store_true',
+      help='Deploy a lacros-chrome instead of ash-chrome.')
 
   # GTest args.
   # TODO(bpastene): Rename 'vm-test' arg to 'gtest'.

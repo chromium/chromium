@@ -279,7 +279,7 @@ FYI_BUILDERS = {
         'tests': [
             {
                 'isolate':
-                'performance_test_suite',
+                'performance_test_suite_eve',
                 'extra_args': [
                     # The magic hostname that resolves to a CrOS device in the test lab
                     '--remote=variable_chromeos_device_hostname',

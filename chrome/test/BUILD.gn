@@ -45,6 +45,10 @@ import("//ui/views/features.gni")
 import("//ui/webui/webui_features.gni")
 import("//v8/gni/v8.gni")
 
+if (is_chromeos) {
+  import("//build/config/chromeos/rules.gni")
+}
+
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
 if (is_android) {
@@ -3336,42 +3340,70 @@ group("ct_telemetry_perf_tests_without_chrome") {
 
 # New target that will replace telemetry_perf_tests when testing
 # is done.
-script_test("performance_test_suite") {
-  script = "//testing/scripts/run_performance_tests.py"
-  args = [ "../../tools/perf/run_benchmark" ]
+template("performance_test_suite_template") {
+  forward_variables_from(invoker, [ "override_board" ])
+  script_test(target_name) {
+    script = "//testing/scripts/run_performance_tests.py"
+    if (is_chromeos_device) {
+      if (defined(override_board)) {
+        args = [ "bin/cros_update_wrapper_${override_board} -- ../../tools/perf/run_benchmark" ]
+      } else {
+        args = [ "bin/cros_update_wrapper -- ../../tools/perf/run_benchmark" ]
+      }
+    } else {
+      args = [ "../../tools/perf/run_benchmark" ]
+    }
 
-  data_deps = [
-    "//base:base_perftests",
-    "//chrome/test:telemetry_perf_tests",
-    "//components:components_perftests",
-    "//components/tracing:tracing_perftests",
-    "//gpu:command_buffer_perftests",
-    "//gpu:gpu_perftests",
-    "//media:media_perftests",
-    "//testing:run_perf_test",
-  ]
-
-  if (build_dawn_tests && !is_chromeos_lacros) {
-    data_deps += [ "//third_party/dawn/src/tests:dawn_perf_tests" ]
-  }
-
-  if (!is_chromeos_lacros) {
-    data_deps += [ "//third_party/angle/src/tests:angle_perftests" ]
-  }
-
-  if (!is_android && !is_fuchsia) {
-    data_deps += [
-      "//chrome/test:load_library_perf_tests",
-      "//ui/views:views_perftests",
+    data_deps = [
+      "//base:base_perftests",
+      "//chrome/test:telemetry_perf_tests",
+      "//components:components_perftests",
+      "//components/tracing:tracing_perftests",
+      "//gpu:command_buffer_perftests",
+      "//gpu:gpu_perftests",
+      "//media:media_perftests",
+      "//testing:run_perf_test",
     ]
-  }
 
-  if (!is_android) {
-    data_deps += [ "//chrome/test:performance_browser_tests" ]
-  }
+    if (build_dawn_tests && !is_chromeos_lacros) {
+      data_deps += [ "//third_party/dawn/src/tests:dawn_perf_tests" ]
+    }
 
-  if (!is_ios && !is_fuchsia && !is_android) {
-    data_deps += [ "//net:net_perftests" ]
+    if (!is_chromeos_lacros) {
+      data_deps += [ "//third_party/angle/src/tests:angle_perftests" ]
+    }
+
+    if (!is_android && !is_fuchsia) {
+      data_deps += [
+        "//chrome/test:load_library_perf_tests",
+        "//ui/views:views_perftests",
+      ]
+    }
+
+    if (!is_android) {
+      data_deps += [ "//chrome/test:performance_browser_tests" ]
+    }
+
+    if (!is_ios && !is_fuchsia && !is_android) {
+      data_deps += [ "//net:net_perftests" ]
+    }
+  }
+}
+
+performance_test_suite_template("performance_test_suite") {
+}
+
+# Generate performance_test_suite_${board} targets.
+# These set --board to ${board} instead of deriving it from the target.
+# This is useful for Lacros, where the generic build is deployed to
+# many different targets.
+if (is_chromeos_device && cros_boards != "") {
+  foreach(_board, string_split(cros_boards, ":")) {
+    _board_underscore = string_replace(_board, "-", "_")
+    performance_test_suite_template(
+        "performance_test_suite_${_board_underscore}") {
+      override_board = _board
+    }
   }
 }
 

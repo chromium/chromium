@@ -1439,6 +1439,10 @@
     "label": "//chrome/test:performance_test_suite",
     "type": "generated_script",
   },
+  "performance_test_suite_eve": {
+    "label": "//chrome/test:performance_test_suite_eve",
+    "type": "generated_script",
+  },
   "performance_webview_test_suite": {
     "args": [
       "remove",
