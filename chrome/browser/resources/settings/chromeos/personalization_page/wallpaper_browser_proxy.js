@@ -4,6 +4,7 @@
 
 // clang-format off
 // #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+// #import {WallpaperCollection} from './wallpaper_constants.m.js';
 // clang-format on
 
 cr.define('settings', function() {
@@ -21,6 +22,12 @@ cr.define('settings', function() {
     isWallpaperPolicyControlled() {}
 
     openWallpaperManager() {}
+
+    /**
+     * @return {!Promise<?Array<!WallpaperCollection>>} Returns a promise to
+     * an array of wallpaper collections. Will reject with null on error.
+     */
+    fetchWallpaperCollections() {}
   }
 
   /**
@@ -40,6 +47,11 @@ cr.define('settings', function() {
     /** @override */
     openWallpaperManager() {
       chrome.send('openWallpaperManager');
+    }
+
+    /** @override */
+    fetchWallpaperCollections() {
+      return cr.sendWithPromise('fetchWallpaperCollections');
     }
   }
 

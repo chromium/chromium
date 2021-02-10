@@ -256,6 +256,8 @@ void PersonalizationSection::AddLoadTimeData(
        IDS_SETTINGS_PHOTO_DISCARD_ACCESSIBLE_TEXT},
       {"photoModeAccessibleText", IDS_SETTINGS_PHOTO_MODE_ACCESSIBLE_TEXT},
       {"videoModeAccessibleText", IDS_SETTINGS_VIDEO_MODE_ACCESSIBLE_TEXT},
+      // TODO(b/178399962) finalize error string for WallpaperWebUI.
+      {"wallpaperCollectionsError", IDS_WALLPAPER_MANAGER_NETWORK_ERROR},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

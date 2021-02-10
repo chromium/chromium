@@ -52,6 +52,7 @@ import './multidevice_page/multidevice_page.m.js';
 import '../prefs/prefs.m.js';
 import './personalization_page/personalization_page.m.js';
 import './personalization_page/change_picture.m.js';
+import './personalization_page/wallpaper_subpage.m.js';
 import './os_a11y_page/tts_subpage.m.js';
 import './os_people_page/account_manager.m.js';
 import './parental_controls_page/parental_controls_page.m.js';

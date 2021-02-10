@@ -231,6 +231,26 @@ TEST_F(
       mocha.run();
     });
 
+// eslint-disable-next-line no-var
+var OSSettingsWallpaperSubpageV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/wallpaper_subpage_test.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat(
+          ['chromeos::features::kWallpaperWebUI']),
+    };
+  }
+};
+
+TEST_F('OSSettingsWallpaperSubpageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
  ['AmbientModePage', 'ambient_mode_page_test.m.js'],

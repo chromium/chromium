@@ -1,14 +1,37 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="../personalization_page/wallpaper_browser_proxy.html">
+<link rel="import" href="wallpaper_browser_proxy.html">
+<link rel="import" href="wallpaper_constants.html">
 <link rel="import" href="../../settings_shared_css.html">
 
 <dom-module id="settings-wallpaper-page">
   <template>
     <style include="cr-shared-style settings-shared">
+      paper-spinner-lite {
+        display: block;
+        height: 28px;
+        margin: 150px auto;
+        width: 28px;
+      }
     </style>
+    <paper-spinner-lite active="[[loading_]]"
+        hidden="[[!loading_]]">
+    </paper-spinner-lite>
+    <p hidden="[[!error_]]" id="error">$i18n{wallpaperCollectionsError}</p>
+    <template is="dom-if"
+        if="[[success_]]">
+      <iron-list items="[[collections_]]">
+        <template>
+          <p class="wallpaper-collection-title"
+              data-id$="[[item.id]]">
+            [[item.name]]
+          </p>
+        </template>
+      </iron-list>
+    </template>
   </template>
   <script src="wallpaper_subpage.js"></script>
 </dom-module>

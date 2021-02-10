@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
     ":change_picture",
     ":change_picture_browser_proxy",
     ":personalization_page",
+    ":wallpaper_constants",
     ":wallpaper_subpage",
   ]
 }
@@ -55,14 +56,22 @@ js_library("personalization_page") {
 }
 
 js_library("wallpaper_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
+  deps = [
+    ":wallpaper_constants",
+    "//ui/webui/resources/js:cr",
+  ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("wallpaper_constants") {
 }
 
 js_library("wallpaper_subpage") {
   deps = [
     ":wallpaper_browser_proxy",
+    ":wallpaper_constants",
     "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
   ]
 }
 
@@ -73,6 +82,7 @@ js_type_check("closure_compile_module") {
     ":change_picture_browser_proxy.m",
     ":personalization_page.m",
     ":wallpaper_browser_proxy.m",
+    ":wallpaper_constants.m",
     ":wallpaper_subpage.m",
   ]
 }
@@ -124,7 +134,13 @@ js_library("personalization_page.m") {
 
 js_library("wallpaper_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_browser_proxy.m.js" ]
+  deps = [ ":wallpaper_constants.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("wallpaper_constants.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_constants.m.js" ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -132,7 +148,9 @@ js_library("wallpaper_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_subpage.m.js" ]
   deps = [
     ":wallpaper_browser_proxy.m",
+    ":wallpaper_constants.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":wallpaper_subpage_module" ]
 }
@@ -180,6 +198,7 @@ js_modulizer("modulize") {
   input_files = [
     "change_picture_browser_proxy.js",
     "wallpaper_browser_proxy.js",
+    "wallpaper_constants.js",
   ]
   namespace_rewrites = os_settings_namespace_rewrites
 }
