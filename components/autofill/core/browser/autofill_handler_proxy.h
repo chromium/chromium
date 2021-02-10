@@ -18,7 +18,7 @@ class AutofillHandlerProxy : public AutofillHandler {
  public:
   AutofillHandlerProxy(
       AutofillDriver* driver,
-      LogManager* log_manager,
+      AutofillClient* client,
       AutofillProvider* provider,
       AutofillHandler::AutofillDownloadManagerState enable_download_manager);
   ~AutofillHandlerProxy() override;

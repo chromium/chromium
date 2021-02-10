@@ -69,7 +69,7 @@ ContentAutofillDriver::ContentAutofillDriver(
   // AutofillManager isn't used if provider is valid, Autofill provider is
   // currently used by Android WebView only.
   if (provider) {
-    SetAutofillProvider(provider, enable_download_manager);
+    SetAutofillProvider(provider, client, enable_download_manager);
   } else {
     SetAutofillManager(std::make_unique<AutofillManager>(
         this, client, app_locale, enable_download_manager));
@@ -402,9 +402,10 @@ void ContentAutofillDriver::RemoveHandler(
 
 void ContentAutofillDriver::SetAutofillProvider(
     AutofillProvider* provider,
+    AutofillClient* client,
     AutofillHandler::AutofillDownloadManagerState enable_download_manager) {
   autofill_handler_ = std::make_unique<AutofillHandlerProxy>(
-      this, log_manager_, provider, enable_download_manager);
+      this, client, provider, enable_download_manager);
   GetAutofillAgent()->SetUserGestureRequired(false);
   GetAutofillAgent()->SetSecureContextRequired(true);
   GetAutofillAgent()->SetFocusRequiresScroll(false);
@@ -449,9 +450,11 @@ void ContentAutofillDriver::ReportAutofillWebOTPMetrics(
 }
 
 void ContentAutofillDriver::SetAutofillProviderForTesting(
-    AutofillProvider* provider) {
-  SetAutofillProvider(provider, AutofillHandler::AutofillDownloadManagerState::
-                                    DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+    AutofillProvider* provider,
+    AutofillClient* client) {
+  SetAutofillProvider(provider, client,
+                      AutofillHandler::AutofillDownloadManagerState::
+                          DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
   // AutofillManager isn't used if provider is valid.
   autofill_manager_ = nullptr;
 }

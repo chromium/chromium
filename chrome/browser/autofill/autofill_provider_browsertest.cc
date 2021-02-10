@@ -121,7 +121,8 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
         ContentAutofillDriverFactory::FromWebContents(web_contents);
     ContentAutofillDriver* driver =
         factory->DriverForFrame(web_contents->GetMainFrame());
-    driver->SetAutofillProviderForTesting(autofill_provider_.get());
+    driver->SetAutofillProviderForTesting(autofill_provider_.get(),
+                                          autofill_client_.get());
   }
 
   void TearDownOnMainThread() override {

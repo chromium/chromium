@@ -18,7 +18,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -42,7 +41,6 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
-#include "components/translate/core/browser/translate_driver.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
@@ -58,7 +56,6 @@ class AutofillProfile;
 class AutofillType;
 class CreditCard;
 class FormStructureBrowserTest;
-class LogManager;
 
 struct FormData;
 struct FormFieldData;
@@ -77,11 +74,9 @@ enum class ValuePatternsMetric {
 
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
-class AutofillManager
-    : public AutofillHandler,
-      public AutocompleteHistoryManager::SuggestionsHandler,
-      public CreditCardAccessManager::Accessor,
-      public translate::TranslateDriver::LanguageDetectionObserver {
+class AutofillManager : public AutofillHandler,
+                        public AutocompleteHistoryManager::SuggestionsHandler,
+                        public CreditCardAccessManager::Accessor {
  public:
   AutofillManager(AutofillDriver* driver,
                   AutofillClient* client,
@@ -175,8 +170,6 @@ class AutofillManager
   // Returns true only if the previewed form should be cleared.
   bool ShouldClearPreviewedForm();
 
-  AutofillClient* client() { return client_; }
-
   CreditCardAccessManager* credit_card_access_manager() {
     return credit_card_access_manager_.get();
   }
@@ -225,16 +218,6 @@ class AutofillManager
       content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;
   void Reset() override;
-
-  // translate::TranslateDriver::LanguageDetectionObserver:
-  void OnTranslateDriverDestroyed(
-      translate::TranslateDriver* translate_driver) override;
-  // Invoked when the language has been detected by the Translate component.
-  // As this usually happens after Autofill has parsed the forms for the first
-  // time, the heuristics need to be re-run by this function in order to run
-  // use language-specific patterns.
-  void OnLanguageDetermined(
-      const translate::LanguageDetectionDetails& details) override;
 
   // AutocompleteHistoryManager::SuggestionsHandler:
   void OnSuggestionsReturned(
@@ -611,9 +594,6 @@ class AutofillManager
                                std::vector<Suggestion>* suggestions,
                                SuggestionsContext* context);
 
-  // Retrieves the page language from |client_|
-  LanguageCode GetCurrentPageLanguage() const override;
-
   // For each submitted field in the |form_structure|, it determines whether
   // |ADDRESS_HOME_STATE| is a possible matching type.
   // This method is intended to run matching type detection on the browser UI
@@ -638,23 +618,11 @@ class AutofillManager
   std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
-  AutofillClient* const client_;
-
   // Delegate to perform external processing (display, selection) on
   // our behalf.
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
 
-  LogManager* log_manager_;
-
   std::string app_locale_;
-
-  // Observer needed to re-run heuristics when the language has been detected.
-  base::ScopedObservation<
-      translate::TranslateDriver,
-      translate::TranslateDriver::LanguageDetectionObserver,
-      &translate::TranslateDriver::AddLanguageDetectionObserver,
-      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
-      translate_observation_{this};
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.  This is overridden by the AutofillManagerTest.

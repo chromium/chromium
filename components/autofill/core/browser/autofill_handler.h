@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/translate/core/browser/translate_driver.h"
 #include "components/version_info/channel.h"
 
 namespace gfx {
@@ -38,7 +40,9 @@ class LogManager;
 
 // This class defines the interface should be implemented by autofill
 // implementation in browser side to interact with AutofillDriver.
-class AutofillHandler : public AutofillDownloadManager::Observer {
+class AutofillHandler
+    : public AutofillDownloadManager::Observer,
+      public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   enum AutofillDownloadManagerState {
     ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
@@ -67,6 +71,8 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
       const std::vector<FormStructure*>& forms);
 
   ~AutofillHandler() override;
+
+  AutofillClient* client() const { return client_; }
 
   // Invoked when the value of textfield is changed.
   void OnTextFieldDidChange(const FormData& form,
@@ -136,6 +142,16 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
 
   // Resets cache.
   virtual void Reset();
+
+  // translate::TranslateDriver::LanguageDetectionObserver:
+  void OnTranslateDriverDestroyed(
+      translate::TranslateDriver* translate_driver) override;
+  // Invoked when the language has been detected by the Translate component.
+  // As this usually happens after Autofill has parsed the forms for the first
+  // time, the heuristics need to be re-run by this function in order to run
+  // use language-specific patterns.
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
 
   // Send the form |data| to renderer for the specified |action|.
   void SendFormDataToRenderer(int query_id,
@@ -213,9 +229,14 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
       std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>()>;
 
   AutofillHandler(AutofillDriver* driver,
-                  LogManager* log_manager,
+                  AutofillClient* client,
+                  AutofillDownloadManagerState enable_download_manager);
+  AutofillHandler(AutofillDriver* driver,
+                  AutofillClient* client,
                   AutofillDownloadManagerState enable_download_manager,
                   version_info::Channel channel);
+
+  LogManager* log_manager() { return log_manager_; }
 
   // For subclass to set the |callback| to create the FormInteractionsUkmLogger
   // as necessary. The |form_interactions_ukm_logger_| is instantiated
@@ -223,6 +244,9 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   // |form_interactions_ukm_logger_| for each navigation.
   void InitFormInteractionsUkmLogger(
       FormInteractionsUkmLoggerFactoryCallback callback);
+
+  // Retrieves the page language from |client_|
+  LanguageCode GetCurrentPageLanguage() const;
 
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
@@ -280,9 +304,6 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   FormStructure* ParseForm(const FormData& form,
                            const FormStructure* cached_form);
 
-  // Returns the page language, if available.
-  virtual LanguageCode GetCurrentPageLanguage() const;
-
   bool value_from_dynamic_change_form_ = false;
 
   std::map<FormRendererId, std::unique_ptr<FormStructure>>*
@@ -318,7 +339,17 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   // outlive this object.
   AutofillDriver* const driver_;
 
+  AutofillClient* const client_;
+
   LogManager* const log_manager_;
+
+  // Observer needed to re-run heuristics when the language has been detected.
+  base::ScopedObservation<
+      translate::TranslateDriver,
+      translate::TranslateDriver::LanguageDetectionObserver,
+      &translate::TranslateDriver::AddLanguageDetectionObserver,
+      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
+      translate_observation_{this};
 
   // Our copy of the form data.
   std::map<FormRendererId, std::unique_ptr<FormStructure>> form_structures_;
