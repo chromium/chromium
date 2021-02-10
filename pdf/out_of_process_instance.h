@@ -338,11 +338,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
     PINCH_END = 4
   };
 
-  // The scroll position for the last raster, before any transformations are
-  // applied.
-  gfx::PointF scroll_position_at_last_raster_;
-  // True if last bitmap was smaller than screen.
-  bool last_bitmap_smaller_ = false;
   // True if the plugin is full-page.
   bool full_ = false;
 
@@ -435,11 +430,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // request so that it can start the throbber. We will tell it again once the
   // document finishes loading.
   bool did_call_start_loading_ = false;
-
-  // If this is true, then don't scroll the plugin in response to DidChangeView
-  // messages. This will be true when the extension page is in the process of
-  // zooming the plugin so that flickering doesn't occur while zooming.
-  bool stop_scrolling_ = false;
 
   bool edit_mode_ = false;
 

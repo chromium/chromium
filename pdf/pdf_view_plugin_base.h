@@ -153,8 +153,25 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   float device_scale() const { return device_scale_; }
 
+  bool last_bitmap_smaller() const { return last_bitmap_smaller_; }
+  void set_last_bitmap_smaller(bool last_bitmap_smaller) {
+    last_bitmap_smaller_ = last_bitmap_smaller;
+  }
+
   void set_needs_reraster(bool needs_reraster) {
     needs_reraster_ = needs_reraster;
+  }
+
+  const gfx::PointF& scroll_position_at_last_raster() const {
+    return scroll_position_at_last_raster_;
+  }
+  void set_scroll_position_at_last_raster(const gfx::PointF& scroll_position) {
+    scroll_position_at_last_raster_ = scroll_position;
+  }
+
+  bool stop_scrolling() const { return stop_scrolling_; }
+  void set_stop_scrolling(bool stop_scrolling) {
+    stop_scrolling_ = stop_scrolling;
   }
 
   void set_received_viewport_message(bool received) {
@@ -231,8 +248,21 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Whether OnPaint() is in progress or not.
   bool in_paint_ = false;
 
+  // True if last bitmap was smaller than the screen.
+  bool last_bitmap_smaller_ = false;
+
   // True if we request a new bitmap rendering.
   bool needs_reraster_ = true;
+
+  // The scroll position for the last raster, before any transformations are
+  // applied.
+  gfx::PointF scroll_position_at_last_raster_;
+
+  // If this is true, then don't scroll the plugin in response to the messages
+  // from DidChangeView() or HandleUpdateScrollMessage(). This will be true when
+  // the extension page is in the process of zooming the plugin so that
+  // flickering doesn't occur while zooming.
+  bool stop_scrolling_ = false;
 
   // Whether the plugin has received a viewport changed message. Nothing should
   // be painted until this is received.

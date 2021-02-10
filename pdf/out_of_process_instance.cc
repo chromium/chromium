@@ -760,7 +760,7 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
   } else if (type == kJSLoadPreviewPageType) {
     HandleLoadPreviewPageMessage(dict);
   } else if (type == kJSStopScrollingType) {
-    stop_scrolling_ = true;
+    set_stop_scrolling(true);
   } else if (type == kJSGetThumbnailType) {
     HandleGetThumbnailMessage(dict);
   } else {
@@ -837,7 +837,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   UpdateGeometryOnViewChanged(RectFromPPRect(view.GetRect()),
                               view.GetDeviceScale());
 
-  if (is_print_preview_ && !stop_scrolling_) {
+  if (is_print_preview_ && !stop_scrolling()) {
     scroll_position_ = PointFromPPPoint(view.GetScrollOffset());
     UpdateScroll();
   }
@@ -847,7 +847,7 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
 }
 
 void OutOfProcessInstance::UpdateScroll() {
-  DCHECK(!stop_scrolling_);
+  DCHECK(!stop_scrolling());
   gfx::PointF scroll_position_float(scroll_position_.x(), scroll_position_.y());
   scroll_position_float = BoundScrollPositionToDocument(scroll_position_float);
   engine()->ScrolledToXPosition(scroll_position_float.x() * device_scale());
@@ -1743,7 +1743,7 @@ void OutOfProcessInstance::HandleUpdateScrollMessage(
     return;
   }
 
-  if (stop_scrolling_) {
+  if (stop_scrolling()) {
     return;
   }
 
@@ -1772,7 +1772,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     return;
   }
   set_received_viewport_message(true);
-  stop_scrolling_ = false;
+  set_stop_scrolling(false);
   PinchPhase pinch_phase =
       static_cast<PinchPhase>(dict.Get(pp::Var(kJSPinchPhase)).AsInt());
   double new_zoom = dict.Get(pp::Var(kJSZoom)).AsDouble();
@@ -1782,8 +1782,8 @@ void OutOfProcessInstance::HandleViewportMessage(
                               dict.Get(pp::Var(kJSYOffset)).AsDouble());
 
   if (pinch_phase == PINCH_START) {
-    scroll_position_at_last_raster_ = scroll_position;
-    last_bitmap_smaller_ = false;
+    set_scroll_position_at_last_raster(scroll_position);
+    set_last_bitmap_smaller(false);
     set_needs_reraster(false);
     return;
   }
@@ -1823,11 +1823,11 @@ void OutOfProcessInstance::HandleViewportMessage(
       paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
       scroll_delta =
           gfx::Vector2d(0, (scroll_position.y() -
-                            scroll_position_at_last_raster_.y() * zoom_ratio));
+                            scroll_position_at_last_raster().y() * zoom_ratio));
 
       pinch_vector = gfx::Vector2d();
-      last_bitmap_smaller_ = true;
-    } else if (last_bitmap_smaller_) {
+      set_last_bitmap_smaller(true);
+    } else if (last_bitmap_smaller()) {
       pinch_center = pp::Point((plugin_size().width() / device_scale()) / 2,
                                (plugin_size().height() / device_scale()) / 2);
       const double zoom_when_doc_covers_plugin_width =
@@ -1838,9 +1838,9 @@ void OutOfProcessInstance::HandleViewportMessage(
       pinch_vector = gfx::Vector2d();
       scroll_delta =
           gfx::Vector2d((scroll_position.x() -
-                         scroll_position_at_last_raster_.x() * zoom_ratio),
+                         scroll_position_at_last_raster().x() * zoom_ratio),
                         (scroll_position.y() -
-                         scroll_position_at_last_raster_.y() * zoom_ratio));
+                         scroll_position_at_last_raster().y() * zoom_ratio));
     }
 
     paint_manager().SetTransform(zoom_ratio, PointFromPPPoint(pinch_center),
@@ -1856,13 +1856,13 @@ void OutOfProcessInstance::HandleViewportMessage(
     // On pinch end the scale is again 1.f and we request a reraster
     // in the new position.
     paint_manager().ClearTransform();
-    last_bitmap_smaller_ = false;
+    set_last_bitmap_smaller(false);
     set_needs_reraster(true);
 
-    // If we're rerastering due to zooming out, we need to update
-    // |scroll_position_at_last_raster_|, in case the user continues the
-    // gesture by zooming in.
-    scroll_position_at_last_raster_ = scroll_position;
+    // If we're rerastering due to zooming out, we need to update the scroll
+    // position for the last raster, in case the user continues the gesture by
+    // zooming in.
+    set_scroll_position_at_last_raster(scroll_position);
   }
 
   // Bound the input parameters.
