@@ -9,41 +9,37 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
-/**
- * Test fixture for MultiDeviceSetup elements.
- * @constructor
- * @extends {PolymerTest}
- */
-function MultiDeviceSetupBrowserTest() {}
+// clang-format off
+[
+  ['Integration', 'integration_test.js', []],
+  ['SetupSucceededPage', 'setup_succeeded_page_test.js', []],
+  ['StartSetupPage', 'start_setup_page_test.js', []],
+]
+    .forEach(
+        test => registerTest('MultiDeviceSetup', ...test));
+// clang-format on
 
-MultiDeviceSetupBrowserTest.prototype = {
-  __proto__: Polymer2DeprecatedTest.prototype,
+function registerTest(componentName, testName, module, deps) {
+  const className = `${componentName}${testName}Test`;
+  this[className] = class extends Polymer2DeprecatedTest {
+    /** @override */
+    get browsePreload() {
+      return `chrome://multidevice-setup/`;
+    }
 
-  browsePreload: 'chrome://multidevice-setup/',
+    /** @override */
+    get extraLibraries() {
+      return [
+        ...Polymer2DeprecatedTest.prototype.extraLibraries,
+        '../test_browser_proxy.js',
+        '../fake_chrome_event.js',  // Necessary for
+                                    // fake_quick_unlock_private.js
+        '../settings/chromeos/fake_quick_unlock_private.js',
+        '../test_util.js',
+        'setup_succeeded_page_test.js',
+      ];
+    }
+  };
 
-  extraLibraries: [
-    ...Polymer2DeprecatedTest.prototype.extraLibraries,
-    '../test_browser_proxy.js',
-    '../fake_chrome_event.js',  // Necessary for fake_quick_unlock_private.js
-    '../settings/chromeos/fake_quick_unlock_private.js',
-    '../test_util.js',
-    'integration_test.js',
-    'setup_succeeded_page_test.js',
-    'start_setup_page_test.js',
-  ],
-};
-
-TEST_F('MultiDeviceSetupBrowserTest', 'Integration', function() {
-  multidevice_setup.registerIntegrationTests();
-  mocha.run();
-});
-
-TEST_F('MultiDeviceSetupBrowserTest', 'SetupSucceededPage', function() {
-  multidevice_setup.registerSetupSucceededPageTests();
-  mocha.run();
-});
-
-TEST_F('MultiDeviceSetupBrowserTest', 'StartSetupPage', function() {
-  multidevice_setup.registerStartSetupPageTests();
-  mocha.run();
-});
+  TEST_F(className, 'All', () => mocha.run());
+}
