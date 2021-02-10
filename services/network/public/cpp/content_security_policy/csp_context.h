@@ -71,6 +71,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
   // HTTPS) according to the CSP.
   bool ShouldModifyRequestUrlForCsp(bool is_subresource_or_form_submssion);
 
+  // This is declared virtual only so that it can be overridden for unit
+  // testing.
   virtual bool SchemeShouldBypassCSP(const base::StringPiece& scheme);
 
   // TODO(arthursonzogni): This is an interface. Stop storing object in it.

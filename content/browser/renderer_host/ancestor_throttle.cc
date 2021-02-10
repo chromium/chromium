@@ -134,10 +134,6 @@ class FrameAncestorCSPContext : public network::CSPContext {
         std::move(violation_params));
   }
 
-  bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override {
-    return csp_context_->SchemeShouldBypassCSP(scheme);
-  }
-
   void SanitizeDataForUseInCspViolation(
       bool is_redirect,
       network::mojom::CSPDirectiveName directive,

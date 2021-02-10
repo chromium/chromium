@@ -476,7 +476,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // network::CSPContext
   void ReportContentSecurityPolicyViolation(
       network::mojom::CSPViolationPtr violation_params) override;
-  bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override;
   void SanitizeDataForUseInCspViolation(
       bool is_redirect,
       network::mojom::CSPDirectiveName directive,

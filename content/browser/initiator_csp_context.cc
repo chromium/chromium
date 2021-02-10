@@ -28,17 +28,6 @@ void InitiatorCSPContext::ReportContentSecurityPolicyViolation(
     initiator->SendViolationReport(std::move(violation));
 }
 
-bool InitiatorCSPContext::SchemeShouldBypassCSP(
-    const base::StringPiece& scheme) {
-  // TODO(andypaicu): RenderFrameHostImpl::SchemeShouldBypassCSP could be
-  // static except for the fact that it's virtual. It's weird to use
-  // the reporting RFH to do this check but overall harmless.
-  if (reporting_render_frame_host_impl_)
-    return reporting_render_frame_host_impl_->SchemeShouldBypassCSP(scheme);
-
-  return false;
-}
-
 void InitiatorCSPContext::SanitizeDataForUseInCspViolation(
     bool is_redirect,
     network::mojom::CSPDirectiveName directive,
