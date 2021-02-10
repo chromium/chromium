@@ -372,22 +372,8 @@ base::FilePath ResourceBundle::GetLocaleFilePath(
 
   base::FilePath locale_file_path;
   if (base::PathService::Get(ui::DIR_LOCALES, &locale_file_path)) {
-#if defined(OS_ANDROID)
-    if (locale_file_path.value().find("chromium_tests") == std::string::npos) {
-      std::string extracted_file_suffix =
-          base::android::BuildInfo::GetInstance()->extracted_file_suffix();
-      locale_file_path = locale_file_path.AppendASCII(
-          app_locale + kPakFileExtension + extracted_file_suffix);
-    } else {
-      // TODO(agrieve): Update tests to not side-load pak files and remove
-      //     this special-case. https://crbug.com/691719
-      locale_file_path =
-          locale_file_path.AppendASCII(app_locale + kPakFileExtension);
-    }
-#else
     locale_file_path =
         locale_file_path.AppendASCII(app_locale + kPakFileExtension);
-#endif
   }
 
   // Note: The delegate GetPathForLocalePack() override is currently only used

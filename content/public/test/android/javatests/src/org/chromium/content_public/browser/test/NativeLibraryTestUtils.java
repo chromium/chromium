@@ -8,8 +8,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.ui.resources.ResourceExtractor;
 
 /**
  * Provides test support for loading and dealing with native libraries.
@@ -40,12 +38,6 @@ public class NativeLibraryTestUtils {
     private static void nativeInitialization(boolean initBrowserProcess) {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
         if (initBrowserProcess) {
-            // Extract compressed resource paks.
-            ResourceExtractor resourceExtractor = ResourceExtractor.get();
-            resourceExtractor.setResultTraits(UiThreadTaskTraits.BOOTSTRAP);
-            resourceExtractor.startExtractingResources("en");
-            resourceExtractor.waitForCompletion();
-
             BrowserStartupController.getInstance().startBrowserProcessesSync(
                     LibraryProcessType.PROCESS_BROWSER, false);
         } else {

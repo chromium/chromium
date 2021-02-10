@@ -7,7 +7,6 @@ package org.chromium.ui.base;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
@@ -21,8 +20,7 @@ import java.util.Arrays;
  * This class provides the resource bundle related methods for the native
  * library.
  *
- * IMPORTANT: Clients that use {@link ResourceBundle} and/or
- * {@link org.chromium.ui.resources.ResourceExtractor} MUST call either
+ * IMPORTANT: Clients that use {@link ResourceBundle} MUST call either
  * {@link ResourceBundle#setAvailablePakLocales(String[], String[])} or
  * {@link ResourceBundle#setNoAvailableLocalePaks()} before calling the getters in this class.
  */
@@ -65,17 +63,13 @@ public final class ResourceBundle {
     }
 
     /**
-     * Return the list of available locales. For bundle builds this is the uncompressed locales list
-     * and for apk builds this is the compressed locales list.
+     * Return the list of available locales.
      * @return The correct locale list for this build.
      */
     public static String[] getAvailableLocales() {
         assert sCompressedLocales != null;
         assert sUncompressedLocales != null;
-        if (BundleUtils.isBundle()) {
-            return sUncompressedLocales;
-        }
-        return sCompressedLocales;
+        return sUncompressedLocales;
     }
 
     /**
@@ -120,6 +114,13 @@ public final class ResourceBundle {
         try (AssetFileDescriptor afd = manager.openNonAssetFd(assetPath)) {
             return assetPath;
         } catch (IOException e) {
+            // Fallback for apk targets.
+            // TODO(crbug.com/1176290): Remove the need for this fallback logic.
+            String fallbackPath = "assets/locales/" + locale + ".pak";
+            try (AssetFileDescriptor afd = manager.openNonAssetFd(fallbackPath)) {
+                return fallbackPath;
+            } catch (IOException e2) {
+            }
             if (logError) {
                 Log.e(TAG, "path=%s", assetPath, e);
             }

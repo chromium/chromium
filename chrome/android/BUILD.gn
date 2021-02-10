@@ -1838,7 +1838,7 @@ if (current_toolchain == default_toolchain) {
     }
 
     android_assets("${_variant}_locale_pak_assets") {
-      disable_compression = _is_bundle_module
+      disable_compression = true
       renaming_sources = []
       renaming_destinations = []
 
