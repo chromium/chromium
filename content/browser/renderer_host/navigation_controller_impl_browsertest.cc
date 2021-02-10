@@ -343,6 +343,10 @@ void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
   GURL url_in_redirect_chain = base_url_empty ? commit_url : base_url;
   EXPECT_EQ(entry->GetRedirectChain()[0], url_in_redirect_chain);
 
+  // The original request URL for loadDataWithBaseURL navigations will be the
+  // URL used for commit (the data URL/header).
+  EXPECT_EQ(entry->GetOriginalRequestURL(), commit_url);
+
   // 3) Now reload and make sure the renderer isn't killed.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   EXPECT_TRUE(shell()->web_contents()->GetMainFrame()->IsRenderFrameLive());
@@ -358,6 +362,10 @@ void NavigationControllerBrowserTest::RunLoadDataWithBaseURL(
 
   EXPECT_EQ(reload_entry->GetRedirectChain().size(), 1u);
   EXPECT_EQ(reload_entry->GetRedirectChain()[0], url_in_redirect_chain);
+
+  // The original request URL for loadDataWithBaseURL navigations will be the
+  // URL used for commit (the data URL/header).
+  EXPECT_EQ(entry->GetOriginalRequestURL(), commit_url);
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, LoadDataWithBaseURL) {
@@ -5695,8 +5703,13 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(entry->GetRedirectChain().size(), 2u);
   EXPECT_EQ(entry->GetRedirectChain()[0], redirecting_url);
   EXPECT_EQ(entry->GetRedirectChain()[1], final_url);
+
   // No replaced entry because it's not a client-side redirect.
   EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+  // The original request URL will be the first entry of redirect chain, which
+  // is the URL that initiated the server redirect.
+  EXPECT_EQ(entry->GetOriginalRequestURL(), redirecting_url);
 }
 
 // Verifies that FrameNavigationEntry's redirect chain is created and stored on
@@ -5789,6 +5802,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   GURL fragment_url(embedded_test_server()->GetURL("/title1.html#foo"));
@@ -5813,6 +5830,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a "real" client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   {
@@ -5838,6 +5859,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a "real" client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), fragment_url);
   }
 
   {
@@ -5858,6 +5883,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), fragment_url_2);
   }
 }
 
@@ -5883,6 +5912,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
@@ -5913,6 +5946,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a "real" client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), entry->GetRedirectChain()[0]);
   }
 
   {
@@ -5933,6 +5970,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), url_3);
   }
 }
 
@@ -5958,6 +5999,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -5990,6 +6035,13 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a "real" client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect. However due to the
+    // bug above this will actually result in a blank URL.
+    // TODO(https://crbug.com/1171210): Fix this. Also, figure out why this also
+    // happens when we didn't enter the "about:blank#blocked" part above?
+    EXPECT_EQ(entry->GetOriginalRequestURL(), GURL());
   }
 
   {
@@ -6010,6 +6062,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), url_3);
   }
 }
 
@@ -6035,6 +6091,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   {
@@ -6059,6 +6119,10 @@ IN_PROC_BROWSER_TEST_P(
     // The URL is saved as the "replaced entry" because it's a reload.
     ASSERT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(start_url, entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   {
@@ -6082,6 +6146,10 @@ IN_PROC_BROWSER_TEST_P(
     // The URL is saved as the "replaced entry" because it's a reload.
     ASSERT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(start_url, entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   {
@@ -6114,6 +6182,10 @@ IN_PROC_BROWSER_TEST_P(
     // The URL is saved as the "replaced entry" because it's a reload.
     ASSERT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(start_url, entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 }
 
@@ -6140,6 +6212,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -6224,6 +6300,10 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
   }
 
   GURL url_2(embedded_test_server()->GetURL("b.com", "/empty404.html"));
@@ -6237,13 +6317,17 @@ IN_PROC_BROWSER_TEST_P(
 
     // On renderer-initiated cross-site navigations with no redirects that end
     // up in error pages, the redirect chain contains the error page URL.
-    // TODO(https://crbug.com/1171237): Should this be the commit URL (url_2)
-    // instead?
+    // TODO(https://crbug.com/1171237): This should be the commit URL (url_2)
+    // instead.
     EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
     EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kUnreachableWebDataURL));
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL on navigations that end up in an error page will
+    // be the URL of the page that failed to load.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), url_2);
   }
 
   {
@@ -6262,6 +6346,109 @@ IN_PROC_BROWSER_TEST_P(
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL on navigations that end up in an error page will
+    // be the URL of the page that failed to load.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), url_3);
+  }
+}
+
+// Checks the contents of the redirect chain after a browser-initiated
+// navigation that server-redirects to an error page.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    FrameNavigationEntry_ServerRedirectToErrorPage_BrowserInitiated) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  GURL server_redirecting_url(
+      embedded_test_server()->GetURL("/server-redirect?/empty404.html"));
+
+  // Browser-initiated cross-site navigation that server-redirects to an empty
+  // 404 page, which would result in an error page.
+  GURL fail_url(embedded_test_server()->GetURL("/empty404.html"));
+  EXPECT_FALSE(NavigateToURL(shell(), fail_url));
+
+  EXPECT_EQ(1, controller.GetEntryCount());
+  NavigationEntry* entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(fail_url, entry->GetURL());
+
+  // On navigations that end up in error pages, the redirect chain only
+  // contains the error page URL, even if the navigation went through server
+  // redirects.
+  // TODO(https://crbug.com/1171237): This should be the commit URL (fail_url)
+  // instead.
+  EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
+  EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kUnreachableWebDataURL));
+
+  // No replaced entry because it's not a client-side redirect.
+  EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+  // The original request URL on navigations that end up in an error page will
+  // be the URL of the page that failed to load even if the navigation went
+  // through server redirects.
+  EXPECT_EQ(entry->GetOriginalRequestURL(), fail_url);
+}
+
+// Checks the contents of the redirect chain after a renderer-initiated
+// navigation that server-redirects to an error page.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    FrameNavigationEntry_ServerRedirectToErrorPage_RendererInitiated) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Navigate the main frame to a normal URL that won't cause any redirects, so
+  // that we can do a renderer-initiated navigation after this.
+  GURL start_url(embedded_test_server()->GetURL("/title1.html"));
+
+  {
+    EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+    ASSERT_EQ(1, controller.GetEntryCount());
+    NavigationEntry* entry = controller.GetLastCommittedEntry();
+    ASSERT_EQ(start_url, entry->GetURL());
+    // The redirect chain contains only the URL we navigated to.
+    EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
+    EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
+
+    // No replaced entry because it's not a client-side redirect.
+    EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL will be the first entry of redirect chain, which
+    // is also the final URL.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), start_url);
+  }
+
+  {
+    // Renderer-initiated cross-site navigation that server-redirects to an
+    // empty 404 page, which would result in an error page. Note that since this
+    // is a script-initiated navigation, it will be marked as a client redirect
+    // too.
+    GURL server_redirecting_url(
+        embedded_test_server()->GetURL("/server-redirect?/empty404.html"));
+    GURL fail_url(embedded_test_server()->GetURL("/empty404.html"));
+    EXPECT_FALSE(NavigateToURLFromRenderer(shell(), server_redirecting_url));
+
+    EXPECT_EQ(2, controller.GetEntryCount());
+    NavigationEntry* entry = controller.GetLastCommittedEntry();
+    EXPECT_EQ(fail_url, entry->GetURL());
+
+    // On navigations that end up in error pages, the redirect chain only
+    // contains the error page URL, even if the navigation went through client
+    // and server redirects.
+    // TODO(https://crbug.com/1171237): This should be the commit URL (fail_url)
+    // instead.
+    EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
+    EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kUnreachableWebDataURL));
+
+    // No replaced entry because it's not a client-side redirect.
+    EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
+
+    // The original request URL on navigations that end up in an error page will
+    // be the URL of the page that failed to load even if the navigation went
+    // through client and server redirects.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), fail_url);
   }
 }
 
@@ -6305,6 +6492,10 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(client_redirecting_url,
               entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirecting_url);
   }
 
   {
@@ -6331,6 +6522,10 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(client_redirecting_url,
               entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), final_url);
   }
 }
 
@@ -6375,6 +6570,10 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(client_redirecting_url,
               entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirecting_url);
   }
 
   {
@@ -6400,6 +6599,10 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(client_redirecting_url,
               entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), final_url);
   }
 }
 
@@ -6444,6 +6647,10 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(client_redirecting_url,
               entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirecting_url);
   }
 }
 
@@ -6491,6 +6698,10 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_TRUE(entry->GetReplacedEntryData().has_value());
     EXPECT_EQ(client_redirecting_url,
               entry->GetReplacedEntryData()->first_committed_url);
+
+    // The original request URL will be the first entry of redirect chain,
+    // which is the URL that initiated the client redirect.
+    EXPECT_EQ(entry->GetOriginalRequestURL(), client_redirecting_url);
   }
 }
 
