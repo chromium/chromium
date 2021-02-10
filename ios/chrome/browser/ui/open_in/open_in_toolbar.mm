@@ -40,6 +40,9 @@ const CGFloat kTopBorderHeight = 0.5f;
 // The line used as the border at the top of the toolbar.
 @property(nonatomic, strong, readonly) UIView* topBorder;
 
+// The bottomAnchor constraint of the openButton.
+@property(nonatomic, strong) NSLayoutConstraint* openButtonBottomConstraint;
+
 @end
 
 @implementation OpenInToolbar
@@ -107,9 +110,8 @@ const CGFloat kTopBorderHeight = 0.5f;
   return topBorder;
 }
 
-#pragma mark UIView
-
-- (void)didMoveToSuperview {
+// Helper to update constraints.
+- (void)updateViewConstraints {
   if (!self.superview)
     return;
   NamedGuide* guide = [NamedGuide guideWithName:kSecondaryToolbarGuide
@@ -119,14 +121,29 @@ const CGFloat kTopBorderHeight = 0.5f;
     [self.trailingAnchor constraintEqualToAnchor:self.superview.trailingAnchor],
     [self.bottomAnchor constraintEqualToAnchor:self.superview.bottomAnchor],
   ]];
+
+  self.openButtonBottomConstraint.active = NO;
   if (guide) {
-    [self.openButton.bottomAnchor constraintEqualToAnchor:guide.topAnchor]
-        .active = YES;
+    self.openButtonBottomConstraint =
+        [self.openButton.bottomAnchor constraintEqualToAnchor:guide.topAnchor];
   } else {
-    [self.openButton.bottomAnchor
-        constraintEqualToAnchor:self.superview.safeAreaLayoutGuide.bottomAnchor]
-        .active = YES;
+    self.openButtonBottomConstraint = [self.openButton.bottomAnchor
+        constraintEqualToAnchor:self.superview.safeAreaLayoutGuide
+                                    .bottomAnchor];
   }
+  self.self.openButtonBottomConstraint.active = YES;
+}
+
+#pragma mark UIView
+
+- (void)didMoveToSuperview {
+  [super didMoveToSuperview];
+  [self updateViewConstraints];
+}
+
+- (void)didMoveToWindow {
+  [super didMoveToWindow];
+  [self updateViewConstraints];
 }
 
 @end
