@@ -961,39 +961,10 @@ TEST_F(PageInfoTest, LegacyTLS) {
   visible_security_state_.connection_status = status;
   visible_security_state_.connection_info_initialized = true;
   visible_security_state_.connection_used_legacy_tls = true;
-  visible_security_state_.should_suppress_legacy_tls_warning = false;
 
   SetDefaultUIExpectations(mock_ui());
 
   EXPECT_EQ(PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS,
-            page_info()->site_connection_status());
-  EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_CERT,
-            page_info()->site_identity_status());
-}
-
-// Tests that the site connection status is not set to LEGACY_TLS when a site
-// using legacy TLS is marked as a control site in the visible security state,
-// when the kLegacyTLSWarnings feature is enabled.
-TEST_F(PageInfoTest, LegacyTLSControlSite) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kLegacyTLSWarnings);
-
-  security_level_ = security_state::SECURE;
-  visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
-  visible_security_state_.certificate = cert();
-  visible_security_state_.cert_status = 0;
-  int status = 0;
-  status = SetSSLVersion(status, net::SSL_CONNECTION_VERSION_TLS1);
-  status = SetSSLVersion(status, CR_TLS_RSA_WITH_AES_256_CBC_SHA256);
-  visible_security_state_.connection_status = status;
-  visible_security_state_.connection_info_initialized = true;
-  visible_security_state_.connection_used_legacy_tls = true;
-  visible_security_state_.should_suppress_legacy_tls_warning = true;
-
-  SetDefaultUIExpectations(mock_ui());
-
-  EXPECT_EQ(PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED,
             page_info()->site_connection_status());
   EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_CERT,
             page_info()->site_identity_status());
@@ -1378,26 +1349,20 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
 TEST_F(PageInfoTest, LegacyTLSMetrics) {
   const struct TestCase {
     const bool connection_used_legacy_tls;
-    const bool should_suppress_legacy_tls_warning;
     const std::string histogram_suffix;
   } kTestCases[] = {
-      {true, false, "LegacyTLS_Triggered"},
-      {true, true, "LegacyTLS_NotTriggered"},
-      {false, false, "LegacyTLS_NotTriggered"},
+      {true, "LegacyTLS_Triggered"},
+      {false, "LegacyTLS_NotTriggered"},
   };
 
   const std::string kHistogramPrefix("Security.LegacyTLS.PageInfo.Action");
   const char kGenericHistogram[] = "WebsiteSettings.Action";
-
-  InitializeEmptyLegacyTLSConfig();
 
   for (const auto& test : kTestCases) {
     base::HistogramTester histograms;
     SetURL("https://example.test");
     visible_security_state_.connection_used_legacy_tls =
         test.connection_used_legacy_tls;
-    visible_security_state_.should_suppress_legacy_tls_warning =
-        test.should_suppress_legacy_tls_warning;
     ResetMockUI();
     ClearPageInfo();
     SetDefaultUIExpectations(mock_ui());
@@ -1426,33 +1391,24 @@ TEST_F(PageInfoTest, LegacyTLSMetrics) {
 TEST_F(PageInfoTest, LegacyTLSTimeOpenMetrics) {
   const struct TestCase {
     const bool connection_used_legacy_tls;
-    const bool should_suppress_legacy_tls_warning;
     const std::string legacy_tls_status_name;
     const PageInfo::PageInfoAction action;
   } kTestCases[] = {
       // PAGE_INFO_COUNT used as shorthand for "take no action".
-      {true, false, "LegacyTLS_Triggered", PageInfo::PAGE_INFO_COUNT},
-      {true, true, "LegacyTLS_NotTriggered", PageInfo::PAGE_INFO_COUNT},
-      {false, false, "LegacyTLS_NotTriggered", PageInfo::PAGE_INFO_COUNT},
-      {true, false, "LegacyTLS_Triggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {true, true, "LegacyTLS_NotTriggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {false, false, "LegacyTLS_NotTriggered",
+      {true, "LegacyTLS_Triggered", PageInfo::PAGE_INFO_COUNT},
+      {false, "LegacyTLS_NotTriggered", PageInfo::PAGE_INFO_COUNT},
+      {true, "LegacyTLS_Triggered", PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
+      {false, "LegacyTLS_NotTriggered",
        PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
   };
 
   const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
-
-  InitializeEmptyLegacyTLSConfig();
 
   for (const auto& test : kTestCases) {
     base::HistogramTester histograms;
     SetURL("https://example.test");
     visible_security_state_.connection_used_legacy_tls =
         test.connection_used_legacy_tls;
-    visible_security_state_.should_suppress_legacy_tls_warning =
-        test.should_suppress_legacy_tls_warning;
     ResetMockUI();
     ClearPageInfo();
     SetDefaultUIExpectations(mock_ui());

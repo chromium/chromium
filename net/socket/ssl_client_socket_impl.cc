@@ -1211,9 +1211,7 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
   // version.
   if (result == OK &&
       SSL_version(ssl_.get()) < context_->config().version_min_warn &&
-      base::FeatureList::IsEnabled(features::kLegacyTLSEnforced) &&
-      !context_->ssl_config_service()->ShouldSuppressLegacyTLSWarning(
-          host_and_port_.host())) {
+      base::FeatureList::IsEnabled(features::kLegacyTLSEnforced)) {
     server_cert_verify_result_.cert_status |= CERT_STATUS_LEGACY_TLS;
 
     // Only set the resulting net error if it hasn't been previously bypassed.

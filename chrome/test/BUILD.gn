@@ -3779,7 +3779,6 @@ test("unit_tests") {
     "../browser/ssl/insecure_sensitive_input_driver_unittest.cc",
     "../browser/ssl/security_state_tab_helper_unittest.cc",
     "../browser/ssl/ssl_config_service_manager_pref_unittest.cc",
-    "../browser/ssl/tls_deprecation_config_unittest.cc",
     "../browser/status_icons/status_icon_menu_model_unittest.cc",
     "../browser/status_icons/status_icon_unittest.cc",
     "../browser/status_icons/status_tray_unittest.cc",

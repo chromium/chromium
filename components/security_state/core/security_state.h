@@ -201,9 +201,6 @@ struct VisibleSecurityState {
   bool is_reader_mode;
   // True if the page was loaded over a legacy TLS version.
   bool connection_used_legacy_tls;
-  // True if the page should be excluded from a UI treatment for legacy TLS
-  // (used for control group in an experimental UI rollout).
-  bool should_suppress_legacy_tls_warning;
   // True if mixed forms should be treated as secure from the visible security
   // state perspective (for example, if a different warning is being shown for
   // them).
@@ -252,8 +249,7 @@ std::string GetSafetyTipHistogramName(const std::string& prefix,
                                       SafetyTipStatus safety_tip_status);
 
 // Returns whether the given VisibleSecurityState would trigger a legacy TLS
-// warning (i.e., uses legacy TLS and isn't in the control group), if the user
-// were in the appropriate field trial.
+// warning.
 bool GetLegacyTLSWarningStatus(
     const VisibleSecurityState& visible_security_state);
 

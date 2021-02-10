@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 
-#include "base/run_loop.h"
-#include "chrome/browser/ssl/tls_deprecation_config.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_config.h"
@@ -14,49 +11,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "services/network/public/mojom/network_service.mojom.h"
-#include "services/network/public/proto/tls_deprecation_config.pb.h"
 #include "url/gurl.h"
-
-void InitializeEmptyLegacyTLSConfig() {
-  auto config =
-      std::make_unique<chrome_browser_ssl::LegacyTLSExperimentConfig>();
-  config->set_version_id(1);
-  // Set browser-side config.
-  SetRemoteTLSDeprecationConfig(config->SerializeAsString());
-}
-
-void InitializeEmptyLegacyTLSConfigNetworkService(base::RunLoop* run_loop) {
-  auto config =
-      std::make_unique<chrome_browser_ssl::LegacyTLSExperimentConfig>();
-  config->set_version_id(1);
-  // Push config to network service.
-  content::GetNetworkService()->UpdateLegacyTLSConfig(
-      base::as_bytes(base::make_span(config->SerializeAsString())),
-      run_loop->QuitClosure());
-  run_loop->Run();
-}
-
-void InitializeLegacyTLSConfigWithControl() {
-  auto config =
-      std::make_unique<chrome_browser_ssl::LegacyTLSExperimentConfig>();
-  config->set_version_id(1);
-  config->add_control_site_hashes(kLegacyTlsControlUrlHash);
-  SetRemoteTLSDeprecationConfig(config->SerializeAsString());
-}
-
-void InitializeLegacyTLSConfigWithControlNetworkService(
-    base::RunLoop* run_loop) {
-  auto config =
-      std::make_unique<chrome_browser_ssl::LegacyTLSExperimentConfig>();
-  config->set_version_id(1);
-  config->add_control_site_hashes(kLegacyTlsControlUrlHash);
-  // Push config to network service.
-  content::GetNetworkService()->UpdateLegacyTLSConfig(
-      base::as_bytes(base::make_span(config->SerializeAsString())),
-      run_loop->QuitClosure());
-  run_loop->Run();
-}
 
 std::unique_ptr<content::NavigationSimulator> CreateTLSNavigation(
     const GURL& url,

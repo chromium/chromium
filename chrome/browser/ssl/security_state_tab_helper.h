@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -51,15 +50,6 @@ class SecurityStateTabHelper
 
   bool UsedPolicyInstalledCertificate() const;
   security_state::MaliciousContentStatus GetMaliciousContentStatus() const;
-
-  // Caches the legacy TLS warning suppression status for the duration of a page
-  // load (bound to a specific navigation ID) to ensure that we show consistent
-  // security UI (e.g., security indicator and page info). This is because the
-  // status depends on external state (a component loading from disk), which can
-  // cause inconsistent state across a page load if it isn't cached.
-  base::Optional<std::pair<int /* navigation entry ID */,
-                           bool /* should_suppress_legacy_tls_warning */>>
-      cached_should_suppress_legacy_tls_warning_;
 
   base::OnceClosure get_security_level_callback_for_tests_;
 

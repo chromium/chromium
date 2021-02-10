@@ -7,10 +7,6 @@
 
 #include <memory>
 
-namespace base {
-class RunLoop;
-}  // namespace base
-
 namespace content {
 class NavigationSimulator;
 class WebContents;
@@ -20,18 +16,6 @@ class GURL;
 
 const char kLegacyTLSHost[] = "example-nonsecure.test";
 const char kLegacyTLSURL[] = "https://example-nonsecure.test";
-// SHA-256 hash of kLegacyTLSURL for use in setting a control site in the
-// LegacyTLSExperimentConfig for Legacy TLS tests. Generated with
-// `echo -n "example-nonsecure.test" | openssl sha256`.
-const char kLegacyTlsControlUrlHash[] =
-    "aaa334d67e96314a14d5679b2309e72f96bf30f9fe9b218e5db3d57be8baa94c";
-
-void InitializeEmptyLegacyTLSConfig();
-void InitializeEmptyLegacyTLSConfigNetworkService(base::RunLoop* run_loop);
-
-void InitializeLegacyTLSConfigWithControl();
-void InitializeLegacyTLSConfigWithControlNetworkService(
-    base::RunLoop* run_loop);
 
 // Creates and starts a simulated navigation using the specified SSL protocol
 // version (e.g., net::SSL_CONNECTION_VERSION_TLS1_2).
