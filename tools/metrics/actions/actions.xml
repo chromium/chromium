@@ -27206,6 +27206,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WindowNaming_Cleared">
+  <owner>ellyjones@chromium.org</owner>
+  <description>
+    Logged when the user accepts the &quot;Name Window...&quot; prompt to clear
+    a custom name for a browser window.
+  </description>
+</action>
+
+<action name="WindowNaming_DialogShown">
+  <owner>ellyjones@chromium.org</owner>
+  <description>
+    Logged when the user opens the &quot;Name Window...&quot; prompt.
+  </description>
+</action>
+
+<action name="WindowNaming_Set">
+  <owner>ellyjones@chromium.org</owner>
+  <description>
+    Logged when the user accepts the &quot;Name Window...&quot; prompt to set a
+    custom name for a browser window.
+  </description>
+</action>
+
 <action name="WindowSelector_ActiveWindowChanged">
   <owner>tbuckley@chromium.org</owner>
   <description>

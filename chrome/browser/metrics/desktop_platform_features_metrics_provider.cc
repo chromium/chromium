@@ -11,6 +11,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -26,6 +28,14 @@ enum class DarkModeStatus {
   kDark = 2,
   kMaxValue = kDark,
 };
+
+bool AnyBrowserWindowHasName() {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (!browser->user_title().empty())
+      return true;
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -59,4 +69,6 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
       }
     }
   }
+
+  UMA_HISTOGRAM_BOOLEAN("Browser.AnyWindowHasName", AnyBrowserWindowHasName());
 }

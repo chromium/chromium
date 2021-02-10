@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -20,8 +21,13 @@ constexpr int kWindowNameFieldId = 1;
 
 void SetBrowserTitleFromTextfield(Browser* browser,
                                   ui::DialogModel* dialog_model) {
-  browser->SetWindowUserTitle(base::UTF16ToUTF8(
-      dialog_model->GetTextfieldByUniqueId(kWindowNameFieldId)->text()));
+  std::string text = base::UTF16ToUTF8(
+      dialog_model->GetTextfieldByUniqueId(kWindowNameFieldId)->text());
+  if (text.empty())
+    base::RecordAction(base::UserMetricsAction("WindowNaming_Cleared"));
+  else
+    base::RecordAction(base::UserMetricsAction("WindowNaming_Set"));
+  browser->SetWindowUserTitle(text);
 }
 
 std::unique_ptr<views::DialogDelegate> CreateWindowNamePrompt(
@@ -50,6 +56,8 @@ std::unique_ptr<views::DialogDelegate> CreateWindowNamePrompt(
 void DoShowWindowNamePrompt(Browser* browser,
                             gfx::NativeView anchor,
                             gfx::NativeWindow context) {
+  base::RecordAction(base::UserMetricsAction("WindowNaming_DialogShown"));
+
   auto prompt = CreateWindowNamePrompt(browser);
   prompt->SetOwnedByWidget(true);
   views::DialogDelegate::CreateDialogWidget(std::move(prompt), context, anchor)
