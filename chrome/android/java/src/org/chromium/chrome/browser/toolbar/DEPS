@@ -25,5 +25,8 @@ specific_include_rules = {
   ],
   'StartSurfaceToolbarView.java': [
     "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/HomeButton.java",
+  ],
+  'LocationBarModel.java': [
+    "+chrome/android/features/start_surface/public/java/src/org/chromium/chrome/features/start_surface/StartSurfaceConfiguration.java",
   ]
 }

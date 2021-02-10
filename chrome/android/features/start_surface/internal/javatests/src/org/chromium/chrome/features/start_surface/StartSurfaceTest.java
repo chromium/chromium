@@ -103,6 +103,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.HomeButton;
+import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -113,6 +114,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -1578,6 +1580,11 @@ public class StartSurfaceTest {
         assertEquals(
                 mActivityTestRule.getActivity().findViewById(R.id.toolbar_buttons).getVisibility(),
                 View.INVISIBLE);
+        ToolbarDataProvider toolbarDataProvider =
+                mActivityTestRule.getActivity().getToolbarManager().getLocationBarModelForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
+        });
 
         // Navigates the new created Tab.
         TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.setText("about:blank"));
@@ -1593,6 +1600,9 @@ public class StartSurfaceTest {
                 MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         waitForView(withId(R.id.voice_search_button));
         Assert.assertTrue(TextUtils.isEmpty(urlBar.getText()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
+        });
 
         // Navigates the Tab to show home button.
         TestThreadUtils.runOnUiThreadBlocking(() -> urlBar.setText("about:blank"));
@@ -1644,6 +1654,11 @@ public class StartSurfaceTest {
         assertEquals(
                 mActivityTestRule.getActivity().findViewById(R.id.toolbar_buttons).getVisibility(),
                 View.INVISIBLE);
+        ToolbarDataProvider toolbarDataProvider =
+                mActivityTestRule.getActivity().getToolbarManager().getLocationBarModelForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertTrue(TextUtils.equals(toolbarDataProvider.getCurrentUrl(), UrlConstants.NTP_URL));
+        });
 
         // Verifies that if the new created tab doesn't navigate, tapping back button will deleted
         // it from the TabModel.
@@ -1655,6 +1670,9 @@ public class StartSurfaceTest {
 
         // Back to the Start surface.
         pressBack();
+        if (Build.VERSION.SDK_INT >= P) {
+            pressBack();
+        }
         CriteriaHelper.pollUiThread(this::isOverviewVisible);
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
     }

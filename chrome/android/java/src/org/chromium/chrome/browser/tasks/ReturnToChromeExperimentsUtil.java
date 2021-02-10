@@ -245,6 +245,7 @@ public final class ReturnToChromeExperimentsUtil {
         if (focusOnOmnibox && tab != null) {
             tab.addObserver(observer);
             StartSurfaceUserData.setFocusOnOmnibox(tab, true);
+            StartSurfaceUserData.setCreatedAsNtp(tab);
         }
 
         if (params.getTransitionType() == PageTransition.AUTO_BOOKMARK) {

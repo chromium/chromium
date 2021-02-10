@@ -189,4 +189,15 @@ public class StartSurfaceConfiguration {
         }
         return false;
     }
+
+    /**
+     * @return Whether the given tab should be treated as chrome://newTab. This function returns
+     *         true only when {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, the tab is newly
+     *         created from the new Tab menu or "+" button, and it hasn't navigate to any URL yet.
+     */
+    public static boolean handleAsNtp(Tab tab) {
+        if (tab == null || tab.getUrl() == null) return false;
+
+        return tab.getUrl().isEmpty() && StartSurfaceUserData.getCreatedAsNtp(tab);
+    }
 }

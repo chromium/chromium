@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -204,7 +205,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public String getCurrentUrl() {
         // Provide NTP url instead of most recent tab url for searches in overview mode (when Start
         // Surface is enabled). .
-        if (isInOverviewAndShowingOmnibox()) {
+        if (isInOverviewAndShowingOmnibox() || StartSurfaceConfiguration.handleAsNtp(getTab())) {
             return UrlConstants.NTP_URL;
         }
 
