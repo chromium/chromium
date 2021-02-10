@@ -15,6 +15,8 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   StyleRuleCounterStyle(const StyleRuleCounterStyle&);
   ~StyleRuleCounterStyle();
 
+  int GetVersion() const { return version_; }
+
   AtomicString GetName() const { return name_; }
   const CSSValue* GetSystem() const { return system_; }
   const CSSValue* GetNegative() const { return negative_; }
@@ -27,19 +29,58 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   const CSSValue* GetAdditiveSymbols() const { return additive_symbols_; }
   const CSSValue* GetSpeakAs() const { return speak_as_; }
 
-  void SetName(const AtomicString& name) { name_ = name; }
-  void SetSystem(const CSSValue* system) { system_ = system; }
-  void SetNegative(const CSSValue* negative) { negative_ = negative; }
-  void SetPrefix(const CSSValue* prefix) { prefix_ = prefix; }
-  void SetSuffix(const CSSValue* suffix) { suffix_ = suffix; }
-  void SetRange(const CSSValue* range) { range_ = range; }
-  void SetPad(const CSSValue* pad) { pad_ = pad; }
-  void SetFallback(const CSSValue* fallback) { fallback_ = fallback; }
-  void SetSymbols(const CSSValue* symbols) { symbols_ = symbols; }
-  void SetAdditiveSymbols(const CSSValue* additive_symbols) {
-    additive_symbols_ = additive_symbols;
+  // Returns false if the setter fails due to invalid new value.
+  bool SetName(const AtomicString& name) {
+    // TODO(crbug.com/687225): Implement.
+    return false;
   }
-  void SetSpeakAs(const CSSValue* speak_as) { speak_as_ = speak_as; }
+  bool SetSystem(const CSSValue* system) {
+    // TODO(crbug.com/687225): Implement.
+    return false;
+  }
+  bool SetNegative(const CSSValue* negative) {
+    negative_ = negative;
+    ++version_;
+    return true;
+  }
+  bool SetPrefix(const CSSValue* prefix) {
+    prefix_ = prefix;
+    ++version_;
+    return true;
+  }
+  bool SetSuffix(const CSSValue* suffix) {
+    suffix_ = suffix;
+    ++version_;
+    return true;
+  }
+  bool SetRange(const CSSValue* range) {
+    range_ = range;
+    ++version_;
+    return true;
+  }
+  bool SetPad(const CSSValue* pad) {
+    pad_ = pad;
+    ++version_;
+    return true;
+  }
+  bool SetFallback(const CSSValue* fallback) {
+    fallback_ = fallback;
+    ++version_;
+    return true;
+  }
+  bool SetSymbols(const CSSValue* symbols) {
+    // TODO(crbug.com/687225): Implement.
+    return false;
+  }
+  bool SetAdditiveSymbols(const CSSValue* additive_symbols) {
+    // TODO(crbug.com/687225): Implement.
+    return false;
+  }
+  bool SetSpeakAs(const CSSValue* speak_as) {
+    speak_as_ = speak_as;
+    ++version_;
+    return true;
+  }
 
   bool HasFailedOrCanceledSubresources() const {
     // TODO(crbug.com/687225): Implement.
@@ -64,6 +105,9 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   Member<const CSSValue> symbols_;
   Member<const CSSValue> additive_symbols_;
   Member<const CSSValue> speak_as_;
+
+  // Tracks mutations due to setter functions.
+  int version_ = 0;
 };
 
 template <>

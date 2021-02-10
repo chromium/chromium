@@ -6,14 +6,14 @@
 [Exposed=Window, RuntimeEnabled=CSSAtRuleCounterStyle]
 interface CSSCounterStyleRule : CSSRule {
   attribute CSSOMString name;
-  attribute CSSOMString system;
-  attribute CSSOMString symbols;
-  attribute CSSOMString additiveSymbols;
-  attribute CSSOMString negative;
-  attribute CSSOMString prefix;
-  attribute CSSOMString suffix;
-  attribute CSSOMString range;
-  attribute CSSOMString pad;
-  attribute CSSOMString speakAs;
-  attribute CSSOMString fallback;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString system;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString symbols;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString additiveSymbols;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString negative;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString prefix;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString suffix;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString range;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString pad;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString speakAs;
+  [SetterCallWith=ExecutionContext] attribute CSSOMString fallback;
 };

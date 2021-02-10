@@ -2358,6 +2358,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   UpdateUseShadowTreesIfNeeded();
 
   GetStyleEngine().UpdateActiveStyle();
+  GetStyleEngine().UpdateCounterStyles();
   InvalidateStyleAndLayoutForFontUpdates();
   UpdateStyleInvalidationIfNeeded();
   UpdateStyle();

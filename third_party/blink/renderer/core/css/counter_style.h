@@ -114,6 +114,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   // The corresponding style rule in CSS.
   Member<const StyleRuleCounterStyle> style_rule_;
 
+  // Tracks mutations of |style_rule_|.
+  int style_rule_version_;
+
   // The actual system of the counter style with 'extends' resolved. The value
   // is kUnresolvedExtends temporarily before the resolution.
   CounterStyleSystem system_ = CounterStyleSystem::kSymbolic;

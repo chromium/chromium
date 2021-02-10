@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COUNTER_STYLE_RULE_H_
 
 #include "third_party/blink/renderer/core/css/css_rule.h"
+#include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
+class ExecutionContext;
 class StyleRuleCounterStyle;
 
 class CSSCounterStyleRule final : public CSSRule {
@@ -35,21 +37,25 @@ class CSSCounterStyleRule final : public CSSRule {
   String fallback() const;
 
   void setName(const String&);
-  void setSystem(const String&);
-  void setSymbols(const String&);
-  void setAdditiveSymbols(const String&);
-  void setNegative(const String&);
-  void setPrefix(const String&);
-  void setSuffix(const String&);
-  void setRange(const String&);
-  void setPad(const String&);
-  void setSpeakAs(const String&);
-  void setFallback(const String&);
+  void setSystem(const ExecutionContext*, const String&);
+  void setSymbols(const ExecutionContext*, const String&);
+  void setAdditiveSymbols(const ExecutionContext*, const String&);
+  void setNegative(const ExecutionContext*, const String&);
+  void setPrefix(const ExecutionContext*, const String&);
+  void setSuffix(const ExecutionContext*, const String&);
+  void setRange(const ExecutionContext*, const String&);
+  void setPad(const ExecutionContext*, const String&);
+  void setSpeakAs(const ExecutionContext*, const String&);
+  void setFallback(const ExecutionContext*, const String&);
 
   void Trace(Visitor*) const override;
 
  private:
   CSSRule::Type GetType() const override { return kCounterStyleRule; }
+
+  void SetterInternal(const ExecutionContext*,
+                      AtRuleDescriptorID,
+                      const String&);
 
   Member<StyleRuleCounterStyle> counter_style_rule_;
 };

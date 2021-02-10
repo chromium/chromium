@@ -546,13 +546,6 @@ void StyleEngine::UpdateActiveStyleSheets() {
     // Moving the initialization to other places causes test failures, which
     // needs investigation and fixing.
     CounterStyleMap::GetUACounterStyleMap();
-
-    if (counter_styles_need_update_) {
-      CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
-                                                 active_tree_scopes_);
-      CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
-      counter_styles_need_update_ = false;
-    }
   }
 
   probe::ActiveStyleSheetsUpdated(document_);
@@ -561,6 +554,16 @@ void StyleEngine::UpdateActiveStyleSheets() {
   document_scope_dirty_ = false;
   tree_scopes_removed_ = false;
   user_style_dirty_ = false;
+}
+
+void StyleEngine::UpdateCounterStyles() {
+  if (!counter_styles_need_update_)
+    return;
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
+  CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
+                                             active_tree_scopes_);
+  CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
+  counter_styles_need_update_ = false;
 }
 
 void StyleEngine::UpdateViewport() {

@@ -400,7 +400,7 @@ CounterStyle* CounterStyle::Create(const StyleRuleCounterStyle& rule) {
 }
 
 CounterStyle::CounterStyle(const StyleRuleCounterStyle& rule)
-    : style_rule_(rule) {
+    : style_rule_(rule), style_rule_version_(rule.GetVersion()) {
   if (const CSSValue* system = rule.GetSystem()) {
     system_ = ToCounterStyleSystemEnum(system);
 
@@ -685,7 +685,8 @@ void CounterStyle::TraverseAndMarkDirtyIfNeeded(
     return;
   visited_counter_styles.insert(this);
 
-  if (has_inexistent_references_) {
+  if (has_inexistent_references_ ||
+      style_rule_version_ != style_rule_->GetVersion()) {
     SetIsDirty();
     return;
   }

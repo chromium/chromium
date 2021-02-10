@@ -378,6 +378,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void InvalidateStyleAndLayoutForFontUpdates();
 
   void MarkCounterStylesNeedUpdate();
+  void UpdateCounterStyles();
 
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
