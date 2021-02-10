@@ -399,6 +399,8 @@ component("platform") {
     "audio/vector_math.cc",
     "audio/vector_math.h",
     "audio/vector_math_scalar.h",
+    "back_forward_cache_utils.cc",
+    "back_forward_cache_utils.h",
     "bindings/active_script_wrappable_base.cc",
     "bindings/active_script_wrappable_base.h",
     "bindings/active_script_wrappable_manager.cc",
