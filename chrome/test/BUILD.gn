@@ -4099,6 +4099,13 @@ test("unit_tests") {
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
     ]
   }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "../browser/speech/cros_speech_recognition_service_factory_unittest.cc",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "../../chromeos/memory/userspace_swap/userspace_swap.cc",

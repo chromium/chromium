@@ -4003,6 +4003,8 @@ static_library("browser") {
       "signin/signin_promo.h",
       "signin/signin_ui_util.cc",
       "signin/signin_ui_util.h",
+      "speech/chrome_speech_recognition_service.cc",
+      "speech/chrome_speech_recognition_service.h",
       "speech/extension_api/tts_extension_api_constants.cc",  # Should be moved
                                                               # to extensions
                                                               # section ?
@@ -4011,7 +4013,6 @@ static_library("browser") {
       "speech/speech_recognition_client_browser_interface.h",
       "speech/speech_recognition_client_browser_interface_factory.cc",
       "speech/speech_recognition_client_browser_interface_factory.h",
-      "speech/speech_recognition_service.cc",
       "speech/speech_recognition_service.h",
       "speech/speech_recognition_service_factory.cc",
       "speech/speech_recognition_service_factory.h",
@@ -4206,6 +4207,16 @@ static_library("browser") {
       "//services/device/public/cpp/hid",
       "//third_party/sqlite",
     ]
+    if (is_chromeos_ash) {
+      sources += [
+        "speech/cros_speech_recognition_service.cc",
+        "speech/cros_speech_recognition_service.h",
+        "speech/cros_speech_recognition_service_factory.cc",
+        "speech/cros_speech_recognition_service_factory.h",
+      ]
+
+      deps += [ "//chrome/services/speech:lib" ]
+    }
     if (is_chromeos_ash) {
       sources += [
         "sharing/webrtc/ice_config_fetcher.cc",

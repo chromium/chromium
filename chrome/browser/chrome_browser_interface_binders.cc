@@ -111,7 +111,11 @@
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
+#else
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
+#endif
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
@@ -423,8 +427,13 @@ void BindSpeechRecognitionContextHandler(
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
   if (base::FeatureList::IsEnabled(media::kLiveCaption)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    CrosSpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
+        std::move(receiver));
+#else
     SpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
         std::move(receiver));
+#endif
   }
 }
 

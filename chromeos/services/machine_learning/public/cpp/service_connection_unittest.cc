@@ -198,7 +198,12 @@ TEST_F(ServiceConnectionTest, BindMachineLearningService) {
   EXPECT_TRUE(model.is_bound());
 }
 
-class TestSodaClient : public mojom::SodaClient {};
+class TestSodaClient : public mojom::SodaClient {
+  void OnStop() override {}
+  void OnStart() override {}
+  void OnSpeechRecognizerEvent(mojom::SpeechRecognizerEventPtr event) override {
+  }
+};
 
 // Tests that LoadSpeechRecognizer runs OK without a crash in a basic Mojo
 // Environment.

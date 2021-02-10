@@ -145,6 +145,23 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
     return;
   }
 
+  // OK, everything is verified, let's send the audio.
+  SendAudioToSpeechRecognitionServiceInternal(std::move(buffer));
+}
+
+void SpeechRecognitionRecognizerImpl::
+    SendAudioToSpeechRecognitionServiceInternal(
+        media::mojom::AudioDataS16Ptr buffer) {
+  int channel_count = buffer->channel_count;
+  int sample_rate = buffer->sample_rate;
+  size_t buffer_size = 0;
+  // Verify and calculate the buffer size.
+  if (!base::CheckMul(buffer->data.size(), sizeof(buffer->data[0]))
+           .AssignIfValid(&buffer_size)) {
+    mojo::ReportBadMessage(kInvalidAudioDataError);
+    return;
+  }
+
   if (enable_soda_) {
     DCHECK(soda_client_);
     DCHECK(base::PathExists(config_path_));

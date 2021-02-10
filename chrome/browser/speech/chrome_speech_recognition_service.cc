@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/speech/speech_recognition_service.h"
+#include "chrome/browser/speech/chrome_speech_recognition_service.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
@@ -22,15 +22,15 @@ namespace speech {
 
 constexpr base::TimeDelta kIdleProcessTimeout = base::TimeDelta::FromSeconds(5);
 
-SpeechRecognitionService::SpeechRecognitionService(
+ChromeSpeechRecognitionService::ChromeSpeechRecognitionService(
     content::BrowserContext* context)
     : context_(context),
       enable_soda_(
           base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {}
 
-SpeechRecognitionService::~SpeechRecognitionService() = default;
+ChromeSpeechRecognitionService::~ChromeSpeechRecognitionService() = default;
 
-void SpeechRecognitionService::Create(
+void ChromeSpeechRecognitionService::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   LaunchIfNotRunning();
 
@@ -38,7 +38,7 @@ void SpeechRecognitionService::Create(
     speech_recognition_service_->BindContext(std::move(receiver));
 }
 
-void SpeechRecognitionService::OnNetworkServiceDisconnect() {
+void ChromeSpeechRecognitionService::OnNetworkServiceDisconnect() {
   if (!enable_soda_) {
     // If the Speech On-Device API
     // is not enabled, pass the URL
@@ -61,7 +61,7 @@ void SpeechRecognitionService::OnNetworkServiceDisconnect() {
   }
 }
 
-void SpeechRecognitionService::LaunchIfNotRunning() {
+void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
   if (speech_recognition_service_.is_bound())
     return;
 
@@ -74,7 +74,8 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
     return;
 
   auto binary_path = global_prefs->GetFilePath(prefs::kSodaBinaryPath);
-  auto config_path = SpeechRecognitionService::GetSodaConfigPath(profile_prefs);
+  auto config_path =
+      ChromeSpeechRecognitionService::GetSodaConfigPath(profile_prefs);
   if (enable_soda_ && (binary_path.empty() || config_path.empty())) {
     LOG(ERROR) << "Unable to find SODA files on the device.";
     return;
@@ -96,15 +97,17 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
 
   speech_recognition_service_client_.reset();
 
-  if (enable_soda_)
+  if (enable_soda_) {
     speech_recognition_service_->SetSodaPath(binary_path, config_path);
+  }
 
   speech_recognition_service_->BindSpeechRecognitionServiceClient(
       speech_recognition_service_client_.BindNewPipeAndPassRemote());
   OnNetworkServiceDisconnect();
 }
 
-base::FilePath SpeechRecognitionService::GetSodaConfigPath(PrefService* prefs) {
+base::FilePath ChromeSpeechRecognitionService::GetSodaConfigPath(
+    PrefService* prefs) {
   base::Optional<component_updater::SodaLanguagePackComponentConfig>
       language_config = component_updater::
           SodaLanguagePackComponentInstallerPolicy::GetLanguageComponentConfig(
@@ -114,7 +117,6 @@ base::FilePath SpeechRecognitionService::GetSodaConfigPath(PrefService* prefs) {
     return g_browser_process->local_state()->GetFilePath(
         language_config.value().config_path_pref);
   }
-
   return base::FilePath();
 }
 }  // namespace speech

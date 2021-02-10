@@ -129,6 +129,14 @@ union SpeechRecognizerEvent {
 // the client, SODA then calls these as 'events' with appropriate details
 // when recognition occurs.
 interface SodaClient {
+  // After SODA successfully starts / stops, in case the client
+  // cares:
+  OnStart();
+  OnStop();
+
+  // This is how the client receives actual recognized text as well as other
+  // conclusions from the SODA model like "speech ended".
+  OnSpeechRecognizerEvent(SpeechRecognizerEvent event);
 };
 
 // The mojom interface for performing the recognition of handwritten text.

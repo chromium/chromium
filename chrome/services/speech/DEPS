@@ -1,5 +1,7 @@
 include_rules = [
   "+chrome/services/speech",
+  "+chromeos/services/machine_learning/public/cpp",
+  "+chromeos/services/machine_learning/public/mojom",
   "+components/speech",
   "+content/public/browser",
   "+google_apis",

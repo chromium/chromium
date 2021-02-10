@@ -54,6 +54,14 @@ class SpeechRecognitionRecognizerImpl
     return recognition_event_callback_;
   }
 
+ protected:
+  virtual void SendAudioToSpeechRecognitionServiceInternal(
+      media::mojom::AudioDataS16Ptr buffer);
+
+  // Return the transcribed audio from the recognition event back to the caller
+  // via the recognition event client.
+  void OnRecognitionEvent(const std::string& result, const bool is_final);
+
  private:
   // Convert the audio buffer into the appropriate format and feed the raw audio
   // into the speech recognition instance.
@@ -63,10 +71,6 @@ class SpeechRecognitionRecognizerImpl
   void OnCaptionBubbleClosed() final;
 
   void AudioReceivedAfterBubbleClosed(base::TimeDelta duration) final;
-
-  // Return the transcribed audio from the recognition event back to the caller
-  // via the recognition event client.
-  void OnRecognitionEvent(const std::string& result, const bool is_final);
 
   void RecordDuration();
 
