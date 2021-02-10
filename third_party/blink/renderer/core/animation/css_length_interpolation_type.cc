@@ -155,12 +155,14 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     const float kSlack = 1e-6;
     const float before_length = FloatValueForLength(before, 100);
     const float after_length = FloatValueForLength(after, 100);
-    // Test relative difference for large values to avoid floating point
-    // inaccuracies tripping the check.
-    const float delta = std::abs(before_length) < kSlack
-                            ? after_length - before_length
-                            : (after_length - before_length) / before_length;
-    DCHECK_LT(std::abs(delta), kSlack);
+    if (std::isfinite(before_length) && std::isfinite(after_length)) {
+      // Test relative difference for large values to avoid floating point
+      // inaccuracies tripping the check.
+      const float delta = std::abs(before_length) < kSlack
+                              ? after_length - before_length
+                              : (after_length - before_length) / before_length;
+      DCHECK_LT(std::abs(delta), kSlack);
+    }
 #endif
     return;
   }
