@@ -32,8 +32,7 @@ namespace {
 // Currently we have no way to know the resources are not enough to create more
 // VEAs. Currently this value is selected as 40 instances are enough to pass
 // the CTS tests.
-// TODO(b/168422427): Decrease this to 8 once media_codecs_c2.xml is updated.
-constexpr size_t kMaxConcurrentClients = 40;
+constexpr size_t kMaxConcurrentClients = 8;
 
 base::Optional<media::VideoFrameLayout> CreateVideoFrameLayout(
     media::VideoPixelFormat format,
