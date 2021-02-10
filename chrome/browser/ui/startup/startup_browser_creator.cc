@@ -1258,7 +1258,8 @@ bool HasPendingUncleanExit(Profile* profile) {
 
 base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
                                      const base::FilePath& cur_dir,
-                                     const base::CommandLine& command_line) {
+                                     const base::CommandLine& command_line,
+                                     bool ignore_profile_picker) {
 // If the browser is launched due to activation on Windows native notification,
 // the profile id encoded in the notification launch id should be chosen over
 // all others.
@@ -1285,7 +1286,8 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ShouldShowProfilePickerAtProcessLaunch(profile_manager, command_line)) {
+  if (!ignore_profile_picker &&
+      ShouldShowProfilePickerAtProcessLaunch(profile_manager, command_line)) {
     // Open the picker only if no URLs have been provided to launch Chrome. If
     // URLs are provided, open them in the last profile, instead.
     Profile* guest_profile =
@@ -1315,8 +1317,8 @@ Profile* GetStartupProfile(const base::FilePath& user_data_dir,
                            const base::FilePath& cur_dir,
                            const base::CommandLine& command_line) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath profile_path =
-      GetStartupProfilePath(user_data_dir, cur_dir, command_line);
+  base::FilePath profile_path = GetStartupProfilePath(
+      user_data_dir, cur_dir, command_line, /*ignore_profile_picker=*/false);
   Profile* profile = profile_manager->GetProfile(profile_path);
 
   // If there is no entry in profile attributes storage, the profile is deleted,

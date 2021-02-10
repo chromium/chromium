@@ -28,6 +28,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -220,6 +221,31 @@ void ConfigureNSAppForKioskMode() {
 }
 
 }  // namespace
+
+// Returns the last profile. This is extracted as a standalone function in order
+// to be friend with base::ScopedAllowBlocking.
+Profile* GetLastProfileMac() {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager)
+    return nullptr;
+
+  base::FilePath profile_path =
+      GetStartupProfilePath(profile_manager->user_data_dir(),
+                            /*current_directory=*/base::FilePath(),
+                            *base::CommandLine::ForCurrentProcess(),
+                            /*ignore_profile_picker=*/true);
+
+  // ProfileManager::GetProfile() is blocking if the profile was not loaded yet.
+  // TODO(https://1176734): Change this code to return nullptr when the profile
+  // is not loaded, and update all callers to handle this case.
+  base::ScopedAllowBlocking allow_blocking;
+
+  // lastProfile is used to open URLs passed in application:openFiles: and
+  // should not default to Guest, even if the profile picker is shown.
+  // TODO(https://crbug.com/1155158): Remove the ignore_profile_picker parameter
+  // once the picker supports opening URLs.
+  return profile_manager->GetProfile(profile_path);
+}
 
 @interface AppController () <HandoffActiveURLObserverBridgeDelegate>
 - (void)initMenuState;
@@ -1414,16 +1440,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (![self isProfileReady])
     return nullptr;
 
-  // On first launch, use the logic that ChromeBrowserMain uses to determine
-  // the initial profile.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!profile_manager)
-    return nullptr;
-
-  return profile_manager->GetProfile(
-      GetStartupProfilePath(profile_manager->user_data_dir(),
-                            /*current_directory=*/base::FilePath(),
-                            *base::CommandLine::ForCurrentProcess()));
+  return GetLastProfileMac();
 }
 
 - (Profile*)safeLastProfileForNewWindows {

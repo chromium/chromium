@@ -446,7 +446,8 @@ void ProcessSingletonNotificationCallbackImpl(
   base::FilePath user_data_dir =
       g_browser_process->profile_manager()->user_data_dir();
   base::FilePath startup_profile_dir =
-      GetStartupProfilePath(user_data_dir, current_directory, command_line);
+      GetStartupProfilePath(user_data_dir, current_directory, command_line,
+                            /*ignore_profile_picker=*/false);
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, current_directory, startup_profile_dir);

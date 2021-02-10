@@ -103,6 +103,9 @@ class HistogramSynchronizer;
 class KeyStorageLinux;
 class NativeBackendKWallet;
 class NativeDesktopMediaList;
+class Profile;
+
+Profile* GetLastProfileMac();
 
 namespace android_webview {
 class AwFormDatabaseService;
@@ -419,6 +422,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class weblayer::WebLayerPathProvider;
 
   friend bool PathProviderWin(int, FilePath*);
+  friend Profile* ::GetLastProfileMac();  // crbug.com/1176734
 
   ScopedAllowBlocking(const Location& from_here = Location::Current());
   ~ScopedAllowBlocking();
