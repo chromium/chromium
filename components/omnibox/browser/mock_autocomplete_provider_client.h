@@ -93,6 +93,10 @@ class MockAutocompleteProviderClient
     return nullptr;
   }
 
+  signin::IdentityManager* GetIdentityManager() const override {
+    return identity_manager_;
+  }
+
   MOCK_CONST_METHOD0(GetAcceptLanguages, std::string());
   MOCK_CONST_METHOD0(GetEmbedderRepresentationOfAboutScheme, std::string());
   MOCK_METHOD0(GetBuiltinURLs, std::vector<base::string16>());
@@ -124,6 +128,10 @@ class MockAutocompleteProviderClient
     template_url_service_ = std::move(service);
   }
 
+  void set_identity_manager(signin::IdentityManager* identity_manager) {
+    identity_manager_ = identity_manager;
+  }
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -138,6 +146,7 @@ class MockAutocompleteProviderClient
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
+  signin::IdentityManager* identity_manager_ = nullptr;  // Not owned.
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_MOCK_AUTOCOMPLETE_PROVIDER_CLIENT_H_

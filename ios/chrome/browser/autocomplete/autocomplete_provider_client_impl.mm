@@ -185,6 +185,11 @@ AutocompleteProviderClientImpl::GetComponentUpdateService() {
   return GetApplicationContext()->GetComponentUpdateService();
 }
 
+signin::IdentityManager* AutocompleteProviderClientImpl::GetIdentityManager()
+    const {
+  return IdentityManagerFactory::GetForBrowserState(browser_state_);
+}
+
 bool AutocompleteProviderClientImpl::IsOffTheRecord() const {
   return browser_state_->IsOffTheRecord();
 }

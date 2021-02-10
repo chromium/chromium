@@ -357,6 +357,11 @@ ChromeAutocompleteProviderClient::GetOmniboxTriggeredFeatureService() const {
   return omnibox_triggered_feature_service_.get();
 }
 
+signin::IdentityManager* ChromeAutocompleteProviderClient::GetIdentityManager()
+    const {
+  return IdentityManagerFactory::GetForProfile(profile_);
+}
+
 bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {
   return profile_->IsOffTheRecord();
 }

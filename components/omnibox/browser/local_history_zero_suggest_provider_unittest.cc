@@ -30,6 +30,7 @@
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -73,7 +74,12 @@ class LocalHistoryZeroSuggestProviderTest
  protected:
   // testing::Test
   void SetUp() override {
+    identity_env_ = std::make_unique<signin::IdentityTestEnvironment>(
+        &test_url_loader_factory_);
+
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
+    client_->set_identity_manager(identity_env_->identity_manager());
+
     provider_ = base::WrapRefCounted(
         LocalHistoryZeroSuggestProvider::Create(client_.get(), this));
 
@@ -120,6 +126,12 @@ class LocalHistoryZeroSuggestProviderTest
   // Verifies that provider matches are as expected.
   void ExpectMatches(const std::vector<TestMatchData>& match_data_list);
 
+  // Makes an "unconsented" primary account available.
+  void SignIn();
+
+  // Clears the primary account.
+  void SignOut();
+
   const TemplateURL* default_search_provider() {
     return client_->GetTemplateURLService()->GetDefaultSearchProvider();
   }
@@ -128,6 +140,8 @@ class LocalHistoryZeroSuggestProviderTest
   // Used to spin the message loop until |provider_| is done with its async ops.
   std::unique_ptr<base::RunLoop> provider_run_loop_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_env_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<LocalHistoryZeroSuggestProvider> provider_;
 };
@@ -199,6 +213,14 @@ void LocalHistoryZeroSuggestProviderTest::ExpectMatches(
               match.allowed_to_be_default_match);
     index++;
   }
+}
+
+void LocalHistoryZeroSuggestProviderTest::SignIn() {
+  identity_env_->MakeUnconsentedPrimaryAccountAvailable("test@email.com");
+}
+
+void LocalHistoryZeroSuggestProviderTest::SignOut() {
+  identity_env_->ClearPrimaryAccount();
 }
 
 // Tests that suggestions are returned only if when input is empty and focused.
@@ -284,17 +306,13 @@ TEST_F(LocalHistoryZeroSuggestProviderTest,
   scoped_feature_list_->InitAndEnableFeature(
       omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers);
 
-  EXPECT_CALL(*client_.get(), IsAuthenticated())
-      .WillOnce(testing::Return(true));
+  StartProviderAndWaitUntilDone();
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
+
+  SignIn();
 
   StartProviderAndWaitUntilDone();
   ExpectMatches({{"hello world", kLocalHistoryZPSAuthenticatedRelevance}});
-
-  EXPECT_CALL(*client_.get(), IsAuthenticated())
-      .WillOnce(testing::Return(false));
-
-  StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 }
 
 // Tests that suggestions are returned for signed-out users only when
@@ -318,17 +336,17 @@ TEST_F(LocalHistoryZeroSuggestProviderTest,
       omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers);
 
   EXPECT_CALL(*client_.get(), IsAuthenticated())
-      .WillOnce(testing::Return(true));
-
-  StartProviderAndWaitUntilDone();
-  ExpectMatches({});
-
-  EXPECT_CALL(*client_.get(), IsAuthenticated())
-      .Times(2)
-      .WillRepeatedly(testing::Return(false));
+      .WillOnce(testing::Return(false));
 
   StartProviderAndWaitUntilDone();
   ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
+
+  EXPECT_CALL(*client_.get(), IsAuthenticated())
+      .WillOnce(testing::Return(true));
+  SignIn();
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches({});
 }
 
 // Tests that suggestions are returned only if FeatureFlags is configured

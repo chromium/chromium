@@ -35,6 +35,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/gurl.h"
 
 using metrics::OmniboxEventProto;
@@ -198,6 +199,13 @@ LocalHistoryZeroSuggestProvider::LocalHistoryZeroSuggestProvider(
 
 LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() {}
 
+bool LocalHistoryZeroSuggestProvider::IsSignedIn() {
+  const auto* identity_manager = client_->GetIdentityManager();
+  return identity_manager ? identity_manager->HasPrimaryAccount(
+                                signin::ConsentLevel::kNotRequired)
+                          : false;
+}
+
 void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     const AutocompleteInput& input) {
   done_ = true;
@@ -238,9 +246,8 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
   };
   std::sort(results.begin(), results.end(), CompareByFrecency);
 
-  int relevance = client_->IsAuthenticated()
-                      ? kLocalHistoryZPSAuthenticatedRelevance
-                      : kLocalHistoryZPSUnauthenticatedRelevance;
+  int relevance = IsSignedIn() ? kLocalHistoryZPSAuthenticatedRelevance
+                               : kLocalHistoryZPSUnauthenticatedRelevance;
   for (const auto& result : results) {
     SearchSuggestionParser::SuggestResult suggestion(
         /*suggestion=*/result.normalized_term,
