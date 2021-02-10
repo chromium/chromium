@@ -53,6 +53,8 @@ generated_callback_function_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_session_description_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_stats_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_stats_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_scheduler_post_task_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_state_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_state_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_storage_error_callback.cc",

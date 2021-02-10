@@ -15,8 +15,7 @@ namespace blink {
 class DOMScheduler;
 class DOMTaskSignal;
 class ScriptState;
-class ScriptValue;
-class V8Function;
+class V8SchedulerPostTaskCallback;
 
 // DOMTask represents a task scheduled via the web scheduling API. It will
 // keep itself alive until DOMTask::Invoke is called, which may be after the
@@ -25,8 +24,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
  public:
   DOMTask(DOMScheduler*,
           ScriptPromiseResolver*,
-          V8Function*,
-          const HeapVector<ScriptValue>& args,
+          V8SchedulerPostTaskCallback*,
           DOMTaskSignal*,
           base::TimeDelta delay);
 
@@ -44,8 +42,7 @@ class DOMTask final : public GarbageCollected<DOMTask> {
 
   Member<DOMScheduler> scheduler_;
   TaskHandle task_handle_;
-  Member<V8Function> callback_;
-  HeapVector<ScriptValue> arguments_;
+  Member<V8SchedulerPostTaskCallback> callback_;
   Member<ScriptPromiseResolver> resolver_;
   probe::AsyncTaskId async_task_id_;
   Member<DOMTaskSignal> signal_;

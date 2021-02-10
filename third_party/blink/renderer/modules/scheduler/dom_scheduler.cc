@@ -63,11 +63,11 @@ void DOMScheduler::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
-ScriptPromise DOMScheduler::postTask(ScriptState* script_state,
-                                     V8Function* callback_function,
-                                     SchedulerPostTaskOptions* options,
-                                     const HeapVector<ScriptValue>& args,
-                                     ExceptionState& exception_state) {
+ScriptPromise DOMScheduler::postTask(
+    ScriptState* script_state,
+    V8SchedulerPostTaskCallback* callback_function,
+    SchedulerPostTaskOptions* options,
+    ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return RejectPromiseImmediately(exception_state);
   if (options->signal() && options->signal()->aborted())
@@ -112,8 +112,8 @@ ScriptPromise DOMScheduler::postTask(ScriptState* script_state,
       base::TimeDelta::FromMilliseconds(std::max(0, options->delay()));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  MakeGarbageCollected<DOMTask>(this, resolver, callback_function, args,
-                                task_signal, delay);
+  MakeGarbageCollected<DOMTask>(this, resolver, callback_function, task_signal,
+                                delay);
   return resolver->Promise();
 }
 
