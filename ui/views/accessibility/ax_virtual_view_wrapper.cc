@@ -4,6 +4,8 @@
 
 #include "ui/views/accessibility/ax_virtual_view_wrapper.h"
 
+#include <string>
+
 #include "ui/views/accessibility/ax_view_obj_wrapper.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -16,10 +18,6 @@ AXVirtualViewWrapper::AXVirtualViewWrapper(AXVirtualView* virtual_view,
     : AXAuraObjWrapper(cache), virtual_view_(virtual_view) {}
 
 AXVirtualViewWrapper::~AXVirtualViewWrapper() = default;
-
-bool AXVirtualViewWrapper::IsIgnored() {
-  return false;
-}
 
 AXAuraObjWrapper* AXVirtualViewWrapper::GetParent() {
   if (virtual_view_->virtual_parent_view()) {
@@ -42,7 +40,7 @@ void AXVirtualViewWrapper::Serialize(ui::AXNodeData* out_node_data) {
   *out_node_data = virtual_view_->GetData();
 }
 
-int32_t AXVirtualViewWrapper::GetUniqueId() const {
+ui::AXNodeID AXVirtualViewWrapper::GetUniqueId() const {
   return virtual_view_->GetUniqueId().Get();
 }
 

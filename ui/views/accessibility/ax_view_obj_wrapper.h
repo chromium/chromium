@@ -30,11 +30,10 @@ class AXViewObjWrapper : public AXAuraObjWrapper, public ViewObserver {
   View* view() { return view_; }
 
   // AXAuraObjWrapper overrides.
-  bool IsIgnored() override;
   AXAuraObjWrapper* GetParent() override;
   void GetChildren(std::vector<AXAuraObjWrapper*>* out_children) override;
   void Serialize(ui::AXNodeData* out_node_data) override;
-  int32_t GetUniqueId() const final;
+  ui::AXNodeID GetUniqueId() const final;
   bool HandleAccessibleAction(const ui::AXActionData& action) override;
   std::string ToString() const override;
 

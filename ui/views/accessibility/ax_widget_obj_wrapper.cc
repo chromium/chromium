@@ -25,10 +25,6 @@ AXWidgetObjWrapper::AXWidgetObjWrapper(AXAuraObjCache* aura_obj_cache,
 
 AXWidgetObjWrapper::~AXWidgetObjWrapper() = default;
 
-bool AXWidgetObjWrapper::IsIgnored() {
-  return false;
-}
-
 AXAuraObjWrapper* AXWidgetObjWrapper::GetParent() {
   return aura_obj_cache_->GetOrCreate(widget_->GetNativeView());
 }
@@ -57,7 +53,7 @@ void AXWidgetObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->state = 0;
 }
 
-int32_t AXWidgetObjWrapper::GetUniqueId() const {
+ui::AXNodeID AXWidgetObjWrapper::GetUniqueId() const {
   return unique_id_.Get();
 }
 

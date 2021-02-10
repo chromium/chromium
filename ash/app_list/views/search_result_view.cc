@@ -341,7 +341,6 @@ void SearchResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // ChromeVox. see details in crbug.com/924776.
   node_data->role = ax::mojom::Role::kListBoxOption;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected());
-  node_data->AddState(ax::mojom::State::kFocusable);
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
   node_data->SetName(GetAccessibleName());
 }

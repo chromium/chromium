@@ -1651,8 +1651,7 @@ bool View::IsFocusable() const {
 }
 
 bool View::IsAccessibilityFocusable() const {
-  return GetFocusBehavior() != FocusBehavior::NEVER && GetEnabled() &&
-         IsDrawn();
+  return GetViewAccessibility().IsAccessibilityFocusable();
 }
 
 FocusManager* View::GetFocusManager() {
@@ -1750,9 +1749,9 @@ bool View::ExceededDragThreshold(const gfx::Vector2d& delta) {
 
 // Accessibility----------------------------------------------------------------
 
-ViewAccessibility& View::GetViewAccessibility() {
+ViewAccessibility& View::GetViewAccessibility() const {
   if (!view_accessibility_)
-    view_accessibility_ = ViewAccessibility::Create(this);
+    view_accessibility_ = ViewAccessibility::Create(const_cast<View*>(this));
   return *view_accessibility_;
 }
 
