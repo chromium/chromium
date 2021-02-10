@@ -396,3 +396,6 @@ crbug.com/1151797 [ win10 amd-0x7340 skia-renderer-gl ] Pixel_DirectComposition_
 
 # Flakes on Mac dual-GPU
 crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ RetryOnFailure ]  # finder:disable Very low flake rate (1 in 1k+ builds)
+
+# Failures on Mac FYI arm64 Release (Apple DTK)
+crbug.com/1175753 [ mac release apple-apple-a12z ] Pixel_Video_BackdropFilter [ Skip ]
