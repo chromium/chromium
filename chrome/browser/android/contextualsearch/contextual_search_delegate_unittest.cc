@@ -233,6 +233,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   std::string search_url_full() { return search_url_full_; }
   std::string search_url_preload() { return search_url_preload_; }
   int coca_card_tag() { return coca_card_tag_; }
+  std::vector<std::string> related_searches() { return related_searches_; }
 
   // The delegate under test.
   std::unique_ptr<ContextualSearchDelegate> delegate_;
@@ -260,6 +261,7 @@ class ContextualSearchDelegateTest : public testing::Test {
     search_url_full_ = resolved_search_term.search_url_full;
     search_url_preload_ = resolved_search_term.search_url_preload;
     coca_card_tag_ = resolved_search_term.coca_card_tag;
+    related_searches_ = resolved_search_term.related_searches;
   }
 
   void recordSampleSelectionAvailable(const std::string& encoding,
@@ -288,6 +290,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   std::string search_url_full_;
   std::string search_url_preload_;
   int coca_card_tag_;
+  std::vector<std::string> related_searches_;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
@@ -574,12 +577,14 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   std::string search_url_full;
   std::string search_url_preload;
   int coca_card_tag;
+  std::vector<std::string> related_searches;
 
   delegate_->DecodeSearchTermFromJsonResponse(
       json_with_escape, &search_term, &display_text, &alternate_term, &mid,
       &prevent_preload, &mention_start, &mention_end, &context_language,
       &thumbnail_url, &caption, &quick_action_uri, &quick_action_category,
-      &logged_event_id, &search_url_full, &search_url_preload, &coca_card_tag);
+      &logged_event_id, &search_url_full, &search_url_preload, &coca_card_tag,
+      &related_searches);
 
   EXPECT_EQ("obama", search_term);
   EXPECT_EQ("Barack Obama", display_text);
@@ -597,6 +602,7 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   EXPECT_EQ("https://www.google.com/search?q=define+obscure&ctxs=2&pf=c&sns=1",
             search_url_preload);
   EXPECT_EQ(12, coca_card_tag);
+  EXPECT_EQ(0u, related_searches.size());
 }
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithLanguage) {

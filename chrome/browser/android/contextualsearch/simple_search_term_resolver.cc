@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -105,6 +106,9 @@ void SimpleSearchTermResolver::OnSearchTermResolutionResponse(
   base::android::ScopedJavaLocalRef<jstring> j_search_url_preload =
       base::android::ConvertUTF8ToJavaString(
           env, resolved_search_term.search_url_preload);
+  base::android::ScopedJavaLocalRef<jobjectArray> j_searches =
+      base::android::ToJavaArrayOfByteArray(
+          env, resolved_search_term.related_searches);
   Java_SimpleSearchTermResolver_onSearchTermResolutionResponse(
       env, java_instance_, resolved_search_term.is_invalid,
       resolved_search_term.response_code, j_search_term, j_display_text,
@@ -114,7 +118,7 @@ void SimpleSearchTermResolver::OnSearchTermResolutionResponse(
       j_thumbnail_url, j_caption, j_quick_action_uri,
       resolved_search_term.quick_action_category,
       resolved_search_term.logged_event_id, j_search_url_full,
-      j_search_url_preload, resolved_search_term.coca_card_tag);
+      j_search_url_preload, resolved_search_term.coca_card_tag, j_searches);
 }
 
 void SimpleSearchTermResolver::OnTextSurroundingSelectionAvailable(

@@ -59,6 +59,7 @@ public class ResolvedSearchTerm {
     private final String mSearchUrlPreload;
     @CardTag
     private final int mCardTagEnum;
+    private final String mRelatedSearches[];
 
     /**
      * Called in response to the
@@ -88,6 +89,7 @@ public class ResolvedSearchTerm {
      * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
      * @param cardTagEnum A {@link CardTag} enumeration indicating what kind of card was returned,
      *        or {@code 0} if no card was returned.
+     * @param relatedSearches An array of searches that may be related to the content.
      */
     private ResolvedSearchTerm(boolean isNetworkUnavailable, int responseCode,
             final String searchTerm, final String displayText, final String alternateTerm,
@@ -96,7 +98,7 @@ public class ResolvedSearchTerm {
             final String caption, final String quickActionUri,
             @QuickActionCategory final int quickActionCategory, final long loggedEventId,
             final String searchUrlFull, final String searchUrlPreload,
-            @CardTag final int cardTagEnum) {
+            @CardTag final int cardTagEnum, final String[] relatedSearches) {
         mIsNetworkUnavailable = isNetworkUnavailable;
         mResponseCode = responseCode;
         mSearchTerm = searchTerm;
@@ -115,6 +117,7 @@ public class ResolvedSearchTerm {
         mSearchUrlFull = searchUrlFull;
         mSearchUrlPreload = searchUrlPreload;
         mCardTagEnum = cardTagEnum;
+        mRelatedSearches = relatedSearches;
     }
 
     public boolean isNetworkUnavailable() {
@@ -218,6 +221,10 @@ public class ResolvedSearchTerm {
         }
     }
 
+    public String[] relatedSearches() {
+        return mRelatedSearches;
+    }
+
     @Override
     public String toString() {
         List<String> sections = buildTextSections();
@@ -230,6 +237,8 @@ public class ResolvedSearchTerm {
             sections.add("Network unavailable!");
         } else if (mResponseCode != HttpURLConnection.HTTP_OK) {
             sections.add("ResponseCode:" + mResponseCode);
+        } else if (relatedSearches().length > 0) {
+            sections.add("Related Searches: [" + TextUtils.join(", ", mRelatedSearches) + "]");
         } else {
             if (mDoPreventPreload) sections.add("Preventing preload!");
             if (!TextUtils.isEmpty(mSearchTerm)) sections.add("Search for '" + mSearchTerm + "'");
@@ -284,7 +293,9 @@ public class ResolvedSearchTerm {
         private String mSearchUrlPreload;
         @CardTag
         private int mCardTagEnum;
+        private String[] mRelatedSearches;
 
+        /** Starts building using the given {@link ResolvedSearchTerm}. */
         public Builder(ResolvedSearchTerm resolvedSearchTerm) {
             mIsNetworkUnavailable = resolvedSearchTerm.mIsNetworkUnavailable;
             mResponseCode = resolvedSearchTerm.mResponseCode;
@@ -304,6 +315,7 @@ public class ResolvedSearchTerm {
             mSearchUrlFull = resolvedSearchTerm.mSearchUrlFull;
             mSearchUrlPreload = resolvedSearchTerm.mSearchUrlPreload;
             mCardTagEnum = resolvedSearchTerm.mCardTagEnum;
+            mRelatedSearches = resolvedSearchTerm.mRelatedSearches;
         }
 
         /**
@@ -337,7 +349,7 @@ public class ResolvedSearchTerm {
                 final String displayText, final String alternateTerm, boolean doPreventPreload) {
             this(isNetworkUnavailable, responseCode, searchTerm, displayText, alternateTerm, "",
                     doPreventPreload, 0, 0, "", "", "", "", QuickActionCategory.NONE, 0L, "", "",
-                    0);
+                    CardTag.CT_NONE, new String[0]);
         }
 
         /**
@@ -368,6 +380,7 @@ public class ResolvedSearchTerm {
          * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
          * @param cardTag The primary internal Coca card tag for the resolution, or {@code 0} if
          *         none.
+         * @param relatedSearches An array of searches that may be related to the content.
          */
         public Builder(boolean isNetworkUnavailable, int responseCode, final String searchTerm,
                 final String displayText, final String alternateTerm, final String mid,
@@ -375,7 +388,7 @@ public class ResolvedSearchTerm {
                 final String contextLanguage, final String thumbnailUrl, final String caption,
                 final String quickActionUri, @QuickActionCategory final int quickActionCategory,
                 final long loggedEventId, final String searchUrlFull, final String searchUrlPreload,
-                final int cardTag) {
+                @CardTag final int cardTag, final String[] relatedSearches) {
             mIsNetworkUnavailable = isNetworkUnavailable;
             mResponseCode = responseCode;
             mSearchTerm = searchTerm;
@@ -394,6 +407,7 @@ public class ResolvedSearchTerm {
             mSearchUrlFull = searchUrlFull;
             mSearchUrlPreload = searchUrlPreload;
             mCardTagEnum = fromCocaCardTag(cardTag);
+            mRelatedSearches = relatedSearches;
         }
 
         /**
@@ -522,6 +536,15 @@ public class ResolvedSearchTerm {
         }
 
         /**
+         * @param relatedSearches The list of related searches generated from the context.
+.
+         */
+        public Builder setRelatedSearches(String[] relatedSearches) {
+            mRelatedSearches = relatedSearches;
+            return this;
+        }
+
+        /**
          * Builds the {@link ResolvedSearchTerm} based on the params passed into the constructor
          * of this builder, plus whatever settings have been established.
          * @return The {@link ResolvedSearchTerm}, which represents all the results sent back by
@@ -532,7 +555,7 @@ public class ResolvedSearchTerm {
                     mDisplayText, mAlternateTerm, mMid, mDoPreventPreload, mSelectionStartAdjust,
                     mSelectionEndAdjust, mContextLanguage, mThumbnailUrl, mCaption, mQuickActionUri,
                     mQuickActionCategory, mLoggedEventId, mSearchUrlFull, mSearchUrlPreload,
-                    mCardTagEnum);
+                    mCardTagEnum, mRelatedSearches);
         }
     }
 }

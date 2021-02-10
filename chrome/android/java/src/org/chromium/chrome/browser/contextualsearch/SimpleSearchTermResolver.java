@@ -99,6 +99,8 @@ public class SimpleSearchTermResolver {
      * @param searchUrlFull The URL for the full search to present in the overlay, or empty.
      * @param searchUrlPreload The URL for the search to preload into the overlay, or empty.
      * @param cocaCardTag The primary internal Coca card tag for the response, or {@code 0} if none.
+     * @param relatedSearches The query suggestions known as Related Searches returned from the
+     *        Claire backend through GoC. These are suggested searches based on the URL or content.
      */
     @CalledByNative
     public void onSearchTermResolutionResponse(boolean isNetworkUnavailable, int responseCode,
@@ -108,14 +110,14 @@ public class SimpleSearchTermResolver {
             final String caption, final String quickActionUri,
             @QuickActionCategory final int quickActionCategory, final long loggedEventId,
             final String searchUrlFull, final String searchUrlPreload,
-            @CardTag final int cocaCardTag) {
+            @CardTag final int cocaCardTag, final String[] relatedSearches) {
         ResolvedSearchTerm resolvedSearchTerm =
                 new ResolvedSearchTerm
                         .Builder(isNetworkUnavailable, responseCode, searchTerm, displayText,
                                 alternateTerm, mid, doPreventPreload, selectionStartAdjust,
                                 selectionEndAdjust, contextLanguage, thumbnailUrl, caption,
                                 quickActionUri, quickActionCategory, loggedEventId, searchUrlFull,
-                                searchUrlPreload, cocaCardTag)
+                                searchUrlPreload, cocaCardTag, relatedSearches)
                         .build();
         Log.v(TAG, "onSearchTermResolutionResponse received with " + resolvedSearchTerm);
         if (!TextUtils.isEmpty(resolvedSearchTerm.searchTerm())) {

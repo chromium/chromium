@@ -255,12 +255,14 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
   std::string search_url_full;
   std::string search_url_preload;
   int coca_card_tag = 0;
+  std::vector<std::string> related_searches;
 
   DecodeSearchTermFromJsonResponse(
       json_string, &search_term, &display_text, &alternate_term, &mid,
       &prevent_preload, &mention_start, &mention_end, &context_language,
       &thumbnail_url, &caption, &quick_action_uri, &quick_action_category,
-      &logged_event_id, &search_url_full, &search_url_preload, &coca_card_tag);
+      &logged_event_id, &search_url_full, &search_url_preload, &coca_card_tag,
+      &related_searches);
   if (mention_start != 0 || mention_end != 0) {
     // Sanity check that our selection is non-zero and it is less than
     // 100 characters as that would make contextual search bar hide.
@@ -283,7 +285,7 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
       prevent_preload == kDoPreventPreloadValue, start_adjust, end_adjust,
       context_language, thumbnail_url, caption, quick_action_uri,
       quick_action_category, logged_event_id, search_url_full,
-      search_url_preload, coca_card_tag));
+      search_url_preload, coca_card_tag, related_searches));
 }
 
 std::string ContextualSearchDelegate::BuildRequestUrl(
@@ -445,7 +447,8 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
     int64_t* logged_event_id,
     std::string* search_url_full,
     std::string* search_url_preload,
-    int* coca_card_tag) {
+    int* coca_card_tag,
+    std::vector<std::string>* related_searches) {
   bool contains_xssi_escape =
       base::StartsWith(response, kXssiEscape, base::CompareCase::SENSITIVE);
   const std::string& proper_json =
@@ -562,6 +565,18 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
     // accessors.
     search_query_list->GetString(0, display_text);
     search_query_list->GetString(0, search_term);
+  }
+
+  // For Related Searches extract the array.
+  base::ListValue* searches_list = nullptr;
+  dict->GetList(kRelatedSearchesQueryList, &searches_list);
+  if (base::FeatureList::IsEnabled(chrome::android::kRelatedSearches) &&
+      searches_list && searches_list->GetSize() >= 1) {
+    for (size_t i = 0; i < searches_list->GetSize(); ++i) {
+      std::string search;
+      searches_list->GetString(i, &search);
+      related_searches->push_back(search);
+    }
   }
 }
 
