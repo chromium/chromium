@@ -229,14 +229,14 @@ void LogFeatureStates(
   if (HasFeatureStateChanged(previous_states, new_states,
                              mojom::Feature::kPhoneHubNotifications)) {
     UMA_HISTOGRAM_ENUMERATION(
-        "PhoneHub.MultiDeviceFeatureState.NotificationsFeature",
+        "PhoneHub.MultiDeviceFeatureState.Notifications",
         new_states.find(mojom::Feature::kPhoneHubNotifications)->second);
   }
 
   if (HasFeatureStateChanged(previous_states, new_states,
                              mojom::Feature::kPhoneHubTaskContinuation)) {
     UMA_HISTOGRAM_ENUMERATION(
-        "PhoneHub.MultiDeviceFeatureState.TaskContinuationFeature",
+        "PhoneHub.MultiDeviceFeatureState.TaskContinuation",
         new_states.find(mojom::Feature::kPhoneHubTaskContinuation)->second);
   }
 
