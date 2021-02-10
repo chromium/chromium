@@ -32,8 +32,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   static constexpr int kSpacing = 24;
   static constexpr int kTitleLineHeight = 24;
 
-  SharesheetBubbleView(views::View* anchor_view,
-                       sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(gfx::NativeWindow native_window,
                        sharesheet::SharesheetServiceDelegate* delegate);
   SharesheetBubbleView(const SharesheetBubbleView&) = delete;
