@@ -1410,60 +1410,6 @@ TEST_F(NGOutOfFlowLayoutPartTest, DISABLED_AbsposNestedFragmentation) {
   EXPECT_EQ(expectation, dump);
 }
 
-// Test the static position of a fragmented OOF element inside a nested
-// multi-column.
-TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationStaticPos) {
-  SetBodyInnerHTML(
-      R"HTML(
-      <style>
-        .multicol {
-          columns:2; column-fill:auto; column-gap:0px;
-        }
-        .rel {
-          position: relative; width:55px;
-        }
-        .abs {
-          position:absolute; width:5px; height:70px;
-        }
-      </style>
-      <div id="container">
-        <div class="multicol" id="outer" style="height:100px;">
-          <div class="multicol" id="inner">
-            <div class="rel">
-              <div style="height:250px; width:25px;"></div>
-              <div class="abs"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      )HTML");
-  String dump = DumpFragmentTree(GetElementById("container"));
-
-  // TODO(almaher): The static position should be 250px down instead of 50px.
-  // It looks like the block size of the first two inner columns are not
-  // taken into account when determining the static position.
-  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x100
-    offset:0,0 size:1000x100
-      offset:0,0 size:500x100
-        offset:0,0 size:500x100
-          offset:0,0 size:250x100
-            offset:0,0 size:55x100
-              offset:0,0 size:25x100
-            offset:0,50 size:5x50
-          offset:250,0 size:250x100
-            offset:0,0 size:55x100
-              offset:0,0 size:25x100
-            offset:0,0 size:5x20
-      offset:500,0 size:500x100
-        offset:0,0 size:500x100
-          offset:0,0 size:250x100
-            offset:0,0 size:55x50
-              offset:0,0 size:25x50
-)DUMP";
-  EXPECT_EQ(expectation, dump);
-}
-
 // Fragmented OOF with `height: auto` and positioned with the bottom property.
 TEST_F(NGOutOfFlowLayoutPartTest,
        PositionedFragmentationWithBottomPropertyAndHeightAuto) {

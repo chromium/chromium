@@ -644,6 +644,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
 void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
   Vector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
   Vector<NGLink*> mutable_multicol_children;
+  const NGBlockBreakToken* previous_column_break_token = nullptr;
 
   NGConstraintSpace multicol_constraint_space =
       CreateConstraintSpaceForMulticol(multicol);
@@ -663,6 +664,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
         multicol_box_fragment->Style().GetWritingDirection();
     const WritingModeConverter converter(writing_direction,
                                          multicol_box_fragment->Size());
+    const NGBlockBreakToken* current_column_break_token =
+        previous_column_break_token;
 
     // Collect the children of the multicol fragments.
     for (auto& child :
@@ -670,14 +673,14 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
       const auto* fragment = To<NGPhysicalContainerFragment>(child.get());
       LogicalOffset offset =
           converter.ToLogical(child.Offset(), fragment->Size());
+      if (fragment->IsFragmentainerBox()) {
+        current_column_break_token =
+            To<NGBlockBreakToken>(fragment->BreakToken());
+      }
 
       multicol_container_builder.AddChild(*fragment, offset);
       mutable_multicol_children.emplace_back(&child);
     }
-
-    if (!multicol_box_fragment
-             ->HasOutOfFlowPositionedFragmentainerDescendants())
-      continue;
 
     // Convert the OOF fragmentainer descendants to the logical coordinate space
     // and store the resulting nodes inside |oof_nodes_to_layout|.
@@ -688,6 +691,17 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
       LogicalOffset containing_block_offset =
           converter.ToLogical(descendant.containing_block_offset,
                               containing_block_fragment->Size());
+
+      // The containing block offset should be the offset from the top of the
+      // inner multicol to the start of the containing block (as if all of the
+      // columns are placed one on top of the other). When propagating OOFs
+      // in a nested fragmentation context, we miss the block contribution
+      // from columns in previous outer fragmentainers. Add the block size
+      // for such columns here to account for this.
+      if (previous_column_break_token) {
+        containing_block_offset.block_offset +=
+            previous_column_break_token->ConsumedBlockSize();
+      }
 
       // The static position should remain relative to its containing block
       // fragment.
@@ -706,6 +720,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(const NGBlockNode& multicol) {
           containing_block_fragment};
       oof_nodes_to_layout.push_back(node);
     }
+    previous_column_break_token = current_column_break_token;
   }
   DCHECK(!oof_nodes_to_layout.IsEmpty());
 
