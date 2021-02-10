@@ -458,9 +458,12 @@
 
     'chromedriver_py_tests_isolated_scripts': {
       'chromedriver_py_tests': {
-        "args": [
-          "--test-type=integration",
+        'args': [
+          '--test-type=integration',
         ],
+        'resultdb': {
+          'enable': True,
+        },
       },
       'chromedriver_replay_unittests': {},
     },

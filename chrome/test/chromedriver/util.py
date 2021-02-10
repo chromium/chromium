@@ -5,11 +5,13 @@
 """Generic utilities for all python scripts."""
 
 import atexit
+import base64
 import httplib
 import json
 import os
 import platform
 import random
+import requests
 import signal
 import socket
 import stat
@@ -334,3 +336,59 @@ def WriteResultToJSONFile(test_suites, results, json_path):
   with open(json_path, 'w') as script_out_file:
     json.dump(output, script_out_file)
     script_out_file.write('\n')
+
+
+def TryUploadingResultToResultSink(results):
+
+  def parse(result):
+    test_results = []
+    for test_case in result.successes:
+      test_results.append({
+          'testId': test_case.id(),
+          'expected': True,
+          'status': 'PASS',
+      })
+
+    for (test_case, stack_trace) in result.failures + result.errors:
+      test_results.append({
+          'testId': test_case.id(),
+          'expected': False,
+          'status': 'FAIL',
+          # Uses <text-artifact> tag to embed the artifact content
+          # in summaryHtml.
+          'summaryHtml': '<p><text-artifact artifact-id="stack_trace"></p>',
+          # A map of artifacts. The keys are artifact ids which uniquely
+          # identify an artifact within the test result.
+          'artifacts': {
+               'stack_trace': {
+                    'contents': base64.b64encode(stack_trace),
+               },
+          },
+      })
+    return test_results
+
+  def getResultSinkTestResults(results):
+    test_results = []
+    for r in results:
+        test_results.extend(parse(r))
+    return test_results
+
+  try:
+    with open(os.environ['LUCI_CONTEXT']) as f:
+      sink = json.load(f)['result_sink']
+  except KeyError:
+    return
+
+  test_results = getResultSinkTestResults(results)
+  # Uploads all test results at once.
+  res = requests.post(
+    url='http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' % sink['address'],
+    headers={
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'ResultSink %s' % sink['auth_token'],
+    },
+    data=json.dumps({'testResults': test_results})
+  )
+  res.raise_for_status()
+
