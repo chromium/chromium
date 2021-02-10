@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/gfx/skia_util.h"
 
 namespace web_app {
@@ -195,6 +196,13 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
       return true;
     }
   } else if (web_application_info_->share_target) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableLinkCapturing) &&
+      web_application_info_->capture_links !=
+          registrar_.GetAppCaptureLinks(app_id_)) {
     return true;
   }
 

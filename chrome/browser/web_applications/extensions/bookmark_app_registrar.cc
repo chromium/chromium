@@ -158,6 +158,12 @@ const apps::ShareTarget* BookmarkAppRegistrar::GetAppShareTarget(
   return nullptr;
 }
 
+// Only implemented for WebApp. Bookmark apps are going away.
+blink::mojom::CaptureLinks BookmarkAppRegistrar::GetAppCaptureLinks(
+    const web_app::AppId& app_id) const {
+  return blink::mojom::CaptureLinks::kUndefined;
+}
+
 base::Optional<GURL> BookmarkAppRegistrar::GetAppScopeInternal(
     const web_app::AppId& app_id) const {
   const Extension* extension = GetBookmarkAppDchecked(app_id);

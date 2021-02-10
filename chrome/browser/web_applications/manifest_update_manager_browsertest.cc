@@ -48,6 +48,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -1109,6 +1110,45 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
                              /*x=*/0, /*y=*/0),
             SK_ColorBLACK);
+}
+
+class ManifestUpdateManagerCaptureLinksBrowserTest
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerCaptureLinksBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppEnableLinkCapturing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerCaptureLinksBrowserTest,
+                       CheckFindsCaptureLinksChange) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1,
+      "capture_links": "$2"
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, "none"});
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(GetProvider().registrar().GetAppCaptureLinks(app_id),
+            blink::mojom::CaptureLinks::kNone);
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, "new-client"});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
+  EXPECT_EQ(GetProvider().registrar().GetAppCaptureLinks(app_id),
+            blink::mojom::CaptureLinks::kNewClient);
 }
 
 class ManifestUpdateManagerSystemAppBrowserTest

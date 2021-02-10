@@ -98,6 +98,8 @@ class AppRegistrar {
       const AppId& app_id) const = 0;
   virtual const apps::ShareTarget* GetAppShareTarget(
       const AppId& app_id) const = 0;
+  virtual blink::mojom::CaptureLinks GetAppCaptureLinks(
+      const AppId& app_id) const = 0;
 
   // Returns the start_url with launch_query_params appended to the end if any.
   GURL GetAppLaunchUrl(const AppId& app_id) const;

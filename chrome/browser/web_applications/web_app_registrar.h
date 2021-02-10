@@ -54,6 +54,8 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
       const AppId& app_id) const override;
   const apps::ShareTarget* GetAppShareTarget(
       const AppId& app_id) const override;
+  blink::mojom::CaptureLinks GetAppCaptureLinks(
+      const web_app::AppId& app_id) const override;
   base::Optional<GURL> GetAppScopeInternal(const AppId& app_id) const override;
   DisplayMode GetAppDisplayMode(const AppId& app_id) const override;
   DisplayMode GetAppUserDisplayMode(const AppId& app_id) const override;

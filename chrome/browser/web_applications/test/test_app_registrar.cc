@@ -122,6 +122,11 @@ const apps::ShareTarget* TestAppRegistrar::GetAppShareTarget(
   return nullptr;
 }
 
+blink::mojom::CaptureLinks TestAppRegistrar::GetAppCaptureLinks(
+    const web_app::AppId& app_id) const {
+  return blink::mojom::CaptureLinks::kUndefined;
+}
+
 base::Optional<GURL> TestAppRegistrar::GetAppScopeInternal(
     const AppId& app_id) const {
   const auto& result = installed_apps_.find(app_id);
