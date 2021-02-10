@@ -681,11 +681,7 @@ def main():
     CopyLibstdcpp(args, LLVM_BOOTSTRAP_INSTALL_DIR)
     RunCommand(['ninja'], msvc_arch='x64')
     if args.run_tests:
-      test_targets = [ 'check-all' ]
-      if sys.platform == 'darwin':
-        # TODO(crbug.com/731375): Run check-all on Darwin too.
-        test_targets = [ 'check-llvm', 'check-clang', 'check-builtins' ]
-      RunCommand(['ninja'] + test_targets, msvc_arch='x64')
+      RunCommand(['ninja', 'check-all'], msvc_arch='x64')
     RunCommand(['ninja', 'install'], msvc_arch='x64')
 
     if sys.platform == 'win32':
