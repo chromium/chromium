@@ -290,7 +290,10 @@ NearbyConnections::~NearbyConnections() {
   }
   VLOG(1) << "Nearby Connections: waiting for Core objects to finish stopping "
           << "all endpoints.";
-  latch.Await(absl::Seconds(5));
+  if (!latch.Await(absl::Seconds(5)).result()) {
+    LOG(FATAL) << __func__ << ": Failed to stop all endpoints on each Core in "
+               << "time. Look for deadlocks in the threads tab of this crash.";
+  }
 
   VLOG(1) << "Nearby Connections: shutting down the shared service controller "
           << "prior to taking down Core objects";
@@ -301,6 +304,8 @@ NearbyConnections::~NearbyConnections() {
   VLOG(1) << "Nearby Connections: cleaning up Core objects";
   service_id_to_core_map_.clear();
   g_instance = nullptr;
+
+  VLOG(1) << "Nearby Connections: shutdown complete";
 }
 
 void NearbyConnections::OnDisconnect(const std::string dependency_name) {
