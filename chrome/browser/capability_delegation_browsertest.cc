@@ -60,19 +60,25 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest, PaymentRequest) {
   EXPECT_EQ(cross_site_url, frame_host->GetLastCommittedURL());
   EXPECT_TRUE(frame_host->IsCrossProcessSubframe());
 
-  // TODO(mustaq): We need to duplicate the following checks to include the
-  // cases without any user activation.  Calling |EvalJs| with the option
-  // EXECUTE_SCRIPT_NO_USER_GESTURE is not enough because the
-  // |NavigateIframeToURL| call above activates the top frame, perhaps to allow
-  // the navigation to complete.
+  // Without either user activation or payment request token, PaymentRequest
+  // dialog is not allowed.
+  EXPECT_EQ("NotAllowedError",
+            content::EvalJs(active_web_contents, "sendRequestToSubframe(false)",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  // Without payment request token, PaymentRequest dialog is not allowed.
+  // Without user activation but with the delegation option, PaymentRequest
+  // dialog is not allowed.
+  EXPECT_EQ("NotAllowedError",
+            content::EvalJs(active_web_contents, "sendRequestToSubframe(true)",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // With user activation but without the delegation option, PaymentRequest
+  // dialog is not allowed.
   EXPECT_EQ("NotAllowedError", content::EvalJs(active_web_contents,
                                                "sendRequestToSubframe(false)"));
 
-  // With payment request token (plus user activation from |NavigateIframeToURL|
-  // above), PaymentRequest dialog is shown and then successfully aborted by the
-  // script.
+  // With both user activation and the delegation option, PaymentRequest dialog
+  // is shown and then successfully aborted by the script.
   EXPECT_EQ("AbortError", content::EvalJs(active_web_contents,
                                           "sendRequestToSubframe(true)"));
 }
