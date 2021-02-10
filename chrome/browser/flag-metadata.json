@@ -755,7 +755,7 @@
   {
     "name": "crostini-enable-dlc",
     "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 90
   },
   {
     "name": "crostini-gpu-support",
@@ -775,7 +775,7 @@
   {
     "name": "crostini-use-dlc",
     "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 90
   },
   {
     "name": "crostini-webui-upgrader",
