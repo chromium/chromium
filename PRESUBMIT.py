@@ -352,8 +352,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   "^docs/ui/learn/bestpractices/layout\\.md",
   '^extensions/browser/',
   '^extensions/renderer/',
-  '^media/blink/webmediaplayer_impl.cc',
-  '^media/blink/webmediaplayer_impl.h',
   '^ppapi/proxy/',
   '^third_party/blink/PRESUBMIT_test.py', # Intentional.
   '^third_party/blink/tools/blinkpy/presubmit/audit_non_blink_usage.py' # Intentional pylint: disable=line-too-long

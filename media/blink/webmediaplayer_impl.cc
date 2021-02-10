@@ -3619,8 +3619,8 @@ void WebMediaPlayerImpl::UpdateBackgroundVideoOptimizationState() {
     } else if (is_background_status_change_cancelled_) {
       // Only trigger updates when we don't have one already scheduled.
       update_background_status_cb_.Reset(
-          base::Bind(&WebMediaPlayerImpl::DisableVideoTrackIfNeeded,
-                     base::Unretained(this)));
+          base::BindOnce(&WebMediaPlayerImpl::DisableVideoTrackIfNeeded,
+                         base::Unretained(this)));
       is_background_status_change_cancelled_ = false;
 
       // Defer disable track until we're sure the clip will be backgrounded for
