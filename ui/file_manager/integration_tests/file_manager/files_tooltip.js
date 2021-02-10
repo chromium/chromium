@@ -204,31 +204,25 @@
     const appId = await setupAndWaitUntilReady(
         RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    // Hover a button with tooltip.
-    let tooltip = await remoteCall.waitForElement(appId, tooltipQueryHidden);
+    // Check: initially the tooltip should be hidden.
+    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+
+    // Hover over a button that has a tooltip: the search button.
     chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
         'fakeMouseOver', appId, [searchButton]));
 
-    // The tooltip should be visible.
+    // Check: the search button tooltip should be visible.
     const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
-    tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
     const label =
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
     chrome.test.assertEq(expectedLabelText, label.text);
 
-    // Hover an element with tooltip.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'fakeMouseOver', appId, [searchButton]));
-
-    // The tooltip should be visible.
-    tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
-
-    // Click on body to hide tooltip.
+    // Click the body element.
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, ['body']));
 
-    // The tooltip should be hidden.
-    tooltip = await remoteCall.waitForElement(appId, tooltipQueryHidden);
+    // Check: the tooltip should hide.
+    await remoteCall.waitForElement(appId, tooltipQueryHidden);
   };
 
   /**
