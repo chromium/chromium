@@ -326,16 +326,14 @@ int CoalescePendingMotionEvents(const x11::Event* x11_event,
 
   conn->ReadResponses();
   if (motion) {
-    for (auto it = conn->events().begin(); it != conn->events().end();) {
-      const auto& next_event = *it;
+    for (auto& next_event : conn->events()) {
       // Discard all but the most recent motion event that targets the same
       // window with unchanged state.
       const auto* next_motion = next_event.As<x11::MotionNotifyEvent>();
       if (next_motion && next_motion->event == motion->event &&
           next_motion->child == motion->child &&
           next_motion->state == motion->state) {
-        *last_event = std::move(*it);
-        it = conn->events().erase(it);
+        *last_event = std::move(next_event);
       } else {
         break;
       }
@@ -345,8 +343,8 @@ int CoalescePendingMotionEvents(const x11::Event* x11_event,
            device->opcode == x11::Input::DeviceEvent::TouchUpdate);
 
     auto* ddmx11 = ui::DeviceDataManagerX11::GetInstance();
-    for (auto it = conn->events().begin(); it != conn->events().end();) {
-      auto* next_device = it->As<x11::Input::DeviceEvent>();
+    for (auto& event : conn->events()) {
+      auto* next_device = event.As<x11::Input::DeviceEvent>();
 
       if (!next_device)
         break;
@@ -357,13 +355,13 @@ int CoalescePendingMotionEvents(const x11::Event* x11_event,
       // always be at least one pending.
       if (!ui::TouchFactory::GetInstance()->ShouldProcessDeviceEvent(
               *next_device)) {
-        it = conn->events().erase(it);
+        event = x11::Event();
         continue;
       }
 
       if (next_device->opcode == device->opcode &&
-          !ddmx11->IsCMTGestureEvent(*it) &&
-          ddmx11->GetScrollClassEventDetail(*it) == SCROLL_TYPE_NO_SCROLL) {
+          !ddmx11->IsCMTGestureEvent(event) &&
+          ddmx11->GetScrollClassEventDetail(event) == SCROLL_TYPE_NO_SCROLL) {
         // Confirm that the motion event is targeted at the same window
         // and that no buttons or modifiers have changed.
         if (device->event == next_device->event &&
@@ -374,12 +372,12 @@ int CoalescePendingMotionEvents(const x11::Event* x11_event,
             device->mods.latched == next_device->mods.latched &&
             device->mods.locked == next_device->mods.locked &&
             device->mods.effective == next_device->mods.effective) {
-          *last_event = std::move(*it);
-          it = conn->events().erase(it);
+          *last_event = std::move(event);
           num_coalesced++;
           continue;
         }
       }
+
       break;
     }
   }

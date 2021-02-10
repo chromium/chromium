@@ -5,10 +5,10 @@
 #ifndef UI_GFX_X_CONNECTION_H_
 #define UI_GFX_X_CONNECTION_H_
 
-#include <list>
 #include <queue>
 
 #include "base/component_export.h"
+#include "base/containers/circular_deque.h"
 #include "base/sequence_checker.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/x/event.h"
@@ -145,8 +145,10 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   uint32_t KeycodeToKeysym(KeyCode keycode, uint32_t modifiers) const;
 
-  // Access the event buffer.  Clients can add, delete, or modify events.
-  std::list<Event>& events() {
+  // Access the event buffer.  Clients may modify the queue, including
+  // "deleting" events by setting events[i] = x11::Event(), which will
+  // guarantee all calls to x11::Event::As() will return nullptr.
+  base::circular_deque<Event>& events() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return events_;
   }
@@ -183,6 +185,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   bool HasNextResponse();
 
+  bool HasNextEvent();
+
   void PreDispatchEvent(const Event& event);
 
   int ScreenIndexFromRootWindow(x11::Window root) const;
@@ -213,7 +217,7 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   std::unique_ptr<KeyboardState> keyboard_state_;
 
-  std::list<Event> events_;
+  base::circular_deque<Event> events_;
 
   std::queue<Request> requests_;
 

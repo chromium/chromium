@@ -223,6 +223,15 @@ bool Connection::HasNextResponse() {
   return request.have_response;
 }
 
+bool Connection::HasNextEvent() {
+  while (!events_.empty()) {
+    if (events_.front().Initialized())
+      return true;
+    events_.pop_front();
+  }
+  return false;
+}
+
 int Connection::GetFd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return Ready() ? xcb_get_file_descriptor(XcbConnection()) : -1;
@@ -291,7 +300,7 @@ void Connection::ReadResponses() {
 
 Event Connection::WaitForNextEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!events_.empty()) {
+  if (HasNextEvent()) {
     Event event = std::move(events_.front());
     events_.pop_front();
     return event;
@@ -305,7 +314,7 @@ Event Connection::WaitForNextEvent() {
 
 bool Connection::HasPendingResponses() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !events_.empty() || HasNextResponse();
+  return HasNextEvent() || HasNextResponse();
 }
 
 const Connection::VisualInfo* Connection::GetVisualInfoFromId(
@@ -351,7 +360,7 @@ void Connection::Dispatch(Delegate* delegate) {
   };
 
   auto process_next_event = [&] {
-    DCHECK(!events_.empty());
+    DCHECK(HasNextEvent());
 
     Event event = std::move(events_.front());
     events_.pop_front();
@@ -364,7 +373,7 @@ void Connection::Dispatch(Delegate* delegate) {
     Flush();
     ReadResponses();
 
-    if (HasNextResponse() && !events_.empty()) {
+    if (HasNextResponse() && HasNextEvent()) {
       if (!events_.front().sequence_valid()) {
         process_next_event();
         continue;
@@ -382,7 +391,7 @@ void Connection::Dispatch(Delegate* delegate) {
         process_next_event();
     } else if (HasNextResponse()) {
       process_next_response();
-    } else if (!events_.empty()) {
+    } else if (HasNextEvent()) {
       process_next_event();
     } else {
       break;

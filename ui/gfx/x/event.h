@@ -74,6 +74,8 @@ class COMPONENT_EXPORT(X11) Event {
       *window_ = window;
   }
 
+  bool Initialized() const { return deleter_; }
+
  private:
   friend void ReadEvent(Event* event,
                         Connection* connection,
