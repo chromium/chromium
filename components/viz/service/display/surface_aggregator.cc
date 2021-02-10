@@ -1541,7 +1541,8 @@ bool SurfaceAggregator::DeclareResourcesToProvider(
 
   // Ref the resources in the surface, and let the provider know we've received
   // new resources from the compositor frame.
-  surface->RefResources(resource_list);
+  if (surface->client())
+    surface->client()->RefResources(resource_list);
   provider_->ReceiveFromChild(child_id, resource_list);
 
   // Figure out which resources are actually used in the render pass.

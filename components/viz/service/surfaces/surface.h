@@ -128,12 +128,6 @@ class VIZ_SERVICE_EXPORT Surface final {
 
   void SetPreviousFrameSurface(Surface* surface);
 
-  // Increments the reference count on resources specified by |resources|.
-  void RefResources(const std::vector<TransferableResource>& resources);
-
-  // Decrements the reference count on resources specified by |resources|.
-  void UnrefResources(const std::vector<ReturnedResource>& resources);
-
   // Returns false if |frame| is invalid.
   // |frame_rejected_callback| will be called once if the frame will not be
   // displayed.

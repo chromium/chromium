@@ -127,16 +127,6 @@ void Surface::SetPreviousFrameSurface(Surface* surface) {
   previous_frame_surface_id_ = surface->surface_id();
 }
 
-void Surface::RefResources(const std::vector<TransferableResource>& resources) {
-  if (surface_client_)
-    surface_client_->RefResources(resources);
-}
-
-void Surface::UnrefResources(const std::vector<ReturnedResource>& resources) {
-  if (surface_client_)
-    surface_client_->UnrefResources(resources);
-}
-
 void Surface::UpdateSurfaceReferences() {
   const base::flat_set<SurfaceId>& existing_referenced_surfaces =
       surface_manager_->GetSurfacesReferencedByParent(surface_id());
