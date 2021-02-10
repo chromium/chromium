@@ -602,6 +602,8 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
     return false;
   }
 
+  if (fflush(ppd_file.handle()))
+    return false;
   if (fseek(ppd_file.handle(), 0, SEEK_SET) != 0)
     return false;
 
