@@ -18,6 +18,7 @@ class OmniboxTriggeredFeatureService {
   // corresponding entry should be added in the UMA histograms.
   enum class Feature {
     kRichAutocompletion = 0,
+    kBookmarkPaths = 1,
     kShortBookmarkSuggestionsByTotalInputLength = 2,
     kMaxValue = kShortBookmarkSuggestionsByTotalInputLength,
   };

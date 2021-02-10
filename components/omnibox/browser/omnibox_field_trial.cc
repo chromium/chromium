@@ -1016,6 +1016,8 @@ const char
     OmniboxFieldTrial::kEntitySuggestionsReduceLatencyDecoderWakeupParam[] =
         "EntitySuggestionsReduceLatencyDecoderWakeup";
 
+extern const char OmniboxFieldTrial::kBookmarkPathsCounterfactual[] =
+    "OmniboxBookmarkPathsCounterfactual";
 extern const char OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle[] =
     "OmniboxBookmarkPathsUiReplaceTitle";
 extern const char OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl[] =
