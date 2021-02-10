@@ -74,8 +74,11 @@ LoginUnlockThroughputRecorder::~LoginUnlockThroughputRecorder() {
 }
 
 void LoginUnlockThroughputRecorder::OnLockStateChanged(bool locked) {
-  if (!locked && chromeos::LoginState::Get()->GetLoggedInUserType() ==
-                     chromeos::LoginState::LOGGED_IN_USER_REGULAR) {
+  auto logged_in_user = chromeos::LoginState::Get()->GetLoggedInUserType();
+
+  if (!locked &&
+      (logged_in_user == chromeos::LoginState::LOGGED_IN_USER_OWNER ||
+       logged_in_user == chromeos::LoginState::LOGGED_IN_USER_REGULAR)) {
     auto* primary_root = Shell::GetPrimaryRootWindow();
     new ui::TotalAnimationThroughputReporter(
         primary_root->GetHost()->compositor(), base::BindOnce(&ReportUnlock),
@@ -84,9 +87,11 @@ void LoginUnlockThroughputRecorder::OnLockStateChanged(bool locked) {
 }
 
 void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
-  if (chromeos::LoginState::Get()->IsUserLoggedIn() &&
-      chromeos::LoginState::Get()->GetLoggedInUserType() ==
-          chromeos::LoginState::LOGGED_IN_USER_REGULAR) {
+  auto* login_state = chromeos::LoginState::Get();
+  auto logged_in_user = login_state->GetLoggedInUserType();
+  if (login_state->IsUserLoggedIn() &&
+      (logged_in_user == chromeos::LoginState::LOGGED_IN_USER_OWNER ||
+       logged_in_user == chromeos::LoginState::LOGGED_IN_USER_REGULAR)) {
     auto* primary_root = Shell::GetPrimaryRootWindow();
     new ui::TotalAnimationThroughputReporter(
         primary_root->GetHost()->compositor(), base::BindOnce(&ReportLogin),
