@@ -38,7 +38,7 @@ class IOSAppConfigWriterUnitTests(writer_unittest_common.WriterUnittestCommon):
       presentation = '<presentation defaultLocale="en-US"/>'
 
     return '''<?xml version="1.0" ?>
-<managedAppConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/com.google.chrome.ios/appconfig/appconfig.xsd">
+<managedAppConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://storage.googleapis.com/appconfig-media/appconfigschema.xsd">
   <version>%s</version>
   <bundleId>com.google.chrome.ios</bundleId>
   %s

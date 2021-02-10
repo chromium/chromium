@@ -117,7 +117,7 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
   def BeginTemplate(self):
     self._app_config.attributes[
         'xmlns:xsi'] = 'http://www.w3.org/2001/XMLSchema-instance'
-    schema_location = '/%s/appconfig/appconfig.xsd' % (self.config['bundle_id'])
+    schema_location = 'https://storage.googleapis.com/appconfig-media/appconfigschema.xsd'
     self._app_config.attributes[
         'xsi:noNamespaceSchemaLocation'] = schema_location
 
