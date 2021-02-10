@@ -16,37 +16,32 @@ namespace base {
 
 namespace internal {
 
-// AddressPoolManagerBitmap is a set of bitmaps that track whether a given
-// address is in a pool that supports BackupRefPtr, or in a pool that doesn't
-// support it. All PartitionAlloc allocations must be in either of the pools.
-//
-// This code is specific to 32-bit systems.
+// AddressPoolManagerBitmap is the bitmap that tracks whether a given address is
+// managed by the direct map or normal buckets.
 class BASE_EXPORT AddressPoolManagerBitmap {
  public:
   static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
   static constexpr uint64_t kAddressSpaceSize = 4ull * kGiB;
-  // Non-BRP pool includes, among others, direct map allocations, which reserve
-  // address space at PageAllocationGranularity(). BRP pool only supports normal
-  // bucket allocations, which always reserve address space at 2MB granularity.
-  static constexpr size_t kNonBRPPoolBits =
+  static constexpr size_t kNormalBucketBits =
+      kAddressSpaceSize / kSuperPageSize;
+  static constexpr size_t kDirectMapBits =
       kAddressSpaceSize / PageAllocationGranularity();
-  static constexpr size_t kBRPPoolBits = kAddressSpaceSize / kSuperPageSize;
 
-  static bool IsManagedByNonBRPPool(const void* address) {
+  static bool IsManagedByDirectMapPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
-    // It is safe to read |non_brp_pool_bits_| without a lock since the caller
-    // is responsible for guaranteeing that the address is inside a valid
+    // It is safe to read |directmap_bits_| without a lock since the caller is
+    // responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
-    return TS_UNCHECKED_READ(non_brp_pool_bits_)
+    return TS_UNCHECKED_READ(directmap_bits_)
         .test(address_as_uintptr / PageAllocationGranularity());
   }
 
-  static bool IsManagedByBRPPool(const void* address) {
+  static bool IsManagedByNormalBucketPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
-    // It is safe to read |brp_pool_bits_| without a lock since the caller
+    // It is safe to read |normal_bucket_bits_| without a lock since the caller
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
-    return TS_UNCHECKED_READ(brp_pool_bits_)
+    return TS_UNCHECKED_READ(normal_bucket_bits_)
         .test(address_as_uintptr >> kSuperPageShift);
   }
 
@@ -55,18 +50,20 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 
   static Lock& GetLock();
 
-  static std::bitset<kNonBRPPoolBits> non_brp_pool_bits_ GUARDED_BY(GetLock());
-  static std::bitset<kBRPPoolBits> brp_pool_bits_ GUARDED_BY(GetLock());
+  static std::bitset<kDirectMapBits> directmap_bits_ GUARDED_BY(GetLock());
+  static std::bitset<kNormalBucketBits> normal_bucket_bits_
+      GUARDED_BY(GetLock());
 };
 
 }  // namespace internal
 
-ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
-  return internal::AddressPoolManagerBitmap::IsManagedByNonBRPPool(address);
+ALWAYS_INLINE bool IsManagedByPartitionAllocDirectMap(const void* address) {
+  return internal::AddressPoolManagerBitmap::IsManagedByDirectMapPool(address);
 }
 
-ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(const void* address) {
-  return internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address);
+ALWAYS_INLINE bool IsManagedByPartitionAllocNormalBuckets(const void* address) {
+  return internal::AddressPoolManagerBitmap::IsManagedByNormalBucketPool(
+      address);
 }
 
 }  // namespace base

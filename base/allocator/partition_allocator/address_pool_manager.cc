@@ -265,14 +265,14 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
                                   size_t length) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
-  if (handle == kNonBRPPoolHandle) {
-    SetBitmap(AddressPoolManagerBitmap::non_brp_pool_bits_,
+  if (handle == kDirectMapHandle) {
+    SetBitmap(AddressPoolManagerBitmap::directmap_bits_,
               ptr_as_uintptr / PageAllocationGranularity(),
               length / PageAllocationGranularity());
   } else {
-    PA_DCHECK(handle == kBRPPoolHandle);
+    PA_DCHECK(handle == kNormalBucketHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
-    SetBitmap(AddressPoolManagerBitmap::brp_pool_bits_,
+    SetBitmap(AddressPoolManagerBitmap::normal_bucket_bits_,
               ptr_as_uintptr >> kSuperPageShift, length >> kSuperPageShift);
   }
 }
@@ -281,25 +281,24 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
                                     uintptr_t address,
                                     size_t length) {
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
-  // Currently, address regions allocated by kBRPPoolHandle are never freed
-  // in PartitionAlloc, because only normal buckets are allocated from there.
-  // Thus we have LIKELY for kNonBRPPoolHandle
-  if (LIKELY(handle == kNonBRPPoolHandle)) {
-    ResetBitmap(AddressPoolManagerBitmap::non_brp_pool_bits_,
+  // Currently, address regions allocated by kNormalBucketHandle are never freed
+  // in PartitionAlloc. Thus we have LIKELY for kDirectMapHandle
+  if (LIKELY(handle == kDirectMapHandle)) {
+    ResetBitmap(AddressPoolManagerBitmap::directmap_bits_,
                 address / PageAllocationGranularity(),
                 length / PageAllocationGranularity());
   } else {
-    PA_DCHECK(handle == kBRPPoolHandle);
+    PA_DCHECK(handle == kNormalBucketHandle);
     PA_DCHECK(!(length & kSuperPageOffsetMask));
-    ResetBitmap(AddressPoolManagerBitmap::brp_pool_bits_,
+    ResetBitmap(AddressPoolManagerBitmap::normal_bucket_bits_,
                 address >> kSuperPageShift, length >> kSuperPageShift);
   }
 }
 
 void AddressPoolManager::ResetForTesting() {
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
-  AddressPoolManagerBitmap::non_brp_pool_bits_.reset();
-  AddressPoolManagerBitmap::brp_pool_bits_.reset();
+  AddressPoolManagerBitmap::directmap_bits_.reset();
+  AddressPoolManagerBitmap::normal_bucket_bits_.reset();
 }
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)

@@ -2841,7 +2841,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
 #endif
     size_t alignment = PageAllocationGranularity();
 #if defined(PA_HAS_64_BITS_POINTERS)
-    if (features::IsPartitionAllocGigaCageEnabled())
+    if (root.UsesGigaCage())
       alignment = kSuperPageSize;
 #endif
     size_t expected_direct_map_size =

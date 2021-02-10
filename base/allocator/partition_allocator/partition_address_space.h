@@ -28,15 +28,15 @@ namespace internal {
 // Reserves address space for PartitionAllocator.
 class BASE_EXPORT PartitionAddressSpace {
  public:
-  // BRP stands for BackupRefPtr. GigaCage is split into pools, one which
-  // supports BackupRefPtr and one that doesn't.
-  static ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
-    return non_brp_pool_;
+  static ALWAYS_INLINE constexpr uintptr_t NormalBucketPoolBaseMask() {
+    return kNormalBucketPoolBaseMask;
   }
-  static ALWAYS_INLINE internal::pool_handle GetBRPPool() { return brp_pool_; }
 
-  static ALWAYS_INLINE constexpr uintptr_t BRPPoolBaseMask() {
-    return kBRPPoolBaseMask;
+  static ALWAYS_INLINE internal::pool_handle GetDirectMapPool() {
+    return direct_map_pool_;
+  }
+  static ALWAYS_INLINE internal::pool_handle GetNormalBucketPool() {
+    return normal_bucket_pool_;
   }
 
   static void Init();
@@ -44,27 +44,27 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE bool IsInitialized() {
     if (reserved_base_address_) {
-      PA_DCHECK(non_brp_pool_ != 0);
-      PA_DCHECK(brp_pool_ != 0);
+      PA_DCHECK(direct_map_pool_ != 0);
+      PA_DCHECK(normal_bucket_pool_ != 0);
       return true;
     }
 
-    PA_DCHECK(non_brp_pool_ == 0);
-    PA_DCHECK(brp_pool_ == 0);
+    PA_DCHECK(direct_map_pool_ == 0);
+    PA_DCHECK(normal_bucket_pool_ == 0);
     return false;
   }
 
-  static ALWAYS_INLINE bool IsInNonBRPPool(const void* address) {
-    return (reinterpret_cast<uintptr_t>(address) & kNonBRPPoolBaseMask) ==
-           non_brp_pool_base_address_;
+  static ALWAYS_INLINE bool IsInDirectMapPool(const void* address) {
+    return (reinterpret_cast<uintptr_t>(address) & kDirectMapPoolBaseMask) ==
+           direct_map_pool_base_address_;
   }
-  static ALWAYS_INLINE bool IsInBRPPool(const void* address) {
-    return (reinterpret_cast<uintptr_t>(address) & kBRPPoolBaseMask) ==
-           brp_pool_base_address_;
+  static ALWAYS_INLINE bool IsInNormalBucketPool(const void* address) {
+    return (reinterpret_cast<uintptr_t>(address) & kNormalBucketPoolBaseMask) ==
+           normal_bucket_pool_base_address_;
   }
 
-  static ALWAYS_INLINE uintptr_t BRPPoolBase() {
-    return brp_pool_base_address_;
+  static ALWAYS_INLINE uintptr_t NormalBucketPoolBase() {
+    return normal_bucket_pool_base_address_;
   }
 
   // PartitionAddressSpace is static_only class.
@@ -75,8 +75,8 @@ class BASE_EXPORT PartitionAddressSpace {
 
  private:
   // Partition Alloc Address Space
-  // Reserves 32GiB address space for one pool that supports BackupRefPtr and
-  // one that doesn't, 16GiB each.
+  // Reserves 32GiB address space for one direct map pool and one normal bucket
+  // pool, 16GiB each.
   // TODO(bartekn): Look into devices with 39-bit address space that have 256GiB
   // user-mode space. Libraries loaded at random addresses may stand in the way
   // of reserving a contiguous 48GiB region (even though we're requesting only
@@ -84,19 +84,18 @@ class BASE_EXPORT PartitionAddressSpace {
   // alignment requirements).
   //
   // +----------------+ reserved_base_address_ (16GiB aligned)
-  // |    non-BRP     |     == non_brp_pool_base_address_
+  // |   direct map   |     == direct_map_pool_base_address_
   // |      pool      |
   // +----------------+ reserved_base_address_ + 16GiB
-  // |      BRP       |     == brp_pool_base_address_
+  // | normal bucket  |     == normal_bucket_pool_base_address_
   // |      pool      |
   // +----------------+ reserved_base_address_ + 32GiB
   //
-  // NOTE! On 64-bit systems with BackupRefPtr enabled, the non-BRP pool must
-  // precede the BRP pool. This is to prevent a pointer immediately past a
-  // non-GigaCage allocation from falling into the BRP pool, thus triggering
-  // BackupRefPtr mechanism and likely crashing.
-  // TODO(bartekn): Add a guard page at the end of direct map allocations to
-  // prevent pointers immediately past those from falling into the BRP pool.
+  // NOTE! On 64-bit systems with BackupRefPtr enabled, the direct map pool must
+  // precede normal bucket pool. This is to prevent a pointer immediately past a
+  // non-GigaCage allocation from falling into the normal bucket pool, thus
+  // triggering BackupRefPtr mechanism and likely crashing.
+  // TODO(bartekn): Add a guard page at the end of direct map allocations.
 
   static constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
 
@@ -108,59 +107,60 @@ class BASE_EXPORT PartitionAddressSpace {
   //
   // For example, [16GiB,8GiB] would work, but [8GiB,16GiB] wouldn't (the 2nd
   // pool is aligned on 8GiB but needs 16GiB), and [8GiB,8GiB,16GiB,1GiB] would.
-  static constexpr size_t kNonBRPPoolSize = 16 * kGigaBytes;
-  static constexpr size_t kBRPPoolSize = 16 * kGigaBytes;
+  static constexpr size_t kDirectMapPoolSize = 16 * kGigaBytes;
+  static constexpr size_t kNormalBucketPoolSize = 16 * kGigaBytes;
 
   static constexpr size_t kDesiredAddressSpaceSize =
-      kNonBRPPoolSize + kBRPPoolSize;
+      kDirectMapPoolSize + kNormalBucketPoolSize;
   static constexpr size_t kReservedAddressSpaceAlignment =
-      std::max(kNonBRPPoolSize, kBRPPoolSize);
+      std::max(kDirectMapPoolSize, kNormalBucketPoolSize);
 
-  static_assert(bits::IsPowerOfTwo(kNonBRPPoolSize) &&
-                    bits::IsPowerOfTwo(kBRPPoolSize),
+  static_assert(bits::IsPowerOfTwo(kDirectMapPoolSize) &&
+                    bits::IsPowerOfTwo(kNormalBucketPoolSize),
                 "Each pool size should be a power of two.");
   static_assert(bits::IsPowerOfTwo(kReservedAddressSpaceAlignment),
                 "kReservedAddressSpaceAlignment should be a power of two.");
-  static_assert(kReservedAddressSpaceAlignment >= kNonBRPPoolSize &&
-                    kReservedAddressSpaceAlignment >= kBRPPoolSize,
+  static_assert(kReservedAddressSpaceAlignment >= kDirectMapPoolSize &&
+                    kReservedAddressSpaceAlignment >= kNormalBucketPoolSize,
                 "kReservedAddressSpaceAlignment should be larger or equal to "
                 "each pool size.");
-  static_assert(kReservedAddressSpaceAlignment % kNonBRPPoolSize == 0 &&
-                    (kReservedAddressSpaceAlignment + kNonBRPPoolSize) %
-                            kBRPPoolSize ==
+  static_assert(kReservedAddressSpaceAlignment % kDirectMapPoolSize == 0 &&
+                    (kReservedAddressSpaceAlignment + kDirectMapPoolSize) %
+                            kNormalBucketPoolSize ==
                         0,
                 "Each pool should be aligned to its own size");
 
   // Masks used to easy determine belonging to a pool.
-  static constexpr uintptr_t kNonBRPPoolOffsetMask =
-      static_cast<uintptr_t>(kNonBRPPoolSize) - 1;
-  static constexpr uintptr_t kNonBRPPoolBaseMask = ~kNonBRPPoolOffsetMask;
-  static constexpr uintptr_t kBRPPoolOffsetMask =
-      static_cast<uintptr_t>(kBRPPoolSize) - 1;
-  static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
+  static constexpr uintptr_t kDirectMapPoolOffsetMask =
+      static_cast<uintptr_t>(kDirectMapPoolSize) - 1;
+  static constexpr uintptr_t kDirectMapPoolBaseMask = ~kDirectMapPoolOffsetMask;
+  static constexpr uintptr_t kNormalBucketPoolOffsetMask =
+      static_cast<uintptr_t>(kNormalBucketPoolSize) - 1;
+  static constexpr uintptr_t kNormalBucketPoolBaseMask =
+      ~kNormalBucketPoolOffsetMask;
 
   // See the comment describing the address layout above.
   static uintptr_t reserved_base_address_;
-  static uintptr_t non_brp_pool_base_address_;
-  static uintptr_t brp_pool_base_address_;
+  static uintptr_t direct_map_pool_base_address_;
+  static uintptr_t normal_bucket_pool_base_address_;
 
-  static internal::pool_handle non_brp_pool_;
-  static internal::pool_handle brp_pool_;
+  static internal::pool_handle direct_map_pool_;
+  static internal::pool_handle normal_bucket_pool_;
 };
 
-ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
+ALWAYS_INLINE internal::pool_handle GetDirectMapPool() {
   // This file is included from checked_ptr.h. This will result in a cycle if it
   // includes partition_alloc_features.h where IsPartitionAllocGigaCageEnabled
   // resides, because it includes Finch headers which may include checked_ptr.h.
   // TODO(bartekn): Uncomment once Finch is no longer used there.
   // PA_DCHECK(IsPartitionAllocGigaCageEnabled());
-  return PartitionAddressSpace::GetNonBRPPool();
+  return PartitionAddressSpace::GetDirectMapPool();
 }
 
-ALWAYS_INLINE internal::pool_handle GetBRPPool() {
+ALWAYS_INLINE internal::pool_handle GetNormalBucketPool() {
   // TODO(bartekn): Uncomment once Finch is no longer used there (see above).
   // PA_DCHECK(IsPartitionAllocGigaCageEnabled());
-  return PartitionAddressSpace::GetBRPPool();
+  return PartitionAddressSpace::GetNormalBucketPool();
 }
 
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
@@ -168,12 +168,12 @@ ALWAYS_INLINE internal::pool_handle GetBRPPool() {
 }  // namespace internal
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
-  return internal::PartitionAddressSpace::IsInNonBRPPool(address);
+ALWAYS_INLINE bool IsManagedByPartitionAllocDirectMap(const void* address) {
+  return internal::PartitionAddressSpace::IsInDirectMapPool(address);
 }
 
-ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(const void* address) {
-  return internal::PartitionAddressSpace::IsInBRPPool(address);
+ALWAYS_INLINE bool IsManagedByPartitionAllocNormalBuckets(const void* address) {
+  return internal::PartitionAddressSpace::IsInNormalBucketPool(address);
 }
 #endif
 

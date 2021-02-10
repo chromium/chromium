@@ -22,12 +22,13 @@ uintptr_t PartitionAddressSpace::reserved_base_address_ = 0;
 // reserved address space. Therefore, set *_pool_base_address_ initially to
 // k*PoolOffsetMask, so that PartitionAddressSpace::IsIn*Pool() always returns
 // false.
-uintptr_t PartitionAddressSpace::non_brp_pool_base_address_ =
-    kNonBRPPoolOffsetMask;
-uintptr_t PartitionAddressSpace::brp_pool_base_address_ = kBRPPoolOffsetMask;
+uintptr_t PartitionAddressSpace::direct_map_pool_base_address_ =
+    kDirectMapPoolOffsetMask;
+uintptr_t PartitionAddressSpace::normal_bucket_pool_base_address_ =
+    kNormalBucketPoolOffsetMask;
 
-pool_handle PartitionAddressSpace::non_brp_pool_ = 0;
-pool_handle PartitionAddressSpace::brp_pool_ = 0;
+pool_handle PartitionAddressSpace::direct_map_pool_ = 0;
+pool_handle PartitionAddressSpace::normal_bucket_pool_ = 0;
 
 void PartitionAddressSpace::Init() {
   if (IsInitialized())
@@ -40,25 +41,25 @@ void PartitionAddressSpace::Init() {
 
   uintptr_t current = reserved_base_address_;
 
-  non_brp_pool_base_address_ = current;
-  non_brp_pool_ = internal::AddressPoolManager::GetInstance()->Add(
-      current, kNonBRPPoolSize);
-  PA_DCHECK(non_brp_pool_);
-  PA_DCHECK(!IsInNonBRPPool(reinterpret_cast<void*>(current - 1)));
-  PA_DCHECK(IsInNonBRPPool(reinterpret_cast<void*>(current)));
-  current += kNonBRPPoolSize;
-  PA_DCHECK(IsInNonBRPPool(reinterpret_cast<void*>(current - 1)));
-  PA_DCHECK(!IsInNonBRPPool(reinterpret_cast<void*>(current)));
+  direct_map_pool_base_address_ = current;
+  direct_map_pool_ = internal::AddressPoolManager::GetInstance()->Add(
+      current, kDirectMapPoolSize);
+  PA_DCHECK(direct_map_pool_);
+  PA_DCHECK(!IsInDirectMapPool(reinterpret_cast<void*>(current - 1)));
+  PA_DCHECK(IsInDirectMapPool(reinterpret_cast<void*>(current)));
+  current += kDirectMapPoolSize;
+  PA_DCHECK(IsInDirectMapPool(reinterpret_cast<void*>(current - 1)));
+  PA_DCHECK(!IsInDirectMapPool(reinterpret_cast<void*>(current)));
 
-  brp_pool_base_address_ = current;
-  brp_pool_ =
-      internal::AddressPoolManager::GetInstance()->Add(current, kBRPPoolSize);
-  PA_DCHECK(brp_pool_);
-  PA_DCHECK(!IsInBRPPool(reinterpret_cast<void*>(current - 1)));
-  PA_DCHECK(IsInBRPPool(reinterpret_cast<void*>(current)));
-  current += kBRPPoolSize;
-  PA_DCHECK(IsInBRPPool(reinterpret_cast<void*>(current - 1)));
-  PA_DCHECK(!IsInBRPPool(reinterpret_cast<void*>(current)));
+  normal_bucket_pool_base_address_ = current;
+  normal_bucket_pool_ = internal::AddressPoolManager::GetInstance()->Add(
+      current, kNormalBucketPoolSize);
+  PA_DCHECK(normal_bucket_pool_);
+  PA_DCHECK(!IsInNormalBucketPool(reinterpret_cast<void*>(current - 1)));
+  PA_DCHECK(IsInNormalBucketPool(reinterpret_cast<void*>(current)));
+  current += kNormalBucketPoolSize;
+  PA_DCHECK(IsInNormalBucketPool(reinterpret_cast<void*>(current - 1)));
+  PA_DCHECK(!IsInNormalBucketPool(reinterpret_cast<void*>(current)));
 
   PA_DCHECK(reserved_base_address_ + kDesiredAddressSpaceSize == current);
 }
@@ -67,10 +68,10 @@ void PartitionAddressSpace::UninitForTesting() {
   FreePages(reinterpret_cast<void*>(reserved_base_address_),
             kReservedAddressSpaceAlignment);
   reserved_base_address_ = 0;
-  non_brp_pool_base_address_ = kNonBRPPoolOffsetMask;
-  brp_pool_base_address_ = kBRPPoolOffsetMask;
-  non_brp_pool_ = 0;
-  brp_pool_ = 0;
+  direct_map_pool_base_address_ = kDirectMapPoolOffsetMask;
+  normal_bucket_pool_base_address_ = kNormalBucketPoolOffsetMask;
+  direct_map_pool_ = 0;
+  normal_bucket_pool_ = 0;
   internal::AddressPoolManager::GetInstance()->ResetForTesting();
 }
 

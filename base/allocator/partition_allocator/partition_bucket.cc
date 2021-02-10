@@ -38,11 +38,10 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(slot_size <= map_size);
 
   char* ptr = nullptr;
-  // Allocate from GigaCage, if enabled. In this case, use non-BRP pool, because
-  // BackupRefPtr isn't supported in direct maps.
+  // Allocate from GigaCage, if enabled.
   if (features::IsPartitionAllocGigaCageEnabled()) {
     ptr = internal::AddressPoolManager::GetInstance()->Reserve(
-        GetNonBRPPool(), nullptr, reserved_size);
+        GetDirectMapPool(), nullptr, reserved_size);
   } else {
     ptr = reinterpret_cast<char*>(
         AllocPages(nullptr, reserved_size, kSuperPageAlignment,
@@ -237,12 +236,13 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // architectures.
   char* requested_address = root->next_super_page;
   char* super_page = nullptr;
-  // Allocate from GigaCage, if enabled. Route to the appropriate GigaCage pool
-  // based on BackupRefPtr support.
-  if (features::IsPartitionAllocGigaCageEnabled()) {
+  // Allocate from GigaCage, if enabled. However, the exception to this is when
+  // ref-count isn't allowed, as CheckedPtr assumes that everything inside
+  // GigaCage uses ref-count (specifically, inside the GigaCage's normal bucket
+  // pool).
+  if (root->UsesGigaCage()) {
     super_page = AddressPoolManager::GetInstance()->Reserve(
-        root->SupportsBRP() ? GetBRPPool() : GetNonBRPPool(), requested_address,
-        kSuperPageSize);
+        GetNormalBucketPool(), requested_address, kSuperPageSize);
   } else {
     super_page = reinterpret_cast<char*>(
         AllocPages(requested_address, kSuperPageSize, kSuperPageAlignment,

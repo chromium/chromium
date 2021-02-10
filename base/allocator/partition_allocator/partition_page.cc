@@ -210,11 +210,10 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
 void DeferredUnmap::Unmap() {
   PA_DCHECK(ptr && size > 0);
   if (features::IsPartitionAllocGigaCageEnabled()) {
-    // Currently this function is only called for direct-mapped allocations,
-    // which always belong to the non-BRP pool, provided that GigaCage is used.
-    PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(ptr));
+    // Currently this function is only called for direct-mapped allocations.
+    PA_DCHECK(IsManagedByPartitionAllocDirectMap(ptr));
     internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-        internal::GetNonBRPPool(), ptr, size);
+        internal::GetDirectMapPool(), ptr, size);
   } else {
     FreePages(ptr, size);
   }

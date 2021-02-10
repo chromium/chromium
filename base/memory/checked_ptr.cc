@@ -4,7 +4,6 @@
 
 #include "base/memory/checked_ptr.h"
 
-#include "base/check.h"
 #include "base/partition_alloc_buildflags.h"
 
 // USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
@@ -18,23 +17,17 @@ namespace base {
 namespace internal {
 
 void BackupRefPtrImpl::AcquireInternal(void* ptr) {
-  DCHECK(features::IsPartitionAllocGigaCageEnabled() &&
-         IsManagedByPartitionAllocBRPPool(ptr));
   void* slot_start = PartitionAllocGetSlotStart(ptr);
   PartitionRefCountPointer(slot_start)->Acquire();
 }
 
 void BackupRefPtrImpl::ReleaseInternal(void* ptr) {
-  DCHECK(features::IsPartitionAllocGigaCageEnabled() &&
-         IsManagedByPartitionAllocBRPPool(ptr));
   void* slot_start = PartitionAllocGetSlotStart(ptr);
   if (PartitionRefCountPointer(slot_start)->Release())
     PartitionAllocFreeForRefCounting(slot_start);
 }
 
 bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
-  DCHECK(features::IsPartitionAllocGigaCageEnabled() &&
-         IsManagedByPartitionAllocBRPPool(ptr));
   void* slot_start = PartitionAllocGetSlotStart(ptr);
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }

@@ -168,13 +168,14 @@ TEST_F(AddressPoolManagerTest, DecommittedDataIsErased) {
 
 #else   // defined(PA_HAS_64_BITS_POINTERS)
 
-TEST_F(AddressPoolManagerTest, IsManagedByNonBRPPool) {
+TEST_F(AddressPoolManagerTest, IsManagedByDirectMapPool) {
   constexpr size_t kAllocCount = 8;
   static const size_t kNumPages[kAllocCount] = {1, 4, 7, 8, 13, 16, 31, 60};
   void* addrs[kAllocCount];
   for (size_t i = 0; i < kAllocCount; ++i) {
     addrs[i] = AddressPoolManager::GetInstance()->Reserve(
-        GetNonBRPPool(), nullptr, PageAllocationGranularity() * kNumPages[i]);
+        GetDirectMapPool(), nullptr,
+        PageAllocationGranularity() * kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(
         !(reinterpret_cast<uintptr_t>(addrs[i]) & kSuperPageOffsetMask));
@@ -186,30 +187,31 @@ TEST_F(AddressPoolManagerTest, IsManagedByNonBRPPool) {
                        PageAllocationGranularity();
     for (size_t j = 0; j < num_pages; ++j) {
       if (j < kNumPages[i]) {
-        EXPECT_TRUE(AddressPoolManager::IsManagedByNonBRPPool(ptr));
+        EXPECT_TRUE(AddressPoolManager::IsManagedByDirectMapPool(ptr));
       } else {
-        EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(ptr));
+        EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(ptr));
       }
-      EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(ptr));
+      EXPECT_FALSE(AddressPoolManager::IsManagedByNormalBucketPool(ptr));
       ptr += PageAllocationGranularity();
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-        GetNonBRPPool(), addrs[i], PageAllocationGranularity() * kNumPages[i]);
-    EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(addrs[i]));
-    EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
+        GetDirectMapPool(), addrs[i],
+        PageAllocationGranularity() * kNumPages[i]);
+    EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(addrs[i]));
+    EXPECT_FALSE(AddressPoolManager::IsManagedByNormalBucketPool(addrs[i]));
   }
 }
 
-TEST_F(AddressPoolManagerTest, IsManagedByBRPPool) {
+TEST_F(AddressPoolManagerTest, IsManagedByNormalBucketPool) {
   constexpr size_t kAllocCount = 4;
   // Totally (1+3+7+11) * 2MB = 44MB allocation
   static const size_t kNumPages[kAllocCount] = {1, 3, 7, 11};
   void* addrs[kAllocCount];
   for (size_t i = 0; i < kAllocCount; ++i) {
     addrs[i] = AddressPoolManager::GetInstance()->Reserve(
-        GetBRPPool(), nullptr, kSuperPageSize * kNumPages[i]);
+        GetNormalBucketPool(), nullptr, kSuperPageSize * kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(
         !(reinterpret_cast<uintptr_t>(addrs[i]) & kSuperPageOffsetMask));
@@ -218,16 +220,16 @@ TEST_F(AddressPoolManagerTest, IsManagedByBRPPool) {
     const char* ptr = reinterpret_cast<const char*>(addrs[i]);
     size_t num_system_pages = kNumPages[i] * kSuperPageSize / SystemPageSize();
     for (size_t j = 0; j < num_system_pages; ++j) {
-      EXPECT_TRUE(AddressPoolManager::IsManagedByBRPPool(ptr));
-      EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(ptr));
+      EXPECT_TRUE(AddressPoolManager::IsManagedByNormalBucketPool(ptr));
+      EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(ptr));
       ptr += SystemPageSize();
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-        GetBRPPool(), addrs[i], kSuperPageSize * kNumPages[i]);
-    EXPECT_FALSE(AddressPoolManager::IsManagedByNonBRPPool(addrs[i]));
-    EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
+        GetNormalBucketPool(), addrs[i], kSuperPageSize * kNumPages[i]);
+    EXPECT_FALSE(AddressPoolManager::IsManagedByDirectMapPool(addrs[i]));
+    EXPECT_FALSE(AddressPoolManager::IsManagedByNormalBucketPool(addrs[i]));
   }
 }
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
