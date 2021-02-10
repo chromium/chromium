@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_service.h"
+#include "base/json/json_reader.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/browser_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace {
 constexpr char kFakeDataPrefix[] = "Fake:";
@@ -31,6 +34,14 @@ bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
                                   CartDB::KeyAndValue pair2) {
   return pair1.second.timestamp() > pair2.second.timestamp();
 }
+
+base::Optional<base::Value> JSONToDictionary(int resource_id) {
+  base::StringPiece json_resource(
+      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id));
+  base::Optional<base::Value> value = base::JSONReader::Read(json_resource);
+  DCHECK(value && value.has_value() && value->is_dict());
+  return value;
+}
 }  // namespace
 
 CartService::CartService(Profile* profile)
@@ -38,7 +49,10 @@ CartService::CartService(Profile* profile)
       cart_db_(std::make_unique<CartDB>(profile_)),
       history_service_(HistoryServiceFactory::GetForProfile(
           profile_,
-          ServiceAccessType::EXPLICIT_ACCESS)) {
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      domain_name_mapping_(JSONToDictionary(IDR_CART_DOMAIN_NAME_MAPPING_JSON)),
+      domain_cart_url_mapping_(
+          JSONToDictionary(IDR_CART_DOMAIN_CART_URL_MAPPING_JSON)) {
   if (history_service_) {
     history_service_observation_.Observe(history_service_);
   }

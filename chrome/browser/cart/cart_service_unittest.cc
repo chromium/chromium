@@ -132,6 +132,21 @@ class CartServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
+  std::string getDomainName(base::StringPiece domain) {
+    std::string* res = service_->domain_name_mapping_->FindStringKey(domain);
+    if (!res)
+      return "";
+    return *res;
+  }
+
+  std::string getDomainCartURL(base::StringPiece domain) {
+    std::string* res =
+        service_->domain_cart_url_mapping_->FindStringKey(domain);
+    if (!res)
+      return "";
+    return *res;
+  }
+
   void TearDown() override {}
 
  protected:
@@ -650,4 +665,23 @@ TEST_F(CartServiceTest, TestOrderInTimestamp) {
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[2].QuitClosure(), result3));
   run_loop[2].Run();
+}
+
+// Tests domain to merchant name mapping.
+TEST_F(CartServiceTest, TestDomainToNameMapping) {
+  EXPECT_EQ("Amazon", getDomainName("amazon.com"));
+
+  EXPECT_EQ("eBay", getDomainName("ebay.com"));
+
+  EXPECT_EQ("", getDomainName("example.com"));
+}
+
+// Tests domain to cart URL mapping.
+TEST_F(CartServiceTest, TestDomainToCartURLMapping) {
+  EXPECT_EQ("https://www.amazon.com/gp/cart/view.html?ref_=nav_cart",
+            getDomainCartURL("amazon.com"));
+
+  EXPECT_EQ("https://cart.ebay.com", getDomainCartURL("ebay.com"));
+
+  EXPECT_EQ("", getDomainCartURL("example.com"));
 }

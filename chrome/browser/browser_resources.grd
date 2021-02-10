@@ -531,6 +531,10 @@
         <include name="IDR_MACHINE_LEARNING_INTERNALS_TIME_MOJO_JS" file="${root_gen_dir}\mojo/public/mojom/base/time.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MACHINE_LEARNING_INTERNALS_UTILS_JS" file="resources\chromeos\machine_learning\machine_learning_internals_utils.js" type="BINDATA" />
       </if>
+      <if expr="not is_android">
+        <!-- Chrome Cart -->
+        <part file="cart/resources/cart_resources.grdp" />
+      </if>
     </includes>
   </release>
 </grit>
