@@ -41,6 +41,7 @@ pausable. Some internal task queues are not.
 | Permission                        | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | ServiceWorkerClientMessage        | No          | No                      |  No        | Yes       | Yes      | Yes          |
 | WebLocks                          | No          | No                      |  No        | No        | No       | Yes          |
+| WakeLock                          | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | InternalDefault                   | No          | No                      |  Yes       | Yes       | Yes      | Yes          |
 | InternalLoading                   | No          | No                      |  Yes       | Yes       | Yes      | No           |
 | InternalTest                      | No          | No                      |  No        | No        | No       | Yes          |

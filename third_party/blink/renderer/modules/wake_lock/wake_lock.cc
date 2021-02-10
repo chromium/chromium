@@ -278,7 +278,7 @@ PermissionService* WakeLock::GetPermissionService() {
     ConnectToPermissionService(
         GetExecutionContext(),
         permission_service_.BindNewPipeAndPassReceiver(
-            GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            GetExecutionContext()->GetTaskRunner(TaskType::kWakeLock)));
   }
   return permission_service_.get();
 }

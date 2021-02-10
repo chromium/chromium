@@ -65281,6 +65281,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="71" label="InternalHighPriorityLocalFrame"/>
   <int value="72" label="JavascriptTimerImmediate"/>
   <int value="73" label="JavascriptTimerDelayedLowNesting"/>
+  <int value="76" label="WakeLock"/>
 </enum>
 
 <enum name="RendererSchedulerTaskUseCase">

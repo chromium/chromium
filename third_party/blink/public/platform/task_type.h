@@ -163,6 +163,9 @@ enum class TaskType : unsigned char {
   // https://wicg.github.io/web-locks/#web-locks-tasks-source
   kWebLocks = 66,
 
+  // https://w3c.github.io/screen-wake-lock/#dfn-screen-wake-lock-task-source
+  kWakeLock = 76,
+
   ///////////////////////////////////////
   // Not-speced tasks should use one of the following task types
   ///////////////////////////////////////
@@ -278,7 +281,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kCount = 76,
+  kCount = 77,
 };
 
 }  // namespace blink

@@ -145,6 +145,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "InternalHighPriorityLocalFrame";
     case TaskType::kMainThreadTaskQueueIPCTracking:
       return "MainThreadTaskQueueIPCTracking";
+    case TaskType::kWakeLock:
+      return "WakeLock";
     case TaskType::kCount:
       return "Count";
   }

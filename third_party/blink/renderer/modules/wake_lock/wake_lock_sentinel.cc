@@ -96,7 +96,7 @@ void WakeLockSentinel::DoRelease() {
 
   // 6. Queue a task to run the following steps:
   GetExecutionContext()
-      ->GetTaskRunner(TaskType::kMiscPlatformAPI)
+      ->GetTaskRunner(TaskType::kWakeLock)
       ->PostTask(FROM_HERE, WTF::Bind(&WakeLockSentinel::DispatchReleaseEvent,
                                       WrapWeakPersistent(this)));
 }
