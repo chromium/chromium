@@ -23,7 +23,6 @@
 #include "headless/lib/browser/headless_browser_main_parts.h"
 #include "headless/lib/browser/headless_devtools_agent_host_client.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "headless/lib/headless_content_main_delegate.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/events/devices/device_data_manager.h"
