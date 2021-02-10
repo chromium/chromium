@@ -77,10 +77,6 @@ remoting::ContinueWindowGtk::continue_window_
 ui::AXPlatformNodeAuraLinux::atk_hyperlink_
 PrintDialogGtk::dialog_
 
-# Populated manually - using nmap or base::AllocPages directly
-blink::GCInfoTable::table_
-disk_cache::MappedFile::buffer_
-
 # Populated manually, because of in-out-arg usage.
 blink::PaintController::IdAsHashKey::client
 ui::AXPlatformNodeAuraLinux::atk_object_
@@ -256,6 +252,14 @@ mojo::core::RequestContext::tls_context_
 
 # Populated manually - on-stack pointee
 mojo::internal::ValidationContext::ScopedDepthTracker::ctx_
+
+# Populated manually - using mmap, MapViewOfFile or base::AllocPages directly
+blink::GCInfoTable::table_
+cc::(anonymous namespace)::BitmapRasterBufferImpl::pixels_
+# TODO(bartekn): This one has a malloc() path, consider rewriting after all.
+disk_cache::MappedFile::buffer_
+network::MojoToNetPendingBuffer::buffer_
+network::NetToMojoPendingBuffer::buffer_
 
 #######
 # End of performance-related exclusions
