@@ -548,6 +548,10 @@ const base::Feature kPrintServerScaling{"PrintServerScaling",
 // Controls whether to enable projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable projector in status tray.
+const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable quick answers.
 const base::Feature kQuickAnswers{"QuickAnswers",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
@@ -849,6 +853,11 @@ bool IsPinAutosubmitBackfillFeatureEnabled() {
 
 bool IsProjectorEnabled() {
   return base::FeatureList::IsEnabled(kProjector);
+}
+
+bool IsProjectorFeaturePodEnabled() {
+  return IsProjectorEnabled() &&
+         base::FeatureList::IsEnabled(kProjectorFeaturePod);
 }
 
 bool IsQuickAnswersDogfood() {

@@ -20,8 +20,13 @@ class ASH_EXPORT ProjectorUiController {
   ProjectorUiController& operator=(const ProjectorUiController&) = delete;
   virtual ~ProjectorUiController();
 
-  // Virtual for testing.
+  // Show Projector toolbar. Virtual for testing.
   virtual void ShowToolbar();
+  // Close Projector toolbar. Virtual for testing.
+  virtual void CloseToolbar();
+  // Toggle Projector toolbar based on the toolbar visibility state.
+  // Virtual for testing.
+  virtual void ToggleToolbar();
   // Invoked when key idea is marked to show a toast. Virtual for testing.
   virtual void OnKeyIdeaMarked();
   // Invoked when transcription is available for rendering. Virtual for testing.

@@ -726,6 +726,8 @@ component("ash") {
     "power/hid_battery_util.h",
     "projector/projector_controller.cc",
     "projector/projector_controller.h",
+    "projector/projector_feature_pod_controller.cc",
+    "projector/projector_feature_pod_controller.h",
     "projector/projector_metadata_controller.cc",
     "projector/projector_metadata_controller.h",
     "projector/projector_metadata_model.cc",

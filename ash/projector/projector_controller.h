@@ -56,6 +56,8 @@ class ASH_EXPORT ProjectorController {
   void SetProjectorMetadataControllerForTest(
       std::unique_ptr<ProjectorMetadataController> metadata_controller);
 
+  ProjectorUiController* ui_controller() { return ui_controller_.get(); }
+
  private:
   // Starts the speech recognition session.
   void StartSpeechRecognition();

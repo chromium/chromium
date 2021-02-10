@@ -32,6 +32,8 @@ ProjectorUiController::ProjectorUiController() = default;
 ProjectorUiController::~ProjectorUiController() = default;
 
 void ProjectorUiController::ShowToolbar() {}
+void ProjectorUiController::CloseToolbar() {}
+void ProjectorUiController::ToggleToolbar() {}
 
 void ProjectorUiController::OnKeyIdeaMarked() {
   ShowToast(kMarkedKeyIdeaToastId, IDS_ASH_PROJECTOR_KEY_IDEA_MARKED,
