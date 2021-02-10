@@ -189,6 +189,19 @@ window.chrome.embeddedSearch.newTabPage.blacklistSearchSuggestion;
 window.chrome.embeddedSearch.newTabPage.blacklistSearchSuggestionWithHash;
 
 /**
+ * @param {number} task_version
+ * @param {number} task_id
+ */
+window.chrome.embeddedSearch.newTabPage.blocklistSearchSuggestion;
+
+/**
+ * @param {number} task_version
+ * @param {number} task_id
+ * @param {string} hash
+ */
+window.chrome.embeddedSearch.newTabPage.blocklistSearchSuggestionWithHash;
+
+/**
  * No params.
  */
 window.chrome.embeddedSearch.newTabPage.confirmThemeChanges;
