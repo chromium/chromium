@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.chrome.browser.webfeed.WebFeedBridge;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -501,8 +502,18 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             menu.findItem(R.id.get_image_descriptions_id).setVisible(false);
         }
 
-        menu.findItem(R.id.feed_follow_id)
-                .setVisible(ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED));
+        // Enable web feed follow menu item if WebFeed feature is enabled.
+        MenuItem followMenuItem = menu.findItem(R.id.feed_follow_id);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
+            followMenuItem.setVisible(true);
+            WebFeedBridge webFeedBridge = new WebFeedBridge();
+            if (webFeedBridge.isFollowed(currentTab.getUrl())) {
+                followMenuItem.setIcon(R.drawable.ic_checkmark_24dp);
+                followMenuItem.setTitle(R.string.menu_following);
+            }
+        } else {
+            followMenuItem.setVisible(false);
+        }
 
         // Disable find in page on the native NTP.
         menu.findItem(R.id.find_in_page_id).setVisible(shouldShowFindInPage(currentTab));

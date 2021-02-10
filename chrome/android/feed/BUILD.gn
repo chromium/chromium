@@ -26,3 +26,9 @@ android_resources("chrome_feed_java_resources") {
     "//ui/android:ui_java_resources",
   ]
 }
+
+android_library("web_feed_java") {
+  sources =
+      [ "core/java/src/org/chromium/chrome/browser/webfeed/WebFeedBridge.java" ]
+  deps = [ "//url:gurl_java" ]
+}

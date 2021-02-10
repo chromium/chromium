@@ -2929,6 +2929,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_MENU_FOLLOW" desc="Menu item allowing users to follow the current website. [CHAR-LIMIT=27]">
         Follow
       </message>
+      <message name="IDS_MENU_FOLLOWING" desc="Menu item indicating the current website is followed, allowing users to unfollow the current website. [CHAR-LIMIT=27]">
+        Following
+      </message>
       <message name="IDS_MENU_PAINT_PREVIEW_SHOW" desc="Menu item allowing users to capture and show a paint preview of a page. [CHAR-LIMIT=27]" translateable="false">
         Show Paint Preview
       </message>
