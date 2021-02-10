@@ -138,9 +138,9 @@ xcode = struct(
     x11e146 = xcode_enum("11e146"),
     # in use by ios-webkit-tot
     x11e608cwk = xcode_enum("11e608cwk"),
-    # (current default) xc12 gm seed
+    # (current default for other projects) xc12.0 gm seed
     x12a7209 = xcode_enum("12a7209"),
-    # latest Xcode 12 beta version.
+    # (current default for iOS) xc12.4 gm seed
     x12d4e = xcode_enum("12d4e"),
 )
 

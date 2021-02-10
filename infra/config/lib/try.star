@@ -315,7 +315,7 @@ def chromium_mac_ios_builder(
         executable = "recipe:chromium_trybot",
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_10_15,
-        xcode = builders.xcode.x12a7209,
+        xcode = builders.xcode.x12d4e,
         **kwargs):
     return try_builder(
         name = name,

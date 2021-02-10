@@ -1058,8 +1058,8 @@
       ],
     },
   },
-  # (default) xcode 12 gm seed
-  'xcode_12a7209': {
+  # (default in other projects) xcode 12.0 gm seed
+    'xcode_12a7209': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
@@ -1075,7 +1075,7 @@
       ],
     },
   },
-  # latest Xcode 12 beta version.
+  # (default in Chromium iOS) xcode 12.4 gm seed
   'xcode_12d4e': {
     '$mixin_append': {
       'args': [

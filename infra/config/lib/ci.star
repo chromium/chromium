@@ -298,7 +298,7 @@ def clang_mac_builder(*, name, cores = 24, **kwargs):
             # The Chromium build doesn't need system Xcode, but the ToT clang
             # bots also build clang and llvm and that build does need system
             # Xcode.
-            "xcode_build_version": "12a7209",
+            "xcode_build_version": "12d4e",
         },
         **kwargs
     )
@@ -427,7 +427,7 @@ def fyi_ios_builder(
         executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
         os = builders.os.MAC_10_15,
-        xcode = builders.xcode.x12a7209,
+        xcode = builders.xcode.x12d4e,
         **kwargs):
     return fyi_builder(
         name = name,
@@ -627,7 +627,7 @@ def mac_ios_builder(
         name,
         executable = "recipe:chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
-        xcode = builders.xcode.x12a7209,
+        xcode = builders.xcode.x12d4e,
         **kwargs):
     return mac_builder(
         name = name,

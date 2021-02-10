@@ -2140,7 +2140,7 @@ ci.clang_builder(
     cores = None,
     os = os.MAC_10_15,
     ssd = True,
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
 )
 
 ci.clang_builder(
@@ -2153,7 +2153,7 @@ ci.clang_builder(
     cores = None,
     os = os.MAC_10_15,
     ssd = True,
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
 )
 
 ci.clang_mac_builder(
@@ -3521,7 +3521,7 @@ ci.fyi_coverage_builder(
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
 )
 
 ci.fyi_coverage_builder(
