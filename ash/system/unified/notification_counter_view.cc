@@ -14,8 +14,11 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
+#include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/system/unified/notification_icons_controller.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
@@ -89,11 +92,16 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
 }  // namespace
 
-NotificationCounterView::NotificationCounterView(Shelf* shelf)
-    : TrayItemView(shelf) {
+NotificationCounterView::NotificationCounterView(
+    UnifiedSystemTray* tray,
+    NotificationIconsController* controller)
+    : TrayItemView(tray->shelf()), controller_(controller) {
+  system_tray_model_observation_.Observe(tray->model());
   CreateImageView();
   SetVisible(false);
   Shell::Get()->session_controller()->AddObserver(this);
+
+  OnSystemTrayButtonSizeChanged(tray->model()->GetSystemTrayButtonSize());
 }
 
 NotificationCounterView::~NotificationCounterView() {
@@ -104,33 +112,14 @@ void NotificationCounterView::Update() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
 
-  // If flag is set, do not include media notifications in count.
-  // TODO(crbug.com/1111881) This code can be removed when OS media controls are
-  // launched (expected by M90).
-  const bool dont_count_media_notification =
-      base::FeatureList::IsEnabled(features::kMediaNotificationsCounter);
+  size_t notification_count = message_center_utils::GetNotificationCount();
 
-  const message_center::NotificationList::Notifications& visible =
-      message_center::MessageCenter::Get()->GetVisibleNotifications();
-
-  size_t notification_count = std::count_if(
-      visible.begin(), visible.end(),
-      [dont_count_media_notification](
-          message_center::Notification* notification) {
-        const std::string& notifier = notification->notifier_id().id;
-        // Don't count these notifications since we have `CameraMicTrayItemView`
-        // to show indicators on the systray.
-        if (notifier == kVmCameraMicNotifierId) {
-          return false;
-        }
-        if (dont_count_media_notification &&
-            notifier == kMediaSessionNotifierId) {
-          return false;
-        }
-        return true;
-      });
-
-  if (notification_count == 0 ||
+  // If we are currently showing icons of some notifications in the tray, this
+  // counter should not be shown.
+  const bool tray_notification_icons_shown =
+      icons_view_visible_ && controller_ &&
+      controller_->TrayItemHasNotification();
+  if (notification_count == 0 || tray_notification_icons_shown ||
       message_center::MessageCenter::Get()->IsQuietMode() ||
       !session_controller->ShouldShowNotificationTray() ||
       (session_controller->IsScreenLocked() &&
@@ -164,8 +153,35 @@ void NotificationCounterView::OnSessionStateChanged(
   Update();
 }
 
+void NotificationCounterView::OnSystemTrayButtonSizeChanged(
+    UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) {
+  icons_view_visible_ =
+      system_tray_size != UnifiedSystemTrayModel::SystemTrayButtonSize::kSmall;
+  Update();
+}
+
 const char* NotificationCounterView::GetClassName() const {
   return "NotificationCounterView";
+}
+
+HiddenNotificationCountView::HiddenNotificationCountView(Shelf* shelf)
+    : TrayItemView(shelf) {
+  CreateLabel();
+  SetupLabelForTray(label());
+  SetBorder(views::CreateEmptyBorder(kUnifiedTrayTextTopPadding, 0, 0,
+                                     kUnifiedTrayTextRightPadding));
+  label()->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary));
+}
+
+HiddenNotificationCountView::~HiddenNotificationCountView() = default;
+
+void HiddenNotificationCountView::HandleLocaleChange() {
+  // TODO(crbug.com/1161557): Finish this function.
+}
+
+const char* HiddenNotificationCountView::GetClassName() const {
+  return "HiddenNotificationCountView";
 }
 
 QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {

@@ -137,7 +137,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
                                     CameraMicTrayItemView::Type::kCamera)),
       mic_view_(
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)),
-      notification_counter_item_(new NotificationCounterView(shelf)),
+      notification_counter_item_(
+          new NotificationCounterView(this,
+                                      notification_icons_controller_.get())),
       quiet_mode_view_(new QuietModeView(shelf)),
       time_view_(new tray::TimeTrayItemView(shelf, model())) {
   tray_container()->SetMargin(
@@ -493,6 +495,8 @@ void UnifiedSystemTray::UpdateNotificationInternal() {
 void UnifiedSystemTray::UpdateNotificationAfterDelay() {
   notification_counter_item_->Update();
   quiet_mode_view_->Update();
+  if (notification_icons_controller_)
+    notification_icons_controller_->UpdateHiddenNotificationCounter();
 }
 
 message_center::MessagePopupView*

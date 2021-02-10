@@ -75,6 +75,12 @@ class ASH_EXPORT NotificationIconsController
   // Initialize the view by adding items to the container of the tray.
   void AddNotificationTrayItems(TrayContainer* tray_container);
 
+  // Update the text and visibility of the hidden notification counter.
+  void UpdateHiddenNotificationCounter();
+
+  // Returns true if any item in `tray_items_` is containing a notification.
+  bool TrayItemHasNotification();
+
   // UnifiedSystemTrayModel::Observer:
   void OnSystemTrayButtonSizeChanged(
       UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) override;
@@ -89,8 +95,11 @@ class ASH_EXPORT NotificationIconsController
   }
 
  private:
-  // Update the icons shown according to the notifications in message center.
-  void Update();
+  friend class NotificationIconsControllerTest;
+
+  // Iterate through the notifications in message center and update the icons
+  // shown accordingly.
+  void UpdateNotificationIcons();
 
   // If the notification with given id is currently shown in tray, returns the
   // pointer to that tray item. Otherwise, returns a null pointer.
@@ -105,10 +114,14 @@ class ASH_EXPORT NotificationIconsController
   // icons tray item. All the items in previous index are used and visible.
   size_t first_unused_item_index_ = 0;
 
-  // Indicates if the notification icons view is set to be shown.
+  // Indicates if the notification icons view is set to be shown. Currently, we
+  // show the icon view in medium or large screen size.
   bool icons_view_visible_ = false;
 
   UnifiedSystemTray* tray_;
+
+  TrayItemView* hidden_notification_count_view_ = nullptr;
+  TrayItemView* separator_ = nullptr;
 
   base::ScopedObservation<UnifiedSystemTrayModel,
                           UnifiedSystemTrayModel::Observer>
