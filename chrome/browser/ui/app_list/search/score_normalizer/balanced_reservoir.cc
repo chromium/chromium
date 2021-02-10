@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -81,10 +82,13 @@ void BalancedReservoir::RecordScore(const double score) {
     SplitBinByScore(index, score);
     MergeSmallestBins();
     // Undo split and merge if there is no improvement in error.
-    if (old_error < GetError()) {
+    const double new_error = GetError();
+    if (old_error < new_error) {
       dividers_ = old_dividers;
       counts_ = old_counts;
     }
+    UMA_HISTOGRAM_BOOLEAN("Apps.AppList.ScoreNormalizer.L2ErrorDecreased",
+                          (new_error <= old_error));
   }
 }
 
@@ -174,6 +178,10 @@ void BalancedReservoir::ReadPrefs() {
         pref_counts->is_list()) {
       dividers_ = PrefsListToVector(pref_dividers->GetList());
       counts_ = PrefsListToVector(pref_counts->GetList());
+      // If dividers and counts exists in prefs log to UMA histogram if it was
+      // successfully read, that is all values in the vector are doubles.
+      UMA_HISTOGRAM_BOOLEAN("Apps.AppList.ScoreNormalizer.ReadPrefsError",
+                            (dividers_.empty() || counts_.empty()));
     }
   }
   if (dividers_.empty() || counts_.empty()) {
@@ -182,8 +190,6 @@ void BalancedReservoir::ReadPrefs() {
   } else {
     DCHECK(dividers_.size() + 1 == counts_.size());
   }
-  // TODO(crbug.com/1156930): Add UMA histogram if ReadPrefs() fails because
-  // entries in vectors are not doubles.
 }
 
 void BalancedReservoir::WritePrefs() {

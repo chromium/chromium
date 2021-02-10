@@ -375,6 +375,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.ScoreNormalizer.L2ErrorDecreased" enum="Boolean"
+    expires_after="2022-01-31">
+  <owner>adafang@google.com</owner>
+  <owner>wrong@chromium.com</owner>
+  <owner>tby@chromium.com</owner>
+  <summary>
+    Whether or not splitting and merging bins is less than or equal to the old
+    L2 error of bin counts. Logged after each search result is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ScoreNormalizer.ReadPrefsError"
+    enum="BooleanError" expires_after="2022-01-31">
+  <owner>adafang@google.com</owner>
+  <owner>wrong@chromium.com</owner>
+  <owner>tby@chromium.com</owner>
+  <summary>
+    Whether or not dividers and/or counts from read prefs is empty. A empty
+    dividers or counts means one of the values in the vector was not saved
+    properly as a double. Logged when the ScoreNormalizer is initialized, which
+    is when ReadPrefs is called.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.ScoreNormalizer.SearchResultsCount" units="count"
+    expires_after="2022-01-31">
+  <owner>adafang@google.com</owner>
+  <owner>wrong@chromium.com</owner>
+  <owner>tby@chromium.com</owner>
+  <summary>
+    The number of search results which have been normalized. Logged when each
+    vector of search results is normalized.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
     expires_after="2021-05-16">
   <owner>thanhdng@chromium.org</owner>

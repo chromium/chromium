@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -33,6 +34,8 @@ void ScoreNormalizer::RecordResults(const Results& results) {
   for (const auto& result : results) {
     RecordScore(result->relevance());
   }
+  UMA_HISTOGRAM_COUNTS_100("Apps.AppList.ScoreNormalizer.SearchResultsCount",
+                           results.size());
   reservoir_.WritePrefs();
 }
 
