@@ -112,7 +112,7 @@ std::unique_ptr<views::ImageView> CreateDefaultTrayIcon() {
   return icon;
 }
 
-// TODO(crbug.com/1171059): Refine UI upon delivery of spec.
+// TODO(crbug.com/1171059): Add ripple effects.
 // Creates the overlay to be drawn over all other child views to indicate that
 // the parent view is a drop target and is capable of handling the current drag
 // payload.
@@ -122,16 +122,18 @@ std::unique_ptr<views::View> CreateDropTargetOverlay() {
   drop_target_overlay->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Layer.
-  drop_target_overlay->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  drop_target_overlay->layer()->SetColor(gfx::kGoogleGrey400);
+  drop_target_overlay->SetPaintToLayer();
+  drop_target_overlay->layer()->SetFillsBoundsOpaquely(false);
 
   // Icon.
   auto* icon =
       drop_target_overlay->AddChildView(std::make_unique<views::ImageView>());
   icon->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  icon->SetImage(gfx::CreateVectorIcon(views::kUnpinIcon, kHoldingSpaceIconSize,
-                                       gfx::kGoogleGrey700));
+  icon->SetImage(gfx::CreateVectorIcon(
+      views::kUnpinIcon, kHoldingSpaceIconSize,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
 
