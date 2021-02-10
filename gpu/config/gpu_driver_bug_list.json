@@ -480,8 +480,15 @@
     },
     {
       "id": 88,
-      "description": "Always rewrite vec/mat constructors to be consistent",
-      "cr_bugs": [398694],
+      "description": "Rewrite vec/mat constructors on older GLSL ES drivers, Android O and earlier",
+      "cr_bugs": [398694, 1165751],
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "8.0"
+        }
+      },
       "features": [
         "scalarize_vec_and_mat_constructor_args"
       ]

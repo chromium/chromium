@@ -126,8 +126,6 @@ crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.h
 crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 
-crbug.com/1165751 conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
-
 # Must handle rotated videos on all platforms.
 crbug.com/1136205 conformance/textures/misc/video-rotation.html [ Skip ]
 
@@ -938,6 +936,10 @@ crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] deqp/functional/gles3/inte
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
 [ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 
+# Was too difficult to suppress these failures on individual bots.
+crbug.com/1165751 [ android-lollipop ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/1165751 [ android-marshmallow ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 # Video tests are flaky. Sometimes the video is black.
 crbug.com/948894 [ android ] conformance/textures/video/* [ RetryOnFailure ]

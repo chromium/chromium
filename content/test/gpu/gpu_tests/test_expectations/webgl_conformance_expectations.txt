@@ -207,8 +207,6 @@ crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-de
 crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 
-crbug.com/1165751 conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
-
 # Must handle rotated videos on all platforms.
 crbug.com/1136205 conformance/textures/misc/video-rotation.html [ Skip ]
 
@@ -259,6 +257,8 @@ crbug.com/angleproject/4931 [ win nvidia angle-vulkan passthrough ] conformance/
 # Win / Intel / Vulkan / Passthrough command decoder
 # Technically flaky, but flake rate is too high for RetryOnFailure.
 crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+# Need to adjust tolerances of this test.
+crbug.com/1165751 [ win intel angle-vulkan passthrough ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 ####################
 # Fuchsia failures #
@@ -522,6 +522,11 @@ crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] confor
 
 crbug.com/903903 [ android qualcomm ] conformance/glsl/bugs/sampler-array-struct-function-arg.html [ Failure ]
 crbug.com/478572 [ android qualcomm ] conformance/glsl/bugs/sequence-operator-evaluation-order.html [ Failure ]
+
+# Was too difficult to suppress these failures on individual bots.
+crbug.com/1165751 [ android-lollipop ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/1165751 [ android-marshmallow ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
+crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
 # The following test is very slow and therefore times out on Android bot.
 [ android ] conformance/rendering/multisample-corruption.html [ Skip ]
