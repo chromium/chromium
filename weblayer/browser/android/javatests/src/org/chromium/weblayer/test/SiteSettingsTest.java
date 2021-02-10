@@ -86,6 +86,25 @@ public class SiteSettingsTest {
     @DisabledTest(message = "https://crbug.com/1174618")
     @Test
     @SmallTest
+    public void testAdBlockingSiteSettingPageLaunches() throws InterruptedException {
+        // The setting for ad blocking is below the fold on the main site settings page, and it's
+        // challenging to scroll to it. Launch directly to the category instead. See the discussion
+        // on https://chromium-review.googlesource.com/c/chromium/src/+/2673520 for further details.
+        // Note that this means that this test unfortunately doesn't verify that the Ads setting is
+        // actually present on the main site settings page.
+        mSettingsTestRule.launchActivity(
+                SettingsTestUtils.createIntentForSiteSettingsSingleCategory(
+                        mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false, "ads",
+                        "Ads"));
+
+        onView(withText("Block ads on sites that show intrusive or misleading ads"))
+                .perform(click());
+
+        onView(withText("Allowed")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     public void testSingleSiteSoundPopupLaunches() throws InterruptedException {
         mSettingsTestRule.launchActivity(SettingsTestUtils.createIntentForSiteSettingsSingleWebsite(
                 mSettingsTestRule.getContext(), PROFILE_NAME, /*isIncognito=*/false, GOOGLE_URL));
