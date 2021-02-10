@@ -423,6 +423,9 @@ class VIEWS_EXPORT Label : public View,
   // Builds |context_menu_contents_|.
   void BuildContextMenuContents();
 
+  // Updates the elide behavior used by |full_text_|.
+  void UpdateFullTextElideBehavior();
+
   int text_context_;
   int text_style_;
   base::Optional<int> line_height_;

@@ -404,6 +404,7 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
   if (elide_behavior_ == elide_behavior)
     return;
   elide_behavior_ = elide_behavior;
+  UpdateFullTextElideBehavior();
   ClearDisplayText();
   OnPropertyChanged(&elide_behavior_, kPropertyEffectsPreferredSizeChanged);
 }
@@ -453,7 +454,9 @@ void Label::SetMaximumWidth(int max_width) {
 
 void Label::SetMaximumWidthSingleLine(int max_width) {
   DCHECK(!GetMultiLine());
+
   max_width_single_line_ = max_width;
+  UpdateFullTextElideBehavior();
   OnPropertyChanged(&max_width_single_line_,
                     kPropertyEffectsPreferredSizeChanged);
 }
@@ -1073,9 +1076,7 @@ void Label::Init(const base::string16& text,
   full_text_->SetCursorEnabled(false);
   full_text_->SetWordWrapBehavior(gfx::TRUNCATE_LONG_WORDS);
   full_text_->SetMinLineHeight(GetLineHeight());
-  // NOTE: |full_text_| should not be elided at all. This is used to keep
-  // some properties and to compute the size of the string.
-  full_text_->SetElideBehavior(gfx::NO_ELIDE);
+  UpdateFullTextElideBehavior();
   full_text_->SetDirectionalityMode(directionality_mode);
 
   SetText(text);
@@ -1115,11 +1116,9 @@ gfx::Size Label::GetTextSize() const {
     // to report an accurate width given the constraints and how it determines
     // to elide the text. If we simply clamp the width to the max after the
     // fact, then there may be some empty space left over *after* an ellipsis.
-    full_text_->SetElideBehavior(elide_behavior_);
     full_text_->SetDisplayRect(
         gfx::Rect(0, 0, max_width_single_line_ - GetInsets().width(), 0));
     size = full_text_->GetStringSize();
-    full_text_->SetElideBehavior(gfx::NO_ELIDE);
   } else {
     // Cancel the display rect of |full_text_|. The display rect may be
     // specified in GetHeightForWidth(), and specifying empty Rect cancels
@@ -1232,6 +1231,13 @@ void Label::BuildContextMenuContents() {
   context_menu_contents_.AddItemWithStringId(MenuCommands::kCopy, IDS_APP_COPY);
   context_menu_contents_.AddItemWithStringId(MenuCommands::kSelectAll,
                                              IDS_APP_SELECT_ALL);
+}
+
+void Label::UpdateFullTextElideBehavior() {
+  // In single line mode when a max width has been set, |full_text_| uses
+  // elision to properly calculate the text size. Otherwise, it is not elided.
+  full_text_->SetElideBehavior(max_width_single_line_ > 0 ? elide_behavior_
+                                                          : gfx::NO_ELIDE);
 }
 
 BEGIN_METADATA(Label, View)
