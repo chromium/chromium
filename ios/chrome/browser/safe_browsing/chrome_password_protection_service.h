@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/string16.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #import "components/safe_browsing/ios/password_protection/password_protection_service.h"
@@ -27,7 +28,8 @@ class WebState;
 
 namespace safe_browsing {
 
-class ChromePasswordProtectionService : public PasswordProtectionService {
+class ChromePasswordProtectionService : public PasswordProtectionService,
+                                        public KeyedService {
  public:
   explicit ChromePasswordProtectionService(ChromeBrowserState* browser_state);
   ~ChromePasswordProtectionService() override;

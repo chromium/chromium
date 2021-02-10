@@ -9,6 +9,8 @@ source_set("safe_browsing") {
   sources = [
     "chrome_password_protection_service.h",
     "chrome_password_protection_service.mm",
+    "chrome_password_protection_service_factory.h",
+    "chrome_password_protection_service_factory.mm",
     "pending_unsafe_resource_storage.h",
     "pending_unsafe_resource_storage.mm",
     "real_time_url_lookup_service_factory.h",
