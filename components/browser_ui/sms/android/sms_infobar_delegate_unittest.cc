@@ -69,7 +69,7 @@ TEST_F(SmsInfoBarDelegateTest, InfoBarForEmbeddedFrame) {
                      base::OnceClosure(), base::OnceClosure());
   EXPECT_EQ(infobar_manager()->infobar_count(), 1u);
   std::string expected_message =
-      "1234 is your code for top.com (through embedded.com)";
+      "1234 is your code for embedded.com to continue on top.com";
   EXPECT_EQ(base::UTF16ToUTF8(infobar_manager()
                                   ->infobar_at(0)
                                   ->delegate()
