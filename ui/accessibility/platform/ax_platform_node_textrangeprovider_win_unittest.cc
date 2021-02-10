@@ -5516,10 +5516,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   EXPECT_FALSE(normalized_start->IsIgnored());
   EXPECT_FALSE(normalized_end->IsIgnored());
-  // TODO(nektar): Re-enable the following two assertions after
-  // AXPosition::SlowCompareTo has been fixed to handle affinity correctly.
-  // EXPECT_LE(*GetStart(ignored_range_win.Get()), *normalized_start);
-  // EXPECT_LE(*GetEnd(ignored_range_win.Get()), *normalized_end);
+  EXPECT_LE(*GetStart(ignored_range_win.Get()), *normalized_start);
+  EXPECT_LE(*GetEnd(ignored_range_win.Get()), *normalized_end);
   EXPECT_LE(*normalized_start, *normalized_end);
 
   // Remove the last node, forcing |NormalizeTextRange| to normalize

@@ -3713,6 +3713,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmbeddedObject) {
   inline_box.id = 6;
 
   root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
   root.child_ids = {image.id, paragraph.id};
 
   image.role = ax::mojom::Role::kImage;
@@ -3722,6 +3723,8 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmbeddedObject) {
   image.SetNameFrom(ax::mojom::NameFrom::kAttribute);
 
   paragraph.role = ax::mojom::Role::kParagraph;
+  paragraph.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
   paragraph.child_ids = {link.id};
 
   link.role = ax::mojom::Role::kLink;
@@ -8695,13 +8698,12 @@ TEST_F(AXPositionTest, OperatorEquals) {
   ASSERT_TRUE(text_position2->IsTextPosition());
   EXPECT_EQ(*text_position1, *text_position2);
 
-  // Affinities should not matter.
   text_position2 = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kUpstream);
   ASSERT_NE(nullptr, text_position2);
   ASSERT_TRUE(text_position2->IsTextPosition());
-  EXPECT_EQ(*text_position1, *text_position2);
+  EXPECT_GT(*text_position1, *text_position2);
 
   // Text offsets should match.
   text_position1 = AXNodePosition::CreateTextPosition(
@@ -8808,6 +8810,317 @@ TEST_F(AXPositionTest, OperatorEqualsSameTextOffsetDifferentAnchorIdLeaf) {
 
   ASSERT_TRUE(*text_position_one == *text_position_two);
   ASSERT_TRUE(*text_position_two == *text_position_one);
+}
+
+TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
+  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+
+  // ++1 kRootWebArea "<embedded_object><embedded_object>"
+  // ++++2 kParagraph "<embedded_object>"
+  // ++++++3 kLink "Hello"
+  // ++++++++4 kStaticText "Hello"
+  // ++++++++++5 kInlineTextBox "Hello"
+  // ++++6 kParagraph "World"
+  // ++++++7 kStaticText "World"
+  // ++++++++8 kInlineTextBox "World"
+  AXNodeData root_1;
+  AXNodeData paragraph_2;
+  AXNodeData link_3;
+  AXNodeData static_text_4;
+  AXNodeData inline_box_5;
+  AXNodeData paragraph_6;
+  AXNodeData static_text_7;
+  AXNodeData inline_box_8;
+
+  root_1.id = 1;
+  paragraph_2.id = 2;
+  link_3.id = 3;
+  static_text_4.id = 4;
+  inline_box_5.id = 5;
+  paragraph_6.id = 6;
+  static_text_7.id = 7;
+  inline_box_8.id = 8;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                          true);
+  root_1.child_ids = {paragraph_2.id, paragraph_6.id};
+
+  paragraph_2.role = ax::mojom::Role::kParagraph;
+  paragraph_2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  paragraph_2.child_ids = {link_3.id};
+
+  link_3.role = ax::mojom::Role::kLink;
+  link_3.AddState(ax::mojom::State::kLinked);
+  link_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.SetName("Hello");
+  static_text_4.child_ids = {inline_box_5.id};
+
+  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_5.SetName("Hello");
+
+  paragraph_6.role = ax::mojom::Role::kParagraph;
+  paragraph_6.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  paragraph_6.child_ids = {static_text_7.id};
+
+  static_text_7.role = ax::mojom::Role::kStaticText;
+  static_text_7.SetName("World");
+  static_text_7.child_ids = {inline_box_8.id};
+
+  inline_box_8.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_8.SetName("World");
+
+  SetTree(
+      CreateAXTree({root_1, paragraph_2, link_3, static_text_4, inline_box_5,
+                    paragraph_6, static_text_7, inline_box_8}));
+
+  TestPositionType before_root_1 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), root_1.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, before_root_1);
+  TestPositionType middle_root_1 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), root_1.id, 1 /* child_index */);
+  ASSERT_NE(nullptr, middle_root_1);
+  TestPositionType after_root_1 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), root_1.id, 2 /* child_index */);
+  ASSERT_NE(nullptr, after_root_1);
+
+  TestPositionType before_paragraph_2 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), paragraph_2.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, before_paragraph_2);
+  TestPositionType after_paragraph_2 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), paragraph_2.id, 1 /* child_index */);
+  ASSERT_NE(nullptr, after_paragraph_2);
+
+  TestPositionType before_paragraph_6 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), paragraph_6.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, before_paragraph_6);
+  TestPositionType after_paragraph_6 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), paragraph_6.id, 1 /* child_index */);
+  ASSERT_NE(nullptr, before_paragraph_6);
+
+  TestPositionType before_inline_box_5 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_5.id,
+      AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_NE(nullptr, before_inline_box_5);
+  TestPositionType after_inline_box_5 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_5.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, after_inline_box_5);
+
+  TestPositionType before_inline_box_8 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_8.id,
+      AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_NE(nullptr, before_inline_box_8);
+  TestPositionType after_inline_box_8 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_8.id, 0 /* child_index */);
+  ASSERT_NE(nullptr, after_inline_box_8);
+
+  EXPECT_EQ(*before_root_1, *before_paragraph_2);
+  EXPECT_EQ(*before_paragraph_2, *before_root_1);
+  EXPECT_EQ(*before_root_1, *before_inline_box_5);
+  EXPECT_EQ(*before_inline_box_5, *before_root_1);
+
+  EXPECT_LT(*before_root_1, *middle_root_1);
+  EXPECT_GT(*before_paragraph_6, *before_inline_box_5);
+  EXPECT_LT(*before_paragraph_2, *before_inline_box_8);
+
+  EXPECT_EQ(*middle_root_1, *before_paragraph_6);
+  EXPECT_EQ(*before_paragraph_6, *middle_root_1);
+  EXPECT_EQ(*middle_root_1, *before_inline_box_8);
+  EXPECT_EQ(*before_inline_box_8, *middle_root_1);
+
+  // Since tree positions do not have affinity, all of the following positions
+  // should be equivalent.
+  EXPECT_EQ(*middle_root_1, *after_paragraph_2);
+  EXPECT_EQ(*after_paragraph_2, *middle_root_1);
+  EXPECT_EQ(*middle_root_1, *after_inline_box_5);
+  EXPECT_EQ(*after_inline_box_5, *middle_root_1);
+
+  EXPECT_EQ(*after_root_1, *after_paragraph_6);
+  EXPECT_EQ(*after_paragraph_6, *after_root_1);
+  EXPECT_EQ(*after_root_1, *after_inline_box_8);
+  EXPECT_EQ(*after_inline_box_8, *after_root_1);
+}
+
+TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
+  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+
+  // ++1 kRootWebArea "<embedded_object><embedded_object>"
+  // ++++2 kParagraph "<embedded_object>"
+  // ++++++3 kLink "Hello"
+  // ++++++++4 kStaticText "Hello"
+  // ++++++++++5 kInlineTextBox "Hello"
+  // ++++6 kParagraph "World"
+  // ++++++7 kStaticText "World"
+  // ++++++++8 kInlineTextBox "World"
+  AXNodeData root_1;
+  AXNodeData paragraph_2;
+  AXNodeData link_3;
+  AXNodeData static_text_4;
+  AXNodeData inline_box_5;
+  AXNodeData paragraph_6;
+  AXNodeData static_text_7;
+  AXNodeData inline_box_8;
+
+  root_1.id = 1;
+  paragraph_2.id = 2;
+  link_3.id = 3;
+  static_text_4.id = 4;
+  inline_box_5.id = 5;
+  paragraph_6.id = 6;
+  static_text_7.id = 7;
+  inline_box_8.id = 8;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                          true);
+  root_1.child_ids = {paragraph_2.id, paragraph_6.id};
+
+  paragraph_2.role = ax::mojom::Role::kParagraph;
+  paragraph_2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  paragraph_2.child_ids = {link_3.id};
+
+  link_3.role = ax::mojom::Role::kLink;
+  link_3.AddState(ax::mojom::State::kLinked);
+  link_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.SetName("Hello");
+  static_text_4.child_ids = {inline_box_5.id};
+
+  inline_box_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_5.SetName("Hello");
+
+  paragraph_6.role = ax::mojom::Role::kParagraph;
+  paragraph_6.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  paragraph_6.child_ids = {static_text_7.id};
+
+  static_text_7.role = ax::mojom::Role::kStaticText;
+  static_text_7.SetName("World");
+  static_text_7.child_ids = {inline_box_8.id};
+
+  inline_box_8.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_8.SetName("World");
+
+  SetTree(
+      CreateAXTree({root_1, paragraph_2, link_3, static_text_4, inline_box_5,
+                    paragraph_6, static_text_7, inline_box_8}));
+
+  TestPositionType before_root_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_1.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_root_1);
+  TestPositionType middle_root_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_1.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, middle_root_1);
+  TestPositionType middle_root_1_upstream = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_1.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, middle_root_1_upstream);
+  TestPositionType after_root_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root_1.id, 2 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_root_1);
+
+  TestPositionType before_paragraph_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), paragraph_2.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_paragraph_2);
+  // The first paragraph has a link inside it, so it will only expose a single
+  // "embedded object replacement character".
+  TestPositionType after_paragraph_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), paragraph_2.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_paragraph_2);
+
+  TestPositionType before_paragraph_6 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), paragraph_6.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_paragraph_6);
+  // The second paragraph contains "World".
+  TestPositionType after_paragraph_6 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), paragraph_6.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_paragraph_6);
+
+  TestPositionType before_inline_box_5 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_5.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_inline_box_5);
+  TestPositionType middle_inline_box_5 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_5.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, middle_inline_box_5);
+  // "Hello".
+  TestPositionType after_inline_box_5 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_5.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_inline_box_5);
+
+  TestPositionType before_inline_box_8 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_8.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, before_inline_box_8);
+  TestPositionType middle_inline_box_8 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_8.id, 1 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, middle_inline_box_8);
+  // "World".
+  TestPositionType after_inline_box_8 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_8.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, after_inline_box_8);
+
+  EXPECT_EQ(*before_root_1, *before_paragraph_2);
+  EXPECT_EQ(*before_paragraph_2, *before_root_1);
+  EXPECT_EQ(*before_root_1, *before_inline_box_5);
+  EXPECT_EQ(*before_inline_box_5, *before_root_1);
+
+  EXPECT_LT(*before_root_1, *middle_root_1);
+  EXPECT_GT(*before_paragraph_6, *before_inline_box_5);
+  EXPECT_LT(*before_paragraph_2, *before_inline_box_8);
+
+  EXPECT_EQ(*middle_root_1, *before_paragraph_6);
+  EXPECT_EQ(*before_paragraph_6, *middle_root_1);
+  EXPECT_EQ(*middle_root_1, *before_inline_box_8);
+  EXPECT_EQ(*before_inline_box_8, *middle_root_1);
+
+  EXPECT_GT(*middle_root_1, *after_paragraph_2);
+  EXPECT_LT(*after_paragraph_2, *middle_root_1);
+  EXPECT_GT(*middle_root_1, *after_inline_box_5);
+  EXPECT_LT(*after_inline_box_5, *middle_root_1);
+
+  // An upstream affinity on the root before the second paragraph attaches the
+  // position to the end of the previous line, i.e. moves it to the end of the
+  // first paragraph.
+  EXPECT_LT(*middle_root_1_upstream, *middle_root_1);
+  EXPECT_EQ(*middle_root_1_upstream, *after_paragraph_2);
+  EXPECT_EQ(*after_paragraph_2, *middle_root_1_upstream);
+  EXPECT_EQ(*middle_root_1_upstream, *after_inline_box_5);
+  EXPECT_EQ(*after_inline_box_5, *middle_root_1_upstream);
+
+  // According to the IAccessible2 Spec, a position inside an embedded object
+  // should be equivalent to a position right after it, if the former is not at
+  // the object's start.
+  EXPECT_EQ(*middle_root_1_upstream, *middle_inline_box_5);
+  EXPECT_EQ(*middle_inline_box_5, *middle_root_1_upstream);
+
+  EXPECT_EQ(*after_root_1, *after_paragraph_6);
+  EXPECT_EQ(*after_paragraph_6, *after_root_1);
+  EXPECT_EQ(*after_root_1, *after_inline_box_8);
+  EXPECT_EQ(*after_inline_box_8, *after_root_1);
+
+  // According to the IAccessible2 Spec, a position inside an embedded object
+  // should be equivalent to a position right after it, if the former is not at
+  // the object's start.
+  EXPECT_EQ(*after_root_1, *middle_inline_box_8);
+  EXPECT_EQ(*middle_inline_box_8, *after_root_1);
 }
 
 TEST_F(AXPositionTest, OperatorsLessThanAndGreaterThan) {

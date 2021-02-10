@@ -1479,16 +1479,11 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
   ASSERT_NE(nullptr, menu_accessible_com);
   ASSERT_EQ(ax::mojom::Role::kMenu, menu_accessible_com->GetData().role);
 
-  // TODO(crbug.com/1039528): This should not have 2 embedded object characters.
-  {
-    const std::array<base::char16, 2> pieces = {
-        ui::AXPlatformNodeBase::kEmbeddedCharacter,
-        ui::AXPlatformNodeBase::kEmbeddedCharacter};
-    const base::string16 expect(pieces.cbegin(), pieces.cend());
-    EXPECT_IA2_TEXT_AT_OFFSET(menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
-                              /*expected_hr=*/S_OK, /*start=*/0, /*end=*/2,
-                              /*text=*/base::as_wcstr(expect));
-  }
+  EXPECT_IA2_TEXT_AT_OFFSET(
+      menu_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
+      /*text=*/
+      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
 }
 
 TEST_F(BrowserAccessibilityWinTest,
@@ -1640,6 +1635,8 @@ TEST_F(BrowserAccessibilityWinTest,
   ASSERT_NE(nullptr, static_text_3_com);
   ASSERT_EQ(ax::mojom::Role::kStaticText, static_text_3_com->GetData().role);
 
+  // [obj] stands for the embedded object replacement character \xFFFC.
+
   // L"<b>efore" [obj] [obj] L"after" L"tail"
   EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,
                             /*expected_hr=*/S_OK, /*start=*/0, /*end=*/1,
@@ -1656,29 +1653,18 @@ TEST_F(BrowserAccessibilityWinTest,
                             /*text=*/L"e");
 
   // L"before" <[obj]> [obj] L"after" L"tail"
-  // TODO(crbug.com/1039528): This should not include multiple characters.
-  {
-    const std::array<base::char16, 3> pieces = {
-        ui::AXPlatformNodeBase::kEmbeddedCharacter,
-        ui::AXPlatformNodeBase::kEmbeddedCharacter, L'a'};
-    const base::string16 expect(pieces.cbegin(), pieces.cend());
-    EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
-                              /*expected_hr=*/S_OK, /*start=*/6, /*end=*/9,
-                              /*text=*/
-                              base::as_wcstr(expect));
-  }
+  EXPECT_IA2_TEXT_AT_OFFSET(
+      body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
+      /*text=*/
+      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
 
   // L"before" [obj] <[obj]> L"after" L"tail"
-  // TODO(crbug.com/1039528): This should not include multiple characters.
-  {
-    const std::array<base::char16, 2> pieces = {
-        ui::AXPlatformNodeBase::kEmbeddedCharacter, L'a'};
-    const base::string16 expect(pieces.cbegin(), pieces.cend());
-    EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
-                              /*expected_hr=*/S_OK, /*start=*/7, /*end=*/9,
-                              /*text=*/
-                              base::as_wcstr(expect));
-  }
+  EXPECT_IA2_TEXT_AT_OFFSET(
+      body_accessible_com, 7, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
+      /*text=*/
+      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
 
   // L"before" [obj] [obj] L"<a>fter" L"tail"
   EXPECT_IA2_TEXT_AT_OFFSET(body_accessible_com, 8, IA2_TEXT_BOUNDARY_CHAR,
@@ -1810,22 +1796,18 @@ TEST_F(BrowserAccessibilityWinTest,
                                 /*text=*/nullptr);
 
   // L"befor<e>" [obj] <[obj]> L"after" L"tail"
-  // TODO(crbug.com/1039528): This should not include multiple characters.
-  {
-    const std::array<base::char16, 3> pieces = {
-        ui::AXPlatformNodeBase::kEmbeddedCharacter,
-        ui::AXPlatformNodeBase::kEmbeddedCharacter, L'a'};
-    const base::string16 expect(pieces.cbegin(), pieces.cend());
-    EXPECT_IA2_TEXT_AFTER_OFFSET(body_accessible_com, 5, IA2_TEXT_BOUNDARY_CHAR,
-                                 /*expected_hr=*/S_OK, /*start=*/6, /*end=*/9,
-                                 /*text=*/base::as_wcstr(expect));
-  }
+  EXPECT_IA2_TEXT_AFTER_OFFSET(
+      body_accessible_com, 5, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/6, /*end=*/7,
+      /*text=*/
+      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
 
   // L"before" <[obj]> [obj] L"after" L"tail"
-  // TODO(crbug.com/1039528): This should probably not skip over L"a"
-  EXPECT_IA2_TEXT_AFTER_OFFSET(body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
-                               /*expected_hr=*/S_OK, /*start=*/9, /*end=*/10,
-                               /*text=*/L"f");
+  EXPECT_IA2_TEXT_AFTER_OFFSET(
+      body_accessible_com, 6, IA2_TEXT_BOUNDARY_CHAR,
+      /*expected_hr=*/S_OK, /*start=*/7, /*end=*/8,
+      /*text=*/
+      base::string16{ui::AXPlatformNodeBase::kEmbeddedCharacter}.c_str());
 
   // <[obj]>
   EXPECT_IA2_TEXT_AFTER_OFFSET(menu_1_accessible_com, 0, IA2_TEXT_BOUNDARY_CHAR,

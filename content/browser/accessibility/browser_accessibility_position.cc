@@ -31,6 +31,16 @@ BrowserAccessibilityPosition::Clone() const {
 base::string16 BrowserAccessibilityPosition::GetText() const {
   if (IsNullPosition())
     return {};
+
+  // Special case, if a position's anchor node has only ignored descendants,
+  // i.e., it appears to be empty to assistive software, on some platforms we
+  // need to still treat it as a character and a word boundary. We achieve this
+  // by adding an embedded object character in the text representation used by
+  // this class, but we don't expose that character to assistive software that
+  // tries to retrieve the node's inner text.
+  if (IsEmptyObjectReplacedByCharacter())
+    return ui::AXNode::kEmbeddedCharacter;
+
   DCHECK(GetAnchor());
   return GetAnchor()->GetText();
 }

@@ -422,7 +422,7 @@ TEST_F(AXRangeTest, IsCollapsed) {
 
   TestPositionRange tree_to_tree_range(tree_position2->Clone(),
                                        tree_position1->Clone());
-  EXPECT_TRUE(tree_to_tree_range.IsCollapsed());
+  EXPECT_FALSE(tree_to_tree_range.IsCollapsed());
 
   // A tree and a text position that essentially point to the same text offset
   // are equivalent, even if they are anchored to a different node.
