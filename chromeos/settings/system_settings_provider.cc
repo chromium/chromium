@@ -15,7 +15,7 @@
 namespace chromeos {
 namespace {
 // TODO(olsen): PerUserTimeZoneEnabled and FineGrainedTimeZoneDetectionEnabled
-// are duplicated in chrome/browser/chromeos/system/timezone_util.cc, which
+// are duplicated in chrome/browser/ash/system/timezone_util.cc, which
 // is not visible from this package. Try to re-unify these functions by moving
 // timezone_util to src/chromeos too (out of src/chrome/browser).
 

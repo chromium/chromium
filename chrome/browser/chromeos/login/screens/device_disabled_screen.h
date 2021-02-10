@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_DEVICE_DISABLED_SCREEN_H_
 
 #include "base/macros.h"
+#include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/system/device_disabling_manager.h"
 
 namespace chromeos {
 

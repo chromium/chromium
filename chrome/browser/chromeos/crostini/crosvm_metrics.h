@@ -14,7 +14,7 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/system/procfs_util.h"
+#include "chrome/browser/ash/system/procfs_util.h"
 
 namespace crostini {
 
