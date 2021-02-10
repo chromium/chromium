@@ -300,18 +300,6 @@ void ProfileBrowserCloseSuccess(const base::FilePath& profile_path) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void CloseGuestProfileWindows() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = profile_manager->GetProfileByPath(
-      ProfileManager::GetGuestProfilePath());
-
-  if (profile) {
-    BrowserList::CloseAllBrowsersWithProfile(
-        profile, base::BindRepeating(&ProfileBrowserCloseSuccess),
-        BrowserList::CloseCallback(), false);
-  }
-}
-
 void LockBrowserCloseSuccess(const base::FilePath& profile_path) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesEntry* entry =
@@ -378,9 +366,9 @@ bool IsLockAvailable(Profile* profile) {
 
 void CloseProfileWindows(Profile* profile) {
   DCHECK(profile);
-  BrowserList::CloseAllBrowsersWithProfile(
-      profile, base::BindRepeating(&ProfileBrowserCloseSuccess),
-      BrowserList::CloseCallback(), false);
+  BrowserList::CloseAllBrowsersWithProfile(profile,
+                                           BrowserList::CloseCallback(),
+                                           BrowserList::CloseCallback(), false);
 }
 
 void CreateSystemProfileForUserManager(
