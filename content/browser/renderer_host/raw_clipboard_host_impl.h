@@ -33,9 +33,7 @@ class CONTENT_EXPORT RawClipboardHostImpl
   ~RawClipboardHostImpl() override;
 
  private:
-  RawClipboardHostImpl(
-      mojo::PendingReceiver<blink::mojom::RawClipboardHost> receiver,
-      RenderFrameHost* render_frame_host);
+  explicit RawClipboardHostImpl(RenderFrameHost* render_frame_host);
 
   // mojom::RawClipboardHost.
   void ReadAvailableFormatNames(
@@ -50,7 +48,6 @@ class CONTENT_EXPORT RawClipboardHostImpl
   // The render frame is not owned.
   const GlobalFrameRoutingId render_frame_routing_id_;
 
-  mojo::Receiver<blink::mojom::RawClipboardHost> receiver_;
   ui::Clipboard* const clipboard_;  // Not owned.
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 };
