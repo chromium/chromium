@@ -376,12 +376,11 @@ static float ComputeFontSize(const CSSToLengthConversionData& conversion_data,
     }
     return result;
   }
-  if (primitive_value.IsCalculatedPercentageWithLength()) {
+  if (primitive_value.IsCalculated()) {
     return To<CSSMathFunctionValue>(primitive_value)
         .ToCalcValue(conversion_data)
         ->Evaluate(parent_size.value);
   }
-
   NOTREACHED();
   return 0;
 }
