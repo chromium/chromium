@@ -1914,6 +1914,10 @@ void DocumentLoader::CommitNavigation() {
     // SameSiteSiblingToAboutBlank_CrossSiteTop testcase).  To limit (but not
     // eliminate :-/) incorrect cases we require that `owner_document`'s origin
     // is same origin with `requestor_origin`.
+    //
+    // TODO(https://crbug.com/1176291): Improve heuristics for finding the
+    // correct initiator, to properly inherit/alias `document.domain` in more
+    // cases.
     auto* owner_local_frame = DynamicTo<LocalFrame>(owner_frame);
     if (owner_local_frame &&
         (url_.IsAboutSrcdocURL() || !requestor_origin_ ||

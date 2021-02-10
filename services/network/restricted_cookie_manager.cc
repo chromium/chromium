@@ -627,6 +627,7 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
     base::debug::ScopedCrashKeyString scoped_key_string_url(
         url_origin, url::Origin::Create(url).GetDebugString());
 
+    NOTREACHED();
     base::debug::DumpWithoutCrashing();
     return false;
   }

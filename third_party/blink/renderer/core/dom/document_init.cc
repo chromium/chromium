@@ -217,7 +217,30 @@ DocumentInit& DocumentInit::WithURL(const KURL& url) {
 }
 
 const KURL& DocumentInit::GetCookieUrl() const {
-  return owner_document_ ? owner_document_->CookieURL() : url_;
+  const KURL& cookie_url =
+      owner_document_ ? owner_document_->CookieURL() : url_;
+
+  // An "about:blank" should inherit the `cookie_url` from the initiator of the
+  // navigation, but sometimes "about:blank" may commit without an
+  // `owner_document` (e.g. if the original initiator has been navigated away).
+  // In such scenario, it is important to use a safe `cookie_url` (e.g.
+  // kCookieAverseUrl) to avoid triggering mojo::ReportBadMessage and renderer
+  // kills via RestrictedCookieManager::ValidateAccessToCookiesAt.
+  //
+  // TODO(https://crbug.com/1176291): Correctly inherit the `cookie_url` from
+  // the initiator.
+  if (cookie_url.IsAboutBlankURL()) {
+    // Signify a cookie-averse document [1] with an null URL.  See how
+    // CookiesJar::GetCookies and other methods check `cookie_url` against
+    // KURL::IsEmpty.
+    //
+    // [1] https://html.spec.whatwg.org/#cookie-averse-document-object
+    const KURL& kCookieAverseUrl = NullURL();
+
+    return kCookieAverseUrl;
+  }
+
+  return cookie_url;
 }
 
 DocumentInit& DocumentInit::WithSrcdocDocument(bool is_srcdoc_document) {

@@ -22,6 +22,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/network_service_instance_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -42,6 +43,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -4430,6 +4432,47 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   console_observer.Wait();
 }
 
+namespace {
+
+void VerifyResultsOfAboutBlankNavigation(RenderFrameHostImpl* target_frame,
+                                         RenderFrameHostImpl* initiator_frame) {
+  // Verify that `target_frame` has been navigated to "about:blank".
+  EXPECT_EQ(GURL(url::kAboutBlankURL), target_frame->GetLastCommittedURL());
+
+  // Verify that "about:blank" committed with the expected origin, and in the
+  // expected SiteInstance.
+  EXPECT_EQ(target_frame->GetLastCommittedOrigin(),
+            initiator_frame->GetLastCommittedOrigin());
+  EXPECT_EQ(target_frame->GetSiteInstance(),
+            initiator_frame->GetSiteInstance());
+
+  // Start monitoring NetworkService for crashes.
+  //
+  // TODO(https://crbug.com/1169431): This should be part of BrowserTestBase.
+  // (with optional opt-out for things like NetworkServiceRestartBrowserTest).
+  bool did_network_service_crash = false;
+  base::CallbackListSubscription crash_monitoring_subscription =
+      RegisterNetworkServiceCrashHandler(base::BindLambdaForTesting(
+          [&]() { did_network_service_crash = true; }));
+  // Ask for cookies in the `target_frame`.  One implicit verification here
+  // is whether this step will hit any `cookie_url`-related NOTREACHED or DwoC
+  // in RestrictedCookieManager::ValidateAccessToCookiesAt.  This verification
+  // is non-racey, because `document.cookie` must have heard back from the
+  // RestrictedCookieManager before returning the value of cookies (this ignores
+  // possible Blink-side caching, but this is the first time the renderer needs
+  // the cookies and so this is okay for this test).
+  EXPECT_EQ("", EvalJs(target_frame, "document.cookie"));
+  // |network_context| might receive an error notification, but it's not
+  // guaranteed to have arrived at this point. Flush the remote to make sure
+  // the notification has been received.
+  // TODO(https://crbug.com/1169431): This should be part of BrowserTestBase.
+  if (!IsInProcessNetworkService())
+    target_frame->FlushNetworkAndNavigationInterfacesForTesting();
+  EXPECT_FALSE(did_network_service_crash);
+}
+
+}  // namespace
+
 // The test below verifies that an "about:blank" navigation commits with the
 // right origin, even when the initiator of the navigation is not the parent or
 // opener of the frame targeted by the navigation.  In the
@@ -4476,10 +4519,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
-            grandchild_frame->GetLastCommittedOrigin());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
-  EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
+  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame);
 }
 
 // The test below verifies that an "about:blank" navigation commits with the
@@ -4529,10 +4569,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
-            grandchild_frame->GetLastCommittedOrigin());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
-  EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
+  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame);
 }
 
 // The test below verifies that an "about:blank" navigation commits with the
@@ -4583,10 +4620,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame = main_frame->child_at(0)->current_frame_host();
   grandchild_frame = child_frame->child_at(0)->current_frame_host();
-  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
-            grandchild_frame->GetLastCommittedOrigin());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
-  EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
+  VerifyResultsOfAboutBlankNavigation(grandchild_frame, main_frame);
 }
 
 // The test below verifies that an "about:blank" navigation commits with the
@@ -4674,10 +4708,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       shell()->web_contents()->GetMainFrame());
   child_frame1 = main_frame->child_at(0)->current_frame_host();
   child_frame2 = main_frame->child_at(1)->current_frame_host();
-  EXPECT_EQ(GURL(url::kAboutBlankURL), child_frame2->GetLastCommittedURL());
-  EXPECT_EQ(child_frame1->GetLastCommittedOrigin(),
-            child_frame2->GetLastCommittedOrigin());
-  EXPECT_EQ(child_frame1->GetSiteInstance(), child_frame2->GetSiteInstance());
+  VerifyResultsOfAboutBlankNavigation(child_frame2, child_frame1);
 }
 
 }  // namespace content
