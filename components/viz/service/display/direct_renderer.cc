@@ -427,6 +427,15 @@ void DirectRenderer::DrawFrame(
   current_frame_valid_ = false;
 }
 
+gfx::Rect DirectRenderer::GetTargetDamageBoundingRect() const {
+  gfx::Rect bounding_rect = output_surface_->GetCurrentFramebufferDamage();
+  if (overlay_processor_) {
+    bounding_rect.Union(
+        overlay_processor_->GetPreviousFrameOverlaysBoundingRect());
+  }
+  return bounding_rect;
+}
+
 gfx::Rect DirectRenderer::DeviceViewportRectInDrawSpace() const {
   gfx::Rect device_viewport_rect(current_frame()->device_viewport_size);
   device_viewport_rect -= current_viewport_rect_.OffsetFromOrigin();

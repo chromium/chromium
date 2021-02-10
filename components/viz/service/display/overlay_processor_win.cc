@@ -37,6 +37,12 @@ bool OverlayProcessorWin::IsOverlaySupported() const {
   return true;
 }
 
+gfx::Rect OverlayProcessorWin::GetPreviousFrameOverlaysBoundingRect() const {
+  // TODO(dcastagna): Implement me.
+  NOTIMPLEMENTED();
+  return gfx::Rect();
+}
+
 gfx::Rect OverlayProcessorWin::GetAndResetOverlayDamage() {
   return gfx::Rect();
 }

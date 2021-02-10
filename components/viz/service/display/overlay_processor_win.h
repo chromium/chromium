@@ -35,6 +35,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   ~OverlayProcessorWin() override;
 
   bool IsOverlaySupported() const override;
+  gfx::Rect GetPreviousFrameOverlaysBoundingRect() const override;
   gfx::Rect GetAndResetOverlayDamage() override;
 
   // Returns true if the platform supports hw overlays and surface occluding

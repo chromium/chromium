@@ -20,6 +20,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
 
   // Overrides OverlayProcessorInterface's pure virtual functions.
   bool IsOverlaySupported() const final;
+  gfx::Rect GetPreviousFrameOverlaysBoundingRect() const final;
   gfx::Rect GetAndResetOverlayDamage() final;
   bool NeedsSurfaceDamageRectList() const final;
   void ProcessForOverlays(
