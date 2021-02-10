@@ -10,6 +10,8 @@ static_library("installer_policies") {
     "optimization_hints_component_installer.h",
     "safety_tips_component_installer.cc",
     "safety_tips_component_installer.h",
+    "trust_token_key_commitments_component_installer_policy.cc",
+    "trust_token_key_commitments_component_installer_policy.h",
   ]
 
   deps = [
@@ -25,7 +27,10 @@ static_library("installer_policies") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "optimization_hints_component_installer_unittest.cc" ]
+  sources = [
+    "optimization_hints_component_installer_unittest.cc",
+    "trust_token_key_commitments_component_installer_policy_unittest.cc",
+  ]
 
   deps = [
     ":installer_policies",
@@ -33,6 +38,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/component_updater:test_support",
     "//components/optimization_guide/core",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
