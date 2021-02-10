@@ -37,6 +37,7 @@
 #include "net/base/net_errors.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
@@ -160,6 +161,11 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   if (GetSwitchValueBoolean(switches::kDisableMojoRenderer, false) &&
       renderer_type_ == content::mojom::RendererType::MOJO_RENDERER) {
     renderer_type_ = content::mojom::RendererType::DEFAULT_RENDERER;
+  }
+
+  if (init_params.webrtc_allow_legacy_tls_protocols) {
+    web_contents_->GetMutableRendererPrefs()
+        ->webrtc_allow_legacy_tls_protocols = true;
   }
 }
 

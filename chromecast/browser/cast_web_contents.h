@@ -233,6 +233,9 @@ class CastWebContents {
     // activity hosted by this CastWebContents.
     // No filters implies no restrictions.
     base::Optional<std::vector<std::string>> url_filters = base::nullopt;
+    // Whether WebRTC peer connections are allowed to use legacy versions of the
+    // TLS/DTLS protocols.
+    bool webrtc_allow_legacy_tls_protocols = false;
 
     InitParams();
     InitParams(const InitParams& other);
