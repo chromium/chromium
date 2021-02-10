@@ -366,7 +366,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
         if (addUI) {
           passEncoder.setPipeline(pipelineForIcons);
           passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-          passEncoder.draw(videos.length * 6, 1, 0, 0);
+          passEncoder.draw(videos.length * 6);
         }
 
         passEncoder.endPass();
@@ -374,7 +374,61 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       });
   }
 
-  setInterval(oneFrame, 143);
+  const oneFrameWithImportTextureApi = () => {
+    renderPassDescriptor.colorAttachments[0].attachment = swapChain
+      .getCurrentTexture()
+      .createView();
+
+    for (let i = 0; i < videos.length; ++i) {
+      videoTextures[i] = device.experimentalImportTexture(
+        videos[i], GPUTextureUsage.SAMPLED);
+    }
+
+    const commandEncoder = device.createCommandEncoder();
+    const passEncoder =
+      commandEncoder.beginRenderPass(renderPassDescriptor);
+    passEncoder.setPipeline(pipeline);
+    passEncoder.setVertexBuffer(0, verticesBuffer);
+
+    for (let i = 0; i < videos.length; ++i) {
+      bindGroups[i] = device.createBindGroup({
+        layout: pipeline.getBindGroupLayout(0),
+        entries: [
+          {
+            binding: 0,
+            resource: sampler,
+          },
+          {
+            binding: 1,
+            resource: videoTextures[i].createView(),
+          },
+        ],
+      });
+      const firstVertex = i * 6;
+      passEncoder.setBindGroup(0, bindGroups[i]);
+      passEncoder.draw(6, 1, firstVertex, 0);
+    }
+
+    // Add UI on Top of (videoRows * videoColumns) videos.
+    if (addUI) {
+      passEncoder.setPipeline(pipelineForIcons);
+      passEncoder.setVertexBuffer(0, verticesBufferForIcons);
+      passEncoder.draw(videos.length * 6);
+    }
+
+    passEncoder.endPass();
+    device.queue.submit([commandEncoder.finish()]);
+
+    // Destroy the texture after submit to promptly recycle resources.
+    for (let i = 0; i < videoTextures.length; ++i)
+      videoTextures[i].destroy();
+  }
+
+  if (useImportTextureApi) {
+    setInterval(oneFrameWithImportTextureApi, 143);
+  } else {
+    setInterval(oneFrame, 143);
+  }
 
   // TODO(magchen@): Render frames at different fps.
   // 4 videos at 30 fps, oneFrame() should be called every 33 milliseconds.
