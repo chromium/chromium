@@ -74,8 +74,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
-  static void SetEnterpriseManagedForTesting(bool enterprise_managed);
-
   static void SetPermissionCallbackForTesting(PermissionCallback callback);
 
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);

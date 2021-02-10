@@ -38,6 +38,7 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "url/gurl.h"
+#include "url/url_canon_ip.h"
 
 using testing::StartsWith;
 
@@ -630,27 +631,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
-                       OpenTcp_RestrictedByEnterprisePolicies) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      DirectSocketsServiceImpl::FailureType::kEnterprisePolicy, 0);
-
-  DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(true);
-
-  const std::string script =
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: 993})";
-
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      DirectSocketsServiceImpl::FailureType::kEnterprisePolicy, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
                        OpenTcp_CannotConnectNonPublic) {
   const auto protocol = DirectSocketsServiceImpl::ProtocolType::kTcp;
   // Tests for the reserved IPv4 ranges. The reserved ranges are tested by
@@ -877,27 +857,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_CannotEvadeCors) {
   histogram_tester.ExpectBucketCount(
       kPermissionDeniedHistogramName,
       DirectSocketsServiceImpl::FailureType::kCORS, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
-                       OpenUdp_RestrictedByEnterprisePolicies) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      DirectSocketsServiceImpl::FailureType::kEnterprisePolicy, 0);
-
-  DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(true);
-
-  const std::string script =
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: 993})";
-
-  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      DirectSocketsServiceImpl::FailureType::kEnterprisePolicy, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest,
