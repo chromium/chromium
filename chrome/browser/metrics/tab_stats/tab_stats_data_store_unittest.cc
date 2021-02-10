@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/tab_stats_data_store.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
 
-#include "chrome/browser/metrics/tab_stats_tracker.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_registry_simple.h"

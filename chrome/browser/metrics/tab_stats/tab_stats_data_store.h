@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_TAB_STATS_DATA_STORE_H_
-#define CHROME_BROWSER_METRICS_TAB_STATS_DATA_STORE_H_
+#ifndef CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_DATA_STORE_H_
+#define CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_DATA_STORE_H_
 
 #include <memory>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/optional.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/metrics/tab_stats_observer.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "content/public/browser/visibility.h"
 
@@ -165,4 +165,4 @@ class TabStatsDataStore : public TabStatsObserver {
 
 }  // namespace metrics
 
-#endif  // CHROME_BROWSER_METRICS_TAB_STATS_DATA_STORE_H_
+#endif  // CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_DATA_STORE_H_

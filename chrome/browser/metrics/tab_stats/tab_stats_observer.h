@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_TAB_STATS_OBSERVER_H_
-#define CHROME_BROWSER_METRICS_TAB_STATS_OBSERVER_H_
+#ifndef CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_OBSERVER_H_
+#define CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_OBSERVER_H_
 
 #include "base/observer_list_types.h"
 #include "content/public/browser/visibility.h"
@@ -45,4 +45,4 @@ class TabStatsObserver : public base::CheckedObserver {
 
 }  // namespace metrics
 
-#endif  // CHROME_BROWSER_METRICS_TAB_STATS_OBSERVER_H_
+#endif  // CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_OBSERVER_H_

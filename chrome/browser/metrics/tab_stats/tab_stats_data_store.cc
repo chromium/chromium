@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/tab_stats_data_store.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
 
 #include <algorithm>
 #include <utility>
@@ -32,8 +32,7 @@ TabStatsDataStore::TabsStats::TabsStats()
       total_tab_count_max(0U),
       max_tab_per_window(0U),
       window_count(0U),
-      window_count_max(0U) {
-}
+      window_count_max(0U) {}
 TabStatsDataStore::TabsStats::TabsStats(const TabsStats& other) = default;
 
 TabStatsDataStore::TabStatsDataStore(PrefService* pref_service)

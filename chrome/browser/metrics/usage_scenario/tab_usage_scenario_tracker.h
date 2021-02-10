@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_TAB_USAGE_SCENARIO_TRACKER_H_
 
 #include "base/containers/flat_set.h"
-#include "chrome/browser/metrics/tab_stats_observer.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "content/public/browser/visibility.h"
 

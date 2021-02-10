@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_TAB_STATS_TRACKER_H_
-#define CHROME_BROWSER_METRICS_TAB_STATS_TRACKER_H_
+#ifndef CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_TRACKER_H_
+#define CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_TRACKER_H_
 
 #include <map>
 #include <memory>
@@ -19,8 +19,8 @@
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "chrome/browser/metrics/tab_stats_data_store.h"
-#include "chrome/browser/metrics/tab_stats_tracker_delegate.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
+#include "chrome/browser/metrics/tab_stats/tab_stats_tracker_delegate.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/metrics/daily_event.h"
@@ -297,4 +297,4 @@ class TabStatsTracker::UmaStatsReportingDelegate {
 
 }  // namespace metrics
 
-#endif  // CHROME_BROWSER_METRICS_TAB_STATS_TRACKER_H_
+#endif  // CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_TRACKER_H_
