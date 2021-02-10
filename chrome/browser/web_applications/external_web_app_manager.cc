@@ -145,8 +145,14 @@ ParsedConfigs ParseConfigsBlocking(const base::FilePath& config_dir,
 base::Optional<std::string> GetDisableReason(
     const ExternalInstallOptions& options,
     Profile* profile,
+    bool default_apps_enabled_in_prefs,
     bool is_new_user,
     const std::string& user_type) {
+  if (!default_apps_enabled_in_prefs) {
+    return options.install_url.spec() +
+           " disabled by default_apps pref setting.";
+  }
+
   // Remove if not applicable to current user type.
   DCHECK_GT(options.user_type_allowlist.size(), 0u);
   if (!base::Contains(options.user_type_allowlist, user_type)) {
@@ -369,13 +375,18 @@ void ExternalWebAppManager::PostProcessConfigs(ConsumeInstallOptions callback,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
+  // TODO(crbug.com/1175196): Move this constant into some shared constants.h
+  // file.
+  bool default_apps_enabled_in_prefs =
+      profile_->GetPrefs()->GetString(prefs::kDefaultApps) == "install";
   bool is_new_user = IsNewUser();
   std::string user_type = apps::DetermineUserType(profile_);
   size_t disabled_count = 0;
   base::EraseIf(
       parsed_configs.options_list, [&](const ExternalInstallOptions& options) {
         base::Optional<std::string> disable_reason =
-            GetDisableReason(options, profile_, is_new_user, user_type);
+            GetDisableReason(options, profile_, default_apps_enabled_in_prefs,
+                             is_new_user, user_type);
         if (disable_reason) {
           VLOG(1) << *disable_reason;
           ++disabled_count;
