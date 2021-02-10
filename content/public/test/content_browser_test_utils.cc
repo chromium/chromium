@@ -54,11 +54,14 @@ GURL GetTestUrl(const char* dir, const char* file) {
   return net::FilePathToFileURL(GetTestFilePath(dir, file));
 }
 
-void NavigateToURLBlockUntilNavigationsComplete(Shell* window,
-                                                const GURL& url,
-                                                int number_of_navigations) {
+void NavigateToURLBlockUntilNavigationsComplete(
+    Shell* window,
+    const GURL& url,
+    int number_of_navigations,
+    bool ignore_uncommitted_navigations) {
   NavigateToURLBlockUntilNavigationsComplete(window->web_contents(), url,
-                                             number_of_navigations);
+                                             number_of_navigations,
+                                             ignore_uncommitted_navigations);
 }
 
 void ReloadBlockUntilNavigationsComplete(Shell* window,
@@ -95,7 +98,7 @@ bool NavigateToURL(Shell* window,
 bool NavigateToURLAndExpectNoCommit(Shell* window, const GURL& url) {
   NavigationEntry* old_entry =
       window->web_contents()->GetController().GetLastCommittedEntry();
-  NavigateToURLBlockUntilNavigationsComplete(window, url, 1);
+  NavigateToURLBlockUntilNavigationsComplete(window->web_contents(), url, 1);
   NavigationEntry* new_entry =
       window->web_contents()->GetController().GetLastCommittedEntry();
   return old_entry == new_entry;

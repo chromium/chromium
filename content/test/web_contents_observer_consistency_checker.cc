@@ -213,9 +213,9 @@ void WebContentsObserverConsistencyChecker::ReadyToCommitNavigation(
   CHECK(NavigationIsOngoing(navigation_handle));
 
   CHECK(!navigation_handle->HasCommitted());
-  CHECK(navigation_handle->GetRenderFrameHost());
   CHECK_EQ(navigation_handle->GetWebContents(), web_contents());
-  CHECK(navigation_handle->GetRenderFrameHost() != nullptr);
+  CHECK(navigation_handle->GetRenderFrameHost());
+  CHECK(navigation_handle->GetRenderFrameHost()->IsRenderFrameLive());
 
   ready_to_commit_hosts_.insert(
       std::make_pair(navigation_handle->GetNavigationId(),
@@ -232,10 +232,11 @@ void WebContentsObserverConsistencyChecker::DidFinishNavigation(
   CHECK_EQ(navigation_handle->GetWebContents(), web_contents());
 
   CHECK(!navigation_handle->HasCommitted() ||
-        navigation_handle->GetRenderFrameHost() != nullptr);
-
+        navigation_handle->GetRenderFrameHost());
   CHECK(!navigation_handle->HasCommitted() ||
         navigation_handle->GetRenderFrameHost()->IsCurrent());
+  CHECK(!navigation_handle->HasCommitted() ||
+        navigation_handle->GetRenderFrameHost()->IsRenderFrameLive());
 
   // If ReadyToCommitNavigation was dispatched, verify that the
   // |navigation_handle| has the same RenderFrameHost at this time as the one

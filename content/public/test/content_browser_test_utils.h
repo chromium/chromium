@@ -87,10 +87,13 @@ WARN_UNUSED_RESULT bool NavigateToURL(Shell* window,
                                       const GURL& expected_commit_url);
 
 // Navigates |window| to |url|, blocking until the given number of navigations
-// finishes.
-void NavigateToURLBlockUntilNavigationsComplete(Shell* window,
-                                                const GURL& url,
-                                                int number_of_navigations);
+// finishes. If |ignore_uncommitted_navigations| is true, then an aborted
+// navigation also counts toward |number_of_navigations| being complete.
+void NavigateToURLBlockUntilNavigationsComplete(
+    Shell* window,
+    const GURL& url,
+    int number_of_navigations,
+    bool ignore_uncommitted_navigations = true);
 
 // Navigates |window| to |url|, blocks until the navigation finishes, and
 // checks that the navigation did not commit (e.g., due to a crash or

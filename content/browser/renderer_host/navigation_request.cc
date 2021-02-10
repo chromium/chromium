@@ -4671,6 +4671,18 @@ void NavigationRequest::UpdateClientSecurityStateInternals() {
 void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   EnterChildTraceEvent("ReadyToCommitNavigation", this);
 
+  // We may come back to here asynchronously, and the renderer may be destroyed
+  // in the meantime. Renderer-initiated navigations listen to mojo
+  // disconnection from the renderer NavigationClient; but browser-initiated
+  // navigations do not, so we must look explicitly. We should not proceed and
+  // claim "ReadyToCommitNavigation" to the delegate if the renderer is gone.
+  if (!render_frame_host_->IsRenderFrameLive()) {
+    OnRendererAbortedNavigation();
+    // DO NOT ADD CODE AFTER THIS, as the NavigationHandle has been deleted
+    // by the previous call.
+    return;
+  }
+
   SetState(READY_TO_COMMIT);
   ready_to_commit_time_ = base::TimeTicks::Now();
   RestartCommitTimeout();

@@ -136,10 +136,13 @@ WARN_UNUSED_RESULT bool NavigateToURL(WebContents* web_contents,
                                       const GURL& expected_commit_url);
 
 // Navigates |web_contents| to |url|, blocking until the given number of
-// navigations finishes.
-void NavigateToURLBlockUntilNavigationsComplete(WebContents* web_contents,
-                                                const GURL& url,
-                                                int number_of_navigations);
+// navigations finishes. If |ignore_uncommitted_navigations| is true, then an
+// aborted navigation also counts toward |number_of_navigations| being complete.
+void NavigateToURLBlockUntilNavigationsComplete(
+    WebContents* web_contents,
+    const GURL& url,
+    int number_of_navigations,
+    bool ignore_uncommitted_navigations = true);
 
 // Perform a renderer-initiated navigation of |window| to |url|, blocking
 // until the navigation finishes.  The navigation is done by assigning

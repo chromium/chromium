@@ -34,6 +34,10 @@ class TaskRunnerDeferringThrottle : public NavigationThrottle {
   ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
+ protected:
+  // Tests may override this to change how/when Resume() is called.
+  virtual void AsyncResume();
+
  private:
   ThrottleCheckResult DeferToPostTask();
 

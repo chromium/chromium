@@ -61,6 +61,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
+#include "content/test/task_runner_deferring_throttle.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host_factory.h"
 #include "ipc/ipc_security_test_util.h"
@@ -4148,6 +4149,109 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, ErrorPageFromCspSandboxResponse) {
   EXPECT_TRUE(current_frame_host()->GetLastCommittedOrigin().opaque());
   EXPECT_TRUE(
       current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(url));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       ProcessShutdownDuringDeferredNavigationThrottle) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  class ShutdownThrottle : public TaskRunnerDeferringThrottle,
+                           WebContentsObserver {
+   public:
+    explicit ShutdownThrottle(WebContents* web_contents,
+                              NavigationHandle* handle)
+        : TaskRunnerDeferringThrottle(base::ThreadTaskRunnerHandle::Get(),
+                                      /*defer_start=*/false,
+                                      /*defer_redirect=*/false,
+                                      /*defer_response=*/true,
+                                      handle),
+          web_contents_(web_contents) {
+      WebContentsObserver::Observe(web_contents_);
+    }
+
+    void AsyncResume() override {
+      // Shutdown the renderer and delay Resume() until then.
+      web_contents_->GetMainFrame()->GetProcess()->Shutdown(1);
+    }
+
+    void RenderFrameDeleted(RenderFrameHost* frame_host) override {
+      TaskRunnerDeferringThrottle::AsyncResume();
+    }
+
+   private:
+    WebContents* web_contents_;
+  };
+
+  auto inserter = std::make_unique<TestNavigationThrottleInserter>(
+      shell()->web_contents(),
+      base::BindLambdaForTesting(
+          [&](NavigationHandle* handle) -> std::unique_ptr<NavigationThrottle> {
+            return std::make_unique<ShutdownThrottle>(shell()->web_contents(),
+                                                      handle);
+          }));
+
+  class DoesNotReadyToCommitObserver : public WebContentsObserver {
+   public:
+    explicit DoesNotReadyToCommitObserver(WebContents* contents)
+        : WebContentsObserver(contents) {}
+
+    // WebContentsObserver overrides.
+    void ReadyToCommitNavigation(NavigationHandle* handle) override {
+      // This method should not happen. Since the process is destroyed before
+      // we become ready to commit, we can not ever reach
+      // ReadyToCommitNavigation. Doing so would fail because the renderer is
+      // gone.
+      ADD_FAILURE() << "ReadyToCommitNavigation but renderer has crashed. "
+                       "IsRenderFrameLive: "
+                    << handle->GetRenderFrameHost()->IsRenderFrameLive();
+      navigation_was_ready_to_commit_ = true;
+    }
+
+    void DidFinishNavigation(NavigationHandle* handle) override {
+      navigation_finished_ = true;
+      navigation_committed_ = handle->HasCommitted();
+    }
+
+    bool navigation_was_ready_to_commit() {
+      return navigation_was_ready_to_commit_;
+    }
+    bool navigation_finished() { return navigation_finished_; }
+    bool navigation_committed() { return navigation_committed_; }
+
+   private:
+    bool navigation_was_ready_to_commit_ = false;
+    bool navigation_finished_ = false;
+    bool navigation_committed_ = false;
+  };
+
+  // Watch that ReadyToCommitNavigation() will not happen when the renderer is
+  // gone.
+  DoesNotReadyToCommitObserver no_commit_obs(shell()->web_contents());
+
+  // We will shutdown the renderer during this navigation.
+  ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+  // Important: This is a browser-initiated navigation, so the NavigationRequest
+  // does not have an open connection (NavigationClient) to the renderer that it
+  // is listening to for termination while running NavigationThrottles.
+  //
+  // Expect this navigation to be aborted, so we stop waiting after the
+  // uncommitted navigation is done.
+  GURL url2 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), url2, /*number_of_navigations=*/1,
+      /*ignore_uncommitted_navigations=*/false);
+
+  // The renderer was shutdown mid-navigation.
+  EXPECT_FALSE(shell()->web_contents()->GetMainFrame()->IsRenderFrameLive());
+
+  // The navigation was aborted, which means it finished but did not commit, and
+  // _importantly_ it never reported "ReadyToCommitNavigation" without a live
+  // renderer.
+  EXPECT_TRUE(no_commit_obs.navigation_finished());
+  EXPECT_FALSE(no_commit_obs.navigation_was_ready_to_commit());
+  EXPECT_FALSE(no_commit_obs.navigation_committed());
 }
 
 // Do sandbox flags apply to error page in sandboxed iframes?

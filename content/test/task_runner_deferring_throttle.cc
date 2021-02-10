@@ -57,11 +57,15 @@ const char* TaskRunnerDeferringThrottle::GetNameForLogging() {
   return "TaskRunnerDeferringThrottle";
 }
 
+void TaskRunnerDeferringThrottle::AsyncResume() {
+  Resume();
+}
+
 NavigationThrottle::ThrottleCheckResult
 TaskRunnerDeferringThrottle::DeferToPostTask() {
   task_runner_->PostTaskAndReply(
       FROM_HERE, base::DoNothing(),
-      base::BindOnce(&TaskRunnerDeferringThrottle::Resume,
+      base::BindOnce(&TaskRunnerDeferringThrottle::AsyncResume,
                      weak_factory_.GetWeakPtr()));
 
   return NavigationThrottle::DEFER;
