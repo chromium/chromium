@@ -136,8 +136,8 @@ crbug.com/1175371 [ linux ] conformance/extensions/khr-parallel-shader-compile.h
 crbug.com/1175371 [ mac ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
-# TODO(kbr): investigate failure on validating command decoder.
-crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Skip ]
+# Won't investigate failure on validating command decoder. Remove once it's unshipped.
+crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
