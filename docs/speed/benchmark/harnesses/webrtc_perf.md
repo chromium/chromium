@@ -44,7 +44,10 @@ the following command:
 ./tools/perf/run_benchmark webrtc --browser-executable=out/Release/chrome
 --story-tag-filter=stress
 ```
-
+Or you can run the single story directly:
+```
+./tools/perf/run_benchmark webrtc --story multiple-peerconnections --browser-executable=out/Release/chrome
+```
 
 ## Adding Telemetry Tests for WebRTC
 
