@@ -548,7 +548,7 @@ TEST_F(TouchTest, TouchMultipleSurfaces) {
 
   auto child_surface = std::make_unique<Surface>();
   auto child_shell_surface = std::make_unique<ShellSurface>(
-      child_surface.get(), gfx::Point(), true, false,
+      child_surface.get(), gfx::Point(), /*can_minimize=*/false,
       ash::desks_util::GetActiveDeskContainerId());
   child_shell_surface->DisableMovement();
   child_shell_surface->SetParent(shell_surface.get());

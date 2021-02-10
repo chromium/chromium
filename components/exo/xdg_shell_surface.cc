@@ -19,10 +19,9 @@ namespace exo {
 
 XdgShellSurface::XdgShellSurface(Surface* surface,
                                  const gfx::Point& origin,
-                                 bool activatable,
                                  bool can_minimize,
                                  int container)
-    : ShellSurface(surface, origin, activatable, can_minimize, container) {}
+    : ShellSurface(surface, origin, can_minimize, container) {}
 
 XdgShellSurface::~XdgShellSurface() {}
 

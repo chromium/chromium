@@ -326,7 +326,7 @@ ClientControlledShellSurface::ClientControlledShellSurface(
     bool can_minimize,
     int container,
     bool default_scale_cancellation)
-    : ShellSurfaceBase(surface, gfx::Point(), true, can_minimize, container),
+    : ShellSurfaceBase(surface, gfx::Point(), can_minimize, container),
       current_pin_(chromeos::WindowPinType::kNone),
       use_default_scale_cancellation_(default_scale_cancellation) {
   server_side_resize_ = true;

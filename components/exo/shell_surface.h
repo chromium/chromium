@@ -31,7 +31,6 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // specified as part of the geometry is relative to the shell surface.
   ShellSurface(Surface* surface,
                const gfx::Point& origin,
-               bool activatable,
                bool can_minimize,
                int container);
   explicit ShellSurface(Surface* surface);

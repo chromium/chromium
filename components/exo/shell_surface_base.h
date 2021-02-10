@@ -58,7 +58,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // specified as part of the geometry is relative to the shell surface.
   ShellSurfaceBase(Surface* surface,
                    const gfx::Point& origin,
-                   bool activatable,
                    bool can_minimize,
                    int container);
   ~ShellSurfaceBase() override;

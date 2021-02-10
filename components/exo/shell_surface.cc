@@ -92,16 +92,14 @@ ShellSurface::ScopedConfigure::~ScopedConfigure() {
 
 ShellSurface::ShellSurface(Surface* surface,
                            const gfx::Point& origin,
-                           bool activatable,
                            bool can_minimize,
                            int container)
-    : ShellSurfaceBase(surface, origin, activatable, can_minimize, container) {}
+    : ShellSurfaceBase(surface, origin, can_minimize, container) {}
 
 ShellSurface::ShellSurface(Surface* surface)
     : ShellSurfaceBase(surface,
                        gfx::Point(),
-                       true,
-                       true,
+                       /*can_minimize=*/true,
                        ash::desks_util::GetActiveDeskContainerId()) {}
 
 ShellSurface::~ShellSurface() {

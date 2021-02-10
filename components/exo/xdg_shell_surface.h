@@ -44,11 +44,11 @@ class XdgShellSurface : public ShellSurface {
   // specified as part of the geometry is relative to the shell surface.
   XdgShellSurface(Surface* surface,
                   const gfx::Point& origin,
-                  bool activatable,
                   bool can_minimize,
                   int container);
   ~XdgShellSurface() override;
 
+  // ShellSurfaceBase::
   void OverrideInitParams(views::Widget::InitParams* params) override;
 
   bool x_flipped() const { return x_flipped_; }

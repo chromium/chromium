@@ -148,7 +148,7 @@ std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {
   }
 
   return std::make_unique<ShellSurface>(
-      surface, gfx::Point(), true /* activatable */, false /* can_minimize */,
+      surface, gfx::Point(), /*can_minimize=*/false,
       ash::desks_util::GetActiveDeskContainerId());
 }
 
@@ -162,7 +162,7 @@ std::unique_ptr<XdgShellSurface> Display::CreateXdgShellSurface(
   }
 
   return std::make_unique<XdgShellSurface>(
-      surface, gfx::Point(), true /* activatable */, false /* can_minimize */,
+      surface, gfx::Point(), /*can_minimize=*/false,
       ash::desks_util::GetActiveDeskContainerId());
 }
 

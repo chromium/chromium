@@ -110,8 +110,9 @@ ExoTestWindow::ExoTestWindow(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_buffer,
   surface_.reset(new Surface());
   int container = is_modal ? ash::kShellWindowId_SystemModalContainer
                            : ash::desks_util::GetActiveDeskContainerId();
-  shell_surface_ = std::make_unique<ShellSurface>(surface_.get(), gfx::Point(),
-                                                  true, false, container);
+  shell_surface_ =
+      std::make_unique<ShellSurface>(surface_.get(), gfx::Point(),
+                                     /*can minimize=*/false, container);
 
   buffer_.reset(new Buffer(std::move(gpu_buffer)));
   surface_->Attach(buffer_.get());

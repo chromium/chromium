@@ -61,7 +61,6 @@ class UILockControllerTest : public test::ExoTestBase {
     auto surface = std::make_unique<Surface>();
     auto shell_surface = std::make_unique<ShellSurface>(
         surface.get(), gfx::Point{0, 0},
-        /*activatable=*/true,
         /*can_minimize=*/true, ash::desks_util::GetActiveDeskContainerId());
     auto buffer = std::make_unique<Buffer>(
         exo_test_helper()->CreateGpuMemoryBuffer({w, h}));

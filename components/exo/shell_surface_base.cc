@@ -298,13 +298,11 @@ int shell_id = 0;
 
 ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
                                    const gfx::Point& origin,
-                                   bool activatable,
                                    bool can_minimize,
                                    int container)
     : SurfaceTreeHost(base::StringPrintf("ExoShellSurfaceHost-%d", shell_id)),
       origin_(origin),
       container_(container),
-      activatable_(activatable),
       can_minimize_(can_minimize) {
   WMHelper::GetInstance()->AddActivationObserver(this);
   surface->AddSurfaceObserver(this);
