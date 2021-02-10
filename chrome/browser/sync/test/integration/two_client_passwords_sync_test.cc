@@ -24,26 +24,26 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "content/public/test/browser_test.h"
 
-using passwords_helper::AddCompromisedCredentials;
+using passwords_helper::AddInsecureCredential;
 using passwords_helper::AddLogin;
 using passwords_helper::AllProfilesContainSamePasswordForms;
 using passwords_helper::AllProfilesContainSamePasswordFormsAsVerifier;
-using passwords_helper::CreateCompromisedCredentials;
+using passwords_helper::CreateInsecureCredential;
 using passwords_helper::CreateTestPasswordForm;
-using passwords_helper::GetAllCompromisedCredentials;
+using passwords_helper::GetAllInsecureCredentials;
 using passwords_helper::GetLogins;
 using passwords_helper::GetPasswordCount;
 using passwords_helper::GetPasswordStore;
 using passwords_helper::GetVerifierPasswordCount;
 using passwords_helper::GetVerifierPasswordStore;
-using passwords_helper::RemoveCompromisedCredentials;
+using passwords_helper::RemoveInsecureCredentials;
 using passwords_helper::RemoveLogin;
 using passwords_helper::RemoveLogins;
 using passwords_helper::UpdateLogin;
 using passwords_helper::UpdateLoginWithPrimaryKey;
-using CheckForCompromised = SamePasswordFormsChecker::CheckForCompromised;
+using CheckForInsecure = SamePasswordFormsChecker::CheckForInsecure;
 
-using password_manager::CompromisedCredentials;
+using password_manager::InsecureCredential;
 using password_manager::InsecureType;
 using password_manager::PasswordForm;
 
@@ -395,26 +395,26 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTestWithVerifier,
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
-                       MergeFormsWithCompromisedCredentials) {
+                       MergeFormsWithInsecureCredentials) {
   if (!GetParam())
     return;
   // Setup the test to have Form 0 on Client 0 and Form 1 on Client 1. Both
-  // Forms has associated compromised credentials. After sync, both clients
-  // should have both forms with their corresponding compromised credentials.
+  // Forms has associated insecure credentials. After sync, both clients should
+  // have both forms with their corresponding insecure credentials.
 
   PasswordForm form0 = CreateTestPasswordForm(0);
   PasswordForm form1 = CreateTestPasswordForm(1);
 
-  const CompromisedCredentials issue0 =
-      CreateCompromisedCredentials(0, InsecureType::kLeaked);
-  const CompromisedCredentials issue1 =
-      CreateCompromisedCredentials(1, InsecureType::kPhished);
+  const InsecureCredential issue0 =
+      CreateInsecureCredential(0, InsecureType::kLeaked);
+  const InsecureCredential issue1 =
+      CreateInsecureCredential(1, InsecureType::kPhished);
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Add the passwords and security issues to Client 0.
   AddLogin(GetPasswordStore(0), form0);
-  AddCompromisedCredentials(GetPasswordStore(0), issue0);
+  AddInsecureCredential(GetPasswordStore(0), issue0);
 
   // Enable sync on Client 0 and wait until they are committed.
   ASSERT_TRUE(GetClient(0)->SetupSync()) << "GetClient(0)->SetupSync() failed.";
@@ -422,105 +422,103 @@ IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
 
   // Add the passwords and security issues to Client 1.
   AddLogin(GetPasswordStore(1), form1);
-  AddCompromisedCredentials(GetPasswordStore(1), issue1);
+  AddInsecureCredential(GetPasswordStore(1), issue1);
 
   // Enable sync on Client 1 and wait until all passwords are merged.
   ASSERT_TRUE(GetClient(1)->SetupSync()) << "GetClient(1)->SetupSync() failed.";
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForCompromised(true)).Wait());
+  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
 
-  EXPECT_THAT(GetAllCompromisedCredentials(GetPasswordStore(0)),
+  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(0)),
               UnorderedElementsAre(issue0, issue1));
-  EXPECT_THAT(GetAllCompromisedCredentials(GetPasswordStore(1)),
+  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
               UnorderedElementsAre(issue0, issue1));
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
-                       AddFormWithCompromisedCredentials) {
+                       AddFormWithInsecureCredentials) {
   if (!GetParam())
     return;
   // Tests that newly added form with security issues is successfully synced.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
-  const CompromisedCredentials issue1 =
-      CreateCompromisedCredentials(0, InsecureType::kLeaked);
-  const CompromisedCredentials issue2 =
-      CreateCompromisedCredentials(0, InsecureType::kPhished);
+  const InsecureCredential issue1 =
+      CreateInsecureCredential(0, InsecureType::kLeaked);
+  const InsecureCredential issue2 =
+      CreateInsecureCredential(0, InsecureType::kPhished);
 
   // Add the form and security issues to Client 0.
   AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
-  AddCompromisedCredentials(GetPasswordStore(0), issue1);
-  AddCompromisedCredentials(GetPasswordStore(0), issue2);
+  AddInsecureCredential(GetPasswordStore(0), issue1);
+  AddInsecureCredential(GetPasswordStore(0), issue2);
 
   // Wait until Client 1 picks up changes.
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForCompromised(true)).Wait());
+  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
   ASSERT_EQ(1, GetPasswordCount(1));
-  EXPECT_THAT(GetAllCompromisedCredentials(GetPasswordStore(1)),
+  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
               UnorderedElementsAre(issue1, issue2));
 }
 
-IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
-                       RemoveCompromisedCredentialss) {
+IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest, RemoveInsecureCredentialss) {
   if (!GetParam())
     return;
   // Tests that removing security issues are successfully synced.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
-  const CompromisedCredentials issue1 =
-      CreateCompromisedCredentials(0, InsecureType::kLeaked);
-  const CompromisedCredentials issue2 =
-      CreateCompromisedCredentials(1, InsecureType::kPhished);
+  const InsecureCredential issue1 =
+      CreateInsecureCredential(0, InsecureType::kLeaked);
+  const InsecureCredential issue2 =
+      CreateInsecureCredential(1, InsecureType::kPhished);
 
   // Add the form and security issues to Client 0.
   AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
   AddLogin(GetPasswordStore(0), CreateTestPasswordForm(1));
-  AddCompromisedCredentials(GetPasswordStore(0), issue1);
-  AddCompromisedCredentials(GetPasswordStore(0), issue2);
+  AddInsecureCredential(GetPasswordStore(0), issue1);
+  AddInsecureCredential(GetPasswordStore(0), issue2);
 
   // Wait until Client 1 picks up changes.
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForCompromised(true)).Wait());
+  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
   ASSERT_EQ(2, GetPasswordCount(1));
-  ASSERT_THAT(GetAllCompromisedCredentials(GetPasswordStore(1)),
+  ASSERT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
               UnorderedElementsAre(issue1, issue2));
 
   // Remove security issues on Client 1.
-  RemoveCompromisedCredentials(GetPasswordStore(1), issue2);
+  RemoveInsecureCredentials(GetPasswordStore(1), issue2);
   // Wait until Client 0 picks up changes.
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForCompromised(true)).Wait());
-  EXPECT_THAT(GetAllCompromisedCredentials(GetPasswordStore(0)),
+  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
+  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(0)),
               UnorderedElementsAre(issue1));
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientPasswordsSyncTest,
-                       CompromisedCredentialUpdateMute) {
+                       InsecureCredentialUpdateMute) {
   if (!GetParam())
     return;
   // Tests that updating security issues are successfully synced.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllProfilesContainSamePasswordForms());
 
-  CompromisedCredentials issue =
-      CreateCompromisedCredentials(0, InsecureType::kLeaked);
+  InsecureCredential issue = CreateInsecureCredential(0, InsecureType::kLeaked);
   // Add the form and security issue to Client 0.
   AddLogin(GetPasswordStore(0), CreateTestPasswordForm(0));
-  AddCompromisedCredentials(GetPasswordStore(0), issue);
+  AddInsecureCredential(GetPasswordStore(0), issue);
 
   // Wait until Client 1 picks up changes.
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
-  ASSERT_THAT(GetAllCompromisedCredentials(GetPasswordStore(1)),
+  ASSERT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
               UnorderedElementsAre(issue));
 
   // Update is_muted field on Client 0.
-  RemoveCompromisedCredentials(GetPasswordStore(0), issue);
+  RemoveInsecureCredentials(GetPasswordStore(0), issue);
   issue.is_muted = password_manager::IsMuted(true);
-  AddCompromisedCredentials(GetPasswordStore(0), issue);
-  EXPECT_THAT(GetAllCompromisedCredentials(GetPasswordStore(0)),
+  AddInsecureCredential(GetPasswordStore(0), issue);
+  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(0)),
               UnorderedElementsAre(issue));
 
   // Wait until Client 1 picks up changes.
-  ASSERT_TRUE(SamePasswordFormsChecker(CheckForCompromised(true)).Wait());
-  EXPECT_THAT(GetAllCompromisedCredentials(GetPasswordStore(1)),
+  ASSERT_TRUE(SamePasswordFormsChecker(CheckForInsecure(true)).Wait());
+  EXPECT_THAT(GetAllInsecureCredentials(GetPasswordStore(1)),
               UnorderedElementsAre(issue));
 }
 

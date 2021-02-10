@@ -73,11 +73,10 @@ class PasswordStoreConsumerHelper
   DISALLOW_COPY_AND_ASSIGN(PasswordStoreConsumerHelper);
 };
 
-// TODO(crbug.com/1175743) Rename Compromised to Insecure.
-class CompromisedCredentialsConsumerHelper
+class InsecureCredentialsConsumerHelper
     : public password_manager::InsecureCredentialsConsumer {
  public:
-  CompromisedCredentialsConsumerHelper() = default;
+  InsecureCredentialsConsumerHelper() = default;
 
   void OnGetInsecureCredentials(
       std::vector<InsecureCredential> insecure_credentials) override {
@@ -95,7 +94,7 @@ class CompromisedCredentialsConsumerHelper
   base::RunLoop run_loop_;
   std::vector<InsecureCredential> insecure_credentials_;
 
-  DISALLOW_COPY_AND_ASSIGN(CompromisedCredentialsConsumerHelper);
+  DISALLOW_COPY_AND_ASSIGN(InsecureCredentialsConsumerHelper);
 };
 
 // PasswordForm::date_synced is a local field. Therefore it may be different
@@ -177,8 +176,8 @@ void AddLogin(PasswordStore* store, const PasswordForm& form) {
   wait_event.Wait();
 }
 
-void AddCompromisedCredentials(PasswordStore* store,
-                               const InsecureCredential& issue) {
+void AddInsecureCredential(PasswordStore* store,
+                           const InsecureCredential& issue) {
   ASSERT_TRUE(store);
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -226,10 +225,10 @@ std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(PasswordStore* store) {
   return consumer.WaitForResult();
 }
 
-std::vector<InsecureCredential> GetAllCompromisedCredentials(
+std::vector<InsecureCredential> GetAllInsecureCredentials(
     PasswordStore* store) {
   DCHECK(store);
-  CompromisedCredentialsConsumerHelper consumer;
+  InsecureCredentialsConsumerHelper consumer;
   store->GetAllInsecureCredentials(&consumer);
   return consumer.WaitForResult();
 }
@@ -251,8 +250,8 @@ void RemoveLogins(PasswordStore* store) {
   }
 }
 
-void RemoveCompromisedCredentials(PasswordStore* store,
-                                  const InsecureCredential& credential) {
+void RemoveInsecureCredentials(PasswordStore* store,
+                               const InsecureCredential& credential) {
   ASSERT_TRUE(store);
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
@@ -346,14 +345,13 @@ bool AllProfilesContainSamePasswordForms() {
   return true;
 }
 
-bool AllProfilesContainSameCompromisedPasswords() {
+bool AllProfilesContainSameInsecurePasswords() {
   auto MatchesProfile0 = testing::Matches(testing::UnorderedElementsAreArray(
-      GetAllCompromisedCredentials(GetPasswordStore(0))));
+      GetAllInsecureCredentials(GetPasswordStore(0))));
   for (int i = 1; i < test()->num_clients(); ++i) {
-    if (!MatchesProfile0(GetAllCompromisedCredentials(GetPasswordStore(i)))) {
-      DVLOG(1)
-          << "Profile " << i
-          << " does not contain the same compromised passwords as Profile 0.";
+    if (!MatchesProfile0(GetAllInsecureCredentials(GetPasswordStore(i)))) {
+      DVLOG(1) << "Profile " << i
+               << " does not contain the same insecure passwords as Profile 0.";
       return false;
     }
   }
@@ -381,7 +379,7 @@ PasswordForm CreateTestPasswordForm(int index) {
   return form;
 }
 
-InsecureCredential CreateCompromisedCredentials(
+InsecureCredential CreateInsecureCredential(
     int index,
     password_manager::InsecureType type) {
   InsecureCredential issue;
@@ -446,13 +444,13 @@ bool PasswordSyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 SamePasswordFormsChecker::SamePasswordFormsChecker()
-    : SamePasswordFormsChecker(CheckForCompromised(false)) {}
+    : SamePasswordFormsChecker(CheckForInsecure(false)) {}
 
 SamePasswordFormsChecker::SamePasswordFormsChecker(
-    CheckForCompromised check_for_compromised)
+    CheckForInsecure check_for_insecure)
     : MultiClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncServices()),
-      check_for_compromised_(check_for_compromised) {}
+      check_for_insecure_(check_for_insecure) {}
 
 SamePasswordFormsChecker::~SamePasswordFormsChecker() = default;
 
@@ -485,8 +483,8 @@ bool SamePasswordFormsChecker::IsExitConditionSatisfied(std::ostream* os) {
   do {
     needs_recheck_ = false;
     result = passwords_helper::AllProfilesContainSamePasswordForms() &&
-             (!check_for_compromised_ ||
-              passwords_helper::AllProfilesContainSameCompromisedPasswords());
+             (!check_for_insecure_ ||
+              passwords_helper::AllProfilesContainSameInsecurePasswords());
   } while (needs_recheck_);
   in_progress_ = false;
   return result;
