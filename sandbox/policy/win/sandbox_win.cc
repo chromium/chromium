@@ -976,7 +976,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
   // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
   // disabled for processes we know are not compatible.
   if (!delegate->CetCompatible())
-    mitigations |= sandbox::MITIGATION_CET_DISABLED;
+    mitigations |= MITIGATION_CET_DISABLED;
 
   ResultCode result = policy->SetProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)
