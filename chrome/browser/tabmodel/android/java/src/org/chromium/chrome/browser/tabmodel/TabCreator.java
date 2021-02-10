@@ -43,12 +43,13 @@ public abstract class TabCreator {
      * On restore, allows us to create a frozen version of a tab using saved tab state we read
      * from disk.
      * @param state    The tab state that the tab can be restored from.
-     * @param id       The id to give the new tab.
      * @param criticalPersistedTabData serialized {@link CriticalPersistedTabData}
+     * @param id       The id to give the new tab.
+     * @param isIncognito if the {@link Tab} is incognito or not
      * @param index    The index for where to place the tab.
      */
-    public abstract Tab createFrozenTab(
-            TabState state, byte[] serializedCriticalPersistedTabData, int id, int index);
+    public abstract Tab createFrozenTab(TabState state, byte[] serializedCriticalPersistedTabData,
+            int id, boolean isIncognito, int index);
 
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for

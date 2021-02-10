@@ -75,11 +75,13 @@ public class TabDelegate extends AsyncTabCreator {
      * The index is ignored in DocumentMode because Android handles the ordering of Tabs.
      */
     @Override
-    public Tab createFrozenTab(TabState state, byte[] criticalPersistedTabData, int id, int index) {
-        return TabBuilder.createFromFrozenState()
-                .setId(id)
-                .setIncognito(state.isIncognito())
-                .build();
+    public Tab createFrozenTab(TabState state, byte[] criticalPersistedTabData, int id,
+            boolean isIncognito, int index) {
+        if (isIncognito != mIsIncognito) {
+            throw new IllegalStateException("Incognito state mismatch. isIncognito: " + isIncognito
+                    + ". TabDelegate: " + mIsIncognito);
+        }
+        return TabBuilder.createFromFrozenState().setId(id).setIncognito(isIncognito).build();
     }
 
     @Override

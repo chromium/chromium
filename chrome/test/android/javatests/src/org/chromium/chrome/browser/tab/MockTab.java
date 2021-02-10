@@ -19,14 +19,14 @@ public class MockTab extends TabImpl {
      */
     public static Tab createAndInitialize(int id, boolean incognito) {
         TabImpl tab = new MockTab(id, incognito);
-        tab.initialize(null, null, null, null, null, false, null, null);
+        tab.initialize(null, null, null, null, null, false, null);
         return tab;
     }
 
     public static TabImpl initializeWithCriticalPersistedTabData(
             TabImpl tab, CriticalPersistedTabData criticalPersistedTabData) {
         tab.getUserDataHost().setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
-        tab.initialize(null, null, null, null, null, false, null, null);
+        tab.initialize(null, null, null, null, null, false, null);
         return tab;
     }
 
@@ -35,18 +35,18 @@ public class MockTab extends TabImpl {
      * these two fields only.
      */
     public MockTab(int id, boolean incognito) {
-        super(id, null, incognito, null);
+        super(id, incognito, null, null);
     }
 
     public MockTab(int id, boolean incognito, @TabLaunchType Integer type) {
-        super(id, null, incognito, type);
+        super(id, incognito, type, null);
     }
 
     @Override
     public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
             LoadUrlParams loadUrlParams, WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
-            TabState tabState, byte[] serializedCriticalPersistedTabData) {
+            TabState tabState) {
         TabHelpers.initTabHelpers(this, parent);
     }
 }
