@@ -39,7 +39,9 @@ class RenderFrameHost;
 
 namespace page_load_metrics {
 
+struct MemoryUpdate;
 class PageLoadMetricsEmbedderInterface;
+class PageLoadMetricsMemoryTracker;
 class PageLoadTracker;
 
 // MetricsWebContentsObserver tracks page loads and loading metrics
@@ -49,6 +51,7 @@ class MetricsWebContentsObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<MetricsWebContentsObserver>,
       public content::RenderWidgetHost::InputEventObserver,
+      public base::SupportsWeakPtr<MetricsWebContentsObserver>,
       public mojom::PageLoadMetrics {
  public:
   // TestingObserver allows tests to observe MetricsWebContentsObserver state
@@ -175,12 +178,24 @@ class MetricsWebContentsObserver
   // WebContentsObserver::DidFinishNavigation methods.
   void BroadcastEventToObservers(PageLoadMetricsEvent event);
 
- private:
-  friend class content::WebContentsUserData<MetricsWebContentsObserver>;
+  // Called when V8 per-frame memory usage updates are available. Virtual for
+  // test classes to override.
+  virtual void OnV8MemoryChanged(
+      const std::vector<MemoryUpdate>& memory_updates);
 
+ protected:
+  // Protected rather than private so that derived test classes can call
+  // constructor.
   MetricsWebContentsObserver(
       content::WebContents* web_contents,
       std::unique_ptr<PageLoadMetricsEmbedderInterface> embedder_interface);
+
+ private:
+  friend class content::WebContentsUserData<MetricsWebContentsObserver>;
+
+  // Gets the memory tracker for the BrowserContext if it exists, or nullptr
+  // otherwise. The tracker measures per-frame memory usage by V8.
+  PageLoadMetricsMemoryTracker* GetMemoryTracker() const;
 
   void WillStartNavigationRequestImpl(
       content::NavigationHandle* navigation_handle);

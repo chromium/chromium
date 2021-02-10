@@ -23,7 +23,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -199,7 +201,7 @@ class AdsPageLoadMetricsObserverBrowserTest
   void SetUp() override {
     std::vector<base::Feature> enabled = {
         subresource_filter::kAdTagging, features::kSitePerProcess,
-        features::kV8PerAdFrameMemoryMonitoring};
+        features::kV8PerFrameMemoryMonitoring};
     std::vector<base::Feature> disabled = {};
 
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
@@ -2249,7 +2251,7 @@ class AdsMemoryMeasurementBrowserTest
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled = {
         {subresource_filter::kAdTagging, {{}}},
         {features::kSitePerProcess, {{}}},
-        {features::kV8PerAdFrameMemoryMonitoring, memory_poll_params}};
+        {features::kV8PerFrameMemoryMonitoring, memory_poll_params}};
     std::vector<base::Feature> disabled = {};
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
@@ -2282,12 +2284,14 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
                        SingleAdFrame_MaxMemoryBytesRecorded) {
   base::HistogramTester histogram_tester;
 
-  // Instantiate a memory request and waiter to wait for a minimum
-  // number of memory measurements to be received.
+  // Instantiate a memory request and waiter to wait for expected
+  // memory measurements to be received.
   std::unique_ptr<performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>
       memory_request = std::make_unique<
           performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>(
-          base::TimeDelta::FromSeconds(1), MeasurementMode::kEagerForTesting);
+          base::TimeDelta::FromSeconds(1),
+          performance_manager::v8_memory::V8DetailedMemoryRequest::
+              MeasurementMode::kEagerForTesting);
   auto waiter = std::make_unique<MemoryMeasurementWaiter>();
   memory_request->AddObserver(waiter.get());
 

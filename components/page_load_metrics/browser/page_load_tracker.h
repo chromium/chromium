@@ -40,6 +40,7 @@ class WebContents;
 
 namespace page_load_metrics {
 
+struct MemoryUpdate;
 class PageLoadMetricsEmbedderInterface;
 
 namespace internal {
@@ -373,6 +374,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Called when the page tracked was just activated after being loaded inside a
   // portal.
   void DidActivatePortal(base::TimeTicks activation_time);
+
+  // Called when V8 per-frame memory usage updates are available.
+  void OnV8MemoryChanged(const std::vector<MemoryUpdate>& memory_updates);
 
  private:
   // This function converts a TimeTicks value taken in the browser process

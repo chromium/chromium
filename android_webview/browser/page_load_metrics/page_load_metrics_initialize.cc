@@ -8,6 +8,14 @@
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace page_load_metrics {
+class PageLoadMetricsMemoryTracker;
+}  // namespace page_load_metrics
+
 namespace android_webview {
 
 namespace {
@@ -22,6 +30,9 @@ class PageLoadMetricsEmbedder
   bool IsNewTabPageUrl(const GURL& url) override;
   bool IsPrerender(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
+  page_load_metrics::PageLoadMetricsMemoryTracker*
+  GetMemoryTrackerForBrowserContext(
+      content::BrowserContext* browser_context) override;
 
  protected:
   // page_load_metrics::PageLoadMetricsEmbedderBase:
@@ -56,6 +67,12 @@ bool PageLoadMetricsEmbedder::IsPrerender(content::WebContents* web_contents) {
 
 bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
   return false;
+}
+
+page_load_metrics::PageLoadMetricsMemoryTracker*
+PageLoadMetricsEmbedder::GetMemoryTrackerForBrowserContext(
+    content::BrowserContext* browser_context) {
+  return nullptr;
 }
 
 }  // namespace

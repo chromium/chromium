@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -135,6 +136,9 @@ void MetricsWebContentsObserver::RenderViewHostChanged(
 }
 
 void MetricsWebContentsObserver::FrameDeleted(content::RenderFrameHost* rfh) {
+  if (auto* memory_tracker = GetMemoryTracker())
+    memory_tracker->OnFrameDeleted(rfh, this);
+
   if (committed_load_)
     committed_load_->FrameDeleted(rfh);
 }
@@ -979,6 +983,18 @@ void MetricsWebContentsObserver::BroadcastEventToObservers(
     PageLoadMetricsEvent event) {
   if (committed_load_)
     committed_load_->BroadcastEventToObservers(event);
+}
+
+void MetricsWebContentsObserver::OnV8MemoryChanged(
+    const std::vector<MemoryUpdate>& memory_updates) {
+  if (committed_load_)
+    committed_load_->OnV8MemoryChanged(memory_updates);
+}
+
+PageLoadMetricsMemoryTracker* MetricsWebContentsObserver::GetMemoryTracker()
+    const {
+  return embedder_interface_->GetMemoryTrackerForBrowserContext(
+      web_contents()->GetBrowserContext());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MetricsWebContentsObserver)

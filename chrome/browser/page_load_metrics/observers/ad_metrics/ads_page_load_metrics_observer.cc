@@ -25,6 +25,7 @@
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
@@ -69,25 +70,6 @@ namespace features {
 // in AdsPageLoadMetricsObserver, and for triggering the Heavy Ad Intervention.
 const base::Feature kRestrictedNavigationAdTagging{
     "RestrictedNavigationAdTagging", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables or disables per-frame memory monitoring.
-const base::Feature kV8PerAdFrameMemoryMonitoring{
-    "V8PerAdFrameMemoryMonitoring", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Minimum time between memory measurements.
-const base::FeatureParam<int> kMemoryPollInterval = {
-    &kV8PerAdFrameMemoryMonitoring, "MemoryPollInterval", 40};
-
-// Available memory measurement modes.
-const base::FeatureParam<MeasurementMode>::Option memory_poll_modes[] = {
-    {MeasurementMode::kLazy, "lazy"},
-    {MeasurementMode::kBounded, "bounded"},
-    {MeasurementMode::kEagerForTesting, "eager_for_testing"}};
-
-// Memory measurement mode.
-const base::FeatureParam<MeasurementMode> kMemoryPollMode = {
-    &kV8PerAdFrameMemoryMonitoring, "MemoryPollMode", MeasurementMode::kLazy,
-    &memory_poll_modes};
 
 }  // namespace features
 
@@ -259,10 +241,7 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
           std::make_unique<HeavyAdThresholdNoiseProvider>(
               heavy_ad_privacy_mitigations_enabled_ /* use_noise */)) {}
 
-AdsPageLoadMetricsObserver::~AdsPageLoadMetricsObserver() {
-  if (memory_request_)
-    memory_request_->RemoveObserver(this);
-}
+AdsPageLoadMetricsObserver::~AdsPageLoadMetricsObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AdsPageLoadMetricsObserver::OnStart(
@@ -428,18 +407,6 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
     if (previous_data) {
       previous_data->UpdateForNavigation(ad_host, frame_navigated);
       return;
-    }
-    if (base::FeatureList::IsEnabled(features::kV8PerAdFrameMemoryMonitoring) &&
-        !memory_request_) {
-      // The first ad subframe has been detected, so instantiate the
-      // memory request and add AdsPLMO as an observer. Without any ads, there
-      // would be no reason to monitor ad-frame memory usage and
-      // |memory_request_| wouldn't be needed.
-      memory_request_ = std::make_unique<
-          performance_manager::v8_memory::V8DetailedMemoryRequestAnySeq>(
-          base::TimeDelta::FromSeconds(features::kMemoryPollInterval.Get()),
-          features::kMemoryPollMode.Get());
-      memory_request_->AddObserver(this);
     }
 
     // Construct a new FrameTreeData to track this ad frame, and update it for
@@ -716,37 +683,27 @@ void AdsPageLoadMetricsObserver::OnFrameDeleted(
   ad_frames_data_.erase(id_and_data);
 }
 
-void AdsPageLoadMetricsObserver::OnV8MemoryMeasurementAvailable(
-    performance_manager::RenderProcessHostId render_process_host_id,
-    const performance_manager::v8_memory::V8DetailedMemoryProcessData&
-        process_data,
-    const V8DetailedMemoryObserverAnySeq::FrameDataMap& frame_data) {
-  num_memory_updates_++;
+void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
+    const std::vector<page_load_metrics::MemoryUpdate>& memory_updates) {
+  for (const auto& update : memory_updates) {
+    memory_update_count_++;
 
-  // Iterate through frames with available measurements.
-  for (const auto& map_pair : frame_data) {
-    content::GlobalFrameRoutingId frame_routing_id = map_pair.first;
-    content::RenderFrameHost* rfh =
-        content::RenderFrameHost::FromID(frame_routing_id);
+    content::RenderFrameHost* render_frame_host =
+        content::RenderFrameHost::FromID(update.routing_id);
 
-    if (!rfh) {
-      num_missed_memory_measurements_++;
+    if (!render_frame_host)
       continue;
-    }
 
-    uint64_t bytes_used = map_pair.second.v8_bytes_used();
-
-    FrameTreeNodeId frame_node_id = rfh->GetFrameTreeNodeId();
+    FrameTreeNodeId frame_node_id = render_frame_host->GetFrameTreeNodeId();
     FrameTreeData* ad_frame_data = FindFrameData(frame_node_id);
 
     if (ad_frame_data) {
-      int64_t delta = UpdateMemoryUsageForFrame(frame_node_id, bytes_used);
-      ad_frame_data->UpdateMemoryUsage(delta);
-      UpdateAggregateMemoryUsage(delta, ad_frame_data->visibility());
-    } else if (!rfh->GetParent()) {
-      // |rfh| is the main frame.
-      int64_t delta = UpdateMemoryUsageForFrame(frame_node_id, bytes_used);
-      aggregate_frame_data_->update_main_frame_memory(delta);
+      ad_frame_data->UpdateMemoryUsage(update.delta_bytes);
+      UpdateAggregateMemoryUsage(update.delta_bytes,
+                                 ad_frame_data->visibility());
+    } else if (!render_frame_host->GetParent()) {
+      // |render_frame_host| is the main frame.
+      aggregate_frame_data_->update_main_frame_memory(update.delta_bytes);
     }
   }
 }
@@ -801,33 +758,6 @@ int AdsPageLoadMetricsObserver::GetUnaccountedAdBytes(
           global_request_id);
   bool is_new_ad = !previous_update->reported_as_ad_resource;
   return is_new_ad ? resource->received_data_length - resource->delta_bytes : 0;
-}
-
-int64_t AdsPageLoadMetricsObserver::UpdateMemoryUsageForFrame(
-    FrameTreeNodeId frame_node_id,
-    uint64_t current_bytes) {
-  auto it = v8_current_memory_usage_map_.find(frame_node_id);
-
-  if (it == v8_current_memory_usage_map_.end()) {
-    v8_current_memory_usage_map_[frame_node_id] = current_bytes;
-    return current_bytes;
-  }
-
-  int64_t delta = current_bytes - it->second;
-  it->second = current_bytes;
-  return delta;
-}
-
-int64_t AdsPageLoadMetricsObserver::RemoveMemoryUsageForFrame(
-    FrameTreeNodeId frame_node_id) {
-  auto it = v8_current_memory_usage_map_.find(frame_node_id);
-
-  if (it == v8_current_memory_usage_map_.end())
-    return 0;
-
-  int64_t delta = -it->second;
-  v8_current_memory_usage_map_.erase(it);
-  return delta;
 }
 
 void AdsPageLoadMetricsObserver::ProcessResourceForPage(
@@ -1050,8 +980,7 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
                 visibility, visibility_data.bytes);
   ADS_HISTOGRAM("Bytes.AdFrames.Aggregate.Network", PAGE_BYTES_HISTOGRAM,
                 visibility, visibility_data.network_bytes);
-
-  if (memory_request_) {
+  if (base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring)) {
     ADS_HISTOGRAM("Memory.Aggregate.Max", PAGE_BYTES_HISTOGRAM, visibility,
                   visibility_data.memory.max_bytes_used());
   }
@@ -1071,14 +1000,11 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForAdTagging(
                 main_frame_resource_data.ad_network_bytes());
   ADS_HISTOGRAM("Bytes.MainFrame.Ads.Total2", PAGE_BYTES_HISTOGRAM, visibility,
                 main_frame_resource_data.ad_bytes());
-  if (memory_request_) {
+  if (base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring)) {
     PAGE_BYTES_HISTOGRAM("PageLoad.Clients.Ads.Memory.MainFrame.Max",
                          aggregate_frame_data_->main_frame_max_memory());
     UMA_HISTOGRAM_COUNTS_10000("PageLoad.Clients.Ads.Memory.UpdateCount",
-                               num_memory_updates_);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "PageLoad.Clients.Ads.Memory.MissedMeasurementCount",
-        num_missed_memory_measurements_);
+                               memory_update_count_);
   }
 }
 
@@ -1166,7 +1092,7 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForAdTagging(
                   visibility, resource_data.bytes());
     ADS_HISTOGRAM("Bytes.AdFrames.PerFrame.Network", PAGE_BYTES_HISTOGRAM,
                   visibility, resource_data.network_bytes());
-    if (memory_request_) {
+    if (base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring)) {
       ADS_HISTOGRAM("Memory.PerFrame.Max", PAGE_BYTES_HISTOGRAM, visibility,
                     ad_frame_data.v8_max_memory_bytes_used());
     }
@@ -1464,10 +1390,6 @@ void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
     bool record_metrics) {
   if (!frame_data)
     return;
-
-  int64_t delta_bytes = RemoveMemoryUsageForFrame(id);
-  frame_data->UpdateMemoryUsage(delta_bytes);
-  UpdateAggregateMemoryUsage(delta_bytes, frame_data->visibility());
 
   if (record_metrics)
     RecordPerFrameMetrics(*frame_data, GetDelegate().GetPageUkmSourceId());

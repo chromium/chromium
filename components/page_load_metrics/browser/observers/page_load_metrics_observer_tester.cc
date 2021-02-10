@@ -26,7 +26,13 @@
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom.h"
 #include "url/gurl.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace page_load_metrics {
+
+class PageLoadMetricsMemoryTracker;
 
 namespace {
 
@@ -56,6 +62,12 @@ class TestPageLoadMetricsEmbedderInterface
   }
 
   bool IsExtensionUrl(const GURL& url) override { return false; }
+
+  page_load_metrics::PageLoadMetricsMemoryTracker*
+  GetMemoryTrackerForBrowserContext(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
 
  private:
   PageLoadMetricsObserverTester* test_;
@@ -330,6 +342,17 @@ void PageLoadMetricsObserverTester::RegisterObservers(
     PageLoadTracker* tracker) {
   if (!register_callback_.is_null())
     register_callback_.Run(tracker);
+}
+
+void PageLoadMetricsObserverTester::SimulateMemoryUpdate(
+    content::RenderFrameHost* render_frame_host,
+    int64_t delta_bytes) {
+  DCHECK(render_frame_host);
+  if (delta_bytes != 0) {
+    std::vector<MemoryUpdate> update({MemoryUpdate(
+        render_frame_host->GetGlobalFrameRoutingId(), delta_bytes)});
+    metrics_web_contents_observer_->OnV8MemoryChanged(update);
+  }
 }
 
 }  // namespace page_load_metrics

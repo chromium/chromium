@@ -251,6 +251,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported number of kilobytes of memory used by V8 by the main
     frame in this pageload.
@@ -264,9 +265,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PageLoad.Clients.Ads.Memory.MissedMeasurementCount"
     units="count" expires_after="2021-04-18">
+  <obsolete>
+    Removed 02/2021. Seen to be ~0.04 (sample mean) compared to a sample mean
+    UpdateCount of ~58.38 measured over all OSes for Dev and Canary for ending
+    date 10/28/2020 with 7-day aggregation.
+  </obsolete>
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The number of V8 per-frame memory measurements received by
     AdsPageLoadMetricsObserver after the corresponding RenderFrameHost has
@@ -280,6 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The number of V8 memory measurement updates received by
     AdsPageLoadMetricsObserver per pageload. Only recorded if the page has at
@@ -1883,10 +1891,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Memory.Aggregate.Max" units="KiB"
-    expires_after="2021-01-31">
+    expires_after="2021-07-31">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported aggregate number of kilobytes of memory used by V8 by
     ad frames in this pageload. The value recorded is the maximum simultaneous
@@ -1900,10 +1909,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Memory.PerFrame.Max" units="KiB"
-    expires_after="2021-01-31">
+    expires_after="2021-07-31">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The maximum reported number of kilobytes of memory used by V8 by frames in
     the ad frame tree in this pageload. The value recorded is the maximum

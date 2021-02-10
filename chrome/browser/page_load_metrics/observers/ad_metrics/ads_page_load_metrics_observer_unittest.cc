@@ -31,6 +31,7 @@
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
@@ -71,14 +72,7 @@ using page_load_metrics::OptionalMin;
 
 namespace {
 
-using FrameDataMap =
-    AdsPageLoadMetricsObserver::V8DetailedMemoryObserverAnySeq::FrameDataMap;
 using FrameTreeNodeId = int;
-
-struct MemoryFrameData {
-  int frame_id;
-  uint64_t bytes_used;
-};
 
 struct ExpectedFrameBytes {
   ExpectedFrameBytes(size_t cached_kb, size_t uncached_kb)
@@ -136,21 +130,6 @@ const int kMaxHeavyAdNetworkBytes =
     heavy_ad_thresholds::kMaxNetworkBytes +
     AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
         kMaxNetworkThresholdNoiseBytes;
-
-FrameDataMap MakeFrameDataMap(int process_id,
-                              std::vector<MemoryFrameData> data) {
-  FrameDataMap data_map;
-
-  for (const auto& entry : data) {
-    content::GlobalFrameRoutingId global_id(process_id, entry.frame_id);
-    performance_manager::v8_memory::V8DetailedMemoryExecutionContextData
-        frame_data;
-    frame_data.set_v8_bytes_used(entry.bytes_used);
-    data_map[global_id] = frame_data;
-  }
-
-  return data_map;
-}
 
 // Calls PopulateRequiredTimingFields with |first_eligible_to_paint| and
 // |first_contentful_paint| fields temporarily nullified.
@@ -819,20 +798,9 @@ class AdsPageLoadMetricsObserverTest
                              "Activated.PostActivation");
   }
 
-  void OnV8MemoryMeasurementAvailable(
-      content::RenderProcessHost* render_process_host,
-      const std::vector<MemoryFrameData>& memory_data) {
-    int process_id = render_process_host->GetID();
-    performance_manager::RenderProcessHostId pm_process_id =
-        static_cast<performance_manager::RenderProcessHostId>(process_id);
-
-    FrameDataMap frame_data = MakeFrameDataMap(process_id, memory_data);
-    performance_manager::v8_memory::V8DetailedMemoryProcessData process_data;
-
-    if (ads_observer_) {
-      ads_observer_->OnV8MemoryMeasurementAvailable(pm_process_id, process_data,
-                                                    frame_data);
-    }
+  void SimulateV8MemoryChange(content::RenderFrameHost* render_frame_host,
+                              int64_t delta_bytes) {
+    tester()->SimulateMemoryUpdate(render_frame_host, delta_bytes);
   }
 
  private:
@@ -2962,7 +2930,7 @@ class AdsMemoryMeasurementTest : public AdsPageLoadMetricsObserverTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kV8PerAdFrameMemoryMonitoring);
+        features::kV8PerFrameMemoryMonitoring);
     AdsPageLoadMetricsObserverTest::SetUp();
   }
 
@@ -2973,170 +2941,126 @@ class AdsMemoryMeasurementTest : public AdsPageLoadMetricsObserverTest {
 TEST_F(AdsMemoryMeasurementTest, SingleAdFrame_MaxMemoryBytesRecorded) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  content::RenderProcessHost* process = ad_frame->GetProcess();
 
   // Load kilobytes in frame so that aggregates are recorded.
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
 
-  // Set initial memory usage data.
-  std::vector<MemoryFrameData> memory_data = {
-      {ad_frame->GetRoutingID(), 10 * 1024 /* bytes_used */}};
-
   // Notify that memory measurement is available.
-  OnV8MemoryMeasurementAvailable(process, memory_data);
+  SimulateV8MemoryChange(ad_frame, 10 * 1024);
 
-  // Update memory usage. The max will change, as
-  // 40 > 10.
-  memory_data[0].bytes_used = 40 * 1024;
-  OnV8MemoryMeasurementAvailable(process, memory_data);
+  // Update memory usage. The max will change, as 30 is positive.
+  SimulateV8MemoryChange(ad_frame, 30 * 1024);
 
-  // Update memory usage. The max will remain the same, as
-  // 20 < 40.
-  memory_data[0].bytes_used = 20 * 1024;
-  OnV8MemoryMeasurementAvailable(process, memory_data);
+  // Update memory usage. The max will remain the same, as -20 is negative.
+  SimulateV8MemoryChange(ad_frame, -20 * 1024);
 
   // Navigate main frame to record histograms.
   NavigateMainFrame(kNonAdUrl);
 
-  histogram_tester().ExpectUniqueSample(kMemoryPerFrameMaxHistogramId, 40, 1);
-  histogram_tester().ExpectUniqueSample(kMemoryAggregateMaxHistogramId, 40, 1);
+  histogram_tester().ExpectUniqueSample(kMemoryPerFrameMaxHistogramId, 10 + 30,
+                                        1);
+  histogram_tester().ExpectUniqueSample(kMemoryAggregateMaxHistogramId, 10 + 30,
+                                        1);
   histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 3, 1);
 }
 
-TEST_F(AdsMemoryMeasurementTest,
-       MultiAdFramesSingleProcess_MaxMemoryBytesRecorded) {
+TEST_F(AdsMemoryMeasurementTest, MultiAdFramesNested_MaxMemoryBytesRecorded) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame1 = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  content::RenderProcessHost* process1 = ad_frame1->GetProcess();
 
   // Create a nested subframe with the same origin as its parent.
   RenderFrameHost* ad_frame2 = CreateAndNavigateSubFrame(kAdUrl, ad_frame1);
-  content::RenderProcessHost* process2 = ad_frame2->GetProcess();
-
-  // Expect a parent and child with the same origin on the same page
-  // to be hosted by the same process.
-  EXPECT_EQ(process1->GetID(), process2->GetID());
 
   // Load kilobytes in each frame so that aggregates are recorded.
   ResourceDataUpdate(ad_frame1, ResourceCached::kNotCached, 10);
   ResourceDataUpdate(ad_frame2, ResourceCached::kNotCached, 10);
 
-  // Set initial memory usage data.
-  std::vector<MemoryFrameData> memory_data = {
-      {ad_frame1->GetRoutingID(), 10 * 1024 /* bytes_used */},
-      {ad_frame2->GetRoutingID(), 10 * 1024 /* bytes_used */}};
-
   // Notify that memory measurement is available.
-  OnV8MemoryMeasurementAvailable(process1, memory_data);
+  SimulateV8MemoryChange(ad_frame1, 10 * 1024);
+  SimulateV8MemoryChange(ad_frame2, 10 * 1024);
 
   // Update memory usage. The max will change, as these values are both
-  // greater than the initial values.
-  memory_data[0].bytes_used = 40 * 1024;
-  memory_data[1].bytes_used = 20 * 1024;
-  OnV8MemoryMeasurementAvailable(process1, memory_data);
+  // positive.
+  SimulateV8MemoryChange(ad_frame1, 30 * 1024);
+  SimulateV8MemoryChange(ad_frame2, 10 * 1024);
 
   // Update memory usage. The max will remain the same, as these values
-  // are both less than the previous values.
-  memory_data[0].bytes_used = 5 * 1024;
-  memory_data[1].bytes_used = 15 * 1024;
-  OnV8MemoryMeasurementAvailable(process1, memory_data);
+  // are both negative.
+  SimulateV8MemoryChange(ad_frame1, -25 * 1024);
+  SimulateV8MemoryChange(ad_frame2, -5 * 1024);
 
   // Navigate main frame to record histograms.
   NavigateMainFrame(kNonAdUrl);
 
-  histogram_tester().ExpectUniqueSample(kMemoryPerFrameMaxHistogramId, 40 + 20,
-                                        1);
-  histogram_tester().ExpectUniqueSample(kMemoryAggregateMaxHistogramId, 40 + 20,
-                                        1);
-  histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 3, 1);
+  histogram_tester().ExpectUniqueSample(kMemoryPerFrameMaxHistogramId,
+                                        10 + 10 + 30 + 10, 1);
+  histogram_tester().ExpectUniqueSample(kMemoryAggregateMaxHistogramId,
+                                        10 + 10 + 30 + 10, 1);
+  histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 6, 1);
 }
 
 TEST_F(AdsMemoryMeasurementTest,
-       MultiAdFramesMultiProcess_MaxMemoryBytesRecorded) {
+       MultiAdFramesNonNested_MaxMemoryBytesRecorded) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame1 = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  content::RenderProcessHost* process1 = ad_frame1->GetProcess();
 
   // Create another ad subframe with a different origin.
   RenderFrameHost* ad_frame2 =
       CreateAndNavigateSubFrame(kOtherAdUrl, main_frame);
-  content::RenderProcessHost* process2 = ad_frame2->GetProcess();
-
-  // Only continue the test if the frames have different processes.
-  // Older versions of Android do not have site isolation.
-  if (process1->GetID() == process2->GetID())
-    return;
 
   // Load kilobytes in each frame so that aggregates are recorded.
   ResourceDataUpdate(ad_frame1, ResourceCached::kNotCached, 10);
   ResourceDataUpdate(ad_frame2, ResourceCached::kNotCached, 10);
 
-  // Set initial memory usage data.
-  std::vector<MemoryFrameData> memory_data1 = {
-      {ad_frame1->GetRoutingID(), 10 * 1024 /* bytes_used */}};
-  std::vector<MemoryFrameData> memory_data2 = {
-      {ad_frame2->GetRoutingID(), 10 * 1024 /* bytes_used */}};
-
   // Notify that memory measurement is available.
-  OnV8MemoryMeasurementAvailable(process1, memory_data1);
-  OnV8MemoryMeasurementAvailable(process2, memory_data2);
+  SimulateV8MemoryChange(ad_frame1, 10 * 1024);
+  SimulateV8MemoryChange(ad_frame2, 10 * 1024);
 
   // Update memory usage. The second max and aggregate max
   // will change.
-  memory_data1[0].bytes_used = 1 * 1024;
-  memory_data2[0].bytes_used = 100 * 1024;
-  OnV8MemoryMeasurementAvailable(process1, memory_data1);
-  OnV8MemoryMeasurementAvailable(process2, memory_data2);
+  SimulateV8MemoryChange(ad_frame1, -9 * 1024);
+  SimulateV8MemoryChange(ad_frame2, 100 * 1024);
 
   // Update memory usage. The aggregate max will change
   // again after the first update.
-  memory_data1[0].bytes_used = 2 * 1024;
-  memory_data2[0].bytes_used = 20 * 1024;
-  OnV8MemoryMeasurementAvailable(process1, memory_data1);
-  OnV8MemoryMeasurementAvailable(process2, memory_data2);
+  SimulateV8MemoryChange(ad_frame1, 1 * 1024);
+  SimulateV8MemoryChange(ad_frame2, -90 * 1024);
 
   // Update memory usage. The first max will change.
-  memory_data1[0].bytes_used = 50 * 1024;
-  memory_data2[0].bytes_used = 5 * 1024;
-  OnV8MemoryMeasurementAvailable(process1, memory_data1);
-  OnV8MemoryMeasurementAvailable(process2, memory_data2);
+  SimulateV8MemoryChange(ad_frame1, 50 * 1024);
+  SimulateV8MemoryChange(ad_frame2, -5 * 1024);
 
   // Navigate main frame to record histograms.
   NavigateMainFrame(kNonAdUrl);
 
-  histogram_tester().ExpectBucketCount(kMemoryPerFrameMaxHistogramId, 50, 1);
-  histogram_tester().ExpectBucketCount(kMemoryPerFrameMaxHistogramId, 100, 1);
-  histogram_tester().ExpectUniqueSample(kMemoryAggregateMaxHistogramId, 2 + 100,
-                                        1);
+  histogram_tester().ExpectBucketCount(kMemoryPerFrameMaxHistogramId,
+                                       10 - 9 + 1 + 50, 1);
+  histogram_tester().ExpectBucketCount(kMemoryPerFrameMaxHistogramId, 10 + 100,
+                                       1);
+  histogram_tester().ExpectUniqueSample(kMemoryAggregateMaxHistogramId,
+                                        10 - 9 + 10 + 100 + 1, 1);
   histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 8, 1);
 }
 
 TEST_F(AdsMemoryMeasurementTest, MainFrame_MaxMemoryBytesRecorded) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  content::RenderProcessHost* process = main_frame->GetProcess();
 
-  // Load kilobytes in each frame. |ad_frame| must be used for the test to
-  // compile.
+  // Load kilobytes in each frame. |ad_frame| must exist for ad metrics to be
+  // tracked.
   ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 1000);
   ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
 
-  // Set initial memory usage data.
-  std::vector<MemoryFrameData> memory_data = {
-      {main_frame->GetRoutingID(), 1000 * 1024 /* bytes_used */}};
-
   // Notify that memory measurement is available.
-  OnV8MemoryMeasurementAvailable(process, memory_data);
+  SimulateV8MemoryChange(main_frame, 1000 * 1024);
 
-  // Update memory usage. The max will also change, as this value is greater
-  // than the initial value.
-  memory_data[0].bytes_used = 2000 * 1024;
-  OnV8MemoryMeasurementAvailable(process, memory_data);
+  // Update memory usage. The max will also change, as this value is
+  // positive.
+  SimulateV8MemoryChange(main_frame, 1000 * 1024);
 
-  // Update memory usage. The max will remain the same, as this value is less
-  // than the previous value.
-  memory_data[0].bytes_used = 20 * 1024;
-  OnV8MemoryMeasurementAvailable(process, memory_data);
+  // Update memory usage. The max will remain the same, as this value is
+  // negative.
+  SimulateV8MemoryChange(main_frame, -1980 * 1024);
 
   // Navigate to record histograms.
   NavigateFrame(kNonAdUrl, main_frame);
@@ -3144,42 +3068,4 @@ TEST_F(AdsMemoryMeasurementTest, MainFrame_MaxMemoryBytesRecorded) {
   histogram_tester().ExpectUniqueSample(kMemoryMainFrameMaxHistogramId, 2000,
                                         1);
   histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 3, 1);
-}
-
-TEST_F(AdsMemoryMeasurementTest, AdFrameDeleted_MaxMemoryBytesRecorded) {
-  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
-  RenderFrameHost* ad_frame1 = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  content::RenderProcessHost* process1 = ad_frame1->GetProcess();
-
-  // Create a nested subframe with the same origin as its parent.
-  RenderFrameHost* ad_frame2 = CreateAndNavigateSubFrame(kAdUrl, ad_frame1);
-
-  // Load kilobytes in each frame so that aggregates are recorded.
-  ResourceDataUpdate(ad_frame1, ResourceCached::kNotCached, 100);
-  ResourceDataUpdate(ad_frame2, ResourceCached::kNotCached, 100);
-
-  // Set initial memory usage data.
-  std::vector<MemoryFrameData> memory_data1 = {
-      {ad_frame1->GetRoutingID(), 100 * 1024 /* bytes_used */},
-      {ad_frame2->GetRoutingID(), 100 * 1024 /* bytes_used */}};
-
-  // Notify that memory measurement is available.
-  OnV8MemoryMeasurementAvailable(process1, memory_data1);
-
-  // Delete |ad_frame2|. The corresponding per-frame memory data will be
-  // deleted, changing the current usage, but the max will remain the same.
-  content::RenderFrameHostTester::For(ad_frame2)->Detach();
-
-  // Update memory usage. The max will change, as this value is
-  // greater than the sum of the initial values.
-  std::vector<MemoryFrameData> memory_data2 = {
-      {ad_frame1->GetRoutingID(), 500 * 1024 /* bytes_used */}};
-  OnV8MemoryMeasurementAvailable(process1, memory_data2);
-
-  // Navigate main frame to record histograms.
-  NavigateMainFrame(kNonAdUrl);
-
-  histogram_tester().ExpectUniqueSample(kMemoryPerFrameMaxHistogramId, 500, 1);
-  histogram_tester().ExpectUniqueSample(kMemoryAggregateMaxHistogramId, 500, 1);
-  histogram_tester().ExpectUniqueSample(kMemoryUpdateCountHistogramId, 2, 1);
 }

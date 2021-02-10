@@ -15,6 +15,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -986,6 +987,12 @@ void PageLoadTracker::OnRestoreFromBackForwardCache(
     observer->OnRestoreFromBackForwardCache(metrics_update_dispatcher_.timing(),
                                             navigation_handle);
   }
+}
+
+void PageLoadTracker::OnV8MemoryChanged(
+    const std::vector<MemoryUpdate>& memory_updates) {
+  for (const auto& observer : observers_)
+    observer->OnV8MemoryChanged(memory_updates);
 }
 
 }  // namespace page_load_metrics

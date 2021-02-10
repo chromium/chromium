@@ -12,6 +12,14 @@
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 #include "weblayer/browser/page_load_metrics_observer_impl.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+namespace page_load_metrics {
+class PageLoadMetricsMemoryTracker;
+}  // namespace page_load_metrics
+
 namespace weblayer {
 
 namespace {
@@ -34,6 +42,11 @@ class PageLoadMetricsEmbedder
     return NoStatePrefetchContentsFromWebContents(web_contents);
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
+  page_load_metrics::PageLoadMetricsMemoryTracker*
+  GetMemoryTrackerForBrowserContext(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
 
  protected:
   // page_load_metrics::PageLoadMetricsEmbedderBase:

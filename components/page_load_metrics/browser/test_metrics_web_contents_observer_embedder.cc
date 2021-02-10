@@ -179,4 +179,10 @@ bool TestMetricsWebContentsObserverEmbedder::IsExtensionUrl(const GURL& url) {
   return false;
 }
 
+PageLoadMetricsMemoryTracker*
+TestMetricsWebContentsObserverEmbedder::GetMemoryTrackerForBrowserContext(
+    content::BrowserContext* browser_context) {
+  return nullptr;
+}
+
 }  // namespace page_load_metrics
