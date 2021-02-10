@@ -11,7 +11,7 @@
 #include "chromecast/browser/accessibility/flutter/flutter_semantics_node.h"
 #include "chromecast/browser/accessibility/proto/cast_server_accessibility.pb.h"
 #include "ui/accessibility/ax_enum_util.h"
-#include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_source.h"
 
 namespace chromecast {
 namespace accessibility {
@@ -25,8 +25,9 @@ class AXTreeSourceFlutter;
 // from semantics trees sent to us from the flutter process.
 class FlutterSemanticsNodeWrapper : public FlutterSemanticsNode {
  public:
-  FlutterSemanticsNodeWrapper(AXTreeSourceFlutter* tree_source,
-                              const SemanticsNode* node);
+  FlutterSemanticsNodeWrapper(
+      ui::AXTreeSource<FlutterSemanticsNode*>* tree_source,
+      const SemanticsNode* node);
   FlutterSemanticsNodeWrapper(const FlutterSemanticsNodeWrapper&) = delete;
   FlutterSemanticsNodeWrapper& operator=(const FlutterSemanticsNodeWrapper&) =
       delete;
@@ -66,7 +67,14 @@ class FlutterSemanticsNodeWrapper : public FlutterSemanticsNode {
   FlutterSemanticsNodeWrapper* IsListItem() const;
   bool IsDescendant(FlutterSemanticsNodeWrapper* ancestor) const;
 
-  AXTreeSourceFlutter* const tree_source_;
+  // Returns bounds of a node which can be passed to AXNodeData.location. Bounds
+  // are returned in the following coordinates depending on whether it's root or
+  // not.
+  // - Root node is relative to its container.
+  // - Non-root node is relative to the root node of this tree.
+  const gfx::Rect GetRelativeBounds() const;
+
+  ui::AXTreeSource<FlutterSemanticsNode*>* const tree_source_;
   const SemanticsNode* const node_ptr_;
 };
 

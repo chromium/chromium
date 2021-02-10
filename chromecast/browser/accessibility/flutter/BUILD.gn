@@ -32,7 +32,10 @@ cast_source_set("accessibility") {
 }
 
 test("cast_accessibility_unittests") {
-  sources = [ "ax_tree_source_flutter_unittest.cc" ]
+  sources = [
+    "ax_tree_source_flutter_unittest.cc",
+    "flutter_semantics_node_wrapper_unittest.cc",
+  ]
 
   deps = [
     ":accessibility",

@@ -472,30 +472,6 @@ void AXTreeSourceFlutter::SerializeNode(FlutterSemanticsNode* info_data,
   info_data->Serialize(out_data);
 }
 
-const gfx::Rect AXTreeSourceFlutter::GetBounds(
-    FlutterSemanticsNode* info_data) const {
-  DCHECK(info_data);
-  DCHECK_NE(root_id_, kInvalidId);
-
-  gfx::Rect node_bounds = info_data->GetBounds();
-
-  // TODO(rmrossi): If embedded flutter is ever not full screen, we will have
-  // to pass in the embedded object tag's screen coordinates to this function
-  // and set the offset of the root node here separately from other nodes.
-  // The bounds of the root node are supposed to be relative to its container
-  // but since we are full screen, we leave them alone.  See
-  // ax_tree_source_arc.cc for an example.
-  if (info_data->GetId() == root_id_) {
-    gfx::Rect root_bounds = GetFromId(root_id_)->GetBounds();
-    // No offset applied since we are full screen.  See TODO above.
-    return root_bounds;
-  }
-  // Bounds of non-root node is relative to its tree's root.
-  gfx::Rect root_bounds = GetFromId(root_id_)->GetBounds();
-  node_bounds.Offset(-1 * root_bounds.x(), -1 * root_bounds.y());
-  return node_bounds;
-}
-
 gfx::Rect AXTreeSourceFlutter::ComputeEnclosingBounds(
     FlutterSemanticsNode* info_data) const {
   gfx::Rect computed_bounds;

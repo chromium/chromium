@@ -89,13 +89,6 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
   // Gets the window id of this tree.
   int32_t window_id() const { return window_id_; }
 
-  // Returns bounds of a node which can be passed to AXNodeData.location. Bounds
-  // are returned in the following coordinates depending on whether it's root or
-  // not.
-  // - Root node is relative to its container.
-  // - Non-root node is relative to the root node of this tree.
-  const gfx::Rect GetBounds(FlutterSemanticsNode* node) const;
-
   void UpdateTree();
 
   // CastWebContents::Observer
