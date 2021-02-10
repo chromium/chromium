@@ -250,11 +250,11 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
     return;
 
   // Registers the initial origin access lists to the BrowserContext
-  // asynchronously.
-  url::Origin extension_origin = url::Origin::Create(extension.url());
-  browser_context_->SetCorsOriginAccessListForOrigin(
-      extension_origin, CreateCorsOriginAccessAllowList(extension),
-      CreateCorsOriginAccessBlockList(extension), base::DoNothing::Once());
+  // (and all related incognito contexts) asynchronously.
+  util::SetCorsOriginAccessListForExtension(
+      browser_context_, extension,
+      content::BrowserContext::TargetBrowserContexts::kSingleContext,
+      base::DoNothing::Once());
 
   // We don't need to include tab permisisons here, since the extension
   // was just loaded.
@@ -289,11 +289,10 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
   }
 
   // Resets registered origin access lists in the BrowserContext asynchronously.
-  url::Origin extension_origin = url::Origin::Create(extension.url());
-  browser_context_->SetCorsOriginAccessListForOrigin(
-      extension_origin, std::vector<network::mojom::CorsOriginPatternPtr>(),
-      std::vector<network::mojom::CorsOriginPatternPtr>(),
-      base::DoNothing::Once());
+  util::ResetCorsOriginAccessListForExtension(
+      browser_context_, extension,
+
+      content::BrowserContext::TargetBrowserContexts::kSingleContext);
 
   for (auto& process_extensions_pair : pending_active_extensions_)
     process_extensions_pair.second.erase(extension.id());

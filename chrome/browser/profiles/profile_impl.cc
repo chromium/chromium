@@ -148,13 +148,11 @@
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_constants.h"
@@ -243,7 +241,6 @@
 using base::TimeDelta;
 using bookmarks::BookmarkModel;
 using content::BrowserThread;
-using content::CorsOriginPatternSetter;
 using content::DownloadManagerDelegate;
 
 namespace {
@@ -473,9 +470,7 @@ ProfileImpl::ProfileImpl(
       io_data_(this),
       last_session_exit_type_(EXIT_NORMAL),
       start_time_(base::Time::Now()),
-      delegate_(delegate),
-      shared_cors_origin_access_list_(
-          content::SharedCorsOriginAccessList::Create()) {
+      delegate_(delegate) {
   TRACE_EVENT0("browser,startup", "ProfileImpl::ctor");
   DCHECK(!path.empty()) << "Using an empty path will attempt to write "
                         << "profile files to the root directory!";
@@ -1336,50 +1331,6 @@ content::BackgroundSyncController* ProfileImpl::GetBackgroundSyncController() {
 
 content::ContentIndexProvider* ProfileImpl::GetContentIndexProvider() {
   return ContentIndexProviderFactory::GetForProfile(this);
-}
-
-void ProfileImpl::SetCorsOriginAccessListForOrigin(
-    const url::Origin& source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  std::vector<Profile*> otr_profiles = GetAllOffTheRecordProfiles();
-  // We need two callbacks for the regular profile and shared cors origin access
-  // list, and one for each off-the-record profile.
-  auto barrier_closure =
-      BarrierClosure(2 + otr_profiles.size(), std::move(closure));
-
-  // Keep profile storage partitions' NetworkContexts synchronized.
-  auto profile_setter = base::MakeRefCounted<CorsOriginPatternSetter>(
-      source_origin, CorsOriginPatternSetter::ClonePatterns(allow_patterns),
-      CorsOriginPatternSetter::ClonePatterns(block_patterns), barrier_closure);
-  ForEachStoragePartition(
-      this, base::BindRepeating(&CorsOriginPatternSetter::SetLists,
-                                base::RetainedRef(profile_setter.get())));
-
-  // Keep off-the-record storage partitions' NetworkContexts synchronized.
-  for (Profile* otr : otr_profiles) {
-    auto off_the_record_setter = base::MakeRefCounted<CorsOriginPatternSetter>(
-        source_origin, CorsOriginPatternSetter::ClonePatterns(allow_patterns),
-        CorsOriginPatternSetter::ClonePatterns(block_patterns),
-        barrier_closure);
-    ForEachStoragePartition(
-        otr,
-        base::BindRepeating(&CorsOriginPatternSetter::SetLists,
-                            base::RetainedRef(off_the_record_setter.get())));
-  }
-
-  // Keep the per-profile access list up to date so that we can use this to
-  // restore NetworkContext settings at anytime, e.g. on restarting the
-  // network service.
-  shared_cors_origin_access_list_->SetForOrigin(
-      source_origin, std::move(allow_patterns), std::move(block_patterns),
-      barrier_closure);
-}
-
-content::SharedCorsOriginAccessList*
-ProfileImpl::GetSharedCorsOriginAccessList() {
-  return shared_cors_origin_access_list_.get();
 }
 
 std::string ProfileImpl::GetMediaDeviceIDSalt() {

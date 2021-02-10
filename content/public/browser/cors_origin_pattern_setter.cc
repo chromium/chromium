@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/cors_origin_pattern_setter.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -20,6 +21,13 @@ CorsOriginPatternSetter::CorsOriginPatternSetter(
 
 CorsOriginPatternSetter::~CorsOriginPatternSetter() {
   std::move(closure_).Run();
+}
+
+void CorsOriginPatternSetter::ApplyToEachStoragePartition(
+    BrowserContext* browser_context) {
+  BrowserContext::ForEachStoragePartition(
+      browser_context, base::BindRepeating(&CorsOriginPatternSetter::SetLists,
+                                           base::RetainedRef(this)));
 }
 
 void CorsOriginPatternSetter::SetLists(StoragePartition* partition) {

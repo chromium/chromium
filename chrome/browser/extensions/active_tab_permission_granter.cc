@@ -21,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
@@ -97,14 +98,6 @@ bool ShouldGrantActiveTabOrPrompt(const Extension* extension,
              extension, web_contents);
 }
 
-void UpdateTabSpecificCorsOriginAccessLists(
-    const Extension& extension,
-    content::BrowserContext* browser_context) {
-  browser_context->SetCorsOriginAccessListForOrigin(
-      extension.origin(), CreateCorsOriginAccessAllowList(extension),
-      CreateCorsOriginAccessBlockList(extension), base::DoNothing::Once());
-}
-
 }  // namespace
 
 ActiveTabPermissionGranter::ActiveTabPermissionGranter(
@@ -172,7 +165,10 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     PermissionSet new_permissions(std::move(new_apis), ManifestPermissionSet(),
                                   new_hosts.Clone(), new_hosts.Clone());
     permissions_data->UpdateTabSpecificPermissions(tab_id_, new_permissions);
-    UpdateTabSpecificCorsOriginAccessLists(*extension, browser_context);
+    util::SetCorsOriginAccessListForExtension(
+        browser_context, *extension,
+        base::nullopt,  // compute the `target_mode` based on the `extension`
+        base::DoNothing::Once());
 
     content::NavigationEntry* navigation_entry =
         web_contents()->GetController().GetVisibleEntry();
@@ -249,7 +245,10 @@ void ActiveTabPermissionGranter::ClearActiveExtensionsAndNotify() {
   ProcessManager* process_manager = ProcessManager::Get(browser_context);
   for (const scoped_refptr<const Extension>& extension : granted_extensions_) {
     extension->permissions_data()->ClearTabSpecificPermissions(tab_id_);
-    UpdateTabSpecificCorsOriginAccessLists(*extension, browser_context);
+    util::SetCorsOriginAccessListForExtension(
+        browser_context, *extension,
+        base::nullopt,  // compute the `target_mode` based on the `extension`
+        base::DoNothing::Once());
 
     extension_ids.push_back(extension->id());
     std::set<content::RenderFrameHost*> extension_frame_hosts =

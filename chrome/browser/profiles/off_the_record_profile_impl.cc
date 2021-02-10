@@ -505,23 +505,6 @@ OffTheRecordProfileImpl::GetVideoDecodePerfHistory() {
   return decode_history;
 }
 
-void OffTheRecordProfileImpl::SetCorsOriginAccessListForOrigin(
-    const url::Origin& source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  // Forward the request to the real profile (which will refresh the access
-  // patterns for both the main and the incognito profiles).
-  profile_->SetCorsOriginAccessListForOrigin(
-      source_origin, std::move(allow_patterns), std::move(block_patterns),
-      std::move(closure));
-}
-
-content::SharedCorsOriginAccessList*
-OffTheRecordProfileImpl::GetSharedCorsOriginAccessList() {
-  return profile_->GetSharedCorsOriginAccessList();
-}
-
 content::FileSystemAccessPermissionContext*
 OffTheRecordProfileImpl::GetFileSystemAccessPermissionContext() {
   return FileSystemAccessPermissionContextFactory::GetForProfile(this);

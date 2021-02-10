@@ -157,6 +157,7 @@ CastBrowserContext::GetBrowsingDataRemoverDelegate() {
 }
 
 void CastBrowserContext::SetCorsOriginAccessListForOrigin(
+    TargetBrowserContexts target_mode,
     const url::Origin& source_origin,
     std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
     std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
@@ -164,12 +165,10 @@ void CastBrowserContext::SetCorsOriginAccessListForOrigin(
   auto barrier_closure = BarrierClosure(2, std::move(closure));
 
   // Keep profile storage partitions' NetworkContexts synchronized.
-  auto profile_setter = base::MakeRefCounted<CorsOriginPatternSetter>(
+  base::MakeRefCounted<CorsOriginPatternSetter>(
       source_origin, CorsOriginPatternSetter::ClonePatterns(allow_patterns),
-      CorsOriginPatternSetter::ClonePatterns(block_patterns), barrier_closure);
-  ForEachStoragePartition(
-      this, base::BindRepeating(&CorsOriginPatternSetter::SetLists,
-                                base::RetainedRef(profile_setter.get())));
+      CorsOriginPatternSetter::ClonePatterns(block_patterns), barrier_closure)
+      ->ApplyToEachStoragePartition(this);
 
   // Keep the per-profile access list up to date so that we can use this to
   // restore NetworkContext settings at anytime, e.g. on restarting the

@@ -312,7 +312,16 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   virtual BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() = 0;
 
   // Sets CORS origin access lists.
+  enum class TargetBrowserContexts {
+    // Only modify |this| BrowserContext.
+    kSingleContext,
+
+    // Modify |this| BrowserContext and all related regular/OffTheRecord
+    // BrowserContexts.
+    kAllRelatedContexts,
+  };
   virtual void SetCorsOriginAccessListForOrigin(
+      TargetBrowserContexts target_mode,
       const url::Origin& source_origin,
       std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
       std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,

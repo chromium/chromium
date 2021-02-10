@@ -16,6 +16,7 @@
 
 namespace content {
 
+class BrowserContext;
 class StoragePartition;
 
 // A class used to make an asynchronous Mojo call with cloned patterns for each
@@ -35,7 +36,7 @@ class CONTENT_EXPORT CorsOriginPatternSetter
       std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
       base::OnceClosure closure);
 
-  void SetLists(StoragePartition* partition);
+  void ApplyToEachStoragePartition(BrowserContext* browser_context);
 
   static std::vector<network::mojom::CorsOriginPatternPtr> ClonePatterns(
       const std::vector<network::mojom::CorsOriginPatternPtr>& patterns);
@@ -43,6 +44,7 @@ class CONTENT_EXPORT CorsOriginPatternSetter
  private:
   friend class base::RefCounted<CorsOriginPatternSetter>;
 
+  void SetLists(StoragePartition* partition);
   ~CorsOriginPatternSetter();
 
   const url::Origin source_origin_;

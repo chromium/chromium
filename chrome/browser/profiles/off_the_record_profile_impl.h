@@ -126,12 +126,6 @@ class OffTheRecordProfileImpl : public Profile {
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
   media::VideoDecodePerfHistory* GetVideoDecodePerfHistory() override;
-  void SetCorsOriginAccessListForOrigin(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure) override;
-  content::SharedCorsOriginAccessList* GetSharedCorsOriginAccessList() override;
   content::FileSystemAccessPermissionContext*
   GetFileSystemAccessPermissionContext() override;
   void RecordMainFrameNavigation() override;

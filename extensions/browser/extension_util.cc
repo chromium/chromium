@@ -13,6 +13,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/ui_util.h"
+#include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
@@ -39,6 +40,37 @@ bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
   return true;
 }
 #endif
+
+void SetCorsOriginAccessListForExtensionHelper(
+    content::BrowserContext* browser_context,
+    const Extension& extension,
+    base::Optional<content::BrowserContext::TargetBrowserContexts> target_mode,
+    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
+    base::OnceClosure closure) {
+  // SetCorsOriginAccessListForExtensionHelper should only affect an incognito
+  // profile if the extension is actually allowed to run in an incognito profile
+  // (not just by the extension manifest, but also by user preferences).
+  if (browser_context->IsOffTheRecord()) {
+    // TODO(lukasza): Change to util::IsIncognitoEnabled if possible.  This
+    // fails today in All/IncognitoCommandsApiTest.IncognitoMode/0 apparently
+    // because ExtensionPrefs::IsIncognitoEnabled return `false` and
+    // ExtensionPrefs::SetIsIncognitoEnabled(..., true) is never called.
+    DCHECK(IncognitoInfo::IsIncognitoAllowed(&extension));
+  }
+
+  if (!target_mode.has_value()) {
+    target_mode =
+        IncognitoInfo::IsSplitMode(&extension)
+            ? content::BrowserContext::TargetBrowserContexts::kSingleContext
+            : content::BrowserContext::TargetBrowserContexts::
+                  kAllRelatedContexts;
+  }
+
+  browser_context->SetCorsOriginAccessListForOrigin(
+      *target_mode, extension.origin(), std::move(allow_patterns),
+      std::move(block_patterns), std::move(closure));
+}
 
 }  // namespace
 
@@ -207,6 +239,25 @@ int GetBrowserContextId(content::BrowserContext* context) {
         context_map->insert(std::make_pair(original_context, next_id++)).first;
   }
   return iter->second;
+}
+
+void SetCorsOriginAccessListForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension,
+    base::Optional<content::BrowserContext::TargetBrowserContexts> target_mode,
+    base::OnceClosure closure) {
+  SetCorsOriginAccessListForExtensionHelper(
+      browser_context, extension, target_mode,
+      CreateCorsOriginAccessAllowList(extension),
+      CreateCorsOriginAccessBlockList(extension), std::move(closure));
+}
+
+void ResetCorsOriginAccessListForExtension(
+    content::BrowserContext* browser_context,
+    const Extension& extension,
+    content::BrowserContext::TargetBrowserContexts target_mode) {
+  SetCorsOriginAccessListForExtensionHelper(
+      browser_context, extension, target_mode, {}, {}, base::DoNothing::Once());
 }
 
 }  // namespace util

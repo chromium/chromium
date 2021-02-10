@@ -83,6 +83,7 @@ class CorsOriginAccessListBrowserTest : public InProcessBrowserTest {
 
       base::RunLoop run_loop;
       browser()->profile()->SetCorsOriginAccessListForOrigin(
+          content::BrowserContext::TargetBrowserContexts::kSingleContext,
           url::Origin::Create(embedded_test_server()->base_url().GetOrigin()),
           std::move(list), std::vector<network::mojom::CorsOriginPatternPtr>(),
           run_loop.QuitClosure());
@@ -98,6 +99,7 @@ class CorsOriginAccessListBrowserTest : public InProcessBrowserTest {
 
       base::RunLoop run_loop;
       browser()->profile()->SetCorsOriginAccessListForOrigin(
+          content::BrowserContext::TargetBrowserContexts::kSingleContext,
           url::Origin::Create(
               embedded_test_server()->GetURL(kTestHost, "/").GetOrigin()),
           std::move(list), std::vector<network::mojom::CorsOriginPatternPtr>(),

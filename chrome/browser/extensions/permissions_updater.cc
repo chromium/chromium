@@ -184,9 +184,9 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
 
   // After an asynchronous call below, the helper will call
   // NotifyPermissionsUpdated if the profile is still valid.
-  browser_context->SetCorsOriginAccessListForOrigin(
-      extension->origin(), CreateCorsOriginAccessAllowList(*extension),
-      CreateCorsOriginAccessBlockList(*extension),
+  util::SetCorsOriginAccessListForExtension(
+      browser_context, *extension,
+      content::BrowserContext::TargetBrowserContexts::kAllRelatedContexts,
       base::BindOnce(&NetworkPermissionsUpdateHelper::OnOriginAccessUpdated,
                      helper->weak_factory_.GetWeakPtr()));
 }
@@ -212,9 +212,10 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::
                      helper->weak_factory_.GetWeakPtr()));
 
   for (const auto& extension : extensions) {
-    browser_context->SetCorsOriginAccessListForOrigin(
-        extension->origin(), CreateCorsOriginAccessAllowList(*extension),
-        CreateCorsOriginAccessBlockList(*extension), barrier_closure);
+    util::SetCorsOriginAccessListForExtension(
+        browser_context, *extension,
+        content::BrowserContext::TargetBrowserContexts::kAllRelatedContexts,
+        barrier_closure);
   }
 }
 

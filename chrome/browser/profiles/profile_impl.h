@@ -94,12 +94,6 @@ class ProfileImpl : public Profile {
       override;
   content::BackgroundFetchDelegate* GetBackgroundFetchDelegate() override;
   content::BackgroundSyncController* GetBackgroundSyncController() override;
-  void SetCorsOriginAccessListForOrigin(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure) override;
-  content::SharedCorsOriginAccessList* GetSharedCorsOriginAccessList() override;
   std::string GetMediaDeviceIDSalt() override;
   download::InProgressDownloadManager* RetriveInProgressDownloadManager()
       override;
@@ -334,9 +328,6 @@ class ProfileImpl : public Profile {
   // components/keyed_service/content/browser_context_keyed_service_factory.*
 
   Profile::Delegate* delegate_;
-
-  scoped_refptr<content::SharedCorsOriginAccessList>
-      shared_cors_origin_access_list_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_IMPL_H_
