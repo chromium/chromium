@@ -569,6 +569,7 @@ void ServiceWorkerFetchDispatcher::DidStartWorker(
     DidFail(status);
     return;
   }
+
   if (!IsEventDispatched()) {
     DispatchFetchEvent();
   }
@@ -794,13 +795,16 @@ bool ServiceWorkerFetchDispatcher::IsEventDispatched() const {
   return request_.is_null();
 }
 
+// static
 void ServiceWorkerFetchDispatcher::OnFetchEventFinished(
+    base::WeakPtr<ServiceWorkerFetchDispatcher> fetch_dispatcher,
     ServiceWorkerVersion* version,
     int event_finish_id,
     scoped_refptr<URLLoaderAssets> url_loader_assets,
     blink::mojom::ServiceWorkerEventStatus status) {
-  if (status == blink::mojom::ServiceWorkerEventStatus::TIMEOUT) {
-    DidFail(blink::ServiceWorkerStatusCode::kErrorTimeout);
+  if (fetch_dispatcher &&
+      status == blink::mojom::ServiceWorkerEventStatus::TIMEOUT) {
+    fetch_dispatcher->DidFail(blink::ServiceWorkerStatusCode::kErrorTimeout);
   }
   version->FinishRequest(
       event_finish_id,

@@ -184,6 +184,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
         const GURL& source_url) {}
     virtual void OnCachedMetadataUpdated(ServiceWorkerVersion* version,
                                          size_t size) {}
+    virtual void OnNoWork(ServiceWorkerVersion* version) {}
 
    protected:
     virtual ~Observer() {}
