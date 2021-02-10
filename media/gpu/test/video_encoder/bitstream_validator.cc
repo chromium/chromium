@@ -115,7 +115,8 @@ BitstreamValidator::BitstreamValidator(
       validator_thread_("BitstreamValidatorThread"),
       validator_cv_(&validator_lock_),
       num_buffers_validating_(0),
-      decode_error_(false) {
+      decode_error_(false),
+      waiting_flush_done_(false) {
   DETACH_FROM_SEQUENCE(validator_sequence_checker_);
   DETACH_FROM_SEQUENCE(validator_thread_sequence_checker_);
 }
@@ -133,6 +134,9 @@ BitstreamValidator::~BitstreamValidator() {
 void BitstreamValidator::ProcessBitstream(scoped_refptr<BitstreamRef> bitstream,
                                           size_t frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_sequence_checker_);
+  LOG_ASSERT(frame_index <= last_frame_index_)
+      << "frame_index is larger than last frame index, frame_index="
+      << frame_index << ", last_frame_index_=" << last_frame_index_;
   base::AutoLock lock(validator_lock_);
   // If many pending buffers are accumulated in this validator class and the
   // allocated memory size becomes large, the test process is killed by the
@@ -159,6 +163,16 @@ void BitstreamValidator::ProcessBitstreamTask(
   const bool should_decode = !num_vp9_temporal_layers_to_decode_ ||
                              (bitstream->metadata.vp9->temporal_idx <
                               *num_vp9_temporal_layers_to_decode_);
+  const bool should_flush = frame_index == last_frame_index_;
+
+  if (should_flush) {
+    // |waiting_flush_done_| should be set before calling Decode() as
+    // VideoDecoder::OutputCB (here, VerifyOutputFrame) might be called
+    // synchronously.
+    base::AutoLock lock(validator_lock_);
+    waiting_flush_done_ = true;
+  }
+
   if (should_decode) {
     scoped_refptr<DecoderBuffer> buffer = bitstream->buffer;
     int64_t timestamp = buffer->timestamp().InMicroseconds();
@@ -176,7 +190,8 @@ void BitstreamValidator::ProcessBitstreamTask(
     num_buffers_validating_--;
     validator_cv_.Signal();
   }
-  if (frame_index == last_frame_index_) {
+
+  if (should_flush) {
     // Flush pending buffers.
     decoder_->Decode(DecoderBuffer::CreateEOSBuffer(),
                      base::BindOnce(&BitstreamValidator::DecodeDone,
@@ -195,6 +210,9 @@ void BitstreamValidator::DecodeDone(int64_t timestamp, Status status) {
     }
   }
   if (timestamp == kEOSTimeStamp) {
+    base::AutoLock lock(validator_lock_);
+    waiting_flush_done_ = false;
+    validator_cv_.Signal();
     return;
   }
 
@@ -245,7 +263,7 @@ void BitstreamValidator::VerifyOutputFrame(scoped_refptr<VideoFrame> frame) {
 
 bool BitstreamValidator::WaitUntilDone() {
   base::AutoLock auto_lock(validator_lock_);
-  while (num_buffers_validating_ > 0)
+  while (num_buffers_validating_ > 0 || waiting_flush_done_)
     validator_cv_.Wait();
 
   bool success = true;

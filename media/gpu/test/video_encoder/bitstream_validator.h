@@ -94,6 +94,8 @@ class BitstreamValidator : public BitstreamProcessor {
   size_t num_buffers_validating_ GUARDED_BY(validator_lock_);
   // True if |decoder_| detects an error while decoding bitstreams.
   bool decode_error_ GUARDED_BY(validator_lock_);
+  // True if a flush is being processed.
+  bool waiting_flush_done_ GUARDED_BY(validator_lock_);
 
   SEQUENCE_CHECKER(validator_sequence_checker_);
   SEQUENCE_CHECKER(validator_thread_sequence_checker_);
