@@ -203,8 +203,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnablePasswordInfoBarAccountIndicationFooter";
     public static final String AUTOFILL_ENABLE_SAVE_CARD_INFO_BAR_ACCOUNT_INDICATION_FOOTER =
             "AutofillEnableSaveCardInfoBarAccountIndicationFooter";
-    public static final String AUTOFILL_ENABLE_UI_FOR_HONORIFIC_PREFIXES_IN_SETTINGS =
-            "AutofillEnableUIForHonorificPrefixesInSettings";
+    public static final String AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES =
+            "AutofillEnableSupportForHonorificPrefixes";
     public static final String ADJUST_WEBAPK_INSTALLATION_SPACE = "AdjustWebApkInstallationSpace";
     public static final String ANDROID_DEFAULT_BROWSER_PROMO = "AndroidDefaultBrowserPromo";
     public static final String ANDROID_LAYOUT_CHANGE_TAB_REPARENT =

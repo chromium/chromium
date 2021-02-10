@@ -176,6 +176,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT_REP(name_last_second);
   VISIT_REP(name_last);
   VISIT_REP(name_full);
+  VISIT_REP(name_full_with_honorific);
 
   VISIT_REP(name_honorific_status);
   VISIT_REP(name_first_status);
@@ -185,6 +186,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT_REP(name_last_second_status);
   VISIT_REP(name_last_status);
   VISIT_REP(name_full_status);
+  VISIT_REP(name_full_with_honorific_status);
 
   VISIT_REP(email_address);
   VISIT(company_name);

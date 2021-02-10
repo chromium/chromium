@@ -117,7 +117,7 @@ public class AddressEditor
 
     private boolean isUIForHonorificPrefixesEnabled() {
         return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ENABLE_UI_FOR_HONORIFIC_PREFIXES_IN_SETTINGS);
+                ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES);
     }
 
     private String getAddressError(int field) {

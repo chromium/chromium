@@ -71,8 +71,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @Features.
-    EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_UI_FOR_HONORIFIC_PREFIXES_IN_SETTINGS})
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
     public void testAddProfile() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillProfilesFragment autofillProfileFragment =
@@ -105,8 +104,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @Features.
-    EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_UI_FOR_HONORIFIC_PREFIXES_IN_SETTINGS})
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
     public void testAddIncompletedProfile() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillProfilesFragment autofillProfileFragment =
@@ -137,8 +135,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @Features.
-    EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_UI_FOR_HONORIFIC_PREFIXES_IN_SETTINGS})
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
     public void testAddProfileWithInvalidPhone() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillProfilesFragment autofillProfileFragment =
@@ -195,8 +192,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @Features.
-    EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_UI_FOR_HONORIFIC_PREFIXES_IN_SETTINGS})
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
     public void testEditProfile() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillProfilesFragment autofillProfileFragment =

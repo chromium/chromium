@@ -77,6 +77,8 @@ struct SortedTokenComparisonResult {
   bool OneIsSubset() const;
   // Returns true if one contains the other.
   bool ContainEachOther() const;
+  // Returns true if both contain the same tokens.
+  bool TokensMatch() const;
 };
 
 // Options for capturing a named group using the
@@ -96,6 +98,9 @@ bool StructuredNamesEnabled();
 
 // Returns true if the structured address feature is enabled.
 bool StructuredAddressesEnabled();
+
+// Returns true if honorific prefixes are enabled.
+bool HonorificPrefixEnabled();
 
 // A cache for compiled RE2 regular expressions.
 class Re2RegExCache {
@@ -239,6 +244,11 @@ std::string CaptureTypeWithPattern(
 std::string CaptureTypeWithPattern(
     const ServerFieldType& type,
     std::initializer_list<base::StringPiece> pattern_span_initializer_list);
+
+// A pattern that is used to capture tokens that are not supposed to be
+// associated into a type.
+std::string NoCapturePattern(const std::string& pattern,
+                             const CaptureOptions& options = CaptureOptions());
 
 // Returns a capture group named by the string representation of |type| that
 // matches |pattern| with an additional uncaptured |prefix_pattern| and

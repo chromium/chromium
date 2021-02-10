@@ -119,7 +119,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestInitialization) {
   TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
   int rowCnt =
       base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableUIForHonorificPrefixesInSettings)
+          autofill::features::kAutofillEnableSupportForHonorificPrefixes)
           ? 11
           : 10;
 
@@ -137,8 +137,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
       kTestCity,     kTestState,   kTestZip,          kTestCountry,
       kTestPhone,    kTestEmail};
   if (base::FeatureList::IsEnabled(
-          autofill::features::
-              kAutofillEnableUIForHonorificPrefixesInSettings)) {
+          autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
     expected_values.insert(expected_values.begin(), kTestHonorificPrefix);
   }
 

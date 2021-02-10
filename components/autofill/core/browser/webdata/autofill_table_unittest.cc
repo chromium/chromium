@@ -1310,6 +1310,10 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
   // NAME_HONORIFIC_PREFIX, ASCIIToUTF16("Dr."),
   // VerificationStatus::kObserved);
 
+  home_profile.SetRawInfoWithVerificationStatus(NAME_HONORIFIC_PREFIX,
+                                                ASCIIToUTF16("Dr."),
+                                                VerificationStatus::kObserved);
+
   home_profile.SetRawInfoWithVerificationStatus(
       NAME_FIRST, ASCIIToUTF16("John"), VerificationStatus::kObserved);
 
@@ -1330,6 +1334,11 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
 
   home_profile.SetRawInfoWithVerificationStatus(
       NAME_FULL, ASCIIToUTF16("John Q. Agent 007 Smith"),
+      VerificationStatus::kObserved);
+
+  home_profile.SetRawInfoWithVerificationStatus(
+      NAME_FULL_WITH_HONORIFIC_PREFIX,
+      ASCIIToUTF16("Dr. John Q. Agent 007 Smith"),
       VerificationStatus::kObserved);
 
   home_profile.SetRawInfo(EMAIL_ADDRESS, ASCIIToUTF16("js@smith.xyz"));

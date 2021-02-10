@@ -21,6 +21,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
+    case NAME_FULL_WITH_HONORIFIC_PREFIX:
       return FieldTypeGroup::kName;
 
     case NAME_BILLING_FIRST:

@@ -55,6 +55,10 @@ bool SortedTokenComparisonResult::ContainEachOther() const {
   return status != DISTINCT;
 }
 
+bool SortedTokenComparisonResult::TokensMatch() const {
+  return status == MATCH;
+}
+
 bool StructuredNamesEnabled() {
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForMoreStructureInNames);
@@ -63,6 +67,13 @@ bool StructuredNamesEnabled() {
 bool StructuredAddressesEnabled() {
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableSupportForMoreStructureInAddresses);
+}
+
+bool HonorificPrefixEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableSupportForHonorificPrefixes) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableSupportForMoreStructureInNames);
 }
 
 Re2RegExCache::Re2RegExCache() = default;
@@ -267,6 +278,29 @@ std::string CaptureTypeWithPattern(
   return CaptureTypeWithPattern(
       type, base::StrCat(base::make_span(pattern_span_initializer_list)),
       options);
+}
+
+std::string NoCapturePattern(const std::string& pattern,
+                             const CaptureOptions& options) {
+  std::string quantifier;
+  switch (options.quantifier) {
+    // Makes the match optional.
+    case MATCH_OPTIONAL:
+      quantifier = "?";
+      break;
+    // Makes the match lazy meaning that it is avoided if possible.
+    case MATCH_LAZY_OPTIONAL:
+      quantifier = "??";
+      break;
+    // Makes the match required.
+    case MATCH_REQUIRED:
+      quantifier = "";
+  }
+
+  // By adding an "i" in the first group, the capturing is case insensitive.
+  // Allow multiple separators to support the ", " case.
+  return base::StrCat(
+      {"(?i:", pattern, "(?:", options.separator, ")+)", quantifier});
 }
 
 std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,

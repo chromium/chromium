@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
@@ -53,46 +54,110 @@ TEST_P(SetFullNameTest, SetFullName) {
             name.GetInfo(AutofillType(NAME_FULL), "en-US"));
 }
 
-TEST(NameInfoTest, GetMatchingTypesForStructuredName) {
+TEST(NameInfoTest, GetMatchingTypesForStructuredNameWithPrefix) {
   base::test::ScopedFeatureList structured_name_feature;
-  structured_name_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
+  structured_name_feature.InitWithFeatures(
+      {features::kAutofillEnableSupportForMoreStructureInNames,
+       features::kAutofillEnableSupportForHonorificPrefixes},
+      {});
 
   NameInfo name;
-  name.SetRawInfoWithVerificationStatus(
-      NAME_FULL, base::ASCIIToUTF16("Mr. Pablo Diego Ruiz y Picasso"),
-      VerificationStatus::kObserved);
+  test::FormGroupValues name_values = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr. Pablo Diego Ruiz y Picasso",
+       .verification_status = VerificationStatus::kObserved}};
+  test::SetFormGroupValues(name, name_values);
   name.FinalizeAfterImport();
 
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // EXPECT_EQ(name.GetRawInfo(NAME_HONORIFIC_PREFIX),
-  // base::ASCIIToUTF16("Mr."));
-  EXPECT_EQ(name.GetRawInfo(NAME_FIRST), base::ASCIIToUTF16("Pablo Diego"));
-  EXPECT_EQ(name.GetRawInfo(NAME_MIDDLE), base::ASCIIToUTF16(""));
-  EXPECT_EQ(name.GetRawInfo(NAME_LAST), base::ASCIIToUTF16("Ruiz y Picasso"));
-  EXPECT_EQ(name.GetRawInfo(NAME_LAST_FIRST), base::ASCIIToUTF16("Ruiz"));
-  EXPECT_EQ(name.GetRawInfo(NAME_LAST_SECOND), base::ASCIIToUTF16("Picasso"));
-  EXPECT_EQ(name.GetRawInfo(NAME_LAST_CONJUNCTION), base::ASCIIToUTF16("y"));
+  test::FormGroupValues expectation = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr. Pablo Diego Ruiz y Picasso",
+       .verification_status = VerificationStatus::kObserved},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr.",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .verification_status = VerificationStatus::kParsed}};
 
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // EXPECT_EQ(name.GetVerificationStatus(NAME_HONORIFIC_PREFIX),
-  //          VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatus(NAME_FIRST),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatus(NAME_MIDDLE),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST), VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST_FIRST),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST_SECOND),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatus(NAME_LAST_CONJUNCTION),
-            VerificationStatus::kParsed);
+  test::VerifyFormGroupValues(name, expectation);
 
   ServerFieldTypeSet matching_types;
   name.GetMatchingTypes(base::ASCIIToUTF16("Ruiz"), "US", &matching_types);
   EXPECT_EQ(matching_types, ServerFieldTypeSet({NAME_LAST_FIRST}));
 
+  name.GetMatchingTypes(base::ASCIIToUTF16("Mr."), "US", &matching_types);
+  EXPECT_EQ(matching_types,
+            ServerFieldTypeSet({NAME_LAST_FIRST, NAME_HONORIFIC_PREFIX}));
+
+  // Verify that a field filled with |NAME_FULL_WITH_HONORIFIC_PREFIX| creates a
+  // |NAME_FULL| vote.
+  name.GetMatchingTypes(base::ASCIIToUTF16("Mr. Pablo Diego Ruiz y Picasso"),
+                        "US", &matching_types);
+  EXPECT_EQ(matching_types, ServerFieldTypeSet({NAME_FULL, NAME_LAST_FIRST,
+                                                NAME_HONORIFIC_PREFIX}));
+}
+
+TEST(NameInfoTest, GetMatchingTypesForStructuredName) {
+  base::test::ScopedFeatureList structured_name_feature;
+  structured_name_feature.InitWithFeatures(
+      {features::kAutofillEnableSupportForMoreStructureInNames},
+      {features::kAutofillEnableSupportForHonorificPrefixes});
+
+  NameInfo name;
+
+  test::FormGroupValues name_values = {
+      {.type = NAME_FULL,
+       .value = "Mr. Pablo Diego Ruiz y Picasso",
+       .verification_status = VerificationStatus::kObserved}};
+  test::SetFormGroupValues(name, name_values);
+  name.FinalizeAfterImport();
+
+  test::FormGroupValues expectation = {
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "",
+       .verification_status = VerificationStatus::kNoStatus},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .verification_status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .verification_status = VerificationStatus::kParsed}};
+
+  test::VerifyFormGroupValues(name, expectation);
+
+  ServerFieldTypeSet matching_types;
+  name.GetMatchingTypes(base::ASCIIToUTF16("Ruiz"), "US", &matching_types);
+  EXPECT_EQ(matching_types, ServerFieldTypeSet({NAME_LAST_FIRST}));
+
+  // The honorific prefix is ignored.
   name.GetMatchingTypes(base::ASCIIToUTF16("Mr."), "US", &matching_types);
   EXPECT_EQ(matching_types, ServerFieldTypeSet({NAME_LAST_FIRST}));
 }
@@ -145,10 +210,6 @@ TEST(NameInfoTest, GetFullName) {
   EXPECT_EQ(ASCIIToUTF16("First"), name.GetRawInfo(NAME_FIRST));
   EXPECT_EQ(base::string16(), name.GetRawInfo(NAME_MIDDLE));
   EXPECT_EQ(base::string16(), name.GetRawInfo(NAME_LAST));
-  // For structured names, the full must contain all of its subcomponents.
-  EXPECT_EQ(structured_address::StructuredNamesEnabled() ? ASCIIToUTF16("First")
-                                                         : base::string16(),
-            name.GetRawInfo(NAME_FULL));
   EXPECT_EQ(ASCIIToUTF16("First"),
             name.GetInfo(AutofillType(NAME_FULL), "en-US"));
 

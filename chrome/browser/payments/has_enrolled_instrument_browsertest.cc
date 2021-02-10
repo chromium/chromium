@@ -166,9 +166,12 @@ IN_PROC_BROWSER_TEST_P(HasEnrolledInstrumentTest,
   address.SetRawInfo(autofill::ServerFieldType::NAME_FIRST, base::string16());
   address.SetRawInfo(autofill::ServerFieldType::NAME_MIDDLE, base::string16());
   address.SetRawInfo(autofill::ServerFieldType::NAME_LAST, base::string16());
-  // For structured names, it is neccessary to explicitely reset the full name.
+  // For structured names, it is necessary to explicitly reset the full name
+  // and the full name with the prefix.
   address.SetInfo(autofill::ServerFieldType::NAME_FULL, base::string16(),
                   "en-US");
+  address.SetInfo(autofill::ServerFieldType::NAME_FULL_WITH_HONORIFIC_PREFIX,
+                  base::string16(), "en-US");
   AddAutofillProfile(address);
   CreateAndAddCreditCardForProfile(address);
 

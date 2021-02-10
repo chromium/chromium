@@ -32,6 +32,10 @@ class NameInfo : public FormGroup {
   // FormGroup:
   base::string16 GetRawInfo(ServerFieldType type) const override;
 
+  void GetMatchingTypes(const base::string16& text,
+                        const std::string& app_locale,
+                        ServerFieldTypeSet* matching_types) const override;
+
   void SetRawInfoWithVerificationStatus(
       ServerFieldType type,
       const base::string16& value,

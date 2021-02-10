@@ -21,6 +21,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case NAME_LAST_SECOND:
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
+    case NAME_FULL_WITH_HONORIFIC_PREFIX:
     case NAME_SUFFIX:
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
@@ -152,6 +153,8 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "EMPTY_TYPE";
     case NAME_HONORIFIC_PREFIX:
       return "NAME_HONORIFIC_PREFIX";
+    case NAME_FULL_WITH_HONORIFIC_PREFIX:
+      return "NAME_FULL_WITH_HONORIFIC_PREFIX";
     case NAME_FIRST:
       return "NAME_FIRST";
     case NAME_MIDDLE:

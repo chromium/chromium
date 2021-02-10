@@ -167,9 +167,9 @@ const base::Feature kAutofillEnableSupportForMergingSubsetNames{
 // Controls whether honorific prefix is shown and editable in Autofill Settings
 // on Android, iOS and Desktop.
 // TODO(crbug.com/1141460): Remove once launched.
-const base::Feature kAutofillEnableUIForHonorificPrefixesInSettings{
-   "AutofillEnableUIForHonorificPrefixesInSettings",
-   base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAutofillEnableSupportForHonorificPrefixes{
+    "AutofillEnableSupportForHonorificPrefixes",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether or not all datalist shall be extracted into FormFieldData.
 // This feature is enabled in both WebView and WebLayer where all datalists

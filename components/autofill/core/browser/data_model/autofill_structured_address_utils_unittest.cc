@@ -217,6 +217,17 @@ TEST(AutofillStructuredAddressUtils, CaptureTypeWithPattern) {
             CaptureTypeWithPattern(NAME_FULL, "abs\\w", {.separator = "_"}));
 }
 
+TEST(AutofillStructuredAddressUtils, NoCaptureTypeWithPattern) {
+  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)?",
+            NoCapturePattern("abs\\w", {.quantifier = MATCH_OPTIONAL}));
+  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)", NoCapturePattern("abs\\w"));
+  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)??",
+            NoCapturePattern("abs\\w", {.quantifier = MATCH_LAZY_OPTIONAL}));
+  EXPECT_EQ("(?i:abs\\w(?:,|\\s+|$)+)", NoCapturePattern("abs\\w"));
+  EXPECT_EQ("(?i:abs\\w(?:_)+)",
+            NoCapturePattern("abs\\w", {.separator = "_"}));
+}
+
 TEST(AutofillStructuredAddressUtils, TokenizeValue) {
   std::vector<AddressToken> expected_tokens = {
       {base::ASCIIToUTF16("AnD"), base::ASCIIToUTF16("and"), 1},

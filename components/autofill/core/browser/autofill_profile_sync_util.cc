@@ -120,6 +120,8 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_CONJUNCTION))));
   specifics->add_name_full(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(NAME_FULL))));
+  specifics->add_name_full_with_honorific(TruncateUTF8(
+      UTF16ToUTF8(entry.GetRawInfo(NAME_FULL_WITH_HONORIFIC_PREFIX))));
 
   // Set address-related statuses.
   specifics->add_name_honorific_status(
@@ -142,6 +144,9 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
           entry.GetVerificationStatus(NAME_LAST_SECOND)));
   specifics->add_name_full_status(ConvertProfileToSpecificsVerificationStatus(
       entry.GetVerificationStatus(NAME_FULL)));
+  specifics->add_name_full_with_honorific_status(
+      ConvertProfileToSpecificsVerificationStatus(
+          entry.GetVerificationStatus(NAME_FULL_WITH_HONORIFIC_PREFIX)));
 
   // Set email, phone and company values.
   specifics->add_email_address(
@@ -256,6 +261,17 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ConvertSpecificsToProfileVerificationStatus(
           specifics.name_honorific_status_size()
               ? specifics.name_honorific_status(0)
+              : AutofillProfileSpecifics::VerificationStatus::
+                    AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
+
+  profile->SetRawInfoWithVerificationStatus(
+      NAME_FULL_WITH_HONORIFIC_PREFIX,
+      UTF8ToUTF16(specifics.name_full_with_honorific_size()
+                      ? specifics.name_full_with_honorific(0)
+                      : std::string()),
+      ConvertSpecificsToProfileVerificationStatus(
+          specifics.name_full_with_honorific_status_size()
+              ? specifics.name_full_with_honorific_status(0)
               : AutofillProfileSpecifics::VerificationStatus::
                     AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
 

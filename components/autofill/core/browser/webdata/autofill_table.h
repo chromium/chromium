@@ -169,6 +169,9 @@ struct PaymentsCustomerData;
 //                      consisting of a single part are stored in the second
 //                      part by default.
 //   full_name          The unstructured full name of a person.
+//   full_name_with_honorific_prefix
+//                      The combination of the full name and the honorific
+//                      prefix.
 //   honorific_prefix_status
 //   first_name_status
 //   middle_name_status
@@ -176,6 +179,7 @@ struct PaymentsCustomerData;
 //   first_last_name_status
 //   conjunction_last_name_status
 //   second_last_name_status
+//   full_name_with_honorific_prefix_status
 //                      Each token of the names has an additional validation
 //                      status that indicates if Autofill parsed the value out
 //                      of an unstructured (last) name, or if autofill formatted
@@ -679,6 +683,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion89AddInstrumentIdColumnToMaskedCreditCard();
   bool MigrateToVersion90AddNewStructuredAddressColumns();
   bool MigrateToVersion91AddMoreStructuredAddressColumns();
+  bool MigrateToVersion92AddNewPrefixedNameColumn();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

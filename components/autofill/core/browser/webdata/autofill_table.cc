@@ -213,8 +213,10 @@ bool AddAutofillProfileNames(const AutofillProfile& profile,
         "conjunction_last_name, conjunction_last_name_status, "
         "second_last_name, second_last_name_status, "
         "last_name, last_name_status, "
-        "full_name, full_name_status) "
-        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+        "full_name, full_name_status, "
+        "full_name_with_honorific_prefix, "
+        "full_name_with_honorific_prefix_status) "
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
     s.BindString(0, profile.guid());
     s.BindString16(1, profile.GetRawInfo(NAME_HONORIFIC_PREFIX));
     s.BindInt(2, profile.GetVerificationStatusInt(NAME_HONORIFIC_PREFIX));
@@ -232,6 +234,9 @@ bool AddAutofillProfileNames(const AutofillProfile& profile,
     s.BindInt(14, profile.GetVerificationStatusInt(NAME_LAST));
     s.BindString16(15, profile.GetRawInfo(NAME_FULL));
     s.BindInt(16, profile.GetVerificationStatusInt(NAME_FULL));
+    s.BindString16(17, profile.GetRawInfo(NAME_FULL_WITH_HONORIFIC_PREFIX));
+    s.BindInt(
+        18, profile.GetVerificationStatusInt(NAME_FULL_WITH_HONORIFIC_PREFIX));
     return s.Run();
   }
   // Add the new name.
@@ -325,7 +330,8 @@ bool AddAutofillProfileNamesToProfile(sql::Database* db,
       "conjunction_last_name, conjunction_last_name_status, "
       "second_last_name, second_last_name_status, "
       "last_name, last_name_status, "
-      "full_name, full_name_status "
+      "full_name, full_name_status, "
+      "full_name_with_honorific_prefix, full_name_with_honorific_prefix_status "
       "FROM autofill_profile_names "
       "WHERE guid=? "
       "LIMIT 1"));
@@ -358,6 +364,9 @@ bool AddAutofillProfileNamesToProfile(sql::Database* db,
           NAME_LAST, s.ColumnString16(13), s.ColumnInt(14));
       profile->SetRawInfoWithVerificationStatusInt(
           NAME_FULL, s.ColumnString16(15), s.ColumnInt(16));
+      profile->SetRawInfoWithVerificationStatusInt(
+          NAME_FULL_WITH_HONORIFIC_PREFIX, s.ColumnString16(17),
+          s.ColumnInt(18));
     } else {
       // If structured components are not enabled, only use the legacy
       // structure.
@@ -774,6 +783,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 91:
       *update_compatible_version = false;
       return MigrateToVersion91AddMoreStructuredAddressColumns();
+    case 92:
+      *update_compatible_version = false;
+      return MigrateToVersion92AddNewPrefixedNameColumn();
   }
   return true;
 }
@@ -3275,6 +3287,27 @@ bool AutofillTable::MigrateToVersion88AddNewNameColumns() {
   return true;
 }
 
+bool AutofillTable::MigrateToVersion92AddNewPrefixedNameColumn() {
+  if (!db_->DoesColumnExist("autofill_profile_names",
+                            "full_name_with_honorific_prefix") &&
+      !db_->Execute(
+          base::StrCat({"ALTER TABLE autofill_profile_names ADD COLUMN ",
+                        "full_name_with_honorific_prefix", " VARCHAR"})
+              .c_str())) {
+    return false;
+  }
+  if (!db_->DoesColumnExist("autofill_profile_names",
+                            "full_name_with_honorific_prefix_status") &&
+      !db_->Execute(
+          base::StrCat({"ALTER TABLE autofill_profile_names ADD COLUMN ",
+                        "full_name_with_honorific_prefix_status",
+                        " INTEGER DEFAULT 0"})
+              .c_str())) {
+    return false;
+  }
+  return true;
+}
+
 bool AutofillTable::MigrateToVersion86RemoveUnmaskedCreditCardsUseColumns() {
   // Sqlite does not support "alter table drop column" syntax, so it has be
   // done manually.
@@ -3677,24 +3710,27 @@ bool AutofillTable::InitProfileNamesTable() {
   if (!db_->DoesTableExist("autofill_profile_names")) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
-    if (!db_->Execute("CREATE TABLE autofill_profile_names ( "
-                      "guid VARCHAR, "
-                      "first_name VARCHAR, "
-                      "middle_name VARCHAR, "
-                      "last_name VARCHAR, "
-                      "full_name VARCHAR, "
-                      "honorific_prefix VARCHAR, "
-                      "first_last_name VARCHAR, "
-                      "conjunction_last_name VARCHAR, "
-                      "second_last_name VARCHAR, "
-                      "honorific_prefix_status INTEGER DEFAULT 0, "
-                      "first_name_status INTEGER DEFAULT 0, "
-                      "middle_name_status INTEGER DEFAULT 0, "
-                      "last_name_status INTEGER DEFAULT 0, "
-                      "first_last_name_status INTEGER DEFAULT 0, "
-                      "conjunction_last_name_status INTEGER DEFAULT 0, "
-                      "second_last_name_status INTEGER DEFAULT 0, "
-                      "full_name_status INTEGER DEFAULT 0)")) {
+    if (!db_->Execute(
+            "CREATE TABLE autofill_profile_names ( "
+            "guid VARCHAR, "
+            "first_name VARCHAR, "
+            "middle_name VARCHAR, "
+            "last_name VARCHAR, "
+            "full_name VARCHAR, "
+            "honorific_prefix VARCHAR, "
+            "first_last_name VARCHAR, "
+            "conjunction_last_name VARCHAR, "
+            "second_last_name VARCHAR, "
+            "honorific_prefix_status INTEGER DEFAULT 0, "
+            "first_name_status INTEGER DEFAULT 0, "
+            "middle_name_status INTEGER DEFAULT 0, "
+            "last_name_status INTEGER DEFAULT 0, "
+            "first_last_name_status INTEGER DEFAULT 0, "
+            "conjunction_last_name_status INTEGER DEFAULT 0, "
+            "second_last_name_status INTEGER DEFAULT 0, "
+            "full_name_status INTEGER DEFAULT 0, "
+            "full_name_with_honorific_prefix VARCHAR, "
+            "full_name_with_honorific_prefix_status INTEGER DEFAULT 0)")) {
       NOTREACHED();
       return false;
     }

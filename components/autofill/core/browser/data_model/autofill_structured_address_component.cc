@@ -49,6 +49,15 @@ bool IsLessSignificantVerificationStatus(VerificationStatus left,
          static_cast<std::underlying_type_t<VerificationStatus>>(right);
 }
 
+VerificationStatus GetMoreSignificantVerificationStatus(
+    VerificationStatus left,
+    VerificationStatus right) {
+  if (IsLessSignificantVerificationStatus(left, right))
+    return right;
+
+  return left;
+}
+
 std::ostream& operator<<(std::ostream& os, VerificationStatus status) {
   switch (status) {
     case VerificationStatus::kNoStatus:
@@ -388,10 +397,7 @@ base::string16 AddressComponent::GetValueForType(
     const std::string& type_name) const {
   base::string16 value;
   bool success = GetValueAndStatusForTypeIfPossible(type_name, &value, nullptr);
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  DCHECK(success || type_name == AutofillType::ServerFieldTypeToString(
-                                     NAME_HONORIFIC_PREFIX))
-      << type_name;
+  DCHECK(success) << type_name;
   return value;
 }
 
@@ -406,9 +412,7 @@ VerificationStatus AddressComponent::GetVerificationStatusForType(
   VerificationStatus status = VerificationStatus::kNoStatus;
   bool success =
       GetValueAndStatusForTypeIfPossible(type_name, nullptr, &status);
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  DCHECK(success || type_name == AutofillType::ServerFieldTypeToString(
-                                     NAME_HONORIFIC_PREFIX));
+  DCHECK(success) << type_name;
   return status;
 }
 
@@ -477,12 +481,9 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
       const std::string& field_type = result_entry.first;
       base::string16 field_value = base::UTF8ToUTF16(result_entry.second);
       // Do not reassign the value of this node.
-      if (field_type == GetStorageTypeName())
+      if (field_type == GetStorageTypeName()) {
         continue;
-      // crbug.com(1113617): Honorifics are temporarily disabled.
-      if (field_type ==
-          AutofillType::ServerFieldTypeToString(NAME_HONORIFIC_PREFIX))
-        continue;
+      }
       bool success = SetValueForTypeIfPossible(field_type, field_value,
                                                VerificationStatus::kParsed);
       // Setting the value should always work unless the regular expression is
@@ -556,7 +557,7 @@ bool AddressComponent::WipeInvalidStructure() {
   return false;
 }
 
-void AddressComponent::FormatValueFromSubcomponents() {
+base::string16 AddressComponent::GetFormattedValueFromSubcomponents() {
   // Get the most suited format string.
   base::string16 format_string = GetBestFormatString();
 
@@ -567,8 +568,13 @@ void AddressComponent::FormatValueFromSubcomponents() {
   // with an empty value.
 
   base::string16 result = ReplacePlaceholderTypesWithValues(format_string);
-  result = base::CollapseWhitespace(result, /*trim_line_breaks=*/false);
-  SetValue(result, VerificationStatus::kFormatted);
+  return base::CollapseWhitespace(result,
+                                  /*trim_sequences_with_line_breaks=*/false);
+}
+
+void AddressComponent::FormatValueFromSubcomponents() {
+  SetValue(GetFormattedValueFromSubcomponents(),
+           VerificationStatus::kFormatted);
 }
 
 base::string16 AddressComponent::ReplacePlaceholderTypesWithValues(
@@ -792,7 +798,11 @@ bool AddressComponent::IsMergeableWithComponent(
   const base::string16 value_newer = newer_component.ValueForComparison();
 
   // If both components are the same, there is nothing to do.
-  if (SameAs(newer_component)) {
+  if (SameAs(newer_component))
+    return true;
+
+  if (merge_mode_ & kUseNewerIfDifferent ||
+      merge_mode_ & kUseBetterOrMostRecentIfDifferent) {
     return true;
   }
 
@@ -832,9 +842,6 @@ bool AddressComponent::IsMergeableWithComponent(
     }
   }
 
-  if (merge_mode_ == kUseNewerIfDifferent)
-    return true;
-
   // If the one value is a substring of the other, use the substring of the
   // corresponding mode is active.
   if ((merge_mode_ & kUseMostRecentSubstring) &&
@@ -848,7 +855,8 @@ bool AddressComponent::IsMergeableWithComponent(
     return true;
   }
 
-  if (merge_mode_ == kMergeChildrenAndReformat) {
+  // Checks if all child nodes are mergeable.
+  if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
     bool is_mergeable = true;
     DCHECK(newer_component.subcomponents_.size() == subcomponents_.size());
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
@@ -968,9 +976,17 @@ bool AddressComponent::MergeWithComponent(
     return true;
   }
 
+  if (merge_mode_ & kUseBetterOrMostRecentIfDifferent) {
+    if (HasNewerValuePrecendenceInMerging(newer_component)) {
+      SetValue(newer_component.GetValue(),
+               newer_component.GetVerificationStatus());
+    }
+    return true;
+  }
+
   // If the corresponding mode is active, ignore this mode and pair-wise merge
   // the child tokens. Reformat this nodes from its children after the merge.
-  if (merge_mode_ & kMergeChildrenAndReformat) {
+  if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
     DCHECK(newer_component.subcomponents_.size() == subcomponents_.size());
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
       bool success = subcomponents_[i]->MergeWithComponent(
@@ -978,9 +994,37 @@ bool AddressComponent::MergeWithComponent(
       if (!success)
         return false;
     }
-    FormatValueFromSubcomponents();
+    // If the two values are already token equivalent, use the value of the
+    // component with the better verification status, or if both are the same,
+    // use the newer one.
+    if (token_comparison_result.TokensMatch()) {
+      if (HasNewerValuePrecendenceInMerging(newer_component)) {
+        SetValue(newer_component.GetValue(),
+                 newer_component.GetVerificationStatus());
+      }
+    } else {
+      // Otherwise do a reformat from the subcomponents.
+      base::string16 formatted_value = GetFormattedValueFromSubcomponents();
+      // If the current value is maintained, keep the more significant
+      // verification status.
+      if (formatted_value == GetValue()) {
+        SetValue(formatted_value,
+                 GetMoreSignificantVerificationStatus(
+                     VerificationStatus::kFormatted, GetVerificationStatus()));
+      } else if (formatted_value == newer_component.GetValue()) {
+        // Otherwise test if the value is the same as the one of
+        // |newer_component|. If yes, maintain the better verification status.
+        SetValue(formatted_value, GetMoreSignificantVerificationStatus(
+                                      VerificationStatus::kFormatted,
+                                      newer_component.GetVerificationStatus()));
+      } else {
+        // In all other cases, set the formatted_value.
+        SetValue(formatted_value, VerificationStatus::kFormatted);
+      }
+    }
     return true;
   }
+
   return false;
 }
 

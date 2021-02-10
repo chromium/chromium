@@ -47,7 +47,7 @@ extern const base::Feature kAutofillEnableSupportForParsingWithSharedLabels;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInNames;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInAddresses;
 extern const base::Feature kAutofillEnableSupportForMergingSubsetNames;
-extern const base::Feature kAutofillEnableUIForHonorificPrefixesInSettings;
+extern const base::Feature kAutofillEnableSupportForHonorificPrefixes;
 extern const base::Feature kAutofillExtractAllDatalists;
 extern const base::Feature kAutofillFixFillableFieldTypes;
 extern const base::Feature kAutofillServerTypeTakesPrecedence;

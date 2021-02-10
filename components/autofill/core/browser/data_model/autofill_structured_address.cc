@@ -367,11 +367,11 @@ bool Address::WipeInvalidStructure() {
 }
 
 // Addresses are mergeable when all of their children are mergeable.
-// Reformat the address from their children after merge.
+// Reformat the address from the children after merge if it changed.
 Address::Address(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_ADDRESS,
                        parent,
-                       MergeMode::kMergeChildrenAndReformat) {}
+                       MergeMode::kMergeChildrenAndReformatIfNeeded) {}
 
 Address::~Address() = default;
 

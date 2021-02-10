@@ -211,12 +211,27 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   upload->set_client_version(GetProductNameAndVersionForUserAgent());
   upload->set_form_signature(15916856893790176210U);
   upload->set_autofill_used(false);
+
+  // The `data_present` fields is a bit mask of field types that are associated
+  // with non-empty profile values. Each bit in this mask corresponds to a
+  // specific type. For details on that mapping please consult
+  // |EncodeFieldTypes()| in components/autofill/core/browser/form_structure.cc.
+  // The resulting bit mask in this test is hard-coded to capture regressions in
+  // the calculation of the mask.
+
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  // For structured names, there is additional data present.
+  // For structured names, there is additional data for new name types present.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForMoreStructureInNames)) {
-    upload->set_data_present("1f7e000378000008000400000004");
+    // If the honorific prefix is enabled, data associated with this types is
+    // also present in the profile.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForHonorificPrefixes)) {
+      upload->set_data_present("1f7e00037800000800040000000404");
+    } else {
+      upload->set_data_present("1f7e000378000008000400000004");
+    }
   } else {
     upload->set_data_present("1f7e0003780000080004");
   }

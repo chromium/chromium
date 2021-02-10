@@ -49,7 +49,18 @@ std::ostream& operator<<(std::ostream& os, VerificationStatus status);
 bool IsLessSignificantVerificationStatus(VerificationStatus left,
                                          VerificationStatus right);
 
+// Returns the more significant verification status according to
+// |IsLessSignificantVerificationStatus|.
+VerificationStatus GetMoreSignificantVerificationStatus(
+    VerificationStatus left,
+    VerificationStatus right);
+
 // The merge mode defines if and how two components are merged.
+// The merge operations are applied in the order defined here.
+// If one merge operation succeeds, the subsequent ones are not tested.
+// Therefore, if |KUseBetterOrMoreRecentIfDifferent| is active,
+// |kMergeChildrenAndReformatIfNeeded| will not be applied because
+// |kUseBetterOrMostRecentIfDifferent| is always applicable.
 enum MergeMode {
   // If one component has an empty value, use the non-empty one.
   kReplaceEmpty = 1,
@@ -68,13 +79,17 @@ enum MergeMode {
   // If the newer component contains one token more, apply a recursive strategy
   // to merge the tokens.
   kRecursivelyMergeSingleTokenSubset = 1 << 6,
-  // If one is a substring use the most recent one.
+  // If one is a substring of the other use the most recent one.
   kUseMostRecentSubstring = 1 << 7,
-  // Merge the child nodes and reformat the node from its children after merge.
-  kMergeChildrenAndReformat = 1 << 8,
-  // If the tokens match or one is a subset of the other, pick the shorter one.
-  kPickShorterIfOneContainsTheOther = 1 << 9,
+  // Merge the child nodes and reformat the node from its children after merge
+  // if the value has changed.
+  kPickShorterIfOneContainsTheOther = 1 << 8,
+  // If the normalized values are different, use the better one in terms
+  // of verification score or the most recent one if both scores are the same.
+  kUseBetterOrMostRecentIfDifferent = 1 << 9,
   // Defines the default merging behavior.
+  kMergeChildrenAndReformatIfNeeded = 1 << 10,
+  // If the tokens match or one is a subset of the other, pick the shorter one.
   kDefault = kRecursivelyMergeTokenEquivalentValues
 };
 
@@ -493,6 +508,14 @@ class AddressComponent {
       const base::string16& value,
       const re2::RE2* parse_expression);
 
+  // Determines and sets a formatted value using
+  // |GetFormattedValueFromSubcomponents|.
+  void FormatValueFromSubcomponents();
+
+  // Returns the maximum number of components with assigned values on the path
+  // from the component to a leaf node.
+  int MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() const;
+
  private:
   // Function to be called by child nodes on construction to register
   // themselves as child nodes.
@@ -504,9 +527,9 @@ class AddressComponent {
   // Unsets the children of a node.
   void UnsetSubcomponents();
 
-  // Determines the |value_| from the values of the subcomponents by using the
+  // Determines a value from the subcomponents by using the
   // most suitable format string determined by |GetBestFormatString()|.
-  void FormatValueFromSubcomponents();
+  base::string16 GetFormattedValueFromSubcomponents();
 
   // Replaces placeholder values with the corresponding values.
   base::string16 ReplacePlaceholderTypesWithValues(
@@ -520,10 +543,6 @@ class AddressComponent {
   // |GetParseRegularExpressionsByRelevance| to parse |value_| into the values
   // of the subcomponents. Returns true on success and is allowed to fail.
   bool ParseValueAndAssignSubcomponentsByRegularExpressions();
-
-  // Returns the maximum number of components with assigned values on the path
-  // from the component to a leaf node.
-  int MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() const;
 
   // The unstructured value of this component.
   base::Optional<base::string16> value_;

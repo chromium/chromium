@@ -48,7 +48,7 @@ struct LastNameParserTestRecord {
 
 // Function to test the parsing of a name from the full (unstructured)
 // representation into its subcomponents.
-void TestNameParsing(const base::string16& full,
+void TestNameParsing(const base::string16& full_with_prefix,
                      const base::string16& honorific,
                      const base::string16& first,
                      const base::string16& middle,
@@ -56,15 +56,25 @@ void TestNameParsing(const base::string16& full,
                      const base::string16& last_first,
                      const base::string16& last_conjunction,
                      const base::string16& last_second) {
-  SCOPED_TRACE(full);
-  NameFull name;
-  name.SetValueForTypeIfPossible(NAME_FULL, full,
+  SCOPED_TRACE(full_with_prefix);
+  NameFullWithPrefix name;
+  name.SetValueForTypeIfPossible(NAME_FULL_WITH_HONORIFIC_PREFIX,
+                                 full_with_prefix,
                                  VerificationStatus::kObserved);
   name.CompleteFullTree();
 
-  EXPECT_EQ(name.GetValueForType(NAME_FULL), full);
+  EXPECT_EQ(name.GetValueForType(NAME_FULL_WITH_HONORIFIC_PREFIX),
+            full_with_prefix);
   // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // EXPECT_EQ(name.GetValueForType(NAME_HONORIFIC_PREFIX), honorific);
+  if (structured_address::HonorificPrefixEnabled()) {
+    EXPECT_EQ(name.GetValueForType(NAME_HONORIFIC_PREFIX), honorific);
+  }
+
+  SCOPED_TRACE(testing::Message()
+               << "first name: " << name.GetValueForType(NAME_FIRST) << "\n"
+               << "middle name: " << name.GetValueForType(NAME_MIDDLE) << "\n"
+               << "last name: " << name.GetValueForType(NAME_LAST));
+
   EXPECT_EQ(name.GetValueForType(NAME_FIRST), first);
   EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), middle);
   EXPECT_EQ(name.GetValueForType(NAME_LAST), last);
@@ -346,28 +356,39 @@ TEST(AutofillStructuredName, GetNameMiddleInitial) {
             base::ASCIIToUTF16("G.-W."));
 }
 
-TEST(AutofillStructuredName, TestGetSupportedTypes) {
+TEST(AutofillStructuredName, TestGetSupportedTypes_FullNameWithPrefix) {
+  NameFullWithPrefix full_name_with_prefix;
+  ServerFieldTypeSet supported_types;
+  full_name_with_prefix.GetSupportedTypes(&supported_types);
+  EXPECT_EQ(ServerFieldTypeSet({NAME_FULL_WITH_HONORIFIC_PREFIX, NAME_FULL,
+                                NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE,
+                                NAME_MIDDLE_INITIAL, NAME_LAST, NAME_LAST_FIRST,
+                                NAME_LAST_CONJUNCTION, NAME_LAST_SECOND}),
+            supported_types);
+}
+
+TEST(AutofillStructuredName, TestGetSupportedTypes_FullName) {
   NameFull full_name;
   ServerFieldTypeSet supported_types;
   full_name.GetSupportedTypes(&supported_types);
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  EXPECT_EQ(ServerFieldTypeSet({NAME_FULL, /*NAME_HONORIFIC_PREFIX*/ NAME_FIRST,
-                                NAME_MIDDLE, NAME_MIDDLE_INITIAL, NAME_LAST,
-                                NAME_LAST_FIRST, NAME_LAST_CONJUNCTION,
-                                NAME_LAST_SECOND}),
+  EXPECT_EQ(ServerFieldTypeSet({NAME_FULL, NAME_FIRST, NAME_MIDDLE,
+                                NAME_MIDDLE_INITIAL, NAME_LAST, NAME_LAST_FIRST,
+                                NAME_LAST_CONJUNCTION, NAME_LAST_SECOND}),
             supported_types);
 }
 
 TEST(AutofillStructuredName, TestSettingMiddleNameInitial) {
-  NameFull full_name;
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE), base::string16());
+  NameFullWithPrefix full_name_with_prefix;
+  EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE),
+            base::string16());
 
-  EXPECT_TRUE(full_name.SetValueForTypeIfPossible(
+  EXPECT_TRUE(full_name_with_prefix.SetValueForTypeIfPossible(
       NAME_MIDDLE_INITIAL, base::UTF8ToUTF16("M"),
       VerificationStatus::kObserved));
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE_INITIAL),
+  EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE_INITIAL),
             base::UTF8ToUTF16("M"));
-  EXPECT_EQ(full_name.GetValueForType(NAME_MIDDLE), base::UTF8ToUTF16("M"));
+  EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE),
+            base::UTF8ToUTF16("M"));
 }
 
 TEST(AutofillStructuredName, MergePermutatedNames) {
@@ -415,126 +436,376 @@ TEST(AutofillStructuredName, MergePermutatedNames) {
             VerificationStatus::kObserved);
 }
 
-TEST(AutofillStructuredName, MergeNamesByCombiningSubstructureObservations) {
-  NameFull one;
-  NameFull two;
+TEST(AutofillStructuredName,
+     MergeNamesByCombiningSubstructureObservations_WithAdditionalPrefix) {
+  NameFullWithPrefix one;
+  NameFullWithPrefix two;
 
   // The first name has an incorrect componentization of the last name, but a
-  // correctly observed structure of title, first, middle, last.
-  one.SetValueForTypeIfPossible(
-      NAME_FULL, base::ASCIIToUTF16("Mr Pablo Diego Ruiz y Picasso"),
-      VerificationStatus::kUserVerified);
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // one.SetValueForTypeIfPossible(NAME_HONORIFIC_PREFIX,
-  // base::ASCIIToUTF16("Mr"),
-  //                              VerificationStatus::kObserved);
-  one.SetValueForTypeIfPossible(NAME_FIRST, base::ASCIIToUTF16("Pablo Diego"),
-                                VerificationStatus::kObserved);
-  one.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16(""),
-                                VerificationStatus::kObserved);
-  one.SetValueForTypeIfPossible(NAME_LAST, base::ASCIIToUTF16("Ruiz y Picasso"),
-                                VerificationStatus::kObserved);
-  one.SetValueForTypeIfPossible(NAME_LAST_SECOND,
-                                base::ASCIIToUTF16("Ruiz y Picasso"),
-                                VerificationStatus::kParsed);
+  // correctly observed structure of first, middle, last and a verified full
+  // name.
+  AddressComponentTestValues name_one_values = {
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kFormatted},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kParsed}};
 
   // The second name has a correct componentization of the last name, but an
-  // incorrectly parsed structure of title,first,middle,last.
-  two.SetValueForTypeIfPossible(
-      NAME_FULL, base::ASCIIToUTF16("Mr Pablo Diego Ruiz y Picasso"),
-      VerificationStatus::kUserVerified);
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // two.SetValueForTypeIfPossible(NAME_HONORIFIC_PREFIX,
-  // base::ASCIIToUTF16(""),
-  //                              VerificationStatus::kParsed);
-  two.SetValueForTypeIfPossible(NAME_FIRST, base::ASCIIToUTF16("Pablo"),
-                                VerificationStatus::kParsed);
-  two.SetValueForTypeIfPossible(NAME_MIDDLE, base::ASCIIToUTF16("Diego"),
-                                VerificationStatus::kParsed);
-  two.SetValueForTypeIfPossible(NAME_LAST, base::ASCIIToUTF16("Ruiz y Picasso"),
-                                VerificationStatus::kParsed);
-  two.SetValueForTypeIfPossible(NAME_LAST_FIRST, base::ASCIIToUTF16("Ruiz"),
-                                VerificationStatus::kObserved);
-  two.SetValueForTypeIfPossible(NAME_LAST_CONJUNCTION, base::ASCIIToUTF16("y"),
-                                VerificationStatus::kObserved);
-  two.SetValueForTypeIfPossible(NAME_LAST_SECOND, base::ASCIIToUTF16("Picasso"),
-                                VerificationStatus::kObserved);
+  // correctly parsed structure of first, middle, last and an additional
+  // title.
+  AddressComponentTestValues name_two_values = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_FIRST,
+       .value = "Pablo",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "Diego",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kObserved},
+  };
 
-  // By merging both, it is expected that the title, first, middle, last
-  // structure of |one| is maintained, while the substructure of the last name
-  // is taken from two.
-  NameFull copy_of_one;
-  copy_of_one.CopyFrom(one);
+  AddressComponentTestValues merge_expectation = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kObserved},
+  };
+
+  SetTestValues(&one, name_one_values);
+  SetTestValues(&two, name_two_values);
+
+  NameFullWithPrefix copy_of_one(one);
+  ASSERT_TRUE(one.IsMergeableWithComponent(two));
   EXPECT_TRUE(one.MergeWithComponent(two));
 
-  EXPECT_EQ(one.GetValueForType(NAME_FULL),
-            base::ASCIIToUTF16("Mr Pablo Diego Ruiz y Picasso"));
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // EXPECT_EQ(one.GetValueForType(NAME_HONORIFIC_PREFIX),
-  //          base::ASCIIToUTF16("Mr"));
-  EXPECT_EQ(one.GetValueForType(NAME_FIRST), base::ASCIIToUTF16("Pablo Diego"));
-  EXPECT_EQ(one.GetValueForType(NAME_MIDDLE), base::ASCIIToUTF16(""));
-  EXPECT_EQ(one.GetValueForType(NAME_LAST),
-            base::ASCIIToUTF16("Ruiz y Picasso"));
-  EXPECT_EQ(one.GetValueForType(NAME_LAST_FIRST), base::ASCIIToUTF16("Ruiz"));
-  EXPECT_EQ(one.GetValueForType(NAME_LAST_CONJUNCTION),
-            base::ASCIIToUTF16("y"));
-  EXPECT_EQ(one.GetValueForType(NAME_LAST_SECOND),
-            base::ASCIIToUTF16("Picasso"));
-
-  EXPECT_EQ(one.GetVerificationStatusForType(NAME_FULL),
-            VerificationStatus::kUserVerified);
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // EXPECT_EQ(one.GetVerificationStatusForType(NAME_HONORIFIC_PREFIX),
-  //          VerificationStatus::kObserved);
-  EXPECT_EQ(one.GetVerificationStatusForType(NAME_FIRST),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(one.GetVerificationStatusForType(NAME_MIDDLE),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(one.GetVerificationStatusForType(NAME_LAST),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(one.GetVerificationStatusForType(NAME_LAST_FIRST),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(one.GetVerificationStatusForType(NAME_LAST_CONJUNCTION),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(one.GetVerificationStatusForType(NAME_LAST_SECOND),
-            VerificationStatus::kObserved);
+  VerifyTestValues(&one, merge_expectation);
 
   // The merging should work in both directions equally.
   EXPECT_TRUE(two.MergeWithComponent(copy_of_one));
 
-  EXPECT_EQ(two.GetValueForType(NAME_FULL),
-            base::ASCIIToUTF16("Mr Pablo Diego Ruiz y Picasso"));
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // EXPECT_EQ(two.GetValueForType(NAME_HONORIFIC_PREFIX),
-  //          base::ASCIIToUTF16("Mr"));
-  EXPECT_EQ(two.GetValueForType(NAME_FIRST), base::ASCIIToUTF16("Pablo Diego"));
-  EXPECT_EQ(two.GetValueForType(NAME_MIDDLE), base::ASCIIToUTF16(""));
-  EXPECT_EQ(two.GetValueForType(NAME_LAST),
-            base::ASCIIToUTF16("Ruiz y Picasso"));
-  EXPECT_EQ(two.GetValueForType(NAME_LAST_FIRST), base::ASCIIToUTF16("Ruiz"));
-  EXPECT_EQ(two.GetValueForType(NAME_LAST_CONJUNCTION),
-            base::ASCIIToUTF16("y"));
-  EXPECT_EQ(two.GetValueForType(NAME_LAST_SECOND),
-            base::ASCIIToUTF16("Picasso"));
+  VerifyTestValues(&two, merge_expectation);
+}
 
-  EXPECT_EQ(two.GetVerificationStatusForType(NAME_FULL),
-            VerificationStatus::kUserVerified);
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-  // EXPECT_EQ(two.GetVerificationStatusForType(NAME_HONORIFIC_PREFIX),
-  //          VerificationStatus::kObserved);
-  EXPECT_EQ(two.GetVerificationStatusForType(NAME_FIRST),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(two.GetVerificationStatusForType(NAME_MIDDLE),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(two.GetVerificationStatusForType(NAME_LAST),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(two.GetVerificationStatusForType(NAME_LAST_FIRST),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(two.GetVerificationStatusForType(NAME_LAST_CONJUNCTION),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(two.GetVerificationStatusForType(NAME_LAST_SECOND),
-            VerificationStatus::kObserved);
+// Tests that the root node of NameFullWithPrefix is correctly populated after a
+// migration from a NameFull structure.
+TEST(AutofillStructuredName, TestPopulationOfNameFullWithPrefix) {
+  NameFullWithPrefix name_full_with_prefix;
+
+  // The first name has an incorrect componentization of the last name, but a
+  // correctly observed structure of title, first, middle, last.
+  AddressComponentTestValues name_full_with_prefix_values = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "",
+       .status = VerificationStatus::kNoStatus},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "",
+       .status = VerificationStatus::kNoStatus},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kParsed}};
+
+  SetTestValues(&name_full_with_prefix, name_full_with_prefix_values);
+
+  AddressComponentTestValues expectation = {
+      // Expect the honorific prefix to be derived from the full name.
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kFormatted},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "",
+       .status = VerificationStatus::kNoStatus},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kParsed}};
+
+  name_full_with_prefix.MigrateLegacyStructure(true);
+  name_full_with_prefix.CompleteFullTree();
+
+  VerifyTestValues(&name_full_with_prefix, expectation);
+}
+
+TEST(AutofillStructuredName,
+     MergeNamesByCombiningSubstructureObservations_FullName) {
+  NameFull one;
+  NameFull two;
+
+  // The first name has an incorrect componentization of the last name, but a
+  // correctly observed structure of first, middle, last.
+  AddressComponentTestValues name_one_values = {
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kParsed}};
+
+  // The second name has a correct componentization of the last name, but an
+  // incorrectly parsed structure of first, middle, last.
+  AddressComponentTestValues name_two_values = {
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_FIRST,
+       .value = "Pablo",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "Diego",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kObserved},
+  };
+
+  AddressComponentTestValues merge_expectation = {
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kObserved},
+  };
+
+  SetTestValues(&one, name_one_values);
+  SetTestValues(&two, name_two_values);
+
+  // By merging both, it is expected that the first, middle, last
+  // structure of |one| is maintained, while the substructure of the last name
+  // is taken from two.
+  NameFull copy_of_one(one);
+  EXPECT_TRUE(one.MergeWithComponent(two));
+
+  VerifyTestValues(&one, merge_expectation);
+
+  // The merging should work in both directions equally.
+  EXPECT_TRUE(two.MergeWithComponent(copy_of_one));
+
+  VerifyTestValues(&two, merge_expectation);
+}
+
+TEST(AutofillStructuredName,
+     MergeNamesByCombiningSubstructureObservations_FullNameWithPrefix) {
+  NameFullWithPrefix one;
+  NameFullWithPrefix two;
+
+  // The first name has an incorrect componentization of the last name, but a
+  // correctly observed structure of title, first, middle, last.
+  AddressComponentTestValues name_one_values = {
+
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kParsed}};
+
+  // The second name has a correct componentization of the last name, but an
+  // incorrectly parsed structure of first, middle, last.
+  AddressComponentTestValues name_two_values = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_FIRST,
+       .value = "Pablo",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_MIDDLE,
+       .value = "Diego",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kParsed},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kObserved},
+  };
+
+  AddressComponentTestValues merge_expectation = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kUserVerified},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "Pablo Diego",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kObserved},
+  };
+
+  SetTestValues(&one, name_one_values);
+  SetTestValues(&two, name_two_values);
+
+  // By merging both, it is expected that the title, first, middle, last
+  // structure of |one| is maintained, while the substructure of the last name
+  // is taken from two.
+  NameFullWithPrefix copy_of_one(one);
+  EXPECT_TRUE(one.MergeWithComponent(two));
+
+  VerifyTestValues(&one, merge_expectation);
+
+  // The merging should work in both directions equally.
+  EXPECT_TRUE(two.MergeWithComponent(copy_of_one));
+
+  VerifyTestValues(&two, merge_expectation);
 }
 
 TEST(AutofillStructuredName, TestCopyConstructuror) {
@@ -802,8 +1073,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
 }
 
 TEST(AutofillStructuredName, MergeSubsetLastname2) {
-  NameFull name;
-  NameFull subset_name;
+  NameFullWithPrefix name;
+  NameFullWithPrefix subset_name;
   name.SetMergeModeForTesting(kRecursivelyMergeSingleTokenSubset |
                               kRecursivelyMergeTokenEquivalentValues);
 

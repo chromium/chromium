@@ -143,6 +143,15 @@ NameFull::NameFull(const NameFull& other) : NameFull() {
   this->CopyFrom(other);
 }
 
+NameHonorificPrefix::NameHonorificPrefix(AddressComponent* parent)
+    : AddressComponent(NAME_HONORIFIC_PREFIX,
+                       parent,
+                       MergeMode::kUseBetterOrNewerForSameValue |
+                           MergeMode::kReplaceEmpty |
+                           MergeMode::kUseBetterOrMostRecentIfDifferent) {}
+
+NameHonorificPrefix::~NameHonorificPrefix() = default;
+
 void NameFull::MigrateLegacyStructure(bool is_verified_profile) {
   // Only if the name was imported from a legacy structure, the component has no
   if (GetVerificationStatus() != VerificationStatus::kNoStatus)
@@ -231,13 +240,51 @@ base::string16 NameFull::GetBestFormatString() const {
       HasCjkNameCharacteristics(base::UTF16ToUTF8(name_last_.GetValue()))) {
     return base::ASCIIToUTF16("${NAME_LAST}${NAME_FIRST}");
   }
-  // TODO(crbug.com/1113617): Honorifics are temporally disabled.
   return
-      // base::ASCIIToUTF16( "${NAME_HONORIFIC_PREFIX} ${NAME_FIRST}
-      // ${NAME_MIDDLE} ${NAME_LAST}");
       base::ASCIIToUTF16("${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}");
 }
 NameFull::~NameFull() = default;
+
+NameFullWithPrefix::NameFullWithPrefix() : NameFullWithPrefix(nullptr) {}
+
+NameFullWithPrefix::NameFullWithPrefix(AddressComponent* parent)
+    : AddressComponent(NAME_FULL_WITH_HONORIFIC_PREFIX,
+                       parent,
+                       MergeMode::kMergeChildrenAndReformatIfNeeded) {}
+
+NameFullWithPrefix::NameFullWithPrefix(const NameFullWithPrefix& other)
+    : NameFullWithPrefix() {
+  // The purpose of the copy operator is to copy the values and verification
+  // statuses of all nodes in |other| to |this|. This exact functionality is
+  // already implemented as a recursive operation in the base class.
+  this->CopyFrom(other);
+}
+
+NameFullWithPrefix::~NameFullWithPrefix() = default;
+
+std::vector<const re2::RE2*>
+NameFullWithPrefix::GetParseRegularExpressionsByRelevance() const {
+  auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
+  return {pattern_provider->GetRegEx(RegEx::kParsePrefixedName)};
+}
+
+void NameFullWithPrefix::MigrateLegacyStructure(bool is_verified_profile) {
+  // If a verification status is set, the structure is already migrated.
+  if (GetVerificationStatus() != VerificationStatus::kNoStatus) {
+    return;
+  }
+
+  // If it is not migrated, continue with migrating the full name.
+  name_full_.MigrateLegacyStructure(is_verified_profile);
+
+  // Check if the tree is already in a completed state.
+  // If yes, build the root node from the subcomponents.
+  // Otherwise, this step is not necessary and will be taken care of in a later
+  // stage of the import process.
+  if (MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() > 1) {
+    FormatValueFromSubcomponents();
+  }
+}
 
 }  // namespace structured_address
 

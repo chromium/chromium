@@ -66,8 +66,8 @@ void VerifyTestValues(AddressComponent* component,
         AutofillType(test_value.type).ToString().c_str(),
         test_value.value.c_str(), static_cast<int>(test_value.status)));
 
-    EXPECT_EQ(component->GetValueForType(test_value.type),
-              base::UTF8ToUTF16(test_value.value));
+    EXPECT_EQ(base::UTF16ToUTF8(component->GetValueForType(test_value.type)),
+              test_value.value);
 
     // Omit testing the status if the value is empty.
     if (!test_value.value.empty()) {

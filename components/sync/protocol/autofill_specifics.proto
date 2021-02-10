@@ -68,6 +68,9 @@ message AutofillProfileSpecifics {
   repeated string name_last_conjunction = 28;
   repeated string name_last_second = 29;
   repeated string name_full = 21;
+  // This value contains the combination of the full name and the honorific
+  // prefix.
+  repeated string name_full_with_honorific = 60;
 
   // Validation status records for name fields.
   repeated VerificationStatus name_honorific_status = 30;
@@ -78,6 +81,7 @@ message AutofillProfileSpecifics {
   repeated VerificationStatus name_last_conjunction_status = 35;
   repeated VerificationStatus name_last_second_status = 36;
   repeated VerificationStatus name_full_status = 37;
+  repeated VerificationStatus name_full_with_honorific_status = 61;
 
   // Contact info additional fields.
   repeated string email_address = 5;

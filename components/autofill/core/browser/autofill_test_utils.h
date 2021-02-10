@@ -56,6 +56,29 @@ inline bool operator!=(const FormDataPredictions& a,
 // Common utilities shared amongst Autofill tests.
 namespace test {
 
+// A compound data type that contains the type, the value and the verification
+// status for a form group entry (an AutofillProfile).
+struct FormGroupValue {
+  ServerFieldType type;
+  std::string value;
+  structured_address::VerificationStatus verification_status =
+      structured_address::VerificationStatus::kNoStatus;
+};
+
+// Convenience declaration for multiple FormGroup values.
+using FormGroupValues = std::vector<FormGroupValue>;
+
+// Helper function to set values and verification statuses to a form group.
+void SetFormGroupValues(FormGroup& form_group,
+                        const std::vector<FormGroupValue>& values);
+
+// Helper function to verify the expectation of values and verification
+// statuses in a form group. If |ignore_status| is set, status checking is
+// omitted.
+void VerifyFormGroupValues(const FormGroup& form_group,
+                           const std::vector<FormGroupValue>& values,
+                           bool ignore_status = false);
+
 const char kEmptyOrigin[] = "";
 
 // The following methods return a PrefService that can be used for

@@ -263,6 +263,28 @@ class TestNonProperFirstNameAddressComponent : public AddressComponent {
   TestAtomicFirstNameAddressComponent second_name_first_node_{this};
 };
 
+// Tests the merging of two atomic component with |type|, and vales
+// |older_values| and |newer_values| respectively, and |merge_modes|.
+// If |is_mergeable| it is expected that the two components are mergeable.
+// If |newer_was_more_recently_used| the newer component was also more recently
+// used which is true by default.
+void TestAtomMerging(ServerFieldType type,
+                     AddressComponentTestValues older_values,
+                     AddressComponentTestValues newer_values,
+                     AddressComponentTestValues merge_expectation,
+                     bool is_mergeable,
+                     int merge_modes,
+                     bool newer_was_more_recently_used = true) {
+  AddressComponent older(type, nullptr, merge_modes);
+  AddressComponent newer(type, nullptr, merge_modes);
+
+  SetTestValues(&older, older_values);
+  SetTestValues(&newer, newer_values);
+
+  TestMerging(&older, &newer, merge_expectation, is_mergeable, merge_modes,
+              newer_was_more_recently_used);
+}
+
 void TestCompoundNameMerging(AddressComponentTestValues older_values,
                              AddressComponentTestValues newer_values,
                              AddressComponentTestValues merge_expectation,
@@ -1588,7 +1610,7 @@ TEST(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {
 
   // Set the root node to merging mode which only merges the children and gets
   // reformatted afterwards.
-  older.SetMergeModeForTesting(MergeMode::kMergeChildrenAndReformat);
+  older.SetMergeModeForTesting(MergeMode::kMergeChildrenAndReformatIfNeeded);
   // Set the merge modes of the children to replace empty values and use
   // supersets.
   for (auto* subcomponent : older.Subcomponents()) {
@@ -1672,7 +1694,7 @@ TEST(AutofillStructuredAddressAddressComponent, MergeChildsAndReformatRoot) {
   VerifyTestValues(&older, older_values);
 }
 
-// Test the comparison of different Verification statuses.
+// Tests the comparison of different Verification statuses.
 TEST(AutofillStructuredAddressAddressComponent,
      TestIsLessSignificantVerificationStatus) {
   EXPECT_TRUE(IsLessSignificantVerificationStatus(
@@ -1691,6 +1713,65 @@ TEST(AutofillStructuredAddressAddressComponent,
       VerificationStatus::kObserved, VerificationStatus::kServerParsed));
   EXPECT_FALSE(IsLessSignificantVerificationStatus(
       VerificationStatus::kUserVerified, VerificationStatus::kServerParsed));
+}
+
+// Tests gettings the more significant VerificationStatus.
+TEST(AutofillStructuredAddressAddressComponent,
+     GetMoreSignificantVerificationStatus) {
+  EXPECT_EQ(VerificationStatus::kFormatted,
+            GetMoreSignificantVerificationStatus(VerificationStatus::kFormatted,
+                                                 VerificationStatus::kParsed));
+  EXPECT_EQ(VerificationStatus::kObserved,
+            GetMoreSignificantVerificationStatus(
+                VerificationStatus::kFormatted, VerificationStatus::kObserved));
+  EXPECT_EQ(
+      VerificationStatus::kUserVerified,
+      GetMoreSignificantVerificationStatus(VerificationStatus::kUserVerified,
+                                           VerificationStatus::kUserVerified));
+}
+
+// Tests merging using the Mermode::KUseBetterOrMoreRecentIfDifferent|
+TEST(AutofillStructuredAddressAddressComponent,
+     TestUseBetterOfMoreRecentIfDifferentMergeStrategy) {
+  AddressComponentTestValues old_values = {
+      {.type = NAME_FIRST,
+       .value = "first value",
+       .status = VerificationStatus::kObserved}};
+  AddressComponentTestValues newer_values = {
+      {.type = NAME_FIRST,
+       .value = "second value",
+       .status = VerificationStatus::kObserved}};
+  AddressComponentTestValues better_values = {
+      {.type = NAME_FIRST,
+       .value = "second value",
+       .status = VerificationStatus::kUserVerified}};
+  AddressComponentTestValues not_better_values = {
+      {.type = NAME_FIRST,
+       .value = "second value",
+       .status = VerificationStatus::kParsed}};
+
+  // Test that the newer values are used.
+  TestAtomMerging(NAME_FIRST, old_values, newer_values, newer_values,
+                  /*is_mergable=*/true,
+                  MergeMode::kUseBetterOrMostRecentIfDifferent);
+
+  // Test that the better values are used.
+  TestAtomMerging(NAME_FIRST, old_values, better_values, better_values,
+                  /*is_mergable=*/true,
+                  MergeMode::kUseBetterOrMostRecentIfDifferent);
+  // Should work equally in both directions.
+  TestAtomMerging(NAME_FIRST, better_values, old_values, better_values,
+                  /*is_mergable=*/true,
+                  MergeMode::kUseBetterOrMostRecentIfDifferent);
+
+  // Test that the not better values are not used.
+  TestAtomMerging(NAME_FIRST, old_values, not_better_values, old_values,
+                  /*is_mergable=*/true,
+                  MergeMode::kUseBetterOrMostRecentIfDifferent);
+  // Should work equally in both directions.
+  TestAtomMerging(NAME_FIRST, not_better_values, old_values, old_values,
+                  /*is_mergable=*/true,
+                  MergeMode::kUseBetterOrMostRecentIfDifferent);
 }
 
 }  // namespace structured_address

@@ -83,6 +83,37 @@ FieldRendererId MakeFieldRendererId() {
 
 }  // namespace
 
+void SetFormGroupValues(FormGroup& form_group,
+                        const std::vector<FormGroupValue>& values) {
+  for (const auto& value : values) {
+    form_group.SetRawInfoWithVerificationStatus(
+        value.type, base::UTF8ToUTF16(value.value), value.verification_status);
+  }
+}
+
+void VerifyFormGroupValues(const FormGroup& form_group,
+                           const std::vector<FormGroupValue>& values,
+                           bool ignore_status) {
+  for (const auto& value : values) {
+    SCOPED_TRACE(testing::Message()
+                 << "Expected for type "
+                 << AutofillType::ServerFieldTypeToString(value.type) << "\n\t"
+                 << value.value << " with status "
+                 << (ignore_status ? "(ignored)" : "")
+                 << value.verification_status << "\nFound:"
+                 << "\n\t" << form_group.GetRawInfo(value.type)
+                 << " with status "
+                 << form_group.GetVerificationStatus(value.type));
+
+    EXPECT_EQ(form_group.GetRawInfo(value.type),
+              base::UTF8ToUTF16(value.value));
+    if (!ignore_status) {
+      EXPECT_EQ(form_group.GetVerificationStatus(value.type),
+                value.verification_status);
+    }
+  }
+}
+
 std::unique_ptr<PrefService> PrefServiceForTesting() {
   scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
       new user_prefs::PrefRegistrySyncable());

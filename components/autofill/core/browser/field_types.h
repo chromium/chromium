@@ -234,9 +234,12 @@ enum ServerFieldType {
   // The floor number within a building.
   ADDRESS_HOME_FLOOR = 116,
 
+  // The full name including the honorific prefix.
+  NAME_FULL_WITH_HONORIFIC_PREFIX = 117,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  MAX_VALID_FIELD_TYPE = 117,
+  MAX_VALID_FIELD_TYPE = 118,
 };
 
 // The list of all HTML autocomplete field type hints supported by Chrome.

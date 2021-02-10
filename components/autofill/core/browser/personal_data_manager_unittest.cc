@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -69,6 +70,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+using structured_address::HonorificPrefixEnabled;
+using structured_address::StructuredAddressesEnabled;
+using structured_address::StructuredNamesEnabled;
+
 namespace {
 
 const char kPrimaryAccountEmail[] = "syncuser@example.com";
@@ -84,15 +90,6 @@ ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
 }
 
-bool StructuredNames() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-}
-
-bool StructuredAddress() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInAddresses);
-}
 
 class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
  public:
@@ -1744,25 +1741,27 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   // For structured names and addresses, there are more non-empty types.
   // TODO(crbug.com/1103421): Clean once launched.
   unsigned int non_empty_types_expectation = 15;
-  if (StructuredNames())
+  if (StructuredNamesEnabled())
     non_empty_types_expectation += 1;
   // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddress())
+  if (StructuredAddressesEnabled())
     non_empty_types_expectation += 2;
+  if (HonorificPrefixEnabled())
+    non_empty_types_expectation += 1;
 
   EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
 
   EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
   EXPECT_TRUE(non_empty_types.count(NAME_LAST));
   // TODO(crbug.com/1103421): Clean once launched.
-  if (StructuredNames())
+  if (StructuredNamesEnabled())
     EXPECT_TRUE(non_empty_types.count(NAME_LAST_SECOND));
   EXPECT_TRUE(non_empty_types.count(NAME_FULL));
   EXPECT_TRUE(non_empty_types.count(EMAIL_ADDRESS));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE1));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
   // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddress()) {
+  if (StructuredAddressesEnabled()) {
     EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
     EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
   }
@@ -1796,17 +1795,19 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   non_empty_types_expectation = 19;
   // For structured names, there is one more non-empty type.
   // TODO(crbug.com/1103421): Clean once launched.
-  if (StructuredNames())
+  if (StructuredNamesEnabled())
+    non_empty_types_expectation += 1;
+  if (HonorificPrefixEnabled())
     non_empty_types_expectation += 1;
   // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddress())
+  if (StructuredAddressesEnabled())
     non_empty_types_expectation += 2;
   EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
   EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
   EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE));
   EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE_INITIAL));
   // TODO(crbug.com/1103421): Clean once launched.
-  if (StructuredNames())
+  if (StructuredNamesEnabled())
     EXPECT_TRUE(non_empty_types.count(NAME_LAST));
   EXPECT_TRUE(non_empty_types.count(NAME_FULL));
   EXPECT_TRUE(non_empty_types.count(EMAIL_ADDRESS));
@@ -1815,7 +1816,7 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE2));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
   // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddress()) {
+  if (StructuredAddressesEnabled()) {
     EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
     EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
   }
@@ -1842,10 +1843,12 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   // For structured names, there is one more non-empty type.
   // TODO(crbug.com/1103421): Clean once launched.
   non_empty_types_expectation = 29;
-  if (StructuredNames())
+  if (StructuredNamesEnabled())
+    non_empty_types_expectation += 1;
+  if (HonorificPrefixEnabled())
     non_empty_types_expectation += 1;
   // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddress())
+  if (StructuredAddressesEnabled())
     non_empty_types_expectation += 2;
   EXPECT_EQ(non_empty_types_expectation, non_empty_types.size());
   EXPECT_TRUE(non_empty_types.count(NAME_FIRST));
@@ -1853,7 +1856,7 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   EXPECT_TRUE(non_empty_types.count(NAME_MIDDLE_INITIAL));
   EXPECT_TRUE(non_empty_types.count(NAME_LAST));
   EXPECT_TRUE(non_empty_types.count(NAME_FULL));
-  if (StructuredNames())
+  if (StructuredNamesEnabled())
     EXPECT_TRUE(non_empty_types.count(NAME_LAST));
   EXPECT_TRUE(non_empty_types.count(EMAIL_ADDRESS));
   EXPECT_TRUE(non_empty_types.count(COMPANY_NAME));
@@ -1861,7 +1864,7 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_LINE2));
   EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_ADDRESS));
   // TODO(crbug.com/1130194): Clean once launched.
-  if (StructuredAddress()) {
+  if (StructuredAddressesEnabled()) {
     EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_STREET_NAME));
     EXPECT_TRUE(non_empty_types.count(ADDRESS_HOME_HOUSE_NUMBER));
   }
@@ -4078,8 +4081,6 @@ class SaveImportedProfileTest
     }
   }
 
-  bool StructuredNames() const { return structured_names_enabled_; }
-
  private:
   bool structured_names_enabled_;
   base::test::ScopedFeatureList scoped_features_;
@@ -4155,7 +4156,7 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
     EXPECT_EQ(kSomeLaterTime, saved_profiles.front()->use_date());
     // For structured names, the modification date is only updated when the
     // profile actually changes.
-    if (StructuredNames()) {
+    if (StructuredNamesEnabled()) {
       EXPECT_EQ(*saved_profiles.front() == original_profile ? kArbitraryTime
                                                             : kSomeLaterTime,
                 saved_profiles.front()->modification_date());
@@ -5651,7 +5652,7 @@ TEST_F(PersonalDataManagerTest,
   // Wallet only provides a full name, so the above first and last names
   // will be ignored when the profile is written to the DB.
 
-  if (!StructuredNames()) {
+  if (!StructuredNamesEnabled()) {
     server_profiles.back().SetRawInfo(NAME_FULL,
                                       base::ASCIIToUTF16("John Doe"));
   }
@@ -5891,7 +5892,7 @@ TEST_F(
   // Wallet only provides a full name, so the above first and last names
   // will be ignored when the profile is written to the DB.
   // This step happens automatically for structured names.
-  if (!StructuredNames()) {
+  if (!StructuredNamesEnabled()) {
     server_profiles.back().SetRawInfo(NAME_FULL,
                                       base::ASCIIToUTF16("John Doe"));
   }

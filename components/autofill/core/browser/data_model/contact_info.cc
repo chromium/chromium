@@ -27,6 +27,9 @@ namespace {
 
 // Factory for the structured tree to be used in NameInfo.
 std::unique_ptr<AddressComponent> CreateStructuredNameTree() {
+  if (structured_address::HonorificPrefixEnabled()) {
+    return std::make_unique<structured_address::NameFullWithPrefix>();
+  }
   return std::make_unique<structured_address::NameFull>();
 }
 
@@ -101,9 +104,13 @@ base::string16 NameInfo::GetRawInfo(ServerFieldType type) const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
   if (structured_address::StructuredNamesEnabled()) {
-    // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-    if (type == NAME_HONORIFIC_PREFIX)
+    // Without the second generation of the structured name tree, honorific
+    // prefixes and the name including the prefix are unsupported types.
+    if ((type == NAME_HONORIFIC_PREFIX ||
+         type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
+        !structured_address::HonorificPrefixEnabled()) {
       return base::string16();
+    }
     return name_->GetValueForType(type);
   }
   switch (type) {
@@ -134,11 +141,15 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
   if (structured_address::StructuredNamesEnabled()) {
-    // TODO(crbug.com/1113617): Honorifics are temporally disabled.
-    if (type == NAME_HONORIFIC_PREFIX)
+    // Without the second generation of the structured name tree, honorific
+    // prefixes and the name including the prefix are unsupported types.
+    if ((type == NAME_HONORIFIC_PREFIX ||
+         type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
+        !structured_address::HonorificPrefixEnabled()) {
       return;
+    }
     bool success = name_->SetValueForTypeIfPossible(type, value, status);
-    DCHECK(success);
+    DCHECK(success) << AutofillType::ServerFieldTypeToString(type);
     return;
   }
   switch (type) {
@@ -163,6 +174,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
     case NAME_LAST_SECOND:
     case NAME_LAST_CONJUNCTION:
     case NAME_HONORIFIC_PREFIX:
+    case NAME_FULL_WITH_HONORIFIC_PREFIX:
       break;
 
     default:
@@ -228,12 +240,31 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                                       status);
 }
 
+void NameInfo::GetMatchingTypes(const base::string16& text,
+                                const std::string& app_locale,
+                                ServerFieldTypeSet* matching_types) const {
+  FormGroup::GetMatchingTypes(text, app_locale, matching_types);
+  // Replace type matches for |NAME_FULL_WITH_HONORIFIC_PREFIX| with |NAME_FULL|
+  // to always vote for a full name field even if the user decides to add an
+  // additional honorific prefix to their name.
+  if (matching_types->contains(NAME_FULL_WITH_HONORIFIC_PREFIX)) {
+    matching_types->erase(NAME_FULL_WITH_HONORIFIC_PREFIX);
+    matching_types->insert(NAME_FULL);
+  }
+}
+
 VerificationStatus NameInfo::GetVerificationStatusImpl(
     ServerFieldType type) const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured
   // names are fully launched.
-  if (structured_address::StructuredNamesEnabled())
+  // Without the second generation of the structured name tree, honorific
+  // prefixes and the name including the prefix are unsupported types.
+  if (structured_address::StructuredNamesEnabled() &&
+      !((type == NAME_HONORIFIC_PREFIX ||
+         type == NAME_FULL_WITH_HONORIFIC_PREFIX) &&
+        !structured_address::HonorificPrefixEnabled())) {
     return name_->GetVerificationStatusForType(type);
+  }
   return VerificationStatus::kNoStatus;
 }
 

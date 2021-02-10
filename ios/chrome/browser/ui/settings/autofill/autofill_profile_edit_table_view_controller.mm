@@ -192,8 +192,7 @@ static const AutofillFieldDisplayInfo kFieldsToDisplay[] = {
 
     if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
         !base::FeatureList::IsEnabled(
-            autofill::features::
-                kAutofillEnableUIForHonorificPrefixesInSettings)) {
+            autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
       continue;
     }
 
