@@ -137,7 +137,7 @@ def Run():
             step.find('Upload') == -1):
 
           a11y_step = step.rstrip()
-          logdog_cat = 'cit logdog cat -raw "chromium%s"' % a11y_step
+          logdog_cat = 'cit logdog cat -raw "%s"' % a11y_step
           # A bit noisy but useful for debugging.
           # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % logdog_cat)
           output = os.popen(logdog_cat).read()
