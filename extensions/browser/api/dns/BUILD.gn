@@ -13,7 +13,11 @@ source_set("dns") {
     "dns_api.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//content/public/browser",
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

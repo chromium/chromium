@@ -23,8 +23,10 @@ source_set("feedback_private") {
     "//components/feedback",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api",
     "//extensions/common",
     "//extensions/common/api",
+    "//google_apis",
     "//net",
   ]
 
@@ -40,6 +42,7 @@ source_set("feedback_private") {
 
     deps += [
       "//ash/public/cpp",
+      "//chromeos/services/assistant/public/cpp",
       "//chromeos/services/assistant/public/mojom",
     ]
   }

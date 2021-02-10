@@ -27,6 +27,7 @@ source_set("file_handlers") {
     "//build:chromeos_buildflags",
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/browser/api",
     "//extensions/common",
     "//extensions/common/api",
     "//net",

@@ -20,6 +20,8 @@ source_set("cast_channel") {
   deps = [
     "//base",
     "//components/cast_channel",
+    "//extensions/browser/api",
+    "//extensions/common",
     "//extensions/common/api",
     "//net",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",

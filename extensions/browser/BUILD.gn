@@ -18,7 +18,10 @@ group("browser") {
   # Includes all API implementations and the ExtensionsApiClient
   # interface. Moving an API from src/chrome to src/extensions implies
   # it can be cleanly disabled with enable_extensions=false.
-  public_deps += [ "//extensions/browser/api" ]
+  public_deps += [
+    "//extensions/browser/api",
+    "//extensions/browser/api:api_implementations",
+  ]
 }
 
 # Isolate the instantiation of BrowserContextKeyedServiceFactories.

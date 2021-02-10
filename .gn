@@ -75,26 +75,9 @@ no_check_targets = [
   "//chrome/test:*",  # 2682 errors
 
   "//clank/third_party/gvr_shim:*",  # 1 error
-  "//extensions/browser/api/alarms:*",  # 2 errors
-  "//extensions/browser/api/app_current_window_internal:*",  # 3 errors
-  "//extensions/browser/api/app_runtime:*",  # 3 errors
-  "//extensions/browser/api/app_window:*",  # 5 errors
-  "//extensions/browser/api/automation_internal:*",  # 37 errors
-  "//extensions/browser/api/bluetooth_low_energy:*",  # 22 errors
-  "//extensions/browser/api/bluetooth_socket:*",  # 12 errors
-  "//extensions/browser/api/cast_channel:*",  # 3 errors
   "//extensions/browser/api/declarative:*",  # 20 errors
   "//extensions/browser/api/declarative_net_request:*",  # 18 errors
   "//extensions/browser/api/declarative_webrequest:*",  # 29 errors
-  "//extensions/browser/api/dns:*",  # 3 errors
-  "//extensions/browser/api/document_scan:*",  # 2 errors
-  "//extensions/browser/api/feedback_private:*",  # 2 errors
-  "//extensions/browser/api/file_handlers:*",  # 3 errors
-  "//extensions/browser/api/file_system:*",  # 1 error
-  "//extensions/browser/api/hid:*",  # 12 errors
-  "//extensions/browser/api/idle:*",  # 4 errors
-  "//extensions/browser/api/test:*",  # 1 error
-  "//extensions/browser/api/usb:*",  # 12 errors
   "//extensions/browser/api/web_request:*",  # 37 errors
   "//extensions/browser/api:*",  # 7 errors
   "//extensions/browser:*",  # 20 errors

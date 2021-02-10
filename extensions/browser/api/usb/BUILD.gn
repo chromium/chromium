@@ -26,6 +26,8 @@ source_set("usb") {
     "//build:chromeos_buildflags",
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/browser/api",
+    "//extensions/common",
     "//extensions/common/api",
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom:usb",

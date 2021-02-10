@@ -43,41 +43,6 @@ source_set("api") {
     "//ipc",
   ]
 
-  # TODO(crbug/1158984): remove these deps. The core API system should not
-  # include specific API implementations; these should instead be moved to
-  # api_implementations below (and only included in the final Chrome target).
-  public_deps += [
-    "//extensions/browser/api/activity_log",
-    "//extensions/browser/api/alarms",
-    "//extensions/browser/api/app_current_window_internal",
-    "//extensions/browser/api/app_runtime",
-    "//extensions/browser/api/app_window",
-    "//extensions/browser/api/audio",
-    "//extensions/browser/api/automation_internal",
-    "//extensions/browser/api/bluetooth",
-    "//extensions/browser/api/bluetooth_low_energy",
-    "//extensions/browser/api/bluetooth_socket",
-    "//extensions/browser/api/cast_channel",
-    "//extensions/browser/api/declarative",
-    "//extensions/browser/api/declarative_content",
-    "//extensions/browser/api/declarative_net_request",
-    "//extensions/browser/api/declarative_webrequest",
-    "//extensions/browser/api/dns",
-    "//extensions/browser/api/feedback_private",
-    "//extensions/browser/api/file_handlers",
-    "//extensions/browser/api/file_system",
-    "//extensions/browser/api/hid",
-    "//extensions/browser/api/idle",
-    "//extensions/browser/api/mime_handler_private",
-    "//extensions/browser/api/power",
-    "//extensions/browser/api/printer_provider",
-    "//extensions/browser/api/runtime",
-    "//extensions/browser/api/test",
-    "//extensions/browser/api/usb",
-    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
-    "//extensions/browser/api/web_request",
-  ]
-
   deps = [
     "//base:i18n",
     "//build:chromeos_buildflags",

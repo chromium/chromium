@@ -13,7 +13,10 @@ source_set("app_runtime") {
     "app_runtime_api.h",
   ]
 
-  deps = [ "//extensions/common/api" ]
+  deps = [
+    "//extensions/common",
+    "//extensions/common/api",
+  ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

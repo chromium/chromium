@@ -27,6 +27,7 @@ source_set("webcam_private") {
     "//chromeos/dbus/ip_peripheral",
     "//extensions/browser/api",
     "//extensions/browser/api/serial",
+    "//extensions/common",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
     "//services/device/public/mojom",

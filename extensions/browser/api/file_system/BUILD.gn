@@ -22,6 +22,7 @@ source_set("file_system") {
     "//base/util/values:values_util",
     "//build:chromeos_buildflags",
     "//content/public/browser",
+    "//extensions/browser/api",
     "//extensions/browser/api/file_handlers",
     "//extensions/common",
     "//extensions/common/api",

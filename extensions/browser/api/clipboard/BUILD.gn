@@ -15,6 +15,7 @@ source_set("clipboard") {
 
   deps = [
     "//extensions/browser/api",
+    "//extensions/common",
     "//extensions/common/api",
     "//ui/base/clipboard",
   ]

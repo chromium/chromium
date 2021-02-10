@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -21,9 +22,16 @@ source_set("idle") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
     "//ui/base/idle",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/dbus/power" ]
+  }
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

@@ -27,6 +27,7 @@ source_set("vpn_provider") {
     "//chromeos/network",
     "//components/keyed_service/content",
     "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 
