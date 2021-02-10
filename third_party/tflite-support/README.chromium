@@ -23,6 +23,7 @@ Modifications:
 - Use _Exit instead of _exit to work on all platforms (0001-use-exit.patch)
 - Remove external file handlers support for memory mapping files to support Windows
   (0001-remove-unsupported-memory-map-from-file-handler.patch)
+- Fixes sign compare issues in tflite-support (0001-task-utils-sign-compare.patch)
 
 Third party dependencies:
 - tflite

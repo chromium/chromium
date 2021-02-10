@@ -9,6 +9,7 @@
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 
 namespace optimization_guide {
 
@@ -36,26 +37,13 @@ class TestModelExecutor
  protected:
   void Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const std::vector<float>& input) override {
-    // TODO(crbug/1176459): Use PopulateTensor instead.
-
-    float* tensor = reinterpret_cast<float*>(input_tensors[0]->data.raw);
-    size_t bytes = input.size() * sizeof(float);
-    memcpy(tensor, input.data(), bytes);
+    tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
   }
 
   std::vector<float> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override {
-    // TODO(crbug/1176459): Use PopulateVector instead.
-
-    const TfLiteTensor* tensor = output_tensors[0];
-    const float* results = reinterpret_cast<const float*>(tensor->data.raw);
-    size_t num = tensor->bytes / sizeof(tensor->type);
-
     std::vector<float> data;
-    data.reserve(num);
-    for (size_t i = 0; i < num; i++) {
-      data.emplace_back(results[i]);
-    }
+    tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
     return data;
   }
 };

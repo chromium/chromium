@@ -1,0 +1,34 @@
+From f84b50f175efff54ee6a6ef795703907245260cd Mon Sep 17 00:00:00 2001
+From: Sophie Chang <sophiechang@chromium.org>
+Date: Wed, 10 Feb 2021 17:55:30 +0000
+Subject: [PATCH] fix sign issues
+
+---
+ .../src/tensorflow_lite_support/cc/task/core/task_utils.h     | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h
+index 744dbbfb0f80..ced3dbcae9e4 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h
+@@ -119,7 +119,7 @@ inline void PopulateVector(const TfLiteTensor* tensor, std::vector<T>* data) {
+   const T* results = GetTensorData<T>(tensor);
+   size_t num = tensor->bytes / sizeof(tensor->type);
+   data->reserve(num);
+-  for (int i = 0; i < num; i++) {
++  for (size_t i = 0; i < num; i++) {
+     data->emplace_back(results[i]);
+   }
+ }
+@@ -169,7 +169,7 @@ static TensorType* FindTensorByName(
+       tensor_metadatas->size() != tensors.size()) {
+     return nullptr;
+   }
+-  for (int i = 0; i < tensor_metadatas->size(); i++) {
++  for (flatbuffers::uoffset_t i = 0; i < tensor_metadatas->size(); i++) {
+     if (strcmp(name.data(), tensor_metadatas->Get(i)->name()->c_str()) == 0) {
+       return tensors[i];
+     }
+-- 
+2.30.0.478.g8a0d178c01-goog
+

@@ -119,7 +119,7 @@ inline void PopulateVector(const TfLiteTensor* tensor, std::vector<T>* data) {
   const T* results = GetTensorData<T>(tensor);
   size_t num = tensor->bytes / sizeof(tensor->type);
   data->reserve(num);
-  for (int i = 0; i < num; i++) {
+  for (size_t i = 0; i < num; i++) {
     data->emplace_back(results[i]);
   }
 }
@@ -169,7 +169,7 @@ static TensorType* FindTensorByName(
       tensor_metadatas->size() != tensors.size()) {
     return nullptr;
   }
-  for (int i = 0; i < tensor_metadatas->size(); i++) {
+  for (flatbuffers::uoffset_t i = 0; i < tensor_metadatas->size(); i++) {
     if (strcmp(name.data(), tensor_metadatas->Get(i)->name()->c_str()) == 0) {
       return tensors[i];
     }
