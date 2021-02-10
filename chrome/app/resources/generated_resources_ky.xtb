@@ -1031,7 +1031,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="214169863967063661">Сырткы көрүнүш жөндөөлөрүн ачуу</translation>
 <translation id="2142328300403846845">Шилтемени төмөнкү катары ачуу</translation>
 <translation id="2142582065325732898">Акыркы ачылган Chrome өтмөктөрүн көрүү үчүн <ph name="LINK1_BEGIN" />Chrome шайкештирүүнү<ph name="LINK1_END" /> күйгүзүңүз. <ph name="LINK2_BEGIN" />Кеңири маалымат<ph name="LINK2_END" /></translation>
-<translation id="2143765403545170146">Толук экранда куралдар тилкеси ар дайым көрсөтүлсүн</translation>
+<translation id="2143765403545170146">Толук экранда куралдар тилкеси ар дайым көрүнсүн</translation>
 <translation id="2143778271340628265">Проксини кол менен конфигурациялоо</translation>
 <translation id="2144536955299248197">Тастыктамага көз чаптыргыч: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android колдонмосун иштеп чыгуу</translation>
@@ -1670,7 +1670,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2841837950101800123">Жабдуучу</translation>
 <translation id="2844169650293029770">USB-C түзмөгү (сол жактагы маңдайкы оюкча)</translation>
 <translation id="2844809857160214557">Басып чыгаруу тапшырмаларын көрүп жана башкарасыз</translation>
-<translation id="2845382757467349449">Кыстармалар тилкеси ар дайым көрсөтүлсүн</translation>
+<translation id="2845382757467349449">Кыстармалар тилкеси ар дайым көрүнсүн</translation>
 <translation id="284805635805850872">Зыянкеч программа алынып салынсынбы?</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Тазалоо катасы</translation>
@@ -6889,7 +6889,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8855977033756560989">Бул Chromebook Enterprise түзмөгүндө Chrome Enterprise Upgrade камтылган. Ишкананын мүмкүнчүлүктөрүн пайдалануу үчүн бул түзмөктү Google админ аккаунту менен каттаңыз.</translation>
 <translation id="8856028055086294840">Колдонмолорду жана барактарды калыбына келтирүү</translation>
 <translation id="885701979325669005">Сактагыч</translation>
-<translation id="8859057652521303089">Тилиңизди тандаңыз:</translation>
+<translation id="8859057652521303089">Тил тандаңыз:</translation>
 <translation id="8859174528519900719">Көмөкчү алкак: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">Тейлөө шарттары жүктөлгөн жок</translation>
 <translation id="8859662783913000679">Ата-эненин аккаунту</translation>

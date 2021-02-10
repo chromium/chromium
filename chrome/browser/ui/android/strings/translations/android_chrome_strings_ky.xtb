@@ -477,7 +477,7 @@
 <translation id="4487967297491345095">Chrome'дун колдонмо дайындарынын бардыгы биротоло өчүрүлөт. Ага бардык файлдар, жөндөөлөр, каттоо эсептери, дайындар базасы ж.б. кирет.</translation>
 <translation id="4493497663118223949">Жөнөкөй режим күйүк</translation>
 <translation id="4508528996305412043">Түрмөктөгү меню ачылды</translation>
-<translation id="4508642716788467538">Тилиңизди тандаңыз</translation>
+<translation id="4508642716788467538">Тил тандаңыз</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# күн мурун}other{# күн мурун}}</translation>
 <translation id="451872707440238414">Кыстармаларды издөө</translation>
 <translation id="4521489764227272523">Тандалган дайындар Chrome'дон жана шайкештирилген түзмөктөрүңүздөн өчүрүлдү.
@@ -751,7 +751,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6277522088822131679">Баракты басып чыгарууда көйгөй келип чыкты. Дагы аракет кылып көрүңүз.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6292420053234093573">Chrome'ду колдонуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен Chrome OS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макулдугуңузду билдиресиз.</translation>
-<translation id="629730747756840877">Каттоо эсеби</translation>
+<translation id="629730747756840877">Аккаунт</translation>
 <translation id="6297765934698848803">Түзмөгүңүздү башкарган уюм камераңызды өчүрүп койду.</translation>
 <translation id="6301525844455696527">Окуу тизмеңизди унутпаңыз</translation>
 <translation id="6303969859164067831">Аккаунттан чыгып, шайкештирүүнү өчүрүү</translation>

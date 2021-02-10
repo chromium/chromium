@@ -61,7 +61,7 @@
 <translation id="1060292118287751956">Pantaila eguneratzeko maiztasuna zehazten du</translation>
 <translation id="1061904396131502319">Atseden hartzeko garaia izango da laster</translation>
 <translation id="1067048845568873861">Sortze-data</translation>
-<translation id="1067922213147265141">Beste Google-ren zerbitzu batzuk</translation>
+<translation id="1067922213147265141">Google-ren beste zerbitzu batzuk</translation>
 <translation id="1070377999570795893">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen luzapen bat gehitu du.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -164,7 +164,7 @@
 <translation id="1174073918202301297">Gehitu da lasterbidea</translation>
 <translation id="117445914942805388">Sinkronizatutako gailu guztietako eta zure Google-ko kontuko arakatze-datuak garbitzeko, <ph name="BEGIN_LINK" />joan sinkronizazio-ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="1175364870820465910">In&amp;primatu…</translation>
-<translation id="1177138678118607465">Baliteke Google-k arakatze-historia erabiltzea Bilaketa, iragarkiak eta beste Google-ren zerbitzu batzuk pertsonalizatzeko. Hori aldatzeko, joan myaccount.google.com/activitycontrols/search helbidera.</translation>
+<translation id="1177138678118607465">Baliteke Google-k arakatze-historia erabiltzea Bilaketa, iragarkiak eta Google-ren beste zerbitzu batzuk pertsonalizatzeko. Hori aldatzeko, joan myaccount.google.com/activitycontrols/search helbidera.</translation>
 <translation id="1177863135347784049">Pertsonalizatua</translation>
 <translation id="1178581264944972037">Pausatu</translation>
 <translation id="117916940443676133">Segurtasun-giltza ez daukazu PIN kodearekin babestuta. Saioa hasteko datuak kudeatzeko, sortu PIN bat.</translation>
@@ -4203,7 +4203,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5794476117027678724">Ez utzi webguneei arbeleko testua eta irudiak ikusten</translation>
 <translation id="5794700615121138172">Linux-eko karpeta partekatuak</translation>
 <translation id="5794786537412027208">Irten Chrome-ren aplikazio guztietatik</translation>
-<translation id="5797070761912323120">Baliteke Google-k historia erabiltzea Bilaketa, iragarkiak eta beste Google-ren zerbitzu batzuk pertsonalizatzeko</translation>
+<translation id="5797070761912323120">Baliteke Google-k historia erabiltzea Bilaketa, iragarkiak eta Google-ren beste zerbitzu batzuk pertsonalizatzeko</translation>
 <translation id="5798301976526354562">Testuaren tamaina (Istanteko azpitituluak eginbideari ere aplikatzen zaio)</translation>
 <translation id="579915268381781820">Kendu egin da segurtasun-giltza.</translation>
 <translation id="5799508265798272974">Linux makina birtuala: <ph name="LINUX_VM_NAME" /></translation>
@@ -4497,7 +4497,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6124650939968185064">Luzapen hauek beste honen menpe daude:</translation>
 <translation id="6124698108608891449">Webgune honek baimen gehiago behar ditu.</translation>
 <translation id="6125479973208104919">Kontua berriro gehitu beharko duzu <ph name="DEVICE_TYPE" /> gailuan.</translation>
-<translation id="6129691635767514872">Kendu dira hautatutako datuak Chrome-tik eta sinkronizatutako gailuetatik. Hala ere, Google-ko kontuaren arakatze-historiako bestelako datu batzuk (adibidez, bilaketak eta beste Google-ren zerbitzu batzuetako jarduerak) gera litezke <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
+<translation id="6129691635767514872">Kendu dira hautatutako datuak Chrome-tik eta sinkronizatutako gailuetatik. Hala ere, Google-ko kontuaren arakatze-historiako bestelako datu batzuk (adibidez, bilaketak eta Google-ren beste zerbitzu batzuetako jarduerak) gera litezke <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="6129938384427316298">Netscape ziurtagiriaren iruzkina</translation>
 <translation id="6129953537138746214">Zuriunea</translation>
 <translation id="6130692320435119637">Gehitu wifi-sarea</translation>

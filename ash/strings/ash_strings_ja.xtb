@@ -51,7 +51,7 @@
 <translation id="1302880136325416935">Bluetooth の設定を表示します。<ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">シェルフを常に表示</translation>
-<translation id="1316811122439383437">Tote: 最近撮影した画面キャプチャや、最近ダウンロードまたは固定したファイル</translation>
+<translation id="1316811122439383437">トート: 最近撮影した画面キャプチャや、最近ダウンロードまたは固定したファイル</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" />を接続しました</translation>
 <translation id="1341651618736211726">オーバーフロー</translation>
 <translation id="1346748346194534595">右</translation>
@@ -790,7 +790,7 @@
 <translation id="7886169021410746335">プライバシー設定を調整する</translation>
 <translation id="7886277072580235377">ログアウトするとインターネット セッションは終了します。<ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">メールを送って</translation>
-<translation id="7895348134893321514">Tote</translation>
+<translation id="7895348134893321514">トート</translation>
 <translation id="7897375687985782769">画面回転のキーボード ショートカットを押しました。画面を回転しますか？</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">指紋認証センサーをタップ</translation>
