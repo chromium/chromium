@@ -18,6 +18,7 @@
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -25,6 +26,7 @@
 #include "ui/views/painter.h"
 
 namespace ash {
+namespace {
 
 // Appearance.
 constexpr int kChildSpacing = 8;
@@ -65,55 +67,28 @@ class CirclePainter : public views::Painter {
   const gfx::InsetsF insets_;
 };
 
-// LabelMaskLayerOwner ---------------------------------------------------------
+// PaintCallbackLabel ----------------------------------------------------------
 
-class LabelMaskLayerOwner : public ui::LayerOwner, public ui::LayerDelegate {
+class PaintCallbackLabel : public views::Label {
  public:
-  LabelMaskLayerOwner()
-      : ui::LayerOwner(std::make_unique<ui ::Layer>(ui::LAYER_TEXTURED)) {
-    layer()->set_delegate(this);
-    layer()->SetFillsBoundsOpaquely(false);
-  }
+  using PaintCallback = base::RepeatingCallback<void(gfx::Canvas* canvas)>;
 
-  LabelMaskLayerOwner(const LabelMaskLayerOwner&) = delete;
-  LabelMaskLayerOwner& operator=(const LabelMaskLayerOwner&) = delete;
-  ~LabelMaskLayerOwner() override = default;
+  explicit PaintCallbackLabel(PaintCallback callback) : callback_(callback) {}
+  PaintCallbackLabel(const PaintCallbackLabel&) = delete;
+  PaintCallbackLabel& operator=(const PaintCallbackLabel&) = delete;
+  ~PaintCallbackLabel() override = default;
 
  private:
-  // ui::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    const gfx::Size size = layer()->size();
-
-    views::PaintInfo paint_info =
-        views::PaintInfo::CreateRootPaintInfo(context, size);
-    const auto& paint_recording_size = paint_info.paint_recording_size();
-
-    // Pass the scale factor when constructing `PaintRecorder` so the mask layer
-    // size is not incorrectly rounded (see https://crbug.com/921274).
-    ui::PaintRecorder recorder(
-        context, paint_info.paint_recording_size(),
-        static_cast<float>(paint_recording_size.width()) / size.width(),
-        static_cast<float>(paint_recording_size.height()) / size.height(),
-        /*cache*/ nullptr);
-
-    // Flip canvas for RTL.
-    gfx::ScopedCanvas canvas(recorder.canvas());
-    canvas.FlipIfRTL(size.width());
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(false);
-
-    gfx::Point gradient_end(size.width() - kHoldingSpaceIconSize, 0);
-    gfx::Point gradient_start(gradient_end.x() - kLabelMaskGradientWidth, 0);
-    flags.setShader(gfx::CreateGradientShader(
-        gradient_start, gradient_end, SK_ColorBLACK, SK_ColorTRANSPARENT));
-
-    recorder.canvas()->DrawRect(gfx::Rect(size), flags);
+  // views::Label:
+  void OnPaint(gfx::Canvas* canvas) override {
+    views::Label::OnPaint(canvas);
+    callback_.Run(canvas);
   }
 
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
+  PaintCallback callback_;
 };
+
+}  // namespace
 
 // HoldingSpaceItemChipView ----------------------------------------------------
 
@@ -128,6 +103,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight));
 
+  // Image.
   image_ = AddChildView(std::make_unique<RoundedImageView>(
       kHoldingSpaceChipIconSize / 2, RoundedImageView::Alignment::kLeading));
 
@@ -144,28 +120,29 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   UpdateImage();
 
-  label_and_pin_button_container_ =
+  auto* label_and_pin_button_container =
       AddChildView(std::make_unique<views::View>());
-  layout->SetFlexForView(label_and_pin_button_container_, 1);
-
-  label_and_pin_button_container_->SetLayoutManager(
+  label_and_pin_button_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
+  layout->SetFlexForView(label_and_pin_button_container, 1);
 
-  label_ = label_and_pin_button_container_->AddChildView(
-      holding_space_util::CreateLabel(holding_space_util::LabelStyle::kChip));
+  // Label.
+  label_ = label_and_pin_button_container->AddChildView(
+      std::make_unique<PaintCallbackLabel>(
+          base::BindRepeating(&HoldingSpaceItemChipView::OnPaintLabelMask,
+                              base::Unretained(this))));
   label_->SetBorder(views::CreateEmptyBorder(kLabelMargins));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label_->SetText(item->text());
-
-  label_mask_layer_owner_ = std::make_unique<LabelMaskLayerOwner>();
-
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
-  label_->layer()->SetMaskLayer(label_mask_layer_owner_->layer());
 
+  holding_space_util::ApplyStyle(label_, holding_space_util::LabelStyle::kChip);
+
+  // Pin.
   views::View* pin_button_container =
-      label_and_pin_button_container_->AddChildView(
+      label_and_pin_button_container->AddChildView(
           std::make_unique<views::View>());
 
   auto* pin_layout =
@@ -176,7 +153,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   pin_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddPin(/*parent=*/pin_button_container);
+  pin_ = AddPin(/*parent=*/pin_button_container);
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
@@ -196,14 +173,32 @@ void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
 }
 
 void HoldingSpaceItemChipView::OnPinVisiblityChanged(bool pin_visible) {
-  if (label_mask_layer_owner_->layer()->bounds() !=
-      label_and_pin_button_container_->bounds()) {
-    // Mask layer has the same size as the label container so that the gradient
-    // ends at the end of the container.
-    label_mask_layer_owner_->layer()->SetBounds(
-        label_and_pin_button_container_->bounds());
+  // The `label_` must be repainted to update its mask for `pin_` visibility.
+  label_->SchedulePaint();
+}
+
+void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
+  // When the `pin_` is not visible no masking is necessary.
+  if (!pin_->GetVisible())
+    return;
+
+  // When the `pin_` is visible, `label_` fades out its tail to avoid overlap.
+  gfx::Point gradient_start, gradient_end;
+  if (base::i18n::IsRTL()) {
+    gradient_end.set_x(pin_->width());
+    gradient_start.set_x(gradient_end.x() + kLabelMaskGradientWidth);
+  } else {
+    gradient_end.set_x(label_->width() - pin_->width());
+    gradient_start.set_x(gradient_end.x() - kLabelMaskGradientWidth);
   }
-  label_mask_layer_owner_->layer()->SetVisible(pin_visible);
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setBlendMode(SkBlendMode::kDstIn);
+  flags.setShader(gfx::CreateGradientShader(
+      gradient_start, gradient_end, SK_ColorBLACK, SK_ColorTRANSPARENT));
+
+  canvas->DrawRect(label_->GetLocalBounds(), flags);
 }
 
 void HoldingSpaceItemChipView::UpdateImage() {

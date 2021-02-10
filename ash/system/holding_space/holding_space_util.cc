@@ -75,9 +75,7 @@ void AnimateOut(views::View* view,
             observer);
 }
 
-std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
-                                          const base::string16& text) {
-  auto label = std::make_unique<views::Label>(text);
+void ApplyStyle(views::Label* label, LabelStyle style) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
@@ -100,7 +98,12 @@ std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
                                        gfx::Font::Weight::MEDIUM));
       break;
   }
+}
 
+std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
+                                          const base::string16& text) {
+  auto label = std::make_unique<views::Label>(text);
+  ApplyStyle(label.get(), style);
   return label;
 }
 

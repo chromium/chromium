@@ -41,6 +41,9 @@ enum class LabelStyle {
   kHeader,
 };
 
+// Applies the specified `style` to the given `label`.
+void ApplyStyle(views::Label* label, LabelStyle style);
+
 // Creates a label with optional `text` matching the specified `style`.
 std::unique_ptr<views::Label> CreateLabel(
     LabelStyle style,
