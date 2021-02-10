@@ -307,6 +307,7 @@
     { "name": "cloud.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "code.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "contributor.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
+    { "name": "datastudio.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "dl.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "docs.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "domains.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
