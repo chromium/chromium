@@ -8666,7 +8666,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true"
     name="MachineLearningService.CreateGraphExecutorResult.Event"
     enum="MachineLearningServiceCreateGraphExecutorResultEvent"
-    expires_after="2021-03-15">
+    expires_after="2021-09-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -8675,7 +8675,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="MachineLearningService.ExecuteResult.Event"
-    enum="MachineLearningServiceExecuteResultEvent" expires_after="2021-03-15">
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2021-09-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -8728,7 +8728,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MachineLearningService.LoadModelResult"
     enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2021-03-15">
+    expires_after="2021-09-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -8740,7 +8740,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="MachineLearningService.LoadModelResult.Event"
     enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2021-03-15">
+    expires_after="2021-09-15">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>

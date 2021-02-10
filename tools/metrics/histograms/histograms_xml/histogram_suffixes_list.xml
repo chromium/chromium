@@ -8690,8 +8690,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="MachineLearningServiceModels" separator="."
     ordering="prefix">
   <suffix name="smart_dim_model_20190521_v3"
-      label="Predict whether to cancel screen dims, temporarily added for
-             downloadable smart dim models, will remove after M84."/>
+      label="Obsolete smart dim model identifier.">
+    <obsolete>
+      This model identifier deprecated after M84, use SmartDimModel instead.
+    </obsolete>
+  </suffix>
   <suffix name="SmartDimModel" label="Predict whether to cancel screen dims."/>
   <suffix name="TestModel" label="A simple model for testing purpose."/>
   <suffix name="TopCatModel" label="Predict the next app to be launched.">
