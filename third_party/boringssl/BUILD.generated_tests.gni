@@ -30,6 +30,7 @@ crypto_test_sources = [
   "src/crypto/asn1/asn1_test.cc",
   "src/crypto/base64/base64_test.cc",
   "src/crypto/bio/bio_test.cc",
+  "src/crypto/blake2/blake2_test.cc",
   "src/crypto/buf/buf_test.cc",
   "src/crypto/bytestring/bytestring_test.cc",
   "src/crypto/chacha/chacha_test.cc",
@@ -93,6 +94,7 @@ crypto_test_sources = [
 ]
 
 crypto_test_data = [
+  "src/crypto/blake2/blake2b256_tests.txt",
   "src/crypto/cipher_extra/test/aes_128_cbc_sha1_tls_implicit_iv_tests.txt",
   "src/crypto/cipher_extra/test/aes_128_cbc_sha1_tls_tests.txt",
   "src/crypto/cipher_extra/test/aes_128_cbc_sha256_tls_tests.txt",
