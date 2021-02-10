@@ -67,7 +67,7 @@
 -->
 
 <div id="grid-base-emoji">
-  <template is="dom-if" if="[[baseEmoji.length]]">
+  <template is="dom-if" if="[[baseEmoji]]">
     <emoji-button emoji="[[baseEmoji]]"></emoji-button>
   </template>
 </div>
@@ -82,21 +82,21 @@
       U+1F3FE EMOJI MODIFIER FITZPATRICK TYPE-5
       U+1F3FF EMOJI MODIFIER FITZPATRICK TYPE-6
     -->
-    <emoji-button emoji="[127995]" disabled></emoji-button>
-    <emoji-button emoji="[127996]" disabled></emoji-button>
-    <emoji-button emoji="[127997]" disabled></emoji-button>
-    <emoji-button emoji="[127998]" disabled></emoji-button>
-    <emoji-button emoji="[127999]" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FB;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FC;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FD;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FE;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FF;" disabled></emoji-button>
   </template>
 </div>
 
 <div id="grid-skin-tone-left" class="skin-tone">
   <template is="dom-if" if="[[showSkinTones]]">
-    <emoji-button emoji="[127995]" disabled></emoji-button>
-    <emoji-button emoji="[127996]" disabled></emoji-button>
-    <emoji-button emoji="[127997]" disabled></emoji-button>
-    <emoji-button emoji="[127998]" disabled></emoji-button>
-    <emoji-button emoji="[127999]" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FB;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FC;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FD;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FE;" disabled></emoji-button>
+    <emoji-button emoji="&#x1F3FF;" disabled></emoji-button>
   </template>
 </div>
 
@@ -104,7 +104,7 @@
   <template is="dom-repeat" items="[[variantRows]]" as="row">
     <div class="variant-row">
       <template is="dom-repeat" items="[[row]]" as="emoji">
-        <emoji-button emoji="[[emoji]]"></emoji-button>
+        <emoji-button emoji="[[emoji.string]]"></emoji-button>
       </template>
     </div>
   </template>

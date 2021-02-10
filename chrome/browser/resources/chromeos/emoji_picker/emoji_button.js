@@ -7,7 +7,7 @@ import './emoji_variants.js';
 import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN} from './events.js';
-import {Codepoints} from './types.js';
+import {Emoji} from './types.js';
 
 export class EmojiButton extends PolymerElement {
   static get is() {
@@ -20,9 +20,9 @@ export class EmojiButton extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Codepoints} */
-      emoji: {type: Array, readonly: true},
-      /** @type {!Array<Codepoints>} */
+      /** @type {!string} */
+      emoji: {type: String, readonly: true},
+      /** @type {Array<Emoji>} */
       variants: {type: Array, readonly: true},
       /** @type {!boolean} */
       variantsVisible: {type: Boolean, value: false},
@@ -38,8 +38,8 @@ export class EmojiButton extends PolymerElement {
   onClick(ev) {
     if (this.disabled)
       return;
-    this.dispatchEvent(createCustomEvent(
-        EMOJI_BUTTON_CLICK, {emoji: this._renderEmoji(this.emoji)}));
+    this.dispatchEvent(
+        createCustomEvent(EMOJI_BUTTON_CLICK, {emoji: this.emoji}));
   }
 
   onContextMenu(ev) {
@@ -71,13 +71,6 @@ export class EmojiButton extends PolymerElement {
 
   _className(variants) {
     return variants && variants.length > 0 ? 'has-variants' : '';
-  }
-
-  /**
-   * @param {Codepoints} codepoints
-   */
-  _renderEmoji(codepoints) {
-    return String.fromCodePoint(...codepoints);
   }
 }
 

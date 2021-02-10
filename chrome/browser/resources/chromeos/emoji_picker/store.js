@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Codepoints} from './types.js';
-
 const LOCALSTORAGE_KEY = 'emoji-recently-used';
 const MAX_RECENTS = 14;
 
 /**
- * Recently used emoji, most recent first. Each emoji is stored as an array
- * of codepoints.
- * @typedef {!Array<Codepoints>}
+ * Recently used emoji, most recent first. Each emoji is stored as a string.
+ * @typedef {!Array<string>} RecentlyUsedEmoji
  */
 let RecentlyUsedEmoji;
 
@@ -22,7 +19,13 @@ function load() {
   if (!stored) {
     return [];
   }
-  return /** @type {?} */ (JSON.parse(stored));
+  const parsed = /** @type {?} */ (JSON.parse(stored));
+  if (parsed[0] && Array.isArray(parsed[0])) {
+    // if stored data is in older codepoint format, ignore it.
+    return [];
+  }
+
+  return parsed;
 }
 
 /**
@@ -44,15 +47,12 @@ export class RecentEmojiStore {
    */
   bumpEmoji(newEmoji) {
     // find and remove newEmoji from array if it previously existed.
-    const oldIndex =
-        this.data.findIndex(x => String.fromCodePoint(...x) === newEmoji);
+    const oldIndex = this.data.findIndex(x => x === newEmoji);
     if (oldIndex !== -1) {
       this.data.splice(oldIndex, 1);
     }
-    // insert newEmoji's codepoints to front of array.
-    // first, split newEmoji into an array of strings where each string is
-    // one codepoint. then, convert each codepoint to its numerical value.
-    this.data.unshift([...newEmoji].map(x => x.codePointAt(0)));
+    // insert newEmoji to the front of the array.
+    this.data.unshift(newEmoji);
     // slice from end of array if it exceeds MAX_RECENTS.
     if (this.data.length > MAX_RECENTS) {
       // setting length is sufficient to truncate an array.

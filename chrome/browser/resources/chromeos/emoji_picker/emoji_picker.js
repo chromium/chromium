@@ -14,7 +14,7 @@ import {EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE
 import {EmojiButton} from './emoji_button.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
 import {RecentEmojiStore} from './store.js';
-import {Codepoints, Emoji, EmojiData, EmojiGroup} from './types.js';
+import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
 
@@ -35,11 +35,13 @@ const GROUP_TABS = [
  * Constructs the emoji group data structure from a given list of emoji
  * strings. Note: returned emoji have no variants.
  *
- * @param {!Array<Codepoints>} recentEmoji list of recently used emoji strings.
- * @return {!Array<!Emoji>} list of emoji data structures
+ * @param {!Array<string>} recentEmoji list of recently used emoji strings.
+ * @return {!Array<EmojiVariants>} list of emoji data structures
  */
 function makeRecentlyUsed(recentEmoji) {
-  return recentEmoji.map(emoji => ({base: emoji, alternates: []}));
+  return recentEmoji.map(
+      emoji =>
+          ({base: {string: emoji, name: '', keywords: []}, alternates: []}));
 }
 
 export class EmojiPicker extends PolymerElement {
@@ -56,7 +58,7 @@ export class EmojiPicker extends PolymerElement {
       /** @type {!string} */
       emojiDataUrl: {type: String, value: EMOJI_ORDERING_JSON},
       emojiGroupTabs: {type: Array},
-      /** @private {?EmojiData} */
+      /** @private {?EmojiGroupData} */
       emojiData: {
         type: Object,
         observer: 'onEmojiDataChanged',
@@ -214,7 +216,7 @@ export class EmojiPicker extends PolymerElement {
 
 
   onEmojiDataLoaded(data) {
-    this.emojiData = /** @type {!EmojiData} */ (JSON.parse(data));
+    this.emojiData = /** @type {!EmojiGroupData} */ (JSON.parse(data));
   }
 
   /**

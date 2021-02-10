@@ -33,11 +33,11 @@ suite('RecentEmojiStore', () => {
 
   test('one emoji in recently used', () => {
     store.bumpEmoji(TEST_EMOJI.grin.string);
-    assertDeepEquals([TEST_EMOJI.grin.codepoints], store.data);
+    assertDeepEquals([TEST_EMOJI.grin.string], store.data);
 
     store.bumpEmoji(TEST_EMOJI.grin.string);
     assertDeepEquals(
-        [TEST_EMOJI.grin.codepoints], store.data,
+        [TEST_EMOJI.grin.string], store.data,
         'clicking an existing emoji should not duplicate it');
   });
 
@@ -45,11 +45,11 @@ suite('RecentEmojiStore', () => {
     store.bumpEmoji(TEST_EMOJI.grin.string);
     store.bumpEmoji(TEST_EMOJI.waving.string);
     assertDeepEquals(
-        [TEST_EMOJI.waving.codepoints, TEST_EMOJI.grin.codepoints], store.data);
+        [TEST_EMOJI.waving.string, TEST_EMOJI.grin.string], store.data);
 
     store.bumpEmoji(TEST_EMOJI.grin.string);
     assertDeepEquals(
-        [TEST_EMOJI.grin.codepoints, TEST_EMOJI.waving.codepoints], store.data,
+        [TEST_EMOJI.grin.string, TEST_EMOJI.waving.string], store.data,
         'clicking an existing emoji should move it to the front');
   });
 });

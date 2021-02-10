@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Codepoints} from './types.js';
+import {Emoji} from './types.js';
 
 const GENDER_FEMALE = 9792;       // U+2640 FEMALE_SIGN
 const SKIN_TONE_MEDIUM = 127997;  // U+1F3FD EMOJI MODIFIER FITZPATRICK TYPE-4
@@ -13,12 +13,13 @@ const COUPLE = 128107;            // U+1F46B MAN AND WOMAN HOLDING HANDS
 /**
  * Determines if the given list of variants has any variant which contains
  * the given codepoint.
- * @param {!Array<Codepoints>} variants
+ * @param {!Array<!Emoji>} variants
  * @param {!number} codepoint
  * @return {boolean}
  */
 function hasVariation(variants, codepoint) {
-  return variants.findIndex(x => x.includes(codepoint)) !== -1;
+  const codepointString = String.fromCodePoint(codepoint);
+  return variants.findIndex(x => x.string.includes(codepointString)) !== -1;
 }
 
 
@@ -57,11 +58,11 @@ export class EmojiVariants extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Array<Codepoints>} */
+      /** @type {!Array<Emoji>} */
       variants: {type: Array, readonly: true},
-      /** @private {!Array<!Array<Codepoints>>} */
+      /** @private {!Array<!Array<Emoji>>} */
       variantRows: {type: Array},
-      /** @private {?Codepoints} */
+      /** @private {?string} */
       baseEmoji: {type: Array},
       /** @private {boolean} */
       showSkinTones: {type: Boolean},
@@ -83,7 +84,7 @@ export class EmojiVariants extends PolymerElement {
 
     if (isFamily || isTwoPeople) {
       // for these cases, the first variant is the generic one.
-      this.baseEmoji = this.variants[0];
+      this.baseEmoji = this.variants[0].string;
     } else {
       this.baseEmoji = null;
     }

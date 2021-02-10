@@ -19,7 +19,7 @@
 <div id="heading">[[data.group]]</div>
 <div id="emoji">
   <template is="dom-repeat" items="[[data.emoji]]">
-    <emoji-button emoji="[[item.base]]" variants="[[item.alternates]]">
+    <emoji-button emoji="[[item.base.string]]" variants="[[item.alternates]]">
     </emoji-button>
   </template>
 </div>

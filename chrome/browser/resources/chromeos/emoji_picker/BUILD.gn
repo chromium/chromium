@@ -16,45 +16,38 @@ component_js_files = [
   "icons.js",
 ]
 
+processed_json_files = [
+  "emoji_13_1_ordering.json",
+  "emoji_test_ordering.json",
+]
+
 resources_grd_file = "$target_gen_dir/resources.grd"
-components_grdp_file = "$target_gen_dir/components.grdp"
-data_grdp_file = "$target_gen_dir/data.grdp"
+preprocessed_grdp_file = "$target_gen_dir/preprocessed.grdp"
 
 generate_grd("build_grd") {
   deps = [
-    ":build_components_grdp",
-    ":build_data_grdp",
+    ":build_preprocessed_grdp",
+    ":emoji_data",
   ]
   grd_prefix = "emoji_picker"
   out_grd = resources_grd_file
   input_files = [
     "constants.js",
-    "emoji_test_ordering.json",
     "events.js",
     "index.html",
     "store.js",
     "types.js",
   ]
-  grdp_files = [
-    components_grdp_file,
-    data_grdp_file,
-  ]
+  grdp_files = [ preprocessed_grdp_file ]
   input_files_base_dir = rebase_path(".", "//")
 }
 
-generate_grd("build_components_grdp") {
+generate_grd("build_preprocessed_grdp") {
   deps = [ ":web_components" ]
   grd_prefix = "emoji_picker"
-  out_grd = components_grdp_file
-  input_files = component_js_files
+  out_grd = preprocessed_grdp_file
+  input_files = component_js_files + processed_json_files
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-}
-
-generate_grd("build_data_grdp") {
-  grd_prefix = "emoji_picker"
-  out_grd = data_grdp_file
-  input_files = [ "emoji_13_1_ordering.json" ]
-  input_files_base_dir = rebase_path("//third_party/emoji-metadata/src", "//")
 }
 
 grit("resources") {
