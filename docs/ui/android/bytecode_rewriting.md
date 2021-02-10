@@ -53,6 +53,14 @@ related to this should get detected by
 [compile_java.py](https://source.chromium.org/chromium/chromium/src/+/master:build/android/gyp/compile_java.py),
 and print a message pointing users here, which is likely why you're reading this :)
 
+If you need to apply FragmentActivityReplacer to a given target then add …
+
+```
+bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
+```
+
+… to the build configuration for that target.
+
 ## How does this affect my code?
 
 The goal is for these changes to be as transparent as possible; most code shouldn't run into issues.
