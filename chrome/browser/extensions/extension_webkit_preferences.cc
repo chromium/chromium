@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "chrome/common/chrome_switches.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -39,6 +40,17 @@ void SetPreferences(const extensions::Extension* extension,
     webkit_prefs->cookie_enabled = false;
     webkit_prefs->target_blank_implies_no_opener_enabled_will_be_removed =
         false;
+  }
+
+  // Prevent font size preferences from affecting the PDF Viewer extension.
+  if (extension->id() == extension_misc::kPdfExtensionId) {
+    blink::web_pref::WebPreferences default_prefs;
+    webkit_prefs->default_font_size = default_prefs.default_font_size;
+    webkit_prefs->default_fixed_font_size =
+        default_prefs.default_fixed_font_size;
+    webkit_prefs->minimum_font_size = default_prefs.minimum_font_size;
+    webkit_prefs->minimum_logical_font_size =
+        default_prefs.minimum_logical_font_size;
   }
 
   // Enable WebGL features that regular pages can't access, since they add
