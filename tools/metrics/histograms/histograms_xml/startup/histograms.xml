@@ -377,6 +377,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Startup.BrowserWindow.FirstPaint.CompositingEnded" units="ms"
     expires_after="2020-04-26">
+  <obsolete>
+    Removed 02/2021.
+  </obsolete>
   <owner>sebmarchand@chromium.org</owner>
   <owner>mblsha@yandex-team.ru</owner>
   <summary>

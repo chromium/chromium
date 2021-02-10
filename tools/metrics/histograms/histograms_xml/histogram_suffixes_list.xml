@@ -18242,7 +18242,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.BrowserMessageLoopStartTimeFromMainEntry3"/>
   <affected-histogram name="Startup.BrowserOpenTabs"/>
   <affected-histogram name="Startup.BrowserWindow.FirstPaint"/>
-  <affected-histogram name="Startup.BrowserWindow.FirstPaint.CompositingEnded"/>
+  <affected-histogram name="Startup.BrowserWindow.FirstPaint.CompositingEnded">
+    <obsolete>
+      Obsolete as of Feb 2021.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Startup.BrowserWindowDisplay"/>
   <affected-histogram name="Startup.FirstWebContents.MainFrameLoad"/>
   <affected-histogram name="Startup.FirstWebContents.MainFrameLoad2"/>

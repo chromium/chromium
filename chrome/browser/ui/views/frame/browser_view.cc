@@ -156,6 +156,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/version_info/channel.h"
@@ -2955,11 +2956,10 @@ void BrowserView::AddedToWidget() {
 
 void BrowserView::PaintChildren(const views::PaintInfo& paint_info) {
   views::ClientView::PaintChildren(paint_info);
-  // Don't reset the instance before it had a chance to get compositor callback.
-  if (!histogram_helper_) {
-    histogram_helper_ = BrowserWindowHistogramHelper::
-        MaybeRecordValueAndCreateInstanceOnBrowserPaint(
-            GetWidget()->GetCompositor());
+  static bool did_first_paint = false;
+  if (!did_first_paint) {
+    did_first_paint = true;
+    startup_metric_utils::RecordBrowserWindowFirstPaint(base::TimeTicks::Now());
   }
 }
 

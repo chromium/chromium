@@ -76,12 +76,6 @@ void RecordFirstWebContentsMainNavigationFinished(base::TimeTicks ticks);
 // computes time deltas based on application start time.
 void RecordBrowserWindowFirstPaint(base::TimeTicks ticks);
 
-// Call this with the time when the Browser window painted its children for the
-// first time and we got a CompositingEnded after that. Must be called after
-// RecordApplicationStartTime(), because it computes time deltas based on
-// application start time.
-void RecordBrowserWindowFirstPaintCompositingEnded(base::TimeTicks ticks);
-
 // Returns the TimeTicks corresponding to main entry as recorded by
 // |RecordMainEntryPointTime|. Returns a null TimeTicks if a value has not been
 // recorded yet. This method is expected to be called from the UI thread.

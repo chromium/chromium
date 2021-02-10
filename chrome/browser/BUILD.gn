@@ -802,8 +802,6 @@ static_library("browser") {
     "metrics/authenticator_utility.h",
     "metrics/bluetooth_available_utility.cc",
     "metrics/bluetooth_available_utility.h",
-    "metrics/browser_window_histogram_helper.cc",
-    "metrics/browser_window_histogram_helper.h",
     "metrics/chrome_browser_main_extra_parts_metrics.cc",
     "metrics/chrome_browser_main_extra_parts_metrics.h",
     "metrics/chrome_feature_list_creator.cc",

@@ -572,23 +572,6 @@ void RecordBrowserWindowFirstPaint(base::TimeTicks ticks) {
                                       g_application_start_ticks, ticks);
 }
 
-void RecordBrowserWindowFirstPaintCompositingEnded(
-    const base::TimeTicks ticks) {
-  DCHECK(!g_application_start_ticks.is_null());
-
-  static bool is_first_call = true;
-  if (!is_first_call || ticks.is_null())
-    return;
-  is_first_call = false;
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(
-      &base::UmaHistogramLongTimes100,
-      "Startup.BrowserWindow.FirstPaint.CompositingEnded",
-      g_application_start_ticks, ticks);
-}
-
 base::TimeTicks MainEntryPointTicks() {
   return g_chrome_main_entry_ticks;
 }
