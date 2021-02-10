@@ -30,6 +30,7 @@
 
 #include <algorithm>
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
@@ -951,6 +952,9 @@ AccessibleNode* AXObject::GetAccessibleNode() const {
 
 void AXObject::Serialize(ui::AXNodeData* node_data,
                          ui::AXMode accessibility_mode) {
+  node_data->role = RoleValue();
+  node_data->id = AXObjectID();
+
   AccessibilityExpanded expanded = IsExpanded();
   if (expanded) {
     if (expanded == kExpandedCollapsed)
@@ -1178,6 +1182,13 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   if (IsScrollableContainer())
     SerializeScrollAttributes(node_data);
+
+  if (GetElement()) {
+    SerializeElementAttributes(node_data);
+    if (accessibility_mode.has_mode(ui::AXMode::kHTML)) {
+      SerializeHTMLAttributes(node_data);
+    }
+  }
 }
 
 void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) {
@@ -1258,6 +1269,57 @@ void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
                              max_scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMax,
                              max_scroll_offset.y());
+}
+
+void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
+  Element* element = this->GetElement();
+  if (!element)
+    return;
+
+  if (const AtomicString& class_name = element->GetClassAttribute()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kClassName,
+                                  class_name.Utf8());
+  }
+
+  // ARIA role.
+  if (const AtomicString& aria_role =
+          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
+    TruncateAndAddStringAttribute(
+        node_data, ax::mojom::blink::StringAttribute::kRole, aria_role.Utf8());
+  } else {
+    std::string role = GetEquivalentAriaRoleString(RoleValue());
+    if (!role.empty()) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kRole, role);
+    }
+  }
+}
+
+void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
+  Element* element = GetElement();
+  TruncateAndAddStringAttribute(node_data,
+                                ax::mojom::blink::StringAttribute::kHtmlTag,
+                                element->tagName().LowerASCII().Utf8());
+  for (const Attribute& attr : element->Attributes()) {
+    std::string name = attr.LocalName().LowerASCII().Utf8();
+    if (name == "class") {  // class already in kClassName
+      continue;
+    }
+    std::string value = attr.Value().Utf8();
+    node_data->html_attributes.push_back(std::make_pair(name, value));
+  }
+
+// TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
+// and remove ifdef.
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+  if (node_data->role == ax::mojom::blink::Role::kMath &&
+      element->innerHTML().length()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kInnerHtml,
+                                  element->innerHTML().Utf8());
+  }
+#endif
 }
 
 void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {

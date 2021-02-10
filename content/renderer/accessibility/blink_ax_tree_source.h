@@ -148,13 +148,6 @@ class CONTENT_EXPORT BlinkAXTreeSource
                                        ui::AXNodeData* dst) const;
   void SerializeOtherScreenReaderAttributes(blink::WebAXObject src,
                                             ui::AXNodeData* dst) const;
-  void SerializeElementAttributes(blink::WebAXObject src,
-                                  blink::WebElement element,
-                                  ui::AXNodeData* dst) const;
-  void SerializeHTMLAttributes(blink::WebAXObject src,
-                               blink::WebElement element,
-                               ui::AXNodeData* dst) const;
-
   blink::WebAXObject ComputeRoot() const;
 
   // Max length for attributes such as aria-label.

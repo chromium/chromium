@@ -147,48 +147,6 @@ bool FindExactlyOneInnerImageInMaxDepthThree(WebAXObject obj,
   return SearchForExactlyOneInnerImage(obj, inner_image, /* max_depth = */ 3);
 }
 
-std::string GetEquivalentAriaRoleString(const ax::mojom::Role role) {
-  switch (role) {
-    case ax::mojom::Role::kArticle:
-      return "article";
-    case ax::mojom::Role::kBanner:
-      return "banner";
-    case ax::mojom::Role::kButton:
-      return "button";
-    case ax::mojom::Role::kComplementary:
-      return "complementary";
-    case ax::mojom::Role::kFigure:
-      return "figure";
-    case ax::mojom::Role::kFooter:
-      return "contentinfo";
-    case ax::mojom::Role::kHeader:
-      return "banner";
-    case ax::mojom::Role::kHeading:
-      return "heading";
-    case ax::mojom::Role::kImage:
-      return "img";
-    case ax::mojom::Role::kMain:
-      return "main";
-    case ax::mojom::Role::kNavigation:
-      return "navigation";
-    case ax::mojom::Role::kRadioButton:
-      return "radio";
-    case ax::mojom::Role::kRegion:
-      return "region";
-    case ax::mojom::Role::kSection:
-      // A <section> element uses the 'region' ARIA role mapping.
-      return "region";
-    case ax::mojom::Role::kSlider:
-      return "slider";
-    case ax::mojom::Role::kTime:
-      return "time";
-    default:
-      break;
-  }
-
-  return std::string();
-}
-
 }  // namespace
 
 ScopedFreezeBlinkAXTreeSource::ScopedFreezeBlinkAXTreeSource(
@@ -502,9 +460,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   // unneeded WebAXObject interfaces.
   src.Serialize(dst, accessibility_mode_);
 
-  dst->role = src.Role();
-  dst->id = src.AxID();
-
   TRACE_EVENT2("accessibility", "BlinkAXTreeSource::SerializeNode", "role",
                ui::ToString(dst->role), "id", dst->id);
 
@@ -531,11 +486,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   if (!node.IsNull() && node.IsElementNode()) {
     WebElement element = node.To<WebElement>();
     is_iframe = element.HasHTMLTagName("iframe");
-
-    SerializeElementAttributes(src, element, dst);
-    if (accessibility_mode_.has_mode(ui::AXMode::kHTML)) {
-      SerializeHTMLAttributes(src, element, dst);
-    }
 
     // Presence of other ARIA attributes.
     if (src.HasAriaAttribute())
@@ -844,52 +794,6 @@ void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
       dst->AddDropeffect(dropeffect);
     }
   }
-}
-
-void BlinkAXTreeSource::SerializeElementAttributes(WebAXObject src,
-                                                   WebElement element,
-                                                   ui::AXNodeData* dst) const {
-  if (element.HasAttribute("class")) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kClassName,
-                                  element.GetAttribute("class").Utf8());
-  }
-
-  // ARIA role.
-  if (element.HasAttribute("role")) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kRole,
-                                  element.GetAttribute("role").Utf8());
-  } else {
-    std::string role = GetEquivalentAriaRoleString(dst->role);
-    if (!role.empty())
-      TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kRole,
-                                    role);
-  }
-}
-
-void BlinkAXTreeSource::SerializeHTMLAttributes(WebAXObject src,
-                                                WebElement element,
-                                                ui::AXNodeData* dst) const {
-  // TODO(ctguil): The tagName in WebKit is lower cased but
-  // HTMLElement::nodeName calls localNameUpper. Consider adding
-  // a WebElement method that returns the original lower cased tagName.
-  TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kHtmlTag,
-                                base::ToLowerASCII(element.TagName().Utf8()));
-  for (unsigned i = 0; i < element.AttributeCount(); ++i) {
-    std::string name = base::ToLowerASCII(element.AttributeLocalName(i).Utf8());
-    if (name != "class") {  // class already in kClassName.
-      std::string value = element.AttributeValue(i).Utf8();
-      dst->html_attributes.push_back(std::make_pair(name, value));
-    }
-  }
-
-// TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
-// and remove ifdef.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-  if (dst->role == ax::mojom::Role::kMath && element.InnerHTML().length()) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kInnerHtml,
-                                  element.InnerHTML().Utf8());
-  }
-#endif
 }
 
 blink::WebDocument BlinkAXTreeSource::GetMainDocument() const {
