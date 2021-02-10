@@ -137,7 +137,7 @@ static EColorInterpolation ColorInterpolationForElement(
     SVGElement& element,
     EColorInterpolation parent_color_interpolation) {
   if (const LayoutObject* layout_object = element.GetLayoutObject())
-    return layout_object->StyleRef().SvgStyle().ColorInterpolationFilters();
+    return layout_object->StyleRef().ColorInterpolationFilters();
 
   // No layout has been performed, try to determine the property value
   // "manually" (used by external SVG files.)

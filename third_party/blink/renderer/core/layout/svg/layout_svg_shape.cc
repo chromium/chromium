@@ -423,14 +423,15 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
     return true;
 
   // TODO(chrishtr): support rect-based intersections in the cases below.
-  const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
+  const ComputedStyle& style = StyleRef();
+  const SVGComputedStyle& svg_style = style.SvgStyle();
   if (hit_rules.can_hit_stroke &&
       (svg_style.HasStroke() || !hit_rules.require_stroke) &&
       StrokeContains(local_location, hit_rules.require_stroke))
     return true;
-  WindRule fill_rule = svg_style.FillRule();
+  WindRule fill_rule = style.FillRule();
   if (request.SvgClipContent())
-    fill_rule = svg_style.ClipRule();
+    fill_rule = style.ClipRule();
   if (hit_rules.can_hit_fill &&
       (svg_style.HasFill() || !hit_rules.require_fill) &&
       FillContains(local_location, hit_rules.require_fill, fill_rule))

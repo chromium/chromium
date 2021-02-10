@@ -62,9 +62,7 @@ SVGTextLayoutEngineBaseline::DominantBaselineToAlignmentBaseline(
   DCHECK(text_line_layout);
   DCHECK(text_line_layout.Style());
 
-  const SVGComputedStyle& style = text_line_layout.StyleRef().SvgStyle();
-
-  EDominantBaseline baseline = style.DominantBaseline();
+  EDominantBaseline baseline = text_line_layout.StyleRef().DominantBaseline();
   if (baseline == DB_AUTO) {
     if (is_vertical_text)
       baseline = DB_CENTRAL;

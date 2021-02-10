@@ -307,10 +307,10 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
     if (WriteSVGPaint(ts, object, svg_style.FillPaint(), GetCSSPropertyFill(),
                       "fill")) {
       WriteIfNotDefault(ts, "opacity", svg_style.FillOpacity(), 1.0f);
-      WriteIfNotDefault(ts, "fill rule", svg_style.FillRule(), RULE_NONZERO);
+      WriteIfNotDefault(ts, "fill rule", style.FillRule(), RULE_NONZERO);
       ts << "}]";
     }
-    WriteIfNotDefault(ts, "clip rule", svg_style.ClipRule(), RULE_NONZERO);
+    WriteIfNotDefault(ts, "clip rule", style.ClipRule(), RULE_NONZERO);
   }
 
   TreeScope& tree_scope = object.GetDocument();
@@ -433,7 +433,7 @@ static inline void WriteSVGInlineTextBox(WTF::TextStream& ts,
   LineLayoutSVGInlineText text_line_layout =
       LineLayoutSVGInlineText(text_box->GetLineLayoutItem());
 
-  const SVGComputedStyle& svg_style = text_line_layout.StyleRef().SvgStyle();
+  const ComputedStyle& style = text_line_layout.StyleRef();
   String text = text_box->GetLineLayoutItem().GetText();
 
   unsigned fragments_size = fragments.size();
@@ -447,9 +447,8 @@ static inline void WriteSVGInlineTextBox(WTF::TextStream& ts,
     // FIXME: Remove this hack, once the new text layout engine is completly
     // landed. We want to preserve the old web test results for now.
     ts << "chunk 1 ";
-    ETextAnchor anchor = svg_style.TextAnchor();
-    bool is_vertical_text =
-        !text_line_layout.StyleRef().IsHorizontalWritingMode();
+    ETextAnchor anchor = style.TextAnchor();
+    bool is_vertical_text = !style.IsHorizontalWritingMode();
     if (anchor == TA_MIDDLE) {
       ts << "(middle anchor";
       if (is_vertical_text)

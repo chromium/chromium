@@ -1151,6 +1151,19 @@ class ComputedStyle : public ComputedStyleBase,
   const Length& Ry() const { return SvgStyle().Ry(); }
   void SetRy(const Length& ry) { AccessSVGStyle().SetRy(ry); }
 
+  WindRule ClipRule() const { return SvgStyle().ClipRule(); }
+  EColorInterpolation ColorInterpolation() const {
+    return SvgStyle().ColorInterpolation();
+  }
+  EColorInterpolation ColorInterpolationFilters() const {
+    return SvgStyle().ColorInterpolationFilters();
+  }
+  EColorRendering ColorRendering() const { return SvgStyle().ColorRendering(); }
+  EDominantBaseline DominantBaseline() const {
+    return SvgStyle().DominantBaseline();
+  }
+  WindRule FillRule() const { return SvgStyle().FillRule(); }
+
   // fill-opacity
   float FillOpacity() const { return SvgStyle().FillOpacity(); }
   void SetFillOpacity(float f) { AccessSVGStyle().SetFillOpacity(f); }
@@ -1181,6 +1194,12 @@ class ComputedStyle : public ComputedStyleBase,
   float StopOpacity() const { return SvgStyle().StopOpacity(); }
   void SetStopOpacity(float f) { AccessSVGStyle().SetStopOpacity(f); }
 
+  // paint-order helper
+  EPaintOrder PaintOrder() const { return SvgStyle().PaintOrder(); }
+  EPaintOrderType PaintOrderType(unsigned index) const;
+
+  EShapeRendering ShapeRendering() const { return SvgStyle().ShapeRendering(); }
+
   // stroke-dasharray
   SVGDashArray* StrokeDashArray() const { return SvgStyle().StrokeDashArray(); }
   void SetStrokeDashArray(scoped_refptr<SVGDashArray> array) {
@@ -1209,6 +1228,7 @@ class ComputedStyle : public ComputedStyleBase,
     AccessSVGStyle().SetStrokeWidth(w);
   }
 
+  ETextAnchor TextAnchor() const { return SvgStyle().TextAnchor(); }
   EVectorEffect VectorEffect() const { return SvgStyle().VectorEffect(); }
 
   // Comparison operators

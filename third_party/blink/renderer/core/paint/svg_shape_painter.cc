@@ -35,10 +35,10 @@ static base::Optional<AffineTransform> SetupNonScalingStrokeContext(
 }
 
 static SkPathFillType FillRuleFromStyle(const PaintInfo& paint_info,
-                                        const SVGComputedStyle& svg_style) {
+                                        const ComputedStyle& style) {
   return WebCoreWindRuleToSkFillType(paint_info.IsRenderingClipPathAsMaskImage()
-                                         ? svg_style.ClipRule()
-                                         : svg_style.FillRule());
+                                         ? style.ClipRule()
+                                         : style.FillRule());
 }
 
 void SVGShapePainter::Paint(const PaintInfo& paint_info) {
@@ -63,23 +63,23 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
       SVGModelObjectPainter::RecordHitTestData(layout_svg_shape_, paint_info);
       SVGDrawingRecorder recorder(paint_info.context, layout_svg_shape_,
                                   paint_info.phase);
-      const SVGComputedStyle& svg_style =
-          layout_svg_shape_.StyleRef().SvgStyle();
+      const ComputedStyle& style = layout_svg_shape_.StyleRef();
+      const SVGComputedStyle& svg_style = style.SvgStyle();
 
-      bool should_anti_alias = svg_style.ShapeRendering() != SR_CRISPEDGES &&
-                               svg_style.ShapeRendering() != SR_OPTIMIZESPEED;
+      bool should_anti_alias = style.ShapeRendering() != SR_CRISPEDGES &&
+                               style.ShapeRendering() != SR_OPTIMIZESPEED;
 
       for (int i = 0; i < 3; i++) {
-        switch (svg_style.PaintOrderType(i)) {
+        switch (style.PaintOrderType(i)) {
           case PT_FILL: {
             PaintFlags fill_flags;
             if (!SVGObjectPainter(layout_svg_shape_)
-                     .PreparePaint(paint_info, layout_svg_shape_.StyleRef(),
-                                   kApplyToFillMode, fill_flags))
+                     .PreparePaint(paint_info, style, kApplyToFillMode,
+                                   fill_flags))
               break;
             fill_flags.setAntiAlias(should_anti_alias);
             FillShape(paint_info.context, fill_flags,
-                      FillRuleFromStyle(paint_info, svg_style));
+                      FillRuleFromStyle(paint_info, style));
             break;
           }
           case PT_STROKE:
@@ -99,15 +99,14 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
               PaintFlags stroke_flags;
               if (!SVGObjectPainter(layout_svg_shape_)
                        .PreparePaint(
-                           paint_info, layout_svg_shape_.StyleRef(),
-                           kApplyToStrokeMode, stroke_flags,
+                           paint_info, style, kApplyToStrokeMode, stroke_flags,
                            base::OptionalOrNullptr(non_scaling_transform)))
                 break;
               stroke_flags.setAntiAlias(should_anti_alias);
 
               StrokeData stroke_data;
               SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
-                  stroke_data, layout_svg_shape_.StyleRef(), layout_svg_shape_,
+                  stroke_data, style, layout_svg_shape_,
                   layout_svg_shape_.DashScaleFactor());
               stroke_data.SetupPaint(&stroke_flags);
 

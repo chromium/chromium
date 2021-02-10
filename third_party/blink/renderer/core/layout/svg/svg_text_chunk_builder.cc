@@ -29,7 +29,7 @@ namespace blink {
 
 float CalculateTextAnchorShift(const ComputedStyle& style, float length) {
   bool is_ltr = style.IsLeftToRightDirection();
-  switch (style.SvgStyle().TextAnchor()) {
+  switch (style.TextAnchor()) {
     default:
       NOTREACHED();
       FALLTHROUGH;
@@ -46,7 +46,7 @@ namespace {
 
 bool NeedsTextAnchorAdjustment(const ComputedStyle& style) {
   bool is_ltr = style.IsLeftToRightDirection();
-  switch (style.SvgStyle().TextAnchor()) {
+  switch (style.TextAnchor()) {
     default:
       NOTREACHED();
       FALLTHROUGH;

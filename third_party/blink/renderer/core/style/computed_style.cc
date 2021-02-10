@@ -2434,6 +2434,45 @@ AtomicString ComputedStyle::ListStyleStringValue() const {
   return GetListStyleType()->GetStringValue();
 }
 
+static const int kPaintOrderBitwidth = 2;
+
+static unsigned PaintOrderSequence(EPaintOrderType first,
+                                   EPaintOrderType second,
+                                   EPaintOrderType third) {
+  return (((third << kPaintOrderBitwidth) | second) << kPaintOrderBitwidth) |
+         first;
+}
+
+EPaintOrderType ComputedStyle::PaintOrderType(unsigned index) const {
+  unsigned pt = 0;
+  DCHECK(index < ((1 << kPaintOrderBitwidth) - 1));
+  switch (PaintOrder()) {
+    case kPaintOrderNormal:
+    case kPaintOrderFillStrokeMarkers:
+      pt = PaintOrderSequence(PT_FILL, PT_STROKE, PT_MARKERS);
+      break;
+    case kPaintOrderFillMarkersStroke:
+      pt = PaintOrderSequence(PT_FILL, PT_MARKERS, PT_STROKE);
+      break;
+    case kPaintOrderStrokeFillMarkers:
+      pt = PaintOrderSequence(PT_STROKE, PT_FILL, PT_MARKERS);
+      break;
+    case kPaintOrderStrokeMarkersFill:
+      pt = PaintOrderSequence(PT_STROKE, PT_MARKERS, PT_FILL);
+      break;
+    case kPaintOrderMarkersFillStroke:
+      pt = PaintOrderSequence(PT_MARKERS, PT_FILL, PT_STROKE);
+      break;
+    case kPaintOrderMarkersStrokeFill:
+      pt = PaintOrderSequence(PT_MARKERS, PT_STROKE, PT_FILL);
+      break;
+  }
+
+  pt =
+      (pt >> (kPaintOrderBitwidth * index)) & ((1u << kPaintOrderBitwidth) - 1);
+  return static_cast<EPaintOrderType>(pt);
+}
+
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,
                    EOverscrollBehavior::kAuto);
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,

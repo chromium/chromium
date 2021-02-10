@@ -347,7 +347,6 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
   EPaintOrder PaintOrder() const {
     return (EPaintOrder)svg_inherited_flags.paint_order;
   }
-  EPaintOrderType PaintOrderType(unsigned index) const;
 
   const SVGPaint& InternalVisitedFillPaint() const {
     return fill->visited_link_paint;

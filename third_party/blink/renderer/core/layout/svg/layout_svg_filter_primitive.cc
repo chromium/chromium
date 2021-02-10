@@ -72,9 +72,8 @@ void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
     CheckForColorChange(element, svg_names::kLightingColorAttr, diff,
                         old_style->LightingColor(), style.LightingColor());
   }
-  const SVGComputedStyle& new_style = style.SvgStyle();
-  if (new_style.ColorInterpolationFilters() !=
-      old_style->SvgStyle().ColorInterpolationFilters()) {
+  if (style.ColorInterpolationFilters() !=
+      old_style->ColorInterpolationFilters()) {
     element.PrimitiveAttributeChanged(
         svg_names::kColorInterpolationFiltersAttr);
   }

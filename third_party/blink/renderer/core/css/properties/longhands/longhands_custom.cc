@@ -1585,10 +1585,10 @@ const CSSValue* ClipPath::CSSValueFromComputedStyleInternal(
 
 const CSSValue* ClipRule::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.ClipRule());
+  return CSSIdentifierValue::Create(style.ClipRule());
 }
 
 const CSSValue* Color::ParseSingleValue(CSSParserTokenRange& range,
@@ -1650,26 +1650,26 @@ void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
 
 const CSSValue* ColorInterpolation::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.ColorInterpolation());
+  return CSSIdentifierValue::Create(style.ColorInterpolation());
 }
 
 const CSSValue* ColorInterpolationFilters::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.ColorInterpolationFilters());
+  return CSSIdentifierValue::Create(style.ColorInterpolationFilters());
 }
 
 const CSSValue* ColorRendering::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.ColorRendering());
+  return CSSIdentifierValue::Create(style.ColorRendering());
 }
 
 const CSSValue* ColorScheme::ParseSingleValue(
@@ -2655,10 +2655,10 @@ void Display::ApplyValue(StyleResolverState& state,
 
 const CSSValue* DominantBaseline::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.DominantBaseline());
+  return CSSIdentifierValue::Create(style.DominantBaseline());
 }
 
 const CSSValue* EmptyCells::CSSValueFromComputedStyleInternal(
@@ -2712,10 +2712,10 @@ const CSSValue* FillOpacity::CSSValueFromComputedStyleInternal(
 
 const CSSValue* FillRule::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.FillRule());
+  return CSSIdentifierValue::Create(style.FillRule());
 }
 
 const CSSValue* Filter::ParseSingleValue(CSSParserTokenRange& range,
@@ -5474,11 +5474,11 @@ const CSSValue* PaintOrder::ParseSingleValue(
 }
 
 const CSSValue* PaintOrder::CSSValueFromComputedStyleInternal(
-    const ComputedStyle&,
-    const SVGComputedStyle& svg_style,
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  const EPaintOrder paint_order = svg_style.PaintOrder();
+  const EPaintOrder paint_order = style.PaintOrder();
   if (paint_order == kPaintOrderNormal)
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
 
@@ -6345,10 +6345,10 @@ const CSSValue* ShapeOutside::CSSValueFromComputedStyleInternal(
 
 const CSSValue* ShapeRendering::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.ShapeRendering());
+  return CSSIdentifierValue::Create(style.ShapeRendering());
 }
 
 static CSSValue* ConsumePageSize(CSSParserTokenRange& range) {
@@ -6784,10 +6784,10 @@ const CSSValue* TextAlignLast::CSSValueFromComputedStyleInternal(
 
 const CSSValue* TextAnchor::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSIdentifierValue::Create(svg_style.TextAnchor());
+  return CSSIdentifierValue::Create(style.TextAnchor());
 }
 
 const CSSValue* TextCombineUpright::CSSValueFromComputedStyleInternal(

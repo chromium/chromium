@@ -172,7 +172,7 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
     }
 
     for (int i = 0; i < 3; i++) {
-      switch (svg_style.PaintOrderType(i)) {
+      switch (style.PaintOrderType(i)) {
         case PT_FILL:
           if (has_fill) {
             PaintText(paint_info, style, *selection_style, fragment,
@@ -345,7 +345,7 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
   const SVGComputedStyle& svg_decoration_style = decoration_style.SvgStyle();
 
   for (int i = 0; i < 3; i++) {
-    switch (svg_decoration_style.PaintOrderType(i)) {
+    switch (decoration_style.PaintOrderType(i)) {
       case PT_FILL:
         if (svg_decoration_style.HasFill()) {
           PaintFlags fill_flags;
