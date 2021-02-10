@@ -150,6 +150,8 @@ RemoteObjectGatewayFactoryImpl::RemoteObjectGatewayFactoryImpl(
 void RemoteObjectGatewayFactoryImpl::CreateRemoteObjectGateway(
     mojo::PendingRemote<mojom::blink::RemoteObjectHost> host,
     mojo::PendingReceiver<mojom::blink::RemoteObjectGateway> receiver) {
+  if (!frame_)
+    return;
   RemoteObjectGatewayImpl::BindMojoReceiver(frame_, std::move(host),
                                             std::move(receiver));
 }
