@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-in_app_assets = [
+in_app_images = [
   "barcode_chevron_down.svg",
   "barcode_chevron_up.svg",
   "barcode_copy.svg",
@@ -50,4 +50,10 @@ in_app_assets = [
   "settings_resolution.svg",
   "settings_timer_duration.svg",
   "spinner.svg",
+]
+
+icon_images = [
+  "camera_app_icons_128.png",
+  "camera_app_icons_192.png",
+  "camera_app_icons_48.png",
 ]

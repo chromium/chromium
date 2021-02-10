@@ -43,8 +43,14 @@ grit("resources") {
 
 # Resources used by chrome://camera-app.
 grit("camera_app_resources") {
-  source = "../components/camera_app_ui/resources/camera_app_resources.grd"
+  enable_input_discovery_for_gn_analyze = false
+  defines =
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
 
+  deps = [ "//chromeos/components/camera_app_ui:build_grd" ]
+
+  camera_app_gen_dir = "$root_gen_dir/chromeos/components/camera_app_ui"
+  source = "$camera_app_gen_dir/chromeos_camera_app_resources.grd"
   outputs = [
     "grit/chromeos_camera_app_resources.h",
     "grit/chromeos_camera_app_resources_map.cc",
@@ -52,14 +58,6 @@ grit("camera_app_resources") {
     "chromeos_camera_app_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
-
-  deps = [
-    "//chromeos/components/camera_app_ui:mojo_bindings_js",
-    "//chromeos/components/camera_app_ui/resources/js:gen_preload_images_js",
-    "//media/capture/video/chromeos/mojom:cros_camera_js",
-    "//mojo/public/js:bindings_lite",
-    "//third_party/blink/public/mojom:mojom_platform_js",
-  ]
 }
 
 # Resources used by chrome://connectivity-diagnostics
