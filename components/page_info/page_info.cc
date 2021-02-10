@@ -841,7 +841,8 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
           subject_name));
     }
 
-    if (visible_security_state.connection_used_legacy_tls) {
+    if (visible_security_state.connection_used_legacy_tls &&
+        !visible_security_state.should_suppress_legacy_tls_warning) {
       site_connection_status_ = SITE_CONNECTION_STATUS_LEGACY_TLS;
     }
 

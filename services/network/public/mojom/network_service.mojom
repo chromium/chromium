@@ -341,6 +341,11 @@ interface NetworkService {
   // this call, will use the same CRLSet.
   UpdateCRLSet(mojo_base.mojom.ReadOnlyBuffer crl_set) => ();
 
+  // Updates the configuration used for determining if a site should have legacy
+  // TLS warnings suppressed. Configs that cannot be parsed as a
+  // LegacyTLSExperimentConfig (protobuf) will be ignored.
+  UpdateLegacyTLSConfig(mojo_base.mojom.ReadOnlyBuffer config) => ();
+
   // Notification that the certificate database has been modified.
   OnCertDBChanged();
 

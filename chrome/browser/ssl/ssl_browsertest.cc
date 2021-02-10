@@ -7764,13 +7764,6 @@ IN_PROC_BROWSER_TEST_F(TLSLegacyVersionSSLUITest, WarningTLS11) {
       "*The connection used to load resources from https://%s:%s*",
       url.host().c_str(), url.port().c_str()));
   ui_test_utils::NavigateToURL(browser(), url);
-
-  // Click through the interstitial (the console warning is only shown on the
-  // affected page, not the interstitial).
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  WaitForInterstitial(tab);
-  ProceedThroughInterstitial(tab);
-
   console_observer.Wait();
   EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
                                  "*will be disabled in the future*"));
@@ -7790,13 +7783,6 @@ IN_PROC_BROWSER_TEST_F(TLSLegacyVersionSSLUITest, WarningTLS1) {
       "*The connection used to load resources from https://%s:%s*",
       url.host().c_str(), url.port().c_str()));
   ui_test_utils::NavigateToURL(browser(), url);
-
-  // Click through the interstitial (the console warning is only shown on the
-  // affected page, not the interstitial).
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  WaitForInterstitial(tab);
-  ProceedThroughInterstitial(tab);
-
   console_observer.Wait();
   EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
                                  "*will be disabled in the future*"));
@@ -7804,10 +7790,51 @@ IN_PROC_BROWSER_TEST_F(TLSLegacyVersionSSLUITest, WarningTLS1) {
                                  "*should enable TLS 1.2 or later*"));
 }
 
+// Warnings should show for subresources, but cap after a limit.
+IN_PROC_BROWSER_TEST_F(TLSLegacyVersionSSLUITest, ManySubresources) {
+  SetTLSVersion(net::SSL_PROTOCOL_VERSION_TLS1);
+  content::SetupCrossSiteRedirector(https_server());
+  ASSERT_TRUE(https_server()->Start());
+  GURL url(https_server()->GetURL("/ssl/page_with_many_subresources.html"));
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Observe the message for a cross-site subresource.
+  {
+    content::WebContentsConsoleObserver console_observer(tab);
+    console_observer.SetPattern("*https://a.test*");
+    ui_test_utils::NavigateToURL(browser(), url);
+    console_observer.Wait();
+    EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
+                                   "*will be disabled in the future*"));
+    EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
+                                   "*should enable TLS 1.2 or later*"));
+  }
+  // Observe that the message caps out after some number of subresources.
+  {
+    content::WebContentsConsoleObserver console_observer(tab);
+    console_observer.SetPattern("*Additional resources*");
+    ui_test_utils::NavigateToURL(browser(), url);
+    console_observer.Wait();
+    EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
+                                   "*will be disabled in the future*"));
+    EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
+                                   "*should enable TLS 1.2 or later*"));
+  }
+}
+
 class LegacyTLSInterstitialTest : public TLSLegacyVersionSSLUITest {
  public:
   LegacyTLSInterstitialTest() {
     feature_list_.InitAndEnableFeature(net::features::kLegacyTLSEnforced);
+  }
+
+  void SetUpOnMainThread() override {
+    TLSLegacyVersionSSLUITest::SetUpOnMainThread();
+
+    // Set up browser and network service configs to be empty by default.
+    InitializeEmptyLegacyTLSConfig();
+    base::RunLoop run_loop;
+    InitializeEmptyLegacyTLSConfigNetworkService(&run_loop);
   }
 
  private:
@@ -7954,6 +7981,27 @@ IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, BackToSafety) {
       security_interstitials::MetricsHelper::DONT_PROCEED, 1);
 }
 
+// Check that we don't show the interstitial for sites in the control set.
+IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, ControlSiteNoInterstitial) {
+  InitializeLegacyTLSConfigWithControl();
+  base::RunLoop run_loop;
+  InitializeLegacyTLSConfigWithControlNetworkService(&run_loop);
+
+  SetTLSVersion(net::SSL_PROTOCOL_VERSION_TLS1);
+  ASSERT_TRUE(https_server()->Start());
+
+  base::HistogramTester histograms;
+
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(kLegacyTLSHost, "/ssl/google.html"));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingLegacyTLSInterstitial(tab));
+
+  // Interstitial metrics should not have been recorded from this navigation.
+  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
+}
+
 // A WebContentsObserver that allows the user to wait for a navigation, and
 // check whether the resource for the navigation was loaded from cache or not.
 class CacheNavigationObserver : public content::WebContentsObserver {
@@ -8002,6 +8050,63 @@ IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, LegacyTLSPagesNotCached) {
   observer.WaitForNavigation();  // Will fail if resource is loaded from cache.
 }
 
+// Tests that resources from control sites are cached, even if they are loaded
+// over legacy TLS.
+IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, ControlSitePagesCached) {
+  InitializeLegacyTLSConfigWithControl();
+  base::RunLoop run_loop;
+  InitializeLegacyTLSConfigWithControlNetworkService(&run_loop);
+
+  // Connect over TLS 1.0 to a site in the control list.
+  SetTLSVersion(net::SSL_PROTOCOL_VERSION_TLS1);
+  ASSERT_TRUE(https_server()->Start());
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(kLegacyTLSHost, "/cachetime"));
+  auto* tab1 = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingLegacyTLSInterstitial(tab1));
+
+  // Open a new tab and navigate so that resources are fetched via the disk
+  // cache. Navigating to the same URL in the same tab triggers a refresh which
+  // will not check the disk cache.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* tab2 = browser()->tab_strip_model()->GetActiveWebContents();
+
+  CacheNavigationObserver observer(tab2, true);
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(kLegacyTLSHost, "/cachetime"));
+  observer.WaitForNavigation();  // Will fail if not loaded from cache.
+}
+
+// Tests that resources loaded over legacy TLS but are control sites should be
+// cached.
+IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, NormalPagesCached) {
+  // Connect to a non-legacy TLS site.
+  ASSERT_TRUE(https_server()->Start());
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(kLegacyTLSHost, "/cachetime"));
+  auto* tab1 = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingLegacyTLSInterstitial(tab1));
+
+  // Open a new tab and navigate so that resources are fetched via the disk
+  // cache. Navigating to the same URL in the same tab triggers a refresh which
+  // will not check the disk cache.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* tab2 = browser()->tab_strip_model()->GetActiveWebContents();
+
+  CacheNavigationObserver observer(tab2, true);
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(kLegacyTLSHost, "/cachetime"));
+  observer.WaitForNavigation();  // Will fail if not loaded from cache.
+}
+
 // Tests that a page with legacy TLS and HSTS shows a bypassable interstitial
 // rather than a hard non-bypassable HSTS warning.
 IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, LegacyTLSNotFatal) {
@@ -8027,6 +8132,30 @@ IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, LegacyTLSNotFatal) {
   ASSERT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetMainFrame(),
                                                   javascript, &result));
   EXPECT_EQ(security_interstitials::CMD_TEXT_FOUND, result);
+}
+
+// Tests that the legacy TLS control config applies to subdomains if the
+// registrable domain is in the control config.
+IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest,
+                       ControlConfigIncludesSubdomains) {
+  InitializeLegacyTLSConfigWithControl();
+  base::RunLoop run_loop;
+  InitializeLegacyTLSConfigWithControlNetworkService(&run_loop);
+
+  SetTLSVersion(net::SSL_PROTOCOL_VERSION_TLS1);
+  ASSERT_TRUE(https_server()->Start());
+
+  base::HistogramTester histograms;
+
+  ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(std::string("www.") + kLegacyTLSHost,
+                                        "/ssl/google.html"));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingLegacyTLSInterstitial(tab));
+
+  // Interstitial metrics should not have been recorded from this navigation.
+  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
 }
 
 // Checks that SimpleURLLoader, which uses services/network/url_loader.cc, goes

@@ -20,6 +20,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
+#include "chrome/browser/ssl/tls_deprecation_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -144,6 +145,23 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
   if (state->connection_info_initialized) {
     state->connection_used_legacy_tls =
         IsLegacyTLS(state->url, state->connection_status);
+    if (state->connection_used_legacy_tls) {
+      // We cache the results of the lookup for the duration of a navigation
+      // entry.
+      int navigation_id =
+          web_contents()->GetController().GetVisibleEntry()->GetUniqueID();
+      if (cached_should_suppress_legacy_tls_warning_ &&
+          cached_should_suppress_legacy_tls_warning_.value().first ==
+              navigation_id) {
+        state->should_suppress_legacy_tls_warning =
+            cached_should_suppress_legacy_tls_warning_.value().second;
+      } else {
+        state->should_suppress_legacy_tls_warning =
+            ShouldSuppressLegacyTLSWarning(state->url);
+        cached_should_suppress_legacy_tls_warning_ = std::pair<int, bool>(
+            navigation_id, state->should_suppress_legacy_tls_warning);
+      }
+    }
   }
 
   // Malware status might already be known even if connection security
