@@ -3,17 +3,5 @@
  * found in the LICENSE file. */
 
 body {
-  background-color: blue;
-}
-
-body #div1 {
-  background-color: blue;
-}
-
-body #div2 {
-  background-color: blue;
-}
-
-body #div3 {
-  background-color: blue;
+  display: none;
 }
