@@ -34,6 +34,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorFactory.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorObserver.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorSupplier.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
@@ -48,6 +49,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]
 }

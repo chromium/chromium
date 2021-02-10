@@ -2465,9 +2465,13 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testExternalNavigationWithUserGesture(@EnabledFeature int enabledFeature) {
+        final ExternalNavigationDelegateImpl delegate =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        ()
+                                -> new ExternalNavigationDelegateImpl(
+                                        sActivityTestRule.getActivity().getActivityTab()));
         final ExternalNavigationHandler externalNavHandler =
-                new ExternalNavigationHandler(new ExternalNavigationDelegateImpl(
-                        sActivityTestRule.getActivity().getActivityTab()));
+                new ExternalNavigationHandler(delegate);
         final NavigationParams navigationParams = new NavigationParams(
                 "intent://test/#Intent;scheme=test;package=com.chrome.test;end", "",
                 0 /* navigationId */, false /* isPost */, true /* hasUserGesture */,
@@ -2495,9 +2499,13 @@ public class ContextualSearchManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testRedirectedExternalNavigationWithUserGesture(
             @EnabledFeature int enabledFeature) {
+        final ExternalNavigationDelegateImpl delegate =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        ()
+                                -> new ExternalNavigationDelegateImpl(
+                                        sActivityTestRule.getActivity().getActivityTab()));
         final ExternalNavigationHandler externalNavHandler =
-                new ExternalNavigationHandler(new ExternalNavigationDelegateImpl(
-                        sActivityTestRule.getActivity().getActivityTab()));
+                new ExternalNavigationHandler(delegate);
 
         final NavigationParams initialNavigationParams = new NavigationParams("http://test.com", "",
                 0 /* navigationId */, false /* isPost */, true /* hasUserGesture */,
@@ -2534,9 +2542,13 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testExternalNavigationWithoutUserGesture(@EnabledFeature int enabledFeature) {
+        final ExternalNavigationDelegateImpl delegate =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        ()
+                                -> new ExternalNavigationDelegateImpl(
+                                        sActivityTestRule.getActivity().getActivityTab()));
         final ExternalNavigationHandler externalNavHandler =
-                new ExternalNavigationHandler(new ExternalNavigationDelegateImpl(
-                        sActivityTestRule.getActivity().getActivityTab()));
+                new ExternalNavigationHandler(delegate);
         final NavigationParams navigationParams = new NavigationParams(
                 "intent://test/#Intent;scheme=test;package=com.chrome.test;end", "",
                 0 /* navigationId */, false /* isPost */, false /* hasUserGesture */,

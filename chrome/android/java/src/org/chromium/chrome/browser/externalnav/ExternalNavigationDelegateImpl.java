@@ -20,10 +20,10 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity;
@@ -33,6 +33,8 @@ import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -53,10 +55,13 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     protected final Context mApplicationContext;
     private final Tab mTab;
     private final TabObserver mTabObserver;
+    private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
+
     private boolean mIsTabDestroyed;
 
     public ExternalNavigationDelegateImpl(Tab tab) {
         mTab = tab;
+        mTabModelSelectorSupplier = TabModelSelectorSupplier.from(tab.getWindowAndroid());
         mApplicationContext = ContextUtils.getApplicationContext();
         mTabObserver = new EmptyTabObserver() {
             @Override
@@ -202,10 +207,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public void closeTab() {
         if (!hasValidTab()) return;
-        Context context = mTab.getWindowAndroid().getContext().get();
-        if (context instanceof ChromeActivity) {
-            ((ChromeActivity) context).getTabModelSelector().closeTab(mTab);
-        }
+        if (!mTabModelSelectorSupplier.hasValue()) return;
+        mTabModelSelectorSupplier.get().closeTab(mTab);
     }
 
     @Override
@@ -299,8 +302,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
      */
     protected void startAutofillAssistantWithIntent(
             Intent targetIntent, String browserFallbackUrl) {
-        AutofillAssistantFacade.start((ChromeActivity) TabUtils.getActivity(mTab),
-                targetIntent.getExtras(), browserFallbackUrl);
+        AutofillAssistantFacade.start(
+                TabUtils.getActivity(mTab), targetIntent.getExtras(), browserFallbackUrl);
     }
 
     /**

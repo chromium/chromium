@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -74,15 +75,17 @@ public class AutofillAssistantFacade {
 
     /**
      * Starts Autofill Assistant.
-     * @param activity {@link ChromeActivity} the activity on which the Autofill Assistant is being
+     * @param activity {@link Activity} the activity on which the Autofill Assistant is being
      *         started.
      * @param bundleExtras {@link Bundle} the extras which were used to start the Autofill
      *         Assistant.
      * @param initialUrl the initial URL the Autofill Assistant should be started on.
      */
-    public static void start(
-            ChromeActivity activity, @Nullable Bundle bundleExtras, String initialUrl) {
-        start(activity,
+    public static void start(Activity activity, @Nullable Bundle bundleExtras, String initialUrl) {
+        // TODO(crbug.com/1155809): Remove ChromeActivity reference.
+        assert activity instanceof ChromeActivity;
+        ChromeActivity chromeActivity = (ChromeActivity) activity;
+        start(chromeActivity,
                 AutofillAssistantArguments.newBuilder()
                         .fromBundle(bundleExtras)
                         .withInitialUrl(initialUrl)

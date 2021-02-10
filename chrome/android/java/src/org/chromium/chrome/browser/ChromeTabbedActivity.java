@@ -407,7 +407,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public ChromeTabbedActivity() {
         mMainIntentMetrics = new MainIntentBehaviorMetrics();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mMultiInstanceManager = new MultiInstanceManager(this, mTabModelSelectorSupplier,
+            mMultiInstanceManager = new MultiInstanceManager(this, getTabModelSelectorSupplier(),
                     getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(), this);
         } else {
             mMultiInstanceManager = null;
@@ -1508,7 +1508,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getActivityTabProvider(), mEphemeralTabCoordinatorSupplier,
                 mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 getOverviewModeBehaviorSupplier(), this::getContextualSearchManager,
-                mTabModelSelectorSupplier, mStartSurfaceSupplier,
+                getTabModelSelectorSupplier(), mStartSurfaceSupplier,
                 mLayoutStateProviderOneshotSupplier, mStartSurfaceParentTabSupplier);
     }
 
@@ -1691,7 +1691,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mRootUiCoordinator.getBottomSheetController(),
                     /* ChromeActivityNativeDelegate */ this, /* isCustomTab= */ false,
                     getBrowserControlsManager(), getFullscreenManager(),
-                    /* TabCreatorManager */ this, mTabModelSelectorSupplier,
+                    /* TabCreatorManager */ this, getTabModelSelectorSupplier(),
                     this::getCompositorViewHolder, getModalDialogManagerSupplier());
         }
         return mTabDelegateFactory;

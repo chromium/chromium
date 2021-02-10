@@ -152,6 +152,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorProfileSupplier;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -241,9 +242,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     private C mComponent;
 
-    protected ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
-    protected ObservableSupplier<Profile> mTabModelProfileSupplier =
+    /** Used to access the {@link ShareDelegate} from {@link WindowAndroid}. */
+    private final UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier =
+            new ShareDelegateSupplier();
+    /** Used to access the {@link TabModelSelector} from {@link WindowAndroid}. */
+    private final UnownedUserDataSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            new TabModelSelectorSupplier();
+
+    protected TabModelSelectorProfileSupplier mTabModelProfileSupplier =
             new TabModelSelectorProfileSupplier(mTabModelSelectorSupplier);
     protected ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
             new ObservableSupplierImpl<>();
@@ -341,11 +347,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private List<MenuOrKeyboardActionController.MenuOrKeyboardActionHandler> mMenuActionHandlers =
             new ArrayList<>();
 
-    // UnownedUserDataSuppliers
-    /** Allows accessing {@link ShareDelegate} from classes created from native. */
-    private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier =
-            new ShareDelegateSupplier();
-
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
     }
@@ -358,8 +359,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     public void performPreInflationStartup() {
-        // Setup UnownedUserData suppliers before they're used.
-        mShareDelegateSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+        setupUnownedUserDataSuppliers();
 
         // Make sure the root coordinator is created prior to calling super to ensure all
         // the activity lifecycle events are called.
@@ -403,6 +403,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         getWindow().setBackgroundDrawable(getBackgroundDrawable());
     }
 
+    private void setupUnownedUserDataSuppliers() {
+        mShareDelegateSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+        mTabModelSelectorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+    }
+
     protected RootUiCoordinator createRootUiCoordinator() {
         // TODO(https://crbug.com/931496): Remove dependency on ChromeActivity in favor of passing
         // in direct dependencies on needed classes. While migrating code from Chrome*Activity
@@ -411,7 +416,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // a recommended pattern.
         return new RootUiCoordinator(this, null, getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
-                this::getContextualSearchManager, mTabModelSelectorSupplier,
+                this::getContextualSearchManager, getTabModelSelectorSupplier(),
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
                 new OneshotSupplierImpl<>(), () -> null);
     }
@@ -426,7 +431,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         ChromeActivityCommonsModule commonsModule = overridenCommonsFactory == null
                 ? new ChromeActivityCommonsModule(this,
-                        mRootUiCoordinator::getBottomSheetController, mTabModelSelectorSupplier,
+                        mRootUiCoordinator::getBottomSheetController, getTabModelSelectorSupplier(),
                         getBrowserControlsManager(), getBrowserControlsManager(),
                         getBrowserControlsManager(), getFullscreenManager(),
                         getLayoutManagerSupplier(), getLifecycleDispatcher(),
@@ -440,7 +445,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         /* ChromeActivityNativeDelegate */ this, getModalDialogManagerSupplier(),
                         getBrowserControlsManager())
                 : overridenCommonsFactory.create(this, mRootUiCoordinator::getBottomSheetController,
-                        mTabModelSelectorSupplier, getBrowserControlsManager(),
+                        getTabModelSelectorSupplier(), getBrowserControlsManager(),
                         getBrowserControlsManager(), getBrowserControlsManager(),
                         getFullscreenManager(), getLayoutManagerSupplier(),
                         getLifecycleDispatcher(), this::getSnackbarManager, mActivityTabProvider,
@@ -1358,7 +1363,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (mShareDelegateSupplier != null) {
             mShareDelegateSupplier.destroy();
-            mShareDelegateSupplier = null;
+        }
+
+        if (mTabModelSelectorSupplier != null) {
+            mTabModelSelectorSupplier.destroy();
         }
 
         mActivityTabProvider.destroy();
@@ -1640,13 +1648,23 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * {@link TabModelSelector} no longer implements TabModel.  Use getTabModelSelector() or
      * getCurrentTabModel() depending on your needs.
      * @return The {@link TabModelSelector}, possibly null.
+     * @deprecated in favor of getTabModelSelectorSupplier.
      */
+    @Deprecated
     public TabModelSelector getTabModelSelector() {
         if (!mTabModelOrchestrator.areTabModelsInitialized()) {
             throw new IllegalStateException(
                     "Attempting to access TabModelSelector before initialization");
         }
         return mTabModelOrchestrator.getTabModelSelector();
+    }
+
+    /**
+     * Returns an {@link ObservableSupplier} for {@link TabModelSelector}. Prefer this method over
+     * using {@link #getTabModelSelector()} directly.
+     */
+    public final ObservableSupplier<TabModelSelector> getTabModelSelectorSupplier() {
+        return mTabModelSelectorSupplier;
     }
 
     /**
