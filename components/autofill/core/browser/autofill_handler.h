@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -335,6 +336,9 @@ class AutofillHandler
   // |form_structures|.
   void OnFormsParsed(const std::vector<const FormData*>& forms);
 
+  void PropagateAutofillPredictionsToDriver(
+      const std::vector<FormStructure*>& forms);
+
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
   AutofillDriver* const driver_;
@@ -368,6 +372,10 @@ class AutofillHandler
 
   // Tracks whether or not rich query encoding is enabled for this client.
   const bool is_rich_query_enabled_ = false;
+
+  // Task to delay propagate the query result to driver for testing.
+  base::CancelableOnceCallback<void(const std::vector<FormStructure*>&)>
+      query_result_delay_task_;
 
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
   ObserverForTest* observer_for_testing_ = nullptr;

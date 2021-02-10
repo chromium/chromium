@@ -4,8 +4,11 @@
 
 #include "components/autofill/core/browser/autofill_handler.h"
 
+#include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
@@ -148,6 +151,8 @@ AutofillHandler::AutofillHandler(
 
 AutofillHandler::~AutofillHandler() {
   translate_observation_.Reset();
+  if (!query_result_delay_task_.IsCancelled())
+    query_result_delay_task_.Cancel();
 }
 
 void AutofillHandler::OnLanguageDetermined(
@@ -520,6 +525,32 @@ void AutofillHandler::OnLoadedServerPredictions(
 
   LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
 
+  // TODO(crbug.com/1176816): Remove the test code after initial integration.
+  int delay = 0;
+  if (auto* cmd = base::CommandLine::ForCurrentProcess()) {
+    // This command line helps to simulate query result arriving after autofill
+    // is triggered and shall be used for manual test only.
+    std::string value = cmd->GetSwitchValueASCII(
+        "autofill-server-query-result-delay-in-seconds");
+    if (!base::StringToInt(value, &delay))
+      delay = 0;
+  }
+
+  if (delay > 0) {
+    query_result_delay_task_.Reset(
+        base::BindOnce(&AutofillHandler::PropagateAutofillPredictionsToDriver,
+                       base::Unretained(this)));
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(query_result_delay_task_.callback(), queried_forms),
+        base::TimeDelta::FromSeconds(delay));
+  } else {
+    PropagateAutofillPredictionsToDriver(queried_forms);
+  }
+}
+
+void AutofillHandler::PropagateAutofillPredictionsToDriver(
+    const std::vector<FormStructure*>& queried_forms) {
   // Forward form structures to the password generation manager to detect
   // account creation forms.
   driver()->PropagateAutofillPredictions(queried_forms);
