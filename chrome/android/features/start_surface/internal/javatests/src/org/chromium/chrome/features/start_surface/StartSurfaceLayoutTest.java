@@ -182,7 +182,7 @@ public class StartSurfaceLayoutTest {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
@@ -731,7 +731,6 @@ public class StartSurfaceLayoutTest {
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
             message = "https://crbug.com/1023833")
     public void testIncognitoToggle_thumbnailFetchCount() throws InterruptedException {
-        mActivityTestRule.loadUrl(mUrl);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         int oldFetchCount = mTabListDelegate.getBitmapFetchCountForTesting();
 
@@ -820,7 +819,8 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
+        + "thumbnail_aspect_ratio/1.0"})
     public void testTabSuggestionMessageCard_dismiss() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
@@ -850,7 +850,8 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
+        + "/thumbnail_aspect_ratio/1.0"})
     public void testTabSuggestionMessageCard_review() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
@@ -880,7 +881,8 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
+        + "thumbnail_aspect_ratio/1.0"})
     public void testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup()
             throws InterruptedException {
         // clang-format on
@@ -893,7 +895,8 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
+        + "thumbnail_aspect_ratio/1.0"})
     public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup()
             throws InterruptedException {
         // clang-format on
@@ -906,7 +909,8 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
+        + "thumbnail_aspect_ratio/1.0"})
     public void testTabSuggestionMessageCardDismissAfterTabClosing() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, mUrl);
@@ -992,7 +996,8 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
+        + "thumbnail_aspect_ratio/1.0"})
     public void testTabSuggestionMessageCard_orientation() throws InterruptedException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1326,8 +1331,8 @@ public class StartSurfaceLayoutTest {
     @Feature({"RenderTest"})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.85"})
-    public void testRenderGrid_withAspectRatioPoint85() throws IOException {
+    @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
+    public void testRenderGrid_withAspectRatioOfOne() throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(3, 0, "about:blank");
@@ -1337,7 +1342,7 @@ public class StartSurfaceLayoutTest {
         createTabGroup(cta, false, tabGroup);
         // Make sure all tabs have thumbnail.
         enterGTSWithThumbnailRetry();
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "aspect_ratio_point_85");
+        mRenderTestRule.render(cta.findViewById(R.id.tab_list_view), "aspect_ratio_of_one");
     }
 
     @Test
@@ -1804,12 +1809,14 @@ public class StartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @Feature("TabSuggestion")
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
-            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"})
+            "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0" +
+            "/thumbnail_aspect_ratio/1.0"})
     public void testTabGroupManualSelection_AfterReviewTabSuggestion() throws InterruptedException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

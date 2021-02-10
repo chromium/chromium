@@ -73,7 +73,7 @@ public class TabContentManager {
     // Whether to allow to refetch tab thumbnail if the aspect ratio is not matching.
     public static final BooleanCachedFieldTrialParameter ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION =
             new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, "allow_to_refetch", false);
+                    ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, "allow_to_refetch", true);
 
     @VisibleForTesting
     public static final String UMA_THUMBNAIL_FETCHING_RESULT =

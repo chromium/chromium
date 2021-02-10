@@ -68,7 +68,7 @@ public class TabSuggestionMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:baseline_tab_suggestions/true/enable_launch_polish/true"
-            + "/min_time_between_prefetches/0";
+            + "/min_time_between_prefetches/0/thumbnail_aspect_ratio/1.0";
     private static final String ENABLE_CLOSE_SUGGESTION_PARAM =
             "/baseline_close_tab_suggestions/true";
     private static final String ENABLE_GROUP_SUGGESTION_PARAM =
