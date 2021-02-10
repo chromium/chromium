@@ -15,6 +15,7 @@
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/log_handler.h"
+#include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/page_handler.h"
 #include "content/browser/devtools/protocol/security_handler.h"
@@ -769,6 +770,55 @@ void OnResponseReceivedExtraInfo(
                          devtools_request_id, response_cookie_list,
                          response_headers, response_headers_text,
                          resource_address_space);
+}
+
+void OnPrivateNetworkRequest(
+    int32_t process_id,
+    int32_t routing_id,
+    const base::Optional<std::string>& devtools_request_id,
+    const GURL& url,
+    bool is_warning,
+    network::mojom::IPAddressSpace resource_address_space,
+    const network::mojom::ClientSecurityStatePtr client_security_state) {
+  FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, routing_id);
+  if (!ftn)
+    return;
+  auto cors_error_status =
+      protocol::Network::CorsErrorStatus::Create()
+          .SetCorsError(
+              protocol::Network::CorsErrorEnum::InsecurePrivateNetwork)
+          .SetFailedParameter("")
+          .Build();
+  std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
+      protocol::Audits::AffectedRequest::Create()
+          .SetRequestId(devtools_request_id.value_or(""))
+          .SetUrl(url.spec())
+          .Build();
+  auto cors_issue_details =
+      protocol::Audits::CorsIssueDetails::Create()
+          .SetIsWarning(is_warning)
+          .SetResourceIPAddressSpace(
+              protocol::NetworkHandler::BuildIpAddressSpace(
+                  resource_address_space))
+          .SetRequest(std::move(affected_request))
+          .SetCorsErrorStatus(std::move(cors_error_status))
+          .Build();
+  auto maybe_protocol_security_state =
+      protocol::NetworkHandler::MaybeBuildClientSecurityState(
+          client_security_state);
+  if (maybe_protocol_security_state.isJust()) {
+    cors_issue_details->SetClientSecurityState(
+        maybe_protocol_security_state.takeJust());
+  }
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetCorsIssueDetails(std::move(cors_issue_details))
+                     .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::CorsIssue)
+                   .SetDetails(std::move(details))
+                   .Build();
+  ReportBrowserInitiatedIssue(ftn->current_frame_host(), issue.get());
 }
 
 void OnCorsPreflightRequest(int32_t process_id,

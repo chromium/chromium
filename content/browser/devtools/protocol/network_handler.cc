@@ -2453,44 +2453,6 @@ DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
   return Response::Success();
 }
 
-namespace {
-String BuildPrivateNetworkRequestPolicy(
-    network::mojom::PrivateNetworkRequestPolicy policy) {
-  switch (policy) {
-    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
-      return protocol::Network::PrivateNetworkRequestPolicyEnum::Allow;
-    case network::mojom::PrivateNetworkRequestPolicy::
-        kBlockFromInsecureToMorePrivate:
-      return protocol::Network::PrivateNetworkRequestPolicyEnum::
-          BlockFromInsecureToMorePrivate;
-  }
-}
-String BuildIpAddressSpace(network::mojom::IPAddressSpace space) {
-  switch (space) {
-    case network::mojom::IPAddressSpace::kLocal:
-      return protocol::Network::IPAddressSpaceEnum::Local;
-    case network::mojom::IPAddressSpace::kPrivate:
-      return protocol::Network::IPAddressSpaceEnum::Private;
-    case network::mojom::IPAddressSpace::kPublic:
-      return protocol::Network::IPAddressSpaceEnum::Public;
-    case network::mojom::IPAddressSpace::kUnknown:
-      return protocol::Network::IPAddressSpaceEnum::Unknown;
-  }
-}
-Maybe<protocol::Network::ClientSecurityState> MaybeBuildClientSecurityState(
-    const network::mojom::ClientSecurityStatePtr& state) {
-  if (!state) {
-    return {};
-  }
-  return protocol::Network::ClientSecurityState::Create()
-      .SetPrivateNetworkRequestPolicy(BuildPrivateNetworkRequestPolicy(
-          state->private_network_request_policy))
-      .SetInitiatorIPAddressSpace(BuildIpAddressSpace(state->ip_address_space))
-      .SetInitiatorIsSecureContext(state->is_web_secure_context)
-      .Build();
-}
-}  // namespace
-
 void NetworkHandler::OnRequestWillBeSentExtraInfo(
     const std::string& devtools_request_id,
     const net::CookieAccessResultList& request_cookie_list,
@@ -2742,6 +2704,50 @@ void NetworkHandler::OnTrustTokenOperationDone(
       GetTrustTokenOperationType(result.type), devtools_request_id,
       std::move(top_level_origin), std::move(issuer),
       result.issued_token_count);
+}
+
+String NetworkHandler::BuildPrivateNetworkRequestPolicy(
+    network::mojom::PrivateNetworkRequestPolicy policy) {
+  switch (policy) {
+    case network::mojom::PrivateNetworkRequestPolicy::kAllow:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::Allow;
+    case network::mojom::PrivateNetworkRequestPolicy::
+        kBlockFromInsecureToMorePrivate:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::
+          BlockFromInsecureToMorePrivate;
+    case network::mojom::PrivateNetworkRequestPolicy::
+        kWarnFromInsecureToMorePrivate:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::
+          WarnFromInsecureToMorePrivate;
+  }
+}
+
+String NetworkHandler::BuildIpAddressSpace(
+    network::mojom::IPAddressSpace space) {
+  switch (space) {
+    case network::mojom::IPAddressSpace::kLocal:
+      return protocol::Network::IPAddressSpaceEnum::Local;
+    case network::mojom::IPAddressSpace::kPrivate:
+      return protocol::Network::IPAddressSpaceEnum::Private;
+    case network::mojom::IPAddressSpace::kPublic:
+      return protocol::Network::IPAddressSpaceEnum::Public;
+    case network::mojom::IPAddressSpace::kUnknown:
+      return protocol::Network::IPAddressSpaceEnum::Unknown;
+  }
+}
+
+Maybe<protocol::Network::ClientSecurityState>
+NetworkHandler::MaybeBuildClientSecurityState(
+    const network::mojom::ClientSecurityStatePtr& state) {
+  if (!state) {
+    return {};
+  }
+  return protocol::Network::ClientSecurityState::Create()
+      .SetPrivateNetworkRequestPolicy(BuildPrivateNetworkRequestPolicy(
+          state->private_network_request_policy))
+      .SetInitiatorIPAddressSpace(BuildIpAddressSpace(state->ip_address_space))
+      .SetInitiatorIsSecureContext(state->is_web_secure_context)
+      .Build();
 }
 
 }  // namespace protocol

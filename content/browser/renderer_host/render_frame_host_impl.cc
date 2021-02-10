@@ -1103,8 +1103,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   if (!base::FeatureList::IsEnabled(
           features::kBlockInsecurePrivateNetworkRequests)) {
-    private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    private_network_request_policy_ = network::mojom::
+        PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
   }
 
   unload_event_monitor_timeout_ =

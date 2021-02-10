@@ -2096,6 +2096,23 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
              FetchSubresourceScript(GetTestUrl("", "empty.html").spec())));
 }
 
+// This test verifies that with the blocking feature disabled, the private
+// network request policy used by RenderFrameHostImpl for requests is set
+// to warn about insecure requests.
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
+                       PrivateNetworkPolicyIsWarnByDefault) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::
+                kWarnFromInsecureToMorePrivate);
+}
+
 // This test mimics the tests below, with the blocking feature disabled. It
 // verifies that by default requests:
 //  - from an insecure page with the "treat-as-public-address" CSP directive

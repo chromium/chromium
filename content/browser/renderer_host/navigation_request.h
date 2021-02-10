@@ -1601,7 +1601,8 @@ class CONTENT_EXPORT NavigationRequest
   // https://crbug.com/1154729
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
-      network::mojom::PrivateNetworkRequestPolicy::kAllow;
+      network::mojom::PrivateNetworkRequestPolicy::
+          kWarnFromInsecureToMorePrivate;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 

@@ -1043,23 +1043,35 @@ bool URLLoader::CanConnectToAddressSpace(
            << ", private_network_request_policy: "
            << security_state->private_network_request_policy << " }.";
 
+  bool is_warning = false;
   // We use a switch statement to force this code to be amended when values are
   // added to the PrivateNetworkRequestPolicy enum.
   switch (security_state->private_network_request_policy) {
     case mojom::PrivateNetworkRequestPolicy::kAllow:
+      DVLOG(1) << "CORS-RFC1918 check: unconditionally allowed.";
+      return true;
+    case mojom::PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate:
+      is_warning = true;
       break;
     case mojom::PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate:
-      // We block requests from insecure contexts to resources in IP address
-      // spaces more private than that of the initiator. This prevents malicious
-      // insecure public websites from making requests to someone's printer, for
-      // example.
-      if (!security_state->is_web_secure_context &&
-          IsLessPublicAddressSpace(resource_address_space,
-                                   security_state->ip_address_space)) {
-        DVLOG(1) << "CORS-RFC1918 check: "
-                    "failed, blocking insecure private network request.";
-        return false;
-      }
+      is_warning = false;
+      break;
+  }
+
+  if (!security_state->is_web_secure_context &&
+      IsLessPublicAddressSpace(resource_address_space,
+                               security_state->ip_address_space)) {
+    DVLOG(1) << "CORS-RFC1918 check: failed,"
+             << (is_warning ? "but not enforcing blocking of insecure private "
+                              "network request."
+                            : "blocking insecure private network request.");
+    if (network_service_client_) {
+      network_service_client_->OnPrivateNetworkRequest(
+          factory_params_->process_id, render_frame_id_, devtools_request_id(),
+          url_request_->url(), is_warning, resource_address_space,
+          security_state->Clone());
+    }
+    return is_warning;
   }
 
   DVLOG(1) << "CORS-RFC1918 check: success.";

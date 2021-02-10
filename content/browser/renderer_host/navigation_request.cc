@@ -3020,8 +3020,8 @@ void NavigationRequest::OnStartChecksComplete(
     // right feature is not enabled.
     if (!base::FeatureList::IsEnabled(
             features::kBlockInsecurePrivateNetworkRequestsForNavigations)) {
-      client_security_state->private_network_request_policy =
-          network::mojom::PrivateNetworkRequestPolicy::kAllow;
+      client_security_state->private_network_request_policy = network::mojom::
+          PrivateNetworkRequestPolicy::kWarnFromInsecureToMorePrivate;
     }
   }
 
@@ -4647,12 +4647,6 @@ void NavigationRequest::UpdateClientSecurityStateInternals() {
   if (computed_ip_address_space != network::mojom::IPAddressSpace::kUnknown)
     policy_container_host_->SetIPAddressSpace(computed_ip_address_space);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kBlockInsecurePrivateNetworkRequests)) {
-    // No need to ask the content browser client, the feature is entirely off.
-    return;
-  }
-
   ContentBrowserClient* client = GetContentClient()->browser();
   BrowserContext* context =
       frame_tree_node_->navigator().GetController()->GetBrowserContext();
@@ -4660,11 +4654,18 @@ void NavigationRequest::UpdateClientSecurityStateInternals() {
   url::Origin origin = GetOriginForURLLoaderFactory();
   if (client->ShouldAllowInsecurePrivateNetworkRequests(context, origin)) {
     // The content browser client decided to make an exception for this URL.
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
     return;
   }
 
-  private_network_request_policy_ = network::mojom::
-      PrivateNetworkRequestPolicy::kBlockFromInsecureToMorePrivate;
+  private_network_request_policy_ =
+      base::FeatureList::IsEnabled(
+          features::kBlockInsecurePrivateNetworkRequests)
+          ? network::mojom::PrivateNetworkRequestPolicy::
+                kBlockFromInsecureToMorePrivate
+          : network::mojom::PrivateNetworkRequestPolicy::
+                kWarnFromInsecureToMorePrivate;
 }
 
 void NavigationRequest::ReadyToCommitNavigation(bool is_error) {

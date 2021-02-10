@@ -46,6 +46,15 @@ void TestNetworkServiceClient::OnRawResponse(
     const base::Optional<std::string>& raw_response_headers,
     network::mojom::IPAddressSpace resource_address_space) {}
 
+void TestNetworkServiceClient::OnPrivateNetworkRequest(
+    int32_t process_id,
+    int32_t routing_id,
+    const base::Optional<std::string>& devtools_request_id,
+    const GURL& url,
+    bool is_warning,
+    network::mojom::IPAddressSpace resource_address_space,
+    network::mojom::ClientSecurityStatePtr client_security_state) {}
+
 void TestNetworkServiceClient::OnCorsPreflightRequest(
     int32_t process_id,
     int32_t routing_id,

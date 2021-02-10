@@ -667,9 +667,8 @@ experimental domain Audits
       TransferIssue
       CreationIssue
 
-  # Details for a request that has been blocked with the BLOCKED_BY_RESPONSE
-  # code. Currently only used for COEP/COOP, but may be extended to include
-  # some CSP errors in the future.
+  # Details for a issue arising from an SAB being instantiated in, or
+  # transfered to a context that is not cross-origin isolated.
   type SharedArrayBufferIssueDetails extends object
     properties
       SourceCodeLocation sourceCodeLocation
@@ -705,6 +704,16 @@ experimental domain Audits
       string fontSize
       string fontWeight
 
+  # Details for a CORS related issue, e.g. a warning or error related to
+  # CORS RFC1918 enforcement.
+  type CorsIssueDetails extends object
+    properties
+      Network.CorsErrorStatus corsErrorStatus
+      boolean isWarning
+      AffectedRequest request
+      optional Network.IPAddressSpace resourceIPAddressSpace
+      optional Network.ClientSecurityState clientSecurityState
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -718,6 +727,7 @@ experimental domain Audits
       SharedArrayBufferIssue
       TrustedWebActivityIssue
       LowTextContrastIssue
+      CorsIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -732,6 +742,7 @@ experimental domain Audits
       optional SharedArrayBufferIssueDetails sharedArrayBufferIssueDetails
       optional TrustedWebActivityIssueDetails twaQualityEnforcementDetails
       optional LowTextContrastIssueDetails lowTextContrastIssueDetails
+      optional CorsIssueDetails corsIssueDetails
 
   # An inspector issue reported from the back-end.
   type InspectorIssue extends object
@@ -5600,6 +5611,7 @@ domain Network
     enum
       Allow
       BlockFromInsecureToMorePrivate
+      WarnFromInsecureToMorePrivate
 
   experimental type IPAddressSpace extends string
     enum

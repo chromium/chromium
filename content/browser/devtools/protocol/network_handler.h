@@ -234,6 +234,15 @@ class NetworkHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
       std::unique_ptr<LoadNetworkResourceCallback> callback) override;
 
+  // Protocol builders.
+  static String BuildPrivateNetworkRequestPolicy(
+      network::mojom::PrivateNetworkRequestPolicy policy);
+  static protocol::Network::IPAddressSpace BuildIpAddressSpace(
+      network::mojom::IPAddressSpace space);
+  static Maybe<protocol::Network::ClientSecurityState>
+  MaybeBuildClientSecurityState(
+      const network::mojom::ClientSecurityStatePtr& state);
+
  private:
   void OnLoadNetworkResourceFinished(DevToolsNetworkResourceLoader* loader,
                                      const net::HttpResponseHeaders* rh,
