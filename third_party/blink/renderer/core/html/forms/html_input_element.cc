@@ -1848,7 +1848,7 @@ bool HTMLInputElement::SupportsPlaceholder() const {
 }
 
 void HTMLInputElement::UpdatePlaceholderText() {
-  return input_type_view_->UpdatePlaceholderText();
+  return input_type_view_->UpdatePlaceholderText(!SuggestedValue().IsEmpty());
 }
 
 String HTMLInputElement::GetPlaceholderValue() const {

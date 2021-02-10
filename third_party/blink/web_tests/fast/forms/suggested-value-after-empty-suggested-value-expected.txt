@@ -90,7 +90,7 @@ Input after setting suggestedValue:
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -107,7 +107,7 @@ Input after setting suggestedValue:
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -122,7 +122,7 @@ Input after setting suggestedValue:
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>
@@ -138,7 +138,7 @@ Input after setting suggestedValue:
 |     <div>
 |       id="placeholder"
 |       pseudo="-internal-input-suggested"
-|       style="display: block !important;"
+|       style="display: block !important; user-select: none !important;"
 |       shadow:pseudoId="-internal-input-suggested"
 |       "suggested value"
 |     <div>

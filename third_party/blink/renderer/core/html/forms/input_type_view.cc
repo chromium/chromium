@@ -188,7 +188,7 @@ bool InputTypeView::ShouldDrawCapsLockIndicator() const {
 
 void InputTypeView::UpdateClearButtonVisibility() {}
 
-void InputTypeView::UpdatePlaceholderText() {}
+void InputTypeView::UpdatePlaceholderText(bool) {}
 
 AXObject* InputTypeView::PopupRootAXObject() {
   return nullptr;
