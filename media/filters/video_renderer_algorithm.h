@@ -267,6 +267,9 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
   base::TimeDelta CalculateAbsoluteDriftForFrame(base::TimeTicks deadline_min,
                                                  int frame_index) const;
 
+  // Returns the index of the first usable frame or -1 if no usable frames.
+  int FindFirstGoodFrame() const;
+
   // Updates |effective_frames_queued_| which is typically called far more
   // frequently (~4x) than the value changes.  This must be called whenever
   // frames are added or removed from the queue or when any property of a
