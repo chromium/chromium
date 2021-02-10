@@ -65,6 +65,7 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   // Send network request.
   fetch_start_time_ = base::TimeTicks::Now();
   stream_->GetNetwork()->SendQueryRequest(
+      NetworkRequestType::kNextPage,
       CreateFeedQueryLoadMoreRequest(
           stream_->GetRequestMetadata(/*is_for_next_page=*/true),
           stream_->GetMetadata()->GetConsistencyToken(),

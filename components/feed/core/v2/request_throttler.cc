@@ -18,6 +18,8 @@ int GetMaxRequestsPerDay(NetworkRequestType request_type) {
       return GetFeedConfig().max_feed_query_requests_per_day;
     case NetworkRequestType::kUploadActions:
       return GetFeedConfig().max_action_upload_requests_per_day;
+    case NetworkRequestType::kNextPage:
+      return GetFeedConfig().max_next_page_requests_per_day;
   }
 }
 

@@ -131,6 +131,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       std::make_unique<UploadActionsTask::Result>(std::move(result));
   latencies_->StepComplete(LoadLatencyTimes::kUploadActions);
   stream_->GetNetwork()->SendQueryRequest(
+      NetworkRequestType::kFeedQuery,
       CreateFeedQueryRefreshRequest(
           GetRequestReason(load_type_),
           stream_->GetRequestMetadata(/*is_for_next_page=*/false),

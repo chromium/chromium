@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/types.h"
 
 namespace feedwire {
@@ -51,6 +52,7 @@ class FeedNetwork {
   // |callback| will be called unless the request is canceled with
   // |CancelRequests()|.
   virtual void SendQueryRequest(
+      NetworkRequestType request_type,
       const feedwire::Request& request,
       bool force_signed_out_request,
       base::OnceCallback<void(QueryRequestResult)> callback) = 0;

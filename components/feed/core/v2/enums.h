@@ -12,6 +12,7 @@ namespace feed {
 enum class NetworkRequestType : int {
   kFeedQuery = 0,
   kUploadActions = 1,
+  kNextPage = 2,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.

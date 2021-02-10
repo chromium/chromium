@@ -14,8 +14,10 @@ namespace feed {
 // The Feed configuration. Default values appear below. Always use
 // |GetFeedConfig()| to get the current configuration.
 struct Config {
-  // Maximum number of FeedQuery or action upload requests per day.
+  // Maximum number of requests per day for FeedQuery, NextPage, and
+  // ActionUpload.
   int max_feed_query_requests_per_day = 20;
+  int max_next_page_requests_per_day = 20;
   int max_action_upload_requests_per_day = 20;
   // We'll always attempt to refresh content older than this.
   base::TimeDelta stale_content_threshold = base::TimeDelta::FromHours(4);

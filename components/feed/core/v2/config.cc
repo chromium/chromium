@@ -34,6 +34,11 @@ void OverrideWithFinch(Config* config) {
           kInterestFeedV2, "max_feed_query_requests_per_day",
           config->max_feed_query_requests_per_day);
 
+  config->max_next_page_requests_per_day =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kInterestFeedV2, "max_next_page_requests_per_day",
+          config->max_next_page_requests_per_day);
+
   config->max_action_upload_requests_per_day =
       base::GetFieldTrialParamByFeatureAsInt(
           kInterestFeedV2, "max_action_upload_requests_per_day",

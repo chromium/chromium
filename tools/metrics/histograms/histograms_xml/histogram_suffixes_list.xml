@@ -6512,6 +6512,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="FeedNetworkRequestType" separator=".">
   <suffix name="FeedQuery" label="Requests to fetch new feed content"/>
+  <suffix name="NextPage" label="Requests to fetch the next page of the feed"/>
   <suffix name="UploadActions" label="Requests to upload user action data"/>
   <affected-histogram name="ContentSuggestions.Feed.Network.ResponseStatus"/>
 </histogram_suffixes>

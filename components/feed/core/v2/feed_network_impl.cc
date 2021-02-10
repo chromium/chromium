@@ -93,10 +93,11 @@ struct FeedNetworkImpl::RawResponse {
 namespace {
 
 void ParseAndForwardQueryResponse(
+    NetworkRequestType request_type,
     base::OnceCallback<void(FeedNetwork::QueryRequestResult)> result_callback,
     RawResponse raw_response) {
   MetricsReporter::NetworkRequestComplete(
-      NetworkRequestType::kFeedQuery, raw_response.response_info.status_code);
+      request_type, raw_response.response_info.status_code);
   FeedNetwork::QueryRequestResult result;
   result.response_info = raw_response.response_info;
   if (result.response_info.status_code == 200) {
@@ -430,6 +431,7 @@ FeedNetworkImpl::FeedNetworkImpl(
 FeedNetworkImpl::~FeedNetworkImpl() = default;
 
 void FeedNetworkImpl::SendQueryRequest(
+    NetworkRequestType request_type,
     const feedwire::Request& request,
     bool force_signed_out_request,
     base::OnceCallback<void(QueryRequestResult)> callback) {
@@ -469,7 +471,8 @@ void FeedNetworkImpl::SendQueryRequest(
                                   url);
   Send(url, "GET", /*request_body=*/{}, force_signed_out_request,
        /*allow_bless_auth=*/host_overridden,
-       base::BindOnce(&ParseAndForwardQueryResponse, std::move(callback)));
+       base::BindOnce(&ParseAndForwardQueryResponse, request_type,
+                      std::move(callback)));
 }
 
 void FeedNetworkImpl::SendActionRequest(

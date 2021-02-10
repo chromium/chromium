@@ -207,7 +207,8 @@ class FeedNetworkTest : public testing::Test {
 
 TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(feedwire::Request(), false, receiver.Bind());
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   feedwire::Request(), false, receiver.Bind());
 
   ASSERT_TRUE(receiver.GetResult());
   const QueryRequestResult& result = *receiver.GetResult();
@@ -217,7 +218,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestEmpty) {
 
 TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToQueryRequest("", net::HTTP_OK);
@@ -239,7 +241,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
 TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
   CallbackReceiver<QueryRequestResult> receiver;
   feed_network()->SendQueryRequest(
-      GetTestFeedRequest(), /*force_signed_out_request=*/true, receiver.Bind());
+      NetworkRequestType::kFeedQuery, GetTestFeedRequest(),
+      /*force_signed_out_request=*/true, receiver.Bind());
   network::ResourceRequest resource_request =
       RespondToQueryRequest("", net::HTTP_OK);
 
@@ -252,7 +255,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestForceSignedOut) {
 
 TEST_F(FeedNetworkTest, SendQueryRequestInvalidResponse) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   RespondToQueryRequest("invalid", net::HTTP_OK);
 
@@ -264,7 +268,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestInvalidResponse) {
 
 TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
 
@@ -282,7 +287,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestReceivesResponse) {
 
 TEST_F(FeedNetworkTest, SendQueryRequestIgnoresBodyForNon200Response) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_FORBIDDEN);
 
@@ -297,7 +303,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestIgnoresBodyForNon200Response) {
 
 TEST_F(FeedNetworkTest, CancelRequest) {
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   feed_network()->CancelRequests();
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -308,7 +315,8 @@ TEST_F(FeedNetworkTest, CancelRequest) {
 TEST_F(FeedNetworkTest, RequestTimeout) {
   base::HistogramTester histogram_tester;
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   task_environment_.FastForwardBy(TimeDelta::FromSeconds(30));
 
@@ -322,11 +330,13 @@ TEST_F(FeedNetworkTest, RequestTimeout) {
 
 TEST_F(FeedNetworkTest, ParallelRequests) {
   CallbackReceiver<QueryRequestResult> receiver1, receiver2;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver1.Bind());
   // Make another request with a different URL so Respond() won't affect both
   // requests.
   feed_network()->SendQueryRequest(
+      NetworkRequestType::kFeedQuery,
       GetTestFeedRequest(feedwire::FeedQuery::NEXT_PAGE_SCROLL), false,
       receiver2.Bind());
 
@@ -350,7 +360,8 @@ TEST_F(FeedNetworkTest, ParallelRequests) {
 TEST_F(FeedNetworkTest, ShouldReportResponseStatusCode) {
   CallbackReceiver<QueryRequestResult> receiver;
   base::HistogramTester histogram_tester;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_FORBIDDEN);
 
@@ -365,7 +376,8 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForAuthError) {
   CallbackReceiver<QueryRequestResult> receiver;
   base::HistogramTester histogram_tester;
 
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(
@@ -391,7 +403,8 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForAuthError) {
 TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForNoSignedInUser) {
   identity_env()->ClearPrimaryAccount();
   CallbackReceiver<QueryRequestResult> receiver;
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
 
   network::ResourceRequest resource_request =
@@ -407,7 +420,8 @@ TEST_F(FeedNetworkTest, TestDurationHistogram) {
   CallbackReceiver<QueryRequestResult> receiver;
   const TimeDelta kDuration = TimeDelta::FromMilliseconds(12345);
 
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
   task_environment_.FastForwardBy(kDuration);
   RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
@@ -423,7 +437,8 @@ TEST_F(FeedNetworkTest, TestHostOverrideWithAuthHeader) {
   CallbackReceiver<QueryRequestResult> receiver;
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
-  feed_network()->SendQueryRequest(GetTestFeedRequest(), false,
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery,
+                                   GetTestFeedRequest(), false,
                                    receiver.Bind());
 
   ASSERT_EQ("www.newhost.com", GetPendingRequestURL().host());

@@ -607,8 +607,9 @@ LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(bool is_load_more,
     return LoadStreamStatus::kCannotLoadFromNetworkOffline;
   }
 
-  if (consume_quota &&
-      !request_throttler_.RequestQuota(NetworkRequestType::kFeedQuery)) {
+  if (consume_quota && !request_throttler_.RequestQuota(
+                           !is_load_more ? NetworkRequestType::kFeedQuery
+                                         : NetworkRequestType::kNextPage)) {
     return LoadStreamStatus::kCannotLoadFromNetworkThrottled;
   }
 

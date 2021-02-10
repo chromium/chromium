@@ -305,6 +305,7 @@ class TestFeedNetwork : public FeedNetwork {
  public:
   // FeedNetwork implementation.
   void SendQueryRequest(
+      NetworkRequestType request_type,
       const feedwire::Request& request,
       bool force_signed_out_request,
       base::OnceCallback<void(QueryRequestResult)> callback) override {

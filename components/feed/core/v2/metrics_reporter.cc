@@ -425,6 +425,11 @@ void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
           "ContentSuggestions.Feed.Network.ResponseStatus.UploadActions",
           http_status_code);
       return;
+    case NetworkRequestType::kNextPage:
+      base::UmaHistogramSparse(
+          "ContentSuggestions.Feed.Network.ResponseStatus.NextPage",
+          http_status_code);
+      return;
   }
 }
 
