@@ -5596,6 +5596,8 @@
     'name': 'chromium.updater',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      # TODO(crbug.com/1120821): switch to new pool
+      # when arm64 device is configured.
       'mac-arm64-updater-tester-rel': {
         'mixins': [
             'mac_arm64_apple_dtk_experimental',
@@ -5606,66 +5608,102 @@
         },
       },
       'mac10.11-updater-tester-rel': {
-        'mixins': [
-            'mac_10.11',
-        ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
           'isolated_scripts': 'updater_isolated_scripts',
+        },
+       'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.11',
+            }
+          ]
         },
       },
       'mac10.12-updater-tester-rel': {
-        'mixins': [
-            'mac_mini_10.12',
-        ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
           'isolated_scripts': 'updater_isolated_scripts',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.12',
+            }
+          ]
         },
       },
       'mac10.13-updater-tester-dbg': {
-        'mixins': [
-            'mac_10.13',
-        ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
           'isolated_scripts': 'updater_isolated_scripts',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.13',
+            }
+          ]
         },
       },
       'mac10.13-updater-tester-rel': {
-        'mixins': [
-            'mac_10.13',
-        ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
           'isolated_scripts': 'updater_isolated_scripts',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.13',
+            }
+          ]
         },
       },
       'mac10.14-updater-tester-rel': {
-        'mixins': [
-            'mac_10.14',
-        ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
           'isolated_scripts': 'updater_isolated_scripts',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.14',
+            }
+          ]
         },
       },
       'mac10.15-updater-tester-rel': {
-        'mixins': [
-            'mac_10.15',
-        ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
           'isolated_scripts': 'updater_isolated_scripts',
         },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-10.15',
+            }
+          ]
+        },
       },
       'mac11.0-updater-tester-rel': {
-        'mixins': [
-            'mac_11.0_beta',
-        ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
           'isolated_scripts': 'updater_isolated_scripts',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+              'os': 'Mac-11',
+              'cpu': 'x86-64',
+            }
+          ]
         },
       },
       'win10-updater-tester-dbg': {
