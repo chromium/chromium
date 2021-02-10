@@ -6143,6 +6143,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Graphics.Smoothness.Diagnostics.DiscardedDependentCount"
+    units="dependent reporters" expires_after="2022-02-01">
+  <owner>sadrul@chromium.org</owner>
+  <owner>behdadb@chromium.org</owner>
+  <summary>
+    Diagnostic metric to measure how many dependent reporters have been
+    discarded.
+
+    The reporters might be dependant on another reporter (when having partial
+    updates) but if the number of dependents go over a limit we would discard
+    them earlier. This metric count how many of such reporters been discarded
+    earlier than expected as a result of outstanding number of dependent
+    reporters. The metric will be reported at the end of each frame if there has
+    been any discarded dependent reporters.
+  </summary>
+</histogram>
+
 <histogram
     name="Graphics.Smoothness.Diagnostics.DroppedFrameAfterScrollStart.Frames"
     units="vsyncs" expires_after="2021-09-01">

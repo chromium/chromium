@@ -7,6 +7,7 @@
 
 #include <bitset>
 #include <memory>
+#include <queue>
 #include <string>
 #include <utility>
 #include <vector>
@@ -356,6 +357,9 @@ class CC_EXPORT CompositorFrameReporter {
   // This method is only used for DCheck
   base::TimeDelta SumOfStageHistory() const;
 
+  // Terminating reporters in partial_update_dependents_ after a limit.
+  void DiscardOldPartialUpdateReporters();
+
   base::TimeTicks Now() const;
 
   bool IsDroppedFrameAffectingSmoothness() const;
@@ -421,15 +425,15 @@ class CC_EXPORT CompositorFrameReporter {
   // In such cases, |partial_update_dependents_| for A contains all the frames
   // that depend on A for deciding whether they had partial updates or not, and
   // |partial_update_decider_| is set to A for all these reporters.
-  std::vector<base::WeakPtr<CompositorFrameReporter>>
-      partial_update_dependents_;
+  std::queue<base::WeakPtr<CompositorFrameReporter>> partial_update_dependents_;
   base::WeakPtr<CompositorFrameReporter> partial_update_decider_;
+  uint32_t discarded_partial_update_dependents_count_;
 
   // From the above example, it may be necessary for A to keep all the
   // dependents alive until A terminates, so that the dependents can set their
   // |has_partial_update_| flags correctly. This is done by passing ownership of
   // these reporters (using |AdoptReporter()|).
-  std::vector<std::unique_ptr<CompositorFrameReporter>>
+  std::queue<std::unique_ptr<CompositorFrameReporter>>
       owned_partial_update_dependents_;
 
   base::WeakPtrFactory<CompositorFrameReporter> weak_factory_{this};
