@@ -146,8 +146,11 @@ enum LaunchType {
 };
 
 // The origin of injected CSS.
-enum CSSOrigin { CSS_ORIGIN_AUTHOR, CSS_ORIGIN_USER };
-static const CSSOrigin CSS_ORIGIN_LAST = CSS_ORIGIN_USER;
+enum class CSSOrigin {
+  kAuthor = 0,
+  kUser = 1,
+  kLast = kUser,
+};
 
 }  // namespace extensions
 

@@ -259,7 +259,7 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
       ScriptExecutor::MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
       ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), std::move(script_url), user_gesture(),
-      CSS_ORIGIN_AUTHOR, ScriptExecutor::JSON_SERIALIZED_RESULT,
+      CSSOrigin::kAuthor, ScriptExecutor::JSON_SERIALIZED_RESULT,
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
   return true;
@@ -369,14 +369,14 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
   }
   DCHECK(script_executor);
 
-  CSSOrigin origin = CSS_ORIGIN_AUTHOR;
+  CSSOrigin origin = CSSOrigin::kAuthor;
   switch (injection_.origin) {
     case api::scripting::STYLE_ORIGIN_NONE:
     case api::scripting::STYLE_ORIGIN_AUTHOR:
-      origin = CSS_ORIGIN_AUTHOR;
+      origin = CSSOrigin::kAuthor;
       break;
     case api::scripting::STYLE_ORIGIN_USER:
-      origin = CSS_ORIGIN_USER;
+      origin = CSSOrigin::kUser;
       break;
   }
 

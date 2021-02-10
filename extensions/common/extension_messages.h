@@ -51,7 +51,7 @@
 
 #define IPC_MESSAGE_START ExtensionMsgStart
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::CSSOrigin, extensions::CSS_ORIGIN_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::CSSOrigin, extensions::CSSOrigin::kLast)
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::ViewType, extensions::VIEW_TYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(content::SocketPermissionRequest::OperationType,

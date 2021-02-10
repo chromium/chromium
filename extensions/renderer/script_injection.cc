@@ -390,10 +390,10 @@ void ScriptInjection::InjectOrRemoveCss(
   blink::WebDocument::CSSOrigin blink_css_origin =
       blink::WebDocument::kAuthorOrigin;
   switch (injector_->GetCssOrigin()) {
-    case CSS_ORIGIN_USER:
+    case CSSOrigin::kUser:
       blink_css_origin = blink::WebDocument::kUserOrigin;
       break;
-    case CSS_ORIGIN_AUTHOR:
+    case CSSOrigin::kAuthor:
       blink_css_origin = blink::WebDocument::kAuthorOrigin;
       break;
   }
