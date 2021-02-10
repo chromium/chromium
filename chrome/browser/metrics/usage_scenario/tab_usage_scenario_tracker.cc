@@ -137,4 +137,10 @@ void TabUsageScenarioTracker::OnDisplayRemoved(const display::Display& unused) {
   }
 }
 
+void TabUsageScenarioTracker::OnMainFrameNavigationCommitted(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  usage_scenario_data_store_->OnTopLevelNavigation();
+}
+
 }  // namespace metrics

@@ -15,6 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,6 +31,22 @@ std::string GetHistogramNameWithBatteryStateSuffix(const char* histogram_name) {
 
   return base::StrCat({histogram_name, suffix});
 }
+
+class TestTabStatsObserver : public TabStatsObserver {
+ public:
+  // Functions used to update the counts.
+  void OnMainFrameNavigationCommitted(
+      content::WebContents* web_contents) override {
+    ++main_frame_committed_navigations_count_;
+  }
+
+  size_t main_frame_committed_navigations_count() {
+    return main_frame_committed_navigations_count_;
+  }
+
+ private:
+  size_t main_frame_committed_navigations_count_ = 0;
+};
 
 class TestTabStatsTracker : public TabStatsTracker {
  public:
@@ -190,6 +207,27 @@ bool CompareHistogramBucket(const base::Bucket& l, const base::Bucket& r) {
 }
 
 }  // namespace
+
+TEST_F(TabStatsTrackerTest, MainFrameCommittedNavigationTriggersUpdate) {
+  constexpr const char kFirstUrl[] = "https://parent.com/";
+
+  TestTabStatsObserver tab_stats_observer;
+  tab_stats_tracker_->AddObserverAndSetInitialState(&tab_stats_observer);
+  // Number of navigations starts of at zero.
+  ASSERT_EQ(tab_stats_observer.main_frame_committed_navigations_count(), 0u);
+
+  // Insert a new tab.
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  tab_stats_tracker_->OnInitialOrInsertedTab(web_contents.get());
+
+  // Commit a main frame navigation on the observed tab.
+  auto* parent = content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents.get(), GURL(kFirstUrl));
+  DCHECK(parent);
+
+  // Navigation registered.
+  ASSERT_EQ(tab_stats_observer.main_frame_committed_navigations_count(), 1u);
+}
 
 TEST_F(TabStatsTrackerTest, OnResume) {
   // Makes sure that there's no sample initially.

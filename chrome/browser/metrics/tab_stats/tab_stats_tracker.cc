@@ -285,6 +285,12 @@ class TabStatsTracker::WebContentsUsageObserver
     navigation_time_ = navigation_handle->NavigationStart();
     ukm_source_id_ = ukm::ConvertToSourceId(
         navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+
+    // Update observers.
+    for (TabStatsObserver& tab_stats_observer :
+         tab_stats_tracker_->tab_stats_observers_) {
+      tab_stats_observer.OnMainFrameNavigationCommitted(web_contents());
+    }
   }
 
   void DidGetUserInteraction(const blink::WebInputEvent& event) override {

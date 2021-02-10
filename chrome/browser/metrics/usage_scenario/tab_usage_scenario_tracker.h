@@ -39,6 +39,8 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   void OnTabInteraction(content::WebContents* web_contents) override;
   void OnMediaEffectivelyFullscreenChanged(content::WebContents* web_contents,
                                            bool is_fullscreen) override;
+  void OnMainFrameNavigationCommitted(
+      content::WebContents* web_contents) override;
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
