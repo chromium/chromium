@@ -1217,6 +1217,12 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ExecuteScript) {
       "platform_apps/web_view/common", "execute_script")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(WebViewTest, ExecuteCode) {
+  ASSERT_TRUE(RunPlatformAppTestWithArg("platform_apps/web_view/common",
+                                        "execute_code"))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(WebViewSizeTest, Shim_TestAutosizeAfterNavigation) {
   TestHelper("testAutosizeAfterNavigation", "web_view/shim", NO_TEST_SERVER);
 }
@@ -1624,6 +1630,138 @@ IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
       empty_guest_web_contents->GetOriginalOpener();
   ASSERT_TRUE(empty_guest_opener);
   ASSERT_NE(empty_guest_opener, empty_guest_embedder->GetMainFrame());
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
+                       NewWindow_AttachAfterOpenerDestroyed) {
+  TestHelper("testNewWindowAttachAfterOpenerDestroyed", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_AttachInSubFrame) {
+  TestHelper("testNewWindowAttachInSubFrame", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
+                       NewWindow_NewWindowNameTakesPrecedence) {
+  TestHelper("testNewWindowNameTakesPrecedence", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
+                       NewWindow_WebViewNameTakesPrecedence) {
+  TestHelper("testNewWindowWebViewNameTakesPrecedence", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_NoName) {
+  TestHelper("testNewWindowNoName", "web_view/newwindow", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_Redirect) {
+  TestHelper("testNewWindowRedirect", "web_view/newwindow", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_Close) {
+  TestHelper("testNewWindowClose", "web_view/newwindow", NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_DeferredAttachment) {
+  TestHelper("testNewWindowDeferredAttachment", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_ExecuteScript) {
+  TestHelper("testNewWindowExecuteScript", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_DeclarativeWebRequest) {
+  TestHelper("testNewWindowDeclarativeWebRequest", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
+                       NewWindow_DiscardAfterOpenerDestroyed) {
+  TestHelper("testNewWindowDiscardAfterOpenerDestroyed", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_WebRequest) {
+  TestHelper("testNewWindowWebRequest", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+// A custom elements bug needs to be addressed to enable this test:
+// See http://crbug.com/282477 for more information.
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
+                       DISABLED_NewWindow_WebRequestCloseWindow) {
+  TestHelper("testNewWindowWebRequestCloseWindow", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
+                       NewWindow_WebRequestRemoveElement) {
+  TestHelper("testNewWindowWebRequestRemoveElement", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+}
+
+// Ensure that when one <webview> makes a window.open() call that references
+// another <webview> by name, the opener is updated without a crash. Regression
+// test for https://crbug.com/1013553.
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest, NewWindow_UpdateOpener) {
+  TestHelper("testNewWindowAndUpdateOpener", "web_view/newwindow",
+             NEEDS_TEST_SERVER);
+
+  // The first <webview> tag in the test will run window.open(), which the
+  // embedder will translate into an injected second <webview> tag, after which
+  // test control will return here.  Wait until there are two guests; i.e.,
+  // until the second <webview>'s guest is also created.
+  GetGuestViewManager()->WaitForNumGuestsCreated(2);
+
+  std::vector<content::WebContents*> guest_contents_list;
+  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  ASSERT_EQ(2u, guest_contents_list.size());
+  content::WebContents* guest1 = guest_contents_list[0];
+  content::WebContents* guest2 = guest_contents_list[1];
+  EXPECT_TRUE(content::WaitForLoadStop(guest1));
+  EXPECT_TRUE(content::WaitForLoadStop(guest2));
+  ASSERT_NE(guest1, guest2);
+
+  // Change first guest's window.name to "foo" and check that it does not
+  // have an opener to start with.
+  EXPECT_TRUE(content::ExecJs(guest1, "window.name = 'foo'"));
+  EXPECT_EQ("foo", content::EvalJs(guest1, "window.name"));
+  EXPECT_EQ(true, content::EvalJs(guest1, "window.opener == null"));
+
+  // Create a subframe in the second guest.  This is needed because the crash
+  // in crbug.com/1013553 only happened when trying to incorrectly create
+  // proxies for a subframe.
+  EXPECT_TRUE(content::ExecuteScript(
+      guest2, "document.body.appendChild(document.createElement('iframe'));"));
+
+  // Update the opener of |guest1| to point to |guest2|.  This triggers
+  // creation of proxies on the new opener chain, which should not crash.
+  EXPECT_TRUE(content::ExecuteScript(guest2, "window.open('', 'foo');"));
+
+  // Ensure both guests have the proper opener relationship set up.  Namely,
+  // each guest's opener should point to the other guest, creating a cycle.
+  EXPECT_EQ(true, content::EvalJs(guest1, "window.opener.opener === window"));
+  EXPECT_EQ(true, content::EvalJs(guest2, "window.opener.opener === window"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewNewWindowTest,
+                       NewWindow_OpenerDestroyedWhileUnattached) {
+  TestHelper("testNewWindowOpenerDestroyedWhileUnattached",
+             "web_view/newwindow", NEEDS_TEST_SERVER);
+  ASSERT_EQ(2u, GetGuestViewManager()->num_guests_created());
+
+  // We have two guests in this test, one is the initial one, the other
+  // is the newwindow one.
+  // Before the embedder goes away, both the guests should go away.
+  // This ensures that unattached guests are gone if opener is gone.
+  GetGuestViewManager()->WaitForAllGuestsDeleted();
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestContentLoadEvent) {
