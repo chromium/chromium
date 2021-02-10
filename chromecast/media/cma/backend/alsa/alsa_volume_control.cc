@@ -180,8 +180,8 @@ std::string AlsaVolumeControl::GetMuteDeviceName() {
 std::vector<std::string> AlsaVolumeControl::GetAmpElementNames() {
   std::vector<std::string> mixer_element_names = base::SplitString(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      switches::kAlsaAmpElementName), ",", base::KEEP_WHITESPACE,
-      base::SPLIT_WANT_NONEMPTY);
+          switches::kAlsaAmpElementName),
+      ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   return mixer_element_names;
 }
@@ -333,8 +333,12 @@ void AlsaVolumeControl::SetMuted(bool muted) {
 
 void AlsaVolumeControl::SetPowerSave(bool power_save_on) {
   for (const auto& amp_mixer : amp_mixers_) {
+    if (IsElementAllMuted(amp_mixer.get()).value_or(false) == power_save_on) {
+      DVLOG(2) << "Power Save already set to: " << power_save_on;
+      continue;
+    }
     if (!SetElementMuted(amp_mixer.get(), power_save_on)) {
-      LOG(INFO) << "Amp toggle failed: no amp switch on mixer element.";
+      LOG(ERROR) << "Amp toggle failed: no amp switch on mixer element.";
     } else {
       LOG(INFO) << "Set Power Save to: " << power_save_on;
     }
@@ -348,10 +352,37 @@ bool AlsaVolumeControl::SetElementMuted(ScopedAlsaMixer* mixer, bool muted) {
       !alsa_->MixerSelemHasPlaybackSwitch(mixer->element)) {
     return false;
   }
+  bool success = true;
   for (int32_t channel = 0; channel <= SND_MIXER_SCHN_LAST; ++channel) {
-    alsa_->MixerSelemSetPlaybackSwitch(
+    int err = alsa_->MixerSelemSetPlaybackSwitch(
         mixer->element, static_cast<snd_mixer_selem_channel_id_t>(channel),
         !muted);
+    if (err != 0) {
+      success = false;
+      LOG(ERROR) << "MixerSelemSetPlaybackSwitch: " << alsa_->StrError(err);
+    }
+  }
+  return success;
+}
+
+base::Optional<bool> AlsaVolumeControl::IsElementAllMuted(
+    ScopedAlsaMixer* mixer) {
+  if (!mixer || !mixer->element ||
+      !alsa_->MixerSelemHasPlaybackSwitch(mixer->element)) {
+    return base::nullopt;
+  }
+  for (int32_t channel = 0; channel <= SND_MIXER_SCHN_LAST; ++channel) {
+    int channel_unmuted;
+    int err = alsa_->MixerSelemGetPlaybackSwitch(
+        mixer->element, static_cast<snd_mixer_selem_channel_id_t>(channel),
+        &channel_unmuted);
+    if (err != 0) {
+      LOG(ERROR) << "MixerSelemGetPlaybackSwitch: " << alsa_->StrError(err);
+      return base::nullopt;
+    }
+    if (channel_unmuted) {
+      return false;
+    }
   }
   return true;
 }
