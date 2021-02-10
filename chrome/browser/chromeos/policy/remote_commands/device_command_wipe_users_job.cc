@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/system/user_removal_manager.h"
+#include "chrome/browser/ash/system/user_removal_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
