@@ -48,7 +48,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
-using password_manager::CompromisedCredentials;
+using password_manager::InsecureCredential;
 using password_manager::MockPasswordFormManagerForUI;
 using password_manager::MockPasswordStore;
 using password_manager::PasswordForm;
@@ -211,11 +211,11 @@ password_manager::PasswordForm BuildFormFromLoginAndURL(
   return form;
 }
 
-CompromisedCredentials CreateCompromised(const PasswordForm& form) {
-  return CompromisedCredentials(form.signon_realm, form.username_value,
-                                base::Time(),
-                                password_manager::InsecureType::kLeaked,
-                                password_manager::IsMuted(false));
+InsecureCredential CreateInsecureCredential(const PasswordForm& form) {
+  return InsecureCredential(form.signon_realm, form.username_value,
+                            base::Time(),
+                            password_manager::InsecureType::kLeaked,
+                            password_manager::IsMuted(false));
 }
 
 }  // namespace
@@ -326,9 +326,9 @@ ManagePasswordsUIControllerTest::CreateFormManagerWithBestMatches(
       .Times(AtMost(1))
       .WillOnce(
           Return(base::span<const password_manager::InteractionsStats>()));
-  EXPECT_CALL(*form_manager, GetCompromisedCredentials())
+  EXPECT_CALL(*form_manager, GetInsecureCredentials())
       .Times(AtMost(1))
-      .WillOnce(Return(base::span<const CompromisedCredentials>()));
+      .WillOnce(Return(base::span<const InsecureCredential>()));
   EXPECT_CALL(*form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(submitted_form_));
   EXPECT_CALL(*form_manager, GetMetricsRecorder())
@@ -1495,11 +1495,11 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<CompromisedCredentials> saved = {
-      CreateCompromised(test_local_form())};
-  // Pretend that the current credential was compromised but with the updated
+  std::vector<InsecureCredential> saved = {
+      CreateInsecureCredential(test_local_form())};
+  // Pretend that the current credential was insecure but with the updated
   // password not anymore.
-  EXPECT_CALL(*test_form_manager_raw, GetCompromisedCredentials())
+  EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
@@ -1529,17 +1529,17 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<CompromisedCredentials> saved = {
-      CreateCompromised(test_local_form())};
-  // Pretend that the current credential was compromised.
-  EXPECT_CALL(*test_form_manager_raw, GetCompromisedCredentials())
+  std::vector<InsecureCredential> saved = {
+      CreateInsecureCredential(test_local_form())};
+  // Pretend that the current credential was insecure.
+  EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The bubble gets hidden after the user clicks on save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
-  // There are more compromised credentials to fix.
+  // There are more insecure credentials to fix.
   saved[0].username = base::ASCIIToUTF16("another username");
   EXPECT_CALL(*client().GetProfilePasswordStore(),
               GetAllInsecureCredentialsImpl)
@@ -1560,17 +1560,17 @@ TEST_F(ManagePasswordsUIControllerTest, OpenUnsafeStateBubble) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<CompromisedCredentials> saved;
+  std::vector<InsecureCredential> saved;
   // Pretend that the current credential was clean.
-  EXPECT_CALL(*test_form_manager_raw, GetCompromisedCredentials())
+  EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The bubble gets hidden after the user clicks on save.
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
-  // There are compromised credentials to fix.
-  saved = {CreateCompromised(test_local_form())};
+  // There are insecure credentials to fix.
+  saved = {CreateInsecureCredential(test_local_form())};
   EXPECT_CALL(*client().GetProfilePasswordStore(),
               GetAllInsecureCredentialsImpl)
       .WillOnce(Return(saved));
@@ -1590,15 +1590,15 @@ TEST_F(ManagePasswordsUIControllerTest, NoUnsafeStateBubbleIfPromoStillOpen) {
   controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
   EXPECT_CALL(*test_form_manager_raw, Save());
-  std::vector<CompromisedCredentials> saved;
+  std::vector<InsecureCredential> saved;
   // Pretend that the current credential was clean.
-  EXPECT_CALL(*test_form_manager_raw, GetCompromisedCredentials())
+  EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The sign-in promo bubble stays open, the warning isn't shown.
-  // There are compromised credentials to fix.
-  saved = {CreateCompromised(test_local_form())};
+  // There are insecure credentials to fix.
+  saved = {CreateInsecureCredential(test_local_form())};
   EXPECT_CALL(*client().GetProfilePasswordStore(),
               GetAllInsecureCredentialsImpl)
       .Times(testing::AtMost(1))

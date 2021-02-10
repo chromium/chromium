@@ -460,7 +460,7 @@ TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
       ->OnGetInsecureCredentials({account_store_insecure_credentials});
 
   EXPECT_THAT(
-      form_fetcher_->GetCompromisedCredentials(),
+      form_fetcher_->GetInsecureCredentials(),
       testing::UnorderedElementsAreArray({profile_store_insecure_credentials,
                                           account_store_insecure_credentials}));
 }

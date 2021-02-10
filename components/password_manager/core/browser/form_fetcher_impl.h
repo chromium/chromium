@@ -51,8 +51,7 @@ class FormFetcherImpl : public FormFetcher,
   void Fetch() override;
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  base::span<const CompromisedCredentials> GetCompromisedCredentials()
-      const override;
+  base::span<const InsecureCredential> GetInsecureCredentials() const override;
   std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
   bool IsBlocklisted() const override;

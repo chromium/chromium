@@ -268,9 +268,9 @@ base::span<const InteractionsStats> PasswordFormManager::GetInteractionsStats()
   return base::make_span(form_fetcher_->GetInteractionsStats());
 }
 
-base::span<const CompromisedCredentials>
-PasswordFormManager::GetCompromisedCredentials() const {
-  return form_fetcher_->GetCompromisedCredentials();
+base::span<const InsecureCredential>
+PasswordFormManager::GetInsecureCredentials() const {
+  return form_fetcher_->GetInsecureCredentials();
 }
 
 bool PasswordFormManager::IsBlocklisted() const {

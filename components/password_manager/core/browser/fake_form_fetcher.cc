@@ -37,9 +37,9 @@ const std::vector<InteractionsStats>& FakeFormFetcher::GetInteractionsStats()
   return stats_;
 }
 
-base::span<const CompromisedCredentials>
-FakeFormFetcher::GetCompromisedCredentials() const {
-  return base::make_span(compromised_);
+base::span<const InsecureCredential> FakeFormFetcher::GetInsecureCredentials()
+    const {
+  return base::make_span(insecure_credentials_);
 }
 
 std::vector<const PasswordForm*> FakeFormFetcher::GetNonFederatedMatches()

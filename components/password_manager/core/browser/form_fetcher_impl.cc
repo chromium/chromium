@@ -137,8 +137,8 @@ const std::vector<InteractionsStats>& FormFetcherImpl::GetInteractionsStats()
   return interactions_stats_;
 }
 
-base::span<const CompromisedCredentials>
-FormFetcherImpl::GetCompromisedCredentials() const {
+base::span<const InsecureCredential> FormFetcherImpl::GetInsecureCredentials()
+    const {
   return insecure_credentials_;
 }
 

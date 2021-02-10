@@ -10,11 +10,11 @@
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace password_manager {
 
-struct CompromisedCredentials;
 struct InteractionsStats;
 struct PasswordForm;
 class PasswordFormMetricsRecorder;
@@ -51,8 +51,8 @@ class PasswordFormManagerForUI {
   // Statistics for recent password bubble usage.
   virtual base::span<const InteractionsStats> GetInteractionsStats() const = 0;
 
-  // List of compromised passwords for the current site.
-  virtual base::span<const CompromisedCredentials> GetCompromisedCredentials()
+  // List of insecure passwords for the current site.
+  virtual base::span<const InsecureCredential> GetInsecureCredentials()
       const = 0;
 
   // Determines if the user opted to 'never remember' passwords for this form.

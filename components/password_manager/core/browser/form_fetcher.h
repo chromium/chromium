@@ -13,10 +13,10 @@
 #include "base/observer_list_types.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
+#include "components/password_manager/core/browser/insecure_credentials_table.h"
 
 namespace password_manager {
 
-struct CompromisedCredentials;
 struct InteractionsStats;
 struct PasswordForm;
 
@@ -65,8 +65,8 @@ class FormFetcher {
   virtual const std::vector<InteractionsStats>& GetInteractionsStats()
       const = 0;
 
-  // Compromised records for the current site.
-  virtual base::span<const CompromisedCredentials> GetCompromisedCredentials()
+  // Insecure credentials records for the current site.
+  virtual base::span<const InsecureCredential> GetInsecureCredentials()
       const = 0;
 
   // Non-federated matches obtained from the backend. Valid only if GetState()

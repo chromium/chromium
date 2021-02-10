@@ -415,7 +415,7 @@ TEST_P(FormFetcherImplTest, Stats) {
   EXPECT_EQ(1u, form_fetcher_->GetInteractionsStats().size());
 }
 
-TEST_P(FormFetcherImplTest, CompromisedCredentials) {
+TEST_P(FormFetcherImplTest, InsecureCredentials) {
   Fetch();
   form_fetcher_->AddConsumer(&consumer_);
   const std::vector<InsecureCredential> credentials = {InsecureCredential(
@@ -423,7 +423,7 @@ TEST_P(FormFetcherImplTest, CompromisedCredentials) {
       base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
   static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
       ->OnGetInsecureCredentials(credentials);
-  EXPECT_THAT(form_fetcher_->GetCompromisedCredentials(),
+  EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
               UnorderedElementsAreArray(credentials));
 }
 
@@ -497,7 +497,7 @@ TEST_P(FormFetcherImplTest, FetchInsecure) {
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
 
-  EXPECT_THAT(form_fetcher_->GetCompromisedCredentials(),
+  EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
               UnorderedElementsAreArray(list));
 }
 #else
@@ -739,7 +739,7 @@ TEST_P(FormFetcherImplTest, Clone_EmptyResults) {
   auto clone = form_fetcher_->Clone();
   EXPECT_EQ(FormFetcher::State::NOT_WAITING, clone->GetState());
   EXPECT_THAT(clone->GetInteractionsStats(), IsEmpty());
-  EXPECT_THAT(clone->GetCompromisedCredentials(), IsEmpty());
+  EXPECT_THAT(clone->GetInsecureCredentials(), IsEmpty());
   EXPECT_THAT(clone->GetFederatedMatches(), IsEmpty());
   MockConsumer consumer;
   EXPECT_CALL(consumer, OnFetchCompleted);
@@ -803,7 +803,7 @@ TEST_P(FormFetcherImplTest, Clone_Stats) {
   EXPECT_EQ(1u, clone->GetInteractionsStats().size());
 }
 
-TEST_P(FormFetcherImplTest, Clone_Compromised) {
+TEST_P(FormFetcherImplTest, Clone_Insecure) {
   Fetch();
   // Pass empty results to make the state NOT_WAITING.
   store_consumer()->OnGetPasswordStoreResultsFrom(
@@ -815,7 +815,7 @@ TEST_P(FormFetcherImplTest, Clone_Compromised) {
       ->OnGetInsecureCredentials(credentials);
 
   auto clone = form_fetcher_->Clone();
-  EXPECT_THAT(clone->GetCompromisedCredentials(),
+  EXPECT_THAT(clone->GetInsecureCredentials(),
               UnorderedElementsAreArray(credentials));
 }
 

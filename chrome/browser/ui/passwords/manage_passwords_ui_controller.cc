@@ -521,8 +521,7 @@ void ManagePasswordsUIController::SavePassword(const base::string16& username,
 
   post_save_compromised_helper_ =
       std::make_unique<password_manager::PostSaveCompromisedHelper>(
-          passwords_data_.form_manager()->GetCompromisedCredentials(),
-          username);
+          passwords_data_.form_manager()->GetInsecureCredentials(), username);
   post_save_compromised_helper_->AnalyzeLeakedCredentials(
       passwords_data_.client()->GetProfilePasswordStore(),
       passwords_data_.client()->GetAccountPasswordStore(),

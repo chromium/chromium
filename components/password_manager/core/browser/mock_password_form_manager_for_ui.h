@@ -37,8 +37,8 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
               GetInteractionsStats,
               (),
               (const override));
-  MOCK_METHOD(base::span<const CompromisedCredentials>,
-              GetCompromisedCredentials,
+  MOCK_METHOD(base::span<const InsecureCredential>,
+              GetInsecureCredentials,
               (),
               (const override));
   MOCK_METHOD(bool, IsBlocklisted, (), (const override));
