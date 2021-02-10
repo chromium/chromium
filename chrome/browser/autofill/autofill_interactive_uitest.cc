@@ -2767,13 +2767,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
 
 // This test verifies that credit card (payment card list) popup works when the
 // form is inside an OOPIF.
-// TODO(crbug.com/1176012): This now flakes on MacOS AND Linux, so it is
-// disabled until fixed.
-// Previous flakes:
-// Flaky on Windows http://crbug.com/728488
-// Flaky on ChromeOS http://crbug.com/1175735
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       DISABLED_CrossSitePaymentForms) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
   CreateTestCreditCart();
   // Main frame is on a.com, iframe is on b.com.
   GURL url = embedded_test_server()->GetURL(
@@ -2800,6 +2794,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
       "window.focus();"
       "document.getElementById('CREDIT_CARD_NUMBER').focus();");
   ASSERT_TRUE(content::ExecuteScript(cross_frame, script_focus));
+
+  // Wait to make sure iframe is fully rendered. Without the wait, Chrome
+  // sometimes got the signal to render a dropdown at a time and coordinate
+  // where the trigger element was outside the view port of the website.
+  DoNothingAndWait(2);
 
   // Send an arrow dow keypress in order to trigger the autofill popup.
   SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
