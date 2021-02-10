@@ -191,7 +191,6 @@ source_set("unit_tests") {
     ":preferred_apps",
     ":publisher",
     ":test_support",
-    "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]
@@ -202,6 +201,9 @@ source_set("unit_tests") {
       "instance_update_unittest.cc",
     ]
 
-    deps += [ ":instance_update" ]
+    deps += [
+      ":instance_update",
+      "//chrome/test:test_support",
+    ]
   }
 }
