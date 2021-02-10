@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -25,6 +26,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -62,7 +64,9 @@ class HoldingSpaceTrayIcon::ResizeAnimation
         previews_container_(previews_container),
         initial_size_(initial_size),
         target_size_(target_size),
-        animation_(this) {
+        animation_(this),
+        animation_throughput_tracker_(
+            icon->GetWidget()->GetCompositor()->RequestNewThroughputTracker()) {
     animation_.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
     animation_.SetSlideDuration(
         ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
@@ -76,6 +80,9 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   void AnimationEnded(const gfx::Animation* animation) override {
     icon_->SetPreferredSize(target_size_);
     previews_container_->SetTransform(gfx::Transform());
+
+    // Record animation smoothness.
+    animation_throughput_tracker_.Stop();
   }
 
   void AnimationProgressed(const gfx::Animation* animation) override {
@@ -100,6 +107,10 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   }
 
   void Start() {
+    animation_throughput_tracker_.Start(
+        metrics_util::ForSmoothness(base::BindRepeating(
+            holding_space_metrics::RecordPodResizeAnimationSmoothness)));
+
     animation_.Show();
     AnimationProgressed(&animation_);
   }
@@ -113,6 +124,7 @@ class HoldingSpaceTrayIcon::ResizeAnimation
   const gfx::Size target_size_;
 
   gfx::SlideAnimation animation_;
+  ui::ThroughputTracker animation_throughput_tracker_;
 };
 
 // HoldingSpaceTrayIcon --------------------------------------------------------

@@ -21,6 +21,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="HoldingSpace.Animation.BubbleResize.Smoothness" units="%"
+    expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the smoothness of the holding space bubble resize animation. Note
+    that smoothness is expected be be between 0 and 100 (inclusively) with 100
+    representing ideal smoothness of &gt;= 60 frames per second. This histogram
+    is emitted when the resize animation ends.
+  </summary>
+</histogram>
+
+<histogram name="HoldingSpace.Animation.PodResize.Smoothness" units="%"
+    expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the smoothness of the holding space pod resize animation. Note that
+    smoothness is expected be be between 0 and 100 (inclusively) with 100
+    representing ideal smoothness of &gt;= 60 frames per second. This histogram
+    is emitted when the resize animation ends.
+  </summary>
+</histogram>
+
 <histogram name="HoldingSpace.Downloads.Action.All"
     enum="HoldingSpaceDownloadsAction" expires_after="2021-09-24">
   <owner>dmblack@google.com</owner>

@@ -94,6 +94,16 @@ ASH_PUBLIC_EXPORT void RecordTimeFromFirstAvailabilityToFirstEntry(
 ASH_PUBLIC_EXPORT void RecordTimeFromFirstEntryToFirstPin(
     base::TimeDelta time_delta);
 
+// Records the `smoothness` of the holding space bubble resize animation. Note
+// that `smoothness` is expected to be between 0 and 100 (inclusively) with
+// 100 representing ideal smoothness of >= 60 frames per second.
+ASH_PUBLIC_EXPORT void RecordBubbleResizeAnimationSmoothness(int smoothness);
+
+// Records the `smoothness` of the holding space pod resize animation. Note that
+// `smoothness` is expected to be between 0 and 100 (inclusively) with 100
+// representing ideal smoothness of >= 60 frames per second.
+ASH_PUBLIC_EXPORT void RecordPodResizeAnimationSmoothness(int smoothness);
+
 }  // namespace holding_space_metrics
 }  // namespace ash
 

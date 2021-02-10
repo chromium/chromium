@@ -126,5 +126,19 @@ void RecordTimeFromFirstEntryToFirstPin(base::TimeDelta time_delta) {
                                 /*buckets=*/50);
 }
 
+void RecordBubbleResizeAnimationSmoothness(int smoothness) {
+  DCHECK_GE(smoothness, 0);
+  DCHECK_LE(smoothness, 100);
+  base::UmaHistogramPercentage("HoldingSpace.Animation.BubbleResize.Smoothness",
+                               smoothness);
+}
+
+void RecordPodResizeAnimationSmoothness(int smoothness) {
+  DCHECK_GE(smoothness, 0);
+  DCHECK_LE(smoothness, 100);
+  base::UmaHistogramPercentage("HoldingSpace.Animation.PodResize.Smoothness",
+                               smoothness);
+}
+
 }  // namespace holding_space_metrics
 }  // namespace ash
