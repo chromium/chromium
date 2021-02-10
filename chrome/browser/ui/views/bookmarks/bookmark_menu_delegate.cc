@@ -179,7 +179,7 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 
   RecordBookmarkLaunch(location_,
                        ProfileMetrics::GetBrowserProfileType(profile_));
-  chrome::OpenAllIfAllowed(browser_, std::move(get_navigator_), selection,
+  chrome::OpenAllIfAllowed(browser_, get_navigator_, selection,
                            ui::DispositionFromEventFlags(mouse_event_flags));
 }
 
