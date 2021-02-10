@@ -1262,11 +1262,10 @@ bool AXNode::IsFocusedInThisTree() const {
 }
 
 bool AXNode::IsChildOfLeaf() const {
-  const AXNode* ancestor = GetUnignoredParent();
-  while (ancestor) {
+  for (const AXNode* ancestor = GetUnignoredParent(); ancestor;
+       ancestor = ancestor->GetUnignoredParent()) {
     if (ancestor->IsLeaf())
       return true;
-    ancestor = ancestor->GetUnignoredParent();
   }
   return false;
 }
@@ -1404,6 +1403,30 @@ bool AXNode::IsEmbeddedGroup() const {
     return false;
 
   return ui::IsSetLike(parent()->data().role);
+}
+
+AXNode* AXNode::GetLowestPlatformAncestor() const {
+  AXNode* current_node = const_cast<AXNode*>(this);
+  AXNode* lowest_unignored_node = current_node;
+  for (; lowest_unignored_node && lowest_unignored_node->IsIgnored();
+       lowest_unignored_node = lowest_unignored_node->parent()) {
+  }
+
+  // `highest_leaf_node` could be nullptr.
+  AXNode* highest_leaf_node = lowest_unignored_node;
+  // For the purposes of this method, a leaf node does not include leaves in the
+  // internal accessibility tree, only in the platform exposed tree.
+  for (AXNode* ancestor_node = lowest_unignored_node; ancestor_node;
+       ancestor_node = ancestor_node->GetUnignoredParent()) {
+    if (ancestor_node->IsLeaf())
+      highest_leaf_node = ancestor_node;
+  }
+  if (highest_leaf_node)
+    return highest_leaf_node;
+
+  if (lowest_unignored_node)
+    return lowest_unignored_node;
+  return current_node;
 }
 
 AXNode* AXNode::GetTextFieldAncestor() const {

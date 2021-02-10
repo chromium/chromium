@@ -221,6 +221,7 @@ test("accessibility_unittests") {
     "ax_language_detection_unittest.cc",
     "ax_node_data_unittest.cc",
     "ax_node_position_unittest.cc",
+    "ax_node_unittest.cc",
     "ax_range_unittest.cc",
     "ax_role_properties_unittest.cc",
     "ax_table_info_unittest.cc",

@@ -158,9 +158,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // Return a pointer to the first ancestor that is a selection container
   BrowserAccessibility* PlatformGetSelectionContainer() const;
 
-  // If this object is exposed to the platform, returns this object. Otherwise,
-  // returns the platform leaf under which this object is found.
-  BrowserAccessibility* PlatformGetClosestPlatformObject() const;
+  // If this object is exposed to the platform's accessibility layer, returns
+  // this object. Otherwise, returns the lowest ancestor that is exposed to the
+  // platform.
+  virtual BrowserAccessibility* PlatformGetLowestPlatformAncestor() const;
 
   bool IsPreviousSiblingOnSameLine() const;
   bool IsNextSiblingOnSameLine() const;
@@ -414,7 +415,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsFocused() const override;
   bool IsInvisibleOrIgnored() const override;
   bool IsToplevelBrowserWindow() override;
-  gfx::NativeViewAccessible GetClosestPlatformObject() const override;
+  gfx::NativeViewAccessible GetLowestPlatformAncestor() const override;
 
   std::unique_ptr<ChildIterator> ChildrenBegin() override;
   std::unique_ptr<ChildIterator> ChildrenEnd() override;

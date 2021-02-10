@@ -467,10 +467,10 @@ NSDictionary* BrowserAccessibilityManagerMac::
   // TODO(mrobinson): Determine definitively what the type of this text
   // selection change is. This requires passing this information here from
   // blink.
-  BrowserAccessibility* focused_accessibility = GetFocus();
-  DCHECK(focused_accessibility);
+  BrowserAccessibility* focus_object = GetFocus();
+  DCHECK(focus_object);
 
-  if (focused_accessibility != GetLastFocusedNode()) {
+  if (focus_object != GetLastFocusedNode()) {
     [user_info setObject:@(ui::AXTextStateChangeTypeSelectionMove)
                   forKey:ui::NSAccessibilityTextStateChangeTypeKey];
   } else {
@@ -478,9 +478,8 @@ NSDictionary* BrowserAccessibilityManagerMac::
                   forKey:ui::NSAccessibilityTextStateChangeTypeKey];
   }
 
-  focused_accessibility =
-      focused_accessibility->PlatformGetClosestPlatformObject();
-  auto native_focus_object = ToBrowserAccessibilityCocoa(focused_accessibility);
+  focus_object = focus_object->PlatformGetLowestPlatformAncestor();
+  auto native_focus_object = ToBrowserAccessibilityCocoa(focus_object);
   if (native_focus_object && [native_focus_object instanceActive]) {
     [user_info setObject:native_focus_object
                   forKey:ui::NSAccessibilityTextChangeElement];

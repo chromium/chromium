@@ -326,8 +326,9 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
 
   // The root inside a portal is not interesting.
   if (ui::IsPlatformDocument(GetRole()) && PlatformGetParent() &&
-      PlatformGetParent()->GetRole() == ax::mojom::Role::kPortal)
+      PlatformGetParent()->GetRole() == ax::mojom::Role::kPortal) {
     return false;
+  }
 
   // Mark as uninteresting if it's hidden, even if it is focusable.
   if (IsInvisibleOrIgnored())
@@ -336,7 +337,7 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // Walk up the ancestry. A non-focusable child of a control is not
   // interesting. A child of an invisible iframe is also not interesting.
   const BrowserAccessibility* parent = PlatformGetParent();
-  while (parent != nullptr) {
+  while (parent) {
     if (ui::IsControl(parent->GetRole()) && !IsFocusable())
       return false;
 
@@ -455,11 +456,13 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   if (BrowserAccessibility::IsLeaf())
     return true;
 
-  // Iframes are always allowed to contain children.
+  // Document roots (e.g. kRootWebArea and kPdfRoot), and iframes are always
+  // allowed to contain children.
   if (ui::IsIframe(GetRole()) || ui::IsPlatformDocument(GetRole()))
     return false;
 
-  // Button, date and time controls should drop their children.
+  // Button, date and time controls should not expose their children to Android
+  // accessibility APIs.
   switch (GetRole()) {
     case ax::mojom::Role::kButton:
     case ax::mojom::Role::kDate:
@@ -487,7 +490,7 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
       }
     }
 
-    // Focusable nodes with text can drop their children.
+    // Focusable nodes with text should not expose their children.
     if (HasState(ax::mojom::State::kFocusable) && !name.empty()) {
       if (HasFocusableNonOptionChild()) {
         return false;
@@ -496,7 +499,7 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
       }
     }
 
-    // Nodes with only static text as children can drop their children.
+    // Nodes with only static text as children should not expose their children.
     if (HasOnlyTextChildren())
       return true;
   }
@@ -2196,6 +2199,34 @@ bool BrowserAccessibilityAndroid::HasImage() const {
       return true;
   }
   return false;
+}
+
+BrowserAccessibility*
+BrowserAccessibilityAndroid::PlatformGetLowestPlatformAncestor() const {
+  BrowserAccessibility* current_object =
+      const_cast<BrowserAccessibilityAndroid*>(this);
+  BrowserAccessibility* lowest_unignored_node = current_object;
+  if (lowest_unignored_node->IsIgnored())
+    lowest_unignored_node = lowest_unignored_node->PlatformGetParent();
+  DCHECK(!lowest_unignored_node || !lowest_unignored_node->IsIgnored())
+      << "`BrowserAccessibility::PlatformGetParent()` should return either an "
+         "unignored object or nullptr.";
+
+  // `highest_leaf_node` could be nullptr.
+  BrowserAccessibility* highest_leaf_node = lowest_unignored_node;
+  // For the purposes of this method, a leaf node does not include leaves in the
+  // internal accessibility tree, only in the platform exposed tree.
+  for (BrowserAccessibility* ancestor_node = lowest_unignored_node;
+       ancestor_node; ancestor_node = ancestor_node->PlatformGetParent()) {
+    if (ancestor_node->IsLeaf())
+      highest_leaf_node = ancestor_node;
+  }
+  if (highest_leaf_node)
+    return highest_leaf_node;
+
+  if (lowest_unignored_node)
+    return lowest_unignored_node;
+  return current_object;
 }
 
 bool BrowserAccessibilityAndroid::HasOnlyTextChildren() const {

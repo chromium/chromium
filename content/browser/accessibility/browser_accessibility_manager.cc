@@ -365,7 +365,7 @@ void BrowserAccessibilityManager::ParentConnectionChanged(
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
-  DCHECK(popup_root_ids_.size() <= 1);
+  DCHECK_LE(popup_root_ids_.size(), 1u);
   if (popup_root_ids_.size() == 1) {
     BrowserAccessibility* node = GetFromID(*popup_root_ids_.begin());
     if (node) {
@@ -637,8 +637,10 @@ void BrowserAccessibilityManager::ActivateFindInPageResult(int request_id) {
   if (!node)
     return;
 
-  // If an ancestor of this node is a leaf node, fire the notification on that.
-  node = node->PlatformGetClosestPlatformObject();
+  // If an ancestor of this node is a leaf node, or if this node is ignored,
+  // fire the notification on that.
+  node = node->PlatformGetLowestPlatformAncestor();
+  DCHECK(node);
 
   // The "scrolled to anchor" notification is a great way to get a
   // screen reader to jump directly to a specific location in a document.
@@ -1664,7 +1666,7 @@ void BrowserAccessibilityManager::CacheHitTestResult(
     BrowserAccessibility* hit_test_result) const {
   // Walk up to the highest ancestor that's a leaf node; we don't want to
   // return a node that's hidden from the tree.
-  hit_test_result = hit_test_result->PlatformGetClosestPlatformObject();
+  hit_test_result = hit_test_result->PlatformGetLowestPlatformAncestor();
 
   last_hover_ax_tree_id_ = hit_test_result->manager()->ax_tree_id();
   last_hover_node_id_ = hit_test_result->GetId();

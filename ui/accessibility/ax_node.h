@@ -514,6 +514,12 @@ class AX_EXPORT AXNode final {
   // collapsed.
   AXNode* GetCollapsedMenuListPopUpButtonAncestor() const;
 
+  // If this node is exposed to the platform's accessibility layer, returns this
+  // node. Otherwise, returns the lowest ancestor that is exposed to the
+  // platform. (See `IsLeaf()` and `IsIgnored()` for information on what is
+  // exposed to platform APIs.)
+  AXNode* GetLowestPlatformAncestor() const;
+
   // If this node is within an editable region, returns the node that is at the
   // root of that editable region, otherwise returns nullptr. In accessibility,
   // an editable region is synonymous to a text field.

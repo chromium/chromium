@@ -223,15 +223,12 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetChild(
   return InternalGetChild(child_index);
 }
 
-BrowserAccessibility* BrowserAccessibility::PlatformGetClosestPlatformObject()
+BrowserAccessibility* BrowserAccessibility::PlatformGetLowestPlatformAncestor()
     const {
-  BrowserAccessibility* platform_object =
-      const_cast<BrowserAccessibility*>(this);
-  while (platform_object && platform_object->IsChildOfLeaf())
-    platform_object = platform_object->InternalGetParent();
-
-  DCHECK(platform_object);
-  return platform_object;
+  ui::AXNode* lowest_platform_ancestor = node()->GetLowestPlatformAncestor();
+  if (!lowest_platform_ancestor)
+    return nullptr;
+  return manager()->GetFromAXNode(lowest_platform_ancestor);
 }
 
 bool BrowserAccessibility::IsPreviousSiblingOnSameLine() const {
@@ -1196,7 +1193,7 @@ bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
   // need to ensure that we check against the lowest unignored ancestor of this
   // object if this object is ignored.
   if (!focus_object ||
-      !focus_object->IsDescendantOf(PlatformGetClosestPlatformObject())) {
+      !focus_object->IsDescendantOf(PlatformGetLowestPlatformAncestor())) {
     return false;
   }
 
@@ -1517,6 +1514,9 @@ bool BrowserAccessibility::IsLeaf() const {
     return !child_count ||
            (child_count == 1 && InternalGetFirstChild()->IsText());
   }
+
+  // If this object is hosting another accessibility tree, then it is certainly
+  // not a leaf.
   return PlatformGetRootOfChildTree() ? false : node()->IsLeaf();
 }
 
@@ -1539,9 +1539,13 @@ bool BrowserAccessibility::IsDescendantOfPlainTextField() const {
   return node()->IsDescendantOfPlainTextField();
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::GetClosestPlatformObject()
+gfx::NativeViewAccessible BrowserAccessibility::GetLowestPlatformAncestor()
     const {
-  return PlatformGetClosestPlatformObject()->GetNativeViewAccessible();
+  BrowserAccessibility* lowest_platform_ancestor =
+      PlatformGetLowestPlatformAncestor();
+  if (lowest_platform_ancestor)
+    return lowest_platform_ancestor->GetNativeViewAccessible();
+  return nullptr;
 }
 
 BrowserAccessibility::PlatformChildIterator::PlatformChildIterator(

@@ -89,9 +89,10 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::RetargetForEvents(
     BrowserAccessibility* node,
     RetargetEventType type) const {
   // Sometimes we get events on nodes in our internal accessibility tree
-  // that aren't exposed on Android. Get |updated| to point to the highest
-  // ancestor that's a leaf node.
-  BrowserAccessibility* updated = node->PlatformGetClosestPlatformObject();
+  // that aren't exposed on Android. Get |updated| to point to the lowest
+  // ancestor that is exposed.
+  BrowserAccessibility* updated = node->PlatformGetLowestPlatformAncestor();
+  DCHECK(updated);
 
   switch (type) {
     case RetargetEventType::RetargetEventTypeGenerated: {

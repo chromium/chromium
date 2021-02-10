@@ -176,9 +176,38 @@ bool AXPlatformNodeDelegateBase::IsDescendantOfPlainTextField() const {
   return false;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetClosestPlatformObject()
-    const {
-  return nullptr;
+gfx::NativeViewAccessible
+AXPlatformNodeDelegateBase::GetLowestPlatformAncestor() const {
+  AXPlatformNodeDelegateBase* current_delegate =
+      const_cast<AXPlatformNodeDelegateBase*>(this);
+  AXPlatformNodeDelegateBase* lowest_unignored_delegate = current_delegate;
+  if (lowest_unignored_delegate->IsInvisibleOrIgnored()) {
+    lowest_unignored_delegate = static_cast<AXPlatformNodeDelegateBase*>(
+        lowest_unignored_delegate->GetParentDelegate());
+  }
+  DCHECK(!lowest_unignored_delegate ||
+         !lowest_unignored_delegate->IsInvisibleOrIgnored())
+      << "`AXPlatformNodeDelegateBase::GetParentDelegate()` should return "
+         "either an unignored object or nullptr.";
+
+  // `highest_leaf_delegate` could be nullptr.
+  AXPlatformNodeDelegateBase* highest_leaf_delegate = lowest_unignored_delegate;
+  // For the purposes of this method, a leaf node does not include leaves in the
+  // internal accessibility tree, only in the platform exposed tree.
+  for (AXPlatformNodeDelegateBase* ancestor_delegate =
+           lowest_unignored_delegate;
+       ancestor_delegate;
+       ancestor_delegate = static_cast<AXPlatformNodeDelegateBase*>(
+           ancestor_delegate->GetParentDelegate())) {
+    if (ancestor_delegate->IsLeaf())
+      highest_leaf_delegate = ancestor_delegate;
+  }
+  if (highest_leaf_delegate)
+    return highest_leaf_delegate->GetNativeViewAccessible();
+
+  if (lowest_unignored_delegate)
+    return lowest_unignored_delegate->GetNativeViewAccessible();
+  return current_delegate->GetNativeViewAccessible();
 }
 
 AXPlatformNodeDelegateBase::ChildIteratorBase::ChildIteratorBase(

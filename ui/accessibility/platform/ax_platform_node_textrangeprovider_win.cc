@@ -56,7 +56,8 @@ namespace ui {
 
 class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
  public:
-  AXRangePhysicalPixelRectDelegate(AXPlatformNodeTextRangeProviderWin* host)
+  explicit AXRangePhysicalPixelRectDelegate(
+      AXPlatformNodeTextRangeProviderWin* host)
       : host_(host) {}
 
   gfx::Rect GetInnerTextRangeBoundsRect(
@@ -519,13 +520,12 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
         delegate->GetFromNodeID(it->anchor_id()));
     DCHECK(platform_node);
 
-    // Only get attributes for nodes in the tree
-    if (platform_node->GetDelegate()->IsChildOfLeaf()) {
-      platform_node = static_cast<AXPlatformNodeWin*>(
-          AXPlatformNode::FromNativeViewAccessible(
-              platform_node->GetDelegate()->GetClosestPlatformObject()));
-      DCHECK(platform_node);
-    }
+    // Only get attributes for nodes in the tree. Exclude descendants of leaves
+    // and ignored objects.
+    platform_node = static_cast<AXPlatformNodeWin*>(
+        AXPlatformNode::FromNativeViewAccessible(
+            platform_node->GetDelegate()->GetLowestPlatformAncestor()));
+    DCHECK(platform_node);
 
     base::win::VariantVector current_value;
     const bool at_end_leaf_text_anchor =
