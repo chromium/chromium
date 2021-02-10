@@ -3263,7 +3263,7 @@
         "args": [
           "info_collection",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
@@ -3303,7 +3303,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -3340,7 +3340,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -3376,7 +3376,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d9 --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -3412,7 +3412,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -3448,7 +3448,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=vulkan --use-cmd-decoder=passthrough --force_high_performance_gpu"
@@ -3487,7 +3487,7 @@
         "args": [
           "info_collection",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
@@ -3525,7 +3525,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -3562,7 +3562,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -3598,7 +3598,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d9 --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -3634,7 +3634,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -3670,7 +3670,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-angle=vulkan --use-cmd-decoder=passthrough --force_high_performance_gpu"

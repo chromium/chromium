@@ -3848,7 +3848,7 @@
         "args": [
           "context_lost",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle"
@@ -3882,7 +3882,7 @@
         "args": [
           "depth_capture",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
@@ -3916,7 +3916,7 @@
         "args": [
           "gpu_process",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
@@ -3950,7 +3950,7 @@
         "args": [
           "hardware_accelerated_feature",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
@@ -3984,7 +3984,7 @@
         "args": [
           "info_collection",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
@@ -4022,7 +4022,7 @@
         "args": [
           "maps",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
@@ -4065,7 +4065,7 @@
         "args": [
           "pixel",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
@@ -4108,7 +4108,7 @@
         "args": [
           "screenshot_sync",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
@@ -4143,7 +4143,7 @@
         "args": [
           "trace_test",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
@@ -4177,7 +4177,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=debug_x64",
+          "--browser=debug",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
@@ -4343,7 +4343,7 @@
         "args": [
           "context_lost",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle"
@@ -4377,7 +4377,7 @@
         "args": [
           "depth_capture",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
@@ -4411,7 +4411,7 @@
         "args": [
           "gpu_process",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
@@ -4445,7 +4445,7 @@
         "args": [
           "hardware_accelerated_feature",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
@@ -4479,7 +4479,7 @@
         "args": [
           "info_collection",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
@@ -4517,7 +4517,7 @@
         "args": [
           "maps",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
@@ -4560,7 +4560,7 @@
         "args": [
           "pixel",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
@@ -4603,7 +4603,7 @@
         "args": [
           "../../tools/perf/run_benchmark",
           "--benchmarks=rendering.desktop",
-          "--browser=release_x64"
+          "--browser=release"
         ],
         "isolate_name": "rendering_representative_perf_tests",
         "merge": {
@@ -4629,7 +4629,7 @@
         "args": [
           "screenshot_sync",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
@@ -4664,7 +4664,7 @@
         "args": [
           "trace_test",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
@@ -4698,7 +4698,7 @@
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=release_x64",
+          "--browser=release",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",

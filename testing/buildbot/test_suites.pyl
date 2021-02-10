@@ -3681,7 +3681,7 @@
           # usage to be the same as the browser.
           '--additional-driver-flag=--use-gpu-in-tests',
         ],
-        'win64_args': [ '--target=Release_x64' ],
+        'win64_args': [ '--target=Release' ],
         'mac_args': [
           # These tests run on 10.14, but web_tests [ Mac ] expectations don't
           # work correctly yet under 10.14. Pretend it's 10.13.
@@ -3723,7 +3723,7 @@
           # usage to be the same as the browser.
           '--additional-driver-flag=--use-gpu-in-tests',
         ],
-        'win64_args': [ '--target=Release_x64' ],
+        'win64_args': [ '--target=Release' ],
         'mac_args': [
           # These tests run on 10.14, but web_tests [ Mac ] expectations don't
           # work correctly yet under 10.14. Pretend it's 10.13.
@@ -5160,7 +5160,7 @@
           '-v',
           '--upload-results',
           '--output-format=histograms',
-          '--browser=release_x64',
+          '--browser=release',
         ],
         'isolate_name': 'vr_perf_tests',
         'merge': {

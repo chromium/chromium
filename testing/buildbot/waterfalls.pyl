@@ -1462,7 +1462,7 @@
       'win-angle-x86-builder': {},
       'win10-angle-chromium-x64-intel': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_intel_hd_630_stable',
         ],
@@ -1472,7 +1472,7 @@
       },
       'win10-angle-chromium-x64-nvidia': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -2228,7 +2228,7 @@
       },
       'Dawn Win10 x64 ASAN Release': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable_dimension_set',
           'win10_intel_hd_630_stable_dimension_set',
@@ -2242,7 +2242,7 @@
       'Dawn Win10 x64 DEPS Builder' : {},
       'Dawn Win10 x64 DEPS Release (Intel HD 630)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_intel_hd_630_stable',
         ],
@@ -2253,7 +2253,7 @@
       },
       'Dawn Win10 x64 DEPS Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -2264,7 +2264,7 @@
       },
       'Dawn Win10 x64 Release (Intel HD 630)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_intel_hd_630_stable',
         ],
@@ -2275,7 +2275,7 @@
       },
       'Dawn Win10 x64 Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -3684,7 +3684,7 @@
         },
       },
       'Win10 x64 Debug (NVIDIA)': {
-        'browser_config': 'debug_x64',
+        'browser_config': 'debug',
         'os_type': 'win',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
@@ -3695,7 +3695,7 @@
         },
       },
       'Win10 x64 Release (NVIDIA)': {
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'os_type': 'win',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
@@ -3790,7 +3790,7 @@
       },
       'ANGLE GPU Win10 x64 Release (Intel HD 630)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_intel_hd_630_stable',
         ],
@@ -3802,7 +3802,7 @@
       },
       'ANGLE GPU Win10 x64 Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -4525,7 +4525,7 @@
       },
       'Optional Win10 x64 Release (Intel HD 630)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'swarming_containment_auto',
           'win10_intel_hd_630_stable',
@@ -4538,7 +4538,7 @@
       },
       'Optional Win10 x64 Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -4551,7 +4551,7 @@
       # END Fake builder used as mirror targets for Optional GPU tryservers
       'Win10 FYI x64 DX12 Vulkan Debug (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'debug_x64',
+        'browser_config': 'debug',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -4561,7 +4561,7 @@
       },
       'Win10 FYI x64 DX12 Vulkan Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -4571,7 +4571,7 @@
       },
       'Win10 FYI x64 Debug (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'debug_x64',
+        'browser_config': 'debug',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -4584,7 +4584,7 @@
       # crbug.com/812000
       'Win10 FYI x64 Exp Release (Intel HD 630)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
           'win10_intel_hd_630_experimental',
@@ -4597,7 +4597,7 @@
       },
       'Win10 FYI x64 Exp Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
           'win10_nvidia_quadro_p400_experimental',
@@ -4616,7 +4616,7 @@
         # This bot currently only has two pieces of hardware behind it,
         # and is being qualified for potential scale-out.
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
           'win10_amd_rx_5500_xt',
@@ -4629,7 +4629,7 @@
       },
       'Win10 FYI x64 Release (Intel HD 630)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_intel_hd_630_stable',
         ],
@@ -4643,7 +4643,7 @@
         # This bot currently only has one piece of hardware behind it,
         # and is being qualified for potential scale-out.
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
           'win10_nvidia_geforce_gtx_1660',
@@ -4655,7 +4655,7 @@
       },
       'Win10 FYI x64 Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -4667,7 +4667,7 @@
       },
       'Win10 FYI x64 Release XR Perf (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -4677,7 +4677,7 @@
       },
       'Win10 FYI x64 SkiaRenderer Dawn Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'win10_nvidia_quadro_p400_stable',
         ],
@@ -4780,7 +4780,7 @@
       },
       'Win7 FYI x64 Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
           'win7_nvidia_quadro_p400',
@@ -4800,7 +4800,7 @@
       },
       'Win7 FYI x64 dEQP Release (NVIDIA)': {
         'os_type': 'win',
-        'browser_config': 'release_x64',
+        'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
           'win7_nvidia_quadro_p400',

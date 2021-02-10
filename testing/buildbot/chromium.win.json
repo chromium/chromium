@@ -3605,7 +3605,7 @@
         "args": [
           "--num-retries=3",
           "--target",
-          "Release_x64"
+          "Release"
         ],
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
@@ -5932,7 +5932,7 @@
         "args": [
           "--pageset-repeat=1",
           "--test-shard-map-filename=smoke_test_benchmark_shard_map.json",
-          "--browser=debug_x64"
+          "--browser=debug"
         ],
         "experiment_percentage": 100,
         "isolate_name": "performance_test_suite",
