@@ -15,6 +15,7 @@
 #include "base/debug/alias.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"
@@ -437,6 +438,8 @@ class COMPONENT_EXPORT(URL) GURL {
   // Helper used by GURL::IsAboutUrl and KURL::IsAboutURL.
   static bool IsAboutPath(base::StringPiece actual_path,
                           base::StringPiece allowed_path);
+
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
   // Variant of the string parsing constructor that allows the caller to elect
