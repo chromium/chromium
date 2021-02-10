@@ -7313,28 +7313,21 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-void Document::PushNewPopupElement(HTMLPopupElement* popup) {
-  DCHECK(!popup_element_stack_.Contains(popup));
-  popup_element_stack_.push_back(popup);
-  AddToTopLayer(popup);
+bool Document::PopupShowing() const {
+  return !popup_element_stack_.IsEmpty();
 }
-
-void Document::PopPopupElement(HTMLPopupElement* popup) {
-  DCHECK(popup_element_stack_.back() == popup);
-  popup_element_stack_.pop_back();
-  RemoveFromTopLayer(popup);
+void Document::HideTopmostPopupElement() const {
+  if (popup_element_stack_.IsEmpty())
+    return;
+  popup_element_stack_.back()->hide();
 }
-
-HTMLPopupElement* Document::TopmostPopupElement() {
-  return popup_element_stack_.IsEmpty() ? nullptr : popup_element_stack_.back();
-}
-
 void Document::HideAllPopupsUntil(HTMLPopupElement* endpoint) {
-  HTMLPopupElement* element;
-  while ((element = TopmostPopupElement()) != endpoint) {
-    DCHECK(element) << "popup element not found in element stack";
-    element->hide();
+  while (!popup_element_stack_.IsEmpty() &&
+         popup_element_stack_.back() != endpoint) {
+    popup_element_stack_.back()->hide();
   }
+  DCHECK(!endpoint || popup_element_stack_.back() == endpoint)
+      << "popup element not found in element stack";
 }
 
 void Document::exitPointerLock() {

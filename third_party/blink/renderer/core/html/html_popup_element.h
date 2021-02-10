@@ -34,6 +34,10 @@ class HTMLPopupElement final : public HTMLElement {
   void ScheduleHideEvent();
   void MarkStyleDirty();
 
+  void PushNewPopupElement(HTMLPopupElement*);
+  void PopPopupElement(HTMLPopupElement*);
+  HTMLPopupElement* TopmostPopupElement();
+
   bool open_;
 };
 

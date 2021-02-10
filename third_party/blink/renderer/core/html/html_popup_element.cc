@@ -32,7 +32,7 @@ void HTMLPopupElement::hide() {
   if (!open_)
     return;
   GetDocument().HideAllPopupsUntil(this);
-  GetDocument().PopPopupElement(this);
+  PopPopupElement(this);
   open_ = false;
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
   MarkStyleDirty();
@@ -65,8 +65,27 @@ void HTMLPopupElement::show() {
   GetDocument().HideAllPopupsUntil(parent_popup);
   open_ = true;
   PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
-  GetDocument().PushNewPopupElement(this);
+  PushNewPopupElement(this);
   MarkStyleDirty();
+}
+
+void HTMLPopupElement::PushNewPopupElement(HTMLPopupElement* popup) {
+  auto& stack = GetDocument().PopupElementStack();
+  DCHECK(!stack.Contains(popup));
+  stack.push_back(popup);
+  GetDocument().AddToTopLayer(popup);
+}
+
+void HTMLPopupElement::PopPopupElement(HTMLPopupElement* popup) {
+  auto& stack = GetDocument().PopupElementStack();
+  DCHECK(stack.back() == popup);
+  stack.pop_back();
+  GetDocument().RemoveFromTopLayer(popup);
+}
+
+HTMLPopupElement* HTMLPopupElement::TopmostPopupElement() {
+  auto& stack = GetDocument().PopupElementStack();
+  return stack.IsEmpty() ? nullptr : stack.back();
 }
 
 Element* HTMLPopupElement::AnchorElement() const {

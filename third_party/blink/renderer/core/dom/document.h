@@ -1376,22 +1376,21 @@ class CORE_EXPORT Document : public ContainerNode,
   const HeapVector<Member<Element>>& TopLayerElements() const {
     return top_layer_elements_;
   }
-  const HeapVector<Member<HTMLPopupElement>>& PopupElementStack() const {
+
+  HTMLDialogElement* ActiveModalDialog() const;
+
+  HeapVector<Member<HTMLPopupElement>>& PopupElementStack() {
     return popup_element_stack_;
   }
+  bool PopupShowing() const;
+  void HideTopmostPopupElement() const;
   // This hides all visible popups up to, but not including,
   // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
   void HideAllPopupsUntil(HTMLPopupElement* endpoint);
 
-  HTMLDialogElement* ActiveModalDialog() const;
-
-  void PushNewPopupElement(HTMLPopupElement*);
-  void PopPopupElement(HTMLPopupElement*);
-  HTMLPopupElement* TopmostPopupElement();
-
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
-  bool IsTemplateDocument() const { return !!template_document_host_; }
+  bool IsTemplateDocument() const { return template_document_host_; }
   Document& EnsureTemplateDocument();
   Document* TemplateDocumentHost() { return template_document_host_; }
 

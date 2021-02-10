@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Popup light dismiss behavior</title>
+<link rel="author" title="Mason Freed" href="mailto:masonfreed@chromium.org">
+<link rel=help href="https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Popup/explainer.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/popup-utils.js"></script>
+
+<body>
+
+
+<button id=b1 onclick='p1.show()'>Popup 1</button>
+<span id=outside>Outside all popups</span>
+<popup id=p1 anchor=b1>
+  <span id=inside1>Inside popup 1</span>
+  <button id=b2 onclick='p2.show()'>Popup 2</button>
+</popup>
+<popup id=p2 anchor=b2>
+  <span id=inside2>Inside popup 2</span>
+</popup>
+
+<style>
+  #p1 { top:50px; }
+  #p2 { top:50px; left:250px; }
+  popup { border: 5px solid red; }
+</style>
+
+
+<script>
+  function clickOn(element) {
+    const actions = new test_driver.Actions();
+    actions.pointerMove(0, 0, {origin: element});
+    actions.pointerDown({button: actions.ButtonType.LEFT});
+    actions.pointerUp({button: actions.ButtonType.LEFT});
+    return actions.send();
+  }
+
+  function pressKey(key) {
+    const actions = new test_driver.Actions();
+    actions.keyDown(key);
+    actions.keyUp(key);
+    return actions.send();
+  }
+
+  (async function() {
+    setup({ explicit_done: true });
+
+    const popup1 = document.querySelector('#p1');
+    const popup2 = document.querySelector('#p2');
+    const outside = document.querySelector('#outside');
+    const inside1 = document.querySelector('#inside1');
+    const inside2 = document.querySelector('#inside2');
+
+    assert_false(popup1.open);
+    popup1.show();
+    assert_true(popup1.open);
+    await clickOn(outside);
+    test(t => {
+      assert_false(popup1.open);
+    },'Clicking outside a popup will dismiss the popup');
+
+    assert_false(popup1.open);
+    popup1.show();
+    await clickOn(inside1);
+    test(t => {
+      assert_true(popup1.open);
+      popup1.hide();
+    },'Clicking inside a popup does not close that popup');
+
+
+    popup1.show();
+    popup2.show();
+    await clickOn(inside2);
+    test(t => {
+      assert_true(popup1.open);
+      assert_true(popup2.open);
+      popup1.hide();
+    },'Clicking inside a child popup shouldn\'t close either popup');
+
+    assert_false(popup1.open);
+    assert_false(popup2.open);
+    popup1.show();
+    popup2.show();
+    await clickOn(inside1);
+    test(t => {
+      assert_true(popup1.open);
+      assert_false(popup2.open);
+      popup1.hide();
+    },'Clicking inside a parent popup should close child popup');
+
+    done();
+  })();
+</script>
