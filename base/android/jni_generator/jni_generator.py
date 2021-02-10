@@ -1508,11 +1508,17 @@ def GetScriptName():
   return os.sep.join(script_components[base_index:])
 
 
-def _RemoveExistingHeaders(path):
-  if os.path.exists(path) and os.path.isdir(path):
-    for root, _, files in os.walk(path):
-      for f in files:
-        file_path = os.path.join(root, f)
+def _RemoveStaleHeaders(path, output_files):
+  if not os.path.isdir(path):
+    return
+  # Do not remove output files so that timestamps on declared outputs are not
+  # modified unless their contents are changed (avoids reverse deps needing to
+  # be rebuilt).
+  preserve = set(output_files)
+  for root, _, files in os.walk(path):
+    for f in files:
+      file_path = os.path.join(root, f)
+      if file_path not in preserve:
         if os.path.isfile(file_path) and os.path.splitext(file_path)[1] == '.h':
           os.remove(file_path)
 
@@ -1604,7 +1610,7 @@ See SampleForTests.java for more details.
     # Remove existing headers so that moving .java source files but not updating
     # the corresponding C++ include will be a compile failure (otherwise
     # incremental builds will usually not catch this).
-    _RemoveExistingHeaders(output_dir)
+    _RemoveStaleHeaders(output_dir, output_files)
   else:
     output_files = [None] * len(input_files)
   temp_dir = tempfile.mkdtemp()
