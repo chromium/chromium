@@ -61,6 +61,8 @@ const char kFeatureType2[] = "feature_type2";
 const char kClientMetadataSessionId[] = "session_id";
 const int kLastActivityTimeSecs1 = 111;
 const int kLastActivityTimeSecs2 = 222;
+const int kLastUpdateTimeSecs1 = 333;
+const int kLastUpdateTimeSecs2 = 444;
 const cryptauthv2::ConnectivityStatus kConnectivityStatus1 =
     cryptauthv2::ConnectivityStatus::ONLINE;
 const cryptauthv2::ConnectivityStatus kConnectivityStatus2 =
@@ -962,12 +964,18 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetDevicesActivityStatusSuccess) {
 
   {
     cryptauthv2::GetDevicesActivityStatusResponse response;
+    cryptauthv2::Timestamp last_update_time1;
+    last_update_time1.set_seconds(kLastUpdateTimeSecs1);
     response.add_device_activity_statuses()->CopyFrom(
         cryptauthv2::BuildDeviceActivityStatus(
-            kDeviceId1, kLastActivityTimeSecs1, kConnectivityStatus1));
+            kDeviceId1, kLastActivityTimeSecs1, kConnectivityStatus1,
+            last_update_time1));
+    cryptauthv2::Timestamp last_update_time2;
+    last_update_time2.set_seconds(kLastUpdateTimeSecs2);
     response.add_device_activity_statuses()->CopyFrom(
         cryptauthv2::BuildDeviceActivityStatus(
-            kDeviceId2, kLastActivityTimeSecs2, kConnectivityStatus2));
+            kDeviceId2, kLastActivityTimeSecs2, kConnectivityStatus2,
+            last_update_time2));
 
     FinishApiCallFlow(&response);
   }
@@ -979,11 +987,15 @@ TEST_F(DeviceSyncCryptAuthClientTest, GetDevicesActivityStatusSuccess) {
             result.device_activity_statuses(0).last_activity_time_sec());
   EXPECT_EQ(kConnectivityStatus1,
             result.device_activity_statuses(0).connectivity_status());
+  ASSERT_EQ(kLastUpdateTimeSecs1,
+            result.device_activity_statuses(0).last_update_time().seconds());
   EXPECT_EQ(kDeviceId2, result.device_activity_statuses(1).device_id());
   ASSERT_EQ(kLastActivityTimeSecs2,
             result.device_activity_statuses(1).last_activity_time_sec());
   EXPECT_EQ(kConnectivityStatus2,
             result.device_activity_statuses(1).connectivity_status());
+  ASSERT_EQ(kLastUpdateTimeSecs2,
+            result.device_activity_statuses(1).last_update_time().seconds());
 }
 
 TEST_F(DeviceSyncCryptAuthClientTest, FetchAccessTokenFailure) {

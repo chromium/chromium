@@ -347,9 +347,15 @@ base::Value DeviceActivityStatusToReadableDictionary(
   dict.SetStringKey(
       "Last activity time",
       base::TimeFormatShortDateAndTimeWithTimeZone(
-          base::Time::FromJavaTime(status.last_activity_time_sec() * 1000)));
+          base::Time::FromTimeT(status.last_activity_time_sec())));
   dict.SetStringKey("Connectivity status",
                     ConnectivityStatusToString(status.connectivity_status()));
+  dict.SetStringKey(
+      "Last update time",
+      base::TimeFormatShortDateAndTimeWithTimeZone(
+          base::Time::FromTimeT(status.last_update_time().seconds()) +
+          base::TimeDelta::FromNanoseconds(status.last_update_time().nanos())));
+
   return dict;
 }
 

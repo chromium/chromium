@@ -38,7 +38,15 @@ struct RemoteDevice {
   std::string pii_free_name;
   std::string public_key;
   std::string persistent_symmetric_key;
+
+  // The last time a feature bit changed for the device in the CryptAuth server.
+  // Beware that devices don't necessarily flip their own bits, for example,
+  // exclusively enabling a feature will disable the bit on all other devices,
+  // or a Chromebook can enable/disable a phone's BETTER_TOGETHER_HOST bit.
+  // Note: Do not confuse with GetDevicesActivityStatus RPC response's
+  // |last_update_time|.
   int64_t last_update_time_millis;
+
   std::map<SoftwareFeature, SoftwareFeatureState> software_features;
   std::vector<BeaconSeed> beacon_seeds;
 

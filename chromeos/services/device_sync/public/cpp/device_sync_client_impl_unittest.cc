@@ -456,7 +456,8 @@ class DeviceSyncClientImplTest : public testing::Test {
         device_activity_statuses.emplace_back(mojom::DeviceActivityStatus::New(
             device_activity_status->device_id,
             device_activity_status->last_activity_time,
-            device_activity_status->connectivity_status));
+            device_activity_status->connectivity_status,
+            device_activity_status->last_update_time));
       }
       device_activity_statuses_optional =
           base::make_optional(std::move(device_activity_statuses));
@@ -851,7 +852,8 @@ TEST_F(DeviceSyncClientImplTest, TestGetDevicesActivityStatus_NoErrorCode) {
   SetupClient();
   std::vector<mojom::DeviceActivityStatusPtr> expected_activity_statuses;
   expected_activity_statuses.emplace_back(mojom::DeviceActivityStatus::New(
-      "deviceid", base::Time(), cryptauthv2::ConnectivityStatus::ONLINE));
+      "deviceid", base::Time(), cryptauthv2::ConnectivityStatus::ONLINE,
+      base::Time()));
 
   CallGetDevicesActivityStatus(mojom::NetworkRequestResult::kSuccess,
                                std::move(expected_activity_statuses));

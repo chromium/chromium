@@ -58,7 +58,8 @@ DeviceFeatureStatus BuildDeviceFeatureStatus(
 DeviceActivityStatus BuildDeviceActivityStatus(
     const std::string& device_id,
     int64_t last_activity_time_sec,
-    const ConnectivityStatus online_status);
+    const ConnectivityStatus online_status,
+    Timestamp last_update_time);
 
 // The data field is set to "start_|start_time_millis|_end_|end_time_millis|".
 BeaconSeed BuildBeaconSeedForTest(int64_t start_time_millis,

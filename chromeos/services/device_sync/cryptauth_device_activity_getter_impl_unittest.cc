@@ -40,6 +40,7 @@ namespace {
 const char kAccessTokenUsed[] = "access token used by CryptAuthClient";
 const char kDeviceId[] = "device_id1";
 const int kLastActivityTimeSecs = 111;
+const int kLastUpdateTimeSecs = 222;
 const cryptauthv2::ConnectivityStatus kConnectivityStatus =
     cryptauthv2::ConnectivityStatus::ONLINE;
 
@@ -67,9 +68,12 @@ const cryptauthv2::GetDevicesActivityStatusResponse& GetResponse() {
   static const base::NoDestructor<cryptauthv2::GetDevicesActivityStatusResponse>
       activity_response([] {
         cryptauthv2::GetDevicesActivityStatusResponse response;
+        cryptauthv2::Timestamp last_update_time;
+        last_update_time.set_seconds(kLastUpdateTimeSecs);
         response.add_device_activity_statuses()->CopyFrom(
             cryptauthv2::BuildDeviceActivityStatus(
-                kDeviceId, kLastActivityTimeSecs, kConnectivityStatus));
+                kDeviceId, kLastActivityTimeSecs, kConnectivityStatus,
+                last_update_time));
         return response;
       }());
 
@@ -211,7 +215,7 @@ TEST_F(DeviceSyncCryptAuthDeviceActivityGetterImplTest, Success) {
   mojom::DeviceActivityStatusPtr expected_device_activity_status =
       mojom::DeviceActivityStatus::New(
           kDeviceId, base::Time::FromTimeT(kLastActivityTimeSecs),
-          kConnectivityStatus);
+          kConnectivityStatus, base::Time::FromTimeT(kLastUpdateTimeSecs));
   std::vector<mojom::DeviceActivityStatusPtr>
       expected_device_activity_status_result;
   expected_device_activity_status_result.emplace_back(
