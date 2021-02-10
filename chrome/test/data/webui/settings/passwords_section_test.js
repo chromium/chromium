@@ -239,6 +239,7 @@ async function openPasswordEditDialogHelper(
   passwordListItem.$$('#showPasswordButton').click();
   flush();
   await passwordManager.whenCalled('requestPlaintextPassword');
+  passwordManager.resetResolver('requestPlaintextPassword');
   flush();
 
   assertEquals('text', passwordListItem.$$('#password').type);
@@ -252,11 +253,10 @@ async function openPasswordEditDialogHelper(
   flush();
   if (isEditDialog) {
     await passwordManager.whenCalled('requestPlaintextPassword');
+    passwordManager.resetResolver('requestPlaintextPassword');
     flush();
-  }
-
-  // Verify that list item password is hidden.
-  if (!isEditDialog) {
+  } else {
+    // Verify that list item password is hidden.
     assertEquals('', passwordListItem.entry.password);
   }
   assertEquals('password', passwordListItem.$$('#password').type);
@@ -275,6 +275,7 @@ async function openPasswordEditDialogHelper(
   flush();
   if (!isEditDialog) {
     await passwordManager.whenCalled('requestPlaintextPassword');
+    passwordManager.resetResolver('requestPlaintextPassword');
     flush();
   }
 
@@ -467,6 +468,7 @@ suite('PasswordsSection', function() {
     passwordListItems[0].$$('#showPasswordButton').click();
     flush();
     await passwordManager.whenCalled('requestPlaintextPassword');
+    passwordManager.resetResolver('requestPlaintextPassword');
     flush();
 
     passwordListItems[1].$$('#showPasswordButton').click();
