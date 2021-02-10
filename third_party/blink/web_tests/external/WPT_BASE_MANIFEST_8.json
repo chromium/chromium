@@ -1261,6 +1261,15 @@
       ]
      }
     },
+    "styling": {
+     "font-size-number-calc-crash.svg": [
+      "6b56d9df2b426e2376f87668a98f5e21ee56e37b",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "svg-in-svg": {
      "svg-in-svg-circular-filter-reference-crash.html": [
       "51303171f09d28e3958ab74ecdce7f9cf120bd12",
@@ -244263,7 +244272,7 @@
      []
     ],
     "cors-rfc1918.idl": [
-     "083b6c3d630bb8179c1376d49bd13d48235bf6f8",
+     "d392a679ff2cca25dae7ad406d6e57fd3ac25cef",
      []
     ],
     "credential-management.idl": [
@@ -244479,7 +244488,7 @@
      []
     ],
     "js-self-profiling.idl": [
-     "2c51c1cfe8eed10c8bd92bae1fdf3bf4a9216995",
+     "a2199999eada84ff43f1a237380685c5833c4791",
      []
     ],
     "keyboard-lock.idl": [
@@ -245004,6 +245013,10 @@
     ],
     "__dir__.headers": [
      "35b10bd2ccdbfa99feb96079fafab61346d025ed",
+     []
+    ],
+    "idlharness.https-expected.txt": [
+     "c1b7bf964b840d03301ce8719f251300ad1f0d76",
      []
     ]
    },
@@ -251940,6 +251953,10 @@
     },
     "extend.js": [
      "d5d199068c5b0465f96ed643af8d7d20a889312e",
+     []
+    ],
+    "modify.tentative-expected.txt": [
+     "e13dca3d44115cda61741720b76a3030067fb40a",
      []
     ],
     "removeRange-expected.txt": [
@@ -414382,7 +414399,7 @@
      ]
     ],
     "modify.tentative.html": [
-     "c4436fcafeb5e43ea43948183d3e64842abb8be6",
+     "37231571eddac45a9cce78cddff52b69b2af9ff6",
      [
       null,
       {}
@@ -428318,6 +428335,15 @@
      ]
     },
     "keyboard": {
+     "modifier-keys-combinations.html": [
+      "1b364ff72ce539b31ef86f4a1bcf75aed6868845",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "modifier-keys.html": [
       "635e5d3b7797e1fcde058f81dda1b3b2132ee375",
       [
