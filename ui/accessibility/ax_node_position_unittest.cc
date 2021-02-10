@@ -7270,6 +7270,824 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
             ancestor_position->affinity());
 }
 
+TEST_F(AXPositionTest, CreateParentAndLeafPositionWithIgnoredNodes) {
+  // The text of ignored nodes should not be visible in the tree's text
+  // representation, but the text of their unignored children should.
+  // `AXPosition::CreateParentPosition` should be able to work even when called
+  // on an ignored position, and it should also be able to produce parent
+  // positions on ignored nodes that have the correct text offset and affinity.
+  // `AXPosition::AsLeafTextPosition`, on the other hand, should skip all
+  // ignored nodes.
+  //
+  // Simulate a tree with two lines of text and some ignored nodes between them:
+  // ++kRootWebArea "HelloWorld"
+  // ++++kGenericContainer ignored
+  // ++++++kStaticText "Hello"
+  // ++++++++kInlineTextBox "Hello"
+  // ++++kStaticText "Ignored1"
+  // ++++++kInlineTextBox "Ignored1"
+  // ++++kStaticText "Ignored2"
+  // ++++++kInlineTextBox "Ignored2"
+  // ++++kStaticText "World"
+  // ++++++kInlineTextBox "World"
+  AXNodeData root;
+  AXNodeData generic_container_ignored;
+  AXNodeData static_text_1;
+  AXNodeData inline_box_1;
+  AXNodeData static_text_ignored_1;
+  AXNodeData inline_box_ignored_1;
+  AXNodeData static_text_ignored_2;
+  AXNodeData inline_box_ignored_2;
+  AXNodeData static_text_2;
+  AXNodeData inline_box_2;
+
+  root.id = 1;
+  generic_container_ignored.id = 2;
+  static_text_1.id = 3;
+  inline_box_1.id = 4;
+  static_text_2.id = 5;
+  inline_box_2.id = 6;
+  static_text_ignored_1.id = 7;
+  inline_box_ignored_1.id = 8;
+  static_text_ignored_2.id = 9;
+  inline_box_ignored_2.id = 10;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  root.child_ids = {generic_container_ignored.id, static_text_ignored_1.id,
+                    static_text_ignored_2.id, static_text_2.id};
+
+  generic_container_ignored.role = ax::mojom::Role::kGenericContainer;
+  generic_container_ignored.AddState(ax::mojom::State::kIgnored);
+  generic_container_ignored.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  generic_container_ignored.child_ids = {static_text_1.id};
+
+  static_text_1.role = ax::mojom::Role::kStaticText;
+  static_text_1.SetName("Hello");
+  static_text_1.child_ids = {inline_box_1.id};
+
+  inline_box_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_1.SetName("Hello");
+
+  static_text_ignored_1.role = ax::mojom::Role::kStaticText;
+  static_text_ignored_1.AddState(ax::mojom::State::kIgnored);
+  static_text_ignored_1.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  static_text_ignored_1.SetName("Ignored1");
+  static_text_ignored_1.child_ids = {inline_box_ignored_1.id};
+
+  inline_box_ignored_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_ignored_1.AddState(ax::mojom::State::kIgnored);
+  inline_box_ignored_1.SetName("Ignored1");
+
+  static_text_ignored_2.role = ax::mojom::Role::kStaticText;
+  static_text_ignored_2.AddState(ax::mojom::State::kIgnored);
+  static_text_ignored_2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  static_text_ignored_2.SetName("Ignored2");
+  static_text_ignored_2.child_ids = {inline_box_ignored_2.id};
+
+  inline_box_ignored_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_ignored_2.AddState(ax::mojom::State::kIgnored);
+  inline_box_ignored_2.SetName("Ignored2");
+
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  static_text_2.SetName("World");
+  static_text_2.child_ids = {inline_box_2.id};
+
+  inline_box_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_2.SetName("World");
+
+  SetTree(CreateAXTree({root, generic_container_ignored, static_text_1,
+                        inline_box_1, static_text_ignored_1,
+                        inline_box_ignored_1, static_text_ignored_2,
+                        inline_box_ignored_2, static_text_2, inline_box_2}));
+
+  // "<H>elloWorld"
+  TestPositionType before_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_root->IsNullPosition());
+
+  // "Hello<W>orld"
+  // On the end of the first line after "Hello".
+  TestPositionType middle_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(middle_root->IsNullPosition());
+
+  // "Hello<W>orld"
+  // At the start of the second line before "World".
+  TestPositionType middle_root_upstream = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_FALSE(middle_root_upstream->IsNullPosition());
+
+  // "HelloWorld<>"
+  // Note that since this is the end of content there is no next line after the
+  // end of the root, so a downstream affinity would still work even though
+  // technically the position is at the end of the last line.
+  TestPositionType after_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 10 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_root->IsNullPosition());
+
+  // "<H>ello"
+  TestPositionType before_inline_box_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_1.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_1->IsNullPosition());
+  // "Hello<>"
+  TestPositionType after_inline_box_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_1.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_inline_box_1->IsNullPosition());
+
+  // "<I>gnored1"
+  TestPositionType before_inline_box_ignored_1 =
+      AXNodePosition::CreateTextPosition(GetTreeID(), inline_box_ignored_1.id,
+                                         0 /* text_offset */,
+                                         ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_ignored_1->IsNullPosition());
+  ASSERT_TRUE(before_inline_box_ignored_1->IsIgnored());
+
+  TestPositionType before_inline_box_ignored_1_tree =
+      AXNodePosition::CreateTreePosition(
+          GetTreeID(), inline_box_ignored_1.id,
+          AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_FALSE(before_inline_box_ignored_1_tree->IsNullPosition());
+  ASSERT_TRUE(before_inline_box_ignored_1_tree->IsIgnored());
+  TestPositionType after_inline_box_ignored_1_tree =
+      AXNodePosition::CreateTreePosition(GetTreeID(), inline_box_ignored_1.id,
+                                         0 /* child_index */);
+  ASSERT_FALSE(after_inline_box_ignored_1_tree->IsNullPosition());
+  ASSERT_TRUE(after_inline_box_ignored_1_tree->IsIgnored());
+
+  // "<I>gnored2"
+  TestPositionType before_inline_box_ignored_2 =
+      AXNodePosition::CreateTextPosition(GetTreeID(), inline_box_ignored_2.id,
+                                         0 /* text_offset */,
+                                         ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_ignored_2->IsNullPosition());
+  ASSERT_TRUE(before_inline_box_ignored_2->IsIgnored());
+
+  TestPositionType before_inline_box_ignored_2_tree =
+      AXNodePosition::CreateTreePosition(
+          GetTreeID(), inline_box_ignored_2.id,
+          AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_FALSE(before_inline_box_ignored_2_tree->IsNullPosition());
+  ASSERT_TRUE(before_inline_box_ignored_2_tree->IsIgnored());
+  TestPositionType after_inline_box_ignored_2_tree =
+      AXNodePosition::CreateTreePosition(GetTreeID(), inline_box_ignored_2.id,
+                                         0 /* child_index */);
+  ASSERT_FALSE(after_inline_box_ignored_2_tree->IsNullPosition());
+  ASSERT_TRUE(after_inline_box_ignored_2_tree->IsIgnored());
+
+  // "<W>orld"
+  TestPositionType before_inline_box_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_2.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_2->IsNullPosition());
+  // "World<>"
+  TestPositionType after_inline_box_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_2.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_inline_box_2->IsNullPosition());
+
+  TestPositionType parent_position =
+      before_inline_box_1->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(generic_container_ignored.id, parent_position->anchor_id());
+  EXPECT_EQ(0, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  TestPositionType leaf_position = before_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_1.id, leaf_position->anchor_id());
+  EXPECT_EQ(0, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  // `inline_box_1` is on a different line from `inline_box_2`, hence the
+  // equivalent position on the root should have an upstream affinity, despite
+  // the fact that the intermitiary parent position is on an ignored generic
+  // container.
+  parent_position =
+      after_inline_box_1->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsIgnored());
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(generic_container_ignored.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+  // Move one more level up to get to the root.
+  parent_position = parent_position->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_FALSE(parent_position->IsIgnored());
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
+
+  leaf_position = middle_root_upstream->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_1.id, leaf_position->anchor_id());
+  EXPECT_EQ(5, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  // By design, positions on ignored nodes between the two lines will be
+  // considered as part of the previous line when finding the unignored root
+  // equivalent position.
+  parent_position = before_inline_box_ignored_1->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
+
+  parent_position = before_inline_box_ignored_1_tree->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(1, parent_position->child_index());
+
+  parent_position = after_inline_box_ignored_1_tree->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(2, parent_position->child_index());
+
+  parent_position = before_inline_box_ignored_2->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
+
+  parent_position = before_inline_box_ignored_2_tree->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(2, parent_position->child_index());
+
+  parent_position = after_inline_box_ignored_2_tree->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(3, parent_position->child_index());
+
+  // `inline_box_2` is on the next line, hence the root equivalent position
+  // should have a downstream affinity.
+  parent_position =
+      before_inline_box_2->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  leaf_position = middle_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_2.id, leaf_position->anchor_id());
+  EXPECT_EQ(0, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  parent_position =
+      after_inline_box_2->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(10, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  leaf_position = after_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_2.id, leaf_position->anchor_id());
+  EXPECT_EQ(5, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+}
+
+TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
+  // `AXPosition::CreateParentPosition` should be able to work even when called
+  // on a position that is anchored to a node with no text in it, such as a
+  // button with no value or inner text. Similarly,
+  // `AXPosition::AsLeafTextPosition` should not skip any empty nodes.
+  //
+  // Simulate a tree with two lines of text and some empty nodes between them:
+  // ++kRootWebArea "HelloWorld"
+  // ++++kCheckbox "Hello"
+  // ++++++kStaticText "Hello"
+  // ++++++++kInlineTextBox "Hello"
+  // ++++kStaticText ""
+  // ++++++kInlineTextBox ""
+  // ++++kButton (empty)
+  // ++++kStaticText "World"
+  // ++++++kInlineTextBox "World"
+  AXNodeData root;
+  AXNodeData check_box;
+  AXNodeData static_text_1;
+  AXNodeData inline_box_1;
+  AXNodeData static_text_empty;
+  AXNodeData inline_box_empty;
+  AXNodeData button_empty;
+  AXNodeData static_text_2;
+  AXNodeData inline_box_2;
+
+  root.id = 1;
+  check_box.id = 2;
+  static_text_1.id = 3;
+  inline_box_1.id = 4;
+  static_text_empty.id = 5;
+  inline_box_empty.id = 6;
+  button_empty.id = 7;
+  static_text_2.id = 8;
+  inline_box_2.id = 9;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  root.child_ids = {check_box.id, static_text_empty.id, button_empty.id,
+                    static_text_2.id};
+
+  check_box.role = ax::mojom::Role::kCheckBox;
+  check_box.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+  check_box.child_ids = {static_text_1.id};
+
+  static_text_1.role = ax::mojom::Role::kStaticText;
+  static_text_1.SetName("Hello");
+  static_text_1.child_ids = {inline_box_1.id};
+
+  inline_box_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_1.SetName("Hello");
+
+  static_text_empty.role = ax::mojom::Role::kStaticText;
+  static_text_empty.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  static_text_empty.child_ids = {inline_box_empty.id};
+
+  inline_box_empty.role = ax::mojom::Role::kInlineTextBox;
+
+  button_empty.role = ax::mojom::Role::kButton;
+  button_empty.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  static_text_2.SetName("World");
+  static_text_2.child_ids = {inline_box_2.id};
+
+  inline_box_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_2.SetName("World");
+
+  SetTree(CreateAXTree({root, check_box, static_text_1, inline_box_1,
+                        static_text_empty, inline_box_empty, button_empty,
+                        static_text_2, inline_box_2}));
+
+  // "<H>elloWorld"
+  TestPositionType before_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_root->IsNullPosition());
+  // "Hello<W>orld"
+  TestPositionType middle_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(middle_root->IsNullPosition());
+  TestPositionType middle_root_upstream = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_FALSE(middle_root_upstream->IsNullPosition());
+  // "HelloWorld<>"
+  TestPositionType after_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 10 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_root->IsNullPosition());
+
+  // "<H>ello"
+  TestPositionType before_inline_box_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_1.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_1->IsNullPosition());
+  // "Hello<>"
+  TestPositionType after_inline_box_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_1.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_inline_box_1->IsNullPosition());
+
+  TestPositionType before_inline_box_empty = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_empty.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_empty->IsNullPosition());
+
+  TestPositionType before_inline_box_empty_tree =
+      AXNodePosition::CreateTreePosition(
+          GetTreeID(), inline_box_empty.id,
+          AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_FALSE(before_inline_box_empty_tree->IsNullPosition());
+  TestPositionType after_inline_box_empty_tree =
+      AXNodePosition::CreateTreePosition(GetTreeID(), inline_box_empty.id,
+                                         0 /* child_index */);
+  ASSERT_FALSE(after_inline_box_empty_tree->IsNullPosition());
+
+  TestPositionType before_button_empty = AXNodePosition::CreateTextPosition(
+      GetTreeID(), button_empty.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_button_empty->IsNullPosition());
+
+  TestPositionType before_button_empty_tree =
+      AXNodePosition::CreateTreePosition(
+          GetTreeID(), button_empty.id,
+          AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_FALSE(before_button_empty_tree->IsNullPosition());
+  TestPositionType after_button_empty_tree = AXNodePosition::CreateTreePosition(
+      GetTreeID(), button_empty.id, 0 /* child_index */);
+  ASSERT_FALSE(after_button_empty_tree->IsNullPosition());
+
+  // "<W>orld"
+  TestPositionType before_inline_box_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_2.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_2->IsNullPosition());
+  // "World<>"
+  TestPositionType after_inline_box_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_2.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_inline_box_2->IsNullPosition());
+
+  TestPositionType parent_position =
+      before_inline_box_1->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(check_box.id, parent_position->anchor_id());
+  EXPECT_EQ(0, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  TestPositionType leaf_position = before_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_1.id, leaf_position->anchor_id());
+  EXPECT_EQ(0, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  // `inline_box_1` is on a different line from `inline_box_2`, hence the
+  // equivalent position on the check box should have had an upstream affinity.
+  // However, since there are a handful of empty nodes between the check box and
+  // the second line, those empty nodes form the end of the line, not the check
+  // box.
+  parent_position =
+      after_inline_box_1->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(check_box.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  leaf_position = middle_root_upstream->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_1.id, leaf_position->anchor_id());
+  EXPECT_EQ(5, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  // By design, positions on empty nodes between the two lines will be
+  // considered as part of the previous line when finding the unignored root
+  // equivalent position.
+  parent_position =
+      before_inline_box_empty->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
+
+  parent_position = before_inline_box_empty_tree->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(1, parent_position->child_index());
+
+  parent_position = after_inline_box_empty_tree->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(2, parent_position->child_index());
+
+  parent_position = before_button_empty->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
+
+  parent_position = before_button_empty_tree->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(2, parent_position->child_index());
+
+  parent_position = after_button_empty_tree->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(3, parent_position->child_index());
+
+  // `inline_box_2` is on the next line, hence the root equivalent position
+  // should have a downstream affinity.
+  parent_position =
+      before_inline_box_2->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(5, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  leaf_position = middle_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  // Empty nodes should not be skipped when finding the leaf equivalent
+  // position. (inline_box_empty and not inline_box_2.)
+  EXPECT_EQ(inline_box_empty.id, leaf_position->anchor_id());
+  EXPECT_EQ(0, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  parent_position =
+      after_inline_box_2->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(10, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  leaf_position = after_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_2.id, leaf_position->anchor_id());
+  EXPECT_EQ(5, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+}
+
+TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmbeddedObjects) {
+  g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
+
+  // ++kRootWebArea "<embedded>Hello<embedded>"
+  // ++++kParagraph "Paragraph"
+  // ++++++kStaticText "Paragraph"
+  // ++++++++kInlineTextBox "Paragraph"
+  // ++++kStaticText "Hello"
+  // ++++++kInlineTextBox "Hello"
+  // ++++kButton (empty)
+  AXNodeData root;
+  AXNodeData paragraph;
+  AXNodeData static_text_1;
+  AXNodeData inline_box_1;
+  AXNodeData static_text_2;
+  AXNodeData inline_box_2;
+  AXNodeData button_empty;
+
+  root.id = 1;
+  paragraph.id = 2;
+  static_text_1.id = 3;
+  inline_box_1.id = 4;
+  static_text_2.id = 5;
+  inline_box_2.id = 6;
+  button_empty.id = 7;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  root.child_ids = {paragraph.id, static_text_2.id, button_empty.id};
+
+  paragraph.role = ax::mojom::Role::kParagraph;
+  paragraph.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+  paragraph.child_ids = {static_text_1.id};
+
+  static_text_1.role = ax::mojom::Role::kStaticText;
+  static_text_1.SetName("Paragraph");
+  static_text_1.child_ids = {inline_box_1.id};
+
+  inline_box_1.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_1.SetName("Paragraph");
+
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  static_text_2.SetName("Hello");
+  static_text_2.child_ids = {inline_box_2.id};
+
+  inline_box_2.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_2.SetName("Hello");
+
+  button_empty.role = ax::mojom::Role::kButton;
+  button_empty.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  SetTree(CreateAXTree({root, paragraph, static_text_1, inline_box_1,
+                        static_text_2, inline_box_2, button_empty}));
+
+  TestPositionType before_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_root->IsNullPosition());
+
+  // The root's first child is an embedded object, i.e. a paragraph. Create two
+  // positions: one after the paragraph (upstream affinity), and the other
+  // before the word "Hello" that comes after the paragraph (downstream
+  // affinity).
+  TestPositionType middle_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, AXNode::kEmbeddedCharacterLength /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(middle_root->IsNullPosition());
+  TestPositionType middle_root_upstream = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, AXNode::kEmbeddedCharacterLength /* text_offset */,
+      ax::mojom::TextAffinity::kUpstream);
+  ASSERT_FALSE(middle_root_upstream->IsNullPosition());
+
+  // The root has 7 characters: two embedded objects and the word "Hello".
+  TestPositionType after_root = AXNodePosition::CreateTextPosition(
+      GetTreeID(), root.id, 7 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_root->IsNullPosition());
+
+  // "<P>aragraph"
+  TestPositionType before_inline_box_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_1.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_1->IsNullPosition());
+  // "Paragraph<>"
+  TestPositionType after_inline_box_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_1.id, 9 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_inline_box_1->IsNullPosition());
+
+  TestPositionType after_inline_box_1_tree = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_1.id, 0 /* child_index */);
+  ASSERT_FALSE(after_inline_box_1_tree->IsNullPosition());
+
+  // "<H>ello"
+  TestPositionType before_inline_box_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_2.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_inline_box_2->IsNullPosition());
+  // "Hello<>"
+  TestPositionType after_inline_box_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), inline_box_2.id, 5 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(after_inline_box_2->IsNullPosition());
+
+  TestPositionType before_inline_box_2_tree =
+      AXNodePosition::CreateTreePosition(
+          GetTreeID(), inline_box_2.id,
+          AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_FALSE(before_inline_box_2_tree->IsNullPosition());
+  TestPositionType after_inline_box_2_tree = AXNodePosition::CreateTreePosition(
+      GetTreeID(), inline_box_2.id, 0 /* child_index */);
+  ASSERT_FALSE(after_inline_box_2_tree->IsNullPosition());
+
+  TestPositionType before_button_empty = AXNodePosition::CreateTextPosition(
+      GetTreeID(), button_empty.id, 0 /* text_offset */,
+      ax::mojom::TextAffinity::kDownstream);
+  ASSERT_FALSE(before_button_empty->IsNullPosition());
+
+  TestPositionType before_button_empty_tree =
+      AXNodePosition::CreateTreePosition(
+          GetTreeID(), button_empty.id,
+          AXNodePosition::BEFORE_TEXT /* child_index */);
+  ASSERT_FALSE(before_button_empty_tree->IsNullPosition());
+  TestPositionType after_button_empty_tree = AXNodePosition::CreateTreePosition(
+      GetTreeID(), button_empty.id, 0 /* child_index */);
+  ASSERT_FALSE(after_button_empty_tree->IsNullPosition());
+
+  TestPositionType parent_position = before_inline_box_1->CreateParentPosition()
+                                         ->CreateParentPosition()
+                                         ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(0, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  TestPositionType leaf_position = before_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_1.id, leaf_position->anchor_id());
+  EXPECT_EQ(0, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  // `inline_box_1` is on a different line from `inline_box_2`, hence the
+  // equivalent position on the root should have an upstream affinity.
+  parent_position = after_inline_box_1->CreateParentPosition()
+                        ->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(AXNode::kEmbeddedCharacterLength, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
+
+  parent_position = after_inline_box_1_tree->CreateParentPosition()
+                        ->CreateParentPosition()
+                        ->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(1, parent_position->child_index());
+
+  leaf_position = middle_root_upstream->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_1.id, leaf_position->anchor_id());
+  EXPECT_EQ(9, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  parent_position =
+      before_inline_box_2->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(AXNode::kEmbeddedCharacterLength, parent_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  leaf_position = middle_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(inline_box_2.id, leaf_position->anchor_id());
+  EXPECT_EQ(0, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+
+  parent_position =
+      after_inline_box_2->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  // The text offset should be after the paragraph, which is an embedded object,
+  // and the word "Hello".
+  EXPECT_EQ(6, parent_position->text_offset());
+  // Since the word "Hello" is on a different line from the empty button, the
+  // affinity at the end of the word should be upstream.
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
+
+  parent_position =
+      before_inline_box_2_tree->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(1, parent_position->child_index());
+
+  parent_position =
+      after_inline_box_2_tree->CreateParentPosition()->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(2, parent_position->child_index());
+
+  parent_position = before_button_empty->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTextPosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  // The empty button comes in the root's hypertext after the paragraph, which
+  // is an embedded object, and the word "Hello".
+  EXPECT_EQ(6, parent_position->text_offset());
+  // The empty button should start a new line, hence the affinity should be
+  // downstream.
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+
+  parent_position = before_button_empty_tree->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(2, parent_position->child_index());
+
+  parent_position = after_button_empty_tree->CreateParentPosition();
+  ASSERT_NE(nullptr, parent_position);
+  EXPECT_TRUE(parent_position->IsTreePosition());
+  EXPECT_EQ(root.id, parent_position->anchor_id());
+  EXPECT_EQ(3, parent_position->child_index());
+
+  leaf_position = after_root->AsLeafTextPosition();
+  ASSERT_NE(nullptr, leaf_position);
+  EXPECT_TRUE(leaf_position->IsTextPosition());
+  EXPECT_EQ(button_empty.id, leaf_position->anchor_id());
+  // Empty leaf objects are replaced by the embedded object character.
+  EXPECT_EQ(AXNode::kEmbeddedCharacterLength, leaf_position->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, leaf_position->affinity());
+}
+
 TEST_F(AXPositionTest, CreateNextAndPreviousLeafTextPositionWithNullPosition) {
   TestPositionType null_position = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, null_position);
