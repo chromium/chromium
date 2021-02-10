@@ -13,10 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "chromeos/services/assistant/fake_assistant_manager_service_impl.h"
-#include "chromeos/services/assistant/media_host.h"
-#include "chromeos/services/assistant/media_session/assistant_media_session.h"
-#include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
+#include "chromeos/services/assistant/platform/audio_output_delegate_impl.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 #include "media/base/audio_bus.h"
 #include "media/base/bind_to_current_loop.h"
@@ -65,7 +62,7 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
   void set_num_of_bytes_to_fill(int bytes) { num_bytes_to_fill_ = bytes; }
 
   void Reset() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     quit_closure_ = media::BindToCurrentLoop(run_loop_->QuitClosure());
   }
 
@@ -79,6 +76,24 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
   bool end_of_stream_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeAudioOutputDelegate);
+};
+
+class FakeAudioOutputDelegateMojom
+    : public chromeos::libassistant::mojom::AudioOutputDelegate {
+ public:
+  FakeAudioOutputDelegateMojom() = default;
+  FakeAudioOutputDelegateMojom(const FakeAudioOutputDelegateMojom&) = delete;
+  FakeAudioOutputDelegateMojom& operator=(const FakeAudioOutputDelegateMojom&) =
+      delete;
+  ~FakeAudioOutputDelegateMojom() override = default;
+
+  // libassistant::mojom::AudioOutputDelegate implementation:
+  void RequestAudioFocus(
+      libassistant::mojom::AudioOutputStreamType stream_type) override {}
+  void AbandonAudioFocusIfNeeded() override {}
+  void AddMediaSessionObserver(
+      mojo::PendingRemote<::media_session::mojom::MediaSessionObserver>
+          observer) override {}
 };
 
 class AssistantAudioDeviceOwnerTest : public testing::Test {
@@ -97,7 +112,8 @@ class AssistantAudioDeviceOwnerTest : public testing::Test {
 };
 
 TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
-  FakeAudioOutputDelegate delegate;
+  FakeAudioOutputDelegateMojom audio_output_delegate_mojom;
+  FakeAudioOutputDelegate audio_output_delegate;
   auto audio_bus = media::AudioBus::Create(2, 4480);
   assistant_client::OutputStreamFormat format{
       assistant_client::OutputStreamEncoding::STREAM_PCM_S16,
@@ -105,36 +121,32 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
       2       // pcm_num_channels,
   };
 
-  delegate.set_num_of_bytes_to_fill(200);
-  delegate.Reset();
-  ScopedAssistantClient client;
-  MediaHost media_host(AssistantClient::Get(),
-                       /*interaction_subscribers=*/nullptr);
-  AssistantMediaSession media_session(&media_host);
+  audio_output_delegate.set_num_of_bytes_to_fill(200);
+  audio_output_delegate.Reset();
 
   auto owner = std::make_unique<AudioDeviceOwner>(
       base::SequencedTaskRunnerHandle::Get(),
       base::SequencedTaskRunnerHandle::Get(), "test device");
   // Upon start, it will start to fill the buffer.
-  owner->StartOnMainThread(&media_session, &delegate, mojo::NullRemote(),
-                           format);
-  delegate.Wait();
+  owner->StartOnMainThread(&audio_output_delegate_mojom, &audio_output_delegate,
+                           mojo::NullRemote(), format);
+  audio_output_delegate.Wait();
 
-  delegate.Reset();
+  audio_output_delegate.Reset();
   audio_bus->Zero();
   // On first render, it will push the data to |audio_bus|. The fill should
   // stop by now.
   owner->Render(base::TimeDelta::FromMicroseconds(0), base::TimeTicks::Now(), 0,
                 audio_bus.get());
-  delegate.Wait();
+  audio_output_delegate.Wait();
   EXPECT_FALSE(audio_bus->AreFramesZero());
-  EXPECT_FALSE(delegate.end_of_stream());
+  EXPECT_FALSE(audio_output_delegate.end_of_stream());
 
   // The subsequent Render call will detect no data available and notify
   // delegate for OnEndOfStream().
   owner->Render(base::TimeDelta::FromMicroseconds(0), base::TimeTicks::Now(), 0,
                 audio_bus.get());
-  EXPECT_TRUE(delegate.end_of_stream());
+  EXPECT_TRUE(audio_output_delegate.end_of_stream());
 }
 
 }  // namespace assistant

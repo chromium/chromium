@@ -62,6 +62,7 @@ class AssistantManagerServiceDelegate;
 class AssistantMediaSession;
 class AssistantProxy;
 class AudioInputHost;
+class AudioOutputDelegateImpl;
 class CrosPlatformApi;
 class MediaHost;
 class PlatformDelegateImpl;
@@ -296,6 +297,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<AssistantDeviceSettingsDelegate> settings_delegate_;
   std::unique_ptr<MediaHost> media_host_;
+  std::unique_ptr<AudioOutputDelegateImpl> audio_output_delegate_;
   std::unique_ptr<SpeechRecognitionObserverWrapper>
       speech_recognition_observer_;
   mojo::Receiver<chromeos::libassistant::mojom::StateObserver>

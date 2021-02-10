@@ -32,7 +32,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
       mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
           pending_remote) override;
   std::unique_ptr<CrosPlatformApi> CreatePlatformApi(
-      AssistantMediaSession* media_session,
+      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+          audio_output_delegate,
       chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> background_thread_task_runner)
       override;

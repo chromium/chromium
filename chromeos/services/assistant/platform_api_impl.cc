@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "chromeos/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/platform/audio_devices.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/audio_input_host.h"
@@ -31,12 +30,13 @@ namespace assistant {
 ////////////////////////////////////////////////////////////////////////////////
 
 PlatformApiImpl::PlatformApiImpl(
-    AssistantMediaSession* media_session,
+    mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+        audio_output_delegate,
     chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     PowerManagerClient* power_manager_client,
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> background_task_runner)
-    : audio_output_provider_(media_session,
+    : audio_output_provider_(std::move(audio_output_delegate),
                              platform_delegate,
                              background_task_runner,
                              media::AudioDeviceDescription::kDefaultDeviceId),

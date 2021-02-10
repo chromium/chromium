@@ -10,6 +10,7 @@ mojom("mojom") {
   sources = [
     "android_app_info.mojom",
     "audio_input_controller.mojom",
+    "audio_output_delegate.mojom",
     "conversation_controller.mojom",
     "display_controller.mojom",
     "media_controller.mojom",
@@ -25,6 +26,7 @@ mojom("mojom") {
     "//chromeos/services/network_config/public/mojom",
     "//services/audio/public/mojom",
     "//services/device/public/mojom",
+    "//services/media_session/public/mojom",
     "//services/network/public/mojom",
   ]
 

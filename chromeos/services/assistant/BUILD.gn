@@ -34,6 +34,8 @@ component("lib") {
     "platform/audio_devices.h",
     "platform/audio_input_host_impl.cc",
     "platform/audio_input_host_impl.h",
+    "platform/audio_output_delegate_impl.cc",
+    "platform/audio_output_delegate_impl.h",
     "platform/platform_delegate_impl.cc",
     "platform/platform_delegate_impl.h",
     "service.cc",

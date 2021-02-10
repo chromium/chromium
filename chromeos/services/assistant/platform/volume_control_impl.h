@@ -7,6 +7,7 @@
 
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "base/macros.h"
+#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -15,13 +16,12 @@
 namespace chromeos {
 namespace assistant {
 
-class AssistantMediaSession;
-
 class VolumeControlImpl : public assistant_client::VolumeControl,
                           public ash::mojom::VolumeObserver {
  public:
-  VolumeControlImpl(AssistantMediaSession* media_session,
-                    chromeos::libassistant::mojom::PlatformDelegate* delegate);
+  VolumeControlImpl(
+      chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
+      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
   ~VolumeControlImpl() override;
 
   // assistant_client::VolumeControl overrides:
@@ -44,7 +44,9 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   void SetSystemVolumeOnMainThread(float new_volume, bool user_initiated);
   void SetSystemMutedOnMainThread(bool muted);
 
-  AssistantMediaSession* const media_session_;
+  // Owned by |AudioOutputProviderImpl|.
+  chromeos::libassistant::mojom::AudioOutputDelegate* const
+      audio_output_delegate_;
   mojo::Remote<ash::mojom::AssistantVolumeControl> volume_control_;
   mojo::Receiver<ash::mojom::VolumeObserver> receiver_{this};
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

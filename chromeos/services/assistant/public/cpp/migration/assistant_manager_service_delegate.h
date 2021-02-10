@@ -9,6 +9,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
+#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -21,7 +22,6 @@ class PlatformApi;
 namespace chromeos {
 namespace assistant {
 
-class AssistantMediaSession;
 class AudioInputHost;
 class CrosPlatformApi;
 
@@ -41,7 +41,8 @@ class AssistantManagerServiceDelegate {
           pending_remote) = 0;
 
   virtual std::unique_ptr<CrosPlatformApi> CreatePlatformApi(
-      AssistantMediaSession* media_session,
+      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+          audio_output_delegate,
       chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       scoped_refptr<base::SingleThreadTaskRunner>
           background_thread_task_runner) = 0;

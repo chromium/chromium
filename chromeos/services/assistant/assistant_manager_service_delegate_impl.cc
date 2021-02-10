@@ -38,12 +38,14 @@ AssistantManagerServiceDelegateImpl::CreateAudioInputHost(
 
 std::unique_ptr<CrosPlatformApi>
 AssistantManagerServiceDelegateImpl::CreatePlatformApi(
-    AssistantMediaSession* media_session,
+    mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+        audio_output_delegate,
     chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> background_thread_task_runner) {
   return std::make_unique<PlatformApiImpl>(
-      media_session, platform_delegate, context_->power_manager_client(),
-      context_->main_task_runner(), background_thread_task_runner);
+      std::move(audio_output_delegate), platform_delegate,
+      context_->power_manager_client(), context_->main_task_runner(),
+      background_thread_task_runner);
 }
 
 std::unique_ptr<assistant_client::AssistantManager>

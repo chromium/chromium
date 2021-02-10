@@ -7,13 +7,22 @@
 #include <algorithm>
 #include <utility>
 
-#include "chromeos/services/assistant/media_session/assistant_media_session.h"
+#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/limits.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace chromeos {
 namespace assistant {
+
+// A macro which ensures we are running on the background thread.
+#define ENSURE_BACKGROUND_THREAD(method, ...)                               \
+  if (!background_task_runner_->RunsTasksInCurrentSequence()) {             \
+    background_task_runner_->PostTask(                                      \
+        FROM_HERE,                                                          \
+        base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
+    return;                                                                 \
+  }
 
 namespace {
 
@@ -85,7 +94,7 @@ AudioDeviceOwner::~AudioDeviceOwner() {
 }
 
 void AudioDeviceOwner::StartOnMainThread(
-    AssistantMediaSession* media_session,
+    chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
     assistant_client::AudioOutput::Delegate* delegate,
     mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
     const assistant_client::OutputStreamFormat& format) {
@@ -121,8 +130,9 @@ void AudioDeviceOwner::StartOnMainThread(
     background_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&AudioDeviceOwner::StartDeviceOnBackgroundThread,
-                       base::Unretained(this), std::move(stream_factory),
-                       media_session));
+                       base::Unretained(this), std::move(stream_factory)));
+    audio_output_delegate->AddMediaSessionObserver(
+        session_receiver_.BindNewPipeAndPassRemote());
   }
 }
 
@@ -139,7 +149,8 @@ void AudioDeviceOwner::StopOnBackgroundThread() {
 void AudioDeviceOwner::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr info) {
   // |output_device_| is only accessed on background thread.
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+  ENSURE_BACKGROUND_THREAD(&AudioDeviceOwner::MediaSessionInfoChanged,
+                           std::move(info));
 
   // We only handle media ducking case here as intended. Other media
   // operactions, such as pausing and resuming, are handled by Libassistant
@@ -153,14 +164,11 @@ void AudioDeviceOwner::MediaSessionInfoChanged(
 }
 
 void AudioDeviceOwner::StartDeviceOnBackgroundThread(
-    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
-    AssistantMediaSession* media_session) {
+    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   output_device_ = std::make_unique<audio::OutputDevice>(
       std::move(stream_factory), audio_param_, this, device_id_);
   output_device_->Play();
-
-  media_session->AddObserver(session_receiver_.BindNewPipeAndPassRemote());
 }
 
 int AudioDeviceOwner::Render(base::TimeDelta delay,

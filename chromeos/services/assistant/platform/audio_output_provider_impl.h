@@ -18,6 +18,7 @@
 #include "chromeos/services/assistant/platform/volume_control_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -28,12 +29,11 @@ namespace chromeos {
 
 namespace assistant {
 
-class AssistantMediaSession;
-
 class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
  public:
   AudioOutputProviderImpl(
-      AssistantMediaSession* media_session,
+      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+          audio_output_delegate,
       chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const std::string& device_id);
@@ -62,8 +62,9 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
 
   // Owned by |AssistantManagerServiceImpl|.
   chromeos::libassistant::mojom::PlatformDelegate* const platform_delegate_;
-  // Owned by |AssistantManagerServiceImpl|.
-  AssistantMediaSession* media_session_;
+
+  mojo::Remote<chromeos::libassistant::mojom::AudioOutputDelegate>
+      audio_output_delegate_;
 
   AudioInputImpl loop_back_input_;
   VolumeControlImpl volume_control_impl_;

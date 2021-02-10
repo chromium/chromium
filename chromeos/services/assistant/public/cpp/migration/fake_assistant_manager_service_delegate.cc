@@ -51,7 +51,8 @@ FakeAssistantManagerServiceDelegate::CreateAudioInputHost(
 
 std::unique_ptr<CrosPlatformApi>
 FakeAssistantManagerServiceDelegate::CreatePlatformApi(
-    AssistantMediaSession* media_session,
+    mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+        audio_output_delegate,
     chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> background_thread_task_runner) {
   return std::make_unique<FakePlatformApi>();

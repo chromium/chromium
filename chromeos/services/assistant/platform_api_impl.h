@@ -14,6 +14,7 @@
 #include "chromeos/services/assistant/platform/network_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
+#include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "libassistant/shared/public/platform_auth.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,13 +24,12 @@ class PowerManagerClient;
 
 namespace assistant {
 
-class AssistantMediaSession;
-
 // Platform API required by the voice assistant.
 class PlatformApiImpl : public CrosPlatformApi {
  public:
   PlatformApiImpl(
-      AssistantMediaSession* media_session,
+      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
+          audio_output_delegate,
       chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
       PowerManagerClient* power_manager_client,
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
