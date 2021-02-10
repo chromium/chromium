@@ -16,7 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 
 namespace ash {
 

@@ -31,6 +31,7 @@
 #include "chrome/browser/chromeos/crosapi/url_handler_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -188,6 +189,12 @@ void CrosapiAsh::BindClipboard(
 void CrosapiAsh::BindDeviceAttributes(
     mojo::PendingReceiver<mojom::DeviceAttributes> receiver) {
   device_attributes_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindSensorHalClient(
+    mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
+  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
+      std::move(remote));
 }
 
 void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {

@@ -39,6 +39,7 @@ const string kPressureChannel = "pressure";
 
 const string kTimestampChannel = "timestamp";
 
+[Stable, Extensible]
 enum DeviceType {
   NONE = 0,  // invalid device type
   ACCEL = 1,
@@ -54,6 +55,7 @@ enum DeviceType {
   MAX = 11,
 };
 
+[Stable, Extensible]
 enum ObserverErrorType {
   ALREADY_STARTED = 0,
   SET_FREQUENCY_IO_FAILED = 1,
@@ -69,6 +71,7 @@ enum ObserverErrorType {
 // different frequencies of that device's samples.
 //
 // Next method ID: 4
+[Stable]
 interface SensorService {
   // Gets device ids as a vector of int given the device's type. Only devices
   // with id having "iio:device" as the prefix would be available.
@@ -98,6 +101,7 @@ interface SensorService {
 // (libiio:iio_device). It is an isolated client in iioservice's point of view.
 //
 // Next method ID: 9
+[Stable]
 interface SensorDevice {
   // Sets |timeout| in milliseconds for I/O operations, mainly for reading
   // samples. Sets |timeout| as 0 to specify that no timeout should occur.
@@ -153,6 +157,7 @@ interface SensorDevice {
 // SensorDevice::StartReadingSamples to register the observer.
 //
 // Next method ID: 2
+[Stable]
 interface SensorDeviceSamplesObserver {
   // |sample| arrives and is sent to the client as a map from iio_chn_indices to
   // data (64 bit integer).
@@ -166,6 +171,7 @@ interface SensorDeviceSamplesObserver {
 // SensorService::RegisterNewDevicesObserver to register the observer.
 //
 // Next method ID: 1
+[Stable]
 interface SensorServiceNewDevicesObserver {
   // A new IIO device with |iio_device_id| and |types| is added and visible to
   // iioservice. Sensor clients can get access to this device with the id.

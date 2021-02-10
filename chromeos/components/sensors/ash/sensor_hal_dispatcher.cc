@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 
 #include <utility>
 

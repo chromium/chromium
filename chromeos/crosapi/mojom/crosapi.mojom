@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/clipboard.mojom";
@@ -46,8 +47,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 14
-// Next method id: 19
+// Next version: 15
+// Next method id: 20
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -101,6 +102,12 @@ interface Crosapi {
   // Binds the SelectFile interface for open/save dialogs.
   // Added in M86.
   BindSelectFile@0(pending_receiver<SelectFile> receiver);
+
+  // Binds the SensorHalClient interface for IIO sensors' data.
+  // Added in M90.
+  [MinVersion=14]
+  BindSensorHalClient@19(
+      pending_remote<chromeos.sensors.mojom.SensorHalClient> receiver);
 
   // Binds the HidManager interface for support HID devices.
   // Added in M87.

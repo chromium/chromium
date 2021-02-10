@@ -66,6 +66,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ScreenManager> receiver) override;
   void BindSelectFile(
       mojo::PendingReceiver<mojom::SelectFile> receiver) override;
+  void BindSensorHalClient(
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
+      override;
   void BindHidManager(
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
   void BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) override;

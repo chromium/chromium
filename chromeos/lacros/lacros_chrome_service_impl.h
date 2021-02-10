@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
+#include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -226,6 +227,13 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     DCHECK(IsClipboardAvailable());
     return clipboard_remote_;
   }
+
+  // |BindSensorHalClient| can only be used when this method returns true.
+  bool IsSensorHalClientAvailable() const;
+
+  // This must be called on the affine sequence.
+  void BindSensorHalClient(
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote);
 
   // Whether the Prefs API is available.
   bool IsPrefsAvailable() const;

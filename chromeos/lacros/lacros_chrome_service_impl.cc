@@ -254,6 +254,13 @@ class LacrosChromeServiceNeverBlockingState
     crosapi_->BindMetricsReporting(std::move(receiver));
   }
 
+  void BindSensorHalClientRemote(
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient>
+          pending_remote) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    crosapi_->BindSensorHalClient(std::move(pending_remote));
+  }
+
   void BindPrefsReceiver(
       mojo::PendingReceiver<crosapi::mojom::Prefs> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -676,6 +683,25 @@ bool LacrosChromeServiceImpl::IsDeviceAttributesAvailable() const {
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion;
+}
+
+bool LacrosChromeServiceImpl::IsSensorHalClientAvailable() const {
+  base::Optional<uint32_t> version = CrosapiVersion();
+  return version &&
+         version.value() >=
+             Crosapi::MethodMinVersions::kBindSensorHalClientMinVersion;
+}
+
+void LacrosChromeServiceImpl::BindSensorHalClient(
+    mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+  DCHECK(IsSensorHalClientAvailable());
+
+  never_blocking_sequence_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &LacrosChromeServiceNeverBlockingState::BindSensorHalClientRemote,
+          weak_sequenced_state_, std::move(remote)));
 }
 
 bool LacrosChromeServiceImpl::IsPrefsAvailable() const {

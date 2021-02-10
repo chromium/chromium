@@ -27,6 +27,7 @@ mojom("mojom") {
   disable_variants = true
 
   public_deps = [
+    "//chromeos/components/sensors/mojom",
     "//mojo/public/mojom/base",
     "//services/device/public/mojom:mojom",
     "//services/media_session/public/mojom:mojom",

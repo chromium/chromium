@@ -15,7 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
+#include "chromeos/components/sensors/sensor_util.h"
 #include "services/device/generic_sensor/platform_sensor_chromeos.h"
 
 namespace device {
@@ -178,8 +178,11 @@ void PlatformSensorProviderChromeOS::RegisterSensorClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!sensor_hal_client_.is_bound());
 
-  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
-      sensor_hal_client_.BindNewPipeAndPassRemote());
+  if (!chromeos::sensors::BindSensorHalClient(
+          sensor_hal_client_.BindNewPipeAndPassRemote())) {
+    LOG(ERROR) << "Failed to bind SensorHalClient via Crosapi";
+    return;
+  }
 
   sensor_hal_client_.set_disconnect_handler(
       base::BindOnce(&PlatformSensorProviderChromeOS::OnSensorHalClientFailure,

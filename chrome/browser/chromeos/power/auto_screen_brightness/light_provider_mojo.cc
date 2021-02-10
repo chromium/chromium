@@ -11,7 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 
 namespace {
 

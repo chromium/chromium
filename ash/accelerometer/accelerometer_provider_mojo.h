@@ -17,6 +17,7 @@
 #include "ash/ash_export.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

@@ -32,6 +32,7 @@ interface SensorHalServer {
 // The CrOS sensor HAL Mojo client.
 //
 // Next method ID: 1
+[Stable, Uuid="4ecd2e06-78e9-4734-8241-9fd14039d91c"]
 interface SensorHalClient {
   // A caller calls SetUpChannel to dispatch the established Mojo channel
   // |sensor_context_ptr| to the client.  The SensorHalClient can create a

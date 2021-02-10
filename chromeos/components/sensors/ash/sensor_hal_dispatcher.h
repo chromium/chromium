@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_SENSORS_SENSOR_HAL_DISPATCHER_H_
-#define CHROMEOS_COMPONENTS_SENSORS_SENSOR_HAL_DISPATCHER_H_
+#ifndef CHROMEOS_COMPONENTS_SENSORS_ASH_SENSOR_HAL_DISPATCHER_H_
+#define CHROMEOS_COMPONENTS_SENSORS_ASH_SENSOR_HAL_DISPATCHER_H_
 
 #include <map>
 #include <memory>
@@ -58,4 +58,4 @@ class COMPONENT_EXPORT(CHROMEOS_SENSORS) SensorHalDispatcher {
 }  // namespace sensors
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_SENSORS_SENSOR_HAL_DISPATCHER_H_
+#endif  // CHROMEOS_COMPONENTS_SENSORS_ASH_SENSOR_HAL_DISPATCHER_H_

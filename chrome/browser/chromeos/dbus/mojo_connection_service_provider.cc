@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
+#include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
