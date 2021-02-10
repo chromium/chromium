@@ -527,12 +527,6 @@ IPC_STRUCT_BEGIN(ExtensionMsg_UpdatePermissions_Params)
   IPC_STRUCT_MEMBER(bool, uses_default_policy_host_restrictions)
 IPC_STRUCT_END()
 
-// Parameters structure for ExtensionMsg_UpdateDefaultPolicyHostRestrictions.
-IPC_STRUCT_BEGIN(ExtensionMsg_UpdateDefaultPolicyHostRestrictions_Params)
-  IPC_STRUCT_MEMBER(extensions::URLPatternSet, default_policy_blocked_hosts)
-  IPC_STRUCT_MEMBER(extensions::URLPatternSet, default_policy_allowed_hosts)
-IPC_STRUCT_END()
-
 // Messages sent from the browser to the renderer:
 
 // The browser sends this message in response to all extension api calls. The
@@ -611,10 +605,6 @@ IPC_MESSAGE_ROUTED1(ExtensionMsg_SetTabId,
 // Tell the renderer to update an extension's permission set.
 IPC_MESSAGE_CONTROL1(ExtensionMsg_UpdatePermissions,
                      ExtensionMsg_UpdatePermissions_Params)
-
-// Tell the renderer to update an extension's policy_blocked_hosts set.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_UpdateDefaultPolicyHostRestrictions,
-                     ExtensionMsg_UpdateDefaultPolicyHostRestrictions_Params)
 
 // Tell the render view about new tab-specific permissions for an extension.
 IPC_MESSAGE_CONTROL5(ExtensionMsg_UpdateTabSpecificPermissions,

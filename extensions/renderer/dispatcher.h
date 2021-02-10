@@ -43,7 +43,6 @@ struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_Loaded_Params;
 struct ExtensionMsg_TabConnectionInfo;
 struct ExtensionMsg_UpdatePermissions_Params;
-struct ExtensionMsg_UpdateDefaultPolicyHostRestrictions_Params;
 
 namespace blink {
 class WebLocalFrame;
@@ -225,6 +224,10 @@ class Dispatcher : public content::RenderThreadObserver,
   void SetWebViewPartitionID(const std::string& partition_id) override;
   void SetScriptingAllowlist(
       const std::vector<std::string>& extension_ids) override;
+  void UpdateDefaultPolicyHostRestrictions(
+      const extensions::URLPatternSet& default_policy_blocked_hosts,
+      const extensions::URLPatternSet& default_policy_allowed_hosts) override;
+
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
   void OnCancelSuspend(const std::string& extension_id);
@@ -251,8 +254,6 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnSuspend(const std::string& extension_id);
   void OnTransferBlobs(const std::vector<std::string>& blob_uuids);
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
-  void OnUpdateDefaultPolicyHostRestrictions(
-      const ExtensionMsg_UpdateDefaultPolicyHostRestrictions_Params& params);
   void OnUpdateTabSpecificPermissions(const GURL& visible_url,
                                       const std::string& extension_id,
                                       const URLPatternSet& new_hosts,

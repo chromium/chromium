@@ -6,6 +6,7 @@ module extensions.mojom;
 
 import "extensions/common/mojom/channel.mojom";
 import "extensions/common/mojom/feature_session_type.mojom";
+import "extensions/common/mojom/url_pattern_set.mojom";
 
 // This should be used for implementing browser-to-renderer control messages
 // which need to retain FIFO with respect to other mojo interfaces like
@@ -40,4 +41,9 @@ interface Renderer {
   // Updates the scripting allowlist for extensions in the render process. This
   // is only used for testing.
   SetScriptingAllowlist(array<string> extension_ids);
+
+  // Tells the renderer to update an extension's policy_blocked_hosts set.
+  UpdateDefaultPolicyHostRestrictions(
+        URLPatternSet default_policy_blocked_hosts,
+        URLPatternSet default_policy_allowed_hosts);
 };

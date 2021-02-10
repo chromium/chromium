@@ -145,13 +145,10 @@ void RendererStartupHelper::InitializeProcess(
 
   // Load default policy_blocked_hosts and policy_allowed_hosts settings, part
   // of the ExtensionSettings policy.
-  ExtensionMsg_UpdateDefaultPolicyHostRestrictions_Params params;
   int context_id = util::GetBrowserContextId(renderer_context);
-  params.default_policy_blocked_hosts =
-      PermissionsData::GetDefaultPolicyBlockedHosts(context_id);
-  params.default_policy_allowed_hosts =
-      PermissionsData::GetDefaultPolicyAllowedHosts(context_id);
-  process->Send(new ExtensionMsg_UpdateDefaultPolicyHostRestrictions(params));
+  renderer->UpdateDefaultPolicyHostRestrictions(
+      PermissionsData::GetDefaultPolicyBlockedHosts(context_id),
+      PermissionsData::GetDefaultPolicyAllowedHosts(context_id));
 
   // Loaded extensions.
   std::vector<ExtensionMsg_Loaded_Params> loaded_extensions;

@@ -46,6 +46,7 @@ if (enable_extensions) {
       "mojom/guest_view.mojom",
       "mojom/keep_alive.mojom",
       "mojom/renderer.mojom",
+      "mojom/url_pattern_set.mojom",
     ]
 
     public_deps = [
@@ -66,6 +67,22 @@ if (enable_extensions) {
         ]
         traits_headers = [ "//extensions/common/mojom/channel_mojom_traits.h" ]
         traits_public_deps = [ "//components/version_info:channel" ]
+      },
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.URLPattern"
+            cpp = "::URLPattern"
+          },
+          {
+            mojom = "extensions.mojom.URLPatternSet"
+            cpp = "::extensions::URLPatternSet"
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/url_pattern_set_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/url_pattern_set_mojom_traits.cc" ]
       },
     ]
     overridden_deps = [ "//content/public/common:interfaces" ]
@@ -473,6 +490,7 @@ if (enable_extensions) {
       "manifest_handlers/web_app_shortcut_icons_handler_unittest.cc",
       "manifest_unittest.cc",
       "message_bundle_unittest.cc",
+      "mojom/url_pattern_set_mojom_traits_unittest.cc",
       "permissions/api_permission_set_unittest.cc",
       "permissions/api_permission_unittest.cc",
       "permissions/base_set_operators_unittest.cc",
@@ -499,6 +517,7 @@ if (enable_extensions) {
       "//extensions:extensions_resources",
       "//extensions/common:mojom",
       "//extensions/common/api",
+      "//mojo/public/cpp/test_support:test_utils",
       "//tools/json_schema_compiler:generated_api_util",
 
       # TODO(brettw) these tests should not be including headers from browser.

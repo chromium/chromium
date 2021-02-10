@@ -15,6 +15,7 @@
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 
 namespace extensions {
@@ -31,6 +32,14 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   size_t num_activated_extensions() { return activated_extensions_.size(); }
 
   size_t num_unloaded_extensions() { return unloaded_extensions_.size(); }
+
+  const URLPatternSet& default_policy_blocked_hosts() const {
+    return default_blocked_hosts_;
+  }
+
+  const URLPatternSet& default_policy_allowed_hosts() const {
+    return default_allowed_hosts_;
+  }
 
  protected:
   mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
@@ -62,6 +71,15 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void SetScriptingAllowlist(
       const std::vector<std::string>& extension_ids) override {}
 
+  void UpdateDefaultPolicyHostRestrictions(
+      const URLPatternSet& default_policy_blocked_hosts,
+      const URLPatternSet& default_policy_allowed_hosts) override {
+    default_blocked_hosts_.AddPatterns(default_policy_blocked_hosts);
+    default_allowed_hosts_.AddPatterns(default_policy_allowed_hosts);
+  }
+
+  URLPatternSet default_blocked_hosts_;
+  URLPatternSet default_allowed_hosts_;
   std::vector<std::string> activated_extensions_;
   std::vector<std::string> unloaded_extensions_;
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
@@ -272,11 +290,32 @@ TEST_F(RendererStartupHelperTest, EnabledBeforeProcessInitialized) {
   EXPECT_TRUE(IsExtensionPendingActivationInProcess(
       *extension_, render_process_host_.get()));
 
+  // Initialize PermissionsData default policy hosts restrictions.
+  // During the process initialization, UpdateDefaultPolicyHostRestrictions
+  // will be called with the default policy values returned by PermissionsData.
+  URLPatternSet default_blocked_hosts;
+  URLPatternSet default_allowed_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.example.com/*"));
+  default_allowed_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_ALL, "*://test.example2.com/*"));
+  PermissionsData::SetDefaultPolicyHostRestrictions(
+      util::GetBrowserContextId(browser_context()), default_blocked_hosts,
+      default_allowed_hosts);
+
   // Initialize the render process.
   SimulateRenderProcessCreated(render_process_host_.get());
   // The renderer would have been sent multiple initialization messages
   // including the loading and activation messages for the extension.
-  EXPECT_LE(2u, sink.message_count());
+  EXPECT_LE(1u, sink.message_count());
+
+  // Method UpdateDefaultPolicyHostRestrictions() from mojom::Renderer should
+  // have been called with the default policy for blocked/allowed hosts given by
+  // PermissionsData, which was initialized above.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(default_blocked_hosts, helper_->default_policy_blocked_hosts());
+  EXPECT_EQ(default_allowed_hosts, helper_->default_policy_allowed_hosts());
+
   EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
   EXPECT_TRUE(
       IsExtensionLoadedInProcess(*extension_, render_process_host_.get()));

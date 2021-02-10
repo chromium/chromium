@@ -190,8 +190,7 @@ class PermissionsUpdater {
 
   // Issues the relevant events, messages and notifications when the default
   // scope management policy have changed.
-  // Specifically, this sends the ExtensionMsg_UpdateDefaultHostRestrictions
-  // IPC message.
+  // Specifically, this sends the UpdateDefaultHostRestrictions Mojo message.
   static void NotifyDefaultPolicyHostRestrictionsUpdated(
       content::BrowserContext* browser_context,
       const URLPatternSet default_runtime_blocked_hosts,
