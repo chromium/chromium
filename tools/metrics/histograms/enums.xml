@@ -35697,9 +35697,10 @@ Called by update_feature_policy_enum.py.-->
 </enum>
 
 <enum name="GetChangePasswordUrlMetric">
-  <int value="0" label="Gstatic file was not fetched yet"/>
+  <int value="0" label="Url override was not fetched yet"/>
   <int value="1" label="Url override was available and used"/>
   <int value="2" label="No url override was available"/>
+  <int value="3" label="Url override was available in the FacetGroup and used"/>
 </enum>
 
 <enum name="GetEncryptionKeyAction">
