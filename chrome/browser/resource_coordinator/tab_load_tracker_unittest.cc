@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/process/kill.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
@@ -114,7 +115,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  TestTabLoadTracker* tracker_;
+  CheckedPtr<TestTabLoadTracker> tracker_;
 };
 
 // The test harness.

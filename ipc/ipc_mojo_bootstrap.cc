@@ -18,6 +18,7 @@
 #include "base/check_op.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
@@ -448,7 +449,7 @@ class ChannelAssociatedGroupController
     mojo::Message& value() { return value_; }
 
    private:
-    ChannelAssociatedGroupController* controller_ = nullptr;
+    CheckedPtr<ChannelAssociatedGroupController> controller_ = nullptr;
     mojo::Message value_;
 
     DISALLOW_COPY_AND_ASSIGN(MessageWrapper);
@@ -598,7 +599,7 @@ class ChannelAssociatedGroupController
 
       scoped_refptr<Endpoint> keepalive(this);
       scoped_refptr<AssociatedGroupController> controller_keepalive(
-          controller_);
+          controller_.get());
       base::AutoLock locker(controller_->lock_);
       bool more_to_process = false;
       if (!sync_messages_.empty()) {
@@ -652,14 +653,14 @@ class ChannelAssociatedGroupController
       return id;
     }
 
-    ChannelAssociatedGroupController* const controller_;
+    const CheckedPtr<ChannelAssociatedGroupController> controller_;
     const mojo::InterfaceId id_;
 
     bool closed_ = false;
     bool peer_closed_ = false;
     bool handle_created_ = false;
     base::Optional<mojo::DisconnectReason> disconnect_reason_;
-    mojo::InterfaceEndpointClient* client_ = nullptr;
+    CheckedPtr<mojo::InterfaceEndpointClient> client_ = nullptr;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
     base::queue<std::pair<uint32_t, MessageWrapper>> sync_messages_;
@@ -680,7 +681,7 @@ class ChannelAssociatedGroupController
       return controller_->SendMessage(message);
     }
 
-    ChannelAssociatedGroupController* controller_;
+    CheckedPtr<ChannelAssociatedGroupController> controller_;
 
     DISALLOW_COPY_AND_ASSIGN(ControlMessageProxyThunk);
   };

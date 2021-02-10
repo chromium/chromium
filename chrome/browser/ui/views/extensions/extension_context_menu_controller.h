@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "ui/views/context_menu_controller.h"
 
@@ -51,16 +52,16 @@ class ExtensionContextMenuController : public views::ContextMenuController {
 
   // The root MenuItemView for the context menu, or null if no menu is being
   // shown. This is used for testing.
-  views::MenuItemView* menu_ = nullptr;
+  CheckedPtr<views::MenuItemView> menu_ = nullptr;
 
   // This delegate_ is set only for ToolbarActionsBar and used to determine if
   // the extension is triggered from the AppMenu.
   // TODO(crbug.com/995473): This should be removed when extensions toolbar menu
   // launches.
-  const ToolbarActionView::Delegate* const delegate_;
+  const CheckedPtr<const ToolbarActionView::Delegate> delegate_;
 
   // This controller contains the data for the extension's context menu.
-  ToolbarActionViewController* const controller_;
+  const CheckedPtr<ToolbarActionViewController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuController);
 };

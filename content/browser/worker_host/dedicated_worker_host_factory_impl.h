@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_FACTORY_IMPL_H_
 #define CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_FACTORY_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/common/content_export.h"
@@ -67,7 +68,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   const url::Origin creator_origin_;
   const net::IsolationInfo isolation_info_;
   const network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
-  CrossOriginEmbedderPolicyReporter* const coep_reporter_;
+  const CheckedPtr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
   DISALLOW_COPY_AND_ASSIGN(DedicatedWorkerHostFactoryImpl);
 };

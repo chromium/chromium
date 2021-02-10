@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 #include "gin/per_isolate_data.h"
@@ -94,10 +95,10 @@ class ArrayBuffer::Private : public base::RefCounted<ArrayBuffer::Private> {
   v8::Global<v8::ArrayBuffer> array_buffer_;
   scoped_refptr<Private> self_reference_;
   v8::Isolate* isolate_;
-  void* buffer_;
+  CheckedPtr<void> buffer_;
   size_t length_;
   DataDeleter deleter_;
-  void* deleter_data_;
+  CheckedPtr<void> deleter_data_;
 };
 
 scoped_refptr<ArrayBuffer::Private> ArrayBuffer::Private::From(

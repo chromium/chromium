@@ -13,7 +13,7 @@ SigninErrorController::SigninErrorController(
       identity_manager_(identity_manager),
       auth_error_(GoogleServiceAuthError::AuthErrorNone()) {
   DCHECK(identity_manager_);
-  scoped_identity_manager_observation_.Observe(identity_manager_);
+  scoped_identity_manager_observation_.Observe(identity_manager_.get());
 
   Update();
 }

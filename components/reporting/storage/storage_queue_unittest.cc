@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -277,12 +278,12 @@ class MockUploadClient
     }
 
    private:
-    MockUploadClient* const client_;
+    const CheckedPtr<MockUploadClient> client_;
   };
 
  private:
   base::Optional<int64_t> generation_id_;
-  LastRecordDigestMap* const last_record_digest_map_;
+  const CheckedPtr<LastRecordDigestMap> last_record_digest_map_;
 
   Sequence test_encounter_sequence_;
   Sequence test_upload_sequence_;

@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_HOST_ROOT_VIEW_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/widget/root_view.h"
 
 namespace views {
@@ -52,7 +53,7 @@ class MenuHostRootView : public internal::RootView {
   MenuController* GetMenuControllerForInputEvents();
 
   // The SubmenuView we contain.
-  SubmenuView* submenu_;
+  CheckedPtr<SubmenuView> submenu_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuHostRootView);
 };

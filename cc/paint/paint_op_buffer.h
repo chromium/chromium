@@ -19,6 +19,7 @@
 #include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "cc/base/math_util.h"
@@ -124,7 +125,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   PlaybackParams(const PlaybackParams& other);
   PlaybackParams& operator=(const PlaybackParams& other);
 
-  ImageProvider* image_provider;
+  CheckedPtr<ImageProvider> image_provider;
   SkM44 original_ctm;
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
@@ -167,11 +168,11 @@ class CC_PAINT_EXPORT PaintOp {
     ~SerializeOptions();
 
     // Required.
-    ImageProvider* image_provider = nullptr;
-    TransferCacheSerializeHelper* transfer_cache = nullptr;
-    ClientPaintCache* paint_cache = nullptr;
-    SkCanvas* canvas = nullptr;
-    SkStrikeServer* strike_server = nullptr;
+    CheckedPtr<ImageProvider> image_provider = nullptr;
+    CheckedPtr<TransferCacheSerializeHelper> transfer_cache = nullptr;
+    CheckedPtr<ClientPaintCache> paint_cache = nullptr;
+    CheckedPtr<SkCanvas> canvas = nullptr;
+    CheckedPtr<SkStrikeServer> strike_server = nullptr;
     sk_sp<SkColorSpace> color_space = nullptr;
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
@@ -181,7 +182,7 @@ class CC_PAINT_EXPORT PaintOp {
     // Optional.
     // The flags to use when serializing this op. This can be used to override
     // the flags serialized with the op. Valid only for PaintOpWithFlags.
-    const PaintFlags* flags_to_serialize = nullptr;
+    CheckedPtr<const PaintFlags> flags_to_serialize = nullptr;
 
     // TODO(crbug.com/1096123): Cleanup after study completion.
     //
@@ -1322,7 +1323,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     // FIFO queue of paint ops that have been peeked at.
     base::StackVector<const PaintOp*, 3> stack_;
     DrawColorOp folded_draw_color_;
-    const PaintOp* current_op_ = nullptr;
+    CheckedPtr<const PaintOp> current_op_ = nullptr;
     uint8_t current_alpha_ = 255;
   };
 

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/checked_ptr.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -47,7 +48,7 @@ class GPU_EXPORT TextureBase {
   void DeleteFromMailboxManager();
 
  private:
-  MailboxManager* mailbox_manager_;
+  CheckedPtr<MailboxManager> mailbox_manager_;
 };
 
 }  // namespace gpu

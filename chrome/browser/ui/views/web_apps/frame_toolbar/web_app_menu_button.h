@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_MENU_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_MENU_BUTTON_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -45,7 +46,7 @@ class WebAppMenuButton : public AppMenuButton {
   void FadeHighlightOff();
 
   // The containing browser view.
-  BrowserView* browser_view_;
+  CheckedPtr<BrowserView> browser_view_;
 
   SkColor color_ = gfx::kPlaceholderColor;
 

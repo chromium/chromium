@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "media/base/video_transformation.h"
 #include "media/gpu/android/android_video_surface_chooser.h"
@@ -115,7 +116,7 @@ class MEDIA_GPU_EXPORT SurfaceChooserHelper {
   // Time since we last updated the chooser state.
   base::TimeTicks most_recent_chooser_retry_;
 
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   // Number of promotion hints that we need to receive before clearing the
   // "delay overlay promotion" flag in |surface_chooser_state_|.  We do this so

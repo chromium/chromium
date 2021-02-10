@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "remoting/codec/encoder_bitrate_filter.h"
@@ -102,7 +103,7 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   std::unique_ptr<uint8_t[]> active_map_;
   webrtc::DesktopSize active_map_size_;
 
-  const base::TickClock* clock_;
+  CheckedPtr<const base::TickClock> clock_;
 
   EncoderBitrateFilter bitrate_filter_;
 

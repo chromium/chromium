@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
@@ -58,8 +59,7 @@ class WebAppRegistryUpdate {
 
  private:
   std::unique_ptr<RegistryUpdateData> update_data_;
-  const WebAppRegistrar* const registrar_;
-
+  const CheckedPtr<const WebAppRegistrar> registrar_;
 };
 
 // A convenience utility class to use RAII for WebAppSyncBridge::BeginUpdate and
@@ -75,8 +75,7 @@ class ScopedRegistryUpdate {
 
  private:
   std::unique_ptr<WebAppRegistryUpdate> update_;
-  WebAppSyncBridge* const sync_bridge_;
-
+  const CheckedPtr<WebAppSyncBridge> sync_bridge_;
 };
 
 }  // namespace web_app

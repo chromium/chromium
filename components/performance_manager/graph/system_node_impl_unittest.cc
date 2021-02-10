@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/system_node_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -70,7 +71,7 @@ class LenientMockObserver : public SystemNodeImpl::Observer {
   }
 
  private:
-  const SystemNode* notified_system_node_ = nullptr;
+  CheckedPtr<const SystemNode> notified_system_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

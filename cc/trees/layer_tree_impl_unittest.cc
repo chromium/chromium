@@ -4,6 +4,7 @@
 
 #include "cc/trees/layer_tree_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/ranges.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
@@ -113,9 +114,9 @@ class LayerTreeImplTest : public LayerTreeImplTestBase, public testing::Test {
   }
 
   // These layers are created by HitTestSimpleTree().
-  LayerImpl* top_ = nullptr;
-  LayerImpl* left_child_ = nullptr;
-  LayerImpl* right_child_ = nullptr;
+  CheckedPtr<LayerImpl> top_ = nullptr;
+  CheckedPtr<LayerImpl> left_child_ = nullptr;
+  CheckedPtr<LayerImpl> right_child_ = nullptr;
 };
 
 TEST_F(LayerTreeImplTest, HitTestingForSingleLayer) {

@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_contribution.h"
@@ -78,7 +79,7 @@ class CommitContributionImpl : public CommitContribution {
   base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback_;
 
   // A non-owned pointer to cryptographer to encrypt entities.
-  Cryptographer* const cryptographer_;
+  const CheckedPtr<Cryptographer> cryptographer_;
 
   const PassphraseType passphrase_type_;
 

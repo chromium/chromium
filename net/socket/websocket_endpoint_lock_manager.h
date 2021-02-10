@@ -12,6 +12,7 @@
 
 #include "base/containers/linked_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -57,7 +58,7 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
 
     // This is null if UnlockEndpoint() has been called before this object was
     // destroyed.
-    WebSocketEndpointLockManager* websocket_endpoint_lock_manager_;
+    CheckedPtr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
     const IPEndPoint endpoint_;
 
     DISALLOW_COPY_AND_ASSIGN(LockReleaser);
@@ -105,7 +106,7 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
 
     // This pointer is non-NULL if a LockReleaser object has been constructed
     // since the last call to UnlockEndpoint().
-    LockReleaser* lock_releaser;
+    CheckedPtr<LockReleaser> lock_releaser;
   };
 
   // SocketLockInfoMap requires std::map iterator semantics for LockInfoMap

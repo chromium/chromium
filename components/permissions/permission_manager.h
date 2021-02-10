@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -182,7 +183,7 @@ class PermissionManager : public KeyedService,
       const url::Origin& origin,
       ContentSettingsType permission);
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   PendingRequestsMap pending_requests_;
   SubscriptionsMap subscriptions_;
 

@@ -4,6 +4,7 @@
 
 #include "components/no_state_prefetch/browser/prerender_processor_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"

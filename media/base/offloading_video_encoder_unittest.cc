@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -46,7 +47,7 @@ class OffloadingVideoEncoderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> work_runner_;
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
-  MockVideoEncoder* mock_video_encoder_;
+  CheckedPtr<MockVideoEncoder> mock_video_encoder_;
   std::unique_ptr<OffloadingVideoEncoder> offloading_encoder_;
 };
 

@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -95,7 +96,7 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
       LoginUIService::SyncConfirmationUIClosedResult result);
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Records whether the user clicked on Undo, Ok, or Settings.
   bool did_user_explicitly_interact_ = false;
@@ -106,9 +107,9 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
 
   // Weak reference to the browser that showed the sync confirmation dialog (if
   // such a dialog exists).
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
 
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncConfirmationHandler);
 };

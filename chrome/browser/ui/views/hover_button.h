@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
@@ -106,11 +107,11 @@ class HoverButton : public views::LabelButton {
                            UpdatesToDisplayCorrectActionTitle);
   friend class PageInfoBubbleViewBrowserTest;
 
-  views::StyledLabel* title_ = nullptr;
-  views::View* label_wrapper_ = nullptr;
-  views::Label* subtitle_ = nullptr;
-  views::View* icon_view_ = nullptr;
-  views::View* secondary_view_ = nullptr;
+  CheckedPtr<views::StyledLabel> title_ = nullptr;
+  CheckedPtr<views::View> label_wrapper_ = nullptr;
+  CheckedPtr<views::Label> subtitle_ = nullptr;
+  CheckedPtr<views::View> icon_view_ = nullptr;
+  CheckedPtr<views::View> secondary_view_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
       this};

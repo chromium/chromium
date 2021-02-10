@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/dom_distiller/core/task_tracker.h"
@@ -47,7 +48,7 @@ class LazyDomDistillerService : public DomDistillerServiceInterface,
 
   // The Profile to use when retrieving the DomDistillerService and also the
   // profile to listen for destruction of.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(LazyDomDistillerService);
 };

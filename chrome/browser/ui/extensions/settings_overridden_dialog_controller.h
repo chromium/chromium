@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_SETTINGS_OVERRIDDEN_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_SETTINGS_OVERRIDDEN_DIALOG_CONTROLLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 
 namespace gfx {
@@ -24,7 +25,7 @@ class SettingsOverriddenDialogController {
     // The icon to display, if any. If non-null, the VectorIcon should have
     // all its colors fully specified; otherwise a placehold grey color will
     // be used.
-    const gfx::VectorIcon* icon = nullptr;
+    CheckedPtr<const gfx::VectorIcon> icon = nullptr;
   };
 
   // The result (i.e., user input) from the dialog being shown.

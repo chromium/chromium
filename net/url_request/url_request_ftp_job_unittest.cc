@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/auth.h"
 #include "net/base/load_states.h"
@@ -129,8 +130,8 @@ class MockURLRequestFtpJobFactory : public URLRequestJobFactory {
   }
 
  private:
-  FtpAuthCache* auth_cache;
-  MockFtpTransactionFactory* factory;
+  CheckedPtr<FtpAuthCache> auth_cache;
+  CheckedPtr<MockFtpTransactionFactory> factory;
 
   DISALLOW_COPY_AND_ASSIGN(MockURLRequestFtpJobFactory);
 };

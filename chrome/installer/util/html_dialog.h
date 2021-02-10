@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 // This is the interface for creating HTML-based Dialogs *before* Chrome has
 // been installed or when there is a suspicion chrome is not working. In
@@ -92,7 +93,7 @@ class EulaHTMLDialog {
     void OnBeforeDisplay(void* window) override;
   };
 
-  HTMLDialog* dialog_;
+  CheckedPtr<HTMLDialog> dialog_;
   DISALLOW_COPY_AND_ASSIGN(EulaHTMLDialog);
 };
 

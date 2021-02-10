@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display/shader.h"
@@ -150,7 +151,7 @@ class VIZ_SERVICE_EXPORT ProgramKey {
   UVTextureMode uv_texture_mode_ = UV_TEXTURE_MODE_NA;
 
   ColorConversionMode color_conversion_mode_ = COLOR_CONVERSION_MODE_NONE;
-  const gfx::ColorTransform* color_transform_ = nullptr;
+  CheckedPtr<const gfx::ColorTransform> color_transform_ = nullptr;
 
   bool has_tex_clamp_rect_ = false;
 

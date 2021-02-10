@@ -16,6 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/strings/string16.h"
@@ -123,7 +124,7 @@ class WebContents : public PageNavigator,
     ~CreateParams();
     CreateParams(BrowserContext* context, scoped_refptr<SiteInstance> site);
 
-    BrowserContext* browser_context;
+    CheckedPtr<BrowserContext> browser_context;
 
     // Specifying a SiteInstance here is optional.  It can be set to avoid an
     // extra process swap if the first navigation is expected to require a
@@ -161,7 +162,7 @@ class WebContents : public PageNavigator,
     bool initially_hidden;
 
     // If non-null then this WebContents will be hosted by a BrowserPlugin.
-    BrowserPluginGuestDelegate* guest_delegate;
+    CheckedPtr<BrowserPluginGuestDelegate> guest_delegate;
 
     // Used to specify the location context which display the new view should
     // belong. This can be nullptr if not needed.

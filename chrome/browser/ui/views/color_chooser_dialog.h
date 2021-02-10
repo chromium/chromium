@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/views/color_chooser_dialog.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -65,7 +66,7 @@ class ColorChooserDialog
   // The listener to notify when the user closes the dialog.  This may be set to
   // NULL before the color chooser is closed, signalling that the listener no
   // longer cares about the outcome.
-  views::ColorChooserListener* listener_;
+  CheckedPtr<views::ColorChooserListener> listener_;
 
   DISALLOW_COPY_AND_ASSIGN(ColorChooserDialog);
 };

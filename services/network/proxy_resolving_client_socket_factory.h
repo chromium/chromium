@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/ssl/ssl_config.h"
 #include "url/gurl.h"
@@ -60,7 +61,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocketFactory {
  private:
   std::unique_ptr<net::HttpNetworkSession> network_session_;
   std::unique_ptr<net::CommonConnectJobParams> common_connect_job_params_;
-  net::URLRequestContext* request_context_;
+  CheckedPtr<net::URLRequestContext> request_context_;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyResolvingClientSocketFactory);
 };

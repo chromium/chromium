@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
@@ -159,7 +160,7 @@ class RasterTaskImpl : public TileTask {
   // The following members are needed for processing completion of this task on
   // origin thread. These are not thread-safe and should be accessed only in
   // origin thread. Ensure their access by checking CalledOnValidThread().
-  TileManager* tile_manager_;
+  CheckedPtr<TileManager> tile_manager_;
   Tile::Id tile_id_;
   ResourcePool::InUsePoolResource resource_;
 
@@ -330,7 +331,7 @@ class TaskSetFinishedTaskImpl : public TileTask {
   }
 
  private:
-  base::SequencedTaskRunner* task_runner_;
+  CheckedPtr<base::SequencedTaskRunner> task_runner_;
   const base::RepeatingClosure on_task_set_finished_callback_;
 };
 
@@ -363,8 +364,8 @@ class DidFinishRunningAllTilesTask : public TileTask {
   ~DidFinishRunningAllTilesTask() override = default;
 
  private:
-  base::SequencedTaskRunner* task_runner_;
-  RasterQueryQueue* pending_raster_queries_;
+  CheckedPtr<base::SequencedTaskRunner> task_runner_;
+  CheckedPtr<RasterQueryQueue> pending_raster_queries_;
   CompletionCb completion_cb_;
 };
 

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -68,7 +69,7 @@ class RenderViewHostTest : public RenderViewHostImplTestHarness {
 
  private:
   RenderViewHostTestBrowserClient test_browser_client_;
-  ContentBrowserClient* old_browser_client_;
+  CheckedPtr<ContentBrowserClient> old_browser_client_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderViewHostTest);
 };

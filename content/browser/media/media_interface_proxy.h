@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
@@ -144,7 +145,7 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
 #endif  // defined(OS_WIN)
 
   // Safe to hold a raw pointer since |this| is owned by RenderFrameHostImpl.
-  RenderFrameHost* const render_frame_host_;
+  const CheckedPtr<RenderFrameHost> render_frame_host_;
 
   mojo::UniqueReceiverSet<media::mojom::FrameInterfaceFactory> frame_factories_;
 

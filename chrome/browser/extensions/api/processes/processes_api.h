@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -60,7 +61,7 @@ class ProcessesEventRouter : public task_manager::TaskManagerObserver {
   // events are being listened to by extensions.
   void UpdateRefreshTypesFlagsBasedOnListeners();
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // Count of listeners, so we avoid sending updates if no one is interested.
   int listeners_;
@@ -99,7 +100,7 @@ class ProcessesAPI : public BrowserContextKeyedAPI,
   static const bool kServiceRedirectedInIncognito = true;
   static const bool kServiceIsNULLWhileTesting = true;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // Created lazily on first access.
   std::unique_ptr<ProcessesEventRouter> processes_event_router_;

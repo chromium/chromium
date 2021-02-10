@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/observers/isolation_context_metrics.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -71,7 +72,7 @@ class IsolationContextMetricsTest : public GraphTestHarness {
 
     // Sets a valid starting time.
     AdvanceClock(base::TimeDelta::FromSeconds(1));
-    graph()->PassToGraph(base::WrapUnique(metrics_));
+    graph()->PassToGraph(base::WrapUnique(metrics_.get()));
   }
 
   // A frame node constructor that lets us specify the browsing instance ID and
@@ -97,7 +98,7 @@ class IsolationContextMetricsTest : public GraphTestHarness {
   }
 
   base::HistogramTester histogram_tester_;
-  TestIsolationContextMetrics* metrics_;
+  CheckedPtr<TestIsolationContextMetrics> metrics_;
   int next_render_frame_id_ = 0;
 };
 

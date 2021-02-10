@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -149,18 +150,18 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // Callback for MenuRunner.
   void OnMenuClosed();
 
-  NativeBrowserFrame* native_browser_frame_;
+  CheckedPtr<NativeBrowserFrame> native_browser_frame_;
 
   // A weak reference to the root view associated with the window. We save a
   // copy as a BrowserRootView to avoid evil casting later, when we need to call
   // functions that only exist on BrowserRootView (versus RootView).
-  BrowserRootView* root_view_;
+  CheckedPtr<BrowserRootView> root_view_;
 
   // A pointer to our NonClientFrameView as a BrowserNonClientFrameView.
-  BrowserNonClientFrameView* browser_frame_view_;
+  CheckedPtr<BrowserNonClientFrameView> browser_frame_view_;
 
   // The BrowserView is our ClientView. This is a pointer to it.
-  BrowserView* browser_view_;
+  CheckedPtr<BrowserView> browser_view_;
 
   std::unique_ptr<SystemMenuModelBuilder> menu_model_builder_;
 
@@ -173,7 +174,8 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
           base::BindRepeating(&BrowserFrame::OnTouchUiChanged,
                               base::Unretained(this)));
 
-  BrowserDesktopWindowTreeHost* browser_desktop_window_tree_host_ = nullptr;
+  CheckedPtr<BrowserDesktopWindowTreeHost> browser_desktop_window_tree_host_ =
+      nullptr;
 
   // Indicates the drag state for this window. The value can be kWindowDrag
   // if the accociated browser is the dragged browser or kTabDrag

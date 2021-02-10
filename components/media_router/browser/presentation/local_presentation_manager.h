@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -208,7 +209,7 @@ class LocalPresentationManager : public KeyedService {
 
     const blink::mojom::PresentationInfo presentation_info_;
     base::Optional<MediaRoute> route_;
-    content::WebContents* receiver_web_contents_ = nullptr;
+    CheckedPtr<content::WebContents> receiver_web_contents_ = nullptr;
 
     // Callback to invoke whenever a receiver connection is available.
     content::ReceiverConnectionAvailableCallback receiver_callback_;

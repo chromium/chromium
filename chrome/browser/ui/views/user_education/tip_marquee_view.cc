@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/resources_util.h"
 #include "chrome/grit/theme_resources.h"
@@ -193,7 +194,7 @@ class TipMarqueeOverflowBubbleView : public views::BubbleDialogDelegateView {
     tip_marquee_view_->ClearTip();
   }
 
-  TipMarqueeView* const tip_marquee_view_;
+  const CheckedPtr<TipMarqueeView> tip_marquee_view_;
 };
 
 BEGIN_METADATA(TipMarqueeOverflowBubbleView, views::BubbleDialogDelegateView)
@@ -362,7 +363,7 @@ void TipMarqueeView::ToggleOverflowWidget() {
   DCHECK(!show_tip_widget_);
   show_tip_widget_ = views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<TipMarqueeOverflowBubbleView>(this, tip_text_));
-  widget_observer_.Observe(show_tip_widget_);
+  widget_observer_.Observe(show_tip_widget_.get());
   show_tip_widget_->Show();
 }
 

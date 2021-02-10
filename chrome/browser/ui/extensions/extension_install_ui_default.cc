@@ -133,7 +133,8 @@ void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
 
     content::NotificationService::current()->Notify(
         chrome::NOTIFICATION_APP_INSTALLED_TO_NTP,
-        content::Source<WebContents>(params.navigated_or_inserted_contents),
+        content::Source<WebContents>(
+            params.navigated_or_inserted_contents.get()),
         content::Details<const std::string>(&app_id));
   }
 #endif

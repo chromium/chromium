@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/common_export.h"
 
@@ -194,7 +195,7 @@ class BLINK_COMMON_EXPORT UniqueNameHelper {
   static std::string ExtractStableNameForTesting(base::StringPiece unique_name);
 
  private:
-  FrameAdapter* const frame_;
+  const CheckedPtr<FrameAdapter> frame_;
   std::string unique_name_;
   bool frozen_ = false;
 

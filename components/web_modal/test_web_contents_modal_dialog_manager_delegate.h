@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEB_MODAL_TEST_WEB_CONTENTS_MODAL_DIALOG_MANAGER_DELEGATE_H_
 #define COMPONENTS_WEB_MODAL_TEST_WEB_CONTENTS_MODAL_DIALOG_MANAGER_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 
 #include "base/compiler_specific.h"
@@ -38,7 +39,8 @@ class TestWebContentsModalDialogManagerDelegate
  private:
   bool web_contents_visible_;
   bool web_contents_blocked_;
-  WebContentsModalDialogHost* web_contents_modal_dialog_host_;  // Not owned.
+  CheckedPtr<WebContentsModalDialogHost>
+      web_contents_modal_dialog_host_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(TestWebContentsModalDialogManagerDelegate);
 };

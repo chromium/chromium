@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
@@ -60,7 +61,7 @@ class TestTabStripModelObserver : public TabStripModelObserver {
       run_loop_.Quit();
   }
 
-  TabStripModel* model_;
+  CheckedPtr<TabStripModel> model_;
   int desired_count_;
   base::RunLoop run_loop_;
 

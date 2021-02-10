@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -100,7 +101,7 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
     Interface();
     ~Interface();
 
-    const mojom::UsbInterfaceInfo* info;
+    CheckedPtr<const mojom::UsbInterfaceInfo> info;
 
     // In a composite device each function has its own driver and path to open.
     std::wstring function_driver;
@@ -125,7 +126,7 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
   };
 
   struct Endpoint {
-    const mojom::UsbInterfaceInfo* interface;
+    CheckedPtr<const mojom::UsbInterfaceInfo> interface;
     mojom::UsbTransferType type;
   };
 

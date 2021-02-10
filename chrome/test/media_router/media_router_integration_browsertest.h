@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/test/media_router/media_router_base_browsertest.h"
@@ -126,7 +127,7 @@ class MediaRouterIntegrationBrowserTest : public MediaRouterBaseBrowserTest {
   void SetEnableMediaRouter(bool enable);
 
   // Test API for manipulating the UI.
-  MediaRouterUiForTest* test_ui_ = nullptr;
+  CheckedPtr<MediaRouterUiForTest> test_ui_ = nullptr;
 
   // Enabled features.
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -154,7 +155,7 @@ class MediaRouterIntegrationIncognitoBrowserTest
   Browser* browser() override;
 
  private:
-  Browser* incognito_browser_ = nullptr;
+  CheckedPtr<Browser> incognito_browser_ = nullptr;
   std::string incognito_extension_id_;
 };
 
