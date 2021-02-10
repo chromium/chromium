@@ -2354,15 +2354,15 @@
     ],
 
     'official_goma_perf': [
-      'official', 'goma', 'minimal_symbols',
+      'official', 'goma', 'minimal_symbols', 'pgo_phase_0',
     ],
 
     'official_goma_mac_perf': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols',
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0',
     ],
 
     'official_goma_mac_arm_perf': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64'
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0',
     ],
 
     'official_goma_mac_pgo': [
@@ -2370,7 +2370,7 @@
     ],
 
     'official_goma_linux_perf': [
-      'official', 'goma', 'no_gnome_keyring', 'minimal_symbols',
+      'official', 'goma', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0',
     ],
 
     'official_goma_fuchsia_arm64_perf': [
@@ -2386,11 +2386,11 @@
     ],
 
     'official_goma_minimal_symbols_android': [
-      'official', 'goma', 'minimal_symbols', 'android',
+      'official', 'goma', 'minimal_symbols', 'android', 'pgo_phase_0',
     ],
 
     'official_goma_minimal_symbols_android_arm64': [
-      'official', 'goma', 'minimal_symbols', 'android', 'arm64',
+      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0',
     ],
 
     'official_goma_minimal_symbols_android_thin_lto_opt': [
@@ -2414,7 +2414,7 @@
     ],
 
     'official_goma_x86_perf': [
-      'official', 'goma', 'x86', 'minimal_symbols'
+      'official', 'goma', 'x86', 'minimal_symbols', 'pgo_phase_0',
     ],
 
     'official_goma_x86_pgo': [
@@ -3241,6 +3241,11 @@
 
     'perfetto': {
       'gn_args': 'use_perfetto_client_library=true',
+    },
+
+    'pgo_phase_0': {
+      'mixins': ['strip_absolute_paths_from_debug_symbols'],
+      'gn_args': 'chrome_pgo_phase=0'
     },
 
     'pgo_phase_1': {
