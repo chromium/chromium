@@ -3,10 +3,11 @@ rootWebArea
 ++++genericContainer ignored
 ++++++splitter horizontal name='Control: elements that are not in tree'
 ++++++layoutTable
-++++++++layoutTableRow
-++++++++++layoutTableCell
-++++++++++++textField
-++++++++++++++genericContainer
+++++++++genericContainer ignored
+++++++++++layoutTableRow
+++++++++++++layoutTableCell
+++++++++++++++textField
+++++++++++++++++genericContainer
 ++++++splitter horizontal name='An aria-owned element is always in tree'
 ++++++group
 ++++++++genericContainer ignored

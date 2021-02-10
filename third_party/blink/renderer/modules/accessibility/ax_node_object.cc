@@ -133,7 +133,6 @@ bool IsNeutralWithinTable(blink::AXObject* obj) {
   ax::mojom::blink::Role role = obj->RoleValue();
   return role == ax::mojom::blink::Role::kGroup ||
          role == ax::mojom::blink::Role::kGenericContainer ||
-         role == ax::mojom::blink::Role::kIgnored ||
          role == ax::mojom::blink::Role::kRowGroup;
 }
 
@@ -290,12 +289,6 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     if (ignored_reasons)
       ignored_reasons->push_back(
           IgnoredReason(kAXAncestorIsLeafNode, LeafNodeAncestor()));
-    return kIgnoreObject;
-  }
-
-  if (RoleValue() == ax::mojom::blink::Role::kIgnored) {
-    if (ignored_reasons)
-      ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     return kIgnoreObject;
   }
 
@@ -715,7 +708,7 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableSectionRole() const {
     return ax::mojom::blink::Role::kGenericContainer;
 
   if (parent->RoleValue() == ax::mojom::blink::Role::kLayoutTable)
-    return ax::mojom::blink::Role::kIgnored;
+    return ax::mojom::blink::Role::kGenericContainer;
 
   return ax::mojom::blink::Role::kRowGroup;
 }

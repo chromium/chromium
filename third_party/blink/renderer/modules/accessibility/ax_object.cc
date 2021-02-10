@@ -105,6 +105,23 @@ Node* GetParentNodeForComputeParent(Node* node) {
   return node->parentNode();
 }
 
+#if DCHECK_IS_ON()
+bool IsValidRole(ax::mojom::blink::Role role, bool is_virtual_object) {
+  // Check for illegal roles that should not be assigned in Blink.
+  switch (role) {
+    case ax::mojom::blink::Role::kUnknown:
+      // Role::kUnknown is allowed on virtual objects with no set role.
+      return is_virtual_object;
+    case ax::mojom::blink::Role::kColumn:
+    case ax::mojom::blink::Role::kTableHeaderContainer:
+    case ax::mojom::blink::Role::kIgnored:
+      return false;
+    default:
+      return true;
+  }
+}
+#endif
+
 struct RoleHashTraits : HashTraits<ax::mojom::blink::Role> {
   static const bool kEmptyValueIsZero = true;
   static ax::mojom::blink::Role EmptyValue() {
@@ -645,8 +662,11 @@ void AXObject::Init(AXObject* parent_if_known) {
   // Note: in order to avoid reentrancy, the role computation cannot use the
   // ParentObject(), although it can use the DOM parent.
   role_ = DetermineAccessibilityRole();
-  DCHECK(role_ != ax::mojom::blink::Role::kUnknown || IsVirtualObject())
-      << "Illegal Role::kUnknown for " << GetNode() << " " << GetLayoutObject();
+#if DCHECK_IS_ON()
+  DCHECK(IsValidRole(role_, IsVirtualObject()))
+      << "Illegal " << role_ << " for " << GetNode() << " "
+      << GetLayoutObject();
+#endif
 
   // Determine the parent as soon as possible.
   // Every AXObject must have a parent unless it's the root.
@@ -2235,13 +2255,10 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (IsA<HTMLHtmlElement>(GetNode()))
     return RuntimeEnabledFeatures::AccessibilityExposeHTMLElementEnabled();
 
-  // If the node is part of the user agent shadow dom, or has the explicit
-  // internal Role::kIgnored, they aren't interesting for paragraph navigation
-  // or LabelledBy/DescribedBy relationships.
-  if (RoleValue() == ax::mojom::blink::Role::kIgnored ||
-      GetNode()->IsInUserAgentShadowRoot()) {
+  // If the node is part of the user agent shadow dom, it isn't interesting for
+  // paragraph navigation or LabelledBy/DescribedBy relationships.
+  if (GetNode()->IsInUserAgentShadowRoot())
     return false;
-  }
 
   // Keep the internal accessibility tree consistent for videos which lack
   // a player and also inner text.
@@ -4983,7 +5000,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kFooterAsNonLandmark:
     case ax::mojom::blink::Role::kGenericContainer:
     case ax::mojom::blink::Role::kHeaderAsNonLandmark:
-    case ax::mojom::blink::Role::kIgnored:
     case ax::mojom::blink::Role::kImageMap:
     case ax::mojom::blink::Role::kInlineTextBox:
     case ax::mojom::blink::Role::kLabelText:
@@ -5071,6 +5087,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     }
 
     case ax::mojom::blink::Role::kColumn:
+    case ax::mojom::blink::Role::kIgnored:
     case ax::mojom::blink::Role::kTableHeaderContainer:
     case ax::mojom::blink::Role::kUnknown:
       NOTREACHED() << "Role shouldn't occur in Blink: " << ToString(true, true);
