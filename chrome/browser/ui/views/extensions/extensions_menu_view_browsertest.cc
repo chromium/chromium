@@ -556,8 +556,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   DismissUi();
 }
 
+// Failing on Mac. https://crbug.com/1176703
+#if defined(OS_MAC)
+#define MAYBE_PinningDisabledInIncognito DISABLED_PinningDisabledInIncognito
+#else
+#define MAYBE_PinningDisabledInIncognito PinningDisabledInIncognito
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
-                       PinningDisabledInIncognito) {
+                       MAYBE_PinningDisabledInIncognito) {
   LoadTestExtension("extensions/uitest/window_open", true);
   SetUpIncognitoBrowser();
 
