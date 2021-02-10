@@ -104,6 +104,10 @@ bool WebViewPasswordManagerClient::PromptUserToChooseCredentials(
   return false;
 }
 
+bool WebViewPasswordManagerClient::RequiresReauthToFill() {
+  return true;
+}
+
 bool WebViewPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool update_password) {
