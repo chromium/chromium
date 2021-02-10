@@ -276,13 +276,18 @@ HRESULT CreateCOMObjectFromDll(HMODULE dll,
 
 ConfigChangeDetector::~ConfigChangeDetector() {}
 
+bool ConfigChangeDetector::IsYUV420() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 // Provides functionality to detect H.264 stream configuration changes.
 // TODO(ananta)
 // Move this to a common place so that all VDA's can use this.
 class H264ConfigChangeDetector : public ConfigChangeDetector {
  public:
-  H264ConfigChangeDetector();
-  ~H264ConfigChangeDetector() override;
+  H264ConfigChangeDetector() {}
+  ~H264ConfigChangeDetector() override {}
 
   // Detects stream configuration changes.
   // Returns false on failure.
@@ -291,29 +296,25 @@ class H264ConfigChangeDetector : public ConfigChangeDetector {
       const gfx::Rect& container_visible_rect) const override;
   VideoColorSpace current_color_space(
       const VideoColorSpace& container_color_space) const override;
+  bool IsYUV420() const override;
 
  private:
   // These fields are used to track the SPS/PPS in the H.264 bitstream and
   // are eventually compared against the SPS/PPS in the bitstream to detect
   // a change.
-  int last_sps_id_;
+  int last_sps_id_ = 0;
   std::vector<uint8_t> last_sps_;
-  int last_pps_id_;
+  int last_pps_id_ = 0;
   std::vector<uint8_t> last_pps_;
   // We want to indicate configuration changes only after we see IDR slices.
   // This flag tracks that we potentially have a configuration change which
   // we want to honor after we see an IDR slice.
-  bool pending_config_changed_;
+  bool pending_config_changed_ = false;
 
   std::unique_ptr<H264Parser> parser_;
 
   DISALLOW_COPY_AND_ASSIGN(H264ConfigChangeDetector);
 };
-
-H264ConfigChangeDetector::H264ConfigChangeDetector()
-    : last_sps_id_(0), last_pps_id_(0), pending_config_changed_(false) {}
-
-H264ConfigChangeDetector::~H264ConfigChangeDetector() {}
 
 bool H264ConfigChangeDetector::DetectConfig(const uint8_t* stream,
                                             unsigned int size) {
@@ -437,6 +438,13 @@ VideoColorSpace H264ConfigChangeDetector::current_color_space(
     return sps->GetColorSpace();
   }
   return container_color_space;
+}
+
+bool H264ConfigChangeDetector::IsYUV420() const {
+  if (!parser_)
+    return true;
+  const H264SPS* sps = parser_->GetSPS(last_sps_id_);
+  return !sps || sps->chroma_format_idc == 1;
 }
 
 // Doesn't actually detect config changes, only stream metadata.
@@ -2241,6 +2249,11 @@ void DXVAVideoDecodeAccelerator::DecodeInternal(
   HRESULT hr = CheckConfigChanged(sample.Get(), &config_changed);
   RETURN_AND_NOTIFY_ON_HR_FAILURE(hr, "Failed to check video stream config",
                                   PLATFORM_FAILURE, );
+
+  // https://crbug.com/1160623 -- non 4:2:0 content hangs the decoder.
+  RETURN_AND_NOTIFY_ON_FAILURE(
+      codec_ != kCodecH264 || config_change_detector_->IsYUV420(),
+      "Only 4:2:0 H.264 content is supported", PLATFORM_FAILURE, );
 
   processing_config_changed_ = config_changed;
 
