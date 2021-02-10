@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/net/network_health/network_health_service.h"
 #include "chromeos/network/network_event_log.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,6 +42,17 @@ std::string GetFormattedString(
                    : "N/A")
            << "\n";
     output << "MAC Address: " << net->mac_address.value_or("N/A") << "\n";
+
+    // Automatic PII scrubbing does not work for IP addresses so manually scrub
+    // them.
+    if (!scrub) {
+      output << "IPV4 Address: " << net->ipv4_address.value_or("N/A") << "\n";
+      output << "IPV6 Addresses: "
+             << (net->ipv6_addresses.size()
+                     ? base::JoinString(net->ipv6_addresses, ", ")
+                     : "N/A");
+    }
+
     output << "\n";
   }
   return output.str();

@@ -66,6 +66,26 @@
             </span>
           </div>
         </template>
+        <template is="dom-if" if="[[network.ipv4Address]]">
+          <div class="network-attribute-container">
+            <div class="network-attribute-label">
+              [[i18n('OncIpv4Address')]]
+            </div>
+            <span class="network-attribute-value">
+              [[network.ipv4Address]]
+            </span>
+          </div>
+        </template>
+        <template is="dom-if" if="[[network.ipv6Addresses.length]]">
+          <div class="network-attribute-container">
+            <div class="network-attribute-label">
+              [[i18n('OncIpv6Address')]]
+            </div>
+            <span class="network-attribute-value">
+              [[network.ipv6Addresses.join(', ')]]
+            </span>
+          </div>
+        </template>
         <template is="dom-if" if="[[network.macAddress]]">
           <div class="network-attribute-container">
             <div class="network-attribute-label">

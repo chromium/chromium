@@ -65,6 +65,10 @@ mojom::NetworkPtr CreateNetwork(
   auto net = mojom::Network::New();
   net->mac_address = device_prop->mac_address;
   net->type = device_prop->type;
+  if (device_prop->ipv6_address)
+    net->ipv6_addresses.push_back(device_prop->ipv6_address->ToString());
+  if (device_prop->ipv4_address)
+    net->ipv4_address = device_prop->ipv4_address->ToString();
 
   if (net_prop) {
     net->state = ConnectionStateToNetworkState(net_prop->connection_state);

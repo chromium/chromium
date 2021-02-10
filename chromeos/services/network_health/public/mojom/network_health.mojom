@@ -54,6 +54,13 @@ struct Network {
   // considered potentially problematic for the connection. See
   // src/platform2/shill/doc/service-api.txt for more details.
   UInt32Value? signal_strength;
+  // Optional string for the network's ipv4_address. This is only intended to be
+  // used for display and is not meant to be parsed.
+  string? ipv4_address;
+  // Optional list of strings for the network's ipv6_addresses. A single network
+  // can have multiple addresses (local, global, temporary etc.). This is only
+  // intended to be used for display and is not meant to be parsed.
+  array<string> ipv6_addresses;
 };
 
 // Aggregate structure for all of the network health state.
