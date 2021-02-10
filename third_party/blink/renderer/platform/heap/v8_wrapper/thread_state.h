@@ -71,7 +71,6 @@ class PLATFORM_EXPORT ThreadState final {
   }
 
   static ALWAYS_INLINE ThreadState* MainThreadState() {
-    DCHECK(Current()->IsMainThread());
     return reinterpret_cast<ThreadState*>(main_thread_state_storage_);
   }
 
@@ -82,16 +81,8 @@ class PLATFORM_EXPORT ThreadState final {
   static ThreadState* AttachCurrentThread();
   static void DetachCurrentThread();
 
-  void AttachToIsolate(v8::Isolate* isolate, V8BuildEmbedderGraphCallback) {
-    isolate_ = isolate;
-    cpp_heap_ = isolate->GetCppHeap();
-    allocation_handle_ = &cpp_heap_->GetAllocationHandle();
-  }
-
-  void DetachFromIsolate() {
-    // No-op for the library implementation.
-    // TODO(1056170): Remove when removing Oilpan from Blink.
-  }
+  void AttachToIsolate(v8::Isolate* isolate, V8BuildEmbedderGraphCallback);
+  void DetachFromIsolate();
 
   ALWAYS_INLINE cppgc::AllocationHandle& allocation_handle() const {
     return *allocation_handle_;
@@ -141,7 +132,7 @@ class PLATFORM_EXPORT ThreadState final {
   // Handle is the most frequently accessed field as it is required for
   // MakeGarbageCollected().
   cppgc::AllocationHandle* allocation_handle_ = nullptr;
-  v8::CppHeap* cpp_heap_ = nullptr;
+  std::unique_ptr<v8::CppHeap> cpp_heap_;
   v8::Isolate* isolate_ = nullptr;
   base::PlatformThreadId thread_id_;
   bool forced_scheduled_gc_for_testing_ = false;

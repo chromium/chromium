@@ -1901,6 +1901,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//gin",
     "//media:test_support",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
