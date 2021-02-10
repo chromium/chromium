@@ -39,6 +39,12 @@ const base::Feature kEnableRegularToChildTransitionFeature{
 const base::Feature kEnableUnifiedAudioFocusFeature{
     "ArcEnableUnifiedAudioFocus", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls ARC Unspecialized Application Processes.
+// When enabled, Android creates a pool of processes
+// that will start applications so that zygote doesn't have to wake.
+const base::Feature kEnableUsap{"ArcEnableUsap",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls experimental file picker feature for ARC.
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};

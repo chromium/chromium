@@ -155,6 +155,11 @@
     "expiry_milestone": 76
   },
   {
+    "name": "arc-enable-usap",
+    "owners": [ "camurcu" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "arc-file-picker-experiment",
     "owners": [ "niwa" ],
     "expiry_milestone": 95

@@ -273,6 +273,25 @@ std::vector<std::string> GenerateKernelCmdline(
       break;
   }
 
+  std::string log_profile_name;
+  switch (start_params.usap_profile) {
+    case StartParams::UsapProfile::DEFAULT:
+      log_profile_name = "default low-memory";
+      break;
+    case StartParams::UsapProfile::M4G:
+      result.push_back("androidboot.usap_profile=4G");
+      log_profile_name = "high-memory 4G";
+      break;
+    case StartParams::UsapProfile::M8G:
+      result.push_back("androidboot.usap_profile=8G");
+      log_profile_name = "high-memory 8G";
+      break;
+    case StartParams::UsapProfile::M16G:
+      result.push_back("androidboot.usap_profile=16G");
+      log_profile_name = "high-memory 16G";
+      break;
+  }
+  VLOG(1) << "Applied " << log_profile_name << " USAP profile";
   return result;
 }
 

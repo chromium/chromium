@@ -19,6 +19,7 @@ extern const base::Feature kEnableChildToRegularTransitionFeature;
 extern const base::Feature kEnableDocumentsProviderInFilesAppFeature;
 extern const base::Feature kEnableRegularToChildTransitionFeature;
 extern const base::Feature kEnableUnifiedAudioFocusFeature;
+extern const base::Feature kEnableUsap;
 extern const base::Feature kFilePickerExperimentFeature;
 extern const base::Feature kNativeBridge64BitSupportExperimentFeature;
 extern const base::Feature kNativeBridgeToggleFeature;

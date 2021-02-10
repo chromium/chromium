@@ -119,6 +119,17 @@ class ArcContainerClientAdapter
     request.set_disable_media_store_maintenance(
         params.disable_media_store_maintenance);
     request.set_arc_generate_pai(params.arc_generate_play_auto_install);
+
+    switch (params.usap_profile) {
+      case StartParams::UsapProfile::DEFAULT:
+        break;
+      case StartParams::UsapProfile::M4G:
+      case StartParams::UsapProfile::M8G:
+      case StartParams::UsapProfile::M16G:
+        VLOG(1) << "USAP profile is not supported for container.";
+        break;
+    }
+
     chromeos::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
   }
