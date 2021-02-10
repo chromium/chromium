@@ -1205,6 +1205,9 @@ class LocalDeviceInstrumentationTestRun(
     # We've tried to disable retries in the past with mixed results.
     # See crbug.com/619055 for historical context and crbug.com/797002
     # for ongoing efforts.
+    if 'Batch' in test['annotations'] and test['annotations']['Batch'][
+        'value'] == 'UnitTests':
+      return False
     del test, result
     return True
 
