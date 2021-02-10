@@ -5,7 +5,9 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
 #include "base/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
 
@@ -66,5 +68,14 @@ void AssociatedReceiverBase::BindImpl(
 }
 
 }  // namespace internal
+
+void AssociateWithDisconnectedPipe(ScopedInterfaceEndpointHandle handle) {
+  MessagePipe pipe;
+  scoped_refptr<internal::MultiplexRouter> router =
+      new internal::MultiplexRouter(
+          std::move(pipe.handle0), internal::MultiplexRouter::MULTI_INTERFACE,
+          false, base::SequencedTaskRunnerHandle::Get());
+  router->AssociateInterface(std::move(handle));
+}
 
 }  // namespace mojo

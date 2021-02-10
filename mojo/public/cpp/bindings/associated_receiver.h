@@ -293,6 +293,13 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   base::WeakPtrFactory<AssociatedReceiver> weak_ptr_factory_{this};
 };
 
+// Associates |handle| with a dedicated and disconnected message pipe.
+// Generally, |handle| should be the receiving side of an entangled
+// AssociatedReceiver/AssociatedRemote pair, which allows the AssociatedRemote
+// to be used to make calls that will be silently dropped.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS)
+void AssociateWithDisconnectedPipe(ScopedInterfaceEndpointHandle handle);
+
 }  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_RECEIVER_H_

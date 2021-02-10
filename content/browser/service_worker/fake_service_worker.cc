@@ -53,23 +53,18 @@ void FakeServiceWorker::InitializeGlobalScope(
 
   // Enable callers to use these endpoints without us actually binding them
   // to an implementation.
-  mojo::AssociateWithDisconnectedPipe(registration_info->receiver.PassHandle());
+  registration_info->receiver.EnableUnassociatedUsage();
   if (registration_info->installing) {
-    mojo::AssociateWithDisconnectedPipe(
-        registration_info->installing->receiver.PassHandle());
+    registration_info->installing->receiver.EnableUnassociatedUsage();
   }
   if (registration_info->waiting) {
-    mojo::AssociateWithDisconnectedPipe(
-        registration_info->waiting->receiver.PassHandle());
+    registration_info->waiting->receiver.EnableUnassociatedUsage();
   }
   if (registration_info->active) {
-    mojo::AssociateWithDisconnectedPipe(
-        registration_info->active->receiver.PassHandle());
+    registration_info->active->receiver.EnableUnassociatedUsage();
   }
-
   if (service_worker_info) {
-    mojo::AssociateWithDisconnectedPipe(
-        service_worker_info->receiver.PassHandle());
+    service_worker_info->receiver.EnableUnassociatedUsage();
   }
 
   registration_info_ = std::move(registration_info);

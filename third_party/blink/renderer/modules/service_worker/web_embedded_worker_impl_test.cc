@@ -218,11 +218,9 @@ class MockServiceWorkerContextClient final
         /*reporting_observer_receiver=*/mojo::NullReceiver());
 
     // To make the other side callable.
-    mojo::AssociateWithDisconnectedPipe(host_receiver.PassHandle());
-    mojo::AssociateWithDisconnectedPipe(
-        registration_object_host_receiver.PassHandle());
-    mojo::AssociateWithDisconnectedPipe(
-        service_worker_object_host_receiver.PassHandle());
+    host_receiver.EnableUnassociatedUsage();
+    registration_object_host_receiver.EnableUnassociatedUsage();
+    service_worker_object_host_receiver.EnableUnassociatedUsage();
   }
 
   void FailedToFetchClassicScript() override {

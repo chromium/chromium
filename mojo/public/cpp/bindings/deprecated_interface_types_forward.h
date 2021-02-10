@@ -15,8 +15,6 @@ class InterfacePtrInfo;
 template <typename Interface>
 class InterfaceRequest;
 template <typename Interface>
-class AssociatedInterfacePtr;
-template <typename Interface>
 class AssociatedInterfacePtrInfo;
 template <typename Interface>
 class AssociatedInterfaceRequest;

@@ -19,11 +19,6 @@
     for a mojom containing only an enum.
 #endif
 
-#ifdef MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_INTERFACE_PTR_H_
-#error associated_interface_ptr.h should not be included by the generated \
-    header for a mojom containing only an enum.
-#endif
-
 #ifdef MOJO_PUBLIC_CPP_BINDINGS_INTERFACE_REQUEST_H_
 #error interface_request.h should not be included by the generated header \
     for a mojom containing only an enum.

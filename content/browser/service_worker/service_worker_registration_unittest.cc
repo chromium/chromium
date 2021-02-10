@@ -318,7 +318,7 @@ TEST_F(ServiceWorkerRegistrationTest, FailedRegistrationNoCrash) {
   // no need to pass |object_info_->receiver| through a message pipe endpoint.
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr object_info =
       registration_object_host->CreateObjectInfo();
-  mojo::AssociateWithDisconnectedPipe(object_info->receiver.PassHandle());
+  object_info->receiver.EnableUnassociatedUsage();
 
   registration->NotifyRegistrationFailed();
   // Don't crash when |registration_object_host| gets destructed.
