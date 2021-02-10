@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileTabs, Tab, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, Tab, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
@@ -38,12 +38,12 @@ suite('TabSearchAppTest', () => {
   }
 
   /**
-   * @param {ProfileTabs} sampleData
+   * @param {ProfileData} sampleData
    * @param {Object=} loadTimeOverriddenData
    */
   async function setupTest(sampleData, loadTimeOverriddenData) {
     testProxy = new TestTabSearchApiProxy();
-    testProxy.setProfileTabs(sampleData);
+    testProxy.setProfileData(sampleData);
     TabSearchApiProxyImpl.instance_ = testProxy;
 
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);

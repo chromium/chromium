@@ -6,14 +6,15 @@ module tab_search.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
-// Collection of WindowTabs of a profile.
-struct ProfileTabs {
-  array<WindowTabs> windows;
+// Collection of window details associated with a profile.
+struct ProfileData {
+  array<Window> windows;
 };
 
-// Collection of Tab of a window.
-struct WindowTabs {
+// Properties and tabs associated with a window.
+struct Window {
   bool active;
+  uint32 height;
   array<Tab> tabs;
 };
 
@@ -83,8 +84,8 @@ interface PageHandler {
   // Close a specific tab.
   CloseTab(int32 tab_id);
 
-  // Get tabs grouped by windows for the current profile.
-  GetProfileTabs() => (ProfileTabs profile_tabs);
+  // Get window and tab data for the current profile.
+  GetProfileData() => (ProfileData profile_data);
 
   // Get tab groups for the current profile.
   GetTabGroups() => (TabGroups tab_groups);
@@ -109,7 +110,7 @@ interface Page {
   // moved or replaced.
   // `profile_tabs` is a collection of all open tabs in the current profile.
   // This is always populated with at least 1 (the currently active) tab.
-  TabsChanged(ProfileTabs profile_tabs);
+  TabsChanged(ProfileData profile_tabs);
 
   // Called when a tab's data has changed and we need only issue an update for
   // that specific tab in the JS's data structures. Typically used for url,

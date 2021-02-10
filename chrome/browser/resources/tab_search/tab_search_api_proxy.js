@@ -4,7 +4,7 @@
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileTabs, SwitchToTabInfo} from './tab_search.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo} from './tab_search.mojom-webui.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
@@ -25,8 +25,8 @@ export class TabSearchApiProxy {
    */
   closeTab(tabId, withSearch, closedTabIndex) {}
 
-  /** @return {Promise<{profileTabs: ProfileTabs}>} */
-  getProfileTabs() {}
+  /** @return {Promise<{profileData: ProfileData}>} */
+  getProfileData() {}
 
   showFeedbackPage() {}
 
@@ -70,8 +70,8 @@ export class TabSearchApiProxyImpl {
   }
 
   /** @override */
-  getProfileTabs() {
-    return this.handler.getProfileTabs();
+  getProfileData() {
+    return this.handler.getProfileData();
   }
 
   /** @override */

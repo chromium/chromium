@@ -20,7 +20,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {fuzzySearch} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import {TabData} from './tab_data.js';
-import {Tab, WindowTabs} from './tab_search.mojom-webui.js';
+import {Tab, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 export class TabSearchAppElement extends PolymerElement {
@@ -130,7 +130,7 @@ export class TabSearchAppElement extends PolymerElement {
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.tabsChanged.addListener(
-            profileTabs => this.openTabsChanged_(profileTabs.windows)),
+            profileData => this.openTabsChanged_(profileData.windows)),
         callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab)),
         callbackRouter.tabsRemoved.addListener(
             tabIds => this.onTabsRemoved_(tabIds)));
@@ -162,12 +162,12 @@ export class TabSearchAppElement extends PolymerElement {
   /** @private */
   updateTabs_() {
     const getTabsStartTimestamp = Date.now();
-    this.apiProxy_.getProfileTabs().then(({profileTabs}) => {
+    this.apiProxy_.getProfileData().then(({profileData}) => {
       chrome.metricsPrivate.recordTime(
           'Tabs.TabSearch.WebUI.TabListDataReceived',
           Math.round(Date.now() - getTabsStartTimestamp));
 
-      this.openTabsChanged_(profileTabs.windows);
+      this.openTabsChanged_(profileData.windows);
     });
   }
 
@@ -303,12 +303,12 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Array<!WindowTabs>} newOpenWindowTabs
+   * @param {!Array<!Window>} newOpenWindows
    * @private
    */
-  openTabsChanged_(newOpenWindowTabs) {
+  openTabsChanged_(newOpenWindows) {
     this.openTabs_ = [];
-    newOpenWindowTabs.forEach(({active, tabs}) => {
+    newOpenWindows.forEach(({active, tabs}) => {
       tabs.forEach(tab => {
         this.openTabs_.push(this.tabData_(tab, active));
       });

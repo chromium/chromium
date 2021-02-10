@@ -44,7 +44,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   // tab_search::mojom::PageHandler:
   void CloseTab(int32_t tab_id) override;
-  void GetProfileTabs(GetProfileTabsCallback callback) override;
+  void GetProfileData(GetProfileDataCallback callback) override;
   void GetTabGroups(GetTabGroupsCallback callback) override;
   void ShowFeedbackPage() override;
   void SwitchToTab(
@@ -80,7 +80,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
     int index;
   };
 
-  tab_search::mojom::ProfileTabsPtr CreateProfileTabs();
+  tab_search::mojom::ProfileDataPtr CreateProfileData();
 
   tab_search::mojom::TabPtr GetTabData(TabStripModel* tab_strip_model,
                                        content::WebContents* contents,

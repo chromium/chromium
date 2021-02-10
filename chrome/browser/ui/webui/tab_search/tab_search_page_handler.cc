@@ -87,9 +87,9 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   // Do not add code past this point.
 }
 
-void TabSearchPageHandler::GetProfileTabs(GetProfileTabsCallback callback) {
+void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   TRACE_EVENT0("browser", "custom_metric:TabSearchPageHandler:GetProfileTabs");
-  auto profile_tabs = CreateProfileTabs();
+  auto profile_tabs = CreateProfileData();
   // On first run record the number of windows and tabs open for the given
   // profile.
   if (!sent_initial_payload_) {
@@ -159,21 +159,22 @@ void TabSearchPageHandler::ShowUI() {
     embedder->ShowUI();
 }
 
-tab_search::mojom::ProfileTabsPtr TabSearchPageHandler::CreateProfileTabs() {
-  auto profile_tabs = tab_search::mojom::ProfileTabs::New();
+tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
+  auto profile_data = tab_search::mojom::ProfileData::New();
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser))
       continue;
     TabStripModel* tab_strip_model = browser->tab_strip_model();
-    auto window_tabs = tab_search::mojom::WindowTabs::New();
-    window_tabs->active = (browser == browser_);
+    auto window = tab_search::mojom::Window::New();
+    window->active = (browser == browser_);
+    window->height = browser->window()->GetContentsSize().height();
     for (int i = 0; i < tab_strip_model->count(); ++i) {
-      window_tabs->tabs.push_back(
+      window->tabs.push_back(
           GetTabData(tab_strip_model, tab_strip_model->GetWebContentsAt(i), i));
     }
-    profile_tabs->windows.push_back(std::move(window_tabs));
+    profile_data->windows.push_back(std::move(window));
   }
-  return profile_tabs;
+  return profile_data;
 }
 
 tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
@@ -250,7 +251,7 @@ void TabSearchPageHandler::ScheduleDebounce() {
 }
 
 void TabSearchPageHandler::NotifyTabsChanged() {
-  page_->TabsChanged(CreateProfileTabs());
+  page_->TabsChanged(CreateProfileData());
   debounce_timer_->Stop();
 }
 

@@ -50,7 +50,7 @@ class MockPage : public tab_search::mojom::Page {
   }
   mojo::Receiver<tab_search::mojom::Page> receiver_{this};
 
-  MOCK_METHOD1(TabsChanged, void(tab_search::mojom::ProfileTabsPtr));
+  MOCK_METHOD1(TabsChanged, void(tab_search::mojom::ProfileDataPtr));
   MOCK_METHOD1(TabUpdated, void(tab_search::mojom::TabPtr));
   MOCK_METHOD1(TabsRemoved, void(const std::vector<int32_t>& tab_ids));
 };
@@ -71,7 +71,7 @@ void ExpectNewTab(const tab_search::mojom::Tab* tab,
   EXPECT_GT(tab->last_active_time_ticks, base::TimeTicks());
 }
 
-void ExpectProfileTabs(tab_search::mojom::ProfileTabs* profile_tabs) {
+void ExpectProfileTabs(tab_search::mojom::ProfileData* profile_tabs) {
   ASSERT_EQ(2u, profile_tabs->windows.size());
   auto* window1 = profile_tabs->windows[0].get();
   ASSERT_EQ(2u, window1->tabs.size());
@@ -210,9 +210,9 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
   int32_t tab_id3 = 0;
 
   // Get Tabs.
-  tab_search::mojom::PageHandler::GetProfileTabsCallback callback1 =
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
       base::BindLambdaForTesting(
-          [&](tab_search::mojom::ProfileTabsPtr profile_tabs) {
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             ASSERT_EQ(2u, profile_tabs->windows.size());
             auto* window1 = profile_tabs->windows[0].get();
             ASSERT_TRUE(window1->active);
@@ -237,7 +237,7 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
             tab_id2 = tab2->tab_id;
             tab_id3 = tab3->tab_id;
           });
-  handler()->GetProfileTabs(std::move(callback1));
+  handler()->GetProfileData(std::move(callback1));
 
   // Switch to 2nd tab.
   auto switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
@@ -245,12 +245,12 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
   handler()->SwitchToTab(std::move(switch_to_tab_info));
 
   // Get Tabs again to verify tab switch.
-  tab_search::mojom::PageHandler::GetProfileTabsCallback callback2 =
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback2 =
       base::BindLambdaForTesting(
-          [&](tab_search::mojom::ProfileTabsPtr profile_tabs) {
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             ExpectProfileTabs(profile_tabs.get());
           });
-  handler()->GetProfileTabs(std::move(callback2));
+  handler()->GetProfileData(std::move(callback2));
 
   // Switch to 3rd tab.
   switch_to_tab_info = tab_search::mojom::SwitchToTabInfo::New();
@@ -258,12 +258,12 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
   handler()->SwitchToTab(std::move(switch_to_tab_info));
 
   // Get Tabs again to verify tab switch.
-  tab_search::mojom::PageHandler::GetProfileTabsCallback callback3 =
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback3 =
       base::BindLambdaForTesting(
-          [&](tab_search::mojom::ProfileTabsPtr profile_tabs) {
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             ExpectProfileTabs(profile_tabs.get());
           });
-  handler()->GetProfileTabs(std::move(callback3));
+  handler()->GetProfileData(std::move(callback3));
 }
 
 // Ensure that repeated tab model changes do not result in repeated calls to

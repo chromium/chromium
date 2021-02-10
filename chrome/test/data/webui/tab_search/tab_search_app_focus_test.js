@@ -4,7 +4,7 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileTabs, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertGT} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -22,12 +22,12 @@ suite('TabSearchAppFocusTest', () => {
   disableScrollIntoViewAnimations(TabSearchItem);
 
   /**
-   * @param {ProfileTabs} sampleData
+   * @param {ProfileData} sampleData
    * @param {Object=} loadTimeOverriddenData
    */
   async function setupTest(sampleData, loadTimeOverriddenData) {
     testProxy = new TestTabSearchApiProxy();
-    testProxy.setProfileTabs(sampleData);
+    testProxy.setProfileData(sampleData);
     TabSearchApiProxyImpl.instance_ = testProxy;
 
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);

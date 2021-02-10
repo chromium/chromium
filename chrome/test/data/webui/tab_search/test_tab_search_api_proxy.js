@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageRemote, ProfileTabs, TabSearchApiProxy} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {PageCallbackRouter, PageRemote, ProfileData, TabSearchApiProxy} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
@@ -11,7 +11,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   constructor() {
     super([
       'closeTab',
-      'getProfileTabs',
+      'getProfileData',
       'showFeedbackPage',
       'switchToTab',
       'showUI',
@@ -25,8 +25,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    /** @private {ProfileTabs} */
-    this.profileTabs_;
+    /** @private {ProfileData} */
+    this.profileData_;
   }
 
   /** @override */
@@ -35,9 +35,9 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  getProfileTabs() {
-    this.methodCalled('getProfileTabs');
-    return Promise.resolve({profileTabs: this.profileTabs_});
+  getProfileData() {
+    this.methodCalled('getProfileData');
+    return Promise.resolve({profileData: this.profileData_});
   }
 
   /** @override */
@@ -70,8 +70,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
     return this.callbackRouterRemote;
   }
 
-  /** @param {ProfileTabs} profileTabs */
-  setProfileTabs(profileTabs) {
-    this.profileTabs_ = profileTabs;
+  /** @param {ProfileData} profileData */
+  setProfileData(profileData) {
+    this.profileData_ = profileData;
   }
 }
