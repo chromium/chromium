@@ -23,7 +23,7 @@ class PCScanTest : public testing::Test {
     allocator_.init({PartitionOptions::Alignment::kRegular,
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,
-                     PartitionOptions::RefCount::kDisabled});
+                     PartitionOptions::RefCount::kEnabled});
     PCScan<ThreadSafe>::Instance().RegisterScannableRoot(allocator_.root());
   }
   ~PCScanTest() override {
@@ -170,8 +170,8 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReference(PCScanTest& test,
                            SourceList* source,
                            ValueList* value) {
-  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBucketPool(
-      reinterpret_cast<char*>(value));
+  auto* value_root =
+      ThreadSafePartitionRoot::FromPointer(reinterpret_cast<char*>(value));
   {
     // Free |value| and leave the dangling reference in |source|.
     ValueList::Destroy(*value_root, value);
@@ -315,11 +315,11 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
   ThreadSafePartitionRoot source_root({PartitionOptions::Alignment::kRegular,
                                        PartitionOptions::ThreadCache::kDisabled,
                                        PartitionOptions::Quarantine::kAllowed,
-                                       PartitionOptions::RefCount::kDisabled});
+                                       PartitionOptions::RefCount::kEnabled});
   ThreadSafePartitionRoot value_root({PartitionOptions::Alignment::kRegular,
                                       PartitionOptions::ThreadCache::kDisabled,
                                       PartitionOptions::Quarantine::kAllowed,
-                                      PartitionOptions::RefCount::kDisabled});
+                                      PartitionOptions::RefCount::kEnabled});
 
   PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&source_root);
   PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&value_root);
@@ -338,11 +338,11 @@ TEST_F(PCScanTest, DanglingReferenceToNonScannablePartition) {
   ThreadSafePartitionRoot source_root({PartitionOptions::Alignment::kRegular,
                                        PartitionOptions::ThreadCache::kDisabled,
                                        PartitionOptions::Quarantine::kAllowed,
-                                       PartitionOptions::RefCount::kDisabled});
+                                       PartitionOptions::RefCount::kEnabled});
   ThreadSafePartitionRoot value_root({PartitionOptions::Alignment::kRegular,
                                       PartitionOptions::ThreadCache::kDisabled,
                                       PartitionOptions::Quarantine::kAllowed,
-                                      PartitionOptions::RefCount::kDisabled});
+                                      PartitionOptions::RefCount::kEnabled});
 
   PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&source_root);
   PCScan<ThreadSafe>::Instance().RegisterNonScannableRoot(&value_root);
@@ -362,12 +362,12 @@ TEST_F(PCScanTest, DanglingReferenceFromNonScannablePartition) {
       {PartitionOptions::Alignment::kRegular,
        PartitionOptions::ThreadCache::kDisabled,
        base::PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::RefCount::kDisabled});
+       PartitionOptions::RefCount::kEnabled});
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::Alignment::kRegular,
        PartitionOptions::ThreadCache::kDisabled,
        base::PartitionOptions::Quarantine::kAllowed,
-       PartitionOptions::RefCount::kDisabled});
+       PartitionOptions::RefCount::kEnabled});
 
   PCScan<ThreadSafe>::Instance().RegisterNonScannableRoot(&source_root);
   PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&value_root);

@@ -213,7 +213,8 @@ class PCScan<thread_safe>::PCScanTask final {
   using LargeScanAreas =
       std::vector<LargeScanArea, MetadataAllocator<LargeScanArea>>;
 
-  // Super pages only correspond to normal buckets.
+  // BRP pool is guaranteed to have only normal buckets, so everything there
+  // deals in super pages.
   // TODO(bikineev): Consider flat containers since the number of elements is
   // relatively small. This requires making base containers allocator-aware.
   using SuperPages =
@@ -225,35 +226,33 @@ class PCScan<thread_safe>::PCScanTask final {
       for (uintptr_t super_page_base : super_pages) {
 #if DCHECK_IS_ON()
         PA_DCHECK(!(super_page_base % kSuperPageAlignment));
-        PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
+        PA_DCHECK(IsManagedByPartitionAllocBRPPool(
             reinterpret_cast<char*>(super_page_base)));
 #endif
-        bitset_.Set(NormalBucketPoolOffset(super_page_base));
+        bitset_.Set(BRPPoolOffset(super_page_base));
       }
     }
 
     ALWAYS_INLINE bool Test(uintptr_t maybe_ptr) const {
 #if DCHECK_IS_ON()
-      PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
-          reinterpret_cast<char*>(maybe_ptr)));
+      PA_DCHECK(
+          IsManagedByPartitionAllocBRPPool(reinterpret_cast<char*>(maybe_ptr)));
 #endif
-      return bitset_.Test(NormalBucketPoolOffset(maybe_ptr));
+      return bitset_.Test(BRPPoolOffset(maybe_ptr));
     }
 
    private:
     static constexpr size_t kBitmapSize =
-        AddressPoolManager::kNormalBucketMaxSize >> kSuperPageShift;
+        AddressPoolManager::kBRPPoolMaxSize >> kSuperPageShift;
 
-    ALWAYS_INLINE static constexpr size_t NormalBucketPoolOffset(
-        uintptr_t ptr) {
-      constexpr uintptr_t kNormalBucketPoolMask =
+    ALWAYS_INLINE static constexpr size_t BRPPoolOffset(uintptr_t ptr) {
+      constexpr uintptr_t kBRPPoolMask =
 #if defined(PA_HAS_64_BITS_POINTERS)
-          PartitionAddressSpace::NormalBucketPoolBaseMask();
+          PartitionAddressSpace::BRPPoolBaseMask();
 #else
           0;
 #endif
-      return static_cast<size_t>((ptr & ~kNormalBucketPoolMask) >>
-                                 kSuperPageShift);
+      return static_cast<size_t>((ptr & ~kBRPPoolMask) >> kSuperPageShift);
     }
 
     SimpleBitset<kBitmapSize> bitset_;
@@ -262,8 +261,8 @@ class PCScan<thread_safe>::PCScanTask final {
   struct BitmapLookupPolicy {
     ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
 #if DCHECK_IS_ON()
-      PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
-          reinterpret_cast<void*>(maybe_ptr)));
+      PA_DCHECK(
+          IsManagedByPartitionAllocBRPPool(reinterpret_cast<void*>(maybe_ptr)));
 #endif
       return task_.super_pages_bitmap_.Test(maybe_ptr);
     }
@@ -286,8 +285,7 @@ class PCScan<thread_safe>::PCScanTask final {
   // Lookup and marking functions. Return size of the object if marked or zero
   // otherwise.
   template <typename LookupPolicy>
-  ALWAYS_INLINE size_t
-  TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr) const;
+  ALWAYS_INLINE size_t TryMarkObjectInBRPPool(uintptr_t maybe_ptr) const;
 
   // Scans all registeres partitions and marks reachable quarantined objects.
   // Returns the size of marked objects.
@@ -316,7 +314,9 @@ template <typename LookupPolicy>
 ALWAYS_INLINE QuarantineBitmap*
 PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
-  // First, check if |maybe_ptr| points to a valid super page.
+  // First, check if |maybe_ptr| points to a valid super page, containing normal
+  // buckets. If GigaCage is enabled, this will filter out addresses not in BRP
+  // pool (which are guaranteed to be normal buckets).
   LookupPolicy lookup{*this};
   if (!lookup.TestOnHeapPointer(maybe_ptr))
     return nullptr;
@@ -332,28 +332,39 @@ PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
 
 // Looks up and marks a potential dangling pointer. Returns the size of the slot
 // (which is then accounted as quarantined) or zero if no object is found.
-// For normal bucket super pages, PCScan uses two quarantine bitmaps, the
+// For super pages in BRP pool, PCScan uses two quarantine bitmaps, the
 // mutator and the scanner one. The former is used by mutators when objects are
 // freed, while the latter is used concurrently by the PCScan thread. The
 // bitmaps are swapped as soon as PCScan is triggered. Once a dangling pointer
 // (which points to an object in the scanner bitmap) is found,
-// TryMarkObjectInNormalBucketPool() marks it again in the bitmap and clears
+// TryMarkObjectInBRPPool() marks it again in the bitmap and clears
 // from the scanner bitmap. This way, when scanning is done, all uncleared
 // entries in the scanner bitmap correspond to unreachable objects.
 template <bool thread_safe>
 template <typename LookupPolicy>
-ALWAYS_INLINE size_t
-PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
+ALWAYS_INLINE size_t PCScan<thread_safe>::PCScanTask::TryMarkObjectInBRPPool(
     uintptr_t maybe_ptr) const {
   using AccessType = QuarantineBitmap::AccessType;
-  // Check if maybe_ptr points somewhere to the heap.
+  // Check if |maybe_ptr| points somewhere to the protected part of the heap
+  // (BRP pool if GigaCage is enabled, normal buckets otherwise).
   auto* scanner_bitmap =
       TryFindScannerBitmapForPointer<LookupPolicy>(maybe_ptr);
   if (!scanner_bitmap)
     return 0;
 
-  auto* root =
-      Root::FromPointerInNormalBucketPool(reinterpret_cast<char*>(maybe_ptr));
+#if DCHECK_IS_ON()
+  // Out of necessity, skip the check if GigaCage isn't enabled, or it'd fail on
+  // RunUnvectorizedNoGigaCage path. This is ok because this function deals fine
+  // with all pointers to normal buckets, and TryFindScannerBitmapForPointer
+  // guarantees we wouldn't get here otherwise.
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    PA_DCHECK(
+        IsManagedByPartitionAllocBRPPool(reinterpret_cast<void*>(maybe_ptr)));
+  }
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK in the |else| case.
+#endif  // DCHECK_IS_ON()
+
+  auto* root = Root::FromPointer(reinterpret_cast<char*>(maybe_ptr));
 
   // Check if pointer was in the quarantine bitmap.
   const uintptr_t base =
@@ -414,7 +425,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
         pcscan_task_(pcscan_task)
 #if defined(PA_HAS_64_BITS_POINTERS)
         ,
-        normal_bucket_pool_base_(PartitionAddressSpace::NormalBucketPoolBase())
+        brp_pool_base_(PartitionAddressSpace::BRPPoolBase())
 #endif
   {
   }
@@ -454,9 +465,9 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
   }
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-  ALWAYS_INLINE bool IsInNormalBucketPool(uintptr_t maybe_ptr) const {
-    return (maybe_ptr & PartitionAddressSpace::NormalBucketPoolBaseMask()) ==
-           normal_bucket_pool_base_;
+  ALWAYS_INLINE bool IsInBRPPool(uintptr_t maybe_ptr) const {
+    return (maybe_ptr & PartitionAddressSpace::BRPPoolBaseMask()) ==
+           brp_pool_base_;
   }
 #endif
 
@@ -473,10 +484,9 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     // _mm_cmpeq_epi64), use packed doubles (not integers). Sticking to doubles
     // helps to avoid latency caused by "domain crossing penalties" (see bypass
     // delays in https://agner.org/optimize/microarchitecture.pdf).
-    const __m128d vbase =
-        _mm_castsi128_pd(_mm_set1_epi64x(normal_bucket_pool_base_));
+    const __m128d vbase = _mm_castsi128_pd(_mm_set1_epi64x(brp_pool_base_));
     const __m128d cage_mask = _mm_castsi128_pd(
-        _mm_set1_epi64x(PartitionAddressSpace::NormalBucketPoolBaseMask()));
+        _mm_set1_epi64x(PartitionAddressSpace::BRPPoolBaseMask()));
 
     size_t quarantine_size = 0;
     for (uintptr_t* payload = begin; payload < end; payload += kWordsInVector) {
@@ -491,7 +501,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
       // avoid racing with the mutator.
       if (mask & 0b01) {
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInBRPPool<BitmapLookupPolicy>(
                 _mm_cvtsi128_si64(_mm_castpd_si128(maybe_ptrs)));
       }
       if (mask & 0b10) {
@@ -502,7 +512,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
         const __m128i shuffled =
             _mm_shuffle_epi32(_mm_castpd_si128(maybe_ptrs), kSecondWordMask);
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInBRPPool<BitmapLookupPolicy>(
                 _mm_cvtsi128_si64(shuffled));
       }
     }
@@ -518,9 +528,9 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     // throughput. For example, according to the Intel docs, on Broadwell and
     // Haswell the CPI of vmovdqa (_mm256_load_si256) is twice smaller (0.25)
     // than that of vmovapd (_mm256_load_pd).
-    const __m256i vbase = _mm256_set1_epi64x(normal_bucket_pool_base_);
+    const __m256i vbase = _mm256_set1_epi64x(brp_pool_base_);
     const __m256i cage_mask =
-        _mm256_set1_epi64x(PartitionAddressSpace::NormalBucketPoolBaseMask());
+        _mm256_set1_epi64x(PartitionAddressSpace::BRPPoolBaseMask());
 
     size_t quarantine_size = 0;
     uintptr_t* payload = begin;
@@ -536,19 +546,19 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
       // avoid racing with the mutator.
       if (mask & 0b0001)
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInBRPPool<BitmapLookupPolicy>(
                 _mm256_extract_epi64(maybe_ptrs, 0));
       if (mask & 0b0010)
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInBRPPool<BitmapLookupPolicy>(
                 _mm256_extract_epi64(maybe_ptrs, 1));
       if (mask & 0b0100)
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInBRPPool<BitmapLookupPolicy>(
                 _mm256_extract_epi64(maybe_ptrs, 2));
       if (mask & 0b1000)
         quarantine_size +=
-            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+            pcscan_task_.TryMarkObjectInBRPPool<BitmapLookupPolicy>(
                 _mm256_extract_epi64(maybe_ptrs, 3));
     }
 
@@ -564,18 +574,17 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
     for (; begin < end; ++begin) {
       uintptr_t maybe_ptr = *begin;
 #if defined(PA_HAS_64_BITS_POINTERS)
-      // On 64bit architectures, call IsInNormalBucketPool instead of
-      // IsManagedByPartitionAllocNormalBuckets to avoid redundant load of
-      // PartitionAddressSpace::normal_bucket_pool_base_address_.
-      if (LIKELY(!IsInNormalBucketPool(maybe_ptr)))
+      // On 64bit architectures, call IsInBRPPool instead of
+      // IsManagedByPartitionAllocBRPPool to avoid redundant load of
+      // PartitionAddressSpace::brp_pool_base_address_.
+      if (LIKELY(!IsInBRPPool(maybe_ptr)))
 #else
-      if (LIKELY(!IsManagedByPartitionAllocNormalBuckets(
+      if (LIKELY(!IsManagedByPartitionAllocBRPPool(
               reinterpret_cast<void*>(maybe_ptr))))
 #endif
         continue;
       quarantine_size +=
-          pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
-              maybe_ptr);
+          pcscan_task_.TryMarkObjectInBRPPool<BitmapLookupPolicy>(maybe_ptr);
     }
     return quarantine_size;
   }
@@ -589,8 +598,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
       if (!maybe_ptr)
         continue;
       quarantine_size +=
-          pcscan_task_.TryMarkObjectInNormalBucketPool<BinaryLookupPolicy>(
-              maybe_ptr);
+          pcscan_task_.TryMarkObjectInBRPPool<BinaryLookupPolicy>(maybe_ptr);
     }
     return quarantine_size;
   }
@@ -599,8 +607,8 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
   const PCScanTask& pcscan_task_;
 #if defined(PA_HAS_64_BITS_POINTERS)
   // Keep this a constant so that the compiler can remove redundant loads for
-  // the base of the normal bucket pool and hoist them out of the loops.
-  const uintptr_t normal_bucket_pool_base_;
+  // the base of the BRP pool and hoist them out of the loops.
+  const uintptr_t brp_pool_base_;
 #endif
 };
 
