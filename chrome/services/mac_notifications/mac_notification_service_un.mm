@@ -7,12 +7,12 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
-#include "base/callback.h"
-#include "base/notreached.h"
+#include <utility>
+
 #include "mojo/public/cpp/bindings/remote.h"
 
 API_AVAILABLE(macosx(10.14))
-@interface AlertNotificationCenterDelegate
+@interface AlertUNNotificationCenterDelegate
     : NSObject <UNUserNotificationCenterDelegate>
 - (instancetype)initWithActionHandler:
     (mojo::PendingRemote<notifications::mojom::MacNotificationActionHandler>)
@@ -25,7 +25,7 @@ MacNotificationServiceUN::MacNotificationServiceUN(
         handler,
     UNUserNotificationCenter* notification_center)
     : binding_(this, std::move(service)),
-      delegate_([[AlertNotificationCenterDelegate alloc]
+      delegate_([[AlertUNNotificationCenterDelegate alloc]
           initWithActionHandler:std::move(handler)]),
       notification_center_([notification_center retain]) {
   [notification_center_ setDelegate:delegate_.get()];
@@ -57,7 +57,7 @@ void MacNotificationServiceUN::RequestPermission() {
                                       completionHandler:resultHandler];
 }
 
-@implementation AlertNotificationCenterDelegate {
+@implementation AlertUNNotificationCenterDelegate {
   mojo::Remote<notifications::mojom::MacNotificationActionHandler> _handler;
 }
 

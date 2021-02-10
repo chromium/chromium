@@ -6,6 +6,8 @@ source_set("mac_notifications") {
   sources = [
     "mac_notification_provider_impl.h",
     "mac_notification_provider_impl.mm",
+    "mac_notification_service_ns.h",
+    "mac_notification_service_ns.mm",
     "mac_notification_service_un.h",
     "mac_notification_service_un.mm",
   ]
@@ -30,7 +32,10 @@ source_set("mac_notifications") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "mac_notification_service_un_unittest.mm" ]
+  sources = [
+    "mac_notification_service_ns_unittest.mm",
+    "mac_notification_service_un_unittest.mm",
+  ]
 
   deps = [
     ":mac_notifications",

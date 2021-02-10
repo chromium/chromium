@@ -4,11 +4,15 @@
 
 #import "chrome/services/mac_notifications/mac_notification_provider_impl.h"
 
+#import <Foundation/NSUserNotification.h>
 #import <UserNotifications/UserNotifications.h>
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "chrome/common/chrome_features.h"
+#import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 
 MacNotificationProviderImpl::MacNotificationProviderImpl(
@@ -34,6 +38,7 @@ void MacNotificationProviderImpl::BindNotificationService(
     }
   }
 
-  // Fall back to the NSUserNotification API.
-  // TODO(crbug.com/1170731): Implement NSUserNotification api.
+  service_ = std::make_unique<MacNotificationServiceNS>(
+      std::move(service), std::move(handler),
+      [NSUserNotificationCenter defaultUserNotificationCenter]);
 }

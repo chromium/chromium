@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-@class AlertNotificationCenterDelegate;
+@class AlertUNNotificationCenterDelegate;
 @class UNUserNotificationCenter;
 
 // Implementation of the MacNotificationService mojo interface using the
@@ -38,7 +38,7 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   void RequestPermission();
 
   mojo::Receiver<notifications::mojom::MacNotificationService> binding_;
-  base::scoped_nsobject<AlertNotificationCenterDelegate> delegate_;
+  base::scoped_nsobject<AlertUNNotificationCenterDelegate> delegate_;
   base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
 };
 

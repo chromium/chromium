@@ -1,0 +1,41 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_NS_H_
+#define CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_NS_H_
+
+#include "base/mac/scoped_nsobject.h"
+#include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+
+@class AlertNSNotificationCenterDelegate;
+@class NSUserNotificationCenter;
+
+// Implementation of the MacNotificationService mojo interface using the
+// NSUserNotification system API.
+class MacNotificationServiceNS
+    : public notifications::mojom::MacNotificationService {
+ public:
+  MacNotificationServiceNS(
+      mojo::PendingReceiver<notifications::mojom::MacNotificationService>
+          service,
+      mojo::PendingRemote<notifications::mojom::MacNotificationActionHandler>
+          handler,
+      NSUserNotificationCenter* notification_center);
+  MacNotificationServiceNS(const MacNotificationServiceNS&) = delete;
+  MacNotificationServiceNS& operator=(const MacNotificationServiceNS&) = delete;
+  ~MacNotificationServiceNS() override;
+
+  // notifications::mojom::MacNotificationService:
+  void CloseAllNotifications() override;
+
+ private:
+  mojo::Receiver<notifications::mojom::MacNotificationService> binding_;
+  base::scoped_nsobject<AlertNSNotificationCenterDelegate> delegate_;
+  base::scoped_nsobject<NSUserNotificationCenter> notification_center_;
+};
+
+#endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_NS_H_
