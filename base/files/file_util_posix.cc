@@ -282,12 +282,12 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
   stat_wrapper_t file_info;
   if (File::Lstat(path_str, &file_info) != 0) {
     // The Windows version defines this condition as success.
-    return (errno == ENOENT || errno == ENOTDIR);
+    return (errno == ENOENT);
   }
   if (!S_ISDIR(file_info.st_mode))
-    return (unlink(path_str) == 0);
+    return (unlink(path_str) == 0) || (errno == ENOENT);
   if (!recursive)
-    return (rmdir(path_str) == 0);
+    return (rmdir(path_str) == 0) || (errno == ENOENT);
 
   bool success = true;
   stack<std::string> directories;
@@ -300,13 +300,13 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
     if (traversal.GetInfo().IsDirectory())
       directories.push(current.value());
     else
-      success &= (unlink(current.value().c_str()) == 0);
+      success &= (unlink(current.value().c_str()) == 0) || (errno == ENOENT);
   }
 
   while (!directories.empty()) {
     FilePath dir = FilePath(directories.top());
     directories.pop();
-    success &= (rmdir(dir.value().c_str()) == 0);
+    success &= (rmdir(dir.value().c_str()) == 0) || (errno == ENOENT);
   }
   return success;
 }
