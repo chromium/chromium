@@ -88,7 +88,8 @@ void AssistantControllerImpl::SendAssistantFeedback(
   assistant_feedback.assistant_debug_info_allowed =
       assistant_debug_info_allowed;
   assistant_feedback.description = feedback_description;
-  assistant_feedback.screenshot_png = screenshot_png;
+  assistant_feedback.screenshot_png =
+      std::vector<uint8_t>(screenshot_png.begin(), screenshot_png.end());
   assistant_->SendAssistantFeedback(std::move(assistant_feedback));
 }
 

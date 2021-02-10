@@ -45,11 +45,18 @@ mojom("mojom") {
           mojom = "chromeos.libassistant.mojom.AssistantNotification"
           cpp = "::chromeos::assistant::AssistantNotification"
         },
+        {
+          mojom = "chromeos.libassistant.mojom.AssistantFeedback"
+          cpp = "::chromeos::assistant::AssistantFeedback"
+        },
       ]
 
       traits_headers = [ "mojom_traits.h" ]
       traits_sources = [ "mojom_traits.cc" ]
-      traits_public_deps = [ "//chromeos/services/assistant/public/shared" ]
+      traits_public_deps = [
+        "//chromeos/services/assistant/public/cpp",
+        "//chromeos/services/assistant/public/shared",
+      ]
     },
   ]
 }

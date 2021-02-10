@@ -9,8 +9,10 @@ namespace mojo {
 using AppStatus = chromeos::assistant::AppStatus;
 using AndroidAppStatus = chromeos::libassistant::mojom::AndroidAppStatus;
 using chromeos::assistant::AndroidAppInfo;
+using chromeos::assistant::AssistantFeedback;
 using chromeos::assistant::AssistantNotification;
 using chromeos::libassistant::mojom::AndroidAppInfoDataView;
+using chromeos::libassistant::mojom::AssistantFeedbackDataView;
 using chromeos::libassistant::mojom::AssistantNotificationDataView;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,6 +157,38 @@ bool StructTraits<AssistantNotificationDataView, AssistantNotification>::Read(
   if (!data.ReadGroupingKey(&output->grouping_key))
     return false;
   if (!data.ReadObfuscatedGaiaId(&output->obfuscated_gaia_id))
+    return false;
+  return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AssistantFeedback
+////////////////////////////////////////////////////////////////////////////////
+
+const std::string&
+StructTraits<AssistantFeedbackDataView, AssistantFeedback>::description(
+    const AssistantFeedback& input) {
+  return input.description;
+}
+
+bool StructTraits<AssistantFeedbackDataView, AssistantFeedback>::
+    assistant_debug_info_allowed(const AssistantFeedback& input) {
+  return input.assistant_debug_info_allowed;
+}
+
+base::span<const uint8_t>
+StructTraits<AssistantFeedbackDataView, AssistantFeedback>::screenshot_png(
+    const AssistantFeedback& input) {
+  return input.screenshot_png;
+}
+
+bool StructTraits<AssistantFeedbackDataView, AssistantFeedback>::Read(
+    chromeos::libassistant::mojom::AssistantFeedbackDataView data,
+    AssistantFeedback* output) {
+  if (!data.ReadDescription(&output->description))
+    return false;
+  output->assistant_debug_info_allowed = data.assistant_debug_info_allowed();
+  if (!data.ReadScreenshotPng(&output->screenshot_png))
     return false;
   return true;
 }

@@ -13,6 +13,9 @@ AssistantService* g_instance = nullptr;
 
 }  // namespace
 
+AssistantFeedback::AssistantFeedback() = default;
+AssistantFeedback::~AssistantFeedback() = default;
+
 // static
 AssistantService* AssistantService::Get() {
   return g_instance;

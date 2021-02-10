@@ -24,6 +24,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     : public mojom::ConversationController {
  public:
   using AssistantNotification = ::chromeos::assistant::AssistantNotification;
+  using AssistantFeedback = ::chromeos::assistant::AssistantFeedback;
 
   explicit ConversationController(ServiceController* service_controller);
   ConversationController(const ConversationController&) = delete;
@@ -41,7 +42,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void RetrieveNotification(const AssistantNotification& notification,
                             int32_t action_index) override;
   void DismissNotification(const AssistantNotification& notification) override;
-  void SendAssistantFeedback(mojom::AssistantFeedbackPtr feedback) override;
+  void SendAssistantFeedback(const AssistantFeedback& feedback) override;
 
  private:
   void SendVoicelessInteraction(const std::string& interaction,

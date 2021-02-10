@@ -140,6 +140,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
 
 //  Details for Assistant feedback.
 struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantFeedback {
+  AssistantFeedback();
+  ~AssistantFeedback();
+
   // User input to be sent with the feedback report.
   std::string description;
 
@@ -148,7 +151,7 @@ struct COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantFeedback {
 
   // Screenshot if allowed by user.
   // Raw data (non-encoded binary octets)
-  std::string screenshot_png;
+  std::vector<uint8_t> screenshot_png;
 };
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {

@@ -99,11 +99,11 @@ void ConversationController::DismissNotification(
 }
 
 void ConversationController::SendAssistantFeedback(
-    mojom::AssistantFeedbackPtr feedback) {
-  std::string raw_image_data(feedback->screenshot_png.begin(),
-                             feedback->screenshot_png.end());
+    const AssistantFeedback& feedback) {
+  std::string raw_image_data(feedback.screenshot_png.begin(),
+                             feedback.screenshot_png.end());
   const std::string interaction = assistant::CreateSendFeedbackInteraction(
-      feedback->assistant_debug_info_allowed, feedback->description,
+      feedback.assistant_debug_info_allowed, feedback.description,
       raw_image_data);
 
   SendVoicelessInteraction(interaction,

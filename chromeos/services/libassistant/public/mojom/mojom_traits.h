@@ -5,7 +5,11 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_MOJOM_MOJOM_TRAITS_H_
 
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "chromeos/services/assistant/public/cpp/assistant_notification.h"
+#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/public/mojom/android_app_info.mojom-shared.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom-shared.h"
@@ -54,6 +58,21 @@ struct StructTraits<
   static bool Read(
       chromeos::libassistant::mojom::AssistantNotificationDataView data,
       AssistantNotification* output);
+};
+
+template <>
+struct StructTraits<chromeos::libassistant::mojom::AssistantFeedbackDataView,
+                    chromeos::assistant::AssistantFeedback> {
+  using AssistantFeedback = chromeos::assistant::AssistantFeedback;
+
+  static const std::string& description(const AssistantFeedback& input);
+  static bool assistant_debug_info_allowed(const AssistantFeedback& input);
+  static base::span<const uint8_t> screenshot_png(
+      const AssistantFeedback& input);
+
+  static bool Read(
+      chromeos::libassistant::mojom::AssistantFeedbackDataView data,
+      AssistantFeedback* output);
 };
 
 }  // namespace mojo

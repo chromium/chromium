@@ -9,22 +9,6 @@
 namespace chromeos {
 namespace assistant {
 
-namespace {
-
-// Coverts |AssistantFeedback| struct to the corresponding Mojom struct (the
-// Mojom-generated |AssistantFeedbackPtr|).
-libassistant::mojom::AssistantFeedbackPtr ConvertFeedbackToMojomStruct(
-    const AssistantFeedback& feedback) {
-  auto ptr = libassistant::mojom::AssistantFeedback::New();
-  ptr->description = feedback.description;
-  ptr->assistant_debug_info_allowed = feedback.assistant_debug_info_allowed;
-  ptr->screenshot_png = std::vector<uint8_t>(feedback.screenshot_png.begin(),
-                                             feedback.screenshot_png.end());
-  return ptr;
-}
-
-}  // namespace
-
 ConversationControllerProxy::ConversationControllerProxy(
     mojo::PendingRemote<ConversationController> conversation_controller_remote)
     : conversation_controller_remote_(
@@ -59,8 +43,7 @@ void ConversationControllerProxy::DismissNotification(
 
 void ConversationControllerProxy::SendAssistantFeedback(
     const AssistantFeedback& feedback) {
-  conversation_controller_remote_->SendAssistantFeedback(
-      ConvertFeedbackToMojomStruct(feedback));
+  conversation_controller_remote_->SendAssistantFeedback(feedback);
 }
 
 }  // namespace assistant
