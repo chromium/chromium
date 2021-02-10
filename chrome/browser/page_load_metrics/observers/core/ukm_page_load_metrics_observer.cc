@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "build/build_config.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -52,6 +53,11 @@
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif  // !defined(OS_ANDROID)
 
 namespace {
 
@@ -250,6 +256,19 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
                                    ->GetMainFrame()
                                    ->GetSiteInstance()
                                    ->GetLastProcessAssignmentOutcome();
+
+  // Android has a different tab model, and will need its own implementation.
+#if !defined(OS_ANDROID)
+  auto* contents = navigation_handle->GetWebContents();
+  DCHECK(contents);
+  if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
+    int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+    if (tab_index != TabStripModel::kNoTab &&
+        browser->tab_strip_model()->GetTabGroupForTab(tab_index).has_value()) {
+      memories_signals_.is_existing_part_of_tab_group = true;
+    }
+  }
+#endif  // !defined(OS_ANDROID)
 
   return CONTINUE_OBSERVING;
 }
@@ -798,7 +817,7 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     builder.SetNavigationEntryOffset(navigation_entry_offset_);
     builder.SetMainDocumentSequenceNumber(main_document_sequence_number_);
   }
-  builder.SetOmniboxUrlCopied(omnibox_url_copied_);
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -1111,6 +1130,11 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   if (timing)
     RecordAbortMetrics(*timing, page_end_time, &builder);
 
+  // Add Memories signals to UKM.
+  builder.SetOmniboxUrlCopied(memories_signals_.omnibox_url_copied);
+  builder.SetIsExistingPartOfTabGroup(
+      memories_signals_.is_existing_part_of_tab_group);
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -1223,7 +1247,7 @@ void UkmPageLoadMetricsObserver::OnEventOccurred(
     page_load_metrics::PageLoadMetricsEvent event) {
   if (event == page_load_metrics::PageLoadMetricsEvent::
                    OMNIBOX_URL_COPIED_TO_CLIPBOARD) {
-    omnibox_url_copied_ = true;
+    memories_signals_.omnibox_url_copied = true;
   }
 }
 

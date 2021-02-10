@@ -287,9 +287,17 @@ class UkmPageLoadMetricsObserver
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
 
-  // True if the user has cut or copied the omnibox URL to the clipboard for
-  // this page load.
-  bool omnibox_url_copied_ = false;
+  // This data is collected during the page lifetime and is meant to be sent to
+  // both UKM and History in OnComplete(). The recording is delayed until then
+  // to ensure that History has a visit entry ready for this navigation.
+  struct MemoriesSignals {
+    // True if the user has cut or copied the omnibox URL to the clipboard for
+    // this page load.
+    bool omnibox_url_copied = false;
+
+    // True if the page was in a tab group when the navigation was committed.
+    bool is_existing_part_of_tab_group = false;
+  } memories_signals_;
 
   DISALLOW_COPY_AND_ASSIGN(UkmPageLoadMetricsObserver);
 };

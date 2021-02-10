@@ -10565,6 +10565,12 @@ be describing additional metrics about the same event.
       different renderer process than the current document or not.
     </summary>
   </metric>
+  <metric name="IsExistingPartOfTabGroup" enum="Boolean">
+    <summary>
+      Marked true if the page was already part of a tab group when the
+      navigation committed.
+    </summary>
+  </metric>
   <metric name="IsSignedExchangeInnerResponse">
     <obsolete>
       Migrated to the PageLoad.SignedExchange event. The presence of that event
