@@ -893,6 +893,8 @@ void EmbeddedWorkerInstance::Start(
 }
 
 void EmbeddedWorkerInstance::Stop() {
+  TRACE_EVENT1("ServiceWorker", "EmbeddedWorkerInstance::Stop", "script_url",
+               owner_version_->script_url().spec());
   DCHECK(status_ == EmbeddedWorkerStatus::STARTING ||
          status_ == EmbeddedWorkerStatus::RUNNING)
       << static_cast<int>(status_);
@@ -1030,8 +1032,11 @@ void EmbeddedWorkerInstance::RequestTermination(
     std::move(callback).Run(true /* will_be_terminated */);
     return;
   }
+  const bool will_be_terminated = owner_version_->OnRequestTermination();
+  TRACE_EVENT1("ServiceWorker", "EmbeddedWorkerInstance::RequestTermination",
+               "will_be_terminated", will_be_terminated);
 
-  std::move(callback).Run(owner_version_->OnRequestTermination());
+  std::move(callback).Run(will_be_terminated);
 }
 
 void EmbeddedWorkerInstance::CountFeature(blink::mojom::WebFeature feature) {
