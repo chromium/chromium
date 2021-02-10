@@ -1,13 +1,4 @@
 {
-  "chromeos-arm-generic-beta": {
-    "args_file": "//build/args/chromeos/arm-generic.gni",
-    "gn_args": {
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "ozone_platform_headless": true,
-      "use_goma": true
-    }
-  },
   "chromeos-arm-generic-cfi-thin-lto-chrome": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {
@@ -20,33 +11,6 @@
       "use_cfi_cast": true,
       "use_goma": true,
       "use_thin_lto": true
-    }
-  },
-  "chromeos-arm-generic-ltc": {
-    "args_file": "//build/args/chromeos/arm-generic.gni",
-    "gn_args": {
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "ozone_platform_headless": true,
-      "use_goma": true
-    }
-  },
-  "chromeos-arm-generic-lts": {
-    "args_file": "//build/args/chromeos/arm-generic.gni",
-    "gn_args": {
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "ozone_platform_headless": true,
-      "use_goma": true
-    }
-  },
-  "chromeos-arm-generic-stable": {
-    "args_file": "//build/args/chromeos/arm-generic.gni",
-    "gn_args": {
-      "is_chromeos_device": true,
-      "is_official_build": true,
-      "ozone_platform_headless": true,
-      "use_goma": true
     }
   },
   "chromeos-betty-pi-arc-cfi-thin-lto-chrome": {
