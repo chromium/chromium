@@ -53,14 +53,11 @@
 + (void)tapRemoveAccountFromDeviceWithFakeIdentity:
     (FakeChromeIdentity*)fakeIdentity;
 
-// Scrolls, if necessary, to the primary sign-in button in recent tabs and taps.
-// Assumes there is a pre-existing primary identity added to the sign-in.
-+ (void)scrollToPrimarySignInButtonInRecentTabs;
+// Opens the recent tabs and tap in the primary sign-in button.
++ (void)tapPrimarySignInButtonInRecentTabs;
 
-// Collapses the recently closed tabs section if the sign in promo is
-// inaccessible otherwise.
-// TODO(crbug.com/1131479): Find a way to scroll the view instead.
-+ (void)collapseRecentlyClosedTabsIfSigninPromoNotVisible;
+// Opens the tab switcher and tap in the primary sign-in button.
++ (void)tapPrimarySignInButtonInTabSwitcher;
 
 // Checks that the sign-in promo view (with a close button) is visible using the
 // right mode.

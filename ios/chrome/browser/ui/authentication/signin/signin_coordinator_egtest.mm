@@ -423,20 +423,10 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
           performAction:grey_tap()];
       break;
     case OpenSigninMethodFromRecentTabs:
-      [ChromeEarlGreyUI openToolsMenu];
-      [ChromeEarlGreyUI
-          tapToolsMenuButton:chrome_test_util::RecentTabsMenuButton()];
-      [SigninEarlGreyUI scrollToPrimarySignInButtonInRecentTabs];
+      [SigninEarlGreyUI tapPrimarySignInButtonInRecentTabs];
       break;
     case OpenSigninMethodFromTabSwitcher:
-      [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-          performAction:grey_tap()];
-      [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                              TabGridOtherDevicesPanelButton()]
-          performAction:grey_tap()];
-
-      [SigninEarlGreyUI collapseRecentlyClosedTabsIfSigninPromoNotVisible];
-      [SigninEarlGreyUI scrollToPrimarySignInButtonInRecentTabs];
+      [SigninEarlGreyUI tapPrimarySignInButtonInTabSwitcher];
       break;
   }
   if (tapSettingsLink) {

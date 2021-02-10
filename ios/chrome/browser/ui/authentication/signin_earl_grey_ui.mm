@@ -230,7 +230,10 @@ using chrome_test_util::SignOutAccountsButton;
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
-+ (void)scrollToPrimarySignInButtonInRecentTabs {
++ (void)tapPrimarySignInButtonInRecentTabs {
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::RecentTabsMenuButton()];
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
@@ -242,22 +245,24 @@ using chrome_test_util::SignOutAccountsButton;
       performAction:grey_tap()];
 }
 
-+ (void)collapseRecentlyClosedTabsIfSigninPromoNotVisible {
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kRecentTabsTableViewControllerAccessibilityIdentifier)]
-      assertWithMatcher:chrome_test_util::ContentViewSmallerThanScrollView()
-                  error:&error];
-
-  if (error) {
-    [[EarlGrey selectElementWithMatcher:
-                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
-                                  l10n_util::GetNSString(
-                                      IDS_IOS_RECENT_TABS_RECENTLY_CLOSED)),
-                              grey_sufficientlyVisible(), nil)]
-        performAction:grey_tap()];
-  }
++ (void)tapPrimarySignInButtonInTabSwitcher {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+  // The start point needs to avoid the "Done" bar on iPhone, in order to catch
+  // the table view and scroll.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollToContentEdgeWithStartPoint(
+                               kGREYContentEdgeBottom, 0.5, 0.5)
+      onElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
 }
 
 #pragma mark - Private
