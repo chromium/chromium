@@ -33,9 +33,33 @@ using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SignOutAccountsButton;
 
+namespace {
+
+// Closes the managed account dialog, if |fakeIdentity| is a managed account.
+void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
+  if (![fakeIdentity.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix]) {
+    return;
+  }
+  // Synchronization off due to an infinite spinner, in the user consent view,
+  // under the managed consent dialog. This spinner is started by the sign-in
+  // process.
+  ScopedSynchronizationDisabler disabler;
+  id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON];
+  [ChromeEarlGrey waitForMatcher:acceptButton];
+  [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+}
+
+}  // namespace
+
 @implementation SigninEarlGreyUI
 
 + (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
+  [self signinWithFakeIdentity:fakeIdentity enableSync:YES];
+}
+
++ (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity
+                    enableSync:(BOOL)enableSync {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
@@ -44,19 +68,18 @@ using chrome_test_util::SignOutAccountsButton;
                                           kIdentityPickerViewIdentifier)]
       performAction:grey_tap()];
   [self selectIdentityWithEmail:fakeIdentity.userEmail];
-  [self tapSigninConfirmationDialog];
-  if ([fakeIdentity.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix]) {
-    // Synchronization off due to an infinite spinner, in the user consent view,
-    // under the managed consent dialog. This spinner is started by the sign-in
-    // process.
-    ScopedSynchronizationDisabler disabler;
-    id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
-        buttonWithAccessibilityLabelID:IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON];
-    [ChromeEarlGrey waitForMatcher:acceptButton];
-    [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+  if (!enableSync) {
+    // Use "settings" link and open an external URL to not turn on sync.
+    [SigninEarlGreyUI tapSettingsLink];
+    CloseSigninManagedAccountDialogIfAny(fakeIdentity);
+    [ChromeEarlGreyUI waitForAppToIdle];
+    [ChromeEarlGrey simulateExternalAppURLOpening];
+  } else {
+    [self tapSigninConfirmationDialog];
+    CloseSigninManagedAccountDialogIfAny(fakeIdentity);
+    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+        performAction:grey_tap()];
   }
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
