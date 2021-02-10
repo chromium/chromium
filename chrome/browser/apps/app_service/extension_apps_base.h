@@ -82,7 +82,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
       int32_t event_flags,
       apps::mojom::IntentPtr intent,
       apps::mojom::LaunchSource launch_source,
-      int64_t display_id);
+      apps::mojom::WindowInfoPtr window_info);
 
   virtual content::WebContents* LaunchImpl(AppLaunchParams&& params);
 
@@ -123,7 +123,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
-              int64_t display_id) override;
+              apps::mojom::WindowInfoPtr window_info) override;
   void LaunchAppWithFiles(const std::string& app_id,
                           apps::mojom::LaunchContainer container,
                           int32_t event_flags,
@@ -133,7 +133,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           int64_t display_id) override;
+                           apps::mojom::WindowInfoPtr window_info) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,

@@ -80,7 +80,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           int64_t display_id) override;
+                           apps::mojom::WindowInfoPtr window_info) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApps(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,

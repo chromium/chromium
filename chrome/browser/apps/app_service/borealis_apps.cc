@@ -170,7 +170,7 @@ void BorealisApps::LoadIcon(const std::string& app_id,
 void BorealisApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
-                          int64_t display_id) {
+                          apps::mojom::WindowInfoPtr window_info) {
   borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
       app_id, base::DoNothing());
 }

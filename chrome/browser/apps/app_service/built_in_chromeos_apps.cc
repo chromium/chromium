@@ -122,7 +122,7 @@ void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
 void BuiltInChromeOsApps::Launch(const std::string& app_id,
                                  int32_t event_flags,
                                  apps::mojom::LaunchSource launch_source,
-                                 int64_t display_id) {
+                                 apps::mojom::WindowInfoPtr window_info) {
   if (app_id == ash::kInternalAppIdKeyboardShortcutViewer) {
     ash::ToggleKeyboardShortcutViewer();
   }

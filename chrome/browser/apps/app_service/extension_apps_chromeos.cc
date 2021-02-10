@@ -190,9 +190,9 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    int64_t display_id) {
+    apps::mojom::WindowInfoPtr window_info) {
   auto* tab = LaunchAppWithIntentImpl(app_id, event_flags, std::move(intent),
-                                      launch_source, display_id);
+                                      launch_source, std::move(window_info));
 
   if (launch_source == apps::mojom::LaunchSource::kFromArc && tab) {
     // Add a flag to remember this tab originated in the ARC context.

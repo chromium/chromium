@@ -57,7 +57,7 @@ class AppServiceImpl : public apps::mojom::AppService {
               const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
-              int64_t display_id) override;
+              apps::mojom::WindowInfoPtr window_info) override;
   void LaunchAppWithFiles(apps::mojom::AppType app_type,
                           const std::string& app_id,
                           apps::mojom::LaunchContainer container,
@@ -69,7 +69,7 @@ class AppServiceImpl : public apps::mojom::AppService {
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           int64_t display_id) override;
+                           apps::mojom::WindowInfoPtr window_info) override;
   void SetPermission(apps::mojom::AppType app_type,
                      const std::string& app_id,
                      apps::mojom::PermissionPtr permission) override;

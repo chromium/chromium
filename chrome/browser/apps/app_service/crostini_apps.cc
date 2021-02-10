@@ -141,8 +141,10 @@ void CrostiniApps::LoadIcon(const std::string& app_id,
 void CrostiniApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
-                          int64_t display_id) {
-  crostini::LaunchCrostiniApp(profile_, app_id, display_id);
+                          apps::mojom::WindowInfoPtr window_info) {
+  crostini::LaunchCrostiniApp(
+      profile_, app_id,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
 }
 
 void CrostiniApps::Uninstall(const std::string& app_id,

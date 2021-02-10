@@ -152,9 +152,10 @@ void WebAppsChromeOs::LaunchAppWithIntent(
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    int64_t display_id) {
+    apps::mojom::WindowInfoPtr window_info) {
   auto* tab = WebAppsChromeOs::LaunchAppWithIntentImpl(
-      app_id, event_flags, std::move(intent), launch_source, display_id);
+      app_id, event_flags, std::move(intent), launch_source,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
 
   if (launch_source != apps::mojom::LaunchSource::kFromArc || !tab) {
     return;

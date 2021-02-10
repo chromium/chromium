@@ -266,8 +266,11 @@ void AppServiceProxy::Launch(const std::string& app_id,
 #endif
 
       RecordAppLaunch(update.AppId(), launch_source);
+
+      apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+      window_info->display_id = display_id;
       app_service_->Launch(update.AppType(), update.AppId(), event_flags,
-                           launch_source, display_id);
+                           launch_source, std::move(window_info));
     });
   }
 }
@@ -327,9 +330,12 @@ void AppServiceProxy::LaunchAppWithIntent(
       }
 #endif
       RecordAppLaunch(update.AppId(), launch_source);
+
+      apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+      window_info->display_id = display_id;
       app_service_->LaunchAppWithIntent(update.AppType(), update.AppId(),
                                         event_flags, std::move(intent),
-                                        launch_source, display_id);
+                                        launch_source, std::move(window_info));
     });
   }
 }

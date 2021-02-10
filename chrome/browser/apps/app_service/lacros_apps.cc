@@ -110,7 +110,7 @@ void LacrosApps::LoadIcon(const std::string& app_id,
 void LacrosApps::Launch(const std::string& app_id,
                         int32_t event_flags,
                         apps::mojom::LaunchSource launch_source,
-                        int64_t display_id) {
+                        apps::mojom::WindowInfoPtr window_info) {
   DCHECK_EQ(extension_misc::kLacrosAppId, app_id);
   crosapi::BrowserManager::Get()->NewWindow();
 }

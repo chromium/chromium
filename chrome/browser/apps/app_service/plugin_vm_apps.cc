@@ -190,7 +190,7 @@ void PluginVmApps::LoadIcon(const std::string& app_id,
 void PluginVmApps::Launch(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
-                          int64_t display_id) {
+                          apps::mojom::WindowInfoPtr window_info) {
   DCHECK_EQ(plugin_vm::kPluginVmShelfAppId, app_id);
   if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_)) {
     plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)->LaunchPluginVm(

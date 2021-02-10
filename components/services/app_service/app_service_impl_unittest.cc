@@ -107,7 +107,7 @@ class FakePublisher : public apps::PublisherBase {
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
-              int64_t display_id) override {}
+              apps::mojom::WindowInfoPtr window_info) override {}
 
   void CallOnApps(apps::mojom::Subscriber* subscriber,
                   std::vector<std::string>& app_ids,

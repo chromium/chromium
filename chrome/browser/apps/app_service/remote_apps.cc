@@ -111,7 +111,7 @@ void RemoteApps::LoadIcon(const std::string& app_id,
 void RemoteApps::Launch(const std::string& app_id,
                         int32_t event_flags,
                         mojom::LaunchSource launch_source,
-                        int64_t display_id) {
+                        apps::mojom::WindowInfoPtr window_info) {
   delegate_->LaunchApp(app_id);
 }
 

@@ -108,7 +108,7 @@ class WebAppsBase : public apps::PublisherBase,
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
-              int64_t display_id) override;
+              apps::mojom::WindowInfoPtr window_info) override;
   void LaunchAppWithFiles(const std::string& app_id,
                           apps::mojom::LaunchContainer container,
                           int32_t event_flags,
@@ -118,7 +118,7 @@ class WebAppsBase : public apps::PublisherBase,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           int64_t display_id) override;
+                           apps::mojom::WindowInfoPtr window_info) override;
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission) override;
   void OpenNativeSettings(const std::string& app_id) override;

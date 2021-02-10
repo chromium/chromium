@@ -558,12 +558,14 @@ void ArcApps::LoadIcon(const std::string& app_id,
 void ArcApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::mojom::LaunchSource launch_source,
-                     int64_t display_id) {
+                     apps::mojom::WindowInfoPtr window_info) {
   auto user_interaction_type = GetUserInterationType(launch_source);
   if (!user_interaction_type.has_value()) {
     return;
   }
 
+  int64_t display_id =
+      window_info ? window_info->display_id : display::kInvalidDisplayId;
   arc::LaunchApp(profile_, app_id, event_flags, user_interaction_type.value(),
                  display_id);
 
@@ -576,7 +578,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
                                   int32_t event_flags,
                                   apps::mojom::IntentPtr intent,
                                   apps::mojom::LaunchSource launch_source,
-                                  int64_t display_id) {
+                                  apps::mojom::WindowInfoPtr window_info) {
   auto user_interaction_type = GetUserInterationType(launch_source);
   if (!user_interaction_type.has_value()) {
     return;
@@ -603,6 +605,9 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
         !intent->activity_name.value().empty()) {
       activity->activity_name = intent->activity_name.value();
     }
+
+    int64_t display_id =
+        window_info ? window_info->display_id : display::kInvalidDisplayId;
 
     if (intent->mime_type.has_value() && intent->file_urls.has_value()) {
       const auto file_urls = intent->file_urls.value();

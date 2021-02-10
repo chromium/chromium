@@ -261,7 +261,7 @@ void WebAppsBase::LoadIcon(const std::string& app_id,
 void WebAppsBase::Launch(const std::string& app_id,
                          int32_t event_flags,
                          apps::mojom::LaunchSource launch_source,
-                         int64_t display_id) {
+                         apps::mojom::WindowInfoPtr window_info) {
   if (!profile_) {
     return;
   }
@@ -310,7 +310,7 @@ void WebAppsBase::Launch(const std::string& app_id,
 
   AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
       web_app->app_id(), event_flags, GetAppLaunchSource(launch_source),
-      display_id,
+      window_info ? window_info->display_id : display::kInvalidDisplayId,
       /*fallback_container=*/
       web_app::ConvertDisplayModeToAppLaunchContainer(display_mode));
 
@@ -338,9 +338,10 @@ void WebAppsBase::LaunchAppWithIntent(const std::string& app_id,
                                       int32_t event_flags,
                                       apps::mojom::IntentPtr intent,
                                       apps::mojom::LaunchSource launch_source,
-                                      int64_t display_id) {
-  LaunchAppWithIntentImpl(app_id, event_flags, std::move(intent), launch_source,
-                          display_id);
+                                      apps::mojom::WindowInfoPtr window_info) {
+  LaunchAppWithIntentImpl(
+      app_id, event_flags, std::move(intent), launch_source,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
 }
 
 void WebAppsBase::SetPermission(const std::string& app_id,
