@@ -530,8 +530,8 @@ void TtsPlatformImplWin::Speak(
 bool TtsPlatformImplWin::StopSpeaking() {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::StopSpeaking,
-               paused_);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::StopSpeaking)
+      .WithArgs(paused_);
   paused_ = false;
 
   is_speaking_ = false;
@@ -546,7 +546,7 @@ void TtsPlatformImplWin::Pause() {
 
   if (paused_ || !is_speaking_)
     return;
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Pause);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::Pause);
   paused_ = true;
 }
 
@@ -557,7 +557,7 @@ void TtsPlatformImplWin::Resume() {
   if (!paused_)
     return;
 
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Resume);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::Resume);
   paused_ = false;
 }
 
@@ -576,7 +576,7 @@ void TtsPlatformImplWin::GetVoices(std::vector<VoiceData>* out_voices) {
 void TtsPlatformImplWin::Shutdown() {
   // This is required to ensures the object is released before the COM is
   // uninitialized. Otherwise, this is causing shutdown hangs.
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Shutdown);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::Shutdown);
 }
 
 void TtsPlatformImplWin::OnInitializeComplete(bool success,
@@ -622,9 +622,9 @@ void TtsPlatformImplWin::ProcessSpeech(
     const std::string& parsed_utterance) {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::ProcessSpeech,
-               utterance_id, lang, voice, params, std::move(on_speak_finished),
-               parsed_utterance);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::ProcessSpeech)
+      .WithArgs(utterance_id, lang, voice, params, std::move(on_speak_finished),
+                parsed_utterance);
 }
 
 TtsPlatformImplWin::TtsPlatformImplWin()
@@ -632,7 +632,7 @@ TtsPlatformImplWin::TtsPlatformImplWin()
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       worker_(worker_task_runner_, worker_task_runner_) {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Initialize);
+  worker_.AsyncCall(&TtsPlatformImplBackgroundWorker::Initialize);
 }
 
 // static

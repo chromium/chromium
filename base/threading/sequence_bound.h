@@ -200,18 +200,6 @@ class SequenceBound {
     return AsyncCallBuilder<R (T::*)(Args...) const>(this, &location, method);
   }
 
-  // Post a call to `method` to `impl_task_runner_`.
-  // TODO(dcheng): Deprecate this in favor of `AsyncCall()`.
-  template <typename... MethodArgs, typename... Args>
-  void Post(const base::Location& from_here,
-            void (T::*method)(MethodArgs...),
-            Args&&... args) const {
-    DCHECK(t_);
-    impl_task_runner_->PostTask(from_here,
-                                base::BindOnce(method, base::Unretained(t_),
-                                               std::forward<Args>(args)...));
-  }
-
   // Posts `task` to `impl_task_runner_`, passing it a reference to the wrapped
   // object. This allows arbitrary logic to be safely executed on the object's
   // task runner. The object is guaranteed to remain alive for the duration of

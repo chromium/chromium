@@ -165,10 +165,10 @@ Status DefaultTexture2DWrapper::Init(
   // device for decoding.  Sharing seems not to work very well.  Otherwise, we
   // would create the texture with KEYED_MUTEX and NTHANDLE, then send along
   // a handle that we get from |texture| as an IDXGIResource1.
-  gpu_resources_.Post(FROM_HERE, &GpuResources::Init, std::move(get_helper_cb),
-                      std::move(mailboxes), GL_TEXTURE_EXTERNAL_OES, size_,
-                      textures_per_picture, texture_formats, pixel_format_,
-                      texture, array_slice);
+  gpu_resources_.AsyncCall(&GpuResources::Init)
+      .WithArgs(std::move(get_helper_cb), std::move(mailboxes),
+                GL_TEXTURE_EXTERNAL_OES, size_, textures_per_picture,
+                texture_formats, pixel_format_, texture, array_slice);
   return OkStatus();
 }
 

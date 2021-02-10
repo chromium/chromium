@@ -64,10 +64,11 @@ DirectSharedImageVideoProvider::~DirectSharedImageVideoProvider() = default;
 // TODO(liberato): add a thread hop to create the default texture owner, but
 // not as part of this class.  just post something from VideoFrameFactory.
 void DirectSharedImageVideoProvider::Initialize(GpuInitCB gpu_init_cb) {
-  // Note that we do not BindToCurrentLoop |gpu_init_cb|, since it is supposed
-  // to be called on the gpu main thread, which is somewhat hacky.
-  gpu_factory_.Post(FROM_HERE, &GpuSharedImageVideoFactory::Initialize,
-                    std::move(gpu_init_cb));
+  // Note that we do use not `AsyncCall()` + `Then()` to call `gpu_init_cb`,
+  // since it is supposed to be called on the gpu main thread, which is somewhat
+  // hacky.
+  gpu_factory_.AsyncCall(&GpuSharedImageVideoFactory::Initialize)
+      .WithArgs(std::move(gpu_init_cb));
 }
 
 void DirectSharedImageVideoProvider::RequestImage(
@@ -83,9 +84,11 @@ void DirectSharedImageVideoProvider::RequestImage(
   // group anyway.  The thing that owns buffer management is all we really
   // care about, and that doesn't have anything to do with GLImage.
 
-  gpu_factory_.Post(FROM_HERE, &GpuSharedImageVideoFactory::CreateImage,
-                    BindToCurrentLoop(std::move(cb)), spec,
-                    std::move(texture_owner));
+  // Note: `cb` is only run on successful creation, so this does not use
+  // `AsyncCall()` + `Then()` to chain the callbacks.
+  gpu_factory_.AsyncCall(&GpuSharedImageVideoFactory::CreateImage)
+      .WithArgs(BindToCurrentLoop(std::move(cb)), spec,
+                std::move(texture_owner));
 }
 
 GpuSharedImageVideoFactory::GpuSharedImageVideoFactory(

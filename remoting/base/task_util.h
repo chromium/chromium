@@ -37,7 +37,8 @@ base::OnceCallback<void(Args...)> WrapCallbackToCurrentSequence(
 // Say if you want to call this method and make |callback| run on the current
 // sequence:
 //
-//   client_.Post(FROM_HERE, &DirectoryClient::DeleteHost, host_id, callback);
+//   client_.AsyncCall(&DirectoryClient::DeleteHost).WithArgs(host_id,
+//   callback);
 //
 // You can just do:
 //
@@ -59,8 +60,9 @@ void PostWithCallback(const base::Location& from_here,
                       void (SequenceBoundType::*method)(MethodArgs...),
                       base::OnceCallback<void(CallbackArgs...)> callback,
                       Args&&... args) {
-  client->Post(from_here, method, std::forward<Args>(args)...,
-               WrapCallbackToCurrentSequence(from_here, std::move(callback)));
+  client->AsyncCall(method, from_here)
+      .WithArgs(std::forward<Args>(args)...,
+                WrapCallbackToCurrentSequence(from_here, std::move(callback)));
 }
 
 }  // namespace remoting

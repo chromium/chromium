@@ -183,15 +183,15 @@ class RebootFuchsiaTest: public ::testing::Test {
 
   StateControlRebootReason GetLastRebootReason() {
     StateControlRebootReason reason;
-    admin_.Post(FROM_HERE, &FakeAdmin::GetLastRebootReason, &reason);
+    admin_.AsyncCall(&FakeAdmin::GetLastRebootReason).WithArgs(&reason);
     thread_.FlushForTesting();
     return reason;
   }
 
   void SetLastReboot(fuchsia::feedback::LastReboot last_reboot) {
-    last_reboot_info_provider_.Post(FROM_HERE,
-                                    &FakeLastRebootInfoProvider::SetLastReboot,
-                                    std::move(last_reboot));
+    last_reboot_info_provider_
+        .AsyncCall(&FakeLastRebootInfoProvider::SetLastReboot)
+        .WithArgs(std::move(last_reboot));
     thread_.FlushForTesting();
   }
 

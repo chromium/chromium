@@ -187,17 +187,17 @@ class FakeWatcherAsync {
   ~FakeWatcherAsync() = default;
 
   void Bind(fidl::InterfaceRequest<fuchsia::net::interfaces::Watcher> request) {
-    watcher_.Post(FROM_HERE, &FakeWatcher::Bind, std::move(request));
+    watcher_.AsyncCall(&FakeWatcher::Bind).WithArgs(std::move(request));
   }
 
   // Asynchronously push an event to the watcher.
   void PushEvent(fuchsia::net::interfaces::Event event) {
-    watcher_.Post(FROM_HERE, &FakeWatcher::PushEvent, std::move(event));
+    watcher_.AsyncCall(&FakeWatcher::PushEvent).WithArgs(std::move(event));
   }
 
   // Asynchronously push an initial set of interfaces to the watcher.
   void SetInitial(std::vector<fuchsia::net::interfaces::Properties> props) {
-    watcher_.Post(FROM_HERE, &FakeWatcher::SetInitial, std::move(props));
+    watcher_.AsyncCall(&FakeWatcher::SetInitial).WithArgs(std::move(props));
   }
 
   // Asynchronously push an initial single intface to the watcher.

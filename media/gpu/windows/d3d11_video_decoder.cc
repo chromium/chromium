@@ -453,8 +453,8 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // the originals on some other thread.
   // Important but subtle note: base::Bind will copy |config_| since it's a
   // const ref.
-  impl_.Post(FROM_HERE, &D3D11VideoDecoderImpl::Initialize,
-             BindToCurrentLoop(std::move(impl_init_cb)));
+  impl_.AsyncCall(&D3D11VideoDecoderImpl::Initialize)
+      .WithArgs(BindToCurrentLoop(std::move(impl_init_cb)));
 }
 
 void D3D11VideoDecoder::AddLifetimeProgressionStage(

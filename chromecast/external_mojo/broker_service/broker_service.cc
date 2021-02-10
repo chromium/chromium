@@ -76,8 +76,8 @@ BrokerService::BrokerService(service_manager::Connector* connector) {
   }
   broker_ = base::SequenceBound<ExternalMojoBroker>(io_thread_->task_runner(),
                                                     GetBrokerPath());
-  broker_.Post(FROM_HERE, &ExternalMojoBroker::InitializeChromium,
-               connector->Clone(), external_services_to_proxy);
+  broker_.AsyncCall(&ExternalMojoBroker::InitializeChromium)
+      .WithArgs(connector->Clone(), external_services_to_proxy);
 }
 
 BrokerService::~BrokerService() {
@@ -134,8 +134,8 @@ void BrokerService::OnConnect(const service_manager::BindSourceInfo& source,
 
 void BrokerService::BindConnector(
     mojo::PendingReceiver<mojom::ExternalConnector> receiver) {
-  broker_.Post(FROM_HERE, &ExternalMojoBroker::BindConnector,
-               std::move(receiver));
+  broker_.AsyncCall(&ExternalMojoBroker::BindConnector)
+      .WithArgs(std::move(receiver));
 }
 
 mojo::PendingRemote<mojom::ExternalConnector> BrokerService::CreateConnector() {
