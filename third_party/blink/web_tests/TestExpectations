@@ -6301,3 +6301,7 @@ crbug.com/1130020 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/
 
 # Branch sheriff 2020-12-14
 crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ Pass Timeout ]
+
+# Branch sheriff 2021-02-10
+# V8 roll
+crbug.com/1173828 fast/workers/worker-shared-asm-buffer.html [ Skip ]
