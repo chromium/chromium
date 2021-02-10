@@ -1612,11 +1612,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "enable-experimental-accessibility-cursor-colors",
-    "owners": [ "katie" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "enable-experimental-accessibility-dictation-extension",
     "owners": [ "akihiroota" ],
     "expiry_milestone": 92
