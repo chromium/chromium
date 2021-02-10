@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_UI_H_
 
 #include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -18,4 +18,4 @@ class SupervisedUserInternalsUI : public content::WebUIController {
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserInternalsUI);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_UI_H_

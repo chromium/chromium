@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/supervised_user_internals_message_handler.h"
+#include "chrome/browser/ui/webui/supervised_user_internals/supervised_user_internals_message_handler.h"
 
 #include <memory>
 #include <utility>
@@ -89,7 +89,8 @@ std::string FilteringBehaviorToString(
 }
 
 std::string FilteringBehaviorToString(
-    SupervisedUserURLFilter::FilteringBehavior behavior, bool uncertain) {
+    SupervisedUserURLFilter::FilteringBehavior behavior,
+    bool uncertain) {
   std::string result = FilteringBehaviorToString(behavior);
   if (uncertain)
     result += " (Uncertain)";
@@ -145,6 +146,11 @@ void SupervisedUserInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
+void SupervisedUserInternalsMessageHandler::OnJavascriptDisallowed() {
+  scoped_observation_.Reset();
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void SupervisedUserInternalsMessageHandler::OnURLFilterChanged() {
   SendBasicInfo();
 }
@@ -159,6 +165,7 @@ SupervisedUserInternalsMessageHandler::GetSupervisedUserService() {
 void SupervisedUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::ListValue* args) {
   DCHECK(args->empty());
+  AllowJavascript();
   if (scoped_observation_.IsObserving())
     return;
 
@@ -172,9 +179,10 @@ void SupervisedUserInternalsMessageHandler::HandleGetBasicInfo(
 
 void SupervisedUserInternalsMessageHandler::HandleTryURL(
     const base::ListValue* args) {
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(2u, args->GetSize());
+  std::string callback_id;
   std::string url_str;
-  if (!args->GetString(0, &url_str))
+  if (!args->GetString(0, &callback_id) || !args->GetString(1, &url_str))
     return;
 
   GURL url = url_formatter::FixupURL(url_str, std::string());
@@ -196,7 +204,7 @@ void SupervisedUserInternalsMessageHandler::HandleTryURL(
   filter->GetFilteringBehaviorForURLWithAsyncChecks(
       url,
       base::BindOnce(&SupervisedUserInternalsMessageHandler::OnTryURLResult,
-                     weak_factory_.GetWeakPtr(), allowlists),
+                     weak_factory_.GetWeakPtr(), allowlists, callback_id),
       skip_manual_parent_filter);
 }
 
@@ -219,9 +227,9 @@ void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
   AddSectionEntry(section_filter, "Denylist active", filter->HasDenylist());
   AddSectionEntry(section_filter, "Online checks active",
                   filter->HasAsyncURLChecker());
-  AddSectionEntry(section_filter, "Default behavior",
-                  FilteringBehaviorToString(
-                      filter->GetDefaultFilteringBehavior()));
+  AddSectionEntry(
+      section_filter, "Default behavior",
+      FilteringBehaviorToString(filter->GetDefaultFilteringBehavior()));
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -230,8 +238,8 @@ void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
     for (const auto& account :
          identity_manager
              ->GetExtendedAccountInfoForAccountsWithRefreshToken()) {
-      base::ListValue* section_user = AddSection(section_list.get(),
-          "User Information for " + account.full_name);
+      base::ListValue* section_user = AddSection(
+          section_list.get(), "User Information for " + account.full_name);
       AddSectionEntry(section_user, "Account id",
                       account.account_id.ToString());
       AddSectionEntry(section_user, "Gaia", account.gaia);
@@ -246,8 +254,7 @@ void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
 
   base::DictionaryValue result;
   result.Set("sections", std::move(section_list));
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.supervised_user_internals.receiveBasicInfo", result);
+  FireWebUIListener("basic-info-received", result);
 
   // Trigger retrieval of the user settings
   SupervisedUserSettingsService* settings_service =
@@ -260,13 +267,14 @@ void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
 
 void SupervisedUserInternalsMessageHandler::SendSupervisedUserSettings(
     const base::DictionaryValue* settings) {
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.supervised_user_internals.receiveUserSettings",
+  FireWebUIListener(
+      "user-settings-received",
       *(settings ? settings : std::make_unique<base::Value>().get()));
 }
 
 void SupervisedUserInternalsMessageHandler::OnTryURLResult(
     const std::map<std::string, base::string16>& allowlists,
+    const std::string& callback_id,
     SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user_error_page::FilteringBehaviorReason reason,
     bool uncertain) {
@@ -283,8 +291,7 @@ void SupervisedUserInternalsMessageHandler::OnTryURLResult(
   result.SetBoolean("manual", reason == supervised_user_error_page::MANUAL &&
                                   behavior == SupervisedUserURLFilter::ALLOW);
   result.SetString("allowlists", allowlists_str);
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.supervised_user_internals.receiveTryURLResult", result);
+  ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
 void SupervisedUserInternalsMessageHandler::OnSiteListUpdated() {}
@@ -299,6 +306,5 @@ void SupervisedUserInternalsMessageHandler::OnURLChecked(
   result.SetString("url", url.possibly_invalid_spec());
   result.SetString("result", FilteringBehaviorToString(behavior, uncertain));
   result.SetString("reason", FilteringBehaviorReasonToString(reason));
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "chrome.supervised_user_internals.receiveFilteringResult", result);
+  FireWebUIListener("filtering-result-received", result);
 }

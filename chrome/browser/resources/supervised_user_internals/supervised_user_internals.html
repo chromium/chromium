@@ -11,9 +11,6 @@ found in the LICENSE file.
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="chrome://resources/css/list.css">
 <link rel="stylesheet" href="supervised_user_internals.css">
-<script src="chrome://resources/js/cr.js"></script>
-<script src="chrome://resources/js/assert.js"></script>
-<script src="chrome://resources/js/util.js"></script>
 </head>
 
 <body>
@@ -23,7 +20,7 @@ found in the LICENSE file.
     <table class="section-details">
       <tr jsselect="data"
             jsvalues="class:$this.is_valid ? '' : 'uninitialized'"
-            jseval='chrome.supervised_user_internals.highlightIfChanged(
+            jseval='highlightIfChanged(
                 this, this.children[1].innerText, stat_value)'>
         <td class="detail" jscontent="stat_name" width=50%></td>
         <td class="value" jscontent="stat_value" width=50%></td>
@@ -74,7 +71,6 @@ found in the LICENSE file.
   </div>
 </div>
 
-<script src="chrome://resources/js/jstemplate_compiled.js"></script>
-<script src="supervised_user_internals.js"></script>
+<script type="module" src="supervised_user_internals.js"></script>
 </body>
 </html>

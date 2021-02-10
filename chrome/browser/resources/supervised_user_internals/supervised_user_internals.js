@@ -2,31 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('chrome.supervised_user_internals', function() {
-  'use strict';
+import 'chrome://resources/js/jstemplate_compiled.js';
 
-  function initialize() {
-    function submitURL(event) {
-      $('try-url-result').textContent = '';
-      $('manual-allowlist').textContent = '';
-      $('allowlists').textContent = '';
-      chrome.send('tryURL', [$('try-url-input').value]);
-      event.preventDefault();
-    }
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
 
-    $('try-url').addEventListener('submit', submitURL);
-
-    // Make the prototype jscontent element disappear.
-    jstProcess({}, $('filtering-results-container'));
-
-    chrome.send('registerForEvents');
-
-    chrome.send('getBasicInfo');
+function initialize() {
+  function submitURL(event) {
+    $('try-url-result').textContent = '';
+    $('manual-allowlist').textContent = '';
+    $('allowlists').textContent = '';
+    sendWithPromise('tryURL', $('try-url-input').value)
+        .then(({allowResult, manual, allowLists}) => {
+          $('try-url-result').textContent = allowResult;
+          $('manual-allowlist').textContent = manual;
+          $('allowlists').textContent = allowlists;
+        });
+    event.preventDefault();
   }
+
+  $('try-url').addEventListener('submit', submitURL);
+
+  // Make the prototype jscontent element disappear.
+  jstProcess({}, $('filtering-results-container'));
+
+  addWebUIListener('basic-info-received', receiveBasicInfo);
+  addWebUIListener('user-settings-received', receiveUserSettings);
+  addWebUIListener('filtering-result-received', receiveFilteringResult);
+
+  chrome.send('registerForEvents');
+
+  chrome.send('getBasicInfo');
+}
 
   function highlightIfChanged(node, oldVal, newVal) {
     function clearHighlight() {
-      this.removeAttribute('highlighted');
+      node.removeAttribute('highlighted');
     }
 
     const oldStr = oldVal.toString();
@@ -66,12 +77,6 @@ cr.define('chrome.supervised_user_internals', function() {
     });
 
     jstProcess(new JsEvalContext({settings: kvpairs}), $('user-settings'));
-  }
-
-  function receiveTryURLResult(result) {
-    $('try-url-result').textContent = result['allowResult'];
-    $('manual-allowlist').textContent = result['manual'];
-    $('allowlists').textContent = result['allowlists'];
   }
 
   /**
@@ -114,16 +119,7 @@ cr.define('chrome.supervised_user_internals', function() {
     }
   }
 
-  // Return an object with all of the exports.
-  return {
-    initialize: initialize,
-    highlightIfChanged: highlightIfChanged,
-    receiveBasicInfo: receiveBasicInfo,
-    receiveUserSettings: receiveUserSettings,
-    receiveTryURLResult: receiveTryURLResult,
-    receiveFilteringResult: receiveFilteringResult,
-  };
-});
+  // Export on window since it is called with jseval.
+  window.highlightIfChanged = highlightIfChanged;
 
-document.addEventListener(
-    'DOMContentLoaded', chrome.supervised_user_internals.initialize);
+  document.addEventListener('DOMContentLoaded', initialize);

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/supervised_user_internals_ui.h"
+#include "chrome/browser/ui/webui/supervised_user_internals/supervised_user_internals_ui.h"
 
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/supervised_user_internals_message_handler.h"
+#include "chrome/browser/ui/webui/supervised_user_internals/supervised_user_internals_message_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/dev_ui_browser_resources.h"
 #include "content/public/browser/web_ui.h"

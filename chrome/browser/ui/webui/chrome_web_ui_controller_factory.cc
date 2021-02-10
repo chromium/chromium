@@ -297,7 +297,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/ui/webui/supervised_user_internals_ui.h"
+#include "chrome/browser/ui/webui/supervised_user_internals/supervised_user_internals_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

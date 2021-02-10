@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
 
 #include "base/callback_list.h"
 #include "base/macros.h"
@@ -31,6 +31,7 @@ class SupervisedUserInternalsMessageHandler
  private:
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
@@ -46,6 +47,7 @@ class SupervisedUserInternalsMessageHandler
 
   void OnTryURLResult(
       const std::map<std::string, base::string16>& allowlists,
+      const std::string& callback_id,
       SupervisedUserURLFilter::FilteringBehavior behavior,
       supervised_user_error_page::FilteringBehaviorReason reason,
       bool uncertain);
@@ -69,4 +71,4 @@ class SupervisedUserInternalsMessageHandler
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserInternalsMessageHandler);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
