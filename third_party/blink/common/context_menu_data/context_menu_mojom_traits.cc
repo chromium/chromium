@@ -76,7 +76,7 @@ bool StructTraits<
     blink::mojom::CustomContextMenuItemDataView,
     blink::MenuItem>::Read(blink::mojom::CustomContextMenuItemDataView data,
                            blink::MenuItem* out) {
-  if (!data.ReadLabel(&out->label) || !data.ReadIcon(&out->label) ||
+  if (!data.ReadLabel(&out->label) || !data.ReadIcon(&out->icon) ||
       !data.ReadToolTip(&out->tool_tip) || !data.ReadType(&out->type) ||
       !data.ReadSubmenu(&out->submenu))
     return false;

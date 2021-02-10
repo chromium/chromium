@@ -256,6 +256,7 @@ source_set("common_unittests_sources") {
   sources = [
     "bluetooth/web_bluetooth_device_id_unittest.cc",
     "client_hints/client_hints_unittest.cc",
+    "context_menu_data/context_menu_mojom_traits_unittest.cc",
     "device_memory/approximated_device_memory_unittest.cc",
     "feature_policy/document_policy_unittest.cc",
     "feature_policy/feature_policy_unittest.cc",
