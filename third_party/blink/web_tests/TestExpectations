@@ -5654,6 +5654,12 @@ crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-em
 # flaky test
 crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ Failure Pass ]
 
+# Temporarily disabled to enable frontend change (https://crrev.com/c/2687495) to go through
+crbug.com/1176691 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
+crbug.com/1176691 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
+
+
+
 # Failing on Webkit Linux Leak
 crbug.com/1174806 external/wpt/css/selectors/focus-visible-006.html [ Pass Failure ]
 
