@@ -1632,10 +1632,21 @@ class MetaBuildWrapper(object):
             '--logs-dir=${ISOLATED_OUTDIR}',
             '--',
         ]
-      cmdline += [
-          '../../testing/test_env.py',
-          '../../' + self.ToSrcRelPath(isolate_map[target]['script'])
-      ]
+      if is_android:
+        extra_files.append('../../build/android/test_wrapper/logdog_wrapper.py')
+        cmdline += [
+            '../../testing/test_env.py',
+            '../../build/android/test_wrapper/logdog_wrapper.py',
+            '--script',
+            '../../' + self.ToSrcRelPath(isolate_map[target]['script']),
+            '--logdog-bin-cmd',
+            '../../.task_template_packages/logdog_butler',
+        ]
+      else:
+        cmdline += [
+            '../../testing/test_env.py',
+            '../../' + self.ToSrcRelPath(isolate_map[target]['script'])
+        ]
     elif test_type == 'additional_compile_target':
       cmdline = [
           './' + str(target) + executable_suffix,

@@ -11,6 +11,11 @@ python_library("monochrome_public_apk_checker") {
   data_deps = [
     "//android_webview:system_webview_apk",
     "//build/android:devil_chromium_py",
+
+    # Depending on logdog_wrapper here is a hack to allow all isolated scripts
+    # to be wrapped, otherwise some python dependencies are missing, since
+    # this target doesn't depend on test_runner_py like others
+    "//build/android:logdog_wrapper_py",
     "//chrome/android:chrome_public_apk",
     "//chrome/android:monochrome_public_apk",
     "//testing:run_isolated_script_test",

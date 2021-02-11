@@ -248,6 +248,7 @@ FOO_ISOLATED_SCRIPTS_WATERFALL_ANDROID = """\
     'name': 'chromium.test',
     'machines': {
       'Fake Tester': {
+        'os_type': 'android',
         'test_suites': {
           'isolated_scripts': 'composition_tests',
         },
@@ -1417,7 +1418,8 @@ ISOLATED_SCRIPT_OUTPUT_ANDROID = """\
             "--test-name",
             "foo_test"
           ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+          "script": \
+"//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "foo_test",
         "swarming": {
@@ -1426,7 +1428,8 @@ ISOLATED_SCRIPT_OUTPUT_ANDROID = """\
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
               "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+              "revision": \
+"git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
             }
           ],
           "output_links": [
