@@ -420,7 +420,7 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   }
 }
 
-void StyleAdjuster::AdjustOverflow(ComputedStyle& style) {
+void StyleAdjuster::AdjustOverflow(ComputedStyle& style, Element* element) {
   DCHECK(style.OverflowX() != EOverflow::kVisible ||
          style.OverflowY() != EOverflow::kVisible);
 
@@ -456,6 +456,11 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style) {
       style.SetOverflowY(EOverflow::kAuto);
     else if (style.OverflowY() == EOverflow::kClip)
       style.SetOverflowY(EOverflow::kHidden);
+  }
+  if (element && (style.OverflowX() == EOverflow::kClip ||
+                  style.OverflowY() == EOverflow::kClip)) {
+    UseCounter::Count(element->GetDocument(),
+                      WebFeature::kOverflowClipAlongEitherAxis);
   }
 }
 
@@ -733,7 +738,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   if (style.OverflowX() != EOverflow::kVisible ||
       style.OverflowY() != EOverflow::kVisible)
-    AdjustOverflow(style);
+    AdjustOverflow(style, element);
 
   // overflow-clip-margin only applies if 'overflow: clip' is set along both
   // axis or 'contain: paint'.

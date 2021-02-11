@@ -43,7 +43,7 @@ class StyleAdjuster {
   static void AdjustStyleForEditing(ComputedStyle&);
 
  private:
-  static void AdjustOverflow(ComputedStyle& style);
+  static void AdjustOverflow(ComputedStyle& style, Element* element);
   static void AdjustForForcedColorsMode(ComputedStyle& style);
 };
 

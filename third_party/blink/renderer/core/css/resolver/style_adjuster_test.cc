@@ -255,4 +255,24 @@ TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
             target->GetComputedStyle()->GetEffectiveTouchAction());
 }
 
+TEST_F(StyleAdjusterTest, OverflowClipUseCount) {
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <div></div>
+    <div style='overflow: hidden'></div>
+    <div style='overflow: scroll'></div>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kOverflowClipAlongEitherAxis));
+
+  SetBodyInnerHTML(R"HTML(
+    <div style='overflow: clip'></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kOverflowClipAlongEitherAxis));
+}
+
 }  // namespace blink
