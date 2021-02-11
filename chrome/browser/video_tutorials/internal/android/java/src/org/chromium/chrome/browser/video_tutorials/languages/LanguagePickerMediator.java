@@ -28,6 +28,7 @@ public class LanguagePickerMediator {
     private final LanguageInfoProvider mLanguageInfoProvider;
     private final PropertyModel mModel;
     private final ModelList mListModel;
+    private String mSelectedLocale;
 
     /**
      * Constructor.
@@ -40,6 +41,7 @@ public class LanguagePickerMediator {
         mLanguageInfoProvider = languageInfoProvider;
         mModel = model;
         mListModel = listModel;
+        mSelectedLocale = mVideoTutorialService.getPreferredLocale();
     }
 
     /**
@@ -47,19 +49,19 @@ public class LanguagePickerMediator {
      */
     public void showLanguagePicker(Runnable doneCallback, Runnable closeCallback) {
         mModel.set(LanguagePickerProperties.CLOSE_CALLBACK, () -> {
+            mSelectedLocale = mVideoTutorialService.getPreferredLocale();
             VideoTutorialMetrics.recordLanguagePickerAction(LanguagePickerAction.CLOSE);
             closeCallback.run();
         });
         mModel.set(LanguagePickerProperties.WATCH_CALLBACK, () -> {
-            VideoTutorialMetrics.recordLanguagePickerAction(LanguagePickerAction.WATCH);
-            recordLanguageSelected();
+            onLanguageSelectionFinalized();
             doneCallback.run();
         });
         populateList(mVideoTutorialService.getSupportedLanguages());
     }
 
     private void onLanguageSelected(String locale) {
-        mVideoTutorialService.setPreferredLocale(locale);
+        mSelectedLocale = locale;
         populateList(mVideoTutorialService.getSupportedLanguages());
     }
 
@@ -80,22 +82,22 @@ public class LanguagePickerMediator {
     }
 
     private PropertyModel buildListItemModelFromLocale(Language language) {
-        String preferredLocale = mVideoTutorialService.getPreferredLocale();
         return new PropertyModel.Builder(LanguageItemProperties.ALL_KEYS)
                 .with(LanguageItemProperties.LOCALE, language.locale)
                 .with(LanguageItemProperties.NAME, language.name)
                 .with(LanguageItemProperties.NATIVE_NAME, language.nativeName)
                 .with(LanguageItemProperties.IS_SELECTED,
-                        TextUtils.equals(language.locale, preferredLocale))
+                        TextUtils.equals(language.locale, mSelectedLocale))
                 .with(LanguageItemProperties.SELECTION_CALLBACK, this::onLanguageSelected)
                 .build();
     }
 
-    private void recordLanguageSelected() {
-        String preferredLocale = mVideoTutorialService.getPreferredLocale();
+    private void onLanguageSelectionFinalized() {
+        VideoTutorialMetrics.recordLanguagePickerAction(LanguagePickerAction.WATCH);
+        mVideoTutorialService.setPreferredLocale(mSelectedLocale);
         List<String> supportedLanguages = mVideoTutorialService.getSupportedLanguages();
         for (int i = 0; i < supportedLanguages.size(); i++) {
-            if (TextUtils.equals(supportedLanguages.get(i), preferredLocale)) {
+            if (TextUtils.equals(supportedLanguages.get(i), mSelectedLocale)) {
                 VideoTutorialMetrics.recordLanguageSelected(i);
                 break;
             }
