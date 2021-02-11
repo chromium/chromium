@@ -1,0 +1,17 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+  '<div contenteditable><ul><li><h1>abc|</h1></li></ul><div id="div1"><br></div></div>',
+  selection => {
+    selection.document.execCommand("selectAll");
+    selection.document.execCommand("copy");
+    var div1 = selection.document.getElementById('div1');
+    selection.collapse(div1, 0);
+    selection.document.execCommand("paste");
+  },
+  '<div contenteditable><ul><li><h1>abc</h1></li></ul><div id="div1"><ul><li><h1>abc</h1></li></ul><div id="div1">|<br></div></div></div>',
+  'Block element inside a list item should be copied if it is selected');
+</script>

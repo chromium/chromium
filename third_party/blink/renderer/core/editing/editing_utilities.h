@@ -297,6 +297,13 @@ EphemeralRangeInFlatTree NormalizeRange(const EphemeralRangeInFlatTree&);
 CORE_EXPORT VisiblePosition VisiblePositionForIndex(int index,
                                                     ContainerNode* scope);
 
+bool AreSameRanges(Node* node,
+                   const Position& start_position,
+                   const Position& end_position);
+bool AreSameRanges(Node* node,
+                   const PositionInFlatTree& start_position,
+                   const PositionInFlatTree& end_position);
+
 // -------------------------------------------------------------------------
 // HTMLElement
 // -------------------------------------------------------------------------

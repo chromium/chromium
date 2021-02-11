@@ -1561,6 +1561,33 @@ VisiblePosition VisiblePositionForIndex(int index, ContainerNode* scope) {
   return CreateVisiblePosition(range.StartPosition());
 }
 
+template <typename Strategy>
+bool AreSameRangesAlgorithm(Node* node,
+                            const PositionTemplate<Strategy>& start_position,
+                            const PositionTemplate<Strategy>& end_position) {
+  DCHECK(node);
+  const EphemeralRange range =
+      CreateVisibleSelection(
+          SelectionInDOMTree::Builder().SelectAllChildren(*node).Build())
+          .ToNormalizedEphemeralRange();
+  return ToPositionInDOMTree(start_position) == range.StartPosition() &&
+         ToPositionInDOMTree(end_position) == range.EndPosition();
+}
+
+bool AreSameRanges(Node* node,
+                   const Position& start_position,
+                   const Position& end_position) {
+  return AreSameRangesAlgorithm<EditingStrategy>(node, start_position,
+                                                 end_position);
+}
+
+bool AreSameRanges(Node* node,
+                   const PositionInFlatTree& start_position,
+                   const PositionInFlatTree& end_position) {
+  return AreSameRangesAlgorithm<EditingInFlatTreeStrategy>(node, start_position,
+                                                           end_position);
+}
+
 bool IsRenderedAsNonInlineTableImageOrHR(const Node* node) {
   if (!node)
     return false;
