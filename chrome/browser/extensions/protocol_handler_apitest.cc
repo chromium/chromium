@@ -17,9 +17,22 @@
 #include "extensions/test/result_catcher.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
+#if defined(OS_MAC)
+#include "chrome/test/base/launchservices_utils_mac.h"
+#endif
+
 namespace extensions {
 
-using ProtocolHandlerApiTest = ExtensionApiTest;
+class ProtocolHandlerApiTest : public ExtensionApiTest {
+ public:
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+
+#if defined(OS_MAC)
+    ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+  }
+};
 
 class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
  public:
