@@ -60,6 +60,7 @@ class XRSystem;
 class XRTransientInputHitTestOptionsInit;
 class XRTransientInputHitTestSource;
 class XRViewData;
+class XRWebGLDepthInformation;
 class XRWebGLLayer;
 
 using XRSessionFeatureSet = HashSet<device::mojom::XRSessionFeature>;
@@ -83,7 +84,8 @@ class XRSession final
       "Anchors feature is not supported by the session.";
   static constexpr char kPlanesFeatureNotSupported[] =
       "Plane detection feature is not supported by the session.";
-
+  static constexpr char kDepthSensingFeatureNotSupported[] =
+      "Depth sensing feature is not supported by the session.";
   // Runs all the video.requestVideoFrameCallback() callbacks associated with
   // one HTMLVideoElement. |double| is the |high_res_now_ms|, derived from
   // MonotonicTimeToZeroBasedDocumentTime(|current_frame_time|), to be passed as
@@ -341,7 +343,11 @@ class XRSession final
   base::Optional<TransformationMatrix> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
-  XRCPUDepthInformation* GetDepthInformation(
+  XRCPUDepthInformation* GetCpuDepthInformation(
+      const XRFrame* xr_frame,
+      ExceptionState& exception_state) const;
+
+  XRWebGLDepthInformation* GetWebGLDepthInformation(
       const XRFrame* xr_frame,
       ExceptionState& exception_state) const;
 

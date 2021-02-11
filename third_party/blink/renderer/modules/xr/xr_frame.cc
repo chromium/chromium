@@ -22,15 +22,8 @@ namespace blink {
 
 namespace {
 
-const char kInactiveFrame[] =
-    "XRFrame access outside the callback that produced it is invalid.";
-
 const char kInvalidView[] =
     "XRView passed in to the method did not originate from current XRFrame.";
-
-const char kNonAnimationFrame[] =
-    "getViewerPose can only be called on XRFrame objects passed to "
-    "XRSession.requestAnimationFrame callbacks.";
 
 const char kSessionMismatch[] = "XRSpace and XRFrame sessions do not match.";
 
@@ -51,6 +44,9 @@ const char kSpacesSequenceTooLarge[] =
 const char kMismatchedBufferSizes[] = "Buffer sizes must be equal";
 
 }  // namespace
+
+constexpr char XRFrame::kInactiveFrame[];
+constexpr char XRFrame::kNonAnimationFrame[];
 
 XRFrame::XRFrame(XRSession* session, bool is_animation_frame)
     : session_(session), is_animation_frame_(is_animation_frame) {}
@@ -165,6 +161,12 @@ XRCPUDepthInformation* XRFrame::getDepthInformation(
     ExceptionState& exception_state) const {
   DVLOG(2) << __func__;
 
+  if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        XRSession::kDepthSensingFeatureNotSupported);
+  }
+
   if (!is_active_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveFrame);
@@ -183,7 +185,7 @@ XRCPUDepthInformation* XRFrame::getDepthInformation(
     return nullptr;
   }
 
-  return session_->GetDepthInformation(this, exception_state);
+  return session_->GetCpuDepthInformation(this, exception_state);
 }
 
 // Return an XRPose that has a transform of basespace_from_space, while

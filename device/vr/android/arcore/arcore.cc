@@ -25,6 +25,18 @@ gfx::Transform ArCore::GetCameraUvFromScreenUvTransform() const {
          gfx::Transform(1, 0, 0, -1, 0, 1);
 }
 
+gfx::Transform ArCore::GetDepthUvFromScreenUvTransform() const {
+  //
+  // Observe how kInputCoordinatesForTransform are transformed by ArCore &
+  // compute a matrix based on that. This is different than the camera UV
+  // transform in that it does not perform the Y-flip - the depth buffer's
+  // coordinate system is defined the same way as ArCore's
+  // AR_COORDINATES_2D_TEXTURE_NORMALIZED.
+  //
+  return MatrixFromTransformedPoints(
+      TransformDisplayUvCoords(kInputCoordinatesForTransform));
+}
+
 ArCore::InitializeResult::InitializeResult(
     const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
     base::Optional<device::mojom::XRDepthConfig> depth_configuration)

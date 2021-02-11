@@ -223,11 +223,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         };
 
         // clip space coordinates + texture space coordinates
+        // our depth buffer has an origin in top-left corner of the screen -
+        // we need to adjust the texture coordinates to account for that
         const vertices_data = [
-          -1, -1,    0, 0,  // bottom left
-           1, -1,    1, 0,  // bottom right
-          -1,  1,    0, 1,  // top left
-           1,  1,    1, 1,  // top right
+          -1, -1,    0, 1,  // bottom left
+           1, -1,    1, 1,  // bottom right
+          -1,  1,    0, 0,  // top left
+           1,  1,    1, 0,  // top right
         ];
 
         vertexBuffer = uploadVertexData(vertices_data);
@@ -366,7 +368,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         gl.uniform1i(programInfo.uniformLocations.depthTexture, 0);
 
         gl.uniformMatrix4fv(programInfo.uniformLocations.uvTransform, false,
-                            depthData.normTextureFromNormView.matrix);
+                            depthData.normDepthBufferFromNormView.matrix);
 
         gl.uniform1f(programInfo.uniformLocations.rawValueToMeters,
                      depthData.rawValueToMeters);

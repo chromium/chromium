@@ -177,7 +177,27 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRFrame* frame, XRView* view) {
 XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
     XRView* view,
     ExceptionState& exception_state) {
-  return nullptr;
+  if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        XRSession::kDepthSensingFeatureNotSupported);
+  }
+
+  XRFrame* frame = view->frame();
+
+  if (!frame->IsActive()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      XRFrame::kInactiveFrame);
+    return nullptr;
+  }
+
+  if (!frame->IsAnimationFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      XRFrame::kNonAnimationFrame);
+    return nullptr;
+  }
+
+  return view->session()->GetWebGLDepthInformation(frame, exception_state);
 }
 
 void XRWebGLBinding::Trace(Visitor* visitor) const {

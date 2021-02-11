@@ -105,9 +105,6 @@ const char kImageTrackingFeatureNotSupported[] =
 const char kEntityTypesNotSpecified[] =
     "No entityTypes specified: the array cannot be empty!";
 
-const char kDepthSensingFeatureNotSupported[] =
-    "Depth sensing feature is not supported by the session.";
-
 const double kDegToRad = M_PI / 180.0;
 
 const float kMinDefaultFramebufferScale = 0.1f;
@@ -246,6 +243,7 @@ constexpr char XRSession::kUnableToRetrieveMatrix[];
 constexpr char XRSession::kNoSpaceSpecified[];
 constexpr char XRSession::kAnchorsFeatureNotSupported[];
 constexpr char XRSession::kPlanesFeatureNotSupported[];
+constexpr char XRSession::kDepthSensingFeatureNotSupported[];
 
 class XRSession::XRSessionResizeObserverDelegate final
     : public ResizeObserver::Delegate {
@@ -1248,7 +1246,7 @@ void XRSession::ProcessHitTestData(
   }
 }
 
-XRCPUDepthInformation* XRSession::GetDepthInformation(
+XRCPUDepthInformation* XRSession::GetCpuDepthInformation(
     const XRFrame* xr_frame,
     ExceptionState& exception_state) const {
   if (!depth_manager_) {
@@ -1257,7 +1255,19 @@ XRCPUDepthInformation* XRSession::GetDepthInformation(
     return nullptr;
   }
 
-  return depth_manager_->GetDepthInformation(xr_frame);
+  return depth_manager_->GetCpuDepthInformation(xr_frame, exception_state);
+}
+
+XRWebGLDepthInformation* XRSession::GetWebGLDepthInformation(
+    const XRFrame* xr_frame,
+    ExceptionState& exception_state) const {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return nullptr;
+  }
+
+  return depth_manager_->GetWebGLDepthInformation(xr_frame, exception_state);
 }
 
 ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,

@@ -1860,7 +1860,7 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
 
     result->pixel_data = std::move(pixels);
     // Transform needed to consume the data:
-    result->norm_texture_from_norm_view = GetCameraUvFromScreenUvTransform();
+    result->norm_texture_from_norm_view = GetDepthUvFromScreenUvTransform();
     result->size = gfx::Size(width, height);
     result->raw_value_to_meters =
         1.0 / 1000.0;  // DepthInMillimeters * 1/1000 = DepthInMeters

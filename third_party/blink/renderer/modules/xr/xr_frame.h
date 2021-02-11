@@ -45,6 +45,12 @@ class XRFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static constexpr char kInactiveFrame[] =
+      "XRFrame access outside the callback that produced it is invalid.";
+  static constexpr char kNonAnimationFrame[] =
+      "This method can only be called on XRFrame objects passed to "
+      "XRSession.requestAnimationFrame callbacks.";
+
   explicit XRFrame(XRSession* session, bool is_animation_frame = false);
 
   XRSession* session() const { return session_; }

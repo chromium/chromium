@@ -89,6 +89,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCore {
   virtual void SetCameraTexture(uint32_t camera_texture_id) = 0;
 
   gfx::Transform GetCameraUvFromScreenUvTransform() const;
+  gfx::Transform GetDepthUvFromScreenUvTransform() const;
 
   virtual gfx::Transform GetProjectionMatrix(float near, float far) = 0;
 

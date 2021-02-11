@@ -10564,7 +10564,7 @@ interface XRDOMOverlayState
 interface XRDepthInformation
     attribute @@toStringTag
     getter height
-    getter normTextureFromNormView
+    getter normDepthBufferFromNormView
     getter rawValueToMeters
     getter width
     method constructor

@@ -12,7 +12,9 @@
 
 namespace blink {
 
+class ExceptionState;
 class XRCPUDepthInformation;
+class XRWebGLDepthInformation;
 class XRFrame;
 class XRSession;
 
@@ -31,7 +33,13 @@ class XRDepthManager : public GarbageCollected<XRDepthManager> {
   const String& depthUsage() const { return usage_str_; }
   const String& depthDataFormat() const { return data_format_str_; }
 
-  XRCPUDepthInformation* GetDepthInformation(const XRFrame* xr_frame);
+  XRCPUDepthInformation* GetCpuDepthInformation(
+      const XRFrame* xr_frame,
+      ExceptionState& exception_state);
+
+  XRWebGLDepthInformation* GetWebGLDepthInformation(
+      const XRFrame* xr_frame,
+      ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const;
 

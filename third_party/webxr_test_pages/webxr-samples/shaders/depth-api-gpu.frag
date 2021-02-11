@@ -29,10 +29,10 @@ vec3 DepthGetColorVisualization(in float x) {
 }
 
 void main(void) {
-  vec2 texCoord = (uUvTransform * vec4(vTexCoord.xy, 0, 1)).xy;
+  vec4 texCoord = uUvTransform * vec4(vTexCoord, 0, 1);
 
   highp float normalized_depth = clamp(
-    DepthGetMeters(uDepthTexture, texCoord) / kMaxDepthInMeters, 0.0, 1.0);
+    DepthGetMeters(uDepthTexture, texCoord.xy) / kMaxDepthInMeters, 0.0, 1.0);
   gl_FragColor = vec4(DepthGetColorVisualization(normalized_depth), 0.75);
 }
 

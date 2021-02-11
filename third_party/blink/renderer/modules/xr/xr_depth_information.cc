@@ -27,51 +27,33 @@ namespace blink {
 XRDepthInformation::XRDepthInformation(
     const XRFrame* xr_frame,
     const gfx::Size& size,
-    const gfx::Transform& norm_texture_from_norm_view,
+    const gfx::Transform& norm_depth_buffer_from_norm_view,
     float raw_value_to_meters)
     : xr_frame_(xr_frame),
       size_(size),
-      norm_texture_from_norm_view_(norm_texture_from_norm_view),
-      rawValueToMeters_(raw_value_to_meters) {
+      norm_depth_buffer_from_norm_view_(norm_depth_buffer_from_norm_view),
+      raw_value_to_meters_(raw_value_to_meters) {
   DVLOG(3) << __func__ << ": size_=" << size_.ToString()
-           << ", norm_texture_from_norm_view_="
-           << norm_texture_from_norm_view_.ToString()
-           << ", raw_value_to_meters=" << raw_value_to_meters;
+           << ", norm_depth_buffer_from_norm_view_="
+           << norm_depth_buffer_from_norm_view_.ToString()
+           << ", raw_value_to_meters_=" << raw_value_to_meters_;
 }
 
-uint32_t XRDepthInformation::width(ExceptionState& exception_state) const {
-  if (!ValidateFrame(exception_state)) {
-    return 0;
-  }
-
+uint32_t XRDepthInformation::width() const {
   return size_.width();
 }
 
-uint32_t XRDepthInformation::height(ExceptionState& exception_state) const {
-  if (!ValidateFrame(exception_state)) {
-    return 0;
-  }
-
+uint32_t XRDepthInformation::height() const {
   return size_.height();
 }
 
-float XRDepthInformation::rawValueToMeters(
-    ExceptionState& exception_state) const {
-  if (!ValidateFrame(exception_state)) {
-    return 0.0;
-  }
-
-  return rawValueToMeters_;
+float XRDepthInformation::rawValueToMeters() const {
+  return raw_value_to_meters_;
 }
 
-XRRigidTransform* XRDepthInformation::normTextureFromNormView(
-    ExceptionState& exception_state) const {
-  if (!ValidateFrame(exception_state)) {
-    return nullptr;
-  }
-
+XRRigidTransform* XRDepthInformation::normDepthBufferFromNormView() const {
   return MakeGarbageCollected<XRRigidTransform>(
-      TransformationMatrix(norm_texture_from_norm_view_.matrix()));
+      TransformationMatrix(norm_depth_buffer_from_norm_view_.matrix()));
 }
 
 bool XRDepthInformation::ValidateFrame(ExceptionState& exception_state) const {

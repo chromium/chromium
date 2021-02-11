@@ -31,8 +31,8 @@ class XRCPUDepthInformation final : public XRDepthInformation {
 
   DOMUint16Array* data(ExceptionState& exception_state) const;
 
-  float getDepthInMeters(uint32_t column,
-                         uint32_t row,
+  float getDepthInMeters(float x,
+                         float y,
                          ExceptionState& exception_state) const;
 
   void Trace(Visitor* visitor) const override;

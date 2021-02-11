@@ -7,11 +7,10 @@
     Exposed=Window,
     RuntimeEnabled=WebXRDepth
 ] interface XRDepthInformation {
-  [RaisesException] readonly attribute unsigned long width;
-  [RaisesException] readonly attribute unsigned long height;
+  readonly attribute unsigned long width;
+  readonly attribute unsigned long height;
 
-  [RaisesException, SameObject]
-  readonly attribute XRRigidTransform normTextureFromNormView;
-  [RaisesException]
+  [SameObject, SaveSameObject]
+  readonly attribute XRRigidTransform normDepthBufferFromNormView;
   readonly attribute float rawValueToMeters;
 };

@@ -7,10 +7,14 @@
     Exposed=Window,
     RuntimeEnabled=WebXRDepth
 ] interface XRCPUDepthInformation : XRDepthInformation {
-  [RaisesException, SameObject, MeasureAs=XRCPUDepthInformationDataAttribute]
-  readonly attribute DataView data;
+  [
+    RaisesException,
+    SameObject,
+    SaveSameObject,
+    MeasureAs=XRCPUDepthInformationDataAttribute
+  ] readonly attribute DataView data;
 
   [RaisesException, MeasureAs=XRCPUDepthInformationGetDepth]
-  float getDepthInMeters(unsigned long column, unsigned long row);
+  float getDepthInMeters(float x, float y);
 };
 

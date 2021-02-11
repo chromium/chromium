@@ -10,6 +10,9 @@
 
 namespace {
 
+constexpr char kInvalidUsageMode[] =
+    "Unable to obtain XRCPUDepthInformation in \"gpu-optimized\" usage mode.";
+
 String UsageToString(device::mojom::XRDepthUsage usage) {
   switch (usage) {
     case device::mojom::XRDepthUsage::kCPUOptimized:
@@ -76,8 +79,15 @@ void XRDepthManager::ProcessDepthInformation(
   }
 }
 
-XRCPUDepthInformation* XRDepthManager::GetDepthInformation(
-    const XRFrame* xr_frame) {
+XRCPUDepthInformation* XRDepthManager::GetCpuDepthInformation(
+    const XRFrame* xr_frame,
+    ExceptionState& exception_state) {
+  if (usage_ != device::mojom::XRDepthUsage::kCPUOptimized) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInvalidUsageMode);
+    return nullptr;
+  }
+
   if (!depth_data_) {
     return nullptr;
   }
@@ -87,6 +97,19 @@ XRCPUDepthInformation* XRDepthManager::GetDepthInformation(
   return MakeGarbageCollected<XRCPUDepthInformation>(
       xr_frame, depth_data_->size, depth_data_->norm_texture_from_norm_view,
       depth_data_->raw_value_to_meters, data_);
+}
+
+XRWebGLDepthInformation* XRDepthManager::GetWebGLDepthInformation(
+    const XRFrame* xr_frame,
+    ExceptionState& exception_state) {
+  if (usage_ != device::mojom::XRDepthUsage::kGPUOptimized) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInvalidUsageMode);
+    return nullptr;
+  }
+
+  NOTREACHED();
+  return nullptr;
 }
 
 void XRDepthManager::EnsureData() {

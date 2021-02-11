@@ -20,10 +20,11 @@ class XRDepthInformation : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  protected:
-  explicit XRDepthInformation(const XRFrame* xr_frame,
-                              const gfx::Size& size,
-                              const gfx::Transform& norm_texture_from_norm_view,
-                              float raw_value_to_meters);
+  explicit XRDepthInformation(
+      const XRFrame* xr_frame,
+      const gfx::Size& size,
+      const gfx::Transform& norm_depth_buffer_from_norm_view,
+      float raw_value_to_meters);
 
   // Helper to validate whether a frame is in a correct state. Should be invoked
   // before every member access. If the validation returns `false`, it means the
@@ -32,14 +33,13 @@ class XRDepthInformation : public ScriptWrappable {
   bool ValidateFrame(ExceptionState& exception_state) const;
 
  public:
-  uint32_t width(ExceptionState& exception_state) const;
+  uint32_t width() const;
 
-  uint32_t height(ExceptionState& exception_state) const;
+  uint32_t height() const;
 
-  XRRigidTransform* normTextureFromNormView(
-      ExceptionState& exception_state) const;
+  XRRigidTransform* normDepthBufferFromNormView() const;
 
-  float rawValueToMeters(ExceptionState& exception_state) const;
+  float rawValueToMeters() const;
 
   void Trace(Visitor* visitor) const override;
 
@@ -48,8 +48,8 @@ class XRDepthInformation : public ScriptWrappable {
 
   const gfx::Size size_;
 
-  const gfx::Transform norm_texture_from_norm_view_;
-  const float rawValueToMeters_;
+  const gfx::Transform norm_depth_buffer_from_norm_view_;
+  const float raw_value_to_meters_;
 };
 
 }  // namespace blink
