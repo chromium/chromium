@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -11,9 +13,12 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ntp.ScrollListener;
+import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.TasksSurface;
@@ -26,6 +31,7 @@ import org.chromium.chrome.start_surface.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -93,6 +99,45 @@ public class StartSurfaceCoordinator implements StartSurface {
     private boolean mIsSecondaryTaskInitPending;
     private FeedLoadingCoordinator mFeedLoadingCoordinator;
 
+    // Listeners used by the contained surfaces (e.g., Explore) to listen to the scroll changes on
+    // the main scrollable container of the start surface.
+    private final ObserverList<ScrollListener> mScrollListeners =
+            new ObserverList<ScrollListener>();
+
+    @Nullable
+    private AppBarLayout.OnOffsetChangedListener mOffsetChangedListenerToGenerateScrollEvents;
+
+    private class ScrollableContainerDelegateImpl implements ScrollableContainerDelegate {
+        @Override
+        public void addScrollListener(ScrollListener listener) {
+            mScrollListeners.addObserver(listener);
+        }
+        @Override
+        public void removeScrollListener(ScrollListener listener) {
+            mScrollListeners.removeObserver(listener);
+        }
+
+        @Override
+        public int getVerticalScrollOffset() {
+            // Always return a zero dummy value because the offset is directly provided
+            // by the observer.
+            return 0;
+        }
+
+        @Override
+        public int getRootViewHeight() {
+            return mActivity.getCompositorViewHolder().getHeight();
+        }
+
+        @Override
+        public int getTopPositionRelativeToContainerView(View childView) {
+            int[] pos = new int[2];
+            ViewUtils.getRelativeLayoutPosition(
+                    mActivity.getCompositorViewHolder(), childView, pos);
+            return pos[1];
+        }
+    }
+
     // TODO(http://crbug.com/1093421): Remove dependency on ChromeActivity.
     public StartSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             BottomSheetController sheetController,
@@ -157,6 +202,10 @@ public class StartSurfaceCoordinator implements StartSurface {
         if (mTasksSurface != null) {
             mTasksSurface.removeFakeSearchBoxShrinkAnimation();
         }
+        if (mOffsetChangedListenerToGenerateScrollEvents != null) {
+            removeHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
+            mOffsetChangedListenerToGenerateScrollEvents = null;
+        }
     }
 
     @Override
@@ -215,7 +264,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mSurfaceMode == SurfaceMode.SINGLE_PANE ? mTasksSurface.getBodyViewContainer()
                                                             : mActivity.getCompositorViewHolder(),
                     mPropertyModel, mSurfaceMode == SurfaceMode.SINGLE_PANE, mBottomSheetController,
-                    mParentTabSupplier);
+                    mParentTabSupplier, new ScrollableContainerDelegateImpl());
         }
         mStartSurfaceMediator.initWithNative(mSurfaceMode != SurfaceMode.NO_START_SURFACE
                         ? mActivity.getToolbarManager().getFakeboxDelegate()
@@ -352,6 +401,15 @@ public class StartSurfaceCoordinator implements StartSurface {
                 !excludeMVTiles, hasTrendyTerms);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
         mTasksSurface.addFakeSearchBoxShrinkAnimation();
+        mOffsetChangedListenerToGenerateScrollEvents = new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                for (ScrollListener scrollListener : mScrollListeners) {
+                    scrollListener.onHeaderOffsetChanged(verticalOffset);
+                }
+            }
+        };
+        addHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
 
         mTasksSurfacePropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel,

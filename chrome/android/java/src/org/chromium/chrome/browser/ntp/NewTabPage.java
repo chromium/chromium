@@ -426,7 +426,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                         mNewTabPageLayout, sectionHeaderView, new FeedV1ActionOptions(),
                         isInNightMode, this, mNewTabPageManager.getNavigationDelegate(), profile,
                         /* isPlaceholderShownInitially= */ false, bottomSheetController,
-                        shareDelegateSupplier);
+                        shareDelegateSupplier, /* externalScrollableContainerDelegate= */ null);
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);

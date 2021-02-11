@@ -26,12 +26,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -51,6 +55,12 @@ public class ExploreSurfaceViewBinderTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    private ScrollableContainerDelegate mScrollableContainerDelegate;
+
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityFromLauncher();
@@ -60,10 +70,10 @@ public class ExploreSurfaceViewBinderTest {
         // well in debug build).
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-            mExploreSurfaceCoordinator =
-                    new ExploreSurfaceCoordinator(mActivityTestRule.getActivity(),
-                            mActivityTestRule.getActivity().getCompositorViewHolder(),
-                            mPropertyModel, true, null, new ObservableSupplierImpl<>());
+            mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(
+                    mActivityTestRule.getActivity(),
+                    mActivityTestRule.getActivity().getCompositorViewHolder(), mPropertyModel, true,
+                    null, new ObservableSupplierImpl<>(), mScrollableContainerDelegate);
             mFeedSurfaceCoordinator =
                     mExploreSurfaceCoordinator.getFeedSurfaceCreator().createFeedSurfaceCoordinator(
                             false, /* isPlaceholderShown= */ false);

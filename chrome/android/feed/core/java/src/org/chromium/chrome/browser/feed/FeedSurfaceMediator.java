@@ -21,11 +21,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
-import org.chromium.chrome.browser.feed.shared.stream.Stream.ScrollListener;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
+import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController.EnhancedProtectionPromoStateListener;
@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -200,6 +199,9 @@ public class FeedSurfaceMediator
                 public void onScrolled(int dx, int dy) {
                     mSnapScrollHelper.handleScroll();
                 }
+
+                @Override
+                public void onHeaderOffsetChanged(int verticalOffset) {}
             };
             stream.addScrollListener(mStreamScrollListener);
         }
@@ -262,45 +264,7 @@ public class FeedSurfaceMediator
             if (mHasHeaderMenu) {
                 mSectionHeader.setMenuModelList(buildMenuItems());
                 mSectionHeader.setListMenuDelegate(this::onItemSelected);
-                FeedSurfaceMediator mediator = this;
-                HeaderIphScrollListener.Delegate delegate = new HeaderIphScrollListener.Delegate() {
-                    @Override
-                    public Tracker getFeatureEngagementTracker() {
-                        return mCoordinator.getFeatureEngagementTracker();
-                    }
-                    @Override
-                    public Stream getStream() {
-                        return mCoordinator.getStream();
-                    }
-                    @Override
-                    public boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH(
-                            float headerMaxPosFraction) {
-                        return mCoordinator.isFeedHeaderPositionInRecyclerViewSuitableForIPH(
-                                headerMaxPosFraction);
-                    }
-                    @Override
-                    public void showMenuIph() {
-                        mCoordinator.getSectionHeaderView().showMenuIph(
-                                mCoordinator.getUserEducationHelper());
-                    }
-                    @Override
-                    public int getVerticalScrollOffset() {
-                        return mediator.getVerticalScrollOffset();
-                    }
-                    @Override
-                    public boolean isFeedExpanded() {
-                        return mSectionHeader.isExpanded();
-                    }
-                    @Override
-                    public int getRootViewHeight() {
-                        return mCoordinator.getView().getHeight();
-                    }
-                    @Override
-                    public boolean isSignedIn() {
-                        return mSigninManager.getIdentityManager().hasPrimaryAccount();
-                    }
-                };
-                stream.addScrollListener(new HeaderIphScrollListener(delegate));
+                mCoordinator.initializeIph();
                 mSigninManager.getIdentityManager().addObserver(this);
             }
         }
@@ -312,6 +276,13 @@ public class FeedSurfaceMediator
 
         mMemoryPressureCallback = pressure -> stream.trim();
         MemoryPressureListener.addCallback(mMemoryPressureCallback);
+    }
+
+    /**
+     * Determines whether the feed is expanded (turned on).
+     */
+    public boolean isExpanded() {
+        return mSectionHeader.isExpanded();
     }
 
     private void initStreamHeaderViews() {
