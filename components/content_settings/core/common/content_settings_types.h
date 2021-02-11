@@ -21,7 +21,6 @@ enum class ContentSettingsType : int32_t {
   COOKIES = 0,
   IMAGES,
   JAVASCRIPT,
-  DEPRECATED_PLUGINS,
 
   // This setting governs both popups and unwanted redirects like tab-unders and
   // framebusting.

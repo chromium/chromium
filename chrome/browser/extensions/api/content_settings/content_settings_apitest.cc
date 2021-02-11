@@ -348,26 +348,4 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
   histogram_tester.ExpectTotalCount(
       "ContentSettings.ExtensionNonEmbeddedSettingSet", 2);
 }
-
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, PluginsApiTest) {
-  constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
-  EXPECT_TRUE(RunLazyTest(kExtensionPath)) << message_;
-}
-
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, ConsoleErrorTest) {
-  constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
-  const extensions::Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII(kExtensionPath));
-  ASSERT_TRUE(extension);
-  auto* web_contents = extensions::ProcessManager::Get(profile())
-                           ->GetBackgroundHostForExtension(extension->id())
-                           ->host_contents();
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern("*API is no longer supported*");
-  browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      profile(), extension->id(), "setPluginsSetting()");
-  console_observer.Wait();
-  EXPECT_EQ(1u, console_observer.messages().size());
-}
-
 }  // namespace extensions
