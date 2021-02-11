@@ -18,10 +18,8 @@ struct SnapshotRequestInfo {
       const base::FilePath& snapshot_file_path,
       const MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback&
           success_callback,
-      MTPDeviceAsyncDelegate::ErrorCallback error_callback);
-  SnapshotRequestInfo(SnapshotRequestInfo&& other);
-  SnapshotRequestInfo(const SnapshotRequestInfo& other) = delete;
-  SnapshotRequestInfo& operator=(const SnapshotRequestInfo& other) = delete;
+      const MTPDeviceAsyncDelegate::ErrorCallback& error_callback);
+  SnapshotRequestInfo(const SnapshotRequestInfo& other);
   ~SnapshotRequestInfo();
 
   // Device file path.
@@ -41,17 +39,16 @@ struct SnapshotRequestInfo {
 // Provides the details for the the creation of snapshot file.
 class SnapshotFileDetails {
  public:
-  explicit SnapshotFileDetails(SnapshotRequestInfo request_info);
+  explicit SnapshotFileDetails(const SnapshotRequestInfo& request_info);
+  SnapshotFileDetails(const SnapshotFileDetails& other);
   ~SnapshotFileDetails();
 
   void set_file_info(const base::File::Info& file_info);
   void set_device_file_stream(IStream* file_stream);
   void set_optimal_transfer_size(DWORD optimal_transfer_size);
 
-  const SnapshotRequestInfo& request_info() const { return request_info_; }
-
-  MTPDeviceAsyncDelegate::ErrorCallback error_callback() {
-    return std::move(request_info_.error_callback);
+  SnapshotRequestInfo request_info() const {
+    return request_info_;
   }
 
   base::File::Info file_info() const {

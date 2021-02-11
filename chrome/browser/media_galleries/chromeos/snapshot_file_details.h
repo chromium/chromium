@@ -22,10 +22,8 @@ struct SnapshotRequestInfo {
       const base::FilePath& snapshot_file_path,
       const MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback&
           success_callback,
-      MTPDeviceAsyncDelegate::ErrorCallback error_callback);
-  SnapshotRequestInfo(SnapshotRequestInfo&& other);
-  SnapshotRequestInfo(const SnapshotRequestInfo& other) = delete;
-  SnapshotRequestInfo& operator=(const SnapshotRequestInfo& other) = delete;
+      const MTPDeviceAsyncDelegate::ErrorCallback& error_callback);
+  SnapshotRequestInfo(const SnapshotRequestInfo& other);
   ~SnapshotRequestInfo();
 
   // MTP device file id.
@@ -39,7 +37,7 @@ struct SnapshotRequestInfo {
       success_callback;
 
   // A callback to be called when CreateSnapshotFile() fails.
-  MTPDeviceAsyncDelegate::ErrorCallback error_callback;
+  const MTPDeviceAsyncDelegate::ErrorCallback error_callback;
 };
 
 // SnapshotFileDetails tracks the current state of the snapshot file (e.g how
@@ -47,7 +45,7 @@ struct SnapshotRequestInfo {
 // metadata information, etc).
 class SnapshotFileDetails {
  public:
-  SnapshotFileDetails(SnapshotRequestInfo request_info,
+  SnapshotFileDetails(const SnapshotRequestInfo& request_info,
                       const base::File::Info& file_info);
 
   ~SnapshotFileDetails();
@@ -69,8 +67,8 @@ class SnapshotFileDetails {
     return request_info_.success_callback;
   }
 
-  MTPDeviceAsyncDelegate::ErrorCallback error_callback() {
-    return std::move(request_info_.error_callback);
+  const MTPDeviceAsyncDelegate::ErrorCallback error_callback() const {
+    return request_info_.error_callback;
   }
 
   bool error_occurred() const {
@@ -96,7 +94,7 @@ class SnapshotFileDetails {
 
  private:
   // Snapshot file request params.
-  SnapshotRequestInfo request_info_;
+  const SnapshotRequestInfo request_info_;
 
   // Metadata of the snapshot file (such as name, size, type, etc).
   const base::File::Info file_info_;
