@@ -21,10 +21,13 @@
   --oobe-subheader-text-color: var(--google-grey-700);
   --oobe-text-color: var(--google-grey-700);
 
+  --oobe-default-line-height: 20px;
+
   --oobe-default-font: {
       font-family: var(--oobe-default-font-family);
       font-size: var(--oobe-default-font-size);
       font-weight: var(--oobe-default-font-weight);
+      line-height: var(--oobe-default-line-height);
   };
 
   --oobe-header-font: {
