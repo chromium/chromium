@@ -21,7 +21,9 @@ class NGTableAlgorithmHelpersTest : public RenderingTest {
                                 percent,
                                 /* border_padding */ LayoutUnit(),
                                 is_constrained,
-                                /* is_collapsed */ false};
+                                /* is_collapsed */ false,
+                                /* is_table_fixed */ false,
+                                /* is_mergeable */ false};
   }
 
   NGTableTypes::Row MakeRow(int block_size,
@@ -155,16 +157,16 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
   column_constraints->data.Shrink(0);
   column_constraints->data.push_back(
       NGTableTypes::Column{LayoutUnit(0), column_widths[0], base::nullopt,
-                           LayoutUnit(), false, false});
+                           LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
       NGTableTypes::Column{LayoutUnit(3.33333), column_widths[1], base::nullopt,
-                           LayoutUnit(), false, false});
+                           LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
       NGTableTypes::Column{LayoutUnit(3.33333), column_widths[2], base::nullopt,
-                           LayoutUnit(), false, false});
+                           LayoutUnit(), false, false, false, false});
   column_constraints->data.push_back(
       NGTableTypes::Column{LayoutUnit(0), column_widths[3], base::nullopt,
-                           LayoutUnit(), false, false});
+                           LayoutUnit(), false, false, false, false});
 
   LayoutUnit assignable_table_inline_size =
       column_widths[0] + column_widths[1] + column_widths[2] + column_widths[3];

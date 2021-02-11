@@ -132,7 +132,12 @@ LayoutNGTableRowInterface* LayoutNGTableSection::LastRowInterface() const {
 // behaviour is correct. Consider removing these methods.
 unsigned LayoutNGTableSection::NumEffectiveColumns() const {
   NOT_DESTROYED();
-  return To<LayoutNGTable>(TableInterface()->ToLayoutObject())->ColumnCount();
+  const LayoutNGTable* table = Table();
+  DCHECK(table);
+  wtf_size_t column_count = table->ColumnCount();
+  if (column_count == 0)
+    return 0;
+  return table->AbsoluteColumnToEffectiveColumn(column_count - 1) + 1;
 }
 
 // TODO(crbug.com/1079133): Used by AXLayoutObject::IsDataTable/ColumnCount,

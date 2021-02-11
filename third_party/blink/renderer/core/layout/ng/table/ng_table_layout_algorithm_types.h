@@ -57,6 +57,23 @@ class CORE_EXPORT NGTableTypes {
   // Constraint for a column.
   struct Column {
     DISALLOW_NEW();
+    Column(const base::Optional<LayoutUnit>& min_inline_size,
+           const base::Optional<LayoutUnit>& max_inline_size,
+           const base::Optional<float>& percent,
+           LayoutUnit percent_border_padding,
+           bool is_constrained,
+           bool is_collapsed,
+           bool is_table_fixed,
+           bool is_mergeable)
+        : min_inline_size(min_inline_size),
+          max_inline_size(max_inline_size),
+          percent(percent),
+          percent_border_padding(percent_border_padding),
+          is_constrained(is_constrained),
+          is_collapsed(is_collapsed),
+          is_table_fixed(is_table_fixed),
+          is_mergeable(is_mergeable) {}
+    Column() = default;
     // These members are initialized from <col> and <colgroup>, then they
     // accumulate data from |CellInlineConstraint|s.
     base::Optional<LayoutUnit> min_inline_size;
@@ -68,6 +85,7 @@ class CORE_EXPORT NGTableTypes {
     bool is_constrained = false;
     bool is_collapsed = false;
     bool is_table_fixed = false;
+    bool is_mergeable = false;
 
     void Encompass(const base::Optional<NGTableTypes::CellInlineConstraint>&);
     LayoutUnit ResolvePercentInlineSize(

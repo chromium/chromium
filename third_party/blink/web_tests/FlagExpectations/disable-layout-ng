@@ -760,7 +760,6 @@ crbug.com/958381 virtual/text-antialias/international/bidi-layout-across-linebre
 
 ### Pass in Legacy, fail in NG
 crbug.com/958381 external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [ Pass ]
-crbug.com/958381 fast/table/large-col-span-crash.html [ Pass ]
 crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows-except-overlapped.html [ Pass ]
 crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows.html [ Pass ]
 crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-1.html [ Pass ]
@@ -887,6 +886,13 @@ crbug.com/958381 fast/css/vertical-align-baseline-rowspan-008.htm [ Failure ]
 # Text failures, no new baselines
 crbug.com/958381 fast/css/empty-cell-baseline.html [ Failure ]
 crbug.com/958381 fast/css/inline-table-first-row-empty-cell-non-auto.html [ Failure ]
+
+# New failures after TablesNG landed, most likely rebaselined tests
+crbug.com/958381 accessibility/table-column-track-merging.html [ Failure ]
+crbug.com/958381 fast/table/colspanMinWidth.html [ Failure ]
+crbug.com/958381 fast/table/colspanMinWidth-vertical.html [ Failure ]
+crbug.com/958381 fast/table/large-col-span-crash.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/column-track-merging.html [ Failure ]
 
 # TablesNG end
 

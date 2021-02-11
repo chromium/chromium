@@ -369,6 +369,28 @@ LayoutRectOutsets LayoutNGTable::BorderBoxOutsets() const {
   return LayoutRectOutsets();
 }
 
+// Effective column index is index of columns with mergeable
+// columns skipped. Used in a11y.
+unsigned LayoutNGTable::AbsoluteColumnToEffectiveColumn(
+    unsigned absolute_column_index) const {
+  NOT_DESTROYED();
+  if (!cached_table_columns_) {
+    NOTREACHED();
+    return absolute_column_index;
+  }
+  unsigned effective_column_index = 0;
+  unsigned column_count = cached_table_columns_.get()->data.size();
+  for (unsigned current_column_index = 0; current_column_index < column_count;
+       ++current_column_index) {
+    if (current_column_index != 0 &&
+        !cached_table_columns_.get()->data[current_column_index].is_mergeable)
+      ++effective_column_index;
+    if (current_column_index == absolute_column_index)
+      return effective_column_index;
+  }
+  return effective_column_index;
+}
+
 bool LayoutNGTable::IsFirstCell(const LayoutNGTableCellInterface& cell) const {
   NOT_DESTROYED();
   const LayoutNGTableRowInterface* row = cell.RowInterface();
