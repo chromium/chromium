@@ -12,7 +12,9 @@
 </style>
 <div id="overviewCardContainer">
   <div class="diagnostics-chip">
-    <span id="marketingName">[[systemInfo_.marketingName]]</span>
-    <span id="deviceInfo">[[deviceInfo_]]</span>
+    <span id="marketingName" aria-describedby="deviceInfo">
+      [[systemInfo_.marketingName]]
+    </span>
+    <span id="deviceInfo" aria-hidden="true">[[deviceInfo_]]</span>
   </div>
 </div>
