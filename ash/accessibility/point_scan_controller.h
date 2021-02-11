@@ -38,13 +38,16 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
     kOff,
   };
 
-  // Starts point scanning, by sweeping a line across the screen and waiting for
-  // user input.
+  // Starts point scanning, by sweeping a range across the screen and waiting
+  // for user input.
+  void Start();
   void StartHorizontalRangeScan();
   void StartHorizontalLineScan();
   void StartVerticalRangeScan();
   void StartVerticalLineScan();
   void Stop();
+  void HideAll();
+  void ResetAnimation();
   base::Optional<gfx::PointF> OnPointSelect();
   bool IsPointScanEnabled();
 

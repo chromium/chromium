@@ -6,6 +6,14 @@
 
 namespace ash {
 
+void PointScanLayerAnimationInfo::Clear() {
+  start_time = base::TimeTicks();
+  change_time = base::TimeTicks();
+  offset = 0;
+  offset_bound = 0;
+  offset_start = 0;
+}
+
 void ComputeOffset(PointScanLayerAnimationInfo* animation_info,
                    base::TimeTicks timestamp) {
   if (timestamp < animation_info->start_time)

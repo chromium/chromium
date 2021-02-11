@@ -31,6 +31,12 @@ PointScanController::PointScanController() {
 
 PointScanController::~PointScanController() = default;
 
+void PointScanController::Start() {
+  HideAll();
+  ResetAnimation();
+  StartHorizontalRangeScan();
+}
+
 void PointScanController::StartHorizontalRangeScan() {
   state_ = PointScanState::kHorizontalRangeScanning;
   horizontal_range_layer_.reset(new PointScanLayer(this));
@@ -76,6 +82,43 @@ void PointScanController::Stop() {
   state_ = PointScanState::kOff;
   vertical_line_layer_->Pause();
   vertical_range_layer_->SetOpacity(0);
+}
+
+void PointScanController::HideAll() {
+  if (horizontal_range_layer_) {
+    horizontal_range_layer_->Pause();
+    horizontal_range_layer_->SetOpacity(0);
+  }
+  if (horizontal_line_layer_) {
+    horizontal_line_layer_->Pause();
+    horizontal_line_layer_->SetOpacity(0);
+  }
+  if (vertical_range_layer_) {
+    vertical_range_layer_->Pause();
+    vertical_range_layer_->SetOpacity(0);
+  }
+  if (vertical_line_layer_) {
+    vertical_line_layer_->Pause();
+    vertical_line_layer_->SetOpacity(0);
+  }
+}
+
+void PointScanController::ResetAnimation() {
+  horizontal_range_layer_info_.Clear();
+  if (horizontal_range_layer_)
+    horizontal_range_layer_->SetSubpixelPositionOffset(gfx::Vector2dF(0, 0));
+
+  horizontal_line_layer_info_.Clear();
+  if (horizontal_line_layer_)
+    horizontal_line_layer_->SetSubpixelPositionOffset(gfx::Vector2dF(0, 0));
+
+  vertical_range_layer_info_.Clear();
+  if (vertical_range_layer_)
+    vertical_range_layer_->SetSubpixelPositionOffset(gfx::Vector2dF(0, 0));
+
+  vertical_line_layer_info_.Clear();
+  if (vertical_line_layer_)
+    vertical_line_layer_->SetSubpixelPositionOffset(gfx::Vector2dF(0, 0));
 }
 
 base::Optional<gfx::PointF> PointScanController::OnPointSelect() {

@@ -16,6 +16,8 @@ struct PointScanLayerAnimationInfo {
   float offset_bound = 0;
   float offset_start = 0;
   float animation_rate = 0;
+
+  void Clear();
 };
 
 void ComputeOffset(PointScanLayerAnimationInfo* animation_info,
