@@ -7879,6 +7879,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              thumbnails."/>
   <suffix name="IPH_TranslateMenuButton"
       label="In product help translate menu button."/>
+  <suffix name="IPH_VideoTutorial_NTP_ChromeIntro"
+      label="Video tutorial card on NTP about introduction to chrome."/>
+  <suffix name="IPH_VideoTutorial_NTP_Download"
+      label="Video tutorial card on NTP about downloading in chrome."/>
+  <suffix name="IPH_VideoTutorial_NTP_Search"
+      label="Video tutorial card on NTP about search in chrome."/>
+  <suffix name="IPH_VideoTutorial_NTP_Summary"
+      label="Video tutorial summary card on NTP."/>
+  <suffix name="IPH_VideoTutorial_NTP_VoiceSearch"
+      label="Video tutorial card on NTP about voice search in chrome."/>
   <suffix name="IPH_WebUITabStrip"
       label="In product help for opening the WebUI tab strip."/>
   <affected-histogram name="InProductHelp.NotifyEventReadyState"/>

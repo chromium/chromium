@@ -30,6 +30,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="VoiceSearch"/>
 </variants>
 
+<histogram name="VideoTutorials.LanguagePicker.Action"
+    enum="VideoTutorials.LanguagePickerAction" expires_after="2021-07-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Recorded whenever the user interacts with the video player language picker
+    UI. Records various user actions such as language selection, back press, or
+    dismiss actions.
+  </summary>
+</histogram>
+
+<histogram name="VideoTutorials.LanguagePicker.LanguageSelected"
+    units="position" expires_after="2021-07-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-upboarding-eng@google.com</owner>
+  <summary>
+    Recorded whenever the user taps on a language in the video player language
+    picker UI. Only the position of the language in the list of available
+    languages will be recorded.
+  </summary>
+</histogram>
+
 <histogram name="VideoTutorials.Player.LoadTimeLatency" units="ms"
     expires_after="2021-05-02">
   <owner>shaktisahu@chromium.org</owner>
@@ -42,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="VideoTutorials.{Feature}.Player.Progress"
-    enum="VideoTutorials.WatchState" expires_after="2021-02-01">
+    enum="VideoTutorials.WatchState" expires_after="2021-07-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>
@@ -54,7 +76,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="VideoTutorials.{Feature}.Player.UserAction"
-    enum="VideoTutorials.UserAction" expires_after="2021-02-01">
+    enum="VideoTutorials.UserAction" expires_after="2021-07-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

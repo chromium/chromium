@@ -13,6 +13,8 @@ import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialUtils;
+import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics;
+import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.UserAction;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -60,14 +62,18 @@ public class TutorialListMediator {
                         .with(TutorialCardProperties.TITLE, tutorial.title)
                         .with(TutorialCardProperties.VIDEO_LENGTH,
                                 VideoTutorialUtils.getVideoLengthString(tutorial.videoLength))
-                        .with(TutorialCardProperties.CLICK_CALLBACK,
-                                () -> mClickCallback.onResult(tutorial));
+                        .with(TutorialCardProperties.CLICK_CALLBACK, () -> onCardClicked(tutorial));
 
         builder.with(TutorialCardProperties.VISUALS_PROVIDER, (consumer, widthPx, heightPx) -> {
             fetchImage(consumer, widthPx, heightPx, tutorial);
             return () -> {};
         });
         return builder.build();
+    }
+
+    private void onCardClicked(Tutorial tutorial) {
+        VideoTutorialMetrics.recordUserAction(tutorial.featureType, UserAction.PLAYED_FROM_RECAP);
+        mClickCallback.onResult(tutorial);
     }
 
     private void fetchImage(
