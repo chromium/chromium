@@ -285,14 +285,19 @@ void FuchsiaAudioRenderer::StopTicking() {
   audio_consumer_->Stop();
 
   base::AutoLock lock(timeline_lock_);
+  UpdateTimelineAfterStop();
   SetPlaybackState(PlaybackState::kStopped);
-  media_pos_ = CurrentMediaTimeLocked();
 }
 
 void FuchsiaAudioRenderer::SetPlaybackRate(double playback_rate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   audio_consumer_->SetRate(playback_rate);
+
+  if (playback_rate == 0.0) {
+    base::AutoLock lock(timeline_lock_);
+    UpdateTimelineAfterStop();
+  }
 }
 
 void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
@@ -302,6 +307,12 @@ void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
   {
     base::AutoLock lock(timeline_lock_);
     media_pos_ = time;
+
+    // Reset reference timestamp. This is necessary to ensure that the correct
+    // value is returned from GetWallClockTimes() until playback is resumed:
+    // the interface requires to return 0 wall clock between SetMediaTime() and
+    // StartTicking().
+    reference_time_ = base::TimeTicks();
   }
 
   FlushInternal();
@@ -310,10 +321,8 @@ void FuchsiaAudioRenderer::SetMediaTime(base::TimeDelta time) {
 
 base::TimeDelta FuchsiaAudioRenderer::CurrentMediaTime() {
   base::AutoLock lock(timeline_lock_);
-  if (state_ != PlaybackState::kPlaying &&
-      state_ != PlaybackState::kEndOfStream) {
+  if (!IsTimeMoving())
     return media_pos_;
-  }
 
   return CurrentMediaTimeLocked();
 }
@@ -326,12 +335,10 @@ bool FuchsiaAudioRenderer::GetWallClockTimes(
 
   base::AutoLock lock(timeline_lock_);
 
-  const bool is_time_moving = (state_ == PlaybackState::kPlaying ||
-                               state_ == PlaybackState::kEndOfStream) &&
-                              (media_delta_ > 0);
+  const bool is_time_moving = IsTimeMoving();
 
   if (media_timestamps.empty()) {
-    wall_clock_times->push_back(is_time_moving ? now : base::TimeTicks());
+    wall_clock_times->push_back(is_time_moving ? now : reference_time_);
     return is_time_moving;
   }
 
@@ -619,7 +626,24 @@ void FuchsiaAudioRenderer::OnEndOfStream() {
   client_->OnEnded();
 }
 
+bool FuchsiaAudioRenderer::IsTimeMoving() {
+  return (state_ == PlaybackState::kPlaying ||
+          state_ == PlaybackState::kEndOfStream) &&
+         (media_delta_ > 0);
+}
+
+void FuchsiaAudioRenderer::UpdateTimelineAfterStop() {
+  if (!IsTimeMoving())
+    return;
+
+  media_pos_ = CurrentMediaTimeLocked();
+  reference_time_ = base::TimeTicks::Now();
+  media_delta_ = 0;
+}
+
 base::TimeDelta FuchsiaAudioRenderer::CurrentMediaTimeLocked() {
+  DCHECK(IsTimeMoving());
+
   // Calculate media position using formula specified by the TimelineFunction.
   // See https://fuchsia.dev/reference/fidl/fuchsia.media#formulas .
   return media_pos_ + (base::TimeTicks::Now() - reference_time_) *

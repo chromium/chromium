@@ -118,8 +118,18 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   // End-of-stream event handler for |audio_consumer_|.
   void OnEndOfStream();
 
+  // Returns true if media clock is ticking and the rate is above 0.0.
+  bool IsTimeMoving() EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
+
+  // Updates TimelineFunction parameters after StopTicking() or
+  // SetPlaybackRate(0.0). Normally these parameters are provided by
+  // AudioConsumer, but this happens asynchronously, while we need to make sure
+  // that StopTicking() and SetPlaybackRate(0.0) stop the media clock
+  // synchronously.
+  void UpdateTimelineAfterStop() EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
+
   // Calculates media position based on the TimelineFunction returned from
-  // AudioConsumer.
+  // AudioConsumer. Should be called only when IsTimeMoving() is true.
   base::TimeDelta CurrentMediaTimeLocked()
       EXCLUSIVE_LOCKS_REQUIRED(timeline_lock_);
 
