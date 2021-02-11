@@ -74,6 +74,25 @@ class ScriptingInsertCSSFunction : public ExtensionFunction {
   api::scripting::CSSInjection injection_;
 };
 
+class ScriptingRemoveCSSFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.removeCSS", SCRIPTING_REMOVECSS)
+
+  ScriptingRemoveCSSFunction();
+  ScriptingRemoveCSSFunction(const ScriptingRemoveCSSFunction&) = delete;
+  ScriptingRemoveCSSFunction& operator=(const ScriptingRemoveCSSFunction&) =
+      delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingRemoveCSSFunction() override;
+
+  // Called when the CSS removal is complete.
+  void OnCSSRemoved(std::vector<ScriptExecutor::FrameResult> results);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_

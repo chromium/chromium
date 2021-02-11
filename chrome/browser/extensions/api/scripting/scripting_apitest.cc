@@ -95,4 +95,8 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSInjection) {
   ASSERT_TRUE(RunExtensionTest("scripting/css_injection")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSRemoval) {
+  ASSERT_TRUE(RunExtensionTest("scripting/remove_css")) << message_;
+}
+
 }  // namespace extensions

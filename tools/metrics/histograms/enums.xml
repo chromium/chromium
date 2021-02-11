@@ -26332,6 +26332,7 @@ Called by update_extension_histograms.py.-->
   <int value="1539" label="FILEMANAGERPRIVATE_ISTABLETMODEENABLED"/>
   <int value="1540" label="FILEMANAGERPRIVATE_NOTIFYDRIVEDIALOGRESULT"/>
   <int value="1541" label="ENTERPRISEREPORTINGPRIVATE_GETCONTEXTINFO"/>
+  <int value="1542" label="SCRIPTING_REMOVECSS"/>
 </enum>
 
 <enum name="ExtensionIconState">

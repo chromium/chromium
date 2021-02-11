@@ -26,6 +26,53 @@ namespace extensions {
 namespace {
 
 constexpr char kCouldNotLoadFileError[] = "Could not load file: '*'.";
+constexpr char kExactlyOneOfCssAndFilesError[] =
+    "Exactly one of 'css' and 'files' must be specified.";
+
+// Note: CSS always injects as soon as possible, so we default to
+// document_start. Because of tab loading, there's no guarantee this will
+// *actually* inject before page load, but it will at least inject "soon".
+constexpr UserScript::RunLocation kCSSRunLocation = UserScript::DOCUMENT_START;
+
+// Converts the given `style_origin` to a CSSOrigin.
+CSSOrigin ConvertStyleOriginToCSSOrigin(
+    api::scripting::StyleOrigin style_origin) {
+  CSSOrigin css_origin = CSSOrigin::kAuthor;
+  switch (style_origin) {
+    case api::scripting::STYLE_ORIGIN_NONE:
+    case api::scripting::STYLE_ORIGIN_AUTHOR:
+      css_origin = CSSOrigin::kAuthor;
+      break;
+    case api::scripting::STYLE_ORIGIN_USER:
+      css_origin = CSSOrigin::kUser;
+      break;
+  }
+
+  return css_origin;
+}
+
+// Checks `files` and populates `resource_out` with the appropriate extension
+// resource. Returns true on success; on failure, populates `error_out`.
+bool GetFileResource(const std::vector<std::string>& files,
+                     const Extension& extension,
+                     ExtensionResource* resource_out,
+                     std::string* error_out) {
+  if (files.size() != 1) {
+    constexpr char kExactlyOneFileError[] =
+        "Exactly one file must be specified.";
+    *error_out = kExactlyOneFileError;
+    return false;
+  }
+  ExtensionResource resource = extension.GetResource(files[0]);
+  if (resource.extension_root().empty() || resource.relative_path().empty()) {
+    *error_out =
+        ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, files[0]);
+    return false;
+  }
+
+  *resource_out = std::move(resource);
+  return true;
+}
 
 // Returns true if the `permissions` allow for injection into the given `frame`.
 // If false, populates `error`.
@@ -160,17 +207,9 @@ bool CheckAndLoadFiles(const std::vector<std::string>& files,
                        bool requires_localization,
                        LoadAndLocalizeResourceCallback callback,
                        std::string* error) {
-  if (files.size() != 1) {
-    constexpr char kExactlyOneFileError[] =
-        "Exactly one file must be specified.";
-    *error = kExactlyOneFileError;
+  ExtensionResource resource;
+  if (!GetFileResource(files, extension, &resource, error))
     return false;
-  }
-  ExtensionResource resource = extension.GetResource(files[0]);
-  if (resource.extension_root().empty() || resource.relative_path().empty()) {
-    *error = ErrorUtils::FormatErrorMessage(kCouldNotLoadFileError, files[0]);
-    return false;
-  }
 
   LoadAndLocalizeResource(extension, resource, requires_localization,
                           std::move(callback));
@@ -311,8 +350,7 @@ ExtensionFunction::ResponseAction ScriptingInsertCSSFunction::Run() {
 
   if ((injection_.files && injection_.css) ||
       (!injection_.files && !injection_.css)) {
-    return RespondNow(
-        Error("Exactly one of 'css' and 'files' must be specified"));
+    return RespondNow(Error(kExactlyOneOfCssAndFilesError));
   }
 
   if (injection_.files) {
@@ -369,27 +407,13 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
   }
   DCHECK(script_executor);
 
-  CSSOrigin origin = CSSOrigin::kAuthor;
-  switch (injection_.origin) {
-    case api::scripting::STYLE_ORIGIN_NONE:
-    case api::scripting::STYLE_ORIGIN_AUTHOR:
-      origin = CSSOrigin::kAuthor;
-      break;
-    case api::scripting::STYLE_ORIGIN_USER:
-      origin = CSSOrigin::kUser;
-      break;
-  }
-
-  // Note: CSS always injects as soon as possible, so we default to
-  // document_start. Because of tab loading, there's no guarantee this will
-  // *actually* inject before page load, but it will at least inject "soon".
-  constexpr UserScript::RunLocation kRunLocation = UserScript::DOCUMENT_START;
   script_executor->ExecuteScript(
       HostID(HostID::EXTENSIONS, extension()->id()), UserScript::ADD_CSS,
       std::move(code_to_execute), frame_scope, frame_ids,
-      ScriptExecutor::MATCH_ABOUT_BLANK, kRunLocation,
+      ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
       ScriptExecutor::DEFAULT_PROCESS,
-      /* webview_src */ GURL(), std::move(script_url), user_gesture(), origin,
+      /* webview_src */ GURL(), std::move(script_url), user_gesture(),
+      ConvertStyleOriginToCSSOrigin(injection_.origin),
       ScriptExecutor::NO_RESULT,
       base::BindOnce(&ScriptingInsertCSSFunction::OnCSSInserted, this));
 
@@ -397,6 +421,74 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
 }
 
 void ScriptingInsertCSSFunction::OnCSSInserted(
+    std::vector<ScriptExecutor::FrameResult> results) {
+  // If only a single frame was included and the injection failed, respond with
+  // an error.
+  if (results.size() == 1 && !results[0].error.empty()) {
+    Respond(Error(std::move(results[0].error)));
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
+ScriptingRemoveCSSFunction::ScriptingRemoveCSSFunction() = default;
+ScriptingRemoveCSSFunction::~ScriptingRemoveCSSFunction() = default;
+
+ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
+  std::unique_ptr<api::scripting::RemoveCSS::Params> params(
+      api::scripting::RemoveCSS::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  api::scripting::CSSInjection& injection = params->injection;
+
+  if ((injection.files && injection.css) ||
+      (!injection.files && !injection.css)) {
+    return RespondNow(Error(kExactlyOneOfCssAndFilesError));
+  }
+
+  GURL script_url;
+  std::string error;
+  std::string code;
+  if (injection.files) {
+    // Note: Since we're just removing the CSS, we don't actually need to load
+    // the file here. It's okay for `code` to be empty in this case.
+    ExtensionResource resource;
+    if (!GetFileResource(*injection.files, *extension(), &resource, &error))
+      return RespondNow(Error(std::move(error)));
+
+    script_url = extension()->GetResourceURL(injection.files->at(0));
+  } else {
+    DCHECK(injection.css);
+    code = std::move(*injection.css);
+  }
+
+  ScriptExecutor* script_executor = nullptr;
+  ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
+  std::vector<int> frame_ids;
+  if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
+                       browser_context(), include_incognito_information(),
+                       &script_executor, &frame_scope, &frame_ids, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+  DCHECK(script_executor);
+
+  DCHECK(code.empty() || !script_url.is_valid());
+
+  script_executor->ExecuteScript(
+      HostID(HostID::EXTENSIONS, extension()->id()), UserScript::REMOVE_CSS,
+      std::move(code), frame_scope, frame_ids,
+      ScriptExecutor::MATCH_ABOUT_BLANK, kCSSRunLocation,
+      ScriptExecutor::DEFAULT_PROCESS,
+      /* webview_src */ GURL(), std::move(script_url), user_gesture(),
+      ConvertStyleOriginToCSSOrigin(injection.origin),
+      ScriptExecutor::NO_RESULT,
+      base::BindOnce(&ScriptingRemoveCSSFunction::OnCSSRemoved, this));
+
+  return RespondLater();
+}
+
+void ScriptingRemoveCSSFunction::OnCSSRemoved(
     std::vector<ScriptExecutor::FrameResult> results) {
   // If only a single frame was included and the injection failed, respond with
   // an error.

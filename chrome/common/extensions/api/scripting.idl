@@ -37,8 +37,8 @@ namespace scripting {
     // specified.
     [serializableFunction]InjectedFunction? function;
 
-    // The path of the JS files to inject, relative to the extension's root
-    // directory.
+    // The path of the JS or CSS files to inject, relative to the extension's
+    // root directory.
     // NOTE: Currently a maximum of one file is supported.
     // Exactly one of <code>files</code> and <code>function</code> must be
     // specified.
@@ -95,6 +95,16 @@ namespace scripting {
     // |injection|: The details of the styles to insert.
     // |callback|: Invoked upon completion of the insertion.
     static void insertCSS(CSSInjection injection,
+                          optional CSSInjectionCallback callback);
+
+    // Removes a CSS stylesheet that was previously inserted by this extension
+    // from a target context.
+    // |injection|: The details of the styles to remove. Note that the
+    // <code>css</code>, <code>files</code>, and <code>origin</code> properties
+    // must exactly match the stylesheet inserted through $(ref:insertCSS).
+    // Attempting to remove a non-existent stylesheet is a no-op.
+    // |callback|: A callback to be invoked upon the completion of the removal.
+    static void removeCSS(CSSInjection injection,
                           optional CSSInjectionCallback callback);
   };
 };
