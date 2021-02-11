@@ -25,6 +25,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/display/direct_renderer.h"
+#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/gl_renderer_copier.h"
 #include "components/viz/service/display/gl_renderer_draw_cache.h"
 #include "components/viz/service/display/program_binding.h"
@@ -75,7 +76,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   GLRenderer(const RendererSettings* settings,
              const DebugRendererSettings* debug_settings,
              OutputSurface* output_surface,
-             DisplayResourceProvider* resource_provider,
+             DisplayResourceProviderGL* resource_provider,
              OverlayProcessorInterface* overlay_processor,
              scoped_refptr<base::SingleThreadTaskRunner> current_task_runner);
   ~GLRenderer() override;
@@ -158,7 +159,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   friend class GLRendererTest;
 
   using OverlayResourceLock =
-      std::unique_ptr<DisplayResourceProvider::ScopedOverlayLockGL>;
+      std::unique_ptr<DisplayResourceProviderGL::ScopedOverlayLockGL>;
   using OverlayResourceLockList = std::vector<OverlayResourceLock>;
 
   // If a RenderPass is used as an overlay, we render the RenderPass with any
@@ -375,6 +376,10 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // Returns true if the given solid color draw quad can be safely drawn using
   // the glClear function call.
   bool CanUseFastSolidColorDraw(const SolidColorDrawQuad* quad) const;
+
+  DisplayResourceProviderGL* resource_provider() {
+    return static_cast<DisplayResourceProviderGL*>(resource_provider_);
+  }
 
   // A map from RenderPass id to the texture used to draw the RenderPass from.
   base::flat_map<AggregatedRenderPassId, ScopedRenderPassTexture>

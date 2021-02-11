@@ -106,7 +106,7 @@ SkDrawRegion::SkDrawRegion(const gfx::QuadF& draw_region) {
   points[3] = gfx::PointFToSkPoint(draw_region.p4());
 }
 
-bool IsTextureResource(DisplayResourceProvider* resource_provider,
+bool IsTextureResource(DisplayResourceProviderSkia* resource_provider,
                        ResourceId resource_id) {
   return !resource_provider->IsResourceSoftwareBacked(resource_id);
 }
@@ -585,7 +585,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     bool use_target_color_space) {
   if (!resource_id)
     return;
-  auto* resource_provider = skia_renderer->resource_provider_;
+  auto* resource_provider = skia_renderer->resource_provider();
   DCHECK(IsTextureResource(resource_provider, resource_id));
 
   gfx::ColorSpace color_space;
@@ -614,14 +614,14 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
   ScopedYUVSkImageBuilder(SkiaRenderer* skia_renderer,
                           const YUVVideoDrawQuad* quad,
                           sk_sp<SkColorSpace> dst_color_space) {
-    DCHECK(IsTextureResource(skia_renderer->resource_provider_,
+    DCHECK(IsTextureResource(skia_renderer->resource_provider(),
                              quad->y_plane_resource_id()));
-    DCHECK(IsTextureResource(skia_renderer->resource_provider_,
+    DCHECK(IsTextureResource(skia_renderer->resource_provider(),
                              quad->u_plane_resource_id()));
-    DCHECK(IsTextureResource(skia_renderer->resource_provider_,
+    DCHECK(IsTextureResource(skia_renderer->resource_provider(),
                              quad->v_plane_resource_id()));
     DCHECK(quad->a_plane_resource_id() == kInvalidResourceId ||
-           IsTextureResource(skia_renderer->resource_provider_,
+           IsTextureResource(skia_renderer->resource_provider(),
                              quad->a_plane_resource_id()));
 
     // The image is always either NV12 or I420, possibly with a separate alpha
@@ -676,7 +676,6 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
   const SkImage* sk_image() const { return sk_image_.get(); }
 
  private:
-  std::unique_ptr<DisplayResourceProvider::ScopedReadLockSkImage> lock_;
   sk_sp<SkImage> sk_image_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedYUVSkImageBuilder);
@@ -707,7 +706,7 @@ class SkiaRenderer::FrameResourceFence : public ResourceFence {
 SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
                            const DebugRendererSettings* debug_settings,
                            OutputSurface* output_surface,
-                           DisplayResourceProvider* resource_provider,
+                           DisplayResourceProviderSkia* resource_provider,
                            OverlayProcessorInterface* overlay_processor,
                            SkiaOutputSurface* skia_output_surface)
     : DirectRenderer(settings,
@@ -720,7 +719,8 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
   lock_set_for_external_use_.emplace(resource_provider, skia_output_surface_);
 
   current_frame_resource_fence_ = base::MakeRefCounted<FrameResourceFence>();
-  resource_provider_->SetReadLockFence(current_frame_resource_fence_.get());
+  this->resource_provider()->SetReadLockFence(
+      current_frame_resource_fence_.get());
 }
 
 SkiaRenderer::~SkiaRenderer() = default;
@@ -738,7 +738,7 @@ void SkiaRenderer::BeginDrawingFrame() {
   for (const auto& pass : *current_frame()->render_passes_in_draw_order) {
     for (auto* quad : pass->quad_list) {
       for (ResourceId resource_id : quad->resources)
-        resource_provider_->InitializePromotionHintRequest(resource_id);
+        resource_provider()->InitializePromotionHintRequest(resource_id);
     }
   }
 #endif
@@ -1863,7 +1863,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
                                    const DrawRPDQParams* rpdq_params,
                                    DrawQuadParams* params) {
   const gfx::ColorSpace& src_color_space =
-      resource_provider_->GetColorSpace(quad->resource_id());
+      resource_provider()->GetColorSpace(quad->resource_id());
   const bool needs_color_conversion_filter =
       quad->is_video_frame && src_color_space.IsHDR();
 
@@ -2012,9 +2012,9 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
                                     const DrawRPDQParams* rpdq_params,
                                     DrawQuadParams* params) {
   DCHECK(!MustFlushBatchedQuads(quad, rpdq_params, *params));
-  // |resource_provider_| can be NULL in resourceless software draws, which
+  // |resource_provider()| can be NULL in resourceless software draws, which
   // should never produce tile quads in the first place.
-  DCHECK(resource_provider_);
+  DCHECK(resource_provider());
   ScopedSkImageBuilder builder(
       this, quad->resource_id(), /*maybe_concurrent_reads=*/false,
       quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
@@ -2079,13 +2079,14 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   const bool supports_dc_layers =
       output_surface_->capabilities().supports_dc_layers;
   if (supports_dc_layers && !src_color_space.IsHDR() &&
-      resource_provider_->IsOverlayCandidate(quad->y_plane_resource_id())) {
-    DCHECK(resource_provider_->IsOverlayCandidate(quad->u_plane_resource_id()));
+      resource_provider()->IsOverlayCandidate(quad->y_plane_resource_id())) {
+    DCHECK(
+        resource_provider()->IsOverlayCandidate(quad->u_plane_resource_id()));
     dst_color_space = gfx::ColorSpace::CreateSRGB();
   }
 #endif
 
-  DCHECK(resource_provider_);
+  DCHECK(resource_provider());
   // Pass in |frame_color_space| here instead of |dst_color_space| so the color
   // space transform going from SkImage to SkSurface is identity. The
   // SkColorFilter already handles color space conversion so this avoids
@@ -2143,7 +2144,7 @@ void SkiaRenderer::ScheduleOverlays() {
   // to OverlayProcessor as well.
   for (auto& overlay : current_frame()->overlay_list) {
     // Resources will be unlocked after the next SwapBuffers() is completed.
-    locks.emplace_back(resource_provider_, overlay.resource_id);
+    locks.emplace_back(resource_provider(), overlay.resource_id);
     auto& lock = locks.back();
 
     // Sync tokens ensure the texture to be overlaid is available before
@@ -2162,7 +2163,7 @@ void SkiaRenderer::ScheduleOverlays() {
         break;
 
       // Resources will be unlocked after the next SwapBuffers() is completed.
-      locks.emplace_back(resource_provider_, resource_id);
+      locks.emplace_back(resource_provider(), resource_id);
       auto& lock = locks.back();
 
       // Sync tokens ensure the texture to be overlaid is available before
@@ -2186,7 +2187,7 @@ void SkiaRenderer::ScheduleOverlays() {
 
     // TODO(https://crbug.com/894929): Track IOSurface in-use instead of just
     // unlocking after the next SwapBuffers is completed.
-    locks.emplace_back(resource_provider_,
+    locks.emplace_back(resource_provider(),
                        ca_layer_overlay.contents_resource_id);
     auto& lock = locks.back();
 
@@ -2211,7 +2212,7 @@ void SkiaRenderer::ScheduleOverlays() {
   // Only Wayland uses this code path.
   for (auto& overlay : current_frame()->overlay_list) {
     // Resources will be unlocked after the next SwapBuffers() is completed.
-    locks.emplace_back(resource_provider_, overlay.resource_id);
+    locks.emplace_back(resource_provider(), overlay.resource_id);
     auto& lock = locks.back();
 
     // Sync tokens ensure the texture to be overlaid is available before
@@ -2234,7 +2235,7 @@ void SkiaRenderer::ScheduleOverlays() {
     on_finished_callback = base::BindOnce(
         &FrameResourceFence::Signal, std::move(current_frame_resource_fence_));
     current_frame_resource_fence_ = base::MakeRefCounted<FrameResourceFence>();
-    resource_provider_->SetReadLockFence(current_frame_resource_fence_.get());
+    resource_provider()->SetReadLockFence(current_frame_resource_fence_.get());
   }
 
   skia_output_surface_->ScheduleOverlays(
@@ -2597,7 +2598,7 @@ void SkiaRenderer::FinishDrawingQuadList() {
     on_finished_callback = base::BindOnce(
         &FrameResourceFence::Signal, std::move(current_frame_resource_fence_));
     current_frame_resource_fence_ = base::MakeRefCounted<FrameResourceFence>();
-    resource_provider_->SetReadLockFence(current_frame_resource_fence_.get());
+    resource_provider()->SetReadLockFence(current_frame_resource_fence_.get());
   }
   skia_output_surface_->EndPaint(std::move(on_finished_callback));
 
@@ -2897,20 +2898,20 @@ DelegatedInkPointRendererBase* SkiaRenderer::GetDelegatedInkPointRenderer() {
 
 #if defined(OS_APPLE)
 bool SkiaRenderer::ScopedReadLockComparator::operator()(
-    const DisplayResourceProvider::ScopedReadLockSharedImage& lhs,
-    const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const {
+    const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
+    const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs) const {
   return lhs.mailbox() < rhs.mailbox();
 }
 
 bool SkiaRenderer::ScopedReadLockComparator::operator()(
-    const DisplayResourceProvider::ScopedReadLockSharedImage& lhs,
+    const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
     const gpu::Mailbox& rhs) const {
   return lhs.mailbox() < rhs;
 }
 
 bool SkiaRenderer::ScopedReadLockComparator::operator()(
     const gpu::Mailbox& lhs,
-    const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const {
+    const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs) const {
   return lhs < rhs.mailbox();
 }
 #endif  // defined(OS_APPLE)

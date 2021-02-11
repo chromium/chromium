@@ -12,12 +12,12 @@
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/direct_renderer.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
 class DebugBorderDrawQuad;
-class DisplayResourceProvider;
 class OutputSurface;
 class PictureDrawQuad;
 class AggregatedRenderPassDrawQuad;
@@ -31,7 +31,7 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   SoftwareRenderer(const RendererSettings* settings,
                    const DebugRendererSettings* debug_settings,
                    OutputSurface* output_surface,
-                   DisplayResourceProvider* resource_provider,
+                   DisplayResourceProviderSoftware* resource_provider,
                    OverlayProcessorInterface* overlay_processor);
 
   ~SoftwareRenderer() override;
@@ -77,7 +77,7 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   void ClearFramebuffer();
   void SetClipRect(const gfx::Rect& rect);
   void SetClipRRect(const gfx::RRectF& rrect);
-  bool IsSoftwareResource(ResourceId resource_id) const;
+  bool IsSoftwareResource(ResourceId resource_id);
 
   void DrawDebugBorderQuad(const DebugBorderDrawQuad* quad);
   void DrawPictureQuad(const PictureDrawQuad* quad);
@@ -107,6 +107,10 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   sk_sp<SkShader> GetBackdropFilterShader(
       const AggregatedRenderPassDrawQuad* quad,
       SkTileMode content_tile_mode) const;
+
+  DisplayResourceProviderSoftware* resource_provider() {
+    return static_cast<DisplayResourceProviderSoftware*>(resource_provider_);
+  }
 
   // A map from RenderPass id to the bitmap used to draw the RenderPass from.
   base::flat_map<AggregatedRenderPassId, SkBitmap> render_pass_bitmaps_;

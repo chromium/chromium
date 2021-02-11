@@ -76,11 +76,12 @@ class AnimatedImagesProvider : public cc::ImageProvider {
 
 }  // namespace
 
-SoftwareRenderer::SoftwareRenderer(const RendererSettings* settings,
-                                   const DebugRendererSettings* debug_settings,
-                                   OutputSurface* output_surface,
-                                   DisplayResourceProvider* resource_provider,
-                                   OverlayProcessorInterface* overlay_processor)
+SoftwareRenderer::SoftwareRenderer(
+    const RendererSettings* settings,
+    const DebugRendererSettings* debug_settings,
+    OutputSurface* output_surface,
+    DisplayResourceProviderSoftware* resource_provider,
+    OverlayProcessorInterface* overlay_processor)
     : DirectRenderer(settings,
                      debug_settings,
                      output_surface,
@@ -240,8 +241,8 @@ void SoftwareRenderer::PrepareSurfaceForPass(
   }
 }
 
-bool SoftwareRenderer::IsSoftwareResource(ResourceId resource_id) const {
-  return resource_provider_->IsResourceSoftwareBacked(resource_id);
+bool SoftwareRenderer::IsSoftwareResource(ResourceId resource_id) {
+  return resource_provider()->IsResourceSoftwareBacked(resource_id);
 }
 
 void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
@@ -438,8 +439,8 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
   }
 
   // TODO(skaslev): Add support for non-premultiplied alpha.
-  DisplayResourceProvider::ScopedReadLockSkImage lock(resource_provider_,
-                                                      quad->resource_id());
+  DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
+      resource_provider(), quad->resource_id());
   if (!lock.valid())
     return;
   const SkImage* image = lock.sk_image();
@@ -483,8 +484,8 @@ void SoftwareRenderer::DrawTileQuad(const TileDrawQuad* quad) {
   DCHECK(resource_provider_);
   DCHECK(IsSoftwareResource(quad->resource_id()));
 
-  DisplayResourceProvider::ScopedReadLockSkImage lock(resource_provider_,
-                                                      quad->resource_id());
+  DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
+      resource_provider(), quad->resource_id());
   if (!lock.valid())
     return;
 
@@ -556,8 +557,8 @@ void SoftwareRenderer::DrawRenderPassQuad(
   }
 
   if (quad->mask_resource_id()) {
-    DisplayResourceProvider::ScopedReadLockSkImage mask_lock(
-        resource_provider_, quad->mask_resource_id());
+    DisplayResourceProviderSoftware::ScopedReadLockSkImage mask_lock(
+        resource_provider(), quad->mask_resource_id());
     if (!mask_lock.valid())
       return;
 

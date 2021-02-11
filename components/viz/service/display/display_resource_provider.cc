@@ -51,31 +51,6 @@ class ScopedAllowGpuAccessForDisplayResourceProvider {
   gpu::ScopedAllowScheduleGpuTask allow_gpu_;
 };
 
-class ScopedSetActiveTexture {
- public:
-  ScopedSetActiveTexture(GLES2Interface* gl, GLenum unit)
-      : gl_(gl), unit_(unit) {
-#if DCHECK_IS_ON()
-    GLint active_unit = 0;
-    gl->GetIntegerv(GL_ACTIVE_TEXTURE, &active_unit);
-    DCHECK_EQ(GL_TEXTURE0, active_unit);
-#endif
-
-    if (unit_ != GL_TEXTURE0)
-      gl_->ActiveTexture(unit_);
-  }
-
-  ~ScopedSetActiveTexture() {
-    // Active unit being GL_TEXTURE0 is effectively the ground state.
-    if (unit_ != GL_TEXTURE0)
-      gl_->ActiveTexture(GL_TEXTURE0);
-  }
-
- private:
-  GLES2Interface* gl_;
-  GLenum unit_;
-};
-
 DisplayResourceProvider::DisplayResourceProvider(
     Mode mode,
     ContextProvider* compositor_context_provider,
@@ -237,10 +212,6 @@ bool DisplayResourceProvider::IsResourceSoftwareBacked(ResourceId id) {
   return GetResource(id)->transferable.is_software;
 }
 
-GLenum DisplayResourceProvider::GetResourceTextureTarget(ResourceId id) {
-  return GetResource(id)->transferable.mailbox_holder.texture_target;
-}
-
 gfx::BufferFormat DisplayResourceProvider::GetBufferFormat(ResourceId id) {
   return BufferFormat(GetResourceFormat(id));
 }
@@ -253,21 +224,6 @@ ResourceFormat DisplayResourceProvider::GetResourceFormat(ResourceId id) {
 const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(ResourceId id) {
   ChildResource* resource = GetResource(id);
   return resource->transferable.color_space;
-}
-
-void DisplayResourceProvider::WaitSyncToken(ResourceId id) {
-  ChildResource* resource = TryGetResource(id);
-  // TODO(ericrk): We should never fail TryGetResource, but we appear to
-  // be doing so on Android in rare cases. Handle this gracefully until a
-  // better solution can be found. https://crbug.com/811858
-  if (!resource)
-    return;
-  WaitSyncTokenInternal(resource);
-
-#if defined(OS_ANDROID)
-  // Now that the resource is synced, we may send it a promotion hint.
-  InitializePromotionHintRequest(id);
-#endif
 }
 
 int DisplayResourceProvider::CreateChild(ReturnCallback return_callback) {
@@ -390,18 +346,6 @@ DisplayResourceProvider::ChildResource* DisplayResourceProvider::TryGetResource(
   return &it->second;
 }
 
-void DisplayResourceProvider::PopulateSkBitmapWithResource(
-    SkBitmap* sk_bitmap,
-    const ChildResource* resource) {
-  DCHECK(IsBitmapFormatSupported(resource->transferable.format));
-  SkImageInfo info =
-      SkImageInfo::MakeN32Premul(resource->transferable.size.width(),
-                                 resource->transferable.size.height());
-  bool pixels_installed = sk_bitmap->installPixels(
-      info, resource->shared_bitmap->pixels(), info.minRowBytes());
-  DCHECK(pixels_installed);
-}
-
 void DisplayResourceProvider::DeleteResourceInternal(ResourceMap::iterator it) {
   TRACE_EVENT0("viz", "DisplayResourceProvider::DeleteResourceInternal");
   ChildResource* resource = &it->second;
@@ -413,20 +357,6 @@ void DisplayResourceProvider::DeleteResourceInternal(ResourceMap::iterator it) {
   }
 
   resources_.erase(it);
-}
-
-void DisplayResourceProvider::WaitSyncTokenInternal(ChildResource* resource) {
-  DCHECK(resource);
-  if (!resource->ShouldWaitSyncToken())
-    return;
-  GLES2Interface* gl = ContextGL();
-  DCHECK(gl);
-  // In the case of context lost, this sync token may be empty (see comment in
-  // the UpdateSyncToken() function). The WaitSyncTokenCHROMIUM() function
-  // handles empty sync tokens properly so just wait anyways and update the
-  // state the synchronized.
-  gl->WaitSyncTokenCHROMIUM(resource->sync_token().GetConstData());
-  resource->SetSynchronized();
 }
 
 GLES2Interface* DisplayResourceProvider::ContextGL() const {
@@ -548,34 +478,6 @@ void DisplayResourceProvider::TryReleaseResource(ResourceId id,
     auto child_it = children_.find(resource->child_id);
     DeleteAndReturnUnusedResourcesToChild(child_it, NORMAL, {id});
   }
-}
-
-GLenum DisplayResourceProvider::BindForSampling(ResourceId resource_id,
-                                                GLenum unit,
-                                                GLenum filter) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  GLES2Interface* gl = ContextGL();
-  auto it = resources_.find(resource_id);
-  // TODO(ericrk): We should never fail to find resource_id, but we appear to
-  // be doing so on Android in rare cases. Handle this gracefully until a
-  // better solution can be found. https://crbug.com/811858
-  if (it == resources_.end())
-    return GL_TEXTURE_2D;
-
-  ChildResource* resource = &it->second;
-  DCHECK(resource->lock_for_read_count);
-
-  ScopedSetActiveTexture scoped_active_tex(gl, unit);
-  GLenum target = resource->transferable.mailbox_holder.texture_target;
-  gl->BindTexture(target, resource->gl_id);
-
-  // Texture parameters can be modified by concurrent reads so reset them
-  // before binding the texture. See https://crbug.com/1092080.
-  gl->TexParameteri(target, GL_TEXTURE_MIN_FILTER, filter);
-  gl->TexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
-  resource->filter = filter;
-
-  return target;
 }
 
 bool DisplayResourceProvider::ReadLockFenceHasPassed(
@@ -807,122 +709,6 @@ void DisplayResourceProvider::SetAllowAccessToGPUThread(bool allow) {
   }
 }
 
-DisplayResourceProvider::ScopedReadLockGL::ScopedReadLockGL(
-    DisplayResourceProvider* resource_provider,
-    ResourceId resource_id)
-    : resource_provider_(resource_provider), resource_id_(resource_id) {
-  const ChildResource* resource =
-      resource_provider->LockForRead(resource_id, false /* overlay_only */);
-  // TODO(ericrk): We should never fail LockForRead, but we appear to be
-  // doing so on Android in rare cases. Handle this gracefully until a better
-  // solution can be found. https://crbug.com/811858
-  if (!resource)
-    return;
-
-  texture_id_ = resource->gl_id;
-  target_ = resource->transferable.mailbox_holder.texture_target;
-  size_ = resource->transferable.size;
-  color_space_ = resource->transferable.color_space;
-}
-
-DisplayResourceProvider::ScopedReadLockGL::~ScopedReadLockGL() {
-  resource_provider_->UnlockForRead(resource_id_, false /* overlay_only */);
-}
-
-DisplayResourceProvider::ScopedOverlayLockGL::ScopedOverlayLockGL(
-    DisplayResourceProvider* resource_provider,
-    ResourceId resource_id)
-    : resource_provider_(resource_provider), resource_id_(resource_id) {
-  const ChildResource* resource =
-      resource_provider->LockForRead(resource_id, true /* overlay_only */);
-  if (!resource)
-    return;
-
-  texture_id_ = resource->gl_id;
-}
-
-DisplayResourceProvider::ScopedOverlayLockGL::~ScopedOverlayLockGL() {
-  resource_provider_->UnlockForRead(resource_id_, true /* overlay_only */);
-}
-
-DisplayResourceProvider::ScopedSamplerGL::ScopedSamplerGL(
-    DisplayResourceProvider* resource_provider,
-    ResourceId resource_id,
-    GLenum filter)
-    : resource_lock_(resource_provider, resource_id),
-      unit_(GL_TEXTURE0),
-      target_(resource_provider->BindForSampling(resource_id, unit_, filter)) {}
-
-DisplayResourceProvider::ScopedSamplerGL::ScopedSamplerGL(
-    DisplayResourceProvider* resource_provider,
-    ResourceId resource_id,
-    GLenum unit,
-    GLenum filter)
-    : resource_lock_(resource_provider, resource_id),
-      unit_(unit),
-      target_(resource_provider->BindForSampling(resource_id, unit_, filter)) {}
-
-DisplayResourceProvider::ScopedSamplerGL::~ScopedSamplerGL() = default;
-
-DisplayResourceProvider::ScopedReadLockSkImage::ScopedReadLockSkImage(
-    DisplayResourceProvider* resource_provider,
-    ResourceId resource_id,
-    SkAlphaType alpha_type,
-    GrSurfaceOrigin origin)
-    : resource_provider_(resource_provider), resource_id_(resource_id) {
-  const ChildResource* resource =
-      resource_provider->LockForRead(resource_id, false /* overlay_only */);
-  DCHECK(resource);
-
-  // Use cached SkImage if possible.
-  auto it = resource_provider_->resource_sk_images_.find(resource_id);
-  if (it != resource_provider_->resource_sk_images_.end()) {
-    sk_image_ = it->second;
-    return;
-  }
-
-  if (resource->is_gpu_resource_type()) {
-    DCHECK(resource->gl_id);
-    GrGLTextureInfo texture_info;
-    texture_info.fID = resource->gl_id;
-    texture_info.fTarget = resource->transferable.mailbox_holder.texture_target;
-    texture_info.fFormat = TextureStorageFormat(resource->transferable.format);
-    GrBackendTexture backend_texture(resource->transferable.size.width(),
-                                     resource->transferable.size.height(),
-                                     GrMipMapped::kNo, texture_info);
-    sk_image_ = SkImage::MakeFromTexture(
-        resource_provider->compositor_context_provider_->GrContext(),
-        backend_texture, origin,
-        ResourceFormatToClosestSkColorType(!resource_provider->IsSoftware(),
-                                           resource->transferable.format),
-        alpha_type, resource->transferable.color_space.ToSkColorSpace());
-    return;
-  }
-
-  if (!resource->shared_bitmap) {
-    // If a CompositorFrameSink is destroyed, it destroys all SharedBitmapIds
-    // that it registered. In this case, a CompositorFrame can be drawn with
-    // SharedBitmapIds that are not known in the viz service. As well, a
-    // misbehaved client can use SharedBitampIds that it did not report to
-    // the service. Then the |shared_bitmap| will be null, and this read lock
-    // will not be valid. Software-compositing users of this read lock must
-    // check for valid() to deal with this scenario.
-    sk_image_ = nullptr;
-    return;
-  }
-
-  DCHECK(origin == kTopLeft_GrSurfaceOrigin);
-  SkBitmap sk_bitmap;
-  resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource);
-  sk_bitmap.setImmutable();
-  sk_image_ = SkImage::MakeFromBitmap(sk_bitmap);
-  resource_provider_->resource_sk_images_[resource_id] = sk_image_;
-}
-
-DisplayResourceProvider::ScopedReadLockSkImage::~ScopedReadLockSkImage() {
-  resource_provider_->UnlockForRead(resource_id_, false /* overlay_only */);
-}
-
 DisplayResourceProvider::ScopedReadLockSharedImage::ScopedReadLockSharedImage(
     DisplayResourceProvider* resource_provider,
     ResourceId resource_id)
@@ -970,89 +756,6 @@ void DisplayResourceProvider::ScopedReadLockSharedImage::Reset() {
   resource_provider_ = nullptr;
   resource_id_ = kInvalidResourceId;
   resource_ = nullptr;
-}
-
-DisplayResourceProvider::LockSetForExternalUse::LockSetForExternalUse(
-    DisplayResourceProvider* resource_provider,
-    ExternalUseClient* client)
-    : resource_provider_(resource_provider) {
-  DCHECK(!resource_provider_->external_use_client_);
-  resource_provider_->external_use_client_ = client;
-}
-
-DisplayResourceProvider::LockSetForExternalUse::~LockSetForExternalUse() {
-  DCHECK(resources_.empty());
-}
-
-ExternalUseClient::ImageContext*
-DisplayResourceProvider::LockSetForExternalUse::LockResource(
-    ResourceId id,
-    bool maybe_concurrent_reads,
-    bool is_video_plane,
-    const gfx::ColorSpace& color_space) {
-  auto it = resource_provider_->resources_.find(id);
-  DCHECK(it != resource_provider_->resources_.end());
-
-  ChildResource& resource = it->second;
-  DCHECK(resource.is_gpu_resource_type());
-
-  if (!resource.locked_for_external_use) {
-    DCHECK(!base::Contains(resources_, std::make_pair(id, &resource)));
-    resources_.emplace_back(id, &resource);
-
-    if (!resource.image_context) {
-      sk_sp<SkColorSpace> image_color_space;
-      if (!is_video_plane) {
-        // HDR video color conversion is handled externally in SkiaRenderer
-        // using a special color filter and |color_space| is set to destination
-        // color space so that Skia doesn't perform implicit color conversion.
-        image_color_space =
-            color_space.IsValid()
-                ? color_space.ToSkColorSpace()
-                : resource.transferable.color_space.ToSkColorSpace();
-      }
-      resource.image_context =
-          resource_provider_->external_use_client_->CreateImageContext(
-              resource.transferable.mailbox_holder, resource.transferable.size,
-              resource.transferable.format, maybe_concurrent_reads,
-              resource.transferable.ycbcr_info, std::move(image_color_space));
-    }
-    resource.locked_for_external_use = true;
-
-    if (resource.transferable.read_lock_fences_enabled) {
-      if (resource_provider_->current_read_lock_fence_.get())
-        resource_provider_->current_read_lock_fence_->Set();
-      resource.read_lock_fence = resource_provider_->current_read_lock_fence_;
-    }
-  }
-
-  DCHECK(base::Contains(resources_, std::make_pair(id, &resource)));
-  return resource.image_context.get();
-}
-
-void DisplayResourceProvider::LockSetForExternalUse::UnlockResources(
-    const gpu::SyncToken& sync_token) {
-  DCHECK(sync_token.verified_flush());
-  for (const auto& pair : resources_) {
-    auto id = pair.first;
-    auto* resource = pair.second;
-    DCHECK(resource->locked_for_external_use);
-
-    // TODO(penghuang): support software resource.
-    DCHECK(resource->is_gpu_resource_type());
-
-    // Update the resource sync token to |sync_token|. When the next frame is
-    // being composited, the DeclareUsedResourcesFromChild() will be called with
-    // resources belong to every child for the next frame. If the resource is
-    // not used by the next frame, the resource will be returned to a child
-    // which owns it with the |sync_token|. The child is responsible for issuing
-    // a WaitSyncToken GL command with the |sync_token| before reusing it.
-    resource->UpdateSyncToken(sync_token);
-    resource->locked_for_external_use = false;
-
-    resource_provider_->TryReleaseResource(id, resource);
-  }
-  resources_.clear();
 }
 
 DisplayResourceProvider::SynchronousFence::SynchronousFence(

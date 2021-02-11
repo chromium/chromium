@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/service/display/direct_renderer.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/sync_query_collection.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/latency/latency_info.h"
@@ -43,7 +44,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   SkiaRenderer(const RendererSettings* settings,
                const DebugRendererSettings* debug_settings,
                OutputSurface* output_surface,
-               DisplayResourceProvider* resource_provider,
+               DisplayResourceProviderSkia* resource_provider,
                OverlayProcessorInterface* overlay_processor,
                SkiaOutputSurface* skia_output_surface);
   ~SkiaRenderer() override;
@@ -250,6 +251,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void PrepareRenderPassOverlay(CALayerOverlay* overlay);
 #endif
 
+  DisplayResourceProviderSkia* resource_provider() {
+    return static_cast<DisplayResourceProviderSkia*>(resource_provider_);
+  }
+
   // A map from RenderPass id to the texture used to draw the RenderPass from.
   struct RenderPassBacking {
     gfx::Size size;
@@ -302,17 +307,17 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // the compositor thread. And the sync token will be released when the DDL
   // for the current frame is replayed on the GPU thread.
   // It is only used with DDL.
-  base::Optional<DisplayResourceProvider::LockSetForExternalUse>
+  base::Optional<DisplayResourceProviderSkia::LockSetForExternalUse>
       lock_set_for_external_use_;
 
   // Locks for overlays are pending for swapbuffers.
   base::circular_deque<
-      std::vector<DisplayResourceProvider::ScopedReadLockSharedImage>>
+      std::vector<DisplayResourceProviderSkia::ScopedReadLockSharedImage>>
       pending_overlay_locks_;
 
   // Locks for overlays have been committed. |pending_overlay_locks_| will
   // be moved to |committed_overlay_locks_| after SwapBuffers() completed.
-  std::vector<DisplayResourceProvider::ScopedReadLockSharedImage>
+  std::vector<DisplayResourceProviderSkia::ScopedReadLockSharedImage>
       committed_overlay_locks_;
 
 #if defined(OS_APPLE)
@@ -320,18 +325,20 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
    public:
     using is_transparent = void;
     bool operator()(
-        const DisplayResourceProvider::ScopedReadLockSharedImage& lhs,
-        const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const;
+        const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
+        const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs)
+        const;
     bool operator()(
-        const DisplayResourceProvider::ScopedReadLockSharedImage& lhs,
+        const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
         const gpu::Mailbox& rhs) const;
     bool operator()(
         const gpu::Mailbox& lhs,
-        const DisplayResourceProvider::ScopedReadLockSharedImage& rhs) const;
+        const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs)
+        const;
   };
   // a set for locks of overlays which are waiting for releasing.
   // The set is using lock.mailbox() as the unique key.
-  base::flat_set<DisplayResourceProvider::ScopedReadLockSharedImage,
+  base::flat_set<DisplayResourceProviderSkia::ScopedReadLockSharedImage,
                  ScopedReadLockComparator>
       awaiting_release_overlay_locks_;
 #endif  // defined(OS_APPLE)
