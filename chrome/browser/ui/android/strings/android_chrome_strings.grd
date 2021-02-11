@@ -779,29 +779,36 @@ For example, some websites may respond to this request by showing you ads that a
       </message>
 
       <!-- Privacy Sandbox Settings. Used by //chrome/browser/privacy_sandbox. -->
-      <message name="IDS_PREFS_PRIVACY_SANDBOX" desc="Title for the 'Privacy sandbox' page.">
-        Privacy sandbox
+      <message name="IDS_PREFS_PRIVACY_SANDBOX" desc="Title for the 'Privacy Sandbox' page.">
+        Privacy Sandbox
       </message>
       <message name="IDS_PRIVACY_SANDBOX_STATUS_ENABLED" desc="Status text, displayed when the Privacy sandbox APIs are enabled.">
-        Trial is enabled
+        Trial features are on
       </message>
       <message name="IDS_PRIVACY_SANDBOX_STATUS_DISABLED" desc="Status text, displayed when the Privacy sandbox APIs are disabled.">
-        Trial is disabled
+        Trial features are off
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION" desc="">
-        Privacy Sandbox is a set of new technologies that will eventually protect people from cross-site tracking mechanisms, like third-party cookies, while preserving web content and services that depend on those mechanisms today. Chrome is working with website developers, publishers, advertisers, and other browsers to develop this new technology.
+      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION_TITLE" desc="Title for the description text of 'Privacy Sandbox'.">
+        About Privacy Sandbox
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_TRIAL_TITLE" desc="">
-        Privacy Sandbox trial
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TRIAL_DESCRIPTION" desc="">
-        Privacy Sandbox is not widely released yet. During this trial period:\n<ph name="BEGIN_LIST_ITEM1">&lt;li1&gt;</ph>Website and app developers can try out the ability to create relevant experiences without accessing uniquely identifiable information about you<ph name="END_LIST_ITEM1">&lt;/li1&gt;</ph>\n<ph name="BEGIN_LIST_ITEM2">&lt;li2&gt;</ph>Users can opt out of the trial using the controls on this page.<ph name="END_LIST_ITEM2">&lt;/li2&gt;</ph>
+      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION" desc="Description of the 'Privacy Sandbox'.">
+        Privacy Sandbox is an ongoing initiative to preserve the open web that will help safeguard you from tracking mechanisms.
+
+Today, websites rely on many technologies, like third-party cookies, for important services like showing relevant ads and measuring a site’s performance.
+
+Privacy Sandbox preserves the vitality of the open web by creating better ways to perform these services – without breaking sites, and while preventing you from being surreptitiously tracked across the web.
+
+Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_TOGGLE" desc="Title for the Privacy Sandbox toggle.">
-        Crowdmasking
+        Enable Privacy Sandbox
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_TOGGLE_DESCRIPTION" desc="">
-        When on, websites won’t be able to use information that personally identifies you to make their sites more relevant. Similar to a crowd in a concert, sites can only know that thousands of users share a similar interest.\n\nYour “crowd” is based on sites you’ve visited. Advertisers can only see what sites the whole crowd visits, not what sites you personally visit.
+      <message name="IDS_PRIVACY_SANDBOX_TOGGLE_DESCRIPTION" desc="Description for the Privacy Sandbox toggle.">
+        When enabled, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
+
+<ph name="BEGIN_LIST_ITEM1">&lt;li1&gt;</ph>Advertisers can learn when thousands of users share a similar interest – like a crowd at a concert — and select ads for the crowd, rather than an individual person.<ph name="END_LIST_ITEM1">&lt;/li1&gt;</ph>
+
+<ph name="BEGIN_LIST_ITEM2">&lt;li2&gt;</ph>Advertisers can study the effectiveness of ads in a way that does not track you across sites.<ph name="END_LIST_ITEM2">&lt;/li2&gt;</ph>
       </message>
       <message name="IDS_PRIVACY_SANDBOX_SNACKBAR_MESSAGE" desc="The text displayed in the snackbar, which gives the user an option to navigate to the Privacy Sandbox settings page. 'Privacy sandbox' has TC ID 5753235213964358658.">
         Explore the Privacy Sandbox

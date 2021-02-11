@@ -6,15 +6,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:summary="@string/privacy_sandbox_description"
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:selectable="false"
+        app:layout="@layout/privacy_sandbox_header"
         app:allowDividerBelow="false" />
 
-    <PreferenceCategory
-        android:title="@string/privacy_sandbox_trial_title"/>
-
     <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="privacy_sandbox_trial_description"
+        android:title="@string/privacy_sandbox_description_title"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
+        android:summary="@string/privacy_sandbox_description"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
@@ -23,8 +25,8 @@
         android:persistent="false"
         app:allowDividerBelow="false" />
 
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:summary="@string/privacy_sandbox_toggle_description"
+    <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
+        android:key="privacy_sandbox_toggle_description"
         app:allowDividerBelow="false" />
 
 </PreferenceScreen>

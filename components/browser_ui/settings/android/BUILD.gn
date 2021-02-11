@@ -19,6 +19,7 @@ android_library("java") {
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ExpandablePreferenceGroup.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/LearnMorePreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/LongSummaryTextMessagePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/SpinnerPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/TextMessagePreference.java",
   ]
