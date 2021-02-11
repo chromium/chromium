@@ -2621,6 +2621,11 @@ const char kSharedHighlightingUseBlocklistDescription[] =
     "restrictions make it unlikely that a URL can be generated and actually "
     "work when shared.";
 
+const char kPreemtiveLinkToTextGenerationName[] =
+    "Preemptive generation of link to text";
+const char kPreemtiveLinkToTextGenerationDescription[] =
+    "Enables link to text to be generated in advance.";
+
 // Android ---------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

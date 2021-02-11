@@ -3230,6 +3230,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionContentVerificationName,
      flag_descriptions::kExtensionContentVerificationDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kExtensionContentVerificationChoices)},
+    {"preemtive-link-to-text-generation",
+     flag_descriptions::kPreemtiveLinkToTextGenerationName,
+     flag_descriptions::kPreemtiveLinkToTextGenerationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPreemtiveLinkToTextGeneration)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"keyboard-based-display-arrangement-in-settings",
      flag_descriptions::kKeyboardBasedDisplayArrangementInSettingsName,
