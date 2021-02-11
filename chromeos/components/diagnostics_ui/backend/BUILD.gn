@@ -38,6 +38,7 @@ static_library("backend") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
+    "//chromeos/strings/",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
     "//ui/base",

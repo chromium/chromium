@@ -7,12 +7,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chromeos/components/diagnostics_ui/backend/routine_log.h"
 #include "chromeos/components/diagnostics_ui/backend/telemetry_log.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
@@ -107,10 +108,9 @@ void SessionLogHandler::HandleSaveSessionLogRequest(
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, select_file_policy_creator_.Run(web_contents));
-  // TODO(michaelcheco): Add string for dialog title.
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE,
-      /*title=*/base::ASCIIToUTF16(""),
+      /*title=*/l10n_util::GetStringUTF16(IDS_DIAGNOSTICS_SELECT_DIALOG_TITLE),
       /*default_path=*/base::FilePath(kDefaultSessionLogFileName),
       /*file_types=*/nullptr,
       /*file_type_index=*/0,
