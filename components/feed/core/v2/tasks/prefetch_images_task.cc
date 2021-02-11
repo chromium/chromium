@@ -38,8 +38,8 @@ PrefetchImagesTask::PrefetchImagesTask(FeedStream* stream) : stream_(stream) {
 PrefetchImagesTask::~PrefetchImagesTask() = default;
 
 void PrefetchImagesTask::Run() {
-  if (stream_->GetModel()) {
-    PrefetchImagesFromModel(*stream_->GetModel());
+  if (stream_->GetModel(kInterestStream)) {
+    PrefetchImagesFromModel(*stream_->GetModel(kInterestStream));
     return;
   }
 

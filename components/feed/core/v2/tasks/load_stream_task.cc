@@ -144,7 +144,7 @@ void LoadStreamTask::QueryRequestComplete(
     FeedNetwork::QueryRequestResult result) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 
-  DCHECK(!stream_->GetModel());
+  DCHECK(!stream_->GetModel(kInterestStream));
 
   network_response_info_ = result.response_info;
 

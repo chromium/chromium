@@ -163,6 +163,9 @@ LocalActionId FeedStream::Metadata::GetNextActionId() {
   return LocalActionId(id);
 }
 
+FeedStream::Stream::Stream() : type(kInterestStream) {}
+FeedStream::Stream::~Stream() = default;
+
 FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
                        MetricsReporter* metrics_reporter,
                        Delegate* delegate,
@@ -191,9 +194,9 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   static WireResponseTranslator default_translator;
   wire_response_translator_ = &default_translator;
 
-  surface_updater_ = std::make_unique<SurfaceUpdater>(metrics_reporter_);
-  offline_page_spy_ = std::make_unique<OfflinePageSpy>(surface_updater_.get(),
-                                                       offline_page_model);
+  Stream& stream = GetStream(kInterestStream);
+  offline_page_spy_ = std::make_unique<OfflinePageSpy>(
+      stream.surface_updater.get(), offline_page_model);
 
   if (prefetch_service_) {
     offline_suggestions_provider_ =
@@ -218,8 +221,36 @@ void FeedStream::InitializeScheduling() {
 
 FeedStream::~FeedStream() = default;
 
+FeedStream::Stream* FeedStream::FindStream(const StreamType& stream_type) {
+  auto iter = streams_.find(stream_type);
+  return (iter != streams_.end()) ? &iter->second : nullptr;
+}
+
+const FeedStream::Stream* FeedStream::FindStream(
+    const StreamType& stream_type) const {
+  return const_cast<FeedStream*>(this)->FindStream(stream_type);
+}
+
+FeedStream::Stream& FeedStream::GetStream(const StreamType& stream_type) {
+  auto iter = streams_.find(stream_type);
+  if (iter != streams_.end())
+    return iter->second;
+  FeedStream::Stream& new_stream = streams_[stream_type];
+  new_stream.type = stream_type;
+  new_stream.surface_updater =
+      std::make_unique<SurfaceUpdater>(metrics_reporter_);
+  return new_stream;
+}
+
+StreamModel* FeedStream::GetModel(const StreamType& stream_type) {
+  Stream* stream = FindStream(stream_type);
+  return stream ? stream->model.get() : nullptr;
+}
+
 void FeedStream::TriggerStreamLoad() {
-  if (model_ || model_loading_in_progress_)
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  Stream& stream = GetStream(kInterestStream);
+  if (stream.model || stream.model_loading_in_progress)
     return;
 
   // If we should not load the stream, abort and send a zero-state update.
@@ -229,8 +260,9 @@ void FeedStream::TriggerStreamLoad() {
     return;
   }
 
-  model_loading_in_progress_ = true;
-  surface_updater_->LoadStreamStarted();
+  stream.model_loading_in_progress = true;
+
+  stream.surface_updater->LoadStreamStarted();
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
       LoadStreamTask::LoadType::kInitialLoad, this,
       base::BindOnce(&FeedStream::InitialStreamLoadComplete,
@@ -238,6 +270,8 @@ void FeedStream::TriggerStreamLoad() {
 }
 
 void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  Stream& stream = GetStream(kInterestStream);
   PopulateDebugStreamData(result, *profile_prefs_);
   metrics_reporter_->OnLoadStream(
       result.load_from_store_status, result.final_status,
@@ -245,9 +279,9 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
       std::move(result.latencies));
   UpdateIsActivityLoggingEnabled();
 
-  model_loading_in_progress_ = false;
-
-  surface_updater_->LoadStreamComplete(model_ != nullptr, result.final_status);
+  stream.model_loading_in_progress = false;
+  stream.surface_updater->LoadStreamComplete(stream.model != nullptr,
+                                             result.final_status);
 
   if (result.loaded_new_content_from_network && prefetch_service_)
     prefetch_service_->NewSuggestionsAvailable();
@@ -268,10 +302,12 @@ bool FeedStream::IsActivityLoggingEnabled() const {
 }
 
 void FeedStream::UpdateIsActivityLoggingEnabled() {
+  Stream& stream = GetStream(kInterestStream);
   is_activity_logging_enabled_ =
-      model_ &&
-      ((model_->signed_in() && model_->logging_enabled()) ||
-       (!model_->signed_in() && GetFeedConfig().send_signed_out_session_logs));
+      stream.model &&
+      ((stream.model->signed_in() && stream.model->logging_enabled()) ||
+       (!stream.model->signed_in() &&
+        GetFeedConfig().send_signed_out_session_logs));
 }
 
 std::string FeedStream::GetSessionId() const {
@@ -284,54 +320,63 @@ void FeedStream::PrefetchImage(const GURL& url) {
 
 void FeedStream::AttachSurface(SurfaceInterface* surface) {
   metrics_reporter_->SurfaceOpened(surface->GetSurfaceId());
-
+  Stream& stream = GetStream(surface->GetStreamType());
   // Skip normal processing when overriding stream data from the internals page.
   if (forced_stream_update_for_debugging_.updated_slices_size() > 0) {
-    surface_updater_->SurfaceAdded(surface);
+    stream.surface_updater->SurfaceAdded(surface);
     surface->StreamUpdate(forced_stream_update_for_debugging_);
     return;
   }
 
   TriggerStreamLoad();
-  surface_updater_->SurfaceAdded(surface);
+  stream.surface_updater->SurfaceAdded(surface);
 
   // Cancel any scheduled model unload task.
-  ++unload_on_detach_sequence_number_;
+  ++stream.unload_on_detach_sequence_number;
   UpdateCanUploadActionsWithNoticeCard();
 }
 
 void FeedStream::DetachSurface(SurfaceInterface* surface) {
+  Stream& stream = GetStream(surface->GetStreamType());
   metrics_reporter_->SurfaceClosed(surface->GetSurfaceId());
-  surface_updater_->SurfaceRemoved(surface);
+  stream.surface_updater->SurfaceRemoved(surface);
   UpdateCanUploadActionsWithNoticeCard();
-  ScheduleModelUnloadIfNoSurfacesAttached();
+  ScheduleModelUnloadIfNoSurfacesAttached(surface->GetStreamType());
 }
 
-void FeedStream::ScheduleModelUnloadIfNoSurfacesAttached() {
-  if (surface_updater_->HasSurfaceAttached())
+void FeedStream::ScheduleModelUnloadIfNoSurfacesAttached(
+    const StreamType& stream_type) {
+  Stream& stream = GetStream(stream_type);
+  if (stream.surface_updater->HasSurfaceAttached())
     return;
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FeedStream::AddUnloadModelIfNoSurfacesAttachedTask,
-                     GetWeakPtr(), unload_on_detach_sequence_number_),
+                     GetWeakPtr(), stream.type,
+                     stream.unload_on_detach_sequence_number),
       GetFeedConfig().model_unload_timeout);
 }
 
-void FeedStream::AddUnloadModelIfNoSurfacesAttachedTask(int sequence_number) {
+void FeedStream::AddUnloadModelIfNoSurfacesAttachedTask(
+    const StreamType& stream_type,
+    int sequence_number) {
+  Stream& stream = GetStream(stream_type);
   // Don't continue if unload_on_detach_sequence_number_ has changed.
-  if (unload_on_detach_sequence_number_ != sequence_number)
+  if (stream.unload_on_detach_sequence_number != sequence_number)
     return;
 
   task_queue_.AddTask(std::make_unique<offline_pages::ClosureTask>(
       base::BindOnce(&FeedStream::UnloadModelIfNoSurfacesAttachedTask,
-                     base::Unretained(this))));
+                     base::Unretained(this), stream_type)));
 }
 
-void FeedStream::UnloadModelIfNoSurfacesAttachedTask() {
-  if (surface_updater_->HasSurfaceAttached())
+void FeedStream::UnloadModelIfNoSurfacesAttachedTask(
+    const StreamType& stream_type) {
+  Stream& stream = GetStream(stream_type);
+  if (stream.surface_updater->HasSurfaceAttached())
     return;
-  UnloadModel();
+  UnloadModel(stream_type);
 }
 
 bool FeedStream::IsArticlesListVisible() {
@@ -346,9 +391,10 @@ bool FeedStream::IsFeedEnabledByEnterprisePolicy() {
   return profile_prefs_->GetBoolean(prefs::kEnableSnippets);
 }
 
-void FeedStream::LoadMore(SurfaceId surface_id,
+void FeedStream::LoadMore(const SurfaceInterface& surface,
                           base::OnceCallback<void(bool)> callback) {
-  if (!model_) {
+  Stream& stream = GetStream(surface.GetStreamType());
+  if (!stream.model) {
     DLOG(ERROR) << "Ignoring LoadMore() before the model is loaded";
     return std::move(callback).Run(false);
   }
@@ -360,8 +406,8 @@ void FeedStream::LoadMore(SurfaceId surface_id,
     return std::move(callback).Run(false);
   }
 
-  metrics_reporter_->OnLoadMoreBegin(surface_id);
-  surface_updater_->SetLoadingMore(true);
+  metrics_reporter_->OnLoadMoreBegin(surface.GetSurfaceId());
+  stream.surface_updater->SetLoadingMore(true);
 
   // Have at most one in-flight LoadMore() request. Send the result to all
   // requestors.
@@ -375,8 +421,10 @@ void FeedStream::LoadMore(SurfaceId surface_id,
 
 void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
   UpdateIsActivityLoggingEnabled();
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  Stream& stream = GetStream(kInterestStream);
   metrics_reporter_->OnLoadMore(result.final_status);
-  surface_updater_->SetLoadingMore(false);
+  stream.surface_updater->SetLoadingMore(false);
   std::vector<base::OnceCallback<void(bool)>> moved_callbacks =
       std::move(load_more_complete_callbacks_);
   bool success = result.final_status == LoadStreamStatus::kLoadedFromNetwork;
@@ -389,45 +437,55 @@ void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
 }
 
 void FeedStream::ExecuteOperations(
+    const StreamType& stream_type,
     std::vector<feedstore::DataOperation> operations) {
-  if (!model_) {
+  StreamModel* model = GetModel(stream_type);
+  if (!model) {
     DLOG(ERROR) << "Calling ExecuteOperations before the model is loaded";
     return;
   }
-  return model_->ExecuteOperations(std::move(operations));
+  return model->ExecuteOperations(std::move(operations));
 }
 
 EphemeralChangeId FeedStream::CreateEphemeralChange(
+    const StreamType& stream_type,
     std::vector<feedstore::DataOperation> operations) {
-  if (!model_) {
+  StreamModel* model = GetModel(stream_type);
+  if (!model) {
     DLOG(ERROR) << "Calling CreateEphemeralChange before the model is loaded";
     return {};
   }
   metrics_reporter_->OtherUserAction(FeedUserActionType::kEphemeralChange);
-  return model_->CreateEphemeralChange(std::move(operations));
+  return model->CreateEphemeralChange(std::move(operations));
 }
 
 EphemeralChangeId FeedStream::CreateEphemeralChangeFromPackedData(
+    const StreamType& stream_type,
     base::StringPiece data) {
   feedpacking::DismissData msg;
   msg.ParseFromArray(data.data(), data.size());
-  return CreateEphemeralChange(TranslateDismissData(base::Time::Now(), msg));
+  return CreateEphemeralChange(stream_type,
+                               TranslateDismissData(base::Time::Now(), msg));
 }
 
-bool FeedStream::CommitEphemeralChange(EphemeralChangeId id) {
-  if (!model_)
+bool FeedStream::CommitEphemeralChange(const StreamType& stream_type,
+                                       EphemeralChangeId id) {
+  StreamModel* model = GetModel(stream_type);
+  if (!model)
     return false;
   metrics_reporter_->OtherUserAction(
       FeedUserActionType::kEphemeralChangeCommited);
-  return model_->CommitEphemeralChange(id);
+  return model->CommitEphemeralChange(id);
 }
 
-bool FeedStream::RejectEphemeralChange(EphemeralChangeId id) {
-  if (!model_)
+bool FeedStream::RejectEphemeralChange(const StreamType& stream_type,
+                                       EphemeralChangeId id) {
+  StreamModel* model = GetModel(stream_type);
+  if (!model)
     return false;
   metrics_reporter_->OtherUserAction(
       FeedUserActionType::kEphemeralChangeRejected);
-  return model_->RejectEphemeralChange(id);
+  return model->RejectEphemeralChange(id);
 }
 
 void FeedStream::ProcessThereAndBackAgain(base::StringPiece data) {
@@ -478,18 +536,21 @@ void FeedStream::ForceRefreshForDebugging() {
 }
 
 void FeedStream::ForceRefreshForDebuggingTask() {
-  UnloadModel();
+  UnloadModel(kInterestStream);
   store_->ClearStreamData(base::DoNothing());
   TriggerStreamLoad();
 }
 
 std::string FeedStream::DumpStateForDebugging() {
+  Stream& stream = GetStream(kInterestStream);
   std::stringstream ss;
-  if (model_) {
-    ss << "model loaded, " << model_->GetContentList().size() << " contents, "
-       << "signed_in=" << model_->signed_in()
-       << ", logging_enabled=" << model_->logging_enabled()
-       << ", privacy_notice_fulfilled=" << model_->privacy_notice_fulfilled();
+  if (stream.model) {
+    ss << "model loaded, " << stream.model->GetContentList().size()
+       << " contents, "
+       << "signed_in=" << stream.model->signed_in()
+       << ", logging_enabled=" << stream.model->logging_enabled()
+       << ", privacy_notice_fulfilled="
+       << stream.model->privacy_notice_fulfilled();
   }
   RequestSchedule schedule = prefs::GetRequestSchedule(*profile_prefs_);
   if (schedule.refresh_offsets.empty()) {
@@ -519,7 +580,9 @@ base::Time FeedStream::GetLastFetchTime() {
 }
 
 bool FeedStream::HasSurfaceAttached() const {
-  return surface_updater_->HasSurfaceAttached();
+  // TODO(crbug/1152592): Make ClearAll() work with multiple streams.
+  const Stream* stream = FindStream(kInterestStream);
+  return stream && stream->surface_updater->HasSurfaceAttached();
 }
 
 void FeedStream::LoadModelForTesting(std::unique_ptr<StreamModel> model) {
@@ -562,7 +625,9 @@ LoadStreamStatus FeedStream::ShouldAttemptLoad(bool model_loading) {
   // being loaded. Because |ShouldAttemptLoad()| is used both before and during
   // the load process, we need to ignore this check when |model_loading| is
   // true.
-  if (model_ || (!model_loading && model_loading_in_progress_))
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  Stream& stream = GetStream(kInterestStream);
+  if (stream.model || (!model_loading && stream.model_loading_in_progress))
     return LoadStreamStatus::kModelAlreadyLoaded;
 
   if (!IsArticlesListVisible())
@@ -588,6 +653,8 @@ bool FeedStream::MissedLastRefresh() {
 
 LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(bool is_load_more,
                                                         bool consume_quota) {
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  Stream& stream = GetStream(kInterestStream);
   if (!is_load_more) {
     // Time has passed since calling |ShouldAttemptLoad()|, call it again to
     // confirm we should still attempt loading.
@@ -598,7 +665,7 @@ LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(bool is_load_more,
     }
   } else {
     // LoadMore requires a next page token.
-    if (!model_ || model_->GetNextPageToken().empty()) {
+    if (!stream.model || stream.model->GetNextPageToken().empty()) {
       return LoadStreamStatus::kCannotLoadMoreNoNextPageToken;
     }
   }
@@ -621,6 +688,9 @@ bool FeedStream::ShouldForceSignedOutFeedQueryRequest() const {
 }
 
 RequestMetadata FeedStream::GetRequestMetadata(bool is_for_next_page) const {
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  const Stream* stream = FindStream(kInterestStream);
+  DCHECK(stream);
   RequestMetadata result;
   result.chrome_info = chrome_info_;
   result.display_metrics = delegate_->GetDisplayMetrics();
@@ -632,8 +702,8 @@ RequestMetadata FeedStream::GetRequestMetadata(bool is_for_next_page) const {
     // If we are continuing an existing feed, use whatever session continuity
     // mechanism is currently associated with the stream: client-instance-id
     // for signed-in feed, session_id token for signed-out.
-    DCHECK(model_);
-    if (model_->signed_in()) {
+    DCHECK(stream->model);
+    if (stream->model->signed_in()) {
       result.client_instance_id = GetClientInstanceId();
     } else {
       result.session_id = GetMetadata()->GetSessionIdToken();
@@ -656,7 +726,9 @@ RequestMetadata FeedStream::GetRequestMetadata(bool is_for_next_page) const {
 }
 
 void FeedStream::OnEulaAccepted() {
-  if (surface_updater_->HasSurfaceAttached())
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  Stream& stream = GetStream(kInterestStream);
+  if (stream.surface_updater->HasSurfaceAttached())
     TriggerStreamLoad();
 }
 
@@ -763,12 +835,16 @@ void FeedStream::UploadAction(
 }
 
 void FeedStream::LoadModel(std::unique_ptr<StreamModel> model) {
-  DCHECK(!model_);
-  model_ = std::move(model);
-  model_->SetStoreObserver(this);
-  surface_updater_->SetModel(model_.get());
-  offline_page_spy_->SetModel(model_.get());
-  ScheduleModelUnloadIfNoSurfacesAttached();
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  Stream& stream = GetStream(kInterestStream);
+  DCHECK(!stream.model);
+  stream.model = std::move(model);
+  stream.model->SetStoreObserver(this);
+  stream.surface_updater->SetModel(stream.model.get());
+  if (stream.type.IsInterest()) {
+    offline_page_spy_->SetModel(stream.model.get());
+  }
+  ScheduleModelUnloadIfNoSurfacesAttached(stream.type);
 }
 
 void FeedStream::SetRequestSchedule(RequestSchedule schedule) {
@@ -782,50 +858,69 @@ void FeedStream::SetRequestSchedule(RequestSchedule schedule) {
   feed::prefs::SetRequestSchedule(schedule, *profile_prefs_);
 }
 
-void FeedStream::UnloadModel() {
+void FeedStream::UnloadModel(const StreamType& stream_type) {
   // Note: This should only be called from a running Task, as some tasks assume
   // the model remains loaded.
-  if (!model_)
+  Stream* stream = FindStream(stream_type);
+  if (!stream || !stream->model)
     return;
-  offline_page_spy_->SetModel(nullptr);
-  surface_updater_->SetModel(nullptr);
-  model_.reset();
+  if (stream_type.IsInterest()) {
+    offline_page_spy_->SetModel(nullptr);
+  }
+  stream->surface_updater->SetModel(nullptr);
+  stream->model.reset();
 }
-void FeedStream::ReportOpenAction(const std::string& slice_id) {
-  int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
+void FeedStream::ReportOpenAction(const StreamType& stream_type,
+                                  const std::string& slice_id) {
+  Stream& stream = GetStream(stream_type);
+
+  int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenAction(index);
-  notice_card_tracker_.OnOpenAction(index);
+  if (stream_type.IsInterest()) {
+    notice_card_tracker_.OnOpenAction(index);
+  }
 }
 void FeedStream::ReportOpenVisitComplete(base::TimeDelta visit_time) {
   metrics_reporter_->OpenVisitComplete(visit_time);
 }
-void FeedStream::ReportOpenInNewTabAction(const std::string& slice_id) {
-  int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
+void FeedStream::ReportOpenInNewTabAction(const StreamType& stream_type,
+                                          const std::string& slice_id) {
+  Stream& stream = GetStream(stream_type);
+  int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenInNewTabAction(index);
-  notice_card_tracker_.OnOpenAction(index);
+  if (stream_type.IsInterest()) {
+    notice_card_tracker_.OnOpenAction(index);
+  }
 }
 void FeedStream::ReportSliceViewed(SurfaceId surface_id,
+                                   const StreamType& stream_type,
                                    const std::string& slice_id) {
-  int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
+  Stream& stream = GetStream(stream_type);
+  int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index >= 0) {
-    UpdateShownSlicesUploadCondition(index);
-    notice_card_tracker_.OnSliceViewed(index);
+    if (stream_type.IsInterest()) {
+      UpdateShownSlicesUploadCondition(index);
+      notice_card_tracker_.OnSliceViewed(index);
+    }
     metrics_reporter_->ContentSliceViewed(surface_id, index);
   }
 }
 // TODO(crbug/1147237): Rename this method and related members?
 bool FeedStream::CanUploadActions() const {
+  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   return can_upload_actions_with_notice_card_ ||
          !prefs::GetLastFetchHadNoticeCard(*profile_prefs_);
 }
 void FeedStream::SetLastStreamLoadHadNoticeCard(bool value) {
+  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   prefs::SetLastFetchHadNoticeCard(*profile_prefs_, value);
 }
 bool FeedStream::HasReachedConditionsToUploadActionsWithNoticeCard() {
+  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   if (base::FeatureList::IsEnabled(
           feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
     return prefs::GetHasReachedClickAndViewActionsUploadConditions(
@@ -837,6 +932,7 @@ bool FeedStream::HasReachedConditionsToUploadActionsWithNoticeCard() {
   return true;
 }
 void FeedStream::DeclareHasReachedConditionsToUploadActionsWithNoticeCard() {
+  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   if (base::FeatureList::IsEnabled(
           feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
     prefs::SetHasReachedClickAndViewActionsUploadConditions(*profile_prefs_,
@@ -846,23 +942,32 @@ void FeedStream::DeclareHasReachedConditionsToUploadActionsWithNoticeCard() {
 void FeedStream::UpdateShownSlicesUploadCondition(int viewed_slice_index) {
   constexpr int kShownSlicesThreshold = 2;
 
-  DCHECK(model_) << "Model was unloaded while handling a viewed slice";
+  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
+  Stream& stream = GetStream(kInterestStream);
+  if (!stream.model) {
+    DLOG(ERROR) << "Model was unloaded while handling a viewed slice";
+    return;
+  }
 
   // Don't take shown slices into consideration when the upload conditions has
   // already been reached.
-  if (HasReachedConditionsToUploadActionsWithNoticeCard())
+  if (HasReachedConditionsToUploadActionsWithNoticeCard()) {
     return;
+  }
 
-  if (!model_->signed_in())
+  if (!stream.model->signed_in()) {
     return;
+  }
 
   if (viewed_slice_index + 1 >= kShownSlicesThreshold)
     DeclareHasReachedConditionsToUploadActionsWithNoticeCard();
 }
 bool FeedStream::CanLogViews() const {
+  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   return CanUploadActions();
 }
 void FeedStream::UpdateCanUploadActionsWithNoticeCard() {
+  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   can_upload_actions_with_notice_card_ =
       HasReachedConditionsToUploadActionsWithNoticeCard();
 }

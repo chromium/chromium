@@ -9,7 +9,8 @@ namespace feed {
 FeedStreamApi::FeedStreamApi() = default;
 FeedStreamApi::~FeedStreamApi() = default;
 
-FeedStreamApi::SurfaceInterface::SurfaceInterface() {
+FeedStreamApi::SurfaceInterface::SurfaceInterface(StreamType stream_type)
+    : stream_type_(stream_type) {
   static SurfaceId::Generator id_generator;
   surface_id_ = id_generator.GenerateNextId();
 }

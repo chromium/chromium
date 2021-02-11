@@ -30,7 +30,8 @@ LoadMoreTask::~LoadMoreTask() = default;
 
 void LoadMoreTask::Run() {
   // Check prerequisites.
-  StreamModel* model = stream_->GetModel();
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  StreamModel* model = stream_->GetModel(kInterestStream);
   if (!model)
     return Done(LoadStreamStatus::kLoadMoreModelIsNotLoaded);
 
@@ -46,7 +47,8 @@ void LoadMoreTask::Run() {
 }
 
 void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
-  StreamModel* model = stream_->GetModel();
+  // TODO(crbug/1152592): Parameterize stream loading by stream type.
+  StreamModel* model = stream_->GetModel(kInterestStream);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
   // Determine whether the load more request should be forced signed-out
@@ -69,14 +71,14 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
       CreateFeedQueryLoadMoreRequest(
           stream_->GetRequestMetadata(/*is_for_next_page=*/true),
           stream_->GetMetadata()->GetConsistencyToken(),
-          stream_->GetModel()->GetNextPageToken()),
+          stream_->GetModel(kInterestStream)->GetNextPageToken()),
       force_signed_out_request,
       base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
 }
 
 void LoadMoreTask::QueryRequestComplete(
     FeedNetwork::QueryRequestResult result) {
-  StreamModel* model = stream_->GetModel();
+  StreamModel* model = stream_->GetModel(kInterestStream);
   DCHECK(model) << "Model was unloaded outside of a Task";
 
   if (!result.response_body)

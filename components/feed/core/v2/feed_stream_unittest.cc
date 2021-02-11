@@ -166,7 +166,8 @@ class TestSurface : public FeedStream::SurfaceInterface {
  public:
   // Provide some helper functionality to attach/detach the surface.
   // This way we can auto-detach in the destructor.
-  explicit TestSurface(FeedStream* stream = nullptr) {
+  explicit TestSurface(FeedStream* stream = nullptr)
+      : FeedStream::SurfaceInterface(kInterestStream) {
     if (stream)
       Attach(stream);
   }
@@ -659,7 +660,7 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
 
   void UnloadModel() {
     WaitForIdleTaskQueue();
-    stream_->UnloadModel();
+    stream_->UnloadModel(kInterestStream);
   }
 
   // Dumps the state of |FeedStore| to a string for debugging.
@@ -760,7 +761,7 @@ TEST_F(FeedStreamTest, BackgroundRefreshSuccess) {
   EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
             metrics_reporter_->background_refresh_status);
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
-  EXPECT_FALSE(stream_->GetModel());
+  EXPECT_FALSE(stream_->GetModel(kInterestStream));
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
@@ -865,12 +866,13 @@ TEST_F(FeedStreamTest, SurfaceReceivesUpdatedContent) {
   }
   TestSurface surface(stream_.get());
   // Remove #1, add #2.
-  stream_->ExecuteOperations({
-      MakeOperation(MakeRemove(MakeClusterId(1))),
-      MakeOperation(MakeCluster(2, MakeRootId())),
-      MakeOperation(MakeContentNode(2, MakeClusterId(2))),
-      MakeOperation(MakeContent(2)),
-  });
+  stream_->ExecuteOperations(
+      kInterestStream, {
+                           MakeOperation(MakeRemove(MakeClusterId(1))),
+                           MakeOperation(MakeCluster(2, MakeRootId())),
+                           MakeOperation(MakeContentNode(2, MakeClusterId(2))),
+                           MakeOperation(MakeContent(2)),
+                       });
   ASSERT_TRUE(surface.update);
   const feedui::StreamUpdate& initial_state = surface.initial_state.value();
   const feedui::StreamUpdate& update = surface.update.value();
@@ -893,18 +895,20 @@ TEST_F(FeedStreamTest, SurfaceReceivesSecondUpdatedContent) {
   }
   TestSurface surface(stream_.get());
   // Add #2.
-  stream_->ExecuteOperations({
-      MakeOperation(MakeCluster(2, MakeRootId())),
-      MakeOperation(MakeContentNode(2, MakeClusterId(2))),
-      MakeOperation(MakeContent(2)),
-  });
+  stream_->ExecuteOperations(
+      kInterestStream, {
+                           MakeOperation(MakeCluster(2, MakeRootId())),
+                           MakeOperation(MakeContentNode(2, MakeClusterId(2))),
+                           MakeOperation(MakeContent(2)),
+                       });
 
   // Clear the last update and add #3.
-  stream_->ExecuteOperations({
-      MakeOperation(MakeCluster(3, MakeRootId())),
-      MakeOperation(MakeContentNode(3, MakeClusterId(3))),
-      MakeOperation(MakeContent(3)),
-  });
+  stream_->ExecuteOperations(
+      kInterestStream, {
+                           MakeOperation(MakeCluster(3, MakeRootId())),
+                           MakeOperation(MakeContentNode(3, MakeClusterId(3))),
+                           MakeOperation(MakeContent(3)),
+                       });
 
   // The last update should have only one new piece of content.
   // This verifies the current content set is tracked properly.
@@ -926,10 +930,11 @@ TEST_F(FeedStreamTest, RemoveAllContentResultsInZeroState) {
   WaitForIdleTaskQueue();
 
   // Remove both pieces of content.
-  stream_->ExecuteOperations({
-      MakeOperation(MakeRemove(MakeClusterId(0))),
-      MakeOperation(MakeRemove(MakeClusterId(1))),
-  });
+  stream_->ExecuteOperations(kInterestStream,
+                             {
+                                 MakeOperation(MakeRemove(MakeClusterId(0))),
+                                 MakeOperation(MakeRemove(MakeClusterId(1))),
+                             });
 
   ASSERT_EQ("loading -> 2 slices -> no-cards", surface.DescribeUpdates());
 }
@@ -946,9 +951,10 @@ TEST_F(FeedStreamTest, DetachSurface) {
   surface.Clear();
 
   // Arbitrary stream change. Surface should not see the update.
-  stream_->ExecuteOperations({
-      MakeOperation(MakeRemove(MakeClusterId(1))),
-  });
+  stream_->ExecuteOperations(kInterestStream,
+                             {
+                                 MakeOperation(MakeRemove(MakeClusterId(1))),
+                             });
   EXPECT_FALSE(surface.update);
 }
 
@@ -975,8 +981,9 @@ TEST_F(FeedStreamTest, LoadFromNetwork) {
 
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   // Verify the model is filled correctly.
-  EXPECT_STRINGS_EQUAL(ModelStateFor(MakeTypicalInitialModelState()),
-                       stream_->GetModel()->DumpStateForTesting());
+  EXPECT_STRINGS_EQUAL(
+      ModelStateFor(MakeTypicalInitialModelState()),
+      stream_->GetModel(kInterestStream)->DumpStateForTesting());
   // Verify the data was written to the store.
   EXPECT_STRINGS_EQUAL(ModelStateFor(MakeTypicalInitialModelState()),
                        ModelStateFor(store_.get()));
@@ -1060,7 +1067,7 @@ TEST_F(FeedStreamTest, ForceRefreshIfMissedScheduledRefresh) {
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.send_query_call_count);
   surface.Detach();
-  stream_->UnloadModel();
+  stream_->UnloadModel(surface.GetStreamType());
 
   // Ensure a refresh is foreced only after a scheduled refresh was missed.
   // First, load the stream after 11 seconds.
@@ -1073,7 +1080,7 @@ TEST_F(FeedStreamTest, ForceRefreshIfMissedScheduledRefresh) {
   // Load the stream after 13 seconds. We missed the scheduled refresh at
   // 12 seconds.
   surface.Detach();
-  stream_->UnloadModel();
+  stream_->UnloadModel(surface.GetStreamType());
   task_environment_.AdvanceClock(base::TimeDelta::FromSeconds(2));
   surface.Attach(stream_.get());
   WaitForIdleTaskQueue();
@@ -1281,16 +1288,16 @@ TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   // Validate the downstream consumption of the response.
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   EXPECT_EQ(kSessionId, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_FALSE(stream_->GetModel()->signed_in());
+  EXPECT_FALSE(stream_->GetModel(surface.GetStreamType())->signed_in());
 
   // Advance the clock beyond the forced signed out period.
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
-  EXPECT_FALSE(stream_->GetModel()->signed_in());
+  EXPECT_FALSE(stream_->GetModel(surface.GetStreamType())->signed_in());
 
   // Requests for subsequent pages continue the use existing session.
   // Subsequent responses may omit the session id.
   response_translator_.InjectResponse(model_generator.MakeNextPage());
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
 
   // Validate that the network request was sent as signed out and
@@ -1305,7 +1312,7 @@ TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
             kSessionId);
 
   // The model should still be in the signed-out state.
-  EXPECT_FALSE(stream_->GetModel()->signed_in());
+  EXPECT_FALSE(stream_->GetModel(kInterestStream)->signed_in());
 
   // Force a refresh of the feed by clearing the cache. The request for the
   // first page should revert back to signed-in. The response data will denote
@@ -1320,7 +1327,7 @@ TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   EXPECT_FALSE(network_.forced_signed_out_request);
 
   // The model should now be in the signed-in state.
-  EXPECT_TRUE(stream_->GetModel()->signed_in());
+  EXPECT_TRUE(stream_->GetModel(kInterestStream)->signed_in());
   EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
 }
 
@@ -1361,8 +1368,9 @@ TEST_F(FeedStreamTest, LoadStreamFromStore) {
   ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   EXPECT_FALSE(network_.query_request_sent);
   // Verify the model is filled correctly.
-  EXPECT_STRINGS_EQUAL(ModelStateFor(MakeTypicalInitialModelState()),
-                       stream_->GetModel()->DumpStateForTesting());
+  EXPECT_STRINGS_EQUAL(
+      ModelStateFor(MakeTypicalInitialModelState()),
+      stream_->GetModel(kInterestStream)->DumpStateForTesting());
 }
 
 TEST_F(FeedStreamTest, LoadingSpinnerIsSentInitially) {
@@ -1413,7 +1421,7 @@ TEST_F(FeedStreamTest, ModelChangesAreSavedToStorage) {
       MakeOperation(MakeContentNode(2, MakeClusterId(2))),
       MakeOperation(MakeContent(2)),
   };
-  stream_->ExecuteOperations(operations);
+  stream_->ExecuteOperations(kInterestStream, operations);
 
   WaitForIdleTaskQueue();
 
@@ -1438,7 +1446,7 @@ TEST_F(FeedStreamTest, ModelChangesAreSavedToStorage) {
       MakeOperation(MakeContentNode(3, MakeClusterId(3))),
       MakeOperation(MakeContent(3)),
   };
-  stream_->ExecuteOperations(operations2);
+  stream_->ExecuteOperations(surface.GetStreamType(), operations2);
 
   WaitForIdleTaskQueue();
   EXPECT_STRINGS_EQUAL(
@@ -1453,7 +1461,7 @@ TEST_F(FeedStreamTest, ReportSliceViewedIdentifiesCorrectIndex) {
   WaitForIdleTaskQueue();
 
   stream_->ReportSliceViewed(
-      surface.GetSurfaceId(),
+      surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
   EXPECT_EQ(1, metrics_reporter_->slice_viewed_index);
 }
@@ -1468,7 +1476,7 @@ TEST_F(FeedStreamTest, LoadMoreAppendsContent) {
   // Load page 2.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   CallbackReceiver<bool> callback;
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
   // Ensure metrics reporter was informed at the start of the operation.
   EXPECT_EQ(surface.GetSurfaceId(), metrics_reporter_->load_more_surface_id);
   WaitForIdleTaskQueue();
@@ -1478,7 +1486,7 @@ TEST_F(FeedStreamTest, LoadMoreAppendsContent) {
 
   // Load page 3.
   response_translator_.InjectResponse(MakeTypicalNextPageState(3));
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
 
   WaitForIdleTaskQueue();
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
@@ -1495,14 +1503,15 @@ TEST_F(FeedStreamTest, LoadMorePersistsData) {
   // Load page 2.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   CallbackReceiver<bool> callback;
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
 
   WaitForIdleTaskQueue();
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
 
   // Verify stored state is equivalent to in-memory model.
-  EXPECT_STRINGS_EQUAL(stream_->GetModel()->DumpStateForTesting(),
-                       ModelStateFor(store_.get()));
+  EXPECT_STRINGS_EQUAL(
+      stream_->GetModel(kInterestStream)->DumpStateForTesting(),
+      ModelStateFor(store_.get()));
 }
 
 TEST_F(FeedStreamTest, LoadMorePersistAndLoadMore) {
@@ -1516,7 +1525,7 @@ TEST_F(FeedStreamTest, LoadMorePersistAndLoadMore) {
   // Load page 2.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   CallbackReceiver<bool> callback;
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
   WaitForIdleTaskQueue();
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
 
@@ -1529,14 +1538,15 @@ TEST_F(FeedStreamTest, LoadMorePersistAndLoadMore) {
   WaitForIdleTaskQueue();
   callback.Clear();
   surface.Clear();
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
   WaitForIdleTaskQueue();
 
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
   ASSERT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
   // Verify stored state is equivalent to in-memory model.
-  EXPECT_STRINGS_EQUAL(stream_->GetModel()->DumpStateForTesting(),
-                       ModelStateFor(store_.get()));
+  EXPECT_STRINGS_EQUAL(
+      stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),
+      ModelStateFor(store_.get()));
 }
 
 TEST_F(FeedStreamTest, LoadMoreSendsTokens) {
@@ -1548,7 +1558,7 @@ TEST_F(FeedStreamTest, LoadMoreSendsTokens) {
   stream_->GetMetadata()->SetConsistencyToken("token-1");
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   CallbackReceiver<bool> callback;
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
 
   WaitForIdleTaskQueue();
   ASSERT_EQ("2 slices +spinner -> 4 slices", surface.DescribeUpdates());
@@ -1564,7 +1574,7 @@ TEST_F(FeedStreamTest, LoadMoreSendsTokens) {
 
   stream_->GetMetadata()->SetConsistencyToken("token-2");
   response_translator_.InjectResponse(MakeTypicalNextPageState(3));
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
 
   WaitForIdleTaskQueue();
   ASSERT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
@@ -1590,7 +1600,7 @@ TEST_F(FeedStreamTest, LoadMoreAbortsIfNoNextPageToken) {
   WaitForIdleTaskQueue();
 
   CallbackReceiver<bool> callback;
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
   WaitForIdleTaskQueue();
 
   // LoadMore fails, and does not make an additional request.
@@ -1611,7 +1621,7 @@ TEST_F(FeedStreamTest, LoadMoreFail) {
   // Don't inject another response, which results in a proto translation
   // failure.
   CallbackReceiver<bool> callback;
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(base::Optional<bool>(false), callback.GetResult());
@@ -1627,14 +1637,15 @@ TEST_F(FeedStreamTest, LoadMoreWithClearAllInResponse) {
   // Use a different initial state (which includes a CLEAR_ALL).
   response_translator_.InjectResponse(MakeTypicalInitialModelState(5));
   CallbackReceiver<bool> callback;
-  stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+  stream_->LoadMore(surface, callback.Bind());
 
   WaitForIdleTaskQueue();
   ASSERT_EQ(base::Optional<bool>(true), callback.GetResult());
 
   // Verify stored state is equivalent to in-memory model.
-  EXPECT_STRINGS_EQUAL(stream_->GetModel()->DumpStateForTesting(),
-                       ModelStateFor(store_.get()));
+  EXPECT_STRINGS_EQUAL(
+      stream_->GetModel(surface.GetStreamType())->DumpStateForTesting(),
+      ModelStateFor(store_.get()));
 
   // Verify the new state has been pushed to |surface|.
   ASSERT_EQ("2 slices +spinner -> 2 slices", surface.DescribeUpdates());
@@ -1655,7 +1666,8 @@ TEST_F(FeedStreamTest, LoadMoreWithClearAllInResponse) {
 
 TEST_F(FeedStreamTest, LoadMoreBeforeLoad) {
   CallbackReceiver<bool> callback;
-  stream_->LoadMore(SurfaceId(), callback.Bind());
+  TestSurface surface;
+  stream_->LoadMore(surface, callback.Bind());
 
   EXPECT_EQ(base::Optional<bool>(false), callback.GetResult());
 }
@@ -1721,7 +1733,7 @@ TEST_F(FeedStreamTest, ClearAllWhileLoadingMore) {
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   stream_->OnCacheDataCleared();  // triggers ClearAll().
@@ -1872,7 +1884,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 
   // Reach conditions.
   stream_->ReportSliceViewed(
-      surface.GetSurfaceId(),
+      surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
 
   // Verify that the view action is still dropped because we haven't
@@ -1903,7 +1915,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnSurfaceAttached) {
 
   // Reach conditions.
   stream_->ReportSliceViewed(
-      surface.GetSurfaceId(),
+      surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
 
   // Attach a new surface to update the bit to enable uploads.
@@ -1912,7 +1924,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnSurfaceAttached) {
   // Trigger an upload through load more to isolate the effect of the on-attach
   // event on enabling uploads.
   response_translator_.InjectResponse(MakeTypicalNextPageState());
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
 
   // Verify that the ThereAndBackAgain action was uploaded.
@@ -1932,7 +1944,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnEnterBackground) {
 
   // Reach conditions.
   stream_->ReportSliceViewed(
-      surface.GetSurfaceId(),
+      surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
 
   stream_->OnEnterBackground();
@@ -1976,7 +1988,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 
   // Reach conditions.
   stream_->ReportSliceViewed(
-      surface.GetSurfaceId(),
+      surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
 
   // Assert that uploads are not yet enabled.
@@ -1997,7 +2009,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 
   // Reach conditions.
   stream_->ReportSliceViewed(
-      surface.GetSurfaceId(),
+      surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
 
   // Update the upload enable bits which will enable upload.
@@ -2050,7 +2062,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 
   // Try to reach conditions.
   stream_->ReportSliceViewed(
-      surface.GetSurfaceId(),
+      surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
 
   // Try to trigger an upload through a query.
@@ -2115,7 +2127,7 @@ TEST_F(FeedStreamTest, LoadMoreUploadsActions) {
 
   network_.consistency_token = "token-12";
 
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(1, network_.action_request_sent->feed_actions_size());
@@ -2145,7 +2157,7 @@ TEST_F(FeedStreamTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
             MakeTypicalNextPageState(page++, kTestTimeEpoch, signed_in, waa_on,
                                      privacy_notice_fulfilled));
         CallbackReceiver<bool> callback;
-        stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
+        stream_->LoadMore(surface, callback.Bind());
         WaitForIdleTaskQueue();
         EXPECT_EQ(
             stream_->IsActivityLoggingEnabled(),
@@ -2179,7 +2191,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   // effect of load more.
   base::HistogramTester histograms;
 
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
 
   // Process a view action that should be dropped because the upload of actions
@@ -2343,11 +2355,11 @@ TEST_F(FeedStreamTest, ModelUnloadsAfterTimeout) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(999));
   WaitForIdleTaskQueue();
-  EXPECT_TRUE(stream_->GetModel());
+  EXPECT_TRUE(stream_->GetModel(surface.GetStreamType()));
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
   WaitForIdleTaskQueue();
-  EXPECT_FALSE(stream_->GetModel());
+  EXPECT_FALSE(stream_->GetModel(surface.GetStreamType()));
 }
 
 TEST_F(FeedStreamTest, ModelDoesNotUnloadIfSurfaceIsAttached) {
@@ -2363,13 +2375,13 @@ TEST_F(FeedStreamTest, ModelDoesNotUnloadIfSurfaceIsAttached) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(999));
   WaitForIdleTaskQueue();
-  EXPECT_TRUE(stream_->GetModel());
+  EXPECT_TRUE(stream_->GetModel(surface.GetStreamType()));
 
   surface.Attach(stream_.get());
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
   WaitForIdleTaskQueue();
-  EXPECT_TRUE(stream_->GetModel());
+  EXPECT_TRUE(stream_->GetModel(surface.GetStreamType()));
 }
 
 TEST_F(FeedStreamTest, ModelUnloadsAfterSecondTimeout) {
@@ -2385,7 +2397,7 @@ TEST_F(FeedStreamTest, ModelUnloadsAfterSecondTimeout) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(999));
   WaitForIdleTaskQueue();
-  EXPECT_TRUE(stream_->GetModel());
+  EXPECT_TRUE(stream_->GetModel(surface.GetStreamType()));
 
   // Attaching another surface will prolong the unload time for another second.
   surface.Attach(stream_.get());
@@ -2393,11 +2405,11 @@ TEST_F(FeedStreamTest, ModelUnloadsAfterSecondTimeout) {
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(999));
   WaitForIdleTaskQueue();
-  EXPECT_TRUE(stream_->GetModel());
+  EXPECT_TRUE(stream_->GetModel(surface.GetStreamType()));
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
   WaitForIdleTaskQueue();
-  EXPECT_FALSE(stream_->GetModel());
+  EXPECT_FALSE(stream_->GetModel(surface.GetStreamType()));
 }
 
 TEST_F(FeedStreamTest, ProvidesPrefetchSuggestionsWhenModelLoaded) {
@@ -2438,7 +2450,7 @@ TEST_F(FeedStreamTest, ProvidesPrefetchSuggestionsWhenModelNotLoaded) {
       callback.Bind());
   WaitForIdleTaskQueue();
 
-  ASSERT_FALSE(stream_->GetModel());
+  ASSERT_FALSE(stream_->GetModel(kInterestStream));
   ASSERT_TRUE(callback.GetResult());
   const std::vector<offline_pages::PrefetchSuggestion>& suggestions =
       callback.GetResult().value();
@@ -2551,7 +2563,7 @@ TEST_F(FeedStreamTest, OfflineBadgesAreRemovedWhenModelIsUnloaded) {
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  stream_->UnloadModel();
+  stream_->UnloadModel(surface.GetStreamType());
 
   // Offline badge no longer present.
   EXPECT_EQ((std::map<std::string, std::string>()),
@@ -2607,7 +2619,7 @@ TEST_F(FeedStreamTest, SendsClientInstanceId) {
 
   // LoadMore, and verify the same token is used.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
 
   ASSERT_EQ(2, network_.send_query_call_count);
@@ -2626,7 +2638,7 @@ TEST_F(FeedStreamTest, SendsClientInstanceId) {
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
 
-  EXPECT_FALSE(stream_->GetModel());
+  EXPECT_FALSE(stream_->GetModel(surface.GetStreamType()));
   const bool is_for_next_page = false;  // No model so no first page yet.
   const std::string new_instance_id =
       stream_->GetRequestMetadata(is_for_next_page).client_instance_id;
@@ -2650,14 +2662,17 @@ TEST_F(FeedStreamTest, LoadStreamSendsNoticeCardAcknowledgement) {
       surface.initial_state->updated_slices(notice_card_index)
           .slice()
           .slice_id();
-  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
-  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
-  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
-  stream_->ReportOpenAction(slice_id);
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
+                             slice_id);
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
+                             slice_id);
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
+                             slice_id);
+  stream_->ReportOpenAction(surface.GetStreamType(), slice_id);
 
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   refresh_scheduler_.Clear();
-  stream_->UnloadModel();
+  stream_->UnloadModel(surface.GetStreamType());
   stream_->ExecuteRefreshTask();
   WaitForIdleTaskQueue();
 
@@ -2750,7 +2765,7 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   response_translator_.InjectResponse(model_generator.MakeNextPage(2),
                                       kSessionToken1);
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
   ASSERT_EQ(2, network_.send_query_call_count);
   EXPECT_TRUE(network_.query_request_sent->feed_request()
@@ -2773,7 +2788,7 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
   //     - the session-id's expiry time should be unchanged
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   response_translator_.InjectResponse(model_generator.MakeNextPage(3));
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
   ASSERT_EQ(3, network_.send_query_call_count);
   EXPECT_TRUE(network_.query_request_sent->feed_request()
@@ -2797,7 +2812,7 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
   response_translator_.InjectResponse(model_generator.MakeNextPage(4),
                                       kSessionToken2);
-  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  stream_->LoadMore(surface, base::DoNothing());
   WaitForIdleTaskQueue();
   ASSERT_EQ(4, network_.send_query_call_count);
   EXPECT_TRUE(network_.query_request_sent->feed_request()

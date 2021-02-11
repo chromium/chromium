@@ -50,8 +50,8 @@ GetPrefetchSuggestionsTask::GetPrefetchSuggestionsTask(
 GetPrefetchSuggestionsTask::~GetPrefetchSuggestionsTask() = default;
 
 void GetPrefetchSuggestionsTask::Run() {
-  if (stream_->GetModel()) {
-    PullSuggestionsFromModel(*stream_->GetModel());
+  if (stream_->GetModel(kInterestStream)) {
+    PullSuggestionsFromModel(*stream_->GetModel(kInterestStream));
     return;
   }
 

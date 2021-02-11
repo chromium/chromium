@@ -136,16 +136,21 @@ class FeedStream : public FeedStreamApi,
       base::OnceCallback<void(NetworkResponse)> callback) override;
   void CancelImageFetch(ImageFetchId id) override;
   PersistentKeyValueStoreImpl* GetPersistentKeyValueStore() override;
-  void LoadMore(SurfaceId surface_id,
+  void LoadMore(const SurfaceInterface& surface,
                 base::OnceCallback<void(bool)> callback) override;
   void ExecuteOperations(
+      const StreamType& stream_type,
       std::vector<feedstore::DataOperation> operations) override;
   EphemeralChangeId CreateEphemeralChange(
+      const StreamType& stream_type,
       std::vector<feedstore::DataOperation> operations) override;
   EphemeralChangeId CreateEphemeralChangeFromPackedData(
+      const StreamType& stream_type,
       base::StringPiece data) override;
-  bool CommitEphemeralChange(EphemeralChangeId id) override;
-  bool RejectEphemeralChange(EphemeralChangeId id) override;
+  bool CommitEphemeralChange(const StreamType& stream_type,
+                             EphemeralChangeId id) override;
+  bool RejectEphemeralChange(const StreamType& stream_type,
+                             EphemeralChangeId id) override;
   void ProcessThereAndBackAgain(base::StringPiece data) override;
   void ProcessViewAction(base::StringPiece data) override;
   DebugStreamData GetDebugStreamData() override;
@@ -155,12 +160,15 @@ class FeedStream : public FeedStreamApi,
       const feedui::StreamUpdate& stream_update) override;
 
   void ReportSliceViewed(SurfaceId surface_id,
+                         const StreamType& stream_type,
                          const std::string& slice_id) override;
   void ReportFeedViewed(SurfaceId surface_id) override;
   void ReportPageLoaded() override;
-  void ReportOpenAction(const std::string& slice_id) override;
+  void ReportOpenAction(const StreamType& stream_type,
+                        const std::string& slice_id) override;
   void ReportOpenVisitComplete(base::TimeDelta visit_time) override;
-  void ReportOpenInNewTabAction(const std::string& slice_id) override;
+  void ReportOpenInNewTabAction(const StreamType& stream_type,
+                                const std::string& slice_id) override;
   void ReportStreamScrolled(int distance_dp) override;
   void ReportStreamScrollStart() override;
   void ReportOtherUserAction(FeedUserActionType action_type) override;
@@ -238,7 +246,7 @@ class FeedStream : public FeedStreamApi,
 
   // Unloads the model. Surfaces are not updated, and will remain frozen until a
   // model load is requested.
-  void UnloadModel();
+  void UnloadModel(const StreamType& stream_type);
 
   // Triggers a stream load. The load will be aborted if |ShouldAttemptLoad()|
   // is not true.
@@ -249,7 +257,7 @@ class FeedStream : public FeedStreamApi,
   void FinishClearAll();
 
   // Returns the model if it is loaded, or null otherwise.
-  StreamModel* GetModel() { return model_.get(); }
+  StreamModel* GetModel(const StreamType& stream_type);
 
   RequestMetadata GetRequestMetadata(bool is_for_next_page) const;
 
@@ -274,6 +282,23 @@ class FeedStream : public FeedStreamApi,
  private:
   class OfflineSuggestionsProvider;
 
+  struct Stream {
+    Stream();
+    ~Stream();
+    Stream(const Stream&) = delete;
+    Stream& operator=(const Stream&) = delete;
+    StreamType type;
+    // Whether the model is being loaded. Used to prevent multiple simultaneous
+    // attempts to load the model.
+    bool model_loading_in_progress = false;
+    std::unique_ptr<SurfaceUpdater> surface_updater;
+    // The stream model. Null if not yet loaded.
+    // Internally, this should only be changed by |LoadModel()| and
+    // |UnloadModel()|.
+    std::unique_ptr<StreamModel> model;
+    int unload_on_detach_sequence_number = 0;
+  };
+
   base::WeakPtr<FeedStream> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -289,9 +314,10 @@ class FeedStream : public FeedStreamApi,
   // To only be called from within a |Task|.
   void ForceRefreshForDebuggingTask();
 
-  void ScheduleModelUnloadIfNoSurfacesAttached();
-  void AddUnloadModelIfNoSurfacesAttachedTask(int sequence_number);
-  void UnloadModelIfNoSurfacesAttachedTask();
+  void ScheduleModelUnloadIfNoSurfacesAttached(const StreamType& stream_type);
+  void AddUnloadModelIfNoSurfacesAttachedTask(const StreamType& stream_type,
+                                              int sequence_number);
+  void UnloadModelIfNoSurfacesAttachedTask(const StreamType& stream_type);
 
   void InitialStreamLoadComplete(LoadStreamTask::Result result);
   void LoadMoreComplete(LoadMoreTask::Result result);
@@ -311,6 +337,10 @@ class FeedStream : public FeedStreamApi,
 
   void UpdateCanUploadActionsWithNoticeCard();
 
+  Stream& GetStream(const StreamType& type);
+  Stream* FindStream(const StreamType& type);
+  const Stream* FindStream(const StreamType& type) const;
+
   // Unowned.
 
   offline_pages::PrefetchService* prefetch_service_;
@@ -327,23 +357,18 @@ class FeedStream : public FeedStreamApi,
   ChromeInfo chrome_info_;
 
   offline_pages::TaskQueue task_queue_;
-  // Whether the model is being loaded. Used to prevent multiple simultaneous
-  // attempts to load the model.
-  bool model_loading_in_progress_ = false;
-  std::unique_ptr<SurfaceUpdater> surface_updater_;
+
+  std::map<StreamType, Stream> streams_;
+
   std::unique_ptr<OfflineSuggestionsProvider> offline_suggestions_provider_;
   std::unique_ptr<OfflinePageSpy> offline_page_spy_;
-  // The stream model. Null if not yet loaded.
-  // Internally, this should only be changed by |LoadModel()| and
-  // |UnloadModel()|.
-  std::unique_ptr<StreamModel> model_;
 
   // Mutable state.
   RequestThrottler request_throttler_;
   base::TimeTicks signed_out_refreshes_until_;
   std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks_;
   Metadata metadata_;
-  int unload_on_detach_sequence_number_ = 0;
+
   bool is_activity_logging_enabled_ = false;
   // Whether the feed stream can upload actions with the notice card in the
   // feed.

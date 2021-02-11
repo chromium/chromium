@@ -16,6 +16,7 @@ option optimize_for = LITE_RUNTIME;
 // This data is sourced from the wire protocol, which is converted upon receipt.
 // This would replace both Journal and Content stores.
 //
+// TODO(crbug/1152592): Support multiple streams.
 // This is the 'value' in the key/value store.
 // Keys are defined as:
 // S/<stream-id>                    -> stream_data

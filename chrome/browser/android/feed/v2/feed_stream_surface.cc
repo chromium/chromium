@@ -46,7 +46,8 @@ JNI_FeedStreamSurface_GetExperimentIds(JNIEnv* env) {
 }
 
 FeedStreamSurface::FeedStreamSurface(const JavaRef<jobject>& j_this)
-    : feed_stream_api_(nullptr) {
+    : FeedStreamApi::SurfaceInterface(kInterestStream),
+      feed_stream_api_(nullptr) {
   java_ref_.Reset(j_this);
 
   FeedService* service = FeedServiceFactory::GetForBrowserContext(
@@ -95,9 +96,8 @@ void FeedStreamSurface::LoadMore(JNIEnv* env,
   if (!feed_stream_api_)
     return;
   feed_stream_api_->LoadMore(
-      GetSurfaceId(),
-      base::BindOnce(&base::android::RunBooleanCallbackAndroid,
-                     ScopedJavaGlobalRef<jobject>(callback_obj)));
+      *this, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
+                            ScopedJavaGlobalRef<jobject>(callback_obj)));
 }
 
 void FeedStreamSurface::ProcessThereAndBackAgain(
@@ -130,7 +130,8 @@ int FeedStreamSurface::ExecuteEphemeralChange(
     return 0;
   std::string data_string;
   base::android::JavaByteArrayToString(env, data, &data_string);
-  return feed_stream_api_->CreateEphemeralChangeFromPackedData(data_string)
+  return feed_stream_api_
+      ->CreateEphemeralChangeFromPackedData(GetStreamType(), data_string)
       .GetUnsafeValue();
 }
 
@@ -139,7 +140,8 @@ void FeedStreamSurface::CommitEphemeralChange(JNIEnv* env,
                                               int change_id) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->CommitEphemeralChange(EphemeralChangeId(change_id));
+  feed_stream_api_->CommitEphemeralChange(GetStreamType(),
+                                          EphemeralChangeId(change_id));
 }
 
 void FeedStreamSurface::DiscardEphemeralChange(JNIEnv* env,
@@ -147,7 +149,8 @@ void FeedStreamSurface::DiscardEphemeralChange(JNIEnv* env,
                                                int change_id) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->RejectEphemeralChange(EphemeralChangeId(change_id));
+  feed_stream_api_->RejectEphemeralChange(GetStreamType(),
+                                          EphemeralChangeId(change_id));
 }
 
 void FeedStreamSurface::SurfaceOpened(JNIEnv* env,
@@ -186,7 +189,7 @@ void FeedStreamSurface::ReportOpenAction(
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportOpenAction(
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
+      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStreamSurface::ReportOpenInNewTabAction(
@@ -196,7 +199,7 @@ void FeedStreamSurface::ReportOpenInNewTabAction(
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportOpenInNewTabAction(
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
+      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStreamSurface::ReportSliceViewed(
@@ -206,7 +209,8 @@ void FeedStreamSurface::ReportSliceViewed(
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportSliceViewed(
-      GetSurfaceId(), base::android::ConvertJavaStringToUTF8(env, slice_id));
+      GetSurfaceId(), GetStreamType(),
+      base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStreamSurface::ReportFeedViewed(

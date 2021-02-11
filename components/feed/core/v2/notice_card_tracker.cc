@@ -69,8 +69,9 @@ bool NoticeCardTracker::HasAcknowledgedNoticeCard() const {
 }
 
 bool NoticeCardTracker::HasNoticeCardActionsCountPrerequisites(int index) {
-  if (!base::FeatureList::IsEnabled(feed::kInterestFeedNoticeCardAutoDismiss))
+  if (!base::FeatureList::IsEnabled(feed::kInterestFeedNoticeCardAutoDismiss)) {
     return false;
+  }
 
   if (!prefs::GetLastFetchHadNoticeCard(*profile_prefs_)) {
     return false;
