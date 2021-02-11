@@ -156,3 +156,9 @@ crbug.com/1152088 [ Linux ] fast/dom/cssTarget-crash.html [ Pass Timeout ]
 
 # Flaky timeouts on MSan.
 crbug.com/1174822 [ Linux ] http/tests/mojo/bindings-lite-sw.https.html [ Pass Timeout ]
+
+# Sheriff 2021-02-11
+crbug.com/1177358 [ Linux ] fast/forms/form-invalid-url.html [ Pass Crash ]
+crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-indices.js [ Pass Timeout ]
+crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-search-reveals-messages.js [ Pass Timeout ]
+crbug.com/1177358 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Pass Timeout ]
