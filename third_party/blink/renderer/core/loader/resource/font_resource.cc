@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
@@ -209,7 +210,13 @@ void FontResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level,
   const String name = GetMemoryDumpName() + "/decoded_webfont";
   WebMemoryAllocatorDump* dump = memory_dump->CreateMemoryAllocatorDump(name);
   dump->AddScalar("size", "bytes", font_data_->DataSize());
-  memory_dump->AddSuballocation(dump->Guid(), "malloc");
+
+  const char* system_allocator_name =
+      base::trace_event::MemoryDumpManager::GetInstance()
+          ->system_allocator_pool_name();
+  if (system_allocator_name) {
+    memory_dump->AddSuballocation(dump->Guid(), system_allocator_name);
+  }
 }
 
 void FontResource::AddClearDataObserver(
