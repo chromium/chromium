@@ -54,6 +54,11 @@ int main(int argc, char** argv) {
   command_line->AppendSwitchASCII(switches::kEnableLogging, "stderr");
   command_line->AppendSwitch(switches::kDisableGpu);
 
+  // Indicate to all processes that they are being run as part of a browser
+  // test, so that dependencies which might compromise test isolation
+  // won't be used (e.g. memory pressure).
+  command_line->AppendSwitch(switches::kBrowserTest);
+
   size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
   if (parallel_jobs == 0U)
     return 1;

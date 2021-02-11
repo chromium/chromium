@@ -7,9 +7,11 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/renderer/cast_streaming_demuxer.h"
@@ -124,6 +126,17 @@ WebEngineContentRendererClient::GetWebEngineRenderFrameObserverForRenderFrameId(
 void WebEngineContentRendererClient::OnRenderFrameDeleted(int render_frame_id) {
   size_t count = render_frame_id_to_observer_map_.erase(render_frame_id);
   DCHECK_EQ(count, 1u);
+}
+
+void WebEngineContentRendererClient::RenderThreadStarted() {
+  // Behavior of browser tests should not depend on things outside of their
+  // control (like the amount of memory on the system running the tests).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kBrowserTest))
+    return;
+
+  memory_pressure_monitor_ =
+      std::make_unique<util::MultiSourceMemoryPressureMonitor>();
+  memory_pressure_monitor_->Start();
 }
 
 void WebEngineContentRendererClient::RenderFrameCreated(
