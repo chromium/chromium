@@ -136,9 +136,9 @@ void DlpClipboardNotifier::WarnOnAction(
     }
   }
 
-  auto proceed_cb = base::BindRepeating(&DlpClipboardNotifier::ProceedOnWarn,
-                                        base::Unretained(this), widget_.get(),
-                                        CloneEndpoint(data_dst));
+  auto proceed_cb =
+      base::BindRepeating(&DlpClipboardNotifier::ProceedOnWarn,
+                          base::Unretained(this), CloneEndpoint(data_dst));
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name),
                     proceed_cb);
@@ -161,8 +161,8 @@ bool DlpClipboardNotifier::DidUserProceedOnWarn(
 }
 
 void DlpClipboardNotifier::ProceedOnWarn(
-    views::Widget* widget,
-    const ui::DataTransferEndpoint& data_dst) {
+    const ui::DataTransferEndpoint& data_dst,
+    views::Widget* widget) {
   CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
   approved_dsts_.push_back(data_dst);
   SynthesizePaste();

@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -42,12 +43,12 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
   MOCK_METHOD1(ShowBlockBubble, void(const base::string16& text));
   MOCK_METHOD2(ShowWarningBubble,
                void(const base::string16& text,
-                    base::RepeatingCallback<void()> proceed_cb));
+                    base::RepeatingCallback<void(views::Widget*)> proceed_cb));
   MOCK_CONST_METHOD2(ShowToast,
                      void(const std::string& id, const base::string16& text));
-  void ProceedOnWarn(views::Widget* widget,
-                     const ui::DataTransferEndpoint& data_dst) {
-    DlpClipboardNotifier::ProceedOnWarn(widget, data_dst);
+  void ProceedOnWarn(const ui::DataTransferEndpoint& data_dst,
+                     views::Widget* widget) {
+    DlpClipboardNotifier::ProceedOnWarn(data_dst, widget);
   }
 
   void ResetUserWarnSelection() {
@@ -109,7 +110,7 @@ TEST_P(DlpClipboardBubbleTest, ProceedOnWarn) {
     data_dst.emplace(param.value());
 
   const ui::DataTransferEndpoint* dst_ptr = base::OptionalOrNullptr(data_dst);
-  notifier.ProceedOnWarn(nullptr, *dst_ptr);
+  notifier.ProceedOnWarn(*dst_ptr, nullptr);
   EXPECT_TRUE(notifier.DidUserProceedOnWarn(dst_ptr));
 }
 
@@ -128,10 +129,10 @@ TEST_F(DlpClipboardBubbleTest, ProceedSavedHistory) {
   const ui::DataTransferEndpoint arc_dst(ui::EndpointType::kArc);
   const ui::DataTransferEndpoint crostini_dst(ui::EndpointType::kCrostini);
 
-  notifier.ProceedOnWarn(nullptr, url_dst);
-  notifier.ProceedOnWarn(nullptr, default_dst);
-  notifier.ProceedOnWarn(nullptr, arc_dst);
-  notifier.ProceedOnWarn(nullptr, crostini_dst);
+  notifier.ProceedOnWarn(url_dst, nullptr);
+  notifier.ProceedOnWarn(default_dst, nullptr);
+  notifier.ProceedOnWarn(arc_dst, nullptr);
+  notifier.ProceedOnWarn(crostini_dst, nullptr);
 
   EXPECT_TRUE(notifier.DidUserProceedOnWarn(&url_dst));
   EXPECT_TRUE(notifier.DidUserProceedOnWarn(&default_dst));

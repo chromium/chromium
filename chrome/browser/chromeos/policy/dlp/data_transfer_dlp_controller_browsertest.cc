@@ -55,7 +55,7 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
   views::Widget* GetWidget() { return GetWidgetForTesting(); }
 
   void ProceedOnWarn(const ui::DataTransferEndpoint& data_dst) {
-    DlpClipboardNotifier::ProceedOnWarn(GetWidget(), data_dst);
+    DlpClipboardNotifier::ProceedOnWarn(data_dst, GetWidget());
   }
 };
 

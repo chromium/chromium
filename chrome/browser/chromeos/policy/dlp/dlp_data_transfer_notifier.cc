@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 
 #include "ash/public/cpp/window_tree_host_lookup.h"
+#include "base/bind.h"
 #include "base/callback_forward.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
@@ -116,14 +117,15 @@ void DlpDataTransferNotifier::ShowBlockBubble(const base::string16& text) {
 
 void DlpDataTransferNotifier::ShowWarningBubble(
     const base::string16& text,
-    base::RepeatingCallback<void()> proceed_cb) {
+    base::RepeatingCallback<void(views::Widget*)> proceed_cb) {
   InitWidget();
   ClipboardWarnBubble* bubble =
       widget_->SetContentsView(std::make_unique<ClipboardWarnBubble>(text));
+  bubble->SetProceedCallback(
+      base::BindRepeating(std::move(proceed_cb), widget_.get()));
   bubble->SetDismissCallback(base::BindRepeating(
       &DlpDataTransferNotifier::CloseWidget, base::Unretained(this),
       widget_.get(), views::Widget::ClosedReason::kCancelButtonClicked));
-  bubble->SetProceedCallback(proceed_cb);
   ResizeAndShowWidget(bubble->GetBubbleSize(), kClipboardDlpWarnDurationMs);
 }
 

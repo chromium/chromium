@@ -35,8 +35,8 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   bool DidUserProceedOnWarn(const ui::DataTransferEndpoint* const data_dst);
 
  protected:
-  void ProceedOnWarn(views::Widget* widget,
-                     const ui::DataTransferEndpoint& data_dst);
+  void ProceedOnWarn(const ui::DataTransferEndpoint& data_dst,
+                     views::Widget* widget);
 
   void ResetUserWarnSelection();
 

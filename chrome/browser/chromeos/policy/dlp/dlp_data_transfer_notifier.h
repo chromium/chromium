@@ -36,8 +36,9 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
  protected:
   virtual void ShowBlockBubble(const base::string16& text);
 
-  virtual void ShowWarningBubble(const base::string16& text,
-                                 base::RepeatingCallback<void()> proceed_cb);
+  virtual void ShowWarningBubble(
+      const base::string16& text,
+      base::RepeatingCallback<void(views::Widget*)> proceed_cb);
 
   void CloseWidget(views::Widget* widget, views::Widget::ClosedReason reason);
 
