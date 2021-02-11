@@ -2096,6 +2096,11 @@
     // it can badly break pages under test.
     "expiry_milestone": -1
   },
+  {
+    "name": "enable-pci-guard-ui",
+    "owners": [ "jimmyxgong", "cros-peripherals@google.com" ],
+    "expiry_milestone": 94
+  },
   { "name": "enable-phone-hub",
     "owners": [ "better-together-dev@google.com", "tjohnsonkanu", "khorimoto" ],
     "expiry_milestone": 90

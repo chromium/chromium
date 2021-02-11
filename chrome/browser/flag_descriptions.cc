@@ -984,6 +984,12 @@ const char kEnableLoginDetectionName[] = "Enable login detection";
 const char kEnableLoginDetectionDescription[] =
     "Allow user sign-in to be detected based on heuristics.";
 
+const char kEnablePciguardUiName[] =
+    "Enable Pciguard (Thunderbolt + USB4 tunneling) UI for settings";
+const char kEnablePciguardUiDescription[] =
+    "Enable toggling Pciguard settings through the Settings App. By default, "
+    "this flag is disabled.";
+
 const char kEnablePixelCanvasRecordingName[] = "Enable pixel canvas recording";
 const char kEnablePixelCanvasRecordingDescription[] =
     "Pixel canvas recording allows the compositor to raster contents aligned "

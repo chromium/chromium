@@ -296,6 +296,10 @@ const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
 const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables toggling Pciguard settings through Settings UI.
+const base::Feature kEnablePciguardUi{"EnablePciguardUi",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Device End Of Lifetime warning notifications.
 const base::Feature kEolWarningNotifications{"EolWarningNotifications",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -833,6 +837,10 @@ bool IsClipboardHistoryContextMenuNudgeEnabled() {
 
 bool IsImprovedKeyboardShortcutsEnabled() {
   return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
+}
+
+bool IsPciguardUiEnabled() {
+  return base::FeatureList::IsEnabled(kEnablePciguardUi);
 }
 
 bool IsPhoneHubEnabled() {

@@ -42826,6 +42826,7 @@ from previous Chrome versions.
   <int value="-2104654357" label="GamesHub:enabled"/>
   <int value="-2102286055" label="WebViewVulkanIntermediateBuffer:disabled"/>
   <int value="-2101682955" label="EnableNotificationIndicator:enabled"/>
+  <int value="-2101338272" label="EnablePciguardUi:disabled"/>
   <int value="-2101337189" label="AutofillOffNoServerData:disabled"/>
   <int value="-2099486626" label="DownloadLater:enabled"/>
   <int value="-2099457894" label="Mash:enabled"/>
@@ -43091,6 +43092,7 @@ from previous Chrome versions.
   <int value="-1880355454" label="disable-topchrome-md"/>
   <int value="-1879877238" label="disable-cancel-all-touches"/>
   <int value="-1878958319" label="ScrollableTabStripButtons:disabled"/>
+  <int value="-1876955850" label="EnablePciguardUi:enabled"/>
   <int value="-1876881908"
       label="disable-infobar-for-protected-media-identifier"/>
   <int value="-1875383510" label="UseGoogleLocalNtp:disabled"/>

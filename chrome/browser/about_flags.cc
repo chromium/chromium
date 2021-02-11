@@ -5516,6 +5516,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePalmOnToolTypePalmName, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnablePalmOnToolTypePalm)},
 
+    {"enable-pci-guard-ui", flag_descriptions::kEnablePciguardUiName,
+     flag_descriptions::kEnablePciguardUiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEnablePciguardUi)},
+
     {"enable-heuristic-stylus-palm-rejection",
      flag_descriptions::kEnableHeuristicStylusPalmRejectionName,
      flag_descriptions::kEnableHeuristicStylusPalmRejectionDescription, kOsCrOS,
