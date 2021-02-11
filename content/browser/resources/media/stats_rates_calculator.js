@@ -454,6 +454,9 @@ class StatsRatesCalculator {
               'totalPacketSendDelay', 'packetsSent',
               CalculatorModifier.kMillisecondsFromSeconds),
           framesEncoded: new RateCalculator('framesEncoded', 'timestamp'),
+          keyFramesEncoded: new RateCalculator('keyFramesEncoded', 'timestamp'),
+          framesSent: new RateCalculator('framesSent', 'timestamp'),
+          hugeFramesSent: new RateCalculator('hugeFramesSent', 'timestamp'),
           totalEncodedBytesTarget: new RateCalculator(
               'totalEncodedBytesTarget', 'timestamp',
               CalculatorModifier.kBytesToBits),
@@ -478,7 +481,12 @@ class StatsRatesCalculator {
               'headerBytesReceived', 'timestamp',
               CalculatorModifier.kBytesToBits),
           packetsReceived: new RateCalculator('packetsReceived', 'timestamp'),
+          framesReceived: [
+            new RateCalculator('framesReceived', 'timestamp'),
+            new DifferenceCalculator('framesReceived', 'framesDecoded'),
+          ],
           framesDecoded: new RateCalculator('framesDecoded', 'timestamp'),
+          keyFramesDecoded: new RateCalculator('keyFramesDecoded', 'timestamp'),
           totalDecodeTime: new RateCalculator(
               'totalDecodeTime', 'framesDecoded',
               CalculatorModifier.kMillisecondsFromSeconds),
@@ -488,8 +496,21 @@ class StatsRatesCalculator {
           totalSquaredInterFrameDelay: new StandardDeviationCalculator(
               'totalSquaredInterFrameDelay', 'totalInterFrameDelay',
               'framesDecoded', 'interFrameDelay'),
+          totalSamplesReceived:
+              new RateCalculator('totalSamplesReceived', 'timestamp'),
+          concealedSamples: new RateCalculator('concealedSamples', 'timestamp'),
+          silentConcealedSamples:
+              new RateCalculator('silentConcealedSamples', 'timestamp'),
+          insertedSamplesForDeceleration:
+              new RateCalculator('insertedSamplesForDeceleration', 'timestamp'),
+          removedSamplesForAcceleration:
+              new RateCalculator('removedSamplesForAcceleration', 'timestamp'),
           qpSum: new RateCalculator('qpSum', 'framesDecoded'),
           codecId: new CodecCalculator(),
+          totalAudioEnergy: new AudioLevelRmsCalculator(),
+          jitterBufferDelay: new RateCalculator(
+              'jitterBufferDelay', 'jitterBufferEmittedCount',
+              CalculatorModifier.kMillisecondsFromSeconds),
         },
       },
       {
