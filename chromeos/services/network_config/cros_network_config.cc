@@ -8,10 +8,12 @@
 
 #include "base/optional.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -298,8 +300,51 @@ mojom::DeviceStatePropertiesPtr GetVpnState() {
   return result;
 }
 
+base::Optional<std::string> GetESimProfileName(
+    CellularESimProfileHandler* cellular_esim_profile_handler,
+    const NetworkState* network_state) {
+  DCHECK(network_state);
+
+  // CellularESimProfileHandler is not available if the relevant flag is
+  // disabled.
+  if (!cellular_esim_profile_handler)
+    return base::nullopt;
+
+  // Only Cellular networks correspond to eSIM profiles.
+  if (network_state->type() != shill::kTypeCellular)
+    return base::nullopt;
+
+  // eSIM profiles have an associated EID and ICCID.
+  if (network_state->eid().empty() || network_state->iccid().empty())
+    return base::nullopt;
+
+  std::vector<CellularESimProfile> profiles =
+      cellular_esim_profile_handler->GetESimProfiles();
+  for (const auto& profile : profiles) {
+    if (profile.eid() != network_state->eid() ||
+        profile.iccid() != network_state->iccid()) {
+      continue;
+    }
+
+    // We've found a profile corresponding to the network. If possible, use the
+    // profile's nickname, falling back to the name or the service provider.
+
+    if (!profile.nickname().empty())
+      return base::UTF16ToUTF8(profile.nickname());
+
+    if (!profile.name().empty())
+      return base::UTF16ToUTF8(profile.name());
+
+    if (!profile.service_provider().empty())
+      return base::UTF16ToUTF8(profile.service_provider());
+  }
+
+  return base::nullopt;
+}
+
 mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
     NetworkStateHandler* network_state_handler,
+    CellularESimProfileHandler* cellular_esim_profile_handler,
     const std::vector<mojom::VpnProviderPtr>& vpn_providers,
     const NetworkState* network) {
   mojom::NetworkType type = ShillTypeToMojo(network->type());
@@ -349,6 +394,11 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
 
   switch (type) {
     case mojom::NetworkType::kCellular: {
+      base::Optional<std::string> profile_name =
+          GetESimProfileName(cellular_esim_profile_handler, network);
+      if (profile_name)
+        result->name = *profile_name;
+
       auto cellular = mojom::CellularStateProperties::New();
       cellular->activation_state = network->GetMojoActivationState();
       cellular->network_technology = ShillToOnc(network->network_technology(),
@@ -1772,6 +1822,7 @@ CrosNetworkConfig::CrosNetworkConfig()
     : CrosNetworkConfig(
           NetworkHandler::Get()->network_state_handler(),
           NetworkHandler::Get()->network_device_handler(),
+          NetworkHandler::Get()->cellular_esim_profile_handler(),
           NetworkHandler::Get()->managed_network_configuration_handler(),
           NetworkHandler::Get()->network_connection_handler(),
           NetworkHandler::Get()->network_certificate_handler()) {}
@@ -1779,11 +1830,13 @@ CrosNetworkConfig::CrosNetworkConfig()
 CrosNetworkConfig::CrosNetworkConfig(
     NetworkStateHandler* network_state_handler,
     NetworkDeviceHandler* network_device_handler,
+    CellularESimProfileHandler* cellular_esim_profile_handler,
     ManagedNetworkConfigurationHandler* network_configuration_handler,
     NetworkConnectionHandler* network_connection_handler,
     NetworkCertificateHandler* network_certificate_handler)
     : network_state_handler_(network_state_handler),
       network_device_handler_(network_device_handler),
+      cellular_esim_profile_handler_(cellular_esim_profile_handler),
       network_configuration_handler_(network_configuration_handler),
       network_connection_handler_(network_connection_handler),
       network_certificate_handler_(network_certificate_handler) {
@@ -1830,8 +1883,9 @@ void CrosNetworkConfig::GetNetworkState(const std::string& guid,
     std::move(callback).Run(nullptr);
     return;
   }
-  std::move(callback).Run(
-      NetworkStateToMojo(network_state_handler_, vpn_providers_, network));
+  std::move(callback).Run(NetworkStateToMojo(network_state_handler_,
+                                             cellular_esim_profile_handler_,
+                                             vpn_providers_, network));
 }
 
 void CrosNetworkConfig::GetNetworkStateList(
@@ -1869,8 +1923,9 @@ void CrosNetworkConfig::GetNetworkStateList(
       // represent a separate network service.
       continue;
     }
-    mojom::NetworkStatePropertiesPtr mojo_network =
-        NetworkStateToMojo(network_state_handler_, vpn_providers_, network);
+    mojom::NetworkStatePropertiesPtr mojo_network = NetworkStateToMojo(
+        network_state_handler_, cellular_esim_profile_handler_, vpn_providers_,
+        network);
     if (mojo_network)
       result.emplace_back(std::move(mojo_network));
   }
@@ -2664,8 +2719,9 @@ void CrosNetworkConfig::ActiveNetworksChanged(
     const std::vector<const NetworkState*>& active_networks) {
   std::vector<mojom::NetworkStatePropertiesPtr> result;
   for (const NetworkState* network : active_networks) {
-    mojom::NetworkStatePropertiesPtr mojo_network =
-        NetworkStateToMojo(network_state_handler_, vpn_providers_, network);
+    mojom::NetworkStatePropertiesPtr mojo_network = NetworkStateToMojo(
+        network_state_handler_, cellular_esim_profile_handler_, vpn_providers_,
+        network);
     if (mojo_network)
       result.emplace_back(std::move(mojo_network));
   }
@@ -2677,7 +2733,8 @@ void CrosNetworkConfig::NetworkPropertiesUpdated(const NetworkState* network) {
   if (network->type() == shill::kTypeEthernetEap)
     return;
   mojom::NetworkStatePropertiesPtr mojo_network =
-      NetworkStateToMojo(network_state_handler_, vpn_providers_, network);
+      NetworkStateToMojo(network_state_handler_, cellular_esim_profile_handler_,
+                         vpn_providers_, network);
   if (!mojo_network)
     return;
   for (auto& observer : observers_)

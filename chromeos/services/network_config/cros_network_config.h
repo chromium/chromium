@@ -21,6 +21,7 @@ class DictionaryValue;
 
 namespace chromeos {
 
+class CellularESimProfileHandler;
 class ManagedNetworkConfigurationHandler;
 class NetworkConnectionHandler;
 class NetworkDeviceHandler;
@@ -41,6 +42,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   CrosNetworkConfig(
       NetworkStateHandler* network_state_handler,
       NetworkDeviceHandler* network_device_handler,
+      CellularESimProfileHandler* cellular_esim_profile_handler,
       ManagedNetworkConfigurationHandler* network_configuration_handler,
       NetworkConnectionHandler* network_connection_handler,
       NetworkCertificateHandler* network_certificate_handler);
@@ -160,6 +162,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
 
   NetworkStateHandler* network_state_handler_;    // Unowned
   NetworkDeviceHandler* network_device_handler_;  // Unowned
+  CellularESimProfileHandler* cellular_esim_profile_handler_;  // Unowned
   ManagedNetworkConfigurationHandler*
       network_configuration_handler_;                       // Unowned
   NetworkConnectionHandler* network_connection_handler_;    // Unowned

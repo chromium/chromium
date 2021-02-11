@@ -27,6 +27,7 @@
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "components/onc/onc_constants.h"
@@ -96,6 +97,9 @@ class CrosNetworkConfigTest : public testing::Test {
             helper_.network_state_handler(), network_profile_handler_.get(),
             network_device_handler_.get(), network_configuration_handler_.get(),
             ui_proxy_config_service_.get());
+    cellular_esim_profile_handler_ =
+        std::make_unique<TestCellularESimProfileHandler>();
+    cellular_esim_profile_handler_->Init();
     network_connection_handler_ =
         NetworkConnectionHandler::InitializeForTesting(
             helper_.network_state_handler(),
@@ -106,6 +110,7 @@ class CrosNetworkConfigTest : public testing::Test {
         std::make_unique<NetworkCertificateHandler>();
     cros_network_config_ = std::make_unique<CrosNetworkConfig>(
         helper_.network_state_handler(), network_device_handler_.get(),
+        cellular_esim_profile_handler_.get(),
         managed_network_configuration_handler_.get(),
         network_connection_handler_.get(), network_certificate_handler_.get());
     SetupPolicy();
@@ -523,6 +528,8 @@ class CrosNetworkConfigTest : public testing::Test {
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
+  std::unique_ptr<TestCellularESimProfileHandler>
+      cellular_esim_profile_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<chromeos::UIProxyConfigService> ui_proxy_config_service_;
   TestingPrefServiceSimple local_state_;
@@ -655,6 +662,40 @@ TEST_F(CrosNetworkConfigTest, GetNetworkStateList) {
   EXPECT_EQ("wifi2_guid", networks[0]->guid);
   EXPECT_EQ("wifi4_guid", networks[1]->guid);
   EXPECT_EQ("wifi3_guid", networks[2]->guid);
+}
+
+TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
+  const char kTestEuiccPath[] = "euicc_path";
+  const char kTestProfileServicePath[] = "esim_service_path";
+  const char kTestIccid[] = "iccid";
+
+  const char kTestProfileName[] = "test_profile_name";
+  const char kTestNameFromShill[] = "shill_network_name";
+
+  // Add a fake eSIM with name kTestProfileName.
+  helper().hermes_manager_test()->AddEuicc(dbus::ObjectPath(kTestEuiccPath),
+                                           "eid", true);
+  helper().hermes_euicc_test()->AddCarrierProfile(
+      dbus::ObjectPath(kTestProfileServicePath),
+      dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestProfileName,
+      "service_provider", "activation_code", kTestProfileServicePath,
+      hermes::profile::State::kInactive,
+      /*service_only=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  // Change the network's name in Shill. Now, Hermes and Shill have different
+  // names associated with the profile.
+  helper().SetServiceProperty(kTestProfileServicePath, shill::kNameProperty,
+                              base::Value(kTestNameFromShill));
+  base::RunLoop().RunUntilIdle();
+
+  // Fetch the Cellular network for the eSIM profile.
+  std::string esim_guid = std::string("esim_guid") + kTestIccid;
+  mojom::NetworkStatePropertiesPtr network = GetNetworkState(esim_guid);
+
+  // The network's name should be the profile name (from Hermes), not the name
+  // from Shill.
+  EXPECT_EQ(kTestProfileName, network->name);
 }
 
 TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
