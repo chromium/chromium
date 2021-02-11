@@ -12,11 +12,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/common/buildflags.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -37,7 +37,7 @@ class WebContents;
 // extension is enabled already). Otherwise, a re-enable install prompt is
 // shown to user. The extension is enabled when user acknowledges it or the
 // flow is aborted when user declines it.
-class ExtensionEnableFlow : public content::NotificationObserver,
+class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
                             public extensions::ExtensionRegistryObserver {
  public:
   ExtensionEnableFlow(Profile* profile,
@@ -57,6 +57,11 @@ class ExtensionEnableFlow : public content::NotificationObserver,
   void Start();
 
   const std::string& extension_id() const { return extension_id_; }
+
+  // LoadErrorReporter::Observer:
+  void OnLoadFailure(content::BrowserContext* browser_context,
+                     const base::FilePath& file_path,
+                     const std::string& error) override;
 
  private:
   // Runs the enable flow. It starts by checking if the extension is loaded.
@@ -89,11 +94,6 @@ class ExtensionEnableFlow : public content::NotificationObserver,
   void StartObserving();
   void StopObserving();
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // extensions::ExtensionRegistryObserver overrides:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
@@ -118,12 +118,15 @@ class ExtensionEnableFlow : public content::NotificationObserver,
   gfx::NativeWindow parent_window_ = nullptr;
 
   std::unique_ptr<ExtensionInstallPrompt> prompt_;
-  content::NotificationRegistrar registrar_;
 
   // Listen to extension load notification.
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
       extension_registry_observer_{this};
+
+  base::ScopedObservation<extensions::LoadErrorReporter,
+                          extensions::LoadErrorReporter::Observer>
+      load_error_observation_{this};
 
   base::WeakPtrFactory<ExtensionEnableFlow> weak_ptr_factory_{this};
 
