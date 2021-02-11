@@ -6,12 +6,16 @@
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_CONTEXT_INFO_FETCHER_H_
 
 #include "base/callback_forward.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace enterprise_connectors {
+enum AnalysisConnector : int;
+class ConnectorsService;
+}  // namespace enterprise_connectors
 
 namespace extensions {
 namespace enterprise_reporting {

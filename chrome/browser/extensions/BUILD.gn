@@ -1137,6 +1137,7 @@ static_library("extensions") {
     ]
     deps += [
       "//components/enterprise",
+      "//components/enterprise/common/proto:connectors_proto",
       "//components/keep_alive_registry",
     ]
     if (is_linux || is_chromeos) {

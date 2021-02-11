@@ -8,6 +8,7 @@
 
 #include "base/callback_forward.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "device_management_backend.pb.h"
