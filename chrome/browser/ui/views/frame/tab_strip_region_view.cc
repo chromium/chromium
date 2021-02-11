@@ -121,11 +121,6 @@ class TabStripContainerOverflowIndicator : public views::View {
     canvas->DrawRect(GetContentsBounds(), flags);
   }
 
-  void OnThemeChanged() override {
-    View::OnThemeChanged();
-    SchedulePaint();
-  }
-
  private:
   TabStrip* tab_strip_;
   views::OverflowIndicatorAlignment side_;
@@ -159,16 +154,18 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_strip_scroll_container->SetContents(std::move(tab_strip));
 
     tab_strip_scroll_container->SetDrawOverflowIndicator(true);
-    tab_strip_scroll_container->SetCustomOverflowIndicator(
-        views::OverflowIndicatorAlignment::kLeft,
-        std::make_unique<TabStripContainerOverflowIndicator>(
-            tab_strip_, views::OverflowIndicatorAlignment::kLeft),
-        TabStripContainerOverflowIndicator::kTotalWidth, false);
-    tab_strip_scroll_container->SetCustomOverflowIndicator(
-        views::OverflowIndicatorAlignment::kRight,
-        std::make_unique<TabStripContainerOverflowIndicator>(
-            tab_strip_, views::OverflowIndicatorAlignment::kRight),
-        TabStripContainerOverflowIndicator::kTotalWidth, false);
+    left_overflow_indicator_ =
+        tab_strip_scroll_container->SetCustomOverflowIndicator(
+            views::OverflowIndicatorAlignment::kLeft,
+            std::make_unique<TabStripContainerOverflowIndicator>(
+                tab_strip_, views::OverflowIndicatorAlignment::kLeft),
+            TabStripContainerOverflowIndicator::kTotalWidth, false);
+    right_overflow_indicator_ =
+        tab_strip_scroll_container->SetCustomOverflowIndicator(
+            views::OverflowIndicatorAlignment::kRight,
+            std::make_unique<TabStripContainerOverflowIndicator>(
+                tab_strip_, views::OverflowIndicatorAlignment::kRight),
+            TabStripContainerOverflowIndicator::kTotalWidth, false);
 
     // This base::Unretained is safe because the callback is called by the
     // layout manager, which is cleaned up before view children like
@@ -304,6 +301,10 @@ void TabStripRegionView::FrameColorsChanged() {
                                            foreground_color);
   }
   tab_strip_->FrameColorsChanged();
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+    left_overflow_indicator_->SchedulePaint();
+    right_overflow_indicator_->SchedulePaint();
+  }
   SchedulePaint();
 }
 

@@ -87,6 +87,10 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   TabSearchButton* tab_search_button_ = nullptr;
   views::ImageButton* leading_scroll_button_;
   views::ImageButton* trailing_scroll_button_;
+  // The views, owned by |scroll_container_|, that indicate that there are more
+  // tabs overflowing to the left or right.
+  views::View* left_overflow_indicator_;
+  views::View* right_overflow_indicator_;
   TipMarqueeView* tip_marquee_view_ = nullptr;
 
   const base::CallbackListSubscription subscription_ =
