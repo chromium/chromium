@@ -169,6 +169,11 @@ ChromeVoxState.prototype = {
   destroyUserActionMonitor() {
     this.userActionMonitor_ = null;
   },
+
+  /**
+   * Forces the reading of the next change to the clipboard.
+   */
+  readNextClipboardDataChange: goog.abstractMethod,
 };
 
 /** @type {!Array<ChromeVoxStateObserver>} */

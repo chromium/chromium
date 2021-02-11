@@ -322,6 +322,13 @@ CommandHandler.onCommand = function(command) {
     case 'resetTextToSpeechSettings':
       ChromeVox.tts.resetTextToSpeechSettings();
       return false;
+    case 'copy':
+      EventGenerator.sendKeyPress(KeyCode.C, {ctrl: true});
+
+      // The above command doesn't trigger document clipboard events, so we need
+      // to set this manually.
+      ChromeVoxState.instance.readNextClipboardDataChange();
+      return false;
   }
 
   // Require a current range.
@@ -1454,8 +1461,7 @@ CommandHandler.init = function() {
 
     if (request.openTutorial) {
       let launchTutorial = function(desktop, evt) {
-        desktop.removeEventListener(
-            chrome.automation.EventType.FOCUS, launchTutorial, true);
+        desktop.removeEventListener(EventType.FOCUS, launchTutorial, true);
         CommandHandler.onCommand('help');
       };
 
@@ -1464,8 +1470,7 @@ CommandHandler.init = function() {
       // show our tutorial.
       chrome.automation.getDesktop(function(desktop) {
         launchTutorial = launchTutorial.bind(this, desktop);
-        desktop.addEventListener(
-            chrome.automation.EventType.FOCUS, launchTutorial, true);
+        desktop.addEventListener(EventType.FOCUS, launchTutorial, true);
       });
     }
   });

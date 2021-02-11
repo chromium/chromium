@@ -355,6 +355,11 @@ export class Background extends ChromeVoxState {
     }
   }
 
+  /** @override */
+  readNextClipboardDataChange() {
+    this.lastClipboardEvent_ = 'copy';
+  }
+
   /**
    * Processes the copy clipboard event.
    * @param {!Event} evt

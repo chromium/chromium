@@ -1204,6 +1204,11 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
   });
   sm_.ExpectSpeech("copy Foo.");
 
+  // Do it again with the command Search+Ctrl+C, which should do the same thing
+  // but triggered through ChromeVox via synthesized keys.
+  sm_.Call([this]() { SendKeyPressWithSearchAndControl(ui::VKEY_C); });
+  sm_.ExpectSpeech("copy Foo.");
+
   sm_.Replay();
 }
 
