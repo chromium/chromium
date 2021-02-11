@@ -55,8 +55,9 @@ struct MultiTokenVariantIsTokenType {
 };
 
 // Specialization for util::TokenType<>.
-template <typename TokenTypeTag>
-struct MultiTokenVariantIsTokenType<::util::TokenType<TokenTypeTag>> {
+template <typename TokenTypeTag, bool kAllowImplicitConversion>
+struct MultiTokenVariantIsTokenType<
+    ::util::TokenType<TokenTypeTag, kAllowImplicitConversion>> {
   static constexpr bool kValue = true;
 
   // We expect an identical layout, which allows us to reinterpret_cast between

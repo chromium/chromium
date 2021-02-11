@@ -621,14 +621,26 @@ int WebFrame::InstanceCount() {
 }
 
 // static
+WebFrame* WebFrame::FromFrameToken(const FrameToken& frame_token) {
+  auto* frame = Frame::ResolveFrame(frame_token);
+  return WebFrame::FromCoreFrame(frame);
+}
+
+// static
 WebFrame* WebFrame::FromFrameToken(const base::UnguessableToken& frame_token) {
   auto* frame = Frame::ResolveFrame(frame_token);
   return WebFrame::FromCoreFrame(frame);
 }
 
 // static
-WebFrame* WebFrame::FromFrameToken(const FrameToken& frame_token) {
-  auto* frame = Frame::ResolveFrame(frame_token);
+WebFrame* WebFrame::FromFrameToken(const LocalFrameToken& frame_token) {
+  auto* frame = Frame::ResolveFrame(FrameToken(frame_token));
+  return WebFrame::FromCoreFrame(frame);
+}
+
+// static
+WebFrame* WebFrame::FromFrameToken(const RemoteFrameToken& frame_token) {
+  auto* frame = Frame::ResolveFrame(FrameToken(frame_token));
   return WebFrame::FromCoreFrame(frame);
 }
 

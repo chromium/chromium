@@ -4,11 +4,13 @@
 
 #include "base/util/type_safety/token_type.h"
 
+#include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace util {
 
 using FooToken = TokenType<class Foo>;
+using ConvertibleToken = TokenType<class Convertible, true>;
 
 TEST(TokenType, TokenApi) {
   // Test default initialization.
@@ -41,6 +43,19 @@ TEST(TokenType, TokenApi) {
 
   // Test string representation.
   EXPECT_EQ(token2.ToString(), token2.value().ToString());
+}
+
+TEST(TokenType, ImplicitConversion) {
+  ConvertibleToken token1;
+  base::UnguessableToken token2;
+  EXPECT_FALSE(token1.value().is_empty());
+  EXPECT_TRUE(token2.is_empty());
+
+  token2 = token1;
+  EXPECT_EQ(token1.value(), token2);
+
+  base::UnguessableToken token3(token1);
+  EXPECT_EQ(token1.value(), token3);
 }
 
 }  // namespace util
