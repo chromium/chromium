@@ -46,14 +46,6 @@ class BASE_EXPORT FilteredServiceDirectory {
   DISALLOW_COPY_AND_ASSIGN(FilteredServiceDirectory);
 };
 
-// TODO(crbug.com/1073821): Remove this block when out-of-tree callers have been
-// changed to use the non-fuchsia-sub-namespace version.
-namespace fuchsia {
-
-using FilteredServiceDirectory = ::base::FilteredServiceDirectory;
-
-}  // namespace fuchsia
-
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_FILTERED_SERVICE_DIRECTORY_H_

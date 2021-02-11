@@ -122,21 +122,6 @@ class BASE_EXPORT ScopedSingleClientServiceBinding {
   DISALLOW_COPY_AND_ASSIGN(ScopedSingleClientServiceBinding);
 };
 
-// TODO(crbug.com/1073821): Remove this block when out-of-tree callers have been
-// changed to use the non-fuchsia-sub-namespace version.
-namespace fuchsia {
-
-template <typename Interface>
-using ScopedServiceBinding = ::base::ScopedServiceBinding<Interface>;
-
-template <typename Interface,
-          ScopedServiceBindingPolicy Policy =
-              ScopedServiceBindingPolicy::kPreferNew>
-using ScopedSingleClientServiceBinding =
-    ScopedSingleClientServiceBinding<Interface, Policy>;
-
-}  // namespace fuchsia
-
 }  // namespace base
 
 #endif  // BASE_FUCHSIA_SCOPED_SERVICE_BINDING_H_
