@@ -30,22 +30,15 @@
         flex-direction: column;
         font-size: 13px;
         height: 100%;
+        line-height: 16px;
         margin: auto;
+        max-width: var(--multidevice-setup-width, var(--default-ui-width));
+        padding: 32px;
       }
 
       iron-pages {
-        height: 100%;
         overflow: var(--iron-pages-overflow, visible);
-      }
-
-      button-bar {
-        padding: 24px;
-      }
-
-      @media screen and (orientation: portrait) {
-        :host-context(html[screen=oobe]) button-bar {
-          align-items: center;
-        }
+        padding: 0 32px;
       }
 
       @media screen and (max-width: 767px) {
@@ -55,6 +48,7 @@
           /* Add height of buttons plus padding on top and bottom of buttons. */
           margin-bottom: calc(var(--narrow-button-bar-height) +
                               calc(2 * var(--narrow-button-bar-spacing)));
+          padding: 32px 32px 0 32px;
         }
 
         iron-pages {
@@ -101,6 +95,7 @@
             delegate="[[delegate]]">
         </start-setup-page>
       </iron-pages>
+      <div class="flex"></div>
       <button-bar forward-button-hidden="[[!forwardButtonTextId]]"
           backward-button-hidden="[[!backwardButtonTextId]]"
           cancel-button-hidden="[[!cancelButtonTextId]]"
