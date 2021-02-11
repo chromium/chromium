@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -278,7 +279,14 @@ void FrameRateDecider::SetPreferredInterval(
 }
 
 bool FrameRateDecider::multiple_refresh_rates_supported() const {
+  // TODO(crbug/1156136): This should work on all platforms, but currently
+  // causes pages to freeze on android when removing a camera track from a video
+  // element. Reenable once the root cause is fixed.
+#if defined(OS_WIN)
   return supports_set_frame_rate_ || supported_intervals_.size() > 1u;
+#else
+  return supported_intervals_.size() > 1u;
+#endif
 }
 
 }  // namespace viz
