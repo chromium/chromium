@@ -5,8 +5,11 @@
 </style>
 
 <diagnostics-card>
-  <div id="cardTitle" slot="title" aria-describedby="batteryStatusChipInfo">[[i18n('batteryTitle')]]</div>
-  <div id="batteryStatusChipInfo" slot="chip" class="diagnostics-chip" aria-hidden="true">
+  <div id="cardTitle" slot="title" aria-describedby="batteryStatusChipInfo">
+    [[i18n('batteryTitle')]]
+  </div>
+  <div id="batteryStatusChipInfo" slot="chip" class="diagnostics-chip"
+      aria-hidden="true">
     [[getDesignedFullCharge_(batteryHealth_.chargeFullDesignMilliampHours)]]
   </div>
   <iron-icon slot="icon" icon="[[batteryIcon]]" class$="[[iconClass]]">

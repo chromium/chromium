@@ -1,7 +1,9 @@
 <style include="diagnostics-shared diagnostics-fonts"></style>
 
 <diagnostics-card>
-  <div id="cardTitle" slot="title" aria-describedby="cpuChipInfo">[[i18n('cpuTitle')]]</div>
+  <div id="cardTitle" slot="title" aria-describedby="cpuChipInfo">
+    [[i18n('cpuTitle')]]
+  </div>
   <div id="cpuChipInfo" slot="chip" aria-hidden="true">[[cpuChipInfo_]]</div>
   <iron-icon slot="icon" icon="diagnostics:cpu"></iron-icon>
   <!-- TODO(michaelcheco): Add i18n string for percent number format -->
