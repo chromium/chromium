@@ -85,5 +85,8 @@ bool UseWebViewNativeContextMenuSystem() {
   return false;
 }
 
+const base::Feature kIOSSharedHighlightingColorChange{
+    "IOSSharedHighlightingColorChange", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace web

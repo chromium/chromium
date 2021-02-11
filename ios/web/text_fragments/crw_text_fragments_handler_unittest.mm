@@ -8,6 +8,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#import "components/shared_highlighting/core/common/text_fragments_constants.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -37,7 +38,10 @@ const char kValidFragmentsURL[] =
     "https://chromium.org#idFrag:~:text=text%201&text=text%202";
 const char kScriptForValidFragmentsURL[] =
     "__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
-    "1\"},{\"textStart\":\"text 2\"}], true)";
+    "1\"},{\"textStart\":\"text 2\"}], true, null, null)";
+const char kScriptForValidFragmentsColorChangeURL[] =
+    "__gCrWeb.textFragments.handleTextFragments([{\"textStart\":\"text "
+    "1\"},{\"textStart\":\"text 2\"}], true, 'e9d2fd', '000000')";
 
 const char kSingleFragmentURL[] = "https://chromium.org#:~:text=text";
 const char kTwoFragmentsURL[] =
@@ -98,14 +102,21 @@ class CRWTextFragmentsHandlerTest : public web::WebTest {
     return CreateHandler(/*has_opener=*/false,
                          /*has_user_gesture=*/true,
                          /*is_same_document=*/false,
-                         /*feature_enabled=*/true);
+                         /*feature_enabled=*/true,
+                         /*feature_color_change=*/false);
   }
 
   CRWTextFragmentsHandler* CreateHandler(bool has_opener,
                                          bool has_user_gesture,
                                          bool is_same_document,
-                                         bool feature_enabled) {
-    if (feature_enabled) {
+                                         bool feature_enabled,
+                                         bool feature_color_change) {
+    if (feature_enabled && feature_color_change) {
+      feature_list_.InitWithFeatures(
+          {web::features::kScrollToTextIOS,
+           web::features::kIOSSharedHighlightingColorChange},
+          {});
+    } else if (feature_enabled) {
       feature_list_.InitAndEnableFeature(web::features::kScrollToTextIOS);
     } else {
       feature_list_.InitAndDisableFeature(web::features::kScrollToTextIOS);
@@ -184,13 +195,43 @@ TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptSuccess) {
   EXPECT_EQ("textFragments", web_state_->last_command_prefix());
 }
 
+// Tests that the handler will execute JavaScript with the default colors
+// if the IOSSharedHighlightingColorChange flag is enabled, if highlighting
+// is allowed and fragments are present.
+TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptWithColorChange) {
+  base::HistogramTester histogram_tester;
+  SetLastURL(GURL(kValidFragmentsURL));
+
+  CRWTextFragmentsHandler* handler =
+      CreateHandler(/*has_opener=*/false,
+                    /*has_user_gesture=*/true,
+                    /*is_same_document=*/false,
+                    /*feature_enabled=*/true,
+                    /*feature_color_change=*/true);
+
+  // Set up expectation.
+  base::string16 expected_javascript =
+      base::UTF8ToUTF16(kScriptForValidFragmentsColorChangeURL);
+  EXPECT_CALL(*web_state_, ExecuteJavaScript(expected_javascript)).Times(1);
+
+  [handler processTextFragmentsWithContext:&context_
+                                  referrer:GetSearchEngineReferrer()];
+
+  // Verify that a command callback was added with the right prefix.
+  EXPECT_NE(web::WebState::ScriptCommandCallback(),
+            web_state_->last_callback());
+  EXPECT_EQ("textFragments", web_state_->last_command_prefix());
+}
+
 // Tests that the handler will not execute JavaScript if the scroll to text
 // feature is disabled.
 TEST_F(CRWTextFragmentsHandlerTest, FeatureDisabledFragmentsDisallowed) {
-  CRWTextFragmentsHandler* handler = CreateHandler(/*has_opener=*/false,
-                                                   /*has_user_gesture=*/true,
-                                                   /*is_same_document=*/false,
-                                                   /*feature_enabled=*/false);
+  CRWTextFragmentsHandler* handler =
+      CreateHandler(/*has_opener=*/false,
+                    /*has_user_gesture=*/true,
+                    /*is_same_document=*/false,
+                    /*feature_enabled=*/false,
+                    /*feature_color_change=*/false);
 
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
@@ -206,10 +247,12 @@ TEST_F(CRWTextFragmentsHandlerTest, FeatureDisabledFragmentsDisallowed) {
 // Tests that the handler will not execute JavaScript if the WebState has an
 // opener.
 TEST_F(CRWTextFragmentsHandlerTest, HasOpenerFragmentsDisallowed) {
-  CRWTextFragmentsHandler* handler = CreateHandler(/*has_opener=*/true,
-                                                   /*has_user_gesture=*/true,
-                                                   /*is_same_document=*/false,
-                                                   /*feature_enabled=*/true);
+  CRWTextFragmentsHandler* handler =
+      CreateHandler(/*has_opener=*/true,
+                    /*has_user_gesture=*/true,
+                    /*is_same_document=*/false,
+                    /*feature_enabled=*/true,
+                    /*feature_color_change=*/false);
 
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
@@ -221,10 +264,12 @@ TEST_F(CRWTextFragmentsHandlerTest, HasOpenerFragmentsDisallowed) {
 // Tests that the handler will not execute JavaScript if the WebState has no
 // user gesture.
 TEST_F(CRWTextFragmentsHandlerTest, NoGestureFragmentsDisallowed) {
-  CRWTextFragmentsHandler* handler = CreateHandler(/*has_opener=*/false,
-                                                   /*has_user_gesture=*/false,
-                                                   /*is_same_document=*/false,
-                                                   /*feature_enabled=*/true);
+  CRWTextFragmentsHandler* handler =
+      CreateHandler(/*has_opener=*/false,
+                    /*has_user_gesture=*/false,
+                    /*is_same_document=*/false,
+                    /*feature_enabled=*/true,
+                    /*feature_color_change=*/false);
 
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
@@ -236,10 +281,12 @@ TEST_F(CRWTextFragmentsHandlerTest, NoGestureFragmentsDisallowed) {
 // Tests that the handler will not execute JavaScript if we navigated on the
 // same document.
 TEST_F(CRWTextFragmentsHandlerTest, SameDocumentFragmentsDisallowed) {
-  CRWTextFragmentsHandler* handler = CreateHandler(/*has_opener=*/false,
-                                                   /*has_user_gesture=*/true,
-                                                   /*is_same_document=*/true,
-                                                   /*feature_enabled=*/true);
+  CRWTextFragmentsHandler* handler =
+      CreateHandler(/*has_opener=*/false,
+                    /*has_user_gesture=*/true,
+                    /*is_same_document=*/true,
+                    /*feature_enabled=*/true,
+                    /*feature_color_change=*/false);
 
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
   EXPECT_CALL(*web_state_, GetLastCommittedURL()).Times(0);
@@ -253,10 +300,12 @@ TEST_F(CRWTextFragmentsHandlerTest, SameDocumentFragmentsDisallowed) {
 TEST_F(CRWTextFragmentsHandlerTest, NoFragmentsNoJavaScript) {
   SetLastURL(GURL("https://www.chromium.org/"));
 
-  CRWTextFragmentsHandler* handler = CreateHandler(/*has_opener=*/false,
-                                                   /*has_user_gesture=*/true,
-                                                   /*is_same_document=*/false,
-                                                   /*feature_enabled=*/true);
+  CRWTextFragmentsHandler* handler =
+      CreateHandler(/*has_opener=*/false,
+                    /*has_user_gesture=*/true,
+                    /*is_same_document=*/false,
+                    /*feature_enabled=*/true,
+                    /*feature_color_change=*/false);
 
   EXPECT_CALL(*web_state_, ExecuteJavaScript(_)).Times(0);
 

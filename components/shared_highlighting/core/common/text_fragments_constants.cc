@@ -16,6 +16,9 @@ const char kFragmentTextEndKey[] = "textEnd";
 const char kFragmentSuffixKey[] = "suffix";
 
 // Light purple.
-const int kFragmentTextBackgroundColor = 0xFFE9D2FD;
+const int kFragmentTextBackgroundColorARGB = 0xFFE9D2FD;
+
+// Black.
+const int kFragmentTextForegroundColorARGB = 0xFF000000;
 
 }  // namespace shared_highlighting

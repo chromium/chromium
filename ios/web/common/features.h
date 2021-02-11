@@ -86,6 +86,9 @@ bool UseWebViewNativeContextMenuWeb();
 // for the web content is used.
 bool UseWebViewNativeContextMenuSystem();
 
+// Feature flag that enable Shared Highlighting color change in iOS.
+extern const base::Feature kIOSSharedHighlightingColorChange;
+
 }  // namespace features
 }  // namespace web
 

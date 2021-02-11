@@ -108,7 +108,7 @@ Color HighlightThemeBackgroundColor(const Document& document,
                        style.UsedColorScheme());
     case kPseudoIdTargetText:
       if (RuntimeEnabledFeatures::TextFragmentColorChangeEnabled())
-        return Color(shared_highlighting::kFragmentTextBackgroundColor);
+        return Color(shared_highlighting::kFragmentTextBackgroundColorARGB);
 
       return LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
           false /* active match */, document.InForcedColorsMode(),

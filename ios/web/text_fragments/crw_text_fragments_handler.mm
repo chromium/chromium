@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <iomanip>
+
 #import "ios/web/text_fragments/crw_text_fragments_handler.h"
 
 #import "base/json/json_writer.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#import "components/shared_highlighting/core/common/text_fragments_constants.h"
 #import "components/shared_highlighting/core/common/text_fragments_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -28,6 +31,14 @@ const char kScriptResponseCommand[] = "textFragments.response";
 
 const double kMinSelectorCount = 0.0;
 const double kMaxSelectorCount = 200.0;
+
+// Returns a rgb hexadecimal color, suitable for processing in JavaScript
+std::string ToHexStringRGB(int color) {
+  std::stringstream sstream;
+  sstream << "'" << std::setfill('0') << std::setw(6) << std::hex
+          << (color & 0x00FFFFFF) << "'";
+  return sstream.str();
+}
 
 }  // namespace
 
@@ -100,10 +111,24 @@ const double kMaxSelectorCount = 200.0;
   std::string fragmentParam;
   base::JSONWriter::Write(parsedFragments, &fragmentParam);
 
-  std::string script = base::ReplaceStringPlaceholders(
-      "__gCrWeb.textFragments.handleTextFragments($1, $2)",
-      {fragmentParam, /* scroll = */ "true"},
-      /* offsets= */ nil);
+  std::string script;
+  if (base::FeatureList::IsEnabled(
+          web::features::kIOSSharedHighlightingColorChange)) {
+    script = base::ReplaceStringPlaceholders(
+        "__gCrWeb.textFragments.handleTextFragments($1, $2, $3, $4)",
+        {fragmentParam,
+         /* scroll = */ "true",
+         /* backgroundColor = */
+         ToHexStringRGB(shared_highlighting::kFragmentTextBackgroundColorARGB),
+         /* foregroundColor = */
+         ToHexStringRGB(shared_highlighting::kFragmentTextForegroundColorARGB)},
+        /* offsets= */ nil);
+  } else {
+    script = base::ReplaceStringPlaceholders(
+        "__gCrWeb.textFragments.handleTextFragments($1, $2, $3, $4)",
+        {fragmentParam, /* scroll = */ "true", "null", "null"},
+        /* offsets= */ nil);
+  }
 
   self.webStateImpl->ExecuteJavaScript(base::UTF8ToUTF16(script));
 }
