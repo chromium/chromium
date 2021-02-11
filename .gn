@@ -122,15 +122,7 @@ no_check_targets = [
   "//third_party/icu/*",
   "//third_party/libvpx:*",  # 164 errors
   "//third_party/libwebp:*",  # 80 errors, https://crbug.com/800762
-  "//third_party/openscreen/src/cast/common:*",  # 4 errors
-  "//third_party/openscreen/src/cast/receiver:*",  # 1 error
-  "//third_party/openscreen/src/cast/streaming:*",  # 66 errors
   "//third_party/openscreen/src/discovery:*",  # 36 errors
-  "//third_party/openscreen/src/osp/impl/quic:*",  # 16 errors
-  "//third_party/openscreen/src/osp/msgs:*",  # 5 errors
-  "//third_party/openscreen/src/osp/public:*",  # 1 error
-  "//third_party/openscreen/src/osp:*",  # 13 errors
-  "//third_party/openscreen/src/util:*",  # 29 errors
 
   # //v8/*, https://crbug.com/v8/7330
   "//v8/src/inspector:*",  # 20 errors
