@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -67,22 +68,30 @@ class ESimProfile : public mojom::ESimProfile {
   using ESimOperationResultCallback =
       base::OnceCallback<void(mojom::ESimOperationResult)>;
 
+  void PerformSetProfileNickname(
+      const base::string16& nickname,
+      bool has_already_requested_installed_profiles,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRequestInstalledProfilesForSetNickname(
+      const base::string16& nickname,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status);
   void OnPendingProfileInstallResult(ProfileInstallResultCallback callback,
                                      HermesResponseStatus status);
-  void OnProfileInstallResult(ProfileInstallResultCallback callback,
-                              const std::string& eid,
-                              HermesResponseStatus status,
-                              const dbus::ObjectPath* object_path);
   void OnProfileUninstallResult(bool success);
   void OnESimOperationResult(ESimOperationResultCallback callback,
                              HermesResponseStatus status);
-  void OnProfilePropertySet(ESimOperationResultCallback callback, bool success);
+  void OnProfileNicknameSet(
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      bool success);
+  bool ProfileExistsOnEuicc();
 
   // Reference to Euicc that owns this profile.
   Euicc* euicc_;
   // Reference to ESimManager that owns Euicc of this profile.
   ESimManager* esim_manager_;
   UninstallProfileCallback uninstall_callback_;
+  SetProfileNicknameCallback set_profile_nickname_callback_;
   mojo::ReceiverSet<mojom::ESimProfile> receiver_set_;
   mojom::ESimProfilePropertiesPtr properties_;
   dbus::ObjectPath path_;
