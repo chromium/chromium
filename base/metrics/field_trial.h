@@ -774,8 +774,6 @@ class BASE_EXPORT FieldTrialList {
   Lock lock_;
   RegistrationMap registered_;
 
-  std::map<std::string, std::string> seen_states_;
-
   // Entropy provider to be used for one-time randomized field trials. If NULL,
   // one-time randomization is not supported.
   std::unique_ptr<const FieldTrial::EntropyProvider> entropy_provider_;
