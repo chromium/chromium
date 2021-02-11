@@ -31,7 +31,6 @@ struct XrView;
 namespace device {
 
 class OpenXrApiWrapper;
-class OpenXRInputHelper;
 
 class OpenXrRenderLoop : public XRCompositorCommon,
                          public mojom::XREnvironmentIntegrationProvider,
@@ -139,7 +138,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   const OpenXrExtensionHelper& extension_helper_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
-  std::unique_ptr<OpenXRInputHelper> input_helper_;
 
   std::vector<CreateAnchorRequest> create_anchor_requests_;
 

@@ -222,17 +222,11 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
   return input_states;
 }
 
-void OpenXRInputHelper::OnInteractionProfileChanged(XrResult* xr_result) {
+XrResult OpenXRInputHelper::OnInteractionProfileChanged() {
   for (OpenXrControllerState& controller_state : controller_states_) {
-    *xr_result = controller_state.controller.UpdateInteractionProfile();
-    if (XR_FAILED(*xr_result)) {
-      return;
-    }
+    RETURN_IF_XR_FAILED(controller_state.controller.UpdateInteractionProfile());
   }
-}
-
-base::WeakPtr<OpenXRInputHelper> OpenXRInputHelper::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+  return XR_SUCCESS;
 }
 
 base::Optional<Gamepad> OpenXRInputHelper ::GetWebXRGamepad(

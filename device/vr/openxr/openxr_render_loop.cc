@@ -63,8 +63,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   frame_data->time_delta =
       base::TimeDelta::FromNanoseconds(openxr_->GetPredictedDisplayTime());
 
-  frame_data->input_state = input_helper_->GetInputState(
-      hand_input_enabled, openxr_->GetPredictedDisplayTime());
+  frame_data->input_state = openxr_->GetInputState(hand_input_enabled);
 
   frame_data->pose = mojom::VRPose::New();
 
@@ -117,7 +116,6 @@ void OpenXrRenderLoop::StartRuntime(
     StartRuntimeCallback start_runtime_callback) {
   DCHECK(instance_ != XR_NULL_HANDLE);
   DCHECK(!openxr_);
-  DCHECK(!input_helper_);
   DCHECK(!current_display_info_);
 
   // The new wrapper object is stored in a temporary variable instead of
@@ -129,13 +127,20 @@ void OpenXrRenderLoop::StartRuntime(
   if (!openxr)
     return std::move(start_runtime_callback).Run(false);
 
+  SessionEndedCallback on_session_ended_callback = base::BindRepeating(
+      &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr());
+  VisibilityChangedCallback on_visibility_state_changed = base::BindRepeating(
+      &OpenXrRenderLoop::SetVisibilityState, weak_ptr_factory_.GetWeakPtr());
+
   texture_helper_.SetUseBGRA(true);
   LUID luid;
   if (XR_FAILED(openxr->GetLuid(&luid, extension_helper_)) ||
       !texture_helper_.SetAdapterLUID(luid) ||
       !texture_helper_.EnsureInitialized() ||
-      XR_FAILED(openxr->InitSession(texture_helper_.GetDevice(), &input_helper_,
-                                    extension_helper_))) {
+      XR_FAILED(openxr->InitSession(texture_helper_.GetDevice(),
+                                    extension_helper_,
+                                    std::move(on_session_ended_callback),
+                                    std::move(on_visibility_state_changed)))) {
     texture_helper_.Reset();
     return std::move(start_runtime_callback).Run(false);
   }
@@ -145,13 +150,6 @@ void OpenXrRenderLoop::StartRuntime(
   openxr_ = std::move(openxr);
   texture_helper_.SetDefaultSize(openxr_->GetViewSize());
 
-  openxr_->RegisterInteractionProfileChangeCallback(
-      base::BindRepeating(&OpenXRInputHelper::OnInteractionProfileChanged,
-                          input_helper_->GetWeakPtr()));
-  openxr_->RegisterVisibilityChangeCallback(base::BindRepeating(
-      &OpenXrRenderLoop::SetVisibilityState, weak_ptr_factory_.GetWeakPtr()));
-  openxr_->RegisterOnSessionEndedCallback(base::BindRepeating(
-      &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr()));
   InitializeDisplayInfo();
 
   StartContextProviderIfNeeded(std::move(start_runtime_callback));
@@ -162,7 +160,6 @@ void OpenXrRenderLoop::StopRuntime() {
   // first, input_helper_destructor will try to call the actual openxr runtime
   // rather than the mock in tests.
   DisposeActiveAnchorCallbacks();
-  input_helper_.reset();
   openxr_ = nullptr;
   current_display_info_ = nullptr;
   texture_helper_.Reset();

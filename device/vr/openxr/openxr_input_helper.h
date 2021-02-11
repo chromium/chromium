@@ -35,9 +35,7 @@ class OpenXRInputHelper {
       bool hand_input_enabled,
       XrTime predicted_display_time);
 
-  void OnInteractionProfileChanged(XrResult* xr_result);
-
-  base::WeakPtr<OpenXRInputHelper> GetWeakPtr();
+  XrResult OnInteractionProfileChanged();
 
  private:
   base::Optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
@@ -64,9 +62,6 @@ class OpenXRInputHelper {
       controller_states_;
 
   std::unique_ptr<OpenXRPathHelper> path_helper_;
-
-  // This must be the last member
-  base::WeakPtrFactory<OpenXRInputHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OpenXRInputHelper);
 };

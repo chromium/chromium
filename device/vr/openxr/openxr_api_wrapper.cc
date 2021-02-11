@@ -76,15 +76,14 @@ void OpenXrApiWrapper::Reset() {
   origin_from_eye_views_.clear();
   head_from_eye_views_.clear();
   layer_projection_views_.clear();
+  input_helper_.reset();
 }
 
 bool OpenXrApiWrapper::Initialize(XrInstance instance) {
   Reset();
+
   session_running_ = false;
   pending_frame_ = false;
-  // Set to min so that the first call to EnsureEventPolling is guaranteed to
-  // call ProcessEvents, which will update this variable from there on.
-  last_process_events_time_ = base::TimeTicks::Min();
 
   DCHECK(instance != XR_NULL_HANDLE);
   instance_ = instance;
@@ -134,9 +133,6 @@ void OpenXrApiWrapper::Uninitialize() {
   Reset();
   session_running_ = false;
   pending_frame_ = false;
-
-  // Set to max so events are no longer polled in the EnsureEventPolling loop.
-  last_process_events_time_ = base::TimeTicks::Max();
 }
 
 bool OpenXrApiWrapper::HasInstance() const {
@@ -281,10 +277,14 @@ bool OpenXrApiWrapper::UpdateAndGetSessionEnded() {
 // objects that may have been created before the failure.
 XrResult OpenXrApiWrapper::InitSession(
     const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device,
-    std::unique_ptr<OpenXRInputHelper>* input_helper,
-    const OpenXrExtensionHelper& extension_helper) {
+    const OpenXrExtensionHelper& extension_helper,
+    const SessionEndedCallback& on_session_ended_callback,
+    const VisibilityChangedCallback& visibility_changed_callback) {
   DCHECK(d3d_device.Get());
   DCHECK(IsInitialized());
+
+  on_session_ended_callback_ = std::move(on_session_ended_callback);
+  visibility_changed_callback_ = std::move(visibility_changed_callback);
 
   RETURN_IF_XR_FAILED(CreateSession(d3d_device));
   RETURN_IF_XR_FAILED(CreateSwapchain());
@@ -303,7 +303,9 @@ XrResult OpenXrApiWrapper::InitSession(
         CreateSpace(XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT, &unbounded_space_));
   }
 
-  RETURN_IF_XR_FAILED(CreateGamepadHelper(input_helper, extension_helper));
+  RETURN_IF_XR_FAILED(OpenXRInputHelper::CreateOpenXRInputHelper(
+      instance_, system_, extension_helper, session_, local_space_,
+      &input_helper_));
 
   // Since the objects in these arrays are used on every frame,
   // we don't want to create and destroy these objects every frame,
@@ -317,7 +319,7 @@ XrResult OpenXrApiWrapper::InitSession(
   DCHECK(HasColorSwapChain());
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
   DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_VIEW));
-  DCHECK(input_helper);
+  DCHECK(input_helper_);
 
   EnsureEventPolling();
 
@@ -419,17 +421,6 @@ XrResult OpenXrApiWrapper::CreateSpace(XrReferenceSpaceType type,
   space_create_info.poseInReferenceSpace = PoseIdentity();
 
   return xrCreateReferenceSpace(session_, &space_create_info, space);
-}
-
-XrResult OpenXrApiWrapper::CreateGamepadHelper(
-    std::unique_ptr<OpenXRInputHelper>* input_helper,
-    const OpenXrExtensionHelper& extension_helper) {
-  DCHECK(HasSession());
-  DCHECK(HasSpace(XR_REFERENCE_SPACE_TYPE_LOCAL));
-
-  return OpenXRInputHelper::CreateOpenXRInputHelper(instance_, system_,
-                                                    extension_helper, session_,
-                                                    local_space_, input_helper);
 }
 
 XrResult OpenXrApiWrapper::BeginSession() {
@@ -649,6 +640,12 @@ void OpenXrApiWrapper::GetHeadFromEyes(XrView* left, XrView* right) const {
   *right = head_from_eye_views_[1];
 }
 
+std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState(
+    bool hand_input_enabled) {
+  return input_helper_->GetInputState(hand_input_enabled,
+                                      GetPredictedDisplayTime());
+}
+
 XrResult OpenXrApiWrapper::GetLuid(
     LUID* luid,
     const OpenXrExtensionHelper& extension_helper) const {
@@ -675,11 +672,8 @@ void OpenXrApiWrapper::EnsureEventPolling() {
   // aren't being requested, this timer loop ensures OpenXR events are
   // occasionally polled while OpenXR is active.
   if (IsInitialized()) {
-    if (base::TimeTicks::Now() - last_process_events_time_ >
-        kTimeBetweenPollingEvents) {
-      if (XR_FAILED(ProcessEvents())) {
-        DCHECK(!session_running_);
-      }
+    if (XR_FAILED(ProcessEvents())) {
+      DCHECK(!session_running_);
     }
 
     // Verify that OpenXR is still active after processing events.
@@ -750,8 +744,8 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
                XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED) {
       XrEventDataInteractionProfileChanged* interaction_profile_changed =
           reinterpret_cast<XrEventDataInteractionProfileChanged*>(&event_data);
-      DCHECK(interaction_profile_changed->session == session_);
-      interaction_profile_changed_callback_.Run(&xr_result);
+      DCHECK_EQ(interaction_profile_changed->session, session_);
+      xr_result = input_helper_->OnInteractionProfileChanged();
     }
 
     if (XR_FAILED(xr_result)) {
@@ -762,8 +756,6 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
     event_data.type = XR_TYPE_EVENT_DATA_BUFFER;
     xr_result = xrPollEvent(instance_, &event_data);
   }
-
-  last_process_events_time_ = base::TimeTicks::Now();
 
   if (XR_FAILED(xr_result))
     Uninitialize();
@@ -872,24 +864,6 @@ bool OpenXrApiWrapper::GetStageParameters(XrExtent2Df* stage_bounds,
 
   *local_from_stage = gfx::ComposeTransform(local_from_stage_decomp);
   return true;
-}
-
-void OpenXrApiWrapper::RegisterInteractionProfileChangeCallback(
-    const base::RepeatingCallback<void(XrResult*)>&
-        interaction_profile_callback) {
-  interaction_profile_changed_callback_ =
-      std::move(interaction_profile_callback);
-}
-
-void OpenXrApiWrapper::RegisterVisibilityChangeCallback(
-    const base::RepeatingCallback<void(mojom::XRVisibilityState)>&
-        visibility_changed_callback) {
-  visibility_changed_callback_ = std::move(visibility_changed_callback);
-}
-
-void OpenXrApiWrapper::RegisterOnSessionEndedCallback(
-    const base::RepeatingCallback<void()>& on_session_ended_callback) {
-  on_session_ended_callback_ = std::move(on_session_ended_callback);
 }
 
 VRTestHook* OpenXrApiWrapper::test_hook_ = nullptr;
