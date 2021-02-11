@@ -55,17 +55,9 @@ LayoutUnit ComputeUndistributableTableSpace(
     const NGTableTypes::Columns& column_constraints,
     LayoutUnit inline_table_border_padding,
     LayoutUnit inline_border_spacing) {
-  unsigned inline_space_count = 2;
-  bool is_first_column = true;
-  for (const NGTableTypes::Column& column : column_constraints.data) {
-    if (!column.is_mergeable) {
-      if (is_first_column)
-        is_first_column = false;
-      else
-        inline_space_count++;
-    }
-  }
-
+  unsigned inline_space_count = 2 + (column_constraints.data.size() > 1
+                                         ? column_constraints.data.size() - 1
+                                         : 0);
   return inline_table_border_padding +
          inline_space_count * inline_border_spacing;
 }
@@ -154,13 +146,7 @@ void ComputeLocationsFromColumns(
     *has_collapsed_columns =
         *has_collapsed_columns || column_constraint.is_collapsed;
     column_location.offset = column_offset;
-    if (column_constraints.data[i].is_mergeable &&
-        (column_sizes[i] == kIndefiniteSize ||
-         column_sizes[i] == LayoutUnit())) {
-      // Empty mergeable columns are treated as collapsed.
-      column_location.size = LayoutUnit();
-      column_location.is_collapsed = true;
-    } else if (shrink_collapsed && column_constraint.is_collapsed) {
+    if (shrink_collapsed && column_constraint.is_collapsed) {
       column_location.is_collapsed = true;
       column_location.size = LayoutUnit();
     } else {

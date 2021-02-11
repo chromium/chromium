@@ -24,55 +24,6 @@ namespace blink {
 
 namespace {
 
-// Mergeable columns cannot be distributed to.
-// Make at least one spanned column is distributable.
-void EnsureDistributableColumnExists(
-    wtf_size_t start_column_index,
-    wtf_size_t span,
-    NGTableTypes::Columns* column_constraints) {
-  if (span == 0)
-    return;
-  DCHECK_LT(start_column_index, column_constraints->data.size());
-  wtf_size_t effective_span =
-      std::min(span, column_constraints->data.size() - start_column_index);
-  if (effective_span == 0)
-    return;
-  NGTableTypes::Column* start_column =
-      &column_constraints->data[start_column_index];
-  NGTableTypes::Column* end_column = start_column + effective_span;
-
-  NGTableTypes::Column* first_mergeable_column = nullptr;
-  for (NGTableTypes::Column* column = start_column; column != end_column;
-       ++column) {
-    if (!column->is_collapsed) {
-      if (!column->is_mergeable) {
-        // Found non-collapsed, non mergeable column, nothing to do.
-        return;
-      } else if (!first_mergeable_column) {
-        // Found first non-collapsed, mergeable column.
-        first_mergeable_column = column;
-      }
-    }
-  }
-  // The interesting problem being solved here is interaction between
-  // collapsed and mergeable columns.
-  // All columns that are created by colspanned cell are mergeable by
-  // default. Without collapsing, the first column would always be
-  // marked as !mergeable.
-  // What to do if the first column collapses? If that was the only
-  // non-mergeable column, the entire cell would merge into first column,
-  // and collapse.
-  // To prevent "whole cell hidden if 1st cell is collapsed",
-  // we try to make first non-collapsed column mergeable.
-  // If all columns collapse, first cell is marked as meargable.
-  if (first_mergeable_column) {
-    // Some columns were not collapsed, mark first as mergeable.
-    first_mergeable_column->is_mergeable = false;
-  } else {
-    start_column->is_mergeable = false;
-  }
-}
-
 // Applies cell/wide cell constraints to columns.
 // Guarantees columns min/max widths have non-empty values.
 void ApplyCellConstraintsToColumnConstraints(
@@ -81,37 +32,8 @@ void ApplyCellConstraintsToColumnConstraints(
     bool is_fixed_layout,
     NGTableTypes::ColspanCells* colspan_cell_constraints,
     NGTableTypes::Columns* column_constraints) {
-  // Satisfy prerequisites for cell merging:
-
-  if (column_constraints->data.size() < cell_constraints.size()) {
-    // Column constraint must exist for each cell.
-    NGTableTypes::Column default_column;
-    default_column.is_table_fixed = is_fixed_layout;
-    default_column.is_mergeable = !is_fixed_layout;
-    wtf_size_t column_count =
-        cell_constraints.size() - column_constraints->data.size();
-    // Must loop because WTF::Vector does not support resize with default value.
-    for (wtf_size_t i = 0; i < column_count; ++i)
-      column_constraints->data.push_back(default_column);
-    DCHECK_EQ(column_constraints->data.size(), cell_constraints.size());
-
-  } else if (column_constraints->data.size() > cell_constraints.size()) {
-    // Trim mergeable columns off the end.
-    wtf_size_t last_non_merged_column = column_constraints->data.size() - 1;
-    while (last_non_merged_column + 1 > cell_constraints.size() &&
-           column_constraints->data[last_non_merged_column].is_mergeable) {
-      --last_non_merged_column;
-    }
-    column_constraints->data.resize(last_non_merged_column + 1);
-    DCHECK_GE(column_constraints->data.size(), cell_constraints.size());
-  }
-  // Make sure there exists a non-mergeable column for each colspanned cell.
-  for (const NGTableTypes::ColspanCell& colspan_cell :
-       *colspan_cell_constraints) {
-    EnsureDistributableColumnExists(colspan_cell.start_column,
-                                    colspan_cell.span, column_constraints);
-  }
-
+  if (column_constraints->data.size() < cell_constraints.size())
+    column_constraints->data.resize(cell_constraints.size());
   // Distribute cell constraints to column constraints.
   for (wtf_size_t i = 0; i < cell_constraints.size(); ++i) {
     column_constraints->data[i].Encompass(cell_constraints[i]);

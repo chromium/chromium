@@ -85,7 +85,6 @@ NGTableTypes::Column NGTableTypes::CreateColumn(
   InlineSizesFromStyle(style, /* inline_border_padding */ LayoutUnit(),
                        /* is_parallel */ true, &inline_size, &min_inline_size,
                        &max_inline_size, &percentage_inline_size);
-  bool is_mergeable;
   if (!inline_size)
     inline_size = default_inline_size;
   if (min_inline_size && inline_size)
@@ -94,16 +93,13 @@ NGTableTypes::Column NGTableTypes::CreateColumn(
   if (percentage_inline_size && *percentage_inline_size == 0.0f)
     percentage_inline_size.reset();
   bool is_collapsed = style.Visibility() == EVisibility::kCollapse;
-  if (is_table_fixed) {
-    is_mergeable = false;
-  } else {
-    is_mergeable = (inline_size.value_or(LayoutUnit()) == LayoutUnit()) &&
-                   (percentage_inline_size.value_or(0.0f) == 0.0f);
-  }
-  return Column(min_inline_size.value_or(LayoutUnit()), inline_size,
+  return Column{min_inline_size.value_or(LayoutUnit()),
+                inline_size,
                 percentage_inline_size,
-                LayoutUnit() /* percent_border_padding */, is_constrained,
-                is_collapsed, is_table_fixed, is_mergeable);
+                LayoutUnit() /* percent_border_padding */,
+                is_constrained,
+                is_collapsed,
+                is_table_fixed};
 }
 
 // Implements https://www.w3.org/TR/css-tables-3/#computing-cell-measures
@@ -290,8 +286,7 @@ void NGTableTypes::Column::Encompass(
   // Constrained columns in fixed tables take precedence over cells.
   if (is_constrained && is_table_fixed)
     return;
-  if (!is_table_fixed)
-    is_mergeable = false;
+
   if (min_inline_size) {
     if (min_inline_size < cell->min_inline_size) {
       min_inline_size = cell->min_inline_size;
