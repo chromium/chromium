@@ -66,6 +66,8 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   SkColor GetContentLayerColor(ContentLayerType type) const override;
   RippleAttributes GetRippleAttributes(
       SkColor bg_color = gfx::kPlaceholderColor) const override;
+  void AddObserver(ColorModeObserver* observer) override;
+  void RemoveObserver(ColorModeObserver* observer) override;
 
   // Gets the background color that can be applied on any layer. The returned
   // color will be different based on color mode and color theme (see
@@ -86,9 +88,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
                           int icon_size);
   void DecorateFloatingIconButton(views::ImageButton* button,
                                   const gfx::VectorIcon& icon);
-
-  void AddObserver(ColorModeObserver* observer);
-  void RemoveObserver(ColorModeObserver* observer);
 
   // True if pref |kDarkModeEnabled| is true, which means the current color mode
   // is dark.

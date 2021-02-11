@@ -11,6 +11,8 @@
 
 namespace ash {
 
+class ColorModeObserver;
+
 // An interface implemented by Ash that provides colors for the system UI.
 class ASH_PUBLIC_EXPORT ColorProvider {
  public:
@@ -148,6 +150,9 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   // GetShieldLayerColor and GetBaseLayerColor.
   virtual RippleAttributes GetRippleAttributes(
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
+
+  virtual void AddObserver(ColorModeObserver* observer) = 0;
+  virtual void RemoveObserver(ColorModeObserver* observer) = 0;
 
  protected:
   ColorProvider();

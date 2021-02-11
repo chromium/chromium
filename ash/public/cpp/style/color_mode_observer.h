@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_DARK_MODE_COLOR_MODE_OBSERVER_H_
-#define ASH_SYSTEM_DARK_MODE_COLOR_MODE_OBSERVER_H_
+#ifndef ASH_PUBLIC_CPP_STYLE_COLOR_MODE_OBSERVER_H_
+#define ASH_PUBLIC_CPP_STYLE_COLOR_MODE_OBSERVER_H_
 
-#include "ash/ash_export.h"
+#include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
 
-class ASH_EXPORT ColorModeObserver : public base::CheckedObserver {
+class ASH_PUBLIC_EXPORT ColorModeObserver : public base::CheckedObserver {
  public:
   // Called when the color mode changes.
   virtual void OnColorModeChanged(bool dark_mode_enabled) {}
@@ -24,4 +24,4 @@ class ASH_EXPORT ColorModeObserver : public base::CheckedObserver {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_DARK_MODE_COLOR_MODE_OBSERVER_H_
+#endif  // ASH_PUBLIC_CPP_STYLE_COLOR_MODE_OBSERVER_H_
