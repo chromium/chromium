@@ -12,3 +12,5 @@ Description: This includes code for the manifest tool, lint tool, and wptserve.
     for more details on maintenance.
 Local Modifications:
 - Removed all files except for those listed in wpt/WPTIncludeList.
+- Cherry-picked df9dc69c2340d79fbd56ee2adfa85ac8d4af0b93 temporarily to fix a
+  lint error blocking the importer.
