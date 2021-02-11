@@ -141,7 +141,7 @@ function getCategoryItemMap() {
       route: routes.SITE_SETTINGS_LOCATION,
       id: Id.GEOLOCATION,
       label: 'siteSettingsLocation',
-      icon: 'cr:location-on',
+      icon: 'settings:location-on',
       enabledLabel: redesignEnabled ? 'siteSettingsLocationAllowed' :
                                       'siteSettingsAskBeforeAccessing',
       disabledLabel: redesignEnabled ? 'siteSettingsLocationBlocked' :

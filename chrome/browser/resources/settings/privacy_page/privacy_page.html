@@ -126,9 +126,7 @@
                 allow-option-icon="cr:file-download"
                 block-option-label
                     ="$i18n{siteSettingsAutomaticDownloadsBlocked}"
-                block-option-icon="settings:block">
-            <!-- TODO(https://crbug.com/1033607): use corresponding block
-                  icons instead of generic ones throughout this page -->
+                block-option-icon="settings:file-download-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.AUTOMATIC_DOWNLOADS]]"
@@ -169,7 +167,7 @@
                     "$i18n{siteSettingsBackgroundSyncAllowed}"
                 allow-option-icon="cr:sync"
                 block-option-label="$i18n{siteSettingsBackgroundSyncBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:sync-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.BACKGROUND_SYNC]]"
@@ -214,7 +212,7 @@
                 block-option-label="$i18n{siteSettingsCameraBlocked}"
                 block-option-sub-label=
                     "$i18n{siteSettingsCameraBlockedSubLabel}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:videocam-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.CAMERA]]" read-only-list
@@ -274,7 +272,7 @@
                 allow-option-label="$i18n{siteSettingsImagesAllowed}"
                 allow-option-icon="settings:photo"
                 block-option-label="$i18n{siteSettingsImagesBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:photo-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.IMAGES]]"
@@ -338,11 +336,11 @@
                 category="[[ContentSettingsTypes.GEOLOCATION]]"
                 allow-option-label=
                     "$i18n{siteSettingsLocationAllowed}"
-                allow-option-icon="settings20:location-on"
+                allow-option-icon="settings:location-on"
                 block-option-label="$i18n{siteSettingsLocationBlocked}"
                 block-option-sub-label=
                     "$i18n{siteSettingsLocationBlockedSubLabel}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:location-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.GEOLOCATION]]" read-only-list
@@ -403,7 +401,7 @@
                 allow-option-label="$i18n{siteSettingsJavascriptAllowed}"
                 allow-option-icon="settings:code"
                 block-option-label="$i18n{siteSettingsJavascriptBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:code-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.JAVASCRIPT]]"
@@ -440,7 +438,7 @@
                 allow-option-label="$i18n{siteSettingsSoundAllowed}"
                 allow-option-icon="settings:volume-up"
                 block-option-label="$i18n{siteSettingsSoundBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:volume-up-off">
             </settings-category-default-radio-group>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
@@ -495,7 +493,7 @@
                 allow-option-icon="cr:mic"
                 block-option-label="$i18n{siteSettingsMicBlocked}"
                 block-option-sub-label="$i18n{siteSettingsMicBlockedSubLabel}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:mic-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.MIC]]" read-only-list
@@ -535,7 +533,7 @@
                 block-option-label="$i18n{siteSettingsMotionSensorsBlocked}"
                 block-option-sub-label=
                     "$i18n{siteSettingsMotionSensorsBlockedSubLabel}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:sensors-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.SENSORS]]" read-only-list
@@ -594,7 +592,7 @@
                     pref="[[prefs.generated.notification]]"
                     label="$i18n{siteSettingsNotificationsBlocked}"
                     sub-label="$i18n{siteSettingsNotificationsBlockedSubLabel}"
-                    icon="settings:block">
+                    icon="settings:notifications-off">
                 </settings-collapse-radio-button>
               </settings-radio-group>
             </div>
@@ -651,7 +649,7 @@
                 allow-option-label="$i18n{siteSettingsPopupsAllowed}"
                 allow-option-icon="cr:open-in-new"
                 block-option-label="$i18n{siteSettingsPopupsBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:open-in-new-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.POPUPS]]"
@@ -690,7 +688,7 @@
                   allow-option-label="$i18n{siteSettingsAdsAllowed}"
                   allow-option-icon="settings:ads"
                   block-option-label="$i18n{siteSettingsAdsBlocked}"
-                  block-option-icon="settings:block">
+                  block-option-icon="settings:ads-off">
               </settings-category-default-radio-group>
               <category-setting-exceptions
                   category="[[ContentSettingsTypes.ADS]]"
@@ -731,7 +729,7 @@
                     "$i18n{siteSettingsMidiAllowed}"
                 allow-option-icon="settings:midi"
                 block-option-label="$i18n{siteSettingsMidiBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:midi-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.MIDI_DEVICES]]" read-only-list
@@ -767,7 +765,7 @@
                 allow-option-label="$i18n{siteSettingsUsbAllowed}"
                 allow-option-icon="settings:usb"
                 block-option-label="$i18n{siteSettingsUsbBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:usb-off">
             </settings-category-default-radio-group>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
@@ -796,7 +794,7 @@
                     "$i18n{siteSettingsSerialPortsAllowed}"
                 allow-option-icon="settings:serial-port"
                 block-option-label="$i18n{siteSettingsSerialPortsBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:serial-port-off">
             </settings-category-default-radio-group>
           </template>
           <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
@@ -843,7 +841,7 @@
                 allow-option-icon="settings:save-original"
                 block-option-label=
                     "$i18n{siteSettingsFileSystemWriteBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:file-editing-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.FILE_SYSTEM_WRITE]]"
@@ -966,7 +964,7 @@
                 allow-option-label="$i18n{siteSettingsClipboardAllowed}"
                 allow-option-icon="settings:clipboard"
                 block-option-label="$i18n{siteSettingsClipboardBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:clipboard-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.CLIPBOARD]]"
@@ -1005,7 +1003,7 @@
                       "$i18n{siteSettingsPaymentHandlersAllowed}"
                   allow-option-icon="settings:payment-handler"
                   block-option-label="$i18n{siteSettingsPaymentHandlersBlocked}"
-                  block-option-icon="settings:block">
+                  block-option-icon="settings:payment-handler-off">
               </settings-category-default-radio-group>
               <category-setting-exceptions
                   category="[[ContentSettingsTypes.PAYMENT_HANDLER]]"
@@ -1067,7 +1065,7 @@
                 allow-option-label="$i18n{siteSettingsVrAllowed}"
                 allow-option-icon="settings:vr-headset"
                 block-option-label="$i18n{siteSettingsVrBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:vr-headset-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.VR]]"
@@ -1107,7 +1105,7 @@
                 allow-option-label="$i18n{siteSettingsArAllowed}"
                 allow-option-icon="settings:vr-headset"
                 block-option-label="$i18n{siteSettingsArBlocked}"
-                block-option-icon="settings:block">
+                block-option-icon="settings:vr-headset-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.AR]]"
