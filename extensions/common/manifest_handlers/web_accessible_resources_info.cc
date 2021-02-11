@@ -36,16 +36,10 @@ const WebAccessibleResourcesInfo* GetResourcesInfo(const Extension* extension) {
       WebAccessibleResourcesManifestKeys::kWebAccessibleResources));
 }  // namespace
 
-base::Optional<URLPattern> GetPatternOrError(std::string relative_path,
-                                             const Extension& extension,
-                                             base::string16* error) {
+URLPattern GetPattern(std::string relative_path, const Extension& extension) {
   URLPattern pattern(URLPattern::SCHEME_EXTENSION);
-  if (pattern.Parse(extension.url().spec()) !=
-      URLPattern::ParseResult::kSuccess) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(
-        errors::kInvalidURLPatternError, extension.url().spec());
-    return base::nullopt;
-  }
+  URLPattern::ParseResult result = pattern.Parse(extension.url().spec());
+  DCHECK_EQ(URLPattern::ParseResult::kSuccess, result);
   while (relative_path[0] == '/')
     relative_path = relative_path.substr(1, relative_path.length() - 1);
   pattern.SetPath(pattern.path() + relative_path);
@@ -64,15 +58,10 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseResourceStringList(
   auto info = std::make_unique<WebAccessibleResourcesInfo>();
   URLPatternSet resource_set;
 
-  size_t i = 0;
   for (std::string& web_accessible_resource :
        manifest_keys.web_accessible_resources) {
-    auto pattern =
-        GetPatternOrError(std::move(web_accessible_resource), extension, error);
-    if (!pattern.has_value())
-      return nullptr;
-    resource_set.AddPattern(pattern.value());
-    ++i;
+    resource_set.AddPattern(
+        GetPattern(std::move(web_accessible_resource), extension));
   }
 
   // In extensions where only a resource list is provided (as is the case in
@@ -118,11 +107,7 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
     // Prepare each key of the web accessible resources.
     URLPatternSet resource_set;
     for (std::string& resource : web_accessible_resource.resources) {
-      auto pattern = GetPatternOrError(std::move(resource), extension, error);
-      if (!pattern.has_value()) {
-        return nullptr;
-      }
-      resource_set.AddPattern(pattern.value());
+      resource_set.AddPattern(GetPattern(std::move(resource), extension));
     }
     URLPatternSet match_set;
     if (web_accessible_resource.matches) {
