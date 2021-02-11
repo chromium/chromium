@@ -38,7 +38,6 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -223,14 +222,6 @@ void BrowserNavigatorTest::RunDoNothingIfIncognitoIsForcedTest(
             browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-void BrowserNavigatorTest::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED, type);
-  ++created_tab_contents_count_;
-}
-
 // Subclass of TestNavigationObserver that saves ChromeNavigationUIData.
 class TestNavigationUIDataObserver : public content::TestNavigationObserver {
  public:
@@ -297,16 +288,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_CurrentTab) {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_SingletonTabExisting) {
   const GURL singleton_url1("http://maps.google.com/");
 
-  // Register for a notification if an additional WebContents was instantiated.
-  // Opening a Singleton tab that is already opened should not be opening a new
-  // tab nor be creating a new WebContents object.
-  content::NotificationRegistrar registrar;
-
-  // As the registrar object goes out of scope, this will get unregistered
-  registrar.Add(this,
-                content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED,
-                content::NotificationService::AllSources());
-
   chrome::AddSelectedTabWithURL(browser(), singleton_url1,
                                 ui::PAGE_TRANSITION_LINK);
   chrome::AddSelectedTabWithURL(browser(), GetGoogleURL(),
@@ -314,9 +295,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_SingletonTabExisting) {
 
   // We should have one browser with 3 tabs, the 3rd selected.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
   EXPECT_EQ(2, browser()->tab_strip_model()->active_index());
-
-  unsigned int previous_tab_contents_count = created_tab_contents_count_ = 0;
 
   // Navigate to singleton_url1.
   NavigateParams params(MakeNavigateParams());
@@ -329,7 +309,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_SingletonTabExisting) {
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
   // No tab contents should have been created
-  EXPECT_EQ(previous_tab_contents_count, created_tab_contents_count_);
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,

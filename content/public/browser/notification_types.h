@@ -95,13 +95,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174767): Remove.
   NOTIFICATION_WEB_CONTENTS_DESTROYED,
 
-  // A RenderViewHost was created for a WebContents. The source is the
-  // associated WebContents, and the details is the RenderViewHost
-  // pointer.
-  // DEPRECATED: Use WebContentsObserver::RenderViewCreated()
-  // TODO(https://crbug.com/1174768): Remove.
-  NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED,
-
   // Indicates that a RenderProcessHost was created and its handle is now
   // available. The source will be the RenderProcessHost that corresponds to
   // the process.

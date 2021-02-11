@@ -109,8 +109,10 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
   FinalStatus expected_final_status() const { return expected_final_status_; }
 
  private:
-  void OnRenderViewHostCreated(
-      content::RenderViewHost* new_render_view_host) override;
+  // WebContentsObserver overrides.
+  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
+
+  // RenderWidgetHostObserver overrides.
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,
                                          bool became_visible) override;
   void RenderWidgetHostDestroyed(
@@ -120,13 +122,11 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
 
   ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
       observer_;
-  // The RenderViewHost created for the prerender, if any.
-  content::RenderViewHost* new_render_view_host_;
-  // Set to true when the prerendering RenderWidget is hidden.
-  bool was_hidden_;
+  // The main frame created for the prerender, if any.
+  content::RenderFrameHost* new_main_frame_ = nullptr;
   // Set to true when the prerendering RenderWidget is shown, after having been
   // hidden.
-  bool was_shown_;
+  bool was_shown_ = false;
   // Expected final value of was_shown_.  Defaults to true for
   // FINAL_STATUS_USED, and false otherwise.
   bool should_be_shown_;

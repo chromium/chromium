@@ -154,9 +154,6 @@ TestNoStatePrefetchContents::TestNoStatePrefetchContents(
           origin),
       expected_final_status_(expected_final_status),
       observer_(this),
-      new_render_view_host_(nullptr),
-      was_hidden_(false),
-      was_shown_(false),
       should_be_shown_(expected_final_status == FINAL_STATUS_USED),
       skip_final_checks_(ignore_final_status) {}
 
@@ -173,7 +170,7 @@ TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
   // WebContents, at the end of a navigation caused by a call to
   // NavigateToURLImpl().
   if (final_status() == FINAL_STATUS_USED)
-    EXPECT_TRUE(new_render_view_host_);
+    EXPECT_TRUE(new_main_frame_);
 
   EXPECT_EQ(should_be_shown_, was_shown_);
 }
@@ -186,28 +183,27 @@ bool TestNoStatePrefetchContents::CheckURL(const GURL& url) {
   return true;
 }
 
-void TestNoStatePrefetchContents::OnRenderViewHostCreated(
-    RenderViewHost* new_render_view_host) {
-  // Used to make sure the RenderViewHost is hidden and, if used,
-  // subsequently shown.
-  observer_.Add(new_render_view_host->GetWidget());
+void TestNoStatePrefetchContents::RenderFrameCreated(
+    content::RenderFrameHost* frame_host) {
+  if (!frame_host->GetParent()) {
+    // Used to make sure the main frame widget is hidden and, if used,
+    // subsequently shown.
+    observer_.Add(frame_host->GetRenderWidgetHost());
+    new_main_frame_ = frame_host;
+  }
 
-  new_render_view_host_ = new_render_view_host;
-
-  NoStatePrefetchContents::OnRenderViewHostCreated(new_render_view_host);
+  NoStatePrefetchContents::RenderFrameCreated(frame_host);
 }
 
 void TestNoStatePrefetchContents::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* widget_host,
     bool became_visible) {
-  EXPECT_EQ(new_render_view_host_->GetWidget(), widget_host);
+  EXPECT_EQ(new_main_frame_->GetRenderWidgetHost(), widget_host);
 
-  if (!became_visible) {
-    was_hidden_ = true;
-  } else {
-    // A prerendered RenderViewHost should only be shown after being removed
+  if (became_visible) {
+    // A prerendered main frame should only be shown after being removed
     // from the NoStatePrefetchContents for display.
-    EXPECT_FALSE(GetRenderViewHost());
+    EXPECT_FALSE(GetMainFrame());
     was_shown_ = true;
   }
 }

@@ -55,9 +55,6 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -84,33 +81,6 @@ using testing::_;
 using testing::Return;
 
 namespace {
-
-// Counts the number of RenderViewHosts created.
-class CountRenderViewHosts : public content::NotificationObserver {
- public:
-  CountRenderViewHosts() : count_(0) {
-    registrar_.Add(this,
-                   content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED,
-                   content::NotificationService::AllSources());
-  }
-  ~CountRenderViewHosts() override {}
-
-  int GetRenderViewHostCreatedCount() const { return count_; }
-
- private:
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    count_++;
-  }
-
-  content::NotificationRegistrar registrar_;
-
-  int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(CountRenderViewHosts);
-};
 
 class CloseObserver : public content::WebContentsObserver {
  public:
@@ -205,20 +175,15 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
       const base::string16& expected_title = base::ASCIIToUTF16("PASS")) {
     GURL url(embedded_test_server()->GetURL(test_name));
 
-    CountRenderViewHosts counter;
-
     ui_test_utils::NavigateToURL(browser, url);
 
     // Since the popup blocker blocked the window.open, there should be only one
-    // tab.
+    // tab and window in the profile.
     EXPECT_EQ(1u, chrome::GetBrowserCount(browser->profile()));
     EXPECT_EQ(1, browser->tab_strip_model()->count());
     WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(url, web_contents->GetURL());
-
-    // And no new RVH created.
-    EXPECT_EQ(0, counter.GetRenderViewHostCreatedCount());
 
     ui_test_utils::TabAddedWaiter tab_add(browser);
 

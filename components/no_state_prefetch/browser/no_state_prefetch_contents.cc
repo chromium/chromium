@@ -24,8 +24,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -42,7 +40,7 @@
 
 using content::BrowserThread;
 using content::OpenURLParams;
-using content::RenderViewHost;
+using content::RenderFrameHost;
 using content::SessionStorageNamespace;
 using content::WebContents;
 
@@ -204,18 +202,14 @@ void NoStatePrefetchContents::StartPrerendering(
 
   // Set the size of the prerender WebContents.
   no_state_prefetch_contents_->Resize(bounds_);
+  no_state_prefetch_contents_->WasHidden();
 
   // TODO(davidben): This logic assumes each prerender has at most one
   // process. https://crbug.com/440544
   no_state_prefetch_manager()->AddPrerenderProcessHost(
-      GetRenderViewHost()->GetProcess());
+      GetMainFrame()->GetProcess());
 
   NotifyPrefetchStart();
-
-  // Register to inform new RenderViews that we're prerendering.
-  notification_registrar_.Add(
-      this, content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED,
-      content::Source<WebContents>(no_state_prefetch_contents_.get()));
 
   content::NavigationController::LoadURLParams load_url_params(prerender_url_);
   load_url_params.referrer = referrer_;
@@ -267,40 +261,6 @@ void NoStatePrefetchContents::AddObserver(Observer* observer) {
 void NoStatePrefetchContents::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
-
-void NoStatePrefetchContents::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED: {
-      if (no_state_prefetch_contents_) {
-        DCHECK_EQ(content::Source<WebContents>(source).ptr(),
-                  no_state_prefetch_contents_.get());
-
-        content::Details<RenderViewHost> new_render_view_host(details);
-        OnRenderViewHostCreated(new_render_view_host.ptr());
-
-        // Make sure the size of the RenderViewHost has been passed to the new
-        // RenderView.  Otherwise, the size may not be sent until the
-        // RenderViewReady event makes it from the render process to the UI
-        // thread of the browser process.  When the RenderView receives its
-        // size, is also sets itself to be visible, which would then break the
-        // visibility API.
-        new_render_view_host->GetWidget()->SynchronizeVisualProperties();
-        no_state_prefetch_contents_->WasHidden();
-      }
-      break;
-    }
-
-    default:
-      NOTREACHED() << "Unexpected notification sent.";
-      break;
-  }
-}
-
-void NoStatePrefetchContents::OnRenderViewHostCreated(
-    RenderViewHost* new_render_view_host) {}
 
 std::unique_ptr<WebContents> NoStatePrefetchContents::CreateWebContents(
     SessionStorageNamespace* session_storage_namespace) {
@@ -475,11 +435,11 @@ void NoStatePrefetchContents::Destroy(FinalStatus final_status) {
 
 void NoStatePrefetchContents::DestroyWhenUsingTooManyResources() {
   if (process_pid_ == base::kNullProcessId) {
-    RenderViewHost* rvh = GetRenderViewHost();
-    if (!rvh)
+    RenderFrameHost* rfh = GetMainFrame();
+    if (!rfh)
       return;
 
-    content::RenderProcessHost* rph = rvh->GetProcess();
+    content::RenderProcessHost* rph = rfh->GetProcess();
     if (!rph)
       return;
 
@@ -534,9 +494,9 @@ NoStatePrefetchContents::ReleaseNoStatePrefetchContents() {
   return std::move(no_state_prefetch_contents_);
 }
 
-RenderViewHost* NoStatePrefetchContents::GetRenderViewHost() {
+RenderFrameHost* NoStatePrefetchContents::GetMainFrame() {
   return no_state_prefetch_contents_
-             ? no_state_prefetch_contents_->GetMainFrame()->GetRenderViewHost()
+             ? no_state_prefetch_contents_->GetMainFrame()
              : nullptr;
 }
 

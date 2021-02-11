@@ -22,8 +22,6 @@
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -49,8 +47,7 @@ namespace prerender {
 
 class NoStatePrefetchManager;
 
-class NoStatePrefetchContents : public content::NotificationObserver,
-                                public content::WebContentsObserver,
+class NoStatePrefetchContents : public content::WebContentsObserver,
                                 public prerender::mojom::PrerenderCanceler {
  public:
   // NoStatePrefetchContents::Create uses the currently registered Factory to
@@ -123,7 +120,7 @@ class NoStatePrefetchContents : public content::NotificationObserver,
   // it if not.
   void DestroyWhenUsingTooManyResources();
 
-  content::RenderViewHost* GetRenderViewHost();
+  content::RenderFrameHost* GetMainFrame();
 
   NoStatePrefetchManager* no_state_prefetch_manager() {
     return no_state_prefetch_manager_;
@@ -158,11 +155,6 @@ class NoStatePrefetchContents : public content::NotificationObserver,
       content::NavigationHandle* navigation_handle) override;
 
   void RenderProcessGone(base::TerminationStatus status) override;
-
-  // content::NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // Checks that a URL may be prerendered, for one of the many redirections. If
   // the URL can not be prerendered - for example, it's an ftp URL - |this| will
@@ -225,11 +217,6 @@ class NoStatePrefetchContents : public content::NotificationObserver,
   void NotifyPrefetchStopLoading();
   void NotifyPrefetchStop();
 
-  // Called whenever a RenderViewHost is created for prerendering.  Only called
-  // once the RenderViewHost has a RenderView and RenderWidgetHostView.
-  virtual void OnRenderViewHostCreated(
-      content::RenderViewHost* new_render_view_host);
-
   std::unique_ptr<content::WebContents> CreateWebContents(
       content::SessionStorageNamespace* session_storage_namespace);
 
@@ -286,8 +273,6 @@ class NoStatePrefetchContents : public content::NotificationObserver,
 
   // The browser context being used
   content::BrowserContext* browser_context_;
-
-  content::NotificationRegistrar notification_registrar_;
 
   // A vector of URLs that this prerendered page matches against.
   // This array can contain more than element as a result of redirects,
