@@ -393,6 +393,7 @@ void FilePathWatcherKQueue::OnKQueueReadable() {
     if (!UpdateWatches(&send_notification)) {
       callback_.Run(target_, true /* error */);
       Cancel();
+      return;
     }
   }
 
