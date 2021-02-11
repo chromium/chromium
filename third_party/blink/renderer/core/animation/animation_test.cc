@@ -2237,4 +2237,62 @@ TEST_F(AnimationAnimationTestCompositing,
             CompositorAnimations::kTimelineSourceHasInvalidCompositingState);
 }
 
+TEST_F(AnimationAnimationTestCompositing, ContentVisibleDisplayLockTest) {
+  animation->cancel();
+  RunDocumentLifecycle();
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .container {
+        content-visibility: auto;
+      }
+      @keyframes anim {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      #target {
+        background-color: blue;
+        width: 50px;
+        height: 50px;
+        animation: anim 1s linear alternate infinite;
+      }
+    </style>
+    <div id="outer" class="container">
+      <div id="inner" class="container">
+        <div id ="target">
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  RunDocumentLifecycle();
+
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
+  Element* target = GetElementById("target");
+
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  EXPECT_EQ(1u, element_animations->Animations().size());
+
+  Animation* animation = element_animations->Animations().begin()->key;
+  ASSERT_TRUE(!!animation);
+  EXPECT_FALSE(animation->IsInDisplayLockedSubtree());
+
+  inner->setAttribute(html_names::kStyleAttr, "content-visibility: hidden");
+  RunDocumentLifecycle();
+  EXPECT_TRUE(animation->IsInDisplayLockedSubtree());
+
+  inner->setAttribute(html_names::kStyleAttr, "content-visibility: visible");
+  RunDocumentLifecycle();
+  EXPECT_FALSE(animation->IsInDisplayLockedSubtree());
+
+  outer->setAttribute(html_names::kStyleAttr, "content-visibility: hidden");
+  RunDocumentLifecycle();
+  EXPECT_TRUE(animation->IsInDisplayLockedSubtree());
+
+  // Ensure that the animation has not been canceled even though display locked.
+  EXPECT_EQ(1u, target->GetElementAnimations()->Animations().size());
+  EXPECT_EQ(animation->playState(), "running");
+}
+
 }  // namespace blink

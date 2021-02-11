@@ -53,6 +53,8 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/events/animation_playback_event.h"
@@ -2594,6 +2596,24 @@ void Animation::commitStyles(ExceptionState& exception_state) {
                 value->CssText(), "", ASSERT_NO_EXCEPTION);
           },
           WrapWeakPersistent(inline_style), WrapWeakPersistent(target)));
+}
+
+bool Animation::IsInDisplayLockedSubtree() {
+  Element* owning_element = OwningElement();
+  if (!owning_element || !GetDocument())
+    return false;
+
+  base::TimeTicks display_lock_update_timestamp =
+      GetDocument()->GetDisplayLockDocumentState().GetLockUpdateTimestamp();
+
+  if (last_display_lock_update_time_ < display_lock_update_timestamp) {
+    const Element* element =
+        DisplayLockUtilities::NearestLockedExclusiveAncestor(*owning_element);
+    is_in_display_locked_subtree_ = !!element;
+    last_display_lock_update_time_ = display_lock_update_timestamp;
+  }
+
+  return is_in_display_locked_subtree_;
 }
 
 void Animation::Trace(Visitor* visitor) const {

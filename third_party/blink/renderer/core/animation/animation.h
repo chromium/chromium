@@ -36,6 +36,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
@@ -299,6 +300,8 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // depends on computed values.
   virtual void FlushPendingUpdates() const {}
 
+  bool IsInDisplayLockedSubtree();
+
   void SetCanCompositeBGColorAnim() { can_composite_bgcolor_anim_ = true; }
   void ResetCanCompositeBGColorAnim() { can_composite_bgcolor_anim_ = false; }
   bool CanCompositeBGColorAnim() const { return can_composite_bgcolor_anim_; }
@@ -528,6 +531,12 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // extend the native paint worklet to composite other types of animations in
   // the future, we might need to extend this to be a fall back reasons.
   bool can_composite_bgcolor_anim_ = false;
+
+  // Animations with an owning element stop ticking if there is an active
+  // display lock on an ancestor element.  Cache the status to minimize the
+  // number of tree walks.
+  base::TimeTicks last_display_lock_update_time_ = base::TimeTicks();
+  bool is_in_display_locked_subtree_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestCompositeAfterPaint,
                            NoCompositeWithoutCompositedElementId);

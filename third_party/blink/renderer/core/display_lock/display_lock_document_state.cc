@@ -44,11 +44,13 @@ void DisplayLockDocumentState::AddLockedDisplayLock() {
                     "LockedDisplayLockCount", TRACE_ID_LOCAL(this),
                     locked_display_lock_count_);
   ++locked_display_lock_count_;
+  last_lock_update_timestamp_ = base::TimeTicks::Now();
 }
 
 void DisplayLockDocumentState::RemoveLockedDisplayLock() {
   DCHECK(locked_display_lock_count_);
   --locked_display_lock_count_;
+  last_lock_update_timestamp_ = base::TimeTicks::Now();
   TRACE_COUNTER_ID1(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"),
                     "LockedDisplayLockCount", TRACE_ID_LOCAL(this),
                     locked_display_lock_count_);
@@ -69,6 +71,10 @@ void DisplayLockDocumentState::DecrementDisplayLockBlockingAllActivation() {
 
 int DisplayLockDocumentState::DisplayLockBlockingAllActivationCount() const {
   return display_lock_blocking_all_activation_count_;
+}
+
+base::TimeTicks DisplayLockDocumentState::GetLockUpdateTimestamp() {
+  return last_lock_update_timestamp_;
 }
 
 void DisplayLockDocumentState::RegisterDisplayLockActivationObservation(
