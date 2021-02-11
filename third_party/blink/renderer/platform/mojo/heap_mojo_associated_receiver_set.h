@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -43,6 +44,11 @@ class HeapMojoAssociatedReceiverSet {
       const HeapMojoAssociatedReceiverSet&) = delete;
 
   // Methods to redirect to mojo::AssociatedReceiverSet:
+  void set_disconnect_handler(base::RepeatingClosure handler) {
+    wrapper_->associated_receiver_set().set_disconnect_handler(
+        std::move(handler));
+  }
+
   mojo::ReceiverId Add(
       mojo::PendingAssociatedReceiver<Interface> associated_receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
