@@ -4,6 +4,7 @@
 
 import("//ios/build/config.gni")
 import("//ios/features.gni")
+import("//ios/web/js_compile.gni")
 
 source_set("safe_browsing") {
   sources = [
@@ -11,6 +12,8 @@ source_set("safe_browsing") {
     "chrome_password_protection_service.mm",
     "chrome_password_protection_service_factory.h",
     "chrome_password_protection_service_factory.mm",
+    "password_protection_java_script_feature.h",
+    "password_protection_java_script_feature.mm",
     "pending_unsafe_resource_storage.h",
     "pending_unsafe_resource_storage.mm",
     "real_time_url_lookup_service_factory.h",
@@ -35,6 +38,7 @@ source_set("safe_browsing") {
   ]
 
   deps = [
+    ":password_protection_js",
     ":util",
     "//base",
     "//build:branding_buildflags",
@@ -79,6 +83,7 @@ source_set("safe_browsing") {
     "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/public/init",
+    "//ios/web/public/js_messaging",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network:network_service",
@@ -88,6 +93,13 @@ source_set("safe_browsing") {
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+js_compile_bundle("password_protection_js") {
+  visibility = [ ":safe_browsing" ]
+  closure_entry_point = "__crWeb.passwordProtection"
+
+  sources = [ "resources/password_protection.js" ]
 }
 
 source_set("test_support") {

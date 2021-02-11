@@ -14,6 +14,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
@@ -23,6 +24,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/ios_chrome_main_parts.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
+#import "ios/chrome/browser/safe_browsing/password_protection_java_script_feature.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_error.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
@@ -278,6 +280,17 @@ void ChromeWebClient::PostBrowserURLRewriterCreation(
       ios::GetChromeBrowserProvider()->GetBrowserURLRewriterProvider();
   if (provider)
     provider->AddProviderRewriters(rewriter);
+}
+
+std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
+    web::BrowserState* browser_state) const {
+  std::vector<web::JavaScriptFeature*> features;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordReuseDetectionEnabled) &&
+      base::ios::IsRunningOnIOS14OrLater()) {
+    features.push_back(PasswordProtectionJavaScriptFeature::GetInstance());
+  }
+  return features;
 }
 
 NSString* ChromeWebClient::GetDocumentStartScriptForAllFrames(

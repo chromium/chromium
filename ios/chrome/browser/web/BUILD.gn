@@ -257,6 +257,7 @@ source_set("web_internal") {
     "//components/dom_distiller/core",
     "//components/google/core/common",
     "//components/infobars/core",
+    "//components/password_manager/core/common",
     "//components/payments/core",
     "//components/prefs",
     "//components/resources",
