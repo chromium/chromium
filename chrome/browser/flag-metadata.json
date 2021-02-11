@@ -4158,7 +4158,7 @@
   {
     "name": "pull-to-refresh",
     "owners": [ "afakhry", "tclaiborne" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 99
   },
   {
     "name": "query-tiles",
