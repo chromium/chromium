@@ -46,6 +46,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -462,6 +463,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/1171147")
     public void testAcceptTosWithoutCrashUpload() throws Exception {
         setAppRestrictionsMockInitialized(true);
         setEnterpriseInfoInitializedWithDeviceOwner(true);
