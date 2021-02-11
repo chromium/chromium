@@ -14,6 +14,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -138,8 +139,11 @@ public class WebappLauncherActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         // Close the notification tray.
-        ContextUtils.getApplicationContext().sendBroadcast(
-                new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
+            // https://crbug.com/1166691
+            ContextUtils.getApplicationContext().sendBroadcast(
+                    new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        }
 
         long createTimestamp = SystemClock.elapsedRealtime();
         Intent intent = getIntent();
