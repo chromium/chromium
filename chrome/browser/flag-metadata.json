@@ -2055,11 +2055,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-on-device-assistant",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "enable-oop-print-drivers",
     "owners": [ "awscreen", "thestig" ],
     "expiry_milestone": 92
