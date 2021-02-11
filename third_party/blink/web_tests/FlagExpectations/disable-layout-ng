@@ -974,3 +974,8 @@ crbug.com/1128262 external/wpt/css/css-flexbox/table-as-item-fixed-min-width-3.h
 crbug.com/6606 external/wpt/css/css-display/display-math-on-non-mathml-elements.html [ Failure ]
 crbug.com/6606 external/wpt/css/css-typed-om/the-stylepropertymap/properties/display.html [ Failure ]
 
+# CanvasFormattedText is supported only through layout NG
+crbug.com/1176933 fast/canvas/canvas-formattedtext-1.html [ Skip ]
+crbug.com/1176933 fast/canvas/canvas-formattedtext-2.html [ Skip ]
+crbug.com/1176933 virtual/gpu/fast/canvas/canvas-formattedtext-1.html [ Skip ]
+crbug.com/1176933 virtual/gpu/fast/canvas/canvas-formattedtext-2.html [ Skip ]

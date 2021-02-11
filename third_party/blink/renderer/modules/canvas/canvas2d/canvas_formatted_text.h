@@ -26,6 +26,7 @@ class Document;
 
 class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(CanvasFormattedText, Dispose);
 
  public:
   static CanvasFormattedText* Create(ExecutionContext* execution_context) {
@@ -34,7 +35,6 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
   }
 
   explicit CanvasFormattedText(Document*);
-  ~CanvasFormattedText() override;
   CanvasFormattedText(const CanvasFormattedText&) = delete;
   CanvasFormattedText& operator=(const CanvasFormattedText&) = delete;
 
@@ -63,16 +63,19 @@ class MODULES_EXPORT CanvasFormattedText final : public ScriptWrappable {
     return text_runs_[index];
   }
 
-  CanvasFormattedTextRun* getRunInternal(unsigned index) const {
-    if (!CheckRunsIndexBound(index, nullptr))
-      return nullptr;
-    return text_runs_[index];
-  }
-
   CanvasFormattedTextRun* appendRun(CanvasFormattedTextRun* run);
 
   LayoutBlockFlow* GetLayoutBlock(Document& document,
                                   const FontDescription& defaultFont);
+
+  sk_sp<PaintRecord> PaintFormattedText(Document& document,
+                                        const FontDescription& font,
+                                        double x,
+                                        double y,
+                                        double wrap_width,
+                                        FloatRect& bounds);
+
+  void Dispose();
 
  private:
   HeapVector<Member<CanvasFormattedTextRun>> text_runs_;

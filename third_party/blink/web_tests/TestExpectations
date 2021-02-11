@@ -176,6 +176,12 @@ crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/* [ Skip ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/* [ Skip ]
 # --- END OOP-R Canvas Tests
 
+# --- CanvasFormattedText tests ---
+# Fails on linux-rel even though actual and expected appear the same.
+crbug.com/1176933 [ Linux ] virtual/gpu/fast/canvas/canvas-formattedtext-2.html [ Skip ]
+
+# --- END CanvasFormattedText tests
+
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]

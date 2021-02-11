@@ -488,7 +488,8 @@ void LayoutObject::AddChild(LayoutObject* new_child,
 
 void LayoutObject::RemoveChild(LayoutObject* old_child) {
   NOT_DESTROYED();
-  DCHECK(IsAllowedToModifyLayoutTreeStructure(GetDocument()));
+  DCHECK(IsAllowedToModifyLayoutTreeStructure(GetDocument()) ||
+         IsLayoutNGObjectForCanvasFormattedText());
 
   LayoutObjectChildList* children = VirtualChildren();
   DCHECK(children);
