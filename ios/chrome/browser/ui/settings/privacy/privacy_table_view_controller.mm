@@ -13,6 +13,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -201,7 +202,11 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
       [[TableViewLinkHeaderFooterItem alloc]
           initWithType:ItemTypePrivacyFooter];
   showPrivacyFooterItem.text =
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER);
+      signin::IsMobileIdentityConsistencyEnabled()
+          ? l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER)
+          : l10n_util::GetNSString(
+                IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER);
+
   showPrivacyFooterItem.linkURL = GURL(kGoogleServicesSettingsURL);
 
   return showPrivacyFooterItem;
