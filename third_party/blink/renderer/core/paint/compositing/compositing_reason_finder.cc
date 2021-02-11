@@ -307,8 +307,13 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
 
 static bool ObjectTypeSupportsCompositedTransformAnimation(
     const LayoutObject& object) {
-  if (object.IsSVGChild())
-    return RuntimeEnabledFeatures::CompositeSVGEnabled();
+  if (object.IsSVGChild()) {
+    if (!RuntimeEnabledFeatures::CompositeSVGEnabled())
+      return false;
+    // Transforms are not supported on hidden containers, inlines, or text.
+    return !object.IsSVGHiddenContainer() && !object.IsLayoutInline() &&
+           !object.IsText();
+  }
   // Transforms don't apply on non-replaced inline elements.
   return object.IsBox();
 }
