@@ -2280,8 +2280,9 @@ class AdsMemoryMeasurementBrowserTest
   DISALLOW_COPY_AND_ASSIGN(AdsMemoryMeasurementBrowserTest);
 };
 
+// TODO(crbug.com/1177094) Renable test
 IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
-                       SingleAdFrame_MaxMemoryBytesRecorded) {
+                       DISABLED_SingleAdFrame_MaxMemoryBytesRecorded) {
   base::HistogramTester histogram_tester;
 
   // Instantiate a memory request and waiter to wait for expected
