@@ -19437,7 +19437,8 @@
                 'window'
               ]
             },
-            'create_desktop_shortcut': { 'type': 'boolean' }
+            'create_desktop_shortcut': { 'type': 'boolean' },
+            'fallback_app_name': { 'type': 'string' }
           },
           'required': ['url']
         }
@@ -19454,13 +19455,33 @@
       }, {
         'url': 'https://docs.google.com',
         'default_launch_container': 'tab'
+      }, {
+        'url': 'https://docs.google.com/editor',
+        'default_launch_container': 'window',
+        'fallback_app_name': 'Editor'
       }],
       'id': 468,
       'caption': '''Configure list of force-installed Web Apps''',
       'tags': [],
       'desc': '''Setting the policy specifies a list of web apps that install silently, without user interaction, and which users can't uninstall or turn off.
 
-      Each list item of the policy is an object with a mandatory member: <ph name="URL_LABEL">url</ph> (the URL of the web app to install) and 2 optional members: <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL">default_launch_container</ph> (for how the web app opens—a new tab is the default) and <ph name="CREATE_DESKTOP_SHORTCUT_LABEL">create_desktop_shortcut</ph> (True if you want to create <ph name="LINUX_OS_NAME">Linux</ph> and Windows® desktop shortcuts).
+      Each list item of the policy is an object with a mandatory member:
+      <ph name="URL_LABEL">url</ph> (the URL of the web app to install)
+
+      and 3 optional members:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL">default_launch_container</ph>
+      (for how the web app opens—a new tab is the default)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL">create_desktop_shortcut</ph>
+      (True if you want to create <ph name="LINUX_OS_NAME">Linux</ph> and
+      <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> desktop shortcuts).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL">fallback_app_name</ph>
+      (Starting with <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 90,
+      allows you to override the app name if it is not a
+      Progressive Web App (PWA), or the app name that is temporarily
+      installed if it is a PWA but authentication is required before the
+      installation can be completed.)
 
       See <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME">PinnedLauncherApps</ph> for pinning apps to the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shelf.''',
       'label': '''URLs for Web Apps to be silently installed.''',

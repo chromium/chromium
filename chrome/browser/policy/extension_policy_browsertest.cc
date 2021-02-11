@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
+#include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
@@ -1970,21 +1971,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 // before the browser is started.
 class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
  public:
-  WebAppInstallForceListPolicyTest() {}
-  ~WebAppInstallForceListPolicyTest() override {}
+  WebAppInstallForceListPolicyTest()
+      : test_page_("/banners/manifest_test_page.html") {}
+  ~WebAppInstallForceListPolicyTest() override = default;
+  WebAppInstallForceListPolicyTest(const WebAppInstallForceListPolicyTest&) =
+      delete;
+  WebAppInstallForceListPolicyTest& operator=(
+      const WebAppInstallForceListPolicyTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionPolicyTest::SetUpInProcessBrowserTestFixture();
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    policy_app_url_ =
-        embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+    policy_app_url_ = embedded_test_server()->GetURL(test_page_);
     base::Value url(policy_app_url_.spec());
     base::Value launch_container("window");
 
     base::Value item(base::Value::Type::DICTIONARY);
     item.SetKey("url", std::move(url));
     item.SetKey("default_launch_container", std::move(launch_container));
+    if (fallback_app_name_.has_value()) {
+      base::Value fallback_app_name(fallback_app_name_.value());
+      item.SetKey("fallback_app_name", std::move(fallback_app_name));
+    }
 
     base::Value list(base::Value::Type::LIST);
     list.Append(std::move(item));
@@ -1995,10 +2004,9 @@ class WebAppInstallForceListPolicyTest : public ExtensionPolicyTest {
   }
 
  protected:
+  std::string test_page_;
   GURL policy_app_url_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebAppInstallForceListPolicyTest);
+  base::Optional<std::string> fallback_app_name_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
@@ -2011,6 +2019,141 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
   if (!app_id)
     app_id = install_observer.AwaitNextInstall();
   EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
+}
+
+class WebAppInstallForceListPolicyWithAppFallbackNameManifestTest
+    : public WebAppInstallForceListPolicyTest {
+ public:
+  WebAppInstallForceListPolicyWithAppFallbackNameManifestTest() {
+    test_page_ = "/banners/manifest_test_page.html";
+    fallback_app_name_ = "fallback app name";
+  }
+
+  ~WebAppInstallForceListPolicyWithAppFallbackNameManifestTest() override =
+      default;
+  WebAppInstallForceListPolicyWithAppFallbackNameManifestTest(
+      const WebAppInstallForceListPolicyWithAppFallbackNameManifestTest&) =
+      delete;
+  WebAppInstallForceListPolicyWithAppFallbackNameManifestTest& operator=(
+      const WebAppInstallForceListPolicyWithAppFallbackNameManifestTest&) =
+      delete;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppInstallForceListPolicyWithAppFallbackNameManifestTest,
+    StartUpInstallationPWAFallbackName) {
+  const web_app::AppRegistrar& registrar =
+      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
+          ->registrar();
+  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  base::Optional<web_app::AppId> app_id =
+      registrar.FindAppWithUrlInScope(policy_app_url_);
+  if (!app_id)
+    app_id = install_observer.AwaitNextInstall();
+  EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
+
+  // We specifically don't expect the fallback name to be used for a PWA
+  // except for the placeholder app.
+  EXPECT_NE(fallback_app_name_, registrar.GetAppShortName(*app_id));
+}
+
+// SAA == Site as App (a non-PWA installed as an app)
+class WebAppInstallForceListPolicySAATest
+    : public WebAppInstallForceListPolicyTest {
+ public:
+  WebAppInstallForceListPolicySAATest() {
+    test_page_ = "/banners/no_manifest_test_page.html";
+  }
+
+  ~WebAppInstallForceListPolicySAATest() override = default;
+  WebAppInstallForceListPolicySAATest(
+      const WebAppInstallForceListPolicySAATest&) = delete;
+  WebAppInstallForceListPolicySAATest& operator=(
+      const WebAppInstallForceListPolicySAATest&) = delete;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
+                       StartUpInstallationSAA) {
+  const web_app::AppRegistrar& registrar =
+      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
+          ->registrar();
+  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  base::Optional<web_app::AppId> app_id =
+      registrar.FindAppWithUrlInScope(policy_app_url_);
+  if (!app_id)
+    app_id = install_observer.AwaitNextInstall();
+  EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
+  EXPECT_NE(fallback_app_name_, registrar.GetAppShortName(*app_id));
+}
+
+class WebAppInstallForceListPolicyWithAppFallbackNameSAATest
+    : public WebAppInstallForceListPolicyTest {
+ public:
+  WebAppInstallForceListPolicyWithAppFallbackNameSAATest() {
+    test_page_ = "/banners/no_manifest_test_page.html";
+    fallback_app_name_ = "fallback app name";
+  }
+
+  ~WebAppInstallForceListPolicyWithAppFallbackNameSAATest() override = default;
+  WebAppInstallForceListPolicyWithAppFallbackNameSAATest(
+      const WebAppInstallForceListPolicyWithAppFallbackNameSAATest&) = delete;
+  WebAppInstallForceListPolicyWithAppFallbackNameSAATest& operator=(
+      const WebAppInstallForceListPolicyWithAppFallbackNameSAATest&) = delete;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
+                       StartUpInstallationSAAFallbackName) {
+  const web_app::AppRegistrar& registrar =
+      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
+          ->registrar();
+  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  base::Optional<web_app::AppId> app_id =
+      registrar.FindAppWithUrlInScope(policy_app_url_);
+  if (!app_id)
+    app_id = install_observer.AwaitNextInstall();
+  EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
+  EXPECT_EQ(fallback_app_name_, registrar.GetAppShortName(*app_id));
+}
+
+class WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest
+    : public WebAppInstallForceListPolicyTest {
+ public:
+  WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest() {
+    test_page_ = "/close-socket";
+    fallback_app_name_ = "fallback app name";
+  }
+
+  ~WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest() override =
+      default;
+  WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest(
+      const WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest&) =
+      delete;
+  WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest& operator=(
+      const WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest&) =
+      delete;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppInstallForceListPolicyPlaceholderWithAppFallbackNameTest,
+    StartUpInstallationPlaceholderFallbackName) {
+  const web_app::AppRegistrar& registrar =
+      web_app::WebAppProviderBase::GetProviderBase(browser()->profile())
+          ->registrar();
+  web_app::WebAppInstallObserver install_observer(browser()->profile());
+  base::Optional<web_app::AppId> app_id =
+      registrar.FindAppWithUrlInScope(policy_app_url_);
+  if (!app_id)
+    app_id = install_observer.AwaitNextInstall();
+  EXPECT_EQ(policy_app_url_, registrar.GetAppStartUrl(*app_id));
+  EXPECT_EQ(fallback_app_name_, registrar.GetAppShortName(*app_id));
+
+  std::unique_ptr<web_app::ExternallyInstalledWebAppPrefs>
+      externally_installed_app_prefs =
+          std::make_unique<web_app::ExternallyInstalledWebAppPrefs>(
+              browser()->profile()->GetPrefs());
+  ASSERT_TRUE(
+      externally_installed_app_prefs->LookupPlaceholderAppId(policy_app_url_)
+          .has_value());
 }
 
 // Fixture for tests that have two profiles with a different policy for each.

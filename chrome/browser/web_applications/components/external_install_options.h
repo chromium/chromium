@@ -39,6 +39,10 @@ struct ExternalInstallOptions {
   DisplayMode user_display_mode;
   ExternalInstallSource install_source;
 
+  // App name to use for placeholder apps or web apps that have no name in
+  // their manifest.
+  base::Optional<std::string> fallback_app_name;
+
   // If true, a shortcut is added to the Applications folder on macOS, and Start
   // Menu on Linux and Windows and launcher on Chrome OS. If false, we skip
   // adding a shortcut to desktop as well, regardless of the value of
@@ -123,7 +127,7 @@ struct ExternalInstallOptions {
   // metadata for the app. A placeholder app uses:
   //  - The default Chrome App icon for the icon
   //  - |url| as the start_url
-  //  - |url| as the app name
+  //  - |url| as the app name (unless fallback_app_name has been specified)
   bool install_placeholder = false;
 
   // Whether we should try to reinstall the app if there is a placeholder for

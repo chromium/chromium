@@ -64,6 +64,8 @@ const char kWebAppSettingWithDefaultConfiguration[] = R"({
   }
 })";
 
+const char kDefaultFallbackAppName[] = "fallback app name";
+
 // TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
 // function.
 GURL WindowedUrl() {
@@ -134,13 +136,13 @@ ExternalInstallOptions GetNoContainerInstallOptions() {
   return options;
 }
 
-base::Value GetCreateDesktopShorcutDefaultItem() {
+base::Value GetCreateDesktopShortcutDefaultItem() {
   base::Value item(base::Value::Type::DICTIONARY);
   item.SetKey(kUrlKey, base::Value(NoContainerUrl().spec()));
   return item;
 }
 
-ExternalInstallOptions GetCreateDesktopShorcutDefaultInstallOptions() {
+ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions() {
   ExternalInstallOptions options(NoContainerUrl(), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
@@ -152,14 +154,14 @@ ExternalInstallOptions GetCreateDesktopShorcutDefaultInstallOptions() {
   return options;
 }
 
-base::Value GetCreateDesktopShorcutFalseItem() {
+base::Value GetCreateDesktopShortcutFalseItem() {
   base::Value item(base::Value::Type::DICTIONARY);
   item.SetKey(kUrlKey, base::Value(NoContainerUrl().spec()));
-  item.SetKey(kCreateDesktopShorcutKey, base::Value(false));
+  item.SetKey(kCreateDesktopShortcutKey, base::Value(false));
   return item;
 }
 
-ExternalInstallOptions GetCreateDesktopShorcutFalseInstallOptions() {
+ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions() {
   ExternalInstallOptions options(NoContainerUrl(), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
@@ -171,14 +173,14 @@ ExternalInstallOptions GetCreateDesktopShorcutFalseInstallOptions() {
   return options;
 }
 
-base::Value GetCreateDesktopShorcutTrueItem() {
+base::Value GetCreateDesktopShortcutTrueItem() {
   base::Value item(base::Value::Type::DICTIONARY);
   item.SetKey(kUrlKey, base::Value(NoContainerUrl().spec()));
-  item.SetKey(kCreateDesktopShorcutKey, base::Value(true));
+  item.SetKey(kCreateDesktopShortcutKey, base::Value(true));
   return item;
 }
 
-ExternalInstallOptions GetCreateDesktopShorcutTrueInstallOptions() {
+ExternalInstallOptions GetCreateDesktopShortcutTrueInstallOptions() {
   ExternalInstallOptions options(NoContainerUrl(), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
@@ -201,6 +203,28 @@ class MockWebAppPolicyManagerObserver : public WebAppPolicyManagerObserver {
  private:
   int on_policy_changed_call_count = 0;
 };
+
+base::Value GetFallbackAppNameItem() {
+  base::Value item(base::Value::Type::DICTIONARY);
+  item.SetKey(kUrlKey, base::Value(WindowedUrl().spec()));
+  item.SetKey(kDefaultLaunchContainerKey,
+              base::Value(kDefaultLaunchContainerWindowValue));
+  item.SetKey(kFallbackAppNameKey, base::Value(kDefaultFallbackAppName));
+  return item;
+}
+
+ExternalInstallOptions GetFallbackAppNameInstallOptions() {
+  ExternalInstallOptions options(WindowedUrl(), DisplayMode::kStandalone,
+                                 ExternalInstallSource::kExternalPolicy);
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = false;
+  options.add_to_quick_launch_bar = false;
+  options.install_placeholder = true;
+  options.reinstall_placeholder = true;
+  options.wait_for_windows_closed = true;
+  options.fallback_app_name = kDefaultFallbackAppName;
+  return options;
+}
 
 }  // namespace
 
@@ -446,9 +470,9 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithNoDefaultLaunchContainer) {
 }
 
 TEST_F(WebAppPolicyManagerTest,
-       ForceInstallAppWithDefaultCreateDesktopShorcut) {
+       ForceInstallAppWithDefaultCreateDesktopShortcut) {
   base::Value list(base::Value::Type::LIST);
-  list.Append(GetCreateDesktopShorcutDefaultItem());
+  list.Append(GetCreateDesktopShortcutDefaultItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
   policy_manager()->Start();
@@ -458,15 +482,15 @@ TEST_F(WebAppPolicyManagerTest,
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(
-      GetCreateDesktopShorcutDefaultInstallOptions());
+      GetCreateDesktopShortcutDefaultInstallOptions());
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 }
 
 TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithCreateDesktopShortcut) {
   base::Value list(base::Value::Type::LIST);
-  list.Append(GetCreateDesktopShorcutFalseItem());
-  list.Append(GetCreateDesktopShorcutTrueItem());
+  list.Append(GetCreateDesktopShortcutFalseItem());
+  list.Append(GetCreateDesktopShortcutTrueItem());
   profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
 
   policy_manager()->Start();
@@ -476,9 +500,25 @@ TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithCreateDesktopShortcut) {
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(
-      GetCreateDesktopShorcutFalseInstallOptions());
+      GetCreateDesktopShortcutFalseInstallOptions());
   expected_install_options_list.push_back(
-      GetCreateDesktopShorcutTrueInstallOptions());
+      GetCreateDesktopShortcutTrueInstallOptions());
+
+  EXPECT_EQ(install_requests, expected_install_options_list);
+}
+
+TEST_F(WebAppPolicyManagerTest, ForceInstallAppWithFallbackAppName) {
+  base::Value list(base::Value::Type::LIST);
+  list.Append(GetFallbackAppNameItem());
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+
+  policy_manager()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  const auto& install_requests = pending_app_manager()->install_requests();
+
+  std::vector<ExternalInstallOptions> expected_install_options_list;
+  expected_install_options_list.push_back(GetFallbackAppNameInstallOptions());
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 }
@@ -599,6 +639,34 @@ TEST_F(WebAppPolicyManagerTest, ReinstallPlaceholderApp) {
   base::RunLoop().RunUntilIdle();
 
   auto reinstall_options = GetWindowedInstallOptions();
+  reinstall_options.install_placeholder = false;
+  reinstall_options.reinstall_placeholder = true;
+  reinstall_options.wait_for_windows_closed = true;
+  expected_options_list.push_back(std::move(reinstall_options));
+
+  EXPECT_EQ(expected_options_list, install_options_list);
+}
+
+// Tests that we correctly reinstall a placeholder app when the placeholder
+// is using a fallback name.
+TEST_F(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
+  base::Value list(base::Value::Type::LIST);
+  list.Append(GetFallbackAppNameItem());
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, std::move(list));
+
+  policy_manager()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  std::vector<ExternalInstallOptions> expected_options_list;
+  expected_options_list.push_back(GetFallbackAppNameInstallOptions());
+
+  const auto& install_options_list = pending_app_manager()->install_requests();
+  EXPECT_EQ(expected_options_list, install_options_list);
+
+  policy_manager()->ReinstallPlaceholderAppIfNecessary(WindowedUrl());
+  base::RunLoop().RunUntilIdle();
+
+  auto reinstall_options = GetFallbackAppNameInstallOptions();
   reinstall_options.install_placeholder = false;
   reinstall_options.reinstall_placeholder = true;
   reinstall_options.wait_for_windows_closed = true;

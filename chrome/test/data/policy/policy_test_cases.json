@@ -6812,6 +6812,11 @@
             {
               "url": "https://xyz.example",
               "create_desktop_shortcut": true
+            },
+            {
+              "url": "https://foo.example",
+              "default_launch_container": "window",
+              "fallback_app_name": "Foo Example App"
             }
           ]
         },

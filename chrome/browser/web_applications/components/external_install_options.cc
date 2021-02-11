@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/components/system_web_app_types.h"
 
@@ -43,6 +44,7 @@ bool ExternalInstallOptions::operator==(
         options.install_url,
         options.user_display_mode,
         options.install_source,
+        options.fallback_app_name,
         options.add_to_applications_menu,
         options.add_to_desktop,
         options.add_to_quick_launch_bar,
@@ -110,6 +112,8 @@ std::ostream& operator<<(std::ostream& out,
          << "\n user_display_mode: " << install_options.user_display_mode
          << "\n install_source: "
          << static_cast<int32_t>(install_options.install_source)
+         << "\n fallback_app_name: "
+         << install_options.fallback_app_name.value_or("")
          << "\n add_to_applications_menu: "
          << install_options.add_to_applications_menu
          << "\n add_to_desktop: " << install_options.add_to_desktop
@@ -164,6 +168,11 @@ InstallManager::InstallParams ConvertExternalInstallOptionsToParams(
   InstallManager::InstallParams params;
 
   params.user_display_mode = install_options.user_display_mode;
+
+  if (install_options.fallback_app_name.has_value()) {
+    params.fallback_app_name =
+        base::UTF8ToUTF16(install_options.fallback_app_name.value());
+  }
 
   params.fallback_start_url = install_options.install_url;
 

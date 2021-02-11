@@ -43,7 +43,8 @@ ExternalInstallOptions ParseInstallOptionsFromPolicyEntry(
   const base::Value* default_launch_container =
       entry.FindKey(kDefaultLaunchContainerKey);
   const base::Value* create_desktop_shortcut =
-      entry.FindKey(kCreateDesktopShorcutKey);
+      entry.FindKey(kCreateDesktopShortcutKey);
+  const base::Value* fallback_app_name = entry.FindKey(kFallbackAppNameKey);
 
   DCHECK(!default_launch_container ||
          default_launch_container->GetString() ==
@@ -71,6 +72,11 @@ ExternalInstallOptions ParseInstallOptionsFromPolicyEntry(
   // Pinning apps to the ChromeOS shelf is done through the PinnedLauncherApps
   // policy.
   install_options.add_to_quick_launch_bar = false;
+
+  // Allow administrators to override the name of the placeholder app, as well
+  // as the permanent name for Web Apps without a manifest.
+  if (fallback_app_name)
+    install_options.fallback_app_name = fallback_app_name->GetString();
 
   return install_options;
 }
