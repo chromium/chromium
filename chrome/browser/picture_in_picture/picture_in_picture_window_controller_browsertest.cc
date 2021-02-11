@@ -2430,34 +2430,28 @@ IN_PROC_BROWSER_TEST_F(
 
 // Check that video does not leave Picture-in-Picture automatically when it
 // doesn't have the Auto Picture-in-Picture attribute set.
-// Flaky, see crbug.com/1140960.
 IN_PROC_BROWSER_TEST_F(
     WebAppPictureInPictureWindowControllerBrowserTest,
-    DISABLED_AutoPictureInPictureNotTriggeredOnPageShownIfNoAttribute) {
+    AutoPictureInPictureNotTriggeredOnPageShownIfNoAttribute) {
   InstallAndLaunchPWA(main_url());
+  ASSERT_TRUE(content::ExecuteScript(web_contents(),
+                                     "video.autoPictureInPicture = false;"));
+
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
                                                    "playVideo();", &result));
   ASSERT_TRUE(result);
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = true;"));
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      web_contents(), "enterPictureInPicture();", &result));
+  ASSERT_TRUE(result);
 
-  // Hide page and check that video entered Picture-in-Picture automatically.
   web_contents()->WasHidden();
-  base::string16 expected_title =
-      base::ASCIIToUTF16("video.enterpictureinpicture");
-  EXPECT_EQ(
-      expected_title,
-      content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
-
-  ASSERT_TRUE(content::ExecuteScript(web_contents(),
-                                     "video.autoPictureInPicture = false;"));
 
   // Show page and check that video did not leave Picture-in-Picture
-  // automatically as it doesn't have the Auto Picture-in-Picture attribute set
-  // anymore.
+  // automatically as it doesn't have the Auto Picture-in-Picture attribute
+  // set.
   web_contents()->WasShown();
-  expected_title = base::ASCIIToUTF16("visible");
+  const auto expected_title = base::ASCIIToUTF16("visible");
   EXPECT_EQ(
       expected_title,
       content::TitleWatcher(web_contents(), expected_title).WaitAndGetTitle());
