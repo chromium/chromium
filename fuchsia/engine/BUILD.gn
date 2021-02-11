@@ -229,6 +229,7 @@ component("web_engine_core") {
     "context_provider_impl.h",
     "context_provider_main.cc",
     "context_provider_main.h",
+    "features.h",
     "renderer/cast_streaming_demuxer.cc",
     "renderer/cast_streaming_demuxer.h",
     "renderer/cast_streaming_receiver.cc",
