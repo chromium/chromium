@@ -14,6 +14,7 @@ source_set("thumb_strip") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/gestures",

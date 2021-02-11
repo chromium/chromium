@@ -10,9 +10,18 @@
 @protocol CRWWebViewScrollViewProxyObserver;
 class WebStateList;
 
+// Protocol for the thumb strip mediator to inform others about navigation
+// changes.
+@protocol ThumbStripNavigationConsumer
+- (void)navigationDidStart;
+@end
+
 // Mediator for the thumb strip. Handles observing changes in the active web
 // state.
 @interface ThumbStripMediator : NSObject
+
+// Consumer for this mediator to inform about updates.
+@property(nonatomic, weak) id<ThumbStripNavigationConsumer> consumer;
 
 // The regular web state list to observe.
 @property(nonatomic, assign) WebStateList* regularWebStateList;

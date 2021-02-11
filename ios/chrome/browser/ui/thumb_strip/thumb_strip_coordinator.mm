@@ -21,7 +21,7 @@ const CGFloat kThumbStripHeight =
     2 * kGridLayoutLineSpacingCompactCompactLimitedWidth;
 }  // namespace
 
-@interface ThumbStripCoordinator ()
+@interface ThumbStripCoordinator () <ThumbStripNavigationConsumer>
 
 @property(nonatomic, strong) ThumbStripMediator* mediator;
 
@@ -39,6 +39,7 @@ const CGFloat kThumbStripHeight =
             baseViewHeight:baseViewHeight];
 
   self.mediator = [[ThumbStripMediator alloc] init];
+  self.mediator.consumer = self;
   if (self.regularBrowser) {
     self.mediator.regularWebStateList = self.regularBrowser->GetWebStateList();
   }
@@ -59,6 +60,12 @@ const CGFloat kThumbStripHeight =
   _incognitoBrowser = incognitoBrowser;
   self.mediator.incognitoWebStateList =
       _incognitoBrowser ? _incognitoBrowser->GetWebStateList() : nullptr;
+}
+
+#pragma mark - ThumbStripNavigationConsumer
+
+- (void)navigationDidStart {
+  [self.panHandler setNextState:ViewRevealState::Hidden animated:YES];
 }
 
 @end
