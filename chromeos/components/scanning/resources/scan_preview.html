@@ -61,6 +61,7 @@
 
   .preview::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
   }
 
   .preview-item {
@@ -71,12 +72,11 @@
   }
 
   .scanned-image {
-    display: block;
-  }
-
-  /* Add top margin to all but the first scanned image. */
-  .scanned-image:nth-of-type(n+2) {
-    margin-top: 8px;
+    box-shadow: rgba(var(--google-grey-200-rgb), .3) 0 4px 4px 0,
+                rgba(var(--google-grey-900-rgb), .15) 0 8px 12px 1px;
+    margin-bottom: 12px;
+    margin-inline-start: 12px;
+    width: calc(100% - 24px);
   }
 
   paper-progress {
