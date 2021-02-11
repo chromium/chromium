@@ -54,7 +54,9 @@ class SkiaOutputDevice {
   // A helper class for defining a BeginPaint() and EndPaint() scope.
   class ScopedPaint {
    public:
-    explicit ScopedPaint(SkiaOutputDevice* device);
+    ScopedPaint(std::vector<GrBackendSemaphore> end_semaphores,
+                SkiaOutputDevice* device,
+                SkSurface* sk_surface);
     ~ScopedPaint();
 
     // This can be null.
@@ -93,6 +95,12 @@ class SkiaOutputDevice {
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
   virtual ~SkiaOutputDevice();
+
+  // Begins a paint scope. The base implementation fails when the SkSurface
+  // cannot be initialized, but devices that don't draw to a SkSurface (i.e
+  // |SkiaOutputDeviceVulkanSecondaryCB|) can override this to bypass the
+  // check.
+  virtual std::unique_ptr<SkiaOutputDevice::ScopedPaint> BeginScopedPaint();
 
   // Changes the size of draw surface and invalidates it's contents.
   virtual bool Reshape(const gfx::Size& size,

@@ -333,7 +333,7 @@ class SkiaOutputSurfaceImplOnGpu
   base::flat_set<ImageContextImpl*> image_contexts_with_end_access_state_;
 
   std::unique_ptr<SkiaOutputDevice> output_device_;
-  base::Optional<SkiaOutputDevice::ScopedPaint> scoped_output_device_paint_;
+  std::unique_ptr<SkiaOutputDevice::ScopedPaint> scoped_output_device_paint_;
 
   base::Optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;

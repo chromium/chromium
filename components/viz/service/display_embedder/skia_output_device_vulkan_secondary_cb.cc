@@ -48,6 +48,14 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
       sk_color_type;
 }
 
+std::unique_ptr<SkiaOutputDevice::ScopedPaint>
+SkiaOutputDeviceVulkanSecondaryCB::BeginScopedPaint() {
+  std::vector<GrBackendSemaphore> end_semaphores;
+  SkSurface* sk_surface = BeginPaint(&end_semaphores);
+  return std::make_unique<SkiaOutputDevice::ScopedPaint>(
+      std::move(end_semaphores), this, sk_surface);
+}
+
 void SkiaOutputDeviceVulkanSecondaryCB::Submit(bool sync_cpu,
                                                base::OnceClosure callback) {
   // Submit the primary command buffer which may render passes.

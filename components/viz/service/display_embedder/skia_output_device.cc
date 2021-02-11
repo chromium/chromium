@@ -47,8 +47,14 @@ void ReportLatency(const gfx::SwapTimings& timings,
 
 }  // namespace
 
-SkiaOutputDevice::ScopedPaint::ScopedPaint(SkiaOutputDevice* device)
-    : device_(device), sk_surface_(device->BeginPaint(&end_semaphores_)) {}
+SkiaOutputDevice::ScopedPaint::ScopedPaint(
+    std::vector<GrBackendSemaphore> end_semaphores,
+    SkiaOutputDevice* device,
+    SkSurface* sk_surface)
+    : end_semaphores_(std::move(end_semaphores)),
+      device_(device),
+      sk_surface_(sk_surface) {}
+
 SkiaOutputDevice::ScopedPaint::~ScopedPaint() {
   DCHECK(end_semaphores_.empty());
   device_->EndPaint();
@@ -97,6 +103,17 @@ SkiaOutputDevice::SkiaOutputDevice(
 SkiaOutputDevice::~SkiaOutputDevice() {
   if (latency_tracker_runner_)
     latency_tracker_runner_->DeleteSoon(FROM_HERE, std::move(latency_tracker_));
+}
+
+std::unique_ptr<SkiaOutputDevice::ScopedPaint>
+SkiaOutputDevice::BeginScopedPaint() {
+  std::vector<GrBackendSemaphore> end_semaphores;
+  SkSurface* sk_surface = BeginPaint(&end_semaphores);
+  if (!sk_surface) {
+    return nullptr;
+  }
+  return std::make_unique<SkiaOutputDevice::ScopedPaint>(
+      std::move(end_semaphores), this, sk_surface);
 }
 
 void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {

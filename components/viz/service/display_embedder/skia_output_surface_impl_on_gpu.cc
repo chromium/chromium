@@ -545,8 +545,11 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   // We do not reset scoped_output_device_paint_ after drawing the ddl until
   // SwapBuffers() is called, because we may need access to output_sk_surface()
   // for CopyOutput().
-  scoped_output_device_paint_.emplace(output_device_.get());
-  DCHECK(scoped_output_device_paint_);
+  scoped_output_device_paint_ = output_device_->BeginScopedPaint();
+  if (!scoped_output_device_paint_) {
+    MarkContextLost(ContextLostReason::CONTEXT_LOST_BEGIN_PAINT_FAILED);
+    return;
+  }
 
   dependency_->ScheduleGrContextCleanup();
 
