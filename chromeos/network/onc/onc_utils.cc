@@ -202,6 +202,12 @@ void FillInHexSSIDFieldsInNetworks(base::Value* network_configs) {
     FillInHexSSIDFieldsInOncObject(kNetworkConfigurationSignature, &network);
 }
 
+// Sets HiddenSSID fields in all entries in the |network_configs| list.
+void SetHiddenSSIDFieldsInNetworks(base::Value* network_configs) {
+  for (auto& network : network_configs->GetList())
+    SetHiddenSSIDFieldInOncObject(kNetworkConfigurationSignature, &network);
+}
+
 // Given a GUID->PEM certificate mapping |certs_by_guid|, looks up the PEM
 // encoded certificate referenced by |guid_ref|. If a match is found, sets
 // |*pem_encoded| to the PEM encoded certificate and returns true. Otherwise,
@@ -851,6 +857,33 @@ void FillInHexSSIDField(base::Value* wifi_fields) {
       base::Value(base::HexEncode(ssid_string.c_str(), ssid_string.size())));
 }
 
+void SetHiddenSSIDFieldInOncObject(const OncValueSignature& signature,
+                                   base::Value* onc_object) {
+  DCHECK(onc_object->is_dict());
+  if (&signature == &kWiFiSignature)
+    SetHiddenSSIDField(onc_object);
+
+  // Recurse into nested objects.
+  for (auto it : onc_object->DictItems()) {
+    if (!it.second.is_dict())
+      continue;
+
+    const OncFieldSignature* field_signature =
+        GetFieldSignature(signature, it.first);
+    if (!field_signature)
+      continue;
+
+    SetHiddenSSIDFieldInOncObject(*field_signature->value_signature,
+                                  &it.second);
+  }
+}
+
+void SetHiddenSSIDField(base::Value* wifi_fields) {
+  if (wifi_fields->FindKey(::onc::wifi::kHiddenSSID))
+    return;
+  wifi_fields->SetKey(::onc::wifi::kHiddenSSID, base::Value(false));
+}
+
 base::Value MaskCredentialsInOncObject(const OncValueSignature& signature,
                                        const base::Value& onc_object,
                                        const std::string& mask) {
@@ -969,6 +1002,8 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   if (validated_networks &&
       validated_networks->GetAsList(&validated_networks_list)) {
     FillInHexSSIDFieldsInNetworks(validated_networks_list);
+    // Set HiddenSSID to default value to solve the issue crbug.com/1171837
+    SetHiddenSSIDFieldsInNetworks(validated_networks_list);
 
     CertPEMsByGUIDMap server_and_ca_certs =
         GetServerAndCACertsByGUID(*certificates);

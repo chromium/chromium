@@ -175,6 +175,7 @@ const char kFakeONC[] = R"(
           "Name": "My WiFi Network",
           "WiFi": {
             "HexSSID": "737369642D6E6F6E65",
+            "HiddenSSID": false,
             "Security": "None" }
         },
         { "GUID": "{guid-for-wifi-with-device-exp}",
@@ -186,6 +187,7 @@ const char kFakeONC[] = R"(
               "Identity": "${DEVICE_SERIAL_NUMBER}-${DEVICE_ASSET_ID}"
             },
             "HexSSID": "7465737431323334",
+            "HiddenSSID": false,
             "Security": "WPA-EAP",
             "SSID": "test1234",
           }

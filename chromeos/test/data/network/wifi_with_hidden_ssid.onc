@@ -1,0 +1,11 @@
+{
+  "GUID": "{77db0089-0bc8-4358-929c-123xcv}",
+      "Type": "WiFi",
+      "Name": "SomeWifi-XY",
+      "WiFi": {
+        "SSID": "SomeWifi-XY",
+        "HexSSID": "536F6D65576966692D5859",
+        "HiddenSSID": true,
+        "Security": "None"
+      },
+}

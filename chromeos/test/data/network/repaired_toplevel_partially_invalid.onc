@@ -36,6 +36,7 @@
       "Name": "My WiFi Network",
       "WiFi": {
         "HexSSID": "4F70656E577274", // "OpenWrt"
+        "HiddenSSID": false,
         "Security": "None",
         "SSID": "OpenWrt"
       }

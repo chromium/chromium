@@ -675,6 +675,11 @@ var availableTests = [
               Effective: 'UserPolicy',
               UserPolicy: '77696669325F50534B'
             },
+            HiddenSSID: {
+              Active: false,
+              Effective: 'UserPolicy',
+              UserPolicy: false,
+            },
             Frequency: 5000,
             FrequencyList: [2400, 5000],
             Passphrase: {
