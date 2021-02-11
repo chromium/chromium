@@ -22,9 +22,9 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     this.forceContextualLastOutput();
   }
 
-  doGesture(gesture) {
+  doGesture(gesture, opt_x, opt_y) {
     return () => {
-      GestureCommandHandler.onAccessibilityGesture_(gesture);
+      GestureCommandHandler.onAccessibilityGesture_(gesture, opt_x, opt_y);
     };
   }
 
@@ -3287,6 +3287,48 @@ TEST_F('ChromeVoxBackgroundTest', 'ClickAncestorAreNotActionable', function() {
         .expectSpeech('more info')
         .call(doCmd('nextObject'))
         .expectSpeech('end')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'TouchEditingState', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>Start</p>
+    <input type="text"></input>
+  `;
+  this.runWithLoadedTree(site, function(rootNode) {
+    const bounds = rootNode.find({role: RoleType.TEXT_FIELD}).location;
+    mockFeedback.expectSpeech('Start')
+        .call(doGesture(
+            chrome.accessibilityPrivate.Gesture.TOUCH_EXPLORE, bounds.left,
+            bounds.top))
+        .expectSpeech('Edit text', 'Double tap to start editing')
+        .call(doGesture(
+            chrome.accessibilityPrivate.Gesture.CLICK, bounds.left, bounds.top))
+        .expectSpeech('Edit text', 'is editing')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'TouchGesturesProducesEarcons', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>Start</p>
+    <button>ok</button>
+    <a href="chromevox.com">cancel</a>
+  `;
+  this.runWithLoadedTree(site, function(rootNode) {
+    mockFeedback.expectSpeech('Start')
+        .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
+        .expectSpeech('ok', 'Button')
+        .expectEarcon(Earcon.BUTTON)
+        .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_RIGHT1))
+        .expectSpeech('cancel', 'Link')
+        .expectEarcon(Earcon.LINK)
+        .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_LEFT1))
+        .expectSpeech('ok', 'Button')
+        .expectEarcon(Earcon.BUTTON)
         .replay();
   });
 });

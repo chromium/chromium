@@ -99,12 +99,8 @@ BaseAutomationHandler = class {
     }
 
     // Decide whether to announce and sync this event.
-    const isFocusOnRoot =
-        evt.type === 'focus' && evt.target === evt.target.root;
     if (!DesktopAutomationHandler.announceActions &&
-        evt.eventFrom === 'action' &&
-        (EventSourceState.get() !== EventSourceType.TOUCH_GESTURE ||
-         isFocusOnRoot)) {
+        evt.eventFrom === 'action') {
       return;
     }
 
