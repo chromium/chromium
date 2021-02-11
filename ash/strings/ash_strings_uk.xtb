@@ -578,7 +578,7 @@
 <translation id="5992218262414051481">Увімкнено режим високого контрасту. Щоб вимкнути його, знову натисніть Ctrl+Search+H.</translation>
 <translation id="6018164090099858612">Вихід із режиму віддзеркалення</translation>
 <translation id="602001110135236999">Прокрутити ліворуч</translation>
-<translation id="602472752137106327">Показ вікон з усіх робочих столів, перемикач вибрано</translation>
+<translation id="602472752137106327">Показувати вікна з усіх робочих столів, перемикач вибрано</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу –<ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="6030495522958826102">Меню переміщено в нижній лівий кут екрана.</translation>
 <translation id="6032620807120418574">Натисніть будь-де, щоб записати весь екран</translation>
@@ -865,7 +865,7 @@
 <translation id="8477270416194247200">Щоб скасувати, натисніть Alt+Search або Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" />. Роздільну здатність змінено на <ph name="FALLBACK_RESOLUTION" />. Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8513108775083588393">Автообертання</translation>
-<translation id="851458219935658693">Показ вікон із поточного робочого столу, перемикач вибрано</translation>
+<translation id="851458219935658693">Показувати вікна з поточного робочого столу, перемикач вибрано</translation>
 <translation id="8517041960877371778">Пристрій <ph name="DEVICE_TYPE" /> може не заряджатися, коли він увімкнений.</translation>
 <translation id="8553395910833293175">Уже призначено для всіх робочих столів.</translation>
 <translation id="8563862697512465947">Налаштування сповіщення</translation>

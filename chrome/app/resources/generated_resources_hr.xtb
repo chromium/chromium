@@ -568,6 +568,7 @@
 <translation id="1618268899808219593">Centar za pomoć</translation>
 <translation id="1620307519959413822">Zaporka je pogrešna. Pokušajte ponovo ili kliknite "Zaboravili ste zaporku?" da biste je poništili.</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
+<translation id="1621485112342885423">Vaše košarice</translation>
 <translation id="1621729191093924223">Značajke kojima je potreban mikrofon neće raditi</translation>
 <translation id="1621831347985899379">Izbrisat će se podaci uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="1622054403950683339">Zaboravljanje Wi-Fi mreže</translation>
@@ -5093,6 +5094,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="683373380308365518">Prijeđite na pametan i siguran preglednik</translation>
 <translation id="6835762382653651563">Povežite se s internetom da biste ažurirali svoj uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Prikaži upit kad web-lokacija želi otvarati i postavljati prozore na zaslonima (preporučeno)</translation>
+<translation id="6838694093138907871">Kôd nije valjan, pokušajte ponovno.</translation>
 <translation id="6839225236531462745">Pogreška brisanja certifikata</translation>
 <translation id="6839916869147598086">Prijava je promijenjena</translation>
 <translation id="6840155290835956714">Pitaj prije slanja</translation>
@@ -5669,6 +5671,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7496732379142025470">Radi uštede baterije značajka “Ok Google” uključena je samo kad je uređaj priključen na napajanje. To možete promijeniti u Postavkama.</translation>
 <translation id="7497215489070763236">CA certifikat poslužitelja</translation>
 <translation id="7497981768003291373">Nemate nedavno snimljenih WebRTC tekstnih zapisnika.</translation>
+<translation id="7498614236023455416"><ph name="TARGET_NAME" /> traži vaše dopuštenje za snimanje sadržaja ove kartice.</translation>
 <translation id="7503191893372251637">Vrsta Netscape certifikata</translation>
 <translation id="7503985202154027481">Na sigurnosnom ključu zadržat će se evidencija vašeg posjeta toj web-lokaciji.</translation>
 <translation id="750509436279396091">Otvori mapu preuzimanja</translation>
@@ -6624,6 +6627,7 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="8584280235376696778">&amp;Otvori video na novoj kartici</translation>
 <translation id="8584427708066927472">Zaporka je izbrisana s ovog uređaja</translation>
 <translation id="8585480574870650651">Uklanjanje Crostinija</translation>
+<translation id="8585841788766257444">Web-lokacije navedene u nastavku imaju prilagođenu postavku umjesto zadane</translation>
 <translation id="8588866096426746242">Prikaži statističke podatke o profilu</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> – VR se prikazuje u masci</translation>
 <translation id="8590375307970699841">Postavi automatsko ažuriranje</translation>

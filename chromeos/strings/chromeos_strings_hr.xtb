@@ -7,6 +7,7 @@
 <translation id="1071587090247825784">Otkriven je vatrozid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
 <translation id="1124772482545689468">Korisnik</translation>
+<translation id="1175697296044146566">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Nepoznata pogreška.</translation>
 <translation id="1204296502688602597">Latencija DNS-a</translation>
 <translation id="123124571410524056">Moguć je portal</translation>
@@ -34,6 +35,7 @@
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutnost DNS prevoditelja</translation>
+<translation id="1743558184855585519">Baterija se smatra potrošenom kad dosegne ograničenje</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1851218745569890714">Videokonferencije</translation>
 <translation id="1905710495812624430">Premašen je maksimalan dopušteni broj pokušaja.</translation>
@@ -58,6 +60,7 @@
 <translation id="2461822463642141190">Trenutačno</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2517472476991765520">Traži</translation>
+<translation id="2570743873672969996">Pokretanje testa <ph name="TEST_NAME" />...</translation>
 <translation id="2585245331261708204">Novo u OS-u Chrome</translation>
 <translation id="2620436844016719705">Sustav</translation>
 <translation id="2740531572673183784">U redu</translation>
@@ -176,6 +179,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5635169860413004179">Pogledaj izvješće</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5719918614880940190">Ovo mjeri upotrebu CPU-a i predstavlja agregaciju svih jezgri</translation>
 <translation id="5760715441271661976">Stanje portala</translation>
 <translation id="5781694279199921985">Spremi zapisnik sesije</translation>
 <translation id="5797428682393400134">USPJEH</translation>
@@ -232,6 +236,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je dovršeno. Skenirana je jedna stranica}one{Skeniranje je dovršeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je dovršeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je dovršeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
+<translation id="7441459999606975924">Kapacitet baterije smanjuje se zbog upotrebe</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7490813197707563893">MAC adresa</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
@@ -263,6 +268,8 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8352772353338965963">Dodajte račun na višestruku prijavu. Svim računima na koje ste prijavljeni može se pristupiti bez zaporke, pa bi se ta značajka trebala upotrebljavati samo s pouzdanim računima.</translation>
 <translation id="8364946094152050673">Prazni poslužitelji naziva</translation>
 <translation id="8372477600026034341">Dodatni hostovi</translation>
+<translation id="8395584934117017006">Uređajem <ph name="DEVICE_TYPE" /> upravlja poduzeće</translation>
+<translation id="8398927464629426868">Brzina punjenja ili pražnjenja uređaja</translation>
 <translation id="8475690821716466388">Wi-Fi mreža zaštićena je slabim protokolom WEP PSK</translation>
 <translation id="8477551185774834963">Latencija DNS-a malo iznad dopuštenog praga</translation>
 <translation id="8483248364096924578">IP adresa</translation>
