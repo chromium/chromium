@@ -14,7 +14,8 @@
 </style>
 
 <div class="entryRow">
-  <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]">
+  <text-badge id="status" badge-type="[[badgeType_]]" value="[[badgeText_]]"
+      aria-hidden="true">
   </text-badge>
-  <div id="routine">[[routineType_]]</div>
+  <div id="routine" aria-describedby="status">[[routineType_]]</div>
 </div>
