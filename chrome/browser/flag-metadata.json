@@ -1582,11 +1582,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "enable-duet-tabstrip-integration",
-    "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "enable-encryption-migration",
     "owners": [ "fukino" ],
     "expiry_milestone": 76
@@ -1808,11 +1803,6 @@
     "name": "enable-holding-space-previews",
     "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
     "expiry_milestone": 90
-  },
-  {
-    "name": "enable-horizontal-tab-switcher",
-    "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 77
   },
   {
     "name": "enable-hosted-app-quit-notification",
