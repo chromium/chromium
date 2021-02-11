@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 
@@ -94,7 +95,7 @@ class BASE_EXPORT WaitableEvent {
   //   SendToOtherThread(e);
   //   e->Wait();
   //   delete e;
-  void Wait();
+  void NOT_TAIL_CALLED Wait();
 
   // Wait up until wait_delta has passed for the event to be signaled
   // (real-time; ignores time overrides).  Returns true if the event was
@@ -102,7 +103,7 @@ class BASE_EXPORT WaitableEvent {
   // have elapsed if this returns false.
   //
   // TimedWait can synchronise its own destruction like |Wait|.
-  bool TimedWait(const TimeDelta& wait_delta);
+  bool NOT_TAIL_CALLED TimedWait(const TimeDelta& wait_delta);
 
 #if defined(OS_WIN)
   HANDLE handle() const { return handle_.Get(); }
@@ -128,7 +129,8 @@ class BASE_EXPORT WaitableEvent {
   //
   // If more than one WaitableEvent is signaled to unblock WaitMany, the lowest
   // index among them is returned.
-  static size_t WaitMany(WaitableEvent** waitables, size_t count);
+  static size_t NOT_TAIL_CALLED WaitMany(WaitableEvent** waitables,
+                                         size_t count);
 
   // For asynchronous waiting, see WaitableEventWatcher
 

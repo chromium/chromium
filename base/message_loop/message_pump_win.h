@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
@@ -152,7 +153,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
                        LPARAM lparam,
                        LRESULT* result);
   void DoRunLoop() override;
-  void WaitForWork(Delegate::NextWorkInfo next_work_info);
+  NOINLINE void NOT_TAIL_CALLED
+  WaitForWork(Delegate::NextWorkInfo next_work_info);
   void HandleWorkMessage();
   void HandleTimerMessage();
   void ScheduleNativeTimer(Delegate::NextWorkInfo next_work_info);
@@ -289,7 +291,8 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
   };
 
   void DoRunLoop() override;
-  void WaitForWork(Delegate::NextWorkInfo next_work_info);
+  NOINLINE void NOT_TAIL_CALLED
+  WaitForWork(Delegate::NextWorkInfo next_work_info);
   bool MatchCompletedIOItem(IOHandler* filter, IOItem* item);
   bool GetIOItem(DWORD timeout, IOItem* item);
   bool ProcessInternalIOItem(const IOItem& item);
