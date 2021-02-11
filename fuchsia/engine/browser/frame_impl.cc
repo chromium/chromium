@@ -1103,6 +1103,13 @@ bool FrameImpl::CheckMediaAccessPermission(
          blink::mojom::PermissionStatus::GRANTED;
 }
 
+bool FrameImpl::CanOverscrollContent() {
+  // Don't process "overscroll" events (e.g. pull-to-refresh, swipe back,
+  // swipe forward).
+  // TODO(crbug/1177399): Add overscroll toggle to Frame API.
+  return false;
+}
+
 void FrameImpl::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame() ||
