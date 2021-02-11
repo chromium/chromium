@@ -40,7 +40,6 @@ js_library("os_search_result_row") {
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
-# TODO: Uncomment as the Polymer3 migration makes progress.
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [

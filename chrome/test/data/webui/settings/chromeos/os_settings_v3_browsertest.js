@@ -319,6 +319,7 @@ TEST_F('OSSettingsWallpaperSubpageV3Test', 'AllJsTests', () => {
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.m.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
  ['OsSearchPage', 'os_search_page_test.m.js'],
+ ['OsSettingsSearchBox', 'os_settings_search_box_test.m.js'],
  ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
  ['PeoplePage', 'os_people_page_test.m.js'],

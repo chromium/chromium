@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/os_settings.js';
+
+// #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
+// #import {FakeSettingsSearchHandler} from './fake_settings_search_handler.m.js';
+// #import {setSearchHandlerForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// clang-format on
+
 /** @fileoverview Runs tests for the OS settings search box. */
 
 suite('OSSettingsSearchBox', () => {

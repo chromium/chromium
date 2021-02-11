@@ -135,3 +135,4 @@ export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './
 export {ChangePictureBrowserProxy, ChangePictureBrowserProxyImpl} from './personalization_page/change_picture_browser_proxy.m.js';
 export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browser_proxy.m.js';
 export {getSearchHandler, setSearchHandlerForTesting} from './search_handler.m.js';
+export {setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation, recordSearch, recordSettingChange} from './metrics_recorder.m.js';
