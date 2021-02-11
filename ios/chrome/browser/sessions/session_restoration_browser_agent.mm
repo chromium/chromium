@@ -35,11 +35,6 @@
 
 BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
 
-namespace {
-const base::FilePath::CharType kSessionDirectory[] =
-    FILE_PATH_LITERAL("Sessions");
-}
-
 // static
 void SessionRestorationBrowserAgent::CreateForBrowser(
     Browser* browser,
@@ -75,7 +70,8 @@ SessionRestorationBrowserAgent::~SessionRestorationBrowserAgent() {
 }
 
 void SessionRestorationBrowserAgent::SetSessionID(
-    const std::string& session_identifier) {
+    NSString* session_identifier) {
+  DCHECK(session_identifier.length != 0);
   session_identifier_ = session_identifier;
 }
 
@@ -173,16 +169,13 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
 }
 
 bool SessionRestorationBrowserAgent::RestoreSession() {
+  DCHECK(session_identifier_.length != 0);
+
   PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
   auto scoped_restore = [session_info startSessionRestoration];
 
-  NSString* session_id = (base::ios::IsMultiwindowSupported() &&
-                          session_info.isMultiWindowEnabledSession)
-                             ? base::SysUTF8ToNSString(session_identifier_)
-                             : nil;
-
   SessionIOS* session = [session_service_
-      loadSessionWithSessionID:session_id
+      loadSessionWithSessionID:session_identifier_
                      directory:browser_state_->GetStatePath()];
   SessionWindowIOS* session_window = nil;
 
@@ -199,11 +192,13 @@ bool SessionRestorationBrowserAgent::IsRestoringSession() {
 }
 
 void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
+  DCHECK(session_identifier_.length != 0);
+
   if (!CanSaveSession())
     return;
 
   [session_service_ saveSession:session_ios_factory_
-                      sessionID:base::SysUTF8ToNSString(session_identifier_)
+                      sessionID:session_identifier_
                       directory:browser_state_->GetStatePath()
                     immediately:immediately];
 }
@@ -289,19 +284,6 @@ void SessionRestorationBrowserAgent::WebStateMoved(WebStateList* web_state_list,
 
   // Persist the session state if the new web state is not loading.
   SaveSession(/*immediately=*/false);
-}
-
-base::FilePath SessionRestorationBrowserAgent::GetSessionStoragePath(
-    bool force_single_window) {
-  base::FilePath path = browser_state_->GetStatePath();
-  if (!force_single_window && base::ios::IsMultiwindowSupported() &&
-      !session_identifier_.empty()) {
-    path = path.Append(kSessionDirectory)
-               .Append(session_identifier_)
-               .AsEndingWithSeparator();
-  }
-
-  return path;
 }
 
 // WebStateObserver methods
