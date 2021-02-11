@@ -480,8 +480,10 @@ void AutofillAgent::PreviewForm(int32_t id, const FormData& form) {
   if (id != autofill_query_id_)
     return;
 
+  ClearPreviewedForm();
+
   query_node_autofill_state_ = element_.GetAutofillState();
-  form_util::PreviewForm(form, element_);
+  previewed_elements_ = form_util::PreviewForm(form, element_);
 
   GetAutofillDriver()->DidPreviewAutofillFormData();
 }
@@ -512,8 +514,9 @@ void AutofillAgent::ClearPreviewedForm() {
   if (password_autofill_agent_->DidClearAutofillSelection(element_))
     return;
 
-  form_util::ClearPreviewedFormWithElement(element_,
-                                           query_node_autofill_state_);
+  form_util::ClearPreviewedElements(previewed_elements_, element_,
+                                    query_node_autofill_state_);
+  previewed_elements_ = {};
 }
 
 void AutofillAgent::FillFieldWithValue(const base::string16& value) {

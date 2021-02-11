@@ -249,21 +249,24 @@ bool FindFormAndFieldForFormControlElement(
     FormFieldData* field);
 
 // Fills the form represented by |form|.  |element| is the input element that
-// initiated the auto-fill process.
-void FillForm(const FormData& form,
-              const blink::WebFormControlElement& element);
+// initiated the auto-fill process. Returns the filled fields.
+std::vector<blink::WebFormControlElement> FillForm(
+    const FormData& form,
+    const blink::WebFormControlElement& element);
 
-// Previews the form represented by |form|.  |element| is the input element that
-// initiated the preview process.
-void PreviewForm(const FormData& form,
-                 const blink::WebFormControlElement& element);
+// Previews the form represented by |form|. |element| is the input element that
+// initiated the preview process. Returns the previewed fields.
+std::vector<blink::WebFormControlElement> PreviewForm(
+    const FormData& form,
+    const blink::WebFormControlElement& element);
 
-// Clears the placeholder values and the auto-filled background for any fields
-// in the form containing |node| that have been previewed.  Resets the
-// autofilled state of |node| to |was_autofilled|.  Returns false if the form is
-// not found.
-bool ClearPreviewedFormWithElement(const blink::WebFormControlElement& element,
-                                   blink::WebAutofillState old_autofill_state);
+// Clears the suggested values in |control_elements|. The state of
+// |initiating_element| is set to |old_autofill_state|; all other fields are set
+// to kNotFilled.
+void ClearPreviewedElements(
+    std::vector<blink::WebFormControlElement>& control_elements,
+    const blink::WebFormControlElement& initiating_element,
+    blink::WebAutofillState old_autofill_state);
 
 // Checks if the webpage is empty.
 // This kind of webpage is considered as empty:

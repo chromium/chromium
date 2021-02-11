@@ -1126,8 +1126,12 @@ void HTMLInputElement::SetValueForUser(const String& value) {
 }
 
 void HTMLInputElement::SetSuggestedValue(const String& value) {
-  if (!input_type_->CanSetSuggestedValue())
+  if (!input_type_->CanSetSuggestedValue()) {
+    // Clear the suggested value because it may have been set when
+    // `input_type_->CanSetSuggestedValue()` was true.
+    TextControlElement::SetSuggestedValue(String());
     return;
+  }
   needs_to_update_view_value_ = true;
   TextControlElement::SetSuggestedValue(SanitizeValue(value));
   SetNeedsStyleRecalc(
