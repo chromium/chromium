@@ -1194,8 +1194,12 @@ String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
 
 mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
     const JSONObject* object) {
-  if (!base::FeatureList::IsEnabled(features::kWebAppEnableLinkCapturing))
+  // Parse if either the command line flag is passed (for about:flags) or the
+  // runtime enabled feature is turned on (for origin trial).
+  if (!base::FeatureList::IsEnabled(features::kWebAppEnableLinkCapturing) &&
+      !RuntimeEnabledFeatures::WebAppLinkCapturingEnabled()) {
     return mojom::blink::CaptureLinks::kUndefined;
+  }
 
   String capture_links_string;
   if (object->GetString("capture_links", &capture_links_string)) {

@@ -2123,6 +2123,9 @@
       status: "experimental",
     },
     {
+      name: "WebAppLinkCapturing",
+    },
+    {
       name: "WebAppManifestDisplayOverride",
     },
     {

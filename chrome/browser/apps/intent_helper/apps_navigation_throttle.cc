@@ -149,16 +149,6 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
   if (!navigate_from_link())
     return base::nullopt;
 
-  bool tabbed_web_apps =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip);
-  bool tabbed_link_capturing =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripLinkCapturing);
-  bool link_capturing =
-      base::FeatureList::IsEnabled(blink::features::kWebAppEnableLinkCapturing);
-
-  if (!link_capturing && (!tabbed_web_apps || !tabbed_link_capturing))
-    return base::nullopt;
-
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   web_app::WebAppProviderBase* provider =
@@ -172,26 +162,10 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
   if (!app_id)
     return base::nullopt;
 
-  bool app_in_tabbed_mode =
-      provider->registrar().IsInExperimentalTabbedWindowMode(*app_id);
-  if (!link_capturing && !app_in_tabbed_mode)
-    return base::nullopt;
-
   auto* tab_helper =
       web_app::WebAppTabHelperBase::FromWebContents(web_contents);
   if (tab_helper && tab_helper->GetAppId() == *app_id) {
     // Already in app scope, do not alter window state while using the app.
-    return base::nullopt;
-  }
-
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (!browser) {
-    // This is a middle click open in new tab action; do not capture.
-    return base::nullopt;
-  }
-
-  if (web_app::AppBrowserController::IsForWebApp(browser, *app_id)) {
-    // Already in the app window; navigation already captured.
     return base::nullopt;
   }
 
@@ -203,6 +177,10 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
   // Experimental tabbed web app link capturing behaves like new-client.
   // This will be removed once we phase out kDesktopPWAsTabStripLinkCapturing in
   // favor of kWebAppEnableLinkCapturing.
+  bool app_in_tabbed_mode =
+      provider->registrar().IsInExperimentalTabbedWindowMode(*app_id);
+  bool tabbed_link_capturing =
+      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripLinkCapturing);
   if (capture_links == blink::mojom::CaptureLinks::kUndefined &&
       app_in_tabbed_mode && tabbed_link_capturing) {
     capture_links = blink::mojom::CaptureLinks::kNewClient;
@@ -213,25 +191,39 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
     case blink::mojom::CaptureLinks::kNone:
       return base::nullopt;
 
-    case blink::mojom::CaptureLinks::kExistingClientNavigate: {
-      for (Browser* open_browser : *BrowserList::GetInstance()) {
-        if (web_app::AppBrowserController::IsForWebApp(open_browser, *app_id)) {
-          open_browser->OpenURL(
-              content::OpenURLParams::FromNavigationHandle(handle));
-
-          // If |web_contents| hasn't loaded yet or has only loaded about:blank
-          // we should remove it to avoid leaving behind a blank tab.
-          if (tab_helper && !tab_helper->HasLoadedNonAboutBlankPage())
-            web_contents->Close();
-
-          return content::NavigationThrottle::CANCEL_AND_IGNORE;
-        }
-      }
-      // Fall back to new-client if there are no existing clients to navigate.
-      FALLTHROUGH;
-    }
-
+    case blink::mojom::CaptureLinks::kExistingClientNavigate:
     case blink::mojom::CaptureLinks::kNewClient: {
+      Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+      if (!browser) {
+        // This is a middle click open in new tab action; do not capture.
+        return base::nullopt;
+      }
+
+      if (web_app::AppBrowserController::IsForWebApp(browser, *app_id)) {
+        // Already in the app window; navigation already captured.
+        return base::nullopt;
+      }
+
+      if (capture_links ==
+          blink::mojom::CaptureLinks::kExistingClientNavigate) {
+        for (Browser* open_browser : *BrowserList::GetInstance()) {
+          if (web_app::AppBrowserController::IsForWebApp(open_browser,
+                                                         *app_id)) {
+            open_browser->OpenURL(
+                content::OpenURLParams::FromNavigationHandle(handle));
+
+            // If |web_contents| hasn't loaded yet or has only loaded
+            // about:blank we should remove it to avoid leaving behind a blank
+            // tab.
+            if (tab_helper && !tab_helper->HasLoadedNonAboutBlankPage())
+              web_contents->Close();
+
+            return content::NavigationThrottle::CANCEL_AND_IGNORE;
+          }
+        }
+        // No browser found; fallthrough to new-client behaviour.
+      }
+
       // If |web_contents| hasn't loaded yet or has only loaded about:blank we
       // should reparent it into the app window to avoid leaving behind a blank
       // tab.
