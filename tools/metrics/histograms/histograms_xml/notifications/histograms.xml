@@ -700,6 +700,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Notifications.WebPlatform.{Action}.TimeToActivity" units="ms"
+    expires_after="M96">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the delay between the user clicking on the {Action} of a web
+    platform notification, and an Activity being launched. Only records if the
+    duration is less than 5 seconds.
+  </summary>
+  <token key="Action">
+    <variant name="ActionButton" summary="action button"/>
+    <variant name="Body" summary="body"/>
+  </token>
+</histogram>
+
+<histogram name="Notifications.WebPlatform.{Action}.TimeToClose" units="ms"
+    expires_after="M96">
+  <owner>peconn@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the delay between the user clicking on the {Action} of a web
+    platform notification, and the notification being closed. Only records if
+    the duration is less than 5 seconds.
+  </summary>
+  <token key="Action">
+    <variant name="ActionButton" summary="action button"/>
+    <variant name="Body" summary="body"/>
+  </token>
+</histogram>
+
 <histogram name="Notifications.Windows.ActivationStatus"
     enum="WindowsNotificationActivationStatus" expires_after="M90">
   <owner>finnur@chromium.org</owner>

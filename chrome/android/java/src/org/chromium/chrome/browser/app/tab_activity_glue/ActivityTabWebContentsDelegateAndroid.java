@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.document.DocumentWebContentsDelegate;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.media.PictureInPicture;
+import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -198,6 +199,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             Log.e(TAG, "Tab not initialized before calling activateContents().  Bailing out.");
             return;
         }
+
+        WebPlatformNotificationMetrics.getInstance().onTabFocused();
 
         // Do nothing if the tab can currently be interacted with by the user.
         if (mTab.isUserInteractable()) return;

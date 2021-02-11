@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -76,6 +77,8 @@ public class ServiceTabLauncher {
     public static void launchTab(final int requestId, boolean incognito, GURL url, int disposition,
             String referrerUrl, int referrerPolicy, String extraHeaders,
             ResourceRequestBody postData) {
+        WebPlatformNotificationMetrics.getInstance().onNewTabLaunched();
+
         // Open popup window in custom tab.
         // Note that this is used by PaymentRequestEvent.openWindow().
         if (disposition == WindowOpenDisposition.NEW_POPUP) {

@@ -965,6 +965,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java",
   "java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactory.java",
   "java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilder.java",
+  "java/src/org/chromium/chrome/browser/notifications/WebPlatformNotificationMetrics.java",
   "java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java",
   "java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java",
   "java/src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManager.java",
