@@ -1,6 +1,7 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+const _save_restore_swap_chain = false;
 
 async function webGpuInit(canvasWidth, canvasHeight) {
   const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
@@ -26,7 +27,7 @@ async function webGpuInit(canvasWidth, canvasHeight) {
     return null;
   }
 
-  return { device, context };
+  return { device, context, canvas };
 }
 
   const wgslShaders = {
@@ -198,7 +199,7 @@ function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
 
 function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
                                addUI, useImportTextureApi) {
-  const { device, context } = gpuSetting;
+  const { device, context, canvas } = gpuSetting;
 
   const verticesBuffer = createVertexBuffer(device, videos, videoRows,
                          videoColumns);
@@ -207,7 +208,8 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
   const swapChain = context.configureSwapChain({
     device,
     format: swapChainFormat,
-    usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+    usage: GPUTextureUsage.OUTPUT_ATTACHMENT | GPUTextureUsage.COPY_DST |
+           GPUTextureUsage.COPY_SRC,
   });
 
   const pipeline = device.createRenderPipeline({
@@ -337,60 +339,141 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     ],
   });
 
+  // The frameId is increased by one every time oneFrame() is called.
+  var frameId = 0;
+
+  // The videos are displayed at different frame rate with lower indices in
+  // videos updated faster than hight indices.
+  // For videos #0-#3, they are to be displayed at 30 fps.
+  // For videos #3-#15, they are to be displayed at 15 fps.
+  // For videos #16+, they are to be displayed at 7.5 fps.
+  // Since oneFrame() is called at 30 fps, the video textures #0-#3 are copied
+  // every frame, #4 -#15 are copied every other frame and #16+ are copied
+  // every 4 frames.
+  function GetNumOfVideosToCopyForCurrentFrame(frameId) {
+    switch (frameId % 4) {
+      case 0:
+        return videos.length;
+      case 1:
+      case 3:
+        return Math.min(4, videos.length);
+      case 2:
+        return Math.min(16, videos.length);
+      default:
+        console.error('Something wrong with frameId % 4');
+    }
+  }
+
+  const savedSwapChain = device.createTexture({
+    size: {
+      width: canvas.width,
+      height: canvas.height,
+      depth: 1,
+    },
+    format: 'bgra8unorm',
+    usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC,
+  });
+
   const oneFrame = () => {
-    renderPassDescriptor.colorAttachments[0].attachment = swapChain
-      .getCurrentTexture()
+    const swapChainTexture = swapChain.getCurrentTexture();
+    renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
       .createView();
 
     const commandEncoder = device.createCommandEncoder();
+    if (_save_restore_swap_chain)
+    {
+      commandEncoder.copyTextureToTexture(
+        { texture: savedSwapChain },
+        { texture: swapChainTexture },
+        { width: canvas.width, height: canvas.height, depth: 1 });
+    }
+
     const passEncoder =
       commandEncoder.beginRenderPass(renderPassDescriptor);
     passEncoder.setPipeline(pipeline);
     passEncoder.setVertexBuffer(0, verticesBuffer);
 
-    Promise.all(videos.map(video => createImageBitmap(video))).
-      then((videoFrames) => {
-        for (let i = 0; i < videos.length; ++i) {
+    // These videos are displayed at different fps. Not every video needs to be
+    // updated in this frame. The videos at lower indices are updated faster
+    // (higher fps) than videos at higher indices. See comments of
+    // GetNumOfVideosToCopyForCurrentFrame() for how the videos with different
+    // fps are arranged.
+    const numVideosToCopy = GetNumOfVideosToCopyForCurrentFrame(frameId);
+
+    Promise.all(videos.slice(0, numVideosToCopy).
+      map(video => createImageBitmap(video))).then((videoFrames) => {
+        for (let i = 0; i < numVideosToCopy; ++i) {
           device.queue.copyImageBitmapToTexture(
             { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
             { texture: videoTextures[i] },
             { width: videos[i].videoWidth, height: videos[i].videoHeight, depth: 1 }
           );
+        }
 
+        const length = _save_restore_swap_chain ? numVideosToCopy :
+                                                  videos.length;
+        for (let i = 0; i < length; ++i) {
           const firstVertex = i * 6;
           passEncoder.setBindGroup(0, bindGroups[i]);
           passEncoder.draw(6, 1, firstVertex, 0);
         }
 
-        // Add UI on Top of (videoRows * videoColumns) videos.
+        // Add UI on Top of all videos.
         if (addUI) {
           passEncoder.setPipeline(pipelineForIcons);
           passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-          passEncoder.draw(videos.length * 6);
+          passEncoder.draw(length * 6);
         }
-
         passEncoder.endPass();
+
+        // Backup the canvas for the next frame if the next frame does partial
+        // update.
+        if (_save_restore_swap_chain) {
+          commandEncoder.copyTextureToTexture(
+            { texture: swapChainTexture },
+            { texture: savedSwapChain },
+            { width: canvas.width, height: canvas.height, depth: 1 });
+        }
         device.queue.submit([commandEncoder.finish()]);
+
+        frameId++;
       });
   }
 
   const oneFrameWithImportTextureApi = () => {
-    renderPassDescriptor.colorAttachments[0].attachment = swapChain
-      .getCurrentTexture()
+    const swapChainTexture = swapChain.getCurrentTexture();
+    renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
       .createView();
 
-    for (let i = 0; i < videos.length; ++i) {
+    // These videos are displayed at different fps. Not every video needs to be
+    // updated in this frame. The videos at lower indices are updated faster
+    // than videos at higher indices. See GetNumOfVideosToCopyForCurrentFrame()
+    // for how the videos with different fps are arranged.
+    const numVideosToCopy = GetNumOfVideosToCopyForCurrentFrame(frameId);
+
+    for (let i = 0; i < numVideosToCopy; ++i) {
+      // Destroy the textures after submit to promptly recycle resources.
+      // The textures not being imported here this time are not to be destroyed.
+      // We still need to render those textures for this frame.
+      videoTextures[i].destroy();
       videoTextures[i] = device.experimentalImportTexture(
         videos[i], GPUTextureUsage.SAMPLED);
     }
 
     const commandEncoder = device.createCommandEncoder();
+    if (_save_restore_swap_chain) {
+      commandEncoder.copyTextureToTexture(
+        { texture: savedSwapChain },
+        { texture: swapChainTexture },
+        { width: canvas.width, height: canvas.height, depth: 1 });
+    }
     const passEncoder =
       commandEncoder.beginRenderPass(renderPassDescriptor);
     passEncoder.setPipeline(pipeline);
     passEncoder.setVertexBuffer(0, verticesBuffer);
 
-    for (let i = 0; i < videos.length; ++i) {
+    const length = _save_restore_swap_chain ? numVideosToCopy : videos.length;
+    for (let i = 0; i < length; ++i) {
       bindGroups[i] = device.createBindGroup({
         layout: pipeline.getBindGroupLayout(0),
         entries: [
@@ -409,29 +492,31 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
       passEncoder.draw(6, 1, firstVertex, 0);
     }
 
-    // Add UI on Top of (videoRows * videoColumns) videos.
+    // Add UI on Top of all videos.
     if (addUI) {
       passEncoder.setPipeline(pipelineForIcons);
       passEncoder.setVertexBuffer(0, verticesBufferForIcons);
-      passEncoder.draw(videos.length * 6);
+      passEncoder.draw(length * 6);
     }
-
     passEncoder.endPass();
+
+    // Backup the canvas for the next frame if the next frame does partial
+    // update.
+    if (_save_restore_swap_chain) {
+      commandEncoder.copyTextureToTexture(
+        { texture: savedSwapChain },
+        { texture: swapChainTexture },
+        { width: canvas.width, height: canvas.height, depth: 1 });
+    }
     device.queue.submit([commandEncoder.finish()]);
 
-    // Destroy the texture after submit to promptly recycle resources.
-    for (let i = 0; i < videoTextures.length; ++i)
-      videoTextures[i].destroy();
+    frameId++;
   }
 
+    // Call oneFrame() every 33 milliseconds to simulate 30 fps.
   if (useImportTextureApi) {
-    setInterval(oneFrameWithImportTextureApi, 143);
+    setInterval(oneFrameWithImportTextureApi, 33);
   } else {
-    setInterval(oneFrame, 143);
+    setInterval(oneFrame, 33);
   }
-
-  // TODO(magchen@): Render frames at different fps.
-  // 4 videos at 30 fps, oneFrame() should be called every 33 milliseconds.
-  // 12 videos at 30 fps, oneFrame() should be called 33 milliseconds.
-  // The rest at 7 fps, oneFrame() should be called 143 milliseconds.
 }

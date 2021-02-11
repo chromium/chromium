@@ -5,15 +5,21 @@ video. A small video simulating the image from the local camera is displays at
 the top right corner.
 
 
-## Configurations in Demo Files
+## Configurations
 
 ### videos_mxn.html
 <video> elements are played through the default media player. The UI are added
 with CSS icons.
 
 ### webgpu_videos_mxn.html
+  PLEASE RUN http-server TO SERVE THIS DEMO, OTHERWISE THIS DEMO WILL NOT START.
+Chromium command line switch to enable WEBGPU:
+  "--enable-unsafe-webgpu --enable-experimental-web-platform-features"
 The image of each video frame is uploaded and rendered by WebGPU. The UI is also
-rendered by WebGPU.
+rendered by WebGPU. The demo uses the experimental Import Texture API to copy
+the video textures into GPU. The copy method can be changed to
+createImageBitmap() then device.queue.copyImageBitmapToTexture() with a flag.
+
 
 The on-screen size that covers all videos is set to 1600x900. The actual size of
 each video is divided by the video rows and columns (MxN).
@@ -23,8 +29,8 @@ string.
 
 The video stream size is 320x280 if the total video count is more than 4. Among
 these videos, 4 are 30 fps, 12 are 15 fps, and the remaining are 7 fps.
-The video stream size is 640x360 if the total video count is equal or less than
-4. All of them are 30 fps.
+The video stream size is 640x360 at 30 fps if the total video count is equal or
+less than 4.
 
 
 ## Usage
@@ -37,15 +43,23 @@ videos_mxn.html?rows=4&columns=7
 webgpu_videos_mxn.html?rows=2&columns=2
 ```
 
-To remove the UI or force the UI to CSS icons in webgpu_videos_mxn.html. Use `ui=none` or `ui=css`.
+For webgpu_videos_mxn.html only:
+To remove the UI or force the UI to CSS icons. Use `ui=none` or `ui=css`.
 ```
 webgpu_videos_mxn.html?ui=css
+```
+To disable Import Texture API and force the video texture copy through
+createImageBitmap() and then copyImageBitmapToTexture(),
+use import_texture_api=0.
+```
+webgpu_videos_mxn.html?import_texture_api=0
 ```
 
 
 ## Video Files
 
-The following videos are recorded and converted to the needed configurations by magchen@chromium.org.
+The following videos are recorded and converted to the needed configurations
+by magchen@chromium.org.
 
 ### teddy1_vp9_320x180_7fps.webm
 ffmpeg -i Teddy1_hd.MOV -c:v libvpx-vp9 -r 7 -s 320x180 teddy1_vp9_320x180_7fps.webm
