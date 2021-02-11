@@ -246,7 +246,7 @@ void GPUCommandEncoder::copyBufferToTexture(
     GPUBufferCopyView* source,
     GPUTextureCopyView* destination,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
-  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size);
+  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
 
   const char* error = nullptr;
@@ -265,7 +265,7 @@ void GPUCommandEncoder::copyTextureToBuffer(
     GPUTextureCopyView* source,
     GPUBufferCopyView* destination,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
-  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size);
+  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
 
   const char* error = nullptr;
@@ -286,7 +286,7 @@ void GPUCommandEncoder::copyTextureToTexture(
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
-  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size);
+  WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
 
   GetProcs().commandEncoderCopyTextureToTexture(
       GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);

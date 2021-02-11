@@ -46,7 +46,8 @@ WGPUColor AsDawnColor(const Vector<double>&);
 WGPUColor AsDawnType(const GPUColorDict*);
 WGPUColor AsDawnType(const DoubleSequenceOrGPUColorDict*);
 WGPUExtent3D AsDawnType(
-    const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict*);
+    const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict*,
+    GPUDevice* device);
 WGPUOrigin3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict*);
 WGPUTextureCopyView AsDawnType(const GPUTextureCopyView* webgpu_view,

@@ -42,7 +42,7 @@ WGPUTextureDescriptor AsDawnType(const GPUTextureDescriptor* webgpu_desc,
   dawn_desc.usage = static_cast<WGPUTextureUsage>(webgpu_desc->usage());
   dawn_desc.dimension =
       AsDawnEnum<WGPUTextureDimension>(webgpu_desc->dimension());
-  dawn_desc.size = AsDawnType(&webgpu_desc->size());
+  dawn_desc.size = AsDawnType(&webgpu_desc->size(), device);
   dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
   dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
   dawn_desc.sampleCount = webgpu_desc->sampleCount();

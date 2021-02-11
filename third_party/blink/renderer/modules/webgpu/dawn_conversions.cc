@@ -833,7 +833,8 @@ WGPUColor AsDawnType(const DoubleSequenceOrGPUColorDict* webgpu_color) {
 }
 
 WGPUExtent3D AsDawnType(
-    const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict* webgpu_extent) {
+    const UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict* webgpu_extent,
+    GPUDevice* device) {
   DCHECK(webgpu_extent);
 
   WGPUExtent3D dawn_extent = {1, 1, 1};
@@ -863,7 +864,14 @@ WGPUExtent3D AsDawnType(
         webgpu_extent->GetAsGPUExtent3DDict();
     dawn_extent.width = webgpu_extent_3d_dict->width();
     dawn_extent.height = webgpu_extent_3d_dict->height();
-    dawn_extent.depth = webgpu_extent_3d_dict->depth();
+
+    if (webgpu_extent_3d_dict->hasDepth()) {
+      device->AddConsoleWarning(
+          "Specifying an extent depth is deprecated. Use depthOrArrayLayers.");
+      dawn_extent.depth = webgpu_extent_3d_dict->depth();
+    } else {
+      dawn_extent.depth = webgpu_extent_3d_dict->depthOrArrayLayers();
+    }
 
   } else {
     NOTREACHED();

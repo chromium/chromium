@@ -7,5 +7,7 @@
 dictionary GPUExtent3DDict {
     GPUIntegerCoordinate width = 1;
     GPUIntegerCoordinate height = 1;
-    GPUIntegerCoordinate depth = 1;
+    GPUIntegerCoordinate depthOrArrayLayers = 1;
+    // Deprecated
+    GPUIntegerCoordinate depth;
 };
