@@ -281,7 +281,13 @@ bool IsRootEditableElementWithCounting(const Element& element) {
 bool DefinitelyNewFormattingContext(const Node& node,
                                     const ComputedStyle& style) {
   auto display = style.Display();
-  if (display == EDisplay::kInline || display == EDisplay::kContents)
+  if (display == EDisplay::kInline || display == EDisplay::kContents ||
+      display == EDisplay::kTableRowGroup ||
+      display == EDisplay::kTableHeaderGroup ||
+      display == EDisplay::kTableFooterGroup ||
+      display == EDisplay::kTableRow ||
+      display == EDisplay::kTableColumnGroup ||
+      display == EDisplay::kTableColumn)
     return false;
   // ::marker may establish a formatting context but still have some dependency
   // on the originating list item, so return false.
@@ -4239,12 +4245,15 @@ void Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,
 
 void Element::ForceLegacyLayoutInFormattingContext(
     const ComputedStyle& new_style) {
-  // TableNG requires that table elements are either all NG, or all Legacy.
-  bool needs_traverse_to_table =
-      RuntimeEnabledFeatures::LayoutNGTableEnabled() &&
-      new_style.IsDisplayTableType();
-  bool found_bfc = DefinitelyNewFormattingContext(*this, new_style);
-  for (Element* ancestor = this; !found_bfc || needs_traverse_to_table;) {
+  bool found_fc = DefinitelyNewFormattingContext(*this, new_style);
+  if (found_fc && RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+    // TableNG requires that table elements are either all NG, or all Legacy. We
+    // need to mark all the way up to the containing table.
+    found_fc = new_style.Display() != EDisplay::kTableCell &&
+               new_style.Display() != EDisplay::kTableCaption;
+  }
+
+  for (Element* ancestor = this; !found_fc;) {
     ancestor =
         DynamicTo<Element>(LayoutTreeBuilderTraversal::Parent(*ancestor));
     if (!ancestor || ancestor->ShouldForceLegacyLayout())
@@ -4252,16 +4261,7 @@ void Element::ForceLegacyLayoutInFormattingContext(
     const ComputedStyle* style = ancestor->GetComputedStyle();
     if (style->Display() == EDisplay::kNone)
       break;
-    found_bfc = found_bfc || DefinitelyNewFormattingContext(*ancestor, *style);
-    if (found_bfc && !needs_traverse_to_table) {
-      needs_traverse_to_table =
-          RuntimeEnabledFeatures::LayoutNGTableEnabled() &&
-          style->IsDisplayTableType();
-    }
-    if (needs_traverse_to_table) {
-      if (style->IsDisplayTableBox())
-        needs_traverse_to_table = false;
-    }
+    found_fc = found_fc || DefinitelyNewFormattingContext(*ancestor, *style);
     ancestor->SetShouldForceLegacyLayoutForChild(true);
     ancestor->SetNeedsReattachLayoutTree();
   }

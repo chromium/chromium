@@ -1092,10 +1092,6 @@ crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows.html 
 crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-1.html [ Failure ]
 crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-2.html [ Failure ]
 
-# Unknown cause, but they are virtual
-crbug.com/958381 virtual/layout_ng_block_frag/fragmentation/multi-line-cells-paginated.html [ Failure ]
-crbug.com/958381 virtual/layout_ng_block_frag/fragmentation/single-line-cells-paginated.html [ Failure ]
-
 # Mac failures - antialiasing of ref
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-087.xht [ Failure ]
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-088.xht [ Failure ]
