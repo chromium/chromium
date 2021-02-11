@@ -1061,12 +1061,12 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
       protocol::DictionaryValue::create();
 
   LayoutObject* layout_object = node->GetLayoutObject();
+  bool is_horizontal = IsHorizontalFlex(layout_object->Parent());
   Length base_size = Length::Auto();
 
   const Length& flex_basis = layout_object->StyleRef().FlexBasis();
-  const Length& size = IsHorizontalFlex(layout_object->Parent())
-                           ? layout_object->StyleRef().Width()
-                           : layout_object->StyleRef().Height();
+  const Length& size = is_horizontal ? layout_object->StyleRef().Width()
+                                     : layout_object->StyleRef().Height();
 
   if (flex_basis.IsFixed()) {
     base_size = flex_basis;
@@ -1077,6 +1077,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
   // For now, we only care about the cases where we can know the base size.
   if (base_size.IsSpecified()) {
     flex_info->setDouble("baseSize", base_size.Pixels() * scale);
+    flex_info->setBoolean("isHorizontalFlow", is_horizontal);
 
     flex_info->setValue(
         "flexItemHighlightConfig",
