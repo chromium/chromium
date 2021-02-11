@@ -65,6 +65,15 @@ _SUITE_REQUIRES_TEST_SERVER_SPAWNER = [
   'net_unittests', 'services_unittests', 'unit_tests'
 ]
 
+# These are use for code coverage.
+_LLVM_PROFDATA_PATH = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
+                                   'llvm-build', 'Release+Asserts', 'bin',
+                                   'llvm-profdata')
+# Name of the file extension for profraw data files.
+_PROFRAW_FILE_EXTENSION = 'profraw'
+# Name of the file where profraw data files are merged.
+_MERGE_PROFDATA_FILE_NAME = 'coverage_merged.' + _PROFRAW_FILE_EXTENSION
+
 # No-op context manager. If we used Python 3, we could change this to
 # contextlib.ExitStack()
 class _NullContextManager(object):
@@ -105,6 +114,59 @@ def _ExtractTestsFromFilter(gtest_filter):
   if '*' in gtest_filter:
     return None
   return patterns
+
+
+def _MergeCoverageFiles(coverage_dir, profdata_dir):
+  """Merge coverage data files.
+
+  Each instrumentation activity generates a separate profraw data file. This
+  merges all profraw files in profdata_dir into a single file in
+  coverage_dir. This happens after each test, rather than waiting until after
+  all tests are ran to reduce the memory footprint used by all the profraw
+  files.
+
+  Args:
+    coverage_dir: The path to the coverage directory.
+    profdata_dir: The directory where the profraw data file(s) are located.
+
+  Return:
+    None
+  """
+  # profdata_dir may not exist if pulling coverage files failed.
+  if not os.path.exists(profdata_dir):
+    logging.debug('Profraw directory does not exist.')
+    return
+
+  merge_file = os.path.join(coverage_dir, _MERGE_PROFDATA_FILE_NAME)
+  profraw_files = [
+      os.path.join(profdata_dir, f) for f in os.listdir(profdata_dir)
+      if f.endswith(_PROFRAW_FILE_EXTENSION)
+  ]
+
+  try:
+    logging.debug('Merging target profraw files into merged profraw file.')
+    subprocess_cmd = [
+        _LLVM_PROFDATA_PATH,
+        'merge',
+        '-o',
+        merge_file,
+        '-sparse=true',
+    ]
+    # Grow the merge file by merging it with itself and the new files.
+    if os.path.exists(merge_file):
+      subprocess_cmd.append(merge_file)
+    subprocess_cmd.extend(profraw_files)
+    output = subprocess.check_output(subprocess_cmd)
+    logging.debug('Merge output: %s', output)
+  except subprocess.CalledProcessError:
+    # Don't raise error as that will kill the test run. When code coverage
+    # generates a report, that will raise the error in the report generation.
+    logging.error(
+        'Failed to merge target profdata files to create merged profraw file.')
+
+  # Free up memory space on bot as all data is in the merge file.
+  for f in profraw_files:
+    os.remove(f)
 
 
 def _PullCoverageFiles(device, device_coverage_dir, output_dir):
@@ -262,9 +324,11 @@ class _ApkDelegate(object):
         raise
       finally:
         if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
-          _PullCoverageFiles(
-              device, device_coverage_dir,
-              os.path.join(self._coverage_dir, str(self._coverage_index)))
+          with tempfile_ext.NamedTemporaryDirectory(
+              prefix=self._coverage_dir) as temp_d:
+            _PullCoverageFiles(device, device_coverage_dir, temp_d)
+            _MergeCoverageFiles(self._coverage_dir,
+                                os.path.join(temp_d, 'profraw'))
 
       return device.ReadFile(stdout_file.name).splitlines()
 
