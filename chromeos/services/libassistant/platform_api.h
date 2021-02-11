@@ -17,6 +17,7 @@ namespace chromeos {
 namespace libassistant {
 
 class AudioOutputProviderImpl;
+class FakeAuthProvider;
 class SystemProviderImpl;
 
 // Implementation of the Libassistant PlatformApi.
@@ -34,7 +35,6 @@ class PlatformApi : public assistant_client::PlatformApi {
       mojom::PlatformDelegate* platform_delegate);
 
   PlatformApi& SetAudioInputProvider(assistant_client::AudioInputProvider*);
-  PlatformApi& SetAuthProvider(assistant_client::AuthProvider*);
   PlatformApi& SetFileProvider(assistant_client::FileProvider*);
   PlatformApi& SetNetworkProvider(assistant_client::NetworkProvider*);
 
@@ -50,11 +50,11 @@ class PlatformApi : public assistant_client::PlatformApi {
   // The below are all owned by the browser side |PlatformApiImpl|,
   // which outlives us.
   assistant_client::AudioInputProvider* audio_input_provider_ = nullptr;
-  assistant_client::AuthProvider* auth_provider_ = nullptr;
   assistant_client::FileProvider* file_provider_ = nullptr;
   assistant_client::NetworkProvider* network_provider_ = nullptr;
 
   std::unique_ptr<AudioOutputProviderImpl> audio_output_provider_;
+  std::unique_ptr<FakeAuthProvider> fake_auth_provider_;
   std::unique_ptr<SystemProviderImpl> system_provider_;
 };
 

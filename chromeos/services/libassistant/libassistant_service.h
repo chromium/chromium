@@ -35,7 +35,6 @@ class AudioInputController;
 class ConversationController;
 class ConversationStateListenerImpl;
 class DisplayController;
-class FakeAuthProvider;
 class MediaController;
 class PlatformApi;
 class ServiceController;
@@ -83,7 +82,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   // These controllers are part of the platform api which is called from
   // Libassistant, and thus they must outlive |service_controller_|.
   std::unique_ptr<PlatformApi> platform_api_;
-  std::unique_ptr<FakeAuthProvider> fake_auth_provider_;
   std::unique_ptr<AudioInputController> audio_input_controller_;
 
   std::unique_ptr<ServiceController> service_controller_;
