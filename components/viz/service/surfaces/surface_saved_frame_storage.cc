@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -60,6 +61,19 @@ std::unique_ptr<SurfaceSavedFrame> SurfaceSavedFrameStorage::TakeSavedFrame() {
 
 void SurfaceSavedFrameStorage::ExpireSavedFrame() {
   saved_frame_.reset();
+}
+
+void SurfaceSavedFrameStorage::ExpireForTesting() {
+  // Only do any work if we have an expiry closure.
+  if (!expiry_closure_.IsCancelled())
+    ExpireSavedFrame();
+}
+
+void SurfaceSavedFrameStorage::CompleteForTesting() {
+  if (saved_frame_) {
+    saved_frame_->CompleteSavedFrameForTesting(  // IN-TEST
+        base::BindOnce([](const gpu::SyncToken&, bool) {}));
+  }
 }
 
 }  // namespace viz

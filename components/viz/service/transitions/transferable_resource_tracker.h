@@ -11,6 +11,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -28,17 +29,17 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   TransferableResourceTracker& operator=(const TransferableResourceTracker&) =
       delete;
 
-  TransferableResource AddMailboxResource(
-      const gpu::Mailbox& mailbox,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      std::unique_ptr<SingleReleaseCallback> release_callback);
+  TransferableResource ImportResource(
+      std::unique_ptr<SurfaceSavedFrame> saved_frame);
 
   void RefResource(ResourceId id);
   void UnrefResource(ResourceId id);
 
  private:
   ResourceId GetNextAvailableResourceId();
+
+  TransferableResource ImportTextureResult(
+      SurfaceSavedFrame::TextureResult result);
 
   const ResourceId starting_id_;
   ResourceId next_id_;

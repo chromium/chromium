@@ -149,14 +149,28 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
     UpdateNeedsBeginFramesInternal();
 
   // Let the animation manager process any new directives on the surface.
-  surface_animation_manager_.ProcessTransitionDirectives(
-      last_frame_time_,
-      surface->GetActiveFrame().metadata.transition_directives,
-      surface->GetSurfaceSavedFrameStorage());
+  // TODO(vmpstr): Figure out if `last_frame_time_` is correct here.
+  // SurfaceAcitvation may have happened some time after we sent the last
+  // BeginFrame to the client (which is when the frame time is updated). We may
+  // need to keep track of a separate time that updates when OnBeginFrame
+  // happens whether or not it is sent to the client.
+  bool started_animation =
+      surface_animation_manager_.ProcessTransitionDirectives(
+          last_frame_time_,
+          surface->GetActiveFrame().metadata.transition_directives,
+          surface->GetSurfaceSavedFrameStorage());
+  // If processing the new directives caused us to start an animation, then
+  // interpoate the frame immediately. This is needed since if we wait until the
+  // next BeginFrame to do the first interpolation, then we maybe have already
+  // drawn this destination frame.
+  if (started_animation)
+    surface_animation_manager_.InterpolateFrame(surface);
 
   // The above call can cause us to start an animation, meaning we need begin
   // frames. If that's the case, make sure to update the begin frame
   // observation.
+  // TODO(vmpstr): Note that if we need to produce an interpolation to the
+  // latest frame, then this is where we would do that.
   if (surface_animation_manager_.NeedsBeginFrame())
     UpdateNeedsBeginFramesInternal();
 
@@ -728,10 +742,19 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
   if (surface_animation_manager_.NeedsBeginFrame()) {
     surface_animation_manager_.NotifyFrameAdvanced(args.frame_time);
 
-    // If notifying causes us to stop needing frames, then update needs begin
-    // frames, in case we no longer are interested in receiving begin frames.
-    if (!surface_animation_manager_.NeedsBeginFrame())
+    // Interpolate the frame here, since it is a reliable spot during the
+    // animation.
+    if (surface_animation_manager_.NeedsBeginFrame()) {
+      if (last_activated_surface_id_.is_valid()) {
+        auto* surface =
+            surface_manager_->GetSurfaceForId(last_activated_surface_id_);
+        surface_animation_manager_.InterpolateFrame(surface);
+      }
+    } else {
+      // If notifying causes us to stop needing frames, then update needs begin
+      // frames, in case we no longer are interested in receiving begin frames.
       UpdateNeedsBeginFramesInternal();
+    }
   }
 }
 

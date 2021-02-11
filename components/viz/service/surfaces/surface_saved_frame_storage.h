@@ -39,15 +39,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
   std::unique_ptr<SurfaceSavedFrame> TakeSavedFrame();
 
   // For testing functionality.
-  void ExpireForTesting() {
-    // Only do any work if we have an expiry closure.
-    if (!expiry_closure_.IsCancelled())
-      ExpireSavedFrame();
-  }
-  void CompleteForTesting() {
-    if (saved_frame_)
-      saved_frame_->CompleteSavedFrameForTesting();
-  }
+  void ExpireForTesting();
+  void CompleteForTesting();
 
  private:
   // This expires the saved frame, if any.

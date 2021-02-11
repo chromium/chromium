@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
@@ -21,17 +20,12 @@ SurfaceSavedFrame::SurfaceSavedFrame(
   DCHECK_EQ(directive.type(), CompositorFrameTransitionDirective::Type::kSave);
 }
 
-SurfaceSavedFrame::~SurfaceSavedFrame() {
-  if (texture_release_callback_) {
-    texture_release_callback_->Run(texture_result_.sync_token,
-                                   /*is_lost=*/false);
-  }
-}
+SurfaceSavedFrame::~SurfaceSavedFrame() = default;
 
 bool SurfaceSavedFrame::IsValid() const {
   // TODO(crbug.com/1174129): This needs to be updated with software copies as
   // well.
-  return !texture_result_.mailbox.IsZero();
+  return HasTextureResult();
 }
 
 void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
@@ -55,13 +49,55 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   if (!result->GetTextureResult())
     return;
 
-  texture_result_ = *result->GetTextureResult();
-  texture_release_callback_ = result->TakeTextureOwnership();
+  auto copy_output_texture = *result->GetTextureResult();
+  texture_result_.mailbox = copy_output_texture.mailbox;
+  texture_result_.sync_token = copy_output_texture.sync_token;
+  texture_result_.size = result->size();
+  texture_result_.release_callback = result->TakeTextureOwnership();
 }
 
-void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
+bool SurfaceSavedFrame::HasTextureResult() const {
+  return texture_result_.release_callback && !texture_result_.mailbox.IsZero();
+}
+
+SurfaceSavedFrame::TextureResult SurfaceSavedFrame::TakeTextureResult() {
+  DCHECK(HasTextureResult());
+  // Note that the TextureResult move constructor resets sufficient state in the
+  // member so that HasTextureResult() returns false afterwards, effectively
+  // clearing the member variable.
+  return std::move(texture_result_);
+}
+
+void SurfaceSavedFrame::CompleteSavedFrameForTesting(
+    base::OnceCallback<void(const gpu::SyncToken&, bool)> release_callback) {
   texture_result_.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  texture_result_.release_callback =
+      SingleReleaseCallback::Create(std::move(release_callback));
   DCHECK(IsValid());
+}
+
+SurfaceSavedFrame::TextureResult::TextureResult() = default;
+SurfaceSavedFrame::TextureResult::TextureResult(TextureResult&& other) {
+  *this = std::move(other);
+}
+
+SurfaceSavedFrame::TextureResult::~TextureResult() {
+  if (release_callback)
+    release_callback->Run(sync_token, /*is_lost=*/false);
+}
+
+SurfaceSavedFrame::TextureResult& SurfaceSavedFrame::TextureResult::operator=(
+    TextureResult&& other) {
+  mailbox = std::move(other.mailbox);
+  other.mailbox = gpu::Mailbox();
+
+  sync_token = std::move(other.sync_token);
+  other.sync_token = gpu::SyncToken();
+
+  size = std::move(other.size);
+
+  release_callback = std::move(other.release_callback);
+  return *this;
 }
 
 }  // namespace viz

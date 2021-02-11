@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -20,6 +21,19 @@ class Surface;
 
 class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
  public:
+  struct TextureResult {
+    TextureResult();
+    TextureResult(TextureResult&& other);
+    ~TextureResult();
+
+    TextureResult& operator=(TextureResult&& other);
+
+    gpu::Mailbox mailbox;
+    gpu::SyncToken sync_token;
+    gfx::Size size;
+    std::unique_ptr<SingleReleaseCallback> release_callback;
+  };
+
   explicit SurfaceSavedFrame(
       const CompositorFrameTransitionDirective& directive);
   ~SurfaceSavedFrame();
@@ -27,23 +41,27 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // Returns true iff the frame is valid and complete.
   bool IsValid() const;
 
-  // Returns the animation duration from the saved directive.
-  base::TimeDelta animation_duration() const { return directive_.duration(); }
+  CompositorFrameTransitionDirective directive() const { return directive_; }
 
   // Appends copy output requests to the needed render passes in the active
   // frame.
   void RequestCopyOfOutput(Surface* surface);
 
+  // Takes the root texture result.
+  // TODO(crbug.com/1174141): We need to support more than just the root result.
+  bool HasTextureResult() const;
+  TextureResult TakeTextureResult() WARN_UNUSED_RESULT;
+
   // For testing functionality that ensures that we have a valid frame.
-  void CompleteSavedFrameForTesting();
+  void CompleteSavedFrameForTesting(
+      base::OnceCallback<void(const gpu::SyncToken&, bool)> release_callback);
 
  private:
   void NotifyCopyOfOutputComplete(std::unique_ptr<CopyOutputResult> result);
 
   CompositorFrameTransitionDirective directive_;
 
-  CopyOutputResult::TextureResult texture_result_;
-  std::unique_ptr<SingleReleaseCallback> texture_release_callback_;
+  TextureResult texture_result_;
 
   base::WeakPtrFactory<SurfaceSavedFrame> weak_factory_{this};
 };

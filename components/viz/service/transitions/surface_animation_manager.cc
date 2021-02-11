@@ -4,6 +4,7 @@
 
 #include "components/viz/service/transitions/surface_animation_manager.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/time/time.h"
@@ -13,12 +14,13 @@ namespace viz {
 SurfaceAnimationManager::SurfaceAnimationManager() = default;
 SurfaceAnimationManager::~SurfaceAnimationManager() = default;
 
-void SurfaceAnimationManager::ProcessTransitionDirectives(
+bool SurfaceAnimationManager::ProcessTransitionDirectives(
     base::TimeTicks last_frame_time,
     const std::vector<CompositorFrameTransitionDirective>& directives,
     SurfaceSavedFrameStorage* storage) {
   DCHECK_GE(last_frame_time, current_time_);
   current_time_ = last_frame_time;
+  bool started_animation = false;
   for (auto& directive : directives) {
     // Don't process directives with sequence ids smaller than or equal to the
     // last seen one. It is possible that we call this with the same frame
@@ -33,10 +35,11 @@ void SurfaceAnimationManager::ProcessTransitionDirectives(
         ProcessSaveDirective(directive, storage);
         break;
       case CompositorFrameTransitionDirective::Type::kAnimate:
-        ProcessAnimateDirective(directive, storage);
+        started_animation |= ProcessAnimateDirective(directive, storage);
         break;
     }
   }
+  return started_animation;
 }
 
 void SurfaceAnimationManager::ProcessSaveDirective(
@@ -48,20 +51,29 @@ void SurfaceAnimationManager::ProcessSaveDirective(
   storage->ProcessSaveDirective(directive);
 }
 
-void SurfaceAnimationManager::ProcessAnimateDirective(
+bool SurfaceAnimationManager::ProcessAnimateDirective(
     const CompositorFrameTransitionDirective& directive,
     SurfaceSavedFrameStorage* storage) {
   // We can only begin an animate if we are currently idle.
   if (state_ != State::kIdle)
-    return;
+    return false;
 
-  saved_frame_ = storage->TakeSavedFrame();
+  // Make sure we don't actually have anything saved as a texture.
+  DCHECK(!saved_root_texture_.has_value());
+
+  auto saved_frame = storage->TakeSavedFrame();
   // We can't animate if we don't have a saved frame.
-  if (!saved_frame_)
-    return;
+  if (!saved_frame || !saved_frame->IsValid())
+    return false;
+
+  // Convert the texture result into a transferable resource.
+  saved_directive_ = saved_frame->directive();
+  saved_root_texture_.emplace(
+      transferable_resource_tracker_.ImportResource(std::move(saved_frame)));
 
   state_ = State::kAnimating;
   started_time_ = current_time_;
+  return true;
 }
 
 bool SurfaceAnimationManager::NeedsBeginFrame() const {
@@ -88,29 +100,39 @@ void SurfaceAnimationManager::NotifyFrameAdvanced(base::TimeTicks new_time) {
 
 void SurfaceAnimationManager::FinishAnimationIfNeeded() {
   DCHECK_EQ(state_, State::kAnimating);
-  DCHECK(saved_frame_);
-  if (current_time_ >= started_time_ + saved_frame_->animation_duration())
+  DCHECK(saved_root_texture_.has_value());
+  if (current_time_ >= started_time_ + saved_directive_.duration())
     state_ = State::kDone;
 }
 
 void SurfaceAnimationManager::FinalizeAndDisposeOfState() {
   DCHECK_EQ(state_, State::kDone);
+  DCHECK(saved_root_texture_.has_value());
+  // Set state to idle.
   state_ = State::kIdle;
-  saved_frame_.reset();
+
+  // Ensure to return the texture / unref it.
+  transferable_resource_tracker_.UnrefResource(saved_root_texture_->id);
+  saved_root_texture_.reset();
+
+  // Other resets so that we don't accidentally access stale values.
+  saved_directive_ = CompositorFrameTransitionDirective();
   started_time_ = base::TimeTicks();
 }
 
 double SurfaceAnimationManager::CalculateAnimationProgress() const {
   DCHECK(state_ == State::kAnimating || state_ == State::kDone);
-  DCHECK(saved_frame_);
   if (state_ == State::kDone)
     return 1.;
 
-  double result =
-      (current_time_ - started_time_) / saved_frame_->animation_duration();
+  double result = (current_time_ - started_time_) / saved_directive_.duration();
   DCHECK_GE(result, 0.);
   DCHECK_LE(result, 1.);
   return result;
+}
+
+void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
+  // TODO(vmpstr): Do the interpolation and saving things back to surface.
 }
 
 }  // namespace viz

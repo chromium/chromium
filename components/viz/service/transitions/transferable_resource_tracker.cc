@@ -25,20 +25,29 @@ TransferableResourceTracker::TransferableResourceTracker(ResourceId starting_id)
 
 TransferableResourceTracker::~TransferableResourceTracker() = default;
 
-TransferableResource TransferableResourceTracker::AddMailboxResource(
-    const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
-    const gfx::Size& size,
-    std::unique_ptr<SingleReleaseCallback> release_callback) {
-  TransferableResource result = TransferableResource::MakeGL(
-      mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
-      /*is_overlay_candidate=*/false);
+TransferableResource TransferableResourceTracker::ImportResource(
+    std::unique_ptr<SurfaceSavedFrame> saved_frame) {
+  DCHECK(saved_frame);
+  DCHECK(saved_frame->IsValid());
+  if (saved_frame->HasTextureResult())
+    return ImportTextureResult(saved_frame->TakeTextureResult());
+
+  NOTREACHED();
+  return TransferableResource();
+}
+
+TransferableResource TransferableResourceTracker::ImportTextureResult(
+    SurfaceSavedFrame::TextureResult texture) {
+  TransferableResource result =
+      TransferableResource::MakeGL(texture.mailbox, GL_LINEAR, GL_TEXTURE_2D,
+                                   texture.sync_token, texture.size,
+                                   /*is_overlay_candidate=*/false);
   result.id = GetNextAvailableResourceId();
 
   DCHECK(!base::Contains(managed_resources_, result.id));
   managed_resources_.emplace(
       result.id,
-      TransferableResourceHolder(result, std::move(release_callback)));
+      TransferableResourceHolder(result, std::move(texture.release_callback)));
   return result;
 }
 
