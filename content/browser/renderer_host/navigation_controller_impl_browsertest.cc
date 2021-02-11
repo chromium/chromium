@@ -6134,9 +6134,13 @@ IN_PROC_BROWSER_TEST_P(
     // The original request URL will be the first entry of redirect chain,
     // which is the URL that initiated the client redirect. However due to the
     // bug above this will actually result in a blank URL.
-    // TODO(https://crbug.com/1171210): Fix this. Also, figure out why this also
-    // happens when we didn't enter the "about:blank#blocked" part above?
-    EXPECT_EQ(entry->GetOriginalRequestURL(), GURL());
+    // TODO(https://crbug.com/1171210): Fix this.
+    if (AreAllSitesIsolatedForTesting() ||
+        CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+        EXPECT_EQ(entry->GetOriginalRequestURL(), GURL());
+    } else {
+        EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
+    }
   }
 
   {
