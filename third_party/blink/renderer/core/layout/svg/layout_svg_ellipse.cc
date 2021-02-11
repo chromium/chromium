@@ -136,8 +136,7 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
 
 bool LayoutSVGEllipse::HasContinuousStroke() const {
   NOT_DESTROYED();
-  const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
-  return svg_style.StrokeDashArray()->data.IsEmpty();
+  return !StyleRef().HasDashArray();
 }
 
 }  // namespace blink

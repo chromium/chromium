@@ -124,7 +124,7 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
   const SVGComputedStyle& svg_style = style.SvgStyle();
 
   bool has_fill = svg_style.HasFill();
-  bool has_visible_stroke = svg_style.HasVisibleStroke();
+  bool has_visible_stroke = style.HasVisibleStroke();
 
   const ComputedStyle* selection_style = &style;
   bool should_paint_selection = ShouldPaintSelection(paint_info);
@@ -137,7 +137,7 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
       if (!has_fill)
         has_fill = svg_selection_style.HasFill();
       if (!has_visible_stroke)
-        has_visible_stroke = svg_selection_style.HasVisibleStroke();
+        has_visible_stroke = selection_style->HasVisibleStroke();
     } else {
       selection_style = &style;
     }
@@ -358,7 +358,7 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
         }
         break;
       case PT_STROKE:
-        if (svg_decoration_style.HasVisibleStroke()) {
+        if (decoration_style.HasVisibleStroke()) {
           PaintFlags stroke_flags;
           if (!SVGObjectPainter(*decoration_layout_object)
                    .PreparePaint(paint_info, decoration_style,

@@ -114,7 +114,7 @@ static HeapVector<Member<SVGResource>> CollectResources(
     resources.push_back(marker->Resource());
   if (auto* paint_resource = svg_style.FillPaint().Resource())
     resources.push_back(paint_resource->Resource());
-  if (auto* paint_resource = svg_style.StrokePaint().Resource())
+  if (auto* paint_resource = style.StrokePaint().Resource())
     resources.push_back(paint_resource->Resource());
   return resources;
 }

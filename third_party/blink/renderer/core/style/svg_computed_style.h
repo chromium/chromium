@@ -360,18 +360,9 @@ class SVGComputedStyle : public RefCounted<SVGComputedStyle> {
            InternalVisitedFillPaint().HasCurrentColor();
   }
 
-  bool IsStrokeColorCurrentColor() const {
-    return StrokePaint().HasCurrentColor() ||
-           InternalVisitedStrokePaint().HasCurrentColor();
-  }
-
   // convenience
   bool HasMarkers() const {
     return MarkerStartResource() || MarkerMidResource() || MarkerEndResource();
-  }
-  bool HasStroke() const { return !StrokePaint().IsNone(); }
-  bool HasVisibleStroke() const {
-    return HasStroke() && !StrokeWidth().IsZero();
   }
   bool HasFill() const { return !FillPaint().IsNone(); }
 

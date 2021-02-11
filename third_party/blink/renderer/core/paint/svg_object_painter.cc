@@ -73,9 +73,9 @@ bool SVGObjectPainter::PreparePaint(
   const bool apply_to_fill = resource_mode == kApplyToFillMode;
   const SVGComputedStyle& svg_style = style.SvgStyle();
   const SVGPaint& paint =
-      apply_to_fill ? svg_style.FillPaint() : svg_style.StrokePaint();
+      apply_to_fill ? svg_style.FillPaint() : style.StrokePaint();
   const float alpha =
-      apply_to_fill ? svg_style.FillOpacity() : svg_style.StrokeOpacity();
+      apply_to_fill ? svg_style.FillOpacity() : style.StrokeOpacity();
   if (paint.HasUrl()) {
     if (ApplyPaintResource(paint, additional_paint_server_transform, flags)) {
       flags.setColor(ScaleAlpha(SK_ColorBLACK, alpha));

@@ -249,13 +249,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.StopColor() == b.StopColor();
     case CSSPropertyID::kStopOpacity:
       return a.StopOpacity() == b.StopOpacity();
-    case CSSPropertyID::kStroke: {
-      const SVGComputedStyle& a_svg = a.SvgStyle();
-      const SVGComputedStyle& b_svg = b.SvgStyle();
-      return a_svg.StrokePaint().EqualTypeOrColor(b_svg.StrokePaint()) &&
-             a_svg.InternalVisitedStrokePaint().EqualTypeOrColor(
-                 b_svg.InternalVisitedStrokePaint());
-    }
+    case CSSPropertyID::kStroke:
+      return a.StrokePaint().EqualTypeOrColor(b.StrokePaint()) &&
+             a.InternalVisitedStrokePaint().EqualTypeOrColor(
+                 b.InternalVisitedStrokePaint());
     case CSSPropertyID::kStrokeDasharray:
       return a.StrokeDashArray() == b.StrokeDashArray();
     case CSSPropertyID::kStrokeDashoffset:

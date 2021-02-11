@@ -64,7 +64,6 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
       SVGDrawingRecorder recorder(paint_info.context, layout_svg_shape_,
                                   paint_info.phase);
       const ComputedStyle& style = layout_svg_shape_.StyleRef();
-      const SVGComputedStyle& svg_style = style.SvgStyle();
 
       bool should_anti_alias = style.ShapeRendering() != SR_CRISPEDGES &&
                                style.ShapeRendering() != SR_OPTIMIZESPEED;
@@ -83,7 +82,7 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
             break;
           }
           case PT_STROKE:
-            if (svg_style.HasVisibleStroke()) {
+            if (style.HasVisibleStroke()) {
               GraphicsContextStateSaver state_saver(paint_info.context, false);
               base::Optional<AffineTransform> non_scaling_transform;
 
@@ -169,7 +168,7 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
 
 void SVGShapePainter::StrokeShape(GraphicsContext& context,
                                   const PaintFlags& flags) {
-  DCHECK(layout_svg_shape_.StyleRef().SvgStyle().HasVisibleStroke());
+  DCHECK(layout_svg_shape_.StyleRef().HasVisibleStroke());
 
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:

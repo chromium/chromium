@@ -32,7 +32,7 @@ bool GetColor(const CSSProperty& property,
     case CSSPropertyID::kFill:
       return GetColorFromPaint(style.SvgStyle().FillPaint(), result);
     case CSSPropertyID::kStroke:
-      return GetColorFromPaint(style.SvgStyle().StrokePaint(), result);
+      return GetColorFromPaint(style.StrokePaint(), result);
     default:
       NOTREACHED();
       return false;

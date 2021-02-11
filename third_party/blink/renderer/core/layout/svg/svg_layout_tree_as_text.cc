@@ -280,23 +280,22 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   WriteIfNotDefault(ts, "opacity", style.Opacity(),
                     ComputedStyleInitialValues::InitialOpacity());
   if (object.IsSVGShape()) {
-    if (WriteSVGPaint(ts, object, svg_style.StrokePaint(),
-                      GetCSSPropertyStroke(), "stroke")) {
+    if (WriteSVGPaint(ts, object, style.StrokePaint(), GetCSSPropertyStroke(),
+                      "stroke")) {
       const LayoutSVGShape& shape = static_cast<const LayoutSVGShape&>(object);
       DCHECK(shape.GetElement());
       SVGLengthContext length_context(shape.GetElement());
       double dash_offset =
-          length_context.ValueForLength(svg_style.StrokeDashOffset(), style);
-      double stroke_width =
-          length_context.ValueForLength(svg_style.StrokeWidth());
+          length_context.ValueForLength(style.StrokeDashOffset(), style);
+      double stroke_width = length_context.ValueForLength(style.StrokeWidth());
       DashArray dash_array = SVGLayoutSupport::ResolveSVGDashArray(
-          *svg_style.StrokeDashArray(), style, length_context);
+          *style.StrokeDashArray(), style, length_context);
 
-      WriteIfNotDefault(ts, "opacity", svg_style.StrokeOpacity(), 1.0f);
+      WriteIfNotDefault(ts, "opacity", style.StrokeOpacity(), 1.0f);
       WriteIfNotDefault(ts, "stroke width", stroke_width, 1.0);
-      WriteIfNotDefault(ts, "miter limit", svg_style.StrokeMiterLimit(), 4.0f);
-      WriteIfNotDefault(ts, "line cap", svg_style.CapStyle(), kButtCap);
-      WriteIfNotDefault(ts, "line join", svg_style.JoinStyle(), kMiterJoin);
+      WriteIfNotDefault(ts, "miter limit", style.StrokeMiterLimit(), 4.0f);
+      WriteIfNotDefault(ts, "line cap", style.CapStyle(), kButtCap);
+      WriteIfNotDefault(ts, "line join", style.JoinStyle(), kMiterJoin);
       WriteIfNotDefault(ts, "dash offset", dash_offset, 0.0);
       if (!dash_array.IsEmpty())
         WriteNameValuePair(ts, "dash array", dash_array);

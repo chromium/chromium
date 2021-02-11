@@ -113,7 +113,7 @@ void SVGResources::UpdatePaints(SVGElement& element,
   const SVGComputedStyle& svg_style = style.SvgStyle();
   if (StyleSVGResource* paint_resource = svg_style.FillPaint().Resource())
     paint_resource->AddClient(element.EnsureSVGResourceClient());
-  if (StyleSVGResource* paint_resource = svg_style.StrokePaint().Resource())
+  if (StyleSVGResource* paint_resource = style.StrokePaint().Resource())
     paint_resource->AddClient(element.EnsureSVGResourceClient());
   if (had_client)
     ClearPaints(element, old_style);
@@ -129,7 +129,7 @@ void SVGResources::ClearPaints(SVGElement& element,
   const SVGComputedStyle& old_svg_style = style->SvgStyle();
   if (StyleSVGResource* paint_resource = old_svg_style.FillPaint().Resource())
     paint_resource->RemoveClient(*client);
-  if (StyleSVGResource* paint_resource = old_svg_style.StrokePaint().Resource())
+  if (StyleSVGResource* paint_resource = style->StrokePaint().Resource())
     paint_resource->RemoveClient(*client);
 }
 
@@ -243,7 +243,7 @@ void SVGElementResourceClient::ResourceContentChanged(SVGResource* resource) {
 
   const SVGComputedStyle& svg_style = style.SvgStyle();
   if (ContainsResource(svg_style.FillPaint().Resource(), resource) ||
-      ContainsResource(svg_style.StrokePaint().Resource(), resource)) {
+      ContainsResource(style.StrokePaint().Resource(), resource)) {
     // Since LayoutSVGInlineTexts don't have SVGResources (they use their
     // parent's), they will not be notified of changes to paint servers. So
     // if the client is one that could have a LayoutSVGInlineText use a
@@ -396,14 +396,15 @@ void SVGResourceInvalidator::InvalidatePaints() {
   if (!client)
     return;
   bool needs_invalidation = false;
-  const SVGComputedStyle& svg_style = object_.StyleRef().SvgStyle();
+  const ComputedStyle& style = object_.StyleRef();
+  const SVGComputedStyle& svg_style = style.SvgStyle();
   if (auto* fill = GetSVGResourceAsType<LayoutSVGResourcePaintServer>(
           *client, svg_style.FillPaint().Resource())) {
     fill->RemoveClientFromCache(*client);
     needs_invalidation = true;
   }
   if (auto* stroke = GetSVGResourceAsType<LayoutSVGResourcePaintServer>(
-          *client, svg_style.StrokePaint().Resource())) {
+          *client, style.StrokePaint().Resource())) {
     stroke->RemoveClientFromCache(*client);
     needs_invalidation = true;
   }
