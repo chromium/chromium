@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.SmallTest;
 
@@ -72,8 +71,8 @@ public class TutorialListCoordinatorTest {
                     org.chromium.chrome.browser.video_tutorials.R.drawable.btn_close);
             TestImageFetcher imageFetcher = new TestImageFetcher(testImage);
             mCoordinator = new TutorialListCoordinatorImpl(
-                    (RecyclerView) mContentView.findViewById(R.id.recycler_view),
-                    mTestVideoTutorialService, imageFetcher, mClickCallback);
+                    mContentView.findViewById(R.id.video_tutorial_list), mTestVideoTutorialService,
+                    imageFetcher, mClickCallback);
         });
     }
 

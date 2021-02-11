@@ -164,6 +164,9 @@ public class PlaybackStateObserver extends MediaSessionObserver {
         long updatedPosition = (long) (mediaPosition.getPosition()
                 + (elapsedTime * mediaPosition.getPlaybackRate()));
         updatedPosition = Math.min(updatedPosition, mediaPosition.getDuration());
+        if (mediaPosition.getDuration() - updatedPosition < 100) {
+            updatedPosition = mediaPosition.getDuration();
+        }
         return updatedPosition;
     }
 

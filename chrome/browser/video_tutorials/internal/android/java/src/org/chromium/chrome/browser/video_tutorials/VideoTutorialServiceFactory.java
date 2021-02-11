@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.video_tutorials;
 
 import android.content.Context;
 import android.util.Pair;
+import android.view.ViewGroup;
 import android.view.ViewStub;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
@@ -61,11 +60,11 @@ public class VideoTutorialServiceFactory {
     }
 
     /** See {@link TutorialListCoordinator}.*/
-    public static TutorialListCoordinator createTutorialListCoordinator(RecyclerView recyclerView,
+    public static TutorialListCoordinator createTutorialListCoordinator(ViewGroup mainView,
             VideoTutorialService videoTutorialService, ImageFetcher imageFetcher,
             Callback<Tutorial> clickCallback) {
         return new TutorialListCoordinatorImpl(
-                recyclerView, videoTutorialService, imageFetcher, clickCallback);
+                mainView, videoTutorialService, imageFetcher, clickCallback);
     }
 
     /** @return The tracker to track Try Now button clicks. */

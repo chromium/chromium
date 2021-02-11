@@ -40,6 +40,7 @@
         android:layout_height="60dp"
         android:src="@drawable/ic_play_arrow_white_36dp"
         android:tint="@color/modern_grey_800"
+        android:contentDescription="@string/accessibility_play_video"
         app:layout_column="0"
         app:layout_row="0"
         app:layout_gravity="center"
@@ -59,6 +60,7 @@
         app:layout_column="0"
         app:layout_row="0"
         app:layout_gravity="bottom"
+        android:importantForAccessibility="no"
         android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
 
     <TextView

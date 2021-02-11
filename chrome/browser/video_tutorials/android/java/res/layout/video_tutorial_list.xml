@@ -8,11 +8,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/video_tutorial_list"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="20dp" >
+    android:paddingTop="6dp" >
 
     <LinearLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
@@ -41,11 +42,19 @@
             app:tint="@color/default_icon_color_tint_list" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp" />
+        android:layout_marginTop="4dp" >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <org.chromium.components.browser_ui.widget.FadingShadowView
+            android:id="@+id/toolbar_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/action_bar_shadow_height"/>
+    </FrameLayout>
 </LinearLayout>

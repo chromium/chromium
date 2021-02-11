@@ -101,6 +101,7 @@ if (is_android) {
       "//services/media_session/public/cpp/android:media_session_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
       "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/android_deps:androidx_core_core_java",
       "//third_party/android_deps:androidx_recyclerview_recyclerview_java",
       "//third_party/gif_player:gif_player_java",
       "//ui/android:ui_java",
