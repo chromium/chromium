@@ -979,8 +979,8 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (void)waitForIncognitoTabCount:(NSUInteger)count
               inWindowWithNumber:(int)windowNumber {
-  __block NSUInteger actualCount =
-      [ChromeEarlGreyAppInterface mainTabCountInWindowWithNumber:windowNumber];
+  __block NSUInteger actualCount = [ChromeEarlGreyAppInterface
+      incognitoTabCountInWindowWithNumber:windowNumber];
   NSString* conditionName =
       [NSString stringWithFormat:
                     @"Failed waiting for incognito tab count to become %" PRIuNS
