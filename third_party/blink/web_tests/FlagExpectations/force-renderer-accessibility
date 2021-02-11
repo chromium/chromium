@@ -217,8 +217,8 @@ wpt_internal/webcodecs/avc_encoder_config.any.worker.html [ Crash ]
 # Below tests have all been seen as Timeout, starting with Slow to see how many actual timeouts
 # vs. running slower with accessibility turned on.
 compositing/overflow/universal-accelerated-overflow-scroll.html [ Slow ]
-inspector-protocol/accessibility/accessibility-nameSources-input.js [ Slow ]
-inspector-protocol/accessibility/accessibility-nameSources-labelledby.js [ Slow ]
+http/tests/inspector-protocol/accessibility/accessibility-nameSources-input.js [ Slow ]
+http/tests/inspector-protocol/accessibility/accessibility-nameSources-labelledby.js [ Slow ]
 inspector-protocol/runtime/runtime-console-basic-functions-paused.js [ Slow ]
 inspector-protocol/runtime/runtime-console-basic-functions.js [ Timeout ]
 external/wpt/selection/addRange-* [ Slow Timeout Pass ]

@@ -376,7 +376,7 @@ crbug.com/874695 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker
 crbug.com/874695 http/tests/xmlhttprequest/web-apps/013.html [ Slow ]
 crbug.com/874695 images/image-page-injected-script-crash.html [ Slow ]
 crbug.com/874695 images/yuv-decode-eligible/color-profile-layer-filter.html [ Slow ]
-crbug.com/874695 inspector-protocol/accessibility/accessibility-nameSources-input-buttons.js [ Slow ]
+crbug.com/874695 http/tests/inspector-protocol/accessibility/accessibility-nameSources-input-buttons.js [ Slow ]
 crbug.com/874695 inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Slow ]
 crbug.com/874695 media/audio-controls-do-not-fade-out.html [ Slow ]
 crbug.com/874695 media/autoplay-muted.html [ Slow ]
