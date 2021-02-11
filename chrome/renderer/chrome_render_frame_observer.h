@@ -23,6 +23,10 @@ namespace gfx {
 class Size;
 }
 
+namespace optimization_guide {
+class PageTextAgent;
+}
+
 namespace safe_browsing {
 class PhishingClassifierDelegate;
 }
@@ -126,6 +130,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
 
   // Have the same lifetime as us.
   translate::TranslateAgent* translate_agent_;
+  optimization_guide::PageTextAgent* page_text_agent_;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
 #endif

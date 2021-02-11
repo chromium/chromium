@@ -7,13 +7,18 @@
 #include <tuple>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
+#include "components/optimization_guide/content/renderer/page_text_agent.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/content/renderer/translate_agent.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -22,7 +27,10 @@
 #include "content/public/renderer/render_view.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -58,6 +66,35 @@ class FakeContentTranslateDriver
 
  private:
   mojo::ReceiverSet<translate::mojom::ContentTranslateDriver> receivers_;
+};
+
+class TestOptGuideConsumer
+    : public optimization_guide::mojom::PageTextConsumer {
+ public:
+  TestOptGuideConsumer() = default;
+  ~TestOptGuideConsumer() override = default;
+
+  base::string16 text() const { return base::StrCat(chunks_); }
+  bool on_chunks_end_called() const { return on_chunks_end_called_; }
+  size_t num_chunks() const { return chunks_.size(); }
+
+  void Bind(mojo::PendingReceiver<optimization_guide::mojom::PageTextConsumer>
+                pending_receiver) {
+    receiver_.Bind(std::move(pending_receiver));
+  }
+
+  // optimization_guide::mojom::PageTextConsumer:
+  void OnTextDumpChunk(const base::string16& chunk) override {
+    ASSERT_FALSE(on_chunks_end_called_);
+    chunks_.push_back(chunk);
+  }
+
+  void OnChunksEnd() override { on_chunks_end_called_ = true; }
+
+ private:
+  mojo::Receiver<optimization_guide::mojom::PageTextConsumer> receiver_{this};
+  std::vector<base::string16> chunks_;
+  bool on_chunks_end_called_ = false;
 };
 
 }  // namespace
@@ -183,7 +220,46 @@ TEST_F(ChromeRenderFrameObserverTest,
   EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
 }
 
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+TEST_F(ChromeRenderFrameObserverTest, OptGuideGetsText) {
+  optimization_guide::PageTextAgent* agent =
+      optimization_guide::PageTextAgent::Get(render_frame());
+  ASSERT_TRUE(agent);
+  render_frame()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      optimization_guide::mojom::PageTextService::Name_,
+      base::BindRepeating(
+          [&](optimization_guide::PageTextAgent* agent,
+              mojo::ScopedInterfaceEndpointHandle handle) {
+            agent->Bind(mojo::PendingAssociatedReceiver<
+                        optimization_guide::mojom::PageTextService>(
+                std::move(handle)));
+          },
+          agent));
+
+  mojo::PendingRemote<optimization_guide::mojom::PageTextConsumer>
+      consumer_remote;
+  TestOptGuideConsumer consumer;
+  consumer.Bind(consumer_remote.InitWithNewPipeAndPassReceiver());
+
+  auto request = optimization_guide::mojom::PageTextDumpRequest::New();
+  request->max_size = 123;
+  request->event = optimization_guide::mojom::TextDumpEvent::kFirstLayout;
+
+  mojo::AssociatedRemote<optimization_guide::mojom::PageTextService>
+      text_service;
+  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&text_service);
+  text_service->RequestPageTextDump(std::move(request),
+                                    std::move(consumer_remote));
+  base::RunLoop().RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  LoadHTML("<html><body>foo</body></html>");
+  histogram_tester.ExpectTotalCount(kTranslateCaptureText, 2);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(base::ASCIIToUTF16("foo"), consumer.text());
+  EXPECT_TRUE(consumer.on_chunks_end_called());
+}
 
 class ChromeRenderFrameObserverNoTranslateNorPhishingTest
     : public ChromeRenderFrameObserverTest {
@@ -209,6 +285,49 @@ TEST_F(ChromeRenderFrameObserverNoTranslateNorPhishingTest,
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
   EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
 }
+
+TEST_F(ChromeRenderFrameObserverNoTranslateNorPhishingTest, OptGuideGetsText) {
+  optimization_guide::PageTextAgent* agent =
+      optimization_guide::PageTextAgent::Get(render_frame());
+  ASSERT_TRUE(agent);
+  render_frame()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      optimization_guide::mojom::PageTextService::Name_,
+      base::BindRepeating(
+          [&](optimization_guide::PageTextAgent* agent,
+              mojo::ScopedInterfaceEndpointHandle handle) {
+            agent->Bind(mojo::PendingAssociatedReceiver<
+                        optimization_guide::mojom::PageTextService>(
+                std::move(handle)));
+          },
+          agent));
+
+  mojo::PendingRemote<optimization_guide::mojom::PageTextConsumer>
+      consumer_remote;
+  TestOptGuideConsumer consumer;
+  consumer.Bind(consumer_remote.InitWithNewPipeAndPassReceiver());
+
+  auto request = optimization_guide::mojom::PageTextDumpRequest::New();
+  request->max_size = 123;
+  request->event = optimization_guide::mojom::TextDumpEvent::kFirstLayout;
+
+  mojo::AssociatedRemote<optimization_guide::mojom::PageTextService>
+      text_service;
+  render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&text_service);
+  text_service->RequestPageTextDump(std::move(request),
+                                    std::move(consumer_remote));
+  base::RunLoop().RunUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  LoadHTML("<html><body>foo</body></html>");
+  histogram_tester.ExpectTotalCount(kTranslateCaptureText, 1);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(base::ASCIIToUTF16("foo"), consumer.text());
+  EXPECT_TRUE(consumer.on_chunks_end_called());
+}
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 class ChromeRenderFrameObserverNoTranslateYesPhishingTest
     : public ChromeRenderFrameObserverTest {

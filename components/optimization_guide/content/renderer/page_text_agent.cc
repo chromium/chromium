@@ -29,7 +29,8 @@ base::Optional<mojom::TextDumpEvent> LayoutEventAsMojoEvent(
 
 }  // namespace
 
-PageTextAgent::PageTextAgent(content::RenderFrame* frame) {
+PageTextAgent::PageTextAgent(content::RenderFrame* frame)
+    : content::RenderFrameObserverTracker<PageTextAgent>(frame) {
   if (!frame) {
     // For unittesting.
     return;

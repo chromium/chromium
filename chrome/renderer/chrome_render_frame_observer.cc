@@ -27,6 +27,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/optimization_guide/content/renderer/page_text_agent.h"
 #include "components/translate/content/renderer/translate_agent.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/web_cache/renderer/web_cache_impl.h"
@@ -124,6 +125,7 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
     web_cache::WebCacheImpl* web_cache_impl)
     : content::RenderFrameObserver(render_frame),
       translate_agent_(nullptr),
+      page_text_agent_(new optimization_guide::PageTextAgent(render_frame)),
       web_cache_impl_(web_cache_impl) {
   render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
       base::BindRepeating(
@@ -477,9 +479,19 @@ bool ChromeRenderFrameObserver::ShouldCapturePageTextForTranslateOrPhishing(
 
 void ChromeRenderFrameObserver::CapturePageText(
     blink::WebMeaningfulLayout layout_type) {
-  if (!ShouldCapturePageTextForTranslateOrPhishing(layout_type)) {
+  bool capture_for_translate_phishing =
+      ShouldCapturePageTextForTranslateOrPhishing(layout_type);
+
+  uint64_t capture_max_size =
+      capture_for_translate_phishing ? kMaxIndexChars : 0;
+  auto text_callback = page_text_agent_->MaybeRequestTextDumpOnLayoutEvent(
+      layout_type, &capture_max_size);
+  bool capture_for_opt_guide = !!text_callback;
+
+  if (!capture_for_translate_phishing && !capture_for_opt_guide) {
     return;
   }
+  DCHECK_GT(capture_max_size, 0U);
 
   base::string16 contents;
   {
@@ -487,7 +499,9 @@ void ChromeRenderFrameObserver::CapturePageText(
     TRACE_EVENT0("renderer", "ChromeRenderFrameObserver::CapturePageText");
 
     contents = WebFrameContentDumper::DumpFrameTreeAsText(
-                   render_frame()->GetWebFrame(), kMaxIndexChars)
+                   render_frame()->GetWebFrame(),
+                   // TODO(crbug/1163244): Move everything to be uint32.
+                   static_cast<size_t>(capture_max_size))
                    .Utf16();
   }
 
@@ -496,6 +510,10 @@ void ChromeRenderFrameObserver::CapturePageText(
   if (translate_agent_ &&
       layout_type == blink::WebMeaningfulLayout::kFinishedParsing) {
     translate_agent_->PageCaptured(contents);
+  }
+
+  if (text_callback) {
+    std::move(text_callback).Run(contents);
   }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

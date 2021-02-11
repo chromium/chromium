@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
+#include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
@@ -28,7 +29,9 @@ namespace optimization_guide {
 // mojom::PageTextService. It currently supports requesting and getting text
 // dumps during |content::RenderFrameObserver::DidMeaningfulLayout|, but more
 // events will be added in the future.
-class PageTextAgent : public mojom::PageTextService {
+class PageTextAgent
+    : public mojom::PageTextService,
+      public content::RenderFrameObserverTracker<PageTextAgent> {
  public:
   explicit PageTextAgent(content::RenderFrame* frame);
   ~PageTextAgent() override;
@@ -41,6 +44,9 @@ class PageTextAgent : public mojom::PageTextService {
   MaybeRequestTextDumpOnLayoutEvent(blink::WebMeaningfulLayout event,
                                     uint64_t* max_size);
 
+  // Bind to mojo pipes. Public for testing.
+  void Bind(mojo::PendingAssociatedReceiver<mojom::PageTextService> receiver);
+
   // mojom::PageTextService:
   void RequestPageTextDump(
       mojom::PageTextDumpRequestPtr request,
@@ -50,9 +56,6 @@ class PageTextAgent : public mojom::PageTextService {
   PageTextAgent& operator=(const PageTextAgent&) = delete;
 
  private:
-  // Bind to mojo pipes.
-  void Bind(mojo::PendingAssociatedReceiver<mojom::PageTextService> receiver);
-
   // Called when the text dump is done and it can be sent to |consumer|.
   void OnPageTextDump(mojo::PendingRemote<mojom::PageTextConsumer> consumer,
                       const base::string16& content);
