@@ -109,11 +109,7 @@ public class SingleActionMessage implements MessageStateHandler {
             mContainer.removeMessage(mView);
             if (hiddenCallback != null) hiddenCallback.run();
         };
-        if (animate) {
-            mMessageBanner.hide(hiddenRunnable);
-        } else {
-            hiddenRunnable.run();
-        }
+        mMessageBanner.hide(animate, hiddenRunnable);
     }
 
     /**

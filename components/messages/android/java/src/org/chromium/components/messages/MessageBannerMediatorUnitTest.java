@@ -110,11 +110,24 @@ public class MessageBannerMediatorUnitTest {
 
         assertModelState(0, 0, 1, "fully shown.");
 
-        mMediator.hide(mHiddenRunnable);
+        mMediator.hide(true, mHiddenRunnable);
         verify(mHiddenRunnable, times(0)).run();
 
         shadowOf(getMainLooper()).idle();
 
+        assertModelState(0, -100, 0, "after hidden.");
+        verify(mHiddenRunnable, times(1)).run();
+    }
+
+    @Test
+    public void testHideMessageNoAnimation() {
+        mMediator.show(mShownRunnable);
+
+        shadowOf(getMainLooper()).idle();
+
+        assertModelState(0, 0, 1, "fully shown.");
+
+        mMediator.hide(false, mHiddenRunnable);
         assertModelState(0, -100, 0, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();
     }

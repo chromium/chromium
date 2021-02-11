@@ -116,15 +116,23 @@ class MessageBannerMediator implements SwipeHandler {
 
     /**
      * Hides the message banner with an animation.
+     * @param animate Whether to hide with an animation.
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      */
-    void hide(Runnable messageHidden) {
+    void hide(boolean animate, Runnable messageHidden) {
+        cancelAnyAnimations();
+
+        if (!animate) {
+            mModel.set(ALPHA, 0.f);
+            mModel.set(TRANSLATION_Y, -mMaxTranslationYSupplier.get());
+            mCurrentState = State.HIDDEN;
+        }
+
         if (mCurrentState == State.HIDDEN) {
             messageHidden.run();
             return;
         }
 
-        cancelAnyAnimations();
         startAnimation(true, -mMaxTranslationYSupplier.get(), false, messageHidden);
     }
 

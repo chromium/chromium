@@ -64,10 +64,11 @@ class MessageBannerCoordinator {
 
     /**
      * Hides the message banner.
+     * @param animate Whether to hide with an animation.
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      */
-    void hide(Runnable messageHidden) {
-        mMediator.hide(messageHidden);
+    void hide(boolean animate, Runnable messageHidden) {
+        mMediator.hide(animate, messageHidden);
     }
 
     void setOnTouchRunnable(Runnable runnable) {
