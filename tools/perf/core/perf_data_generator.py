@@ -205,7 +205,9 @@ FYI_BUILDERS = {
             'extra_args': [
                 'hardware_accelerated_feature', '--show-stdout',
                 '--browser=web-engine-shell', '--passthrough', '-v',
-                '--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc'
+                '--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc',
+                '--device=custom',
+                '--custom-device-target=internal.astro_target'
             ],
             'type':
             TEST_TYPES.GENERIC,
