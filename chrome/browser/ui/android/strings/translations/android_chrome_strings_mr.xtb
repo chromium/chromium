@@ -565,7 +565,6 @@
 <translation id="5004416275253351869">Google ॲक्टिव्हिटी नियंत्रणे</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करू इच्छिते</translation>
-<translation id="5013696553129441713">कोणत्याही नवीन सूचना नाहीत</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5040262127954254034">गोपनीयता</translation>
@@ -591,6 +590,7 @@
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> ला जवळपासची ब्लूटूथ डिव्हाइस स्कॅन करायची आहेत. खालील डिव्हाइस आढळली:</translation>
 <translation id="5233638681132016545">नवीन टॅब</translation>
+<translation id="5250483651202458397">स्क्रीनशॉट. बंद करण्यासाठी टॅप करा.</translation>
 <translation id="526421993248218238">हे पेज लोड करू शकत नाही</translation>
 <translation id="5271967389191913893">डाउनलोड केली जाण्यासाठी डिव्हाइस आशय उघडू शकत नाही.</translation>
 <translation id="5292796745632149097">यांना पाठवा</translation>
@@ -835,6 +835,7 @@
 <translation id="6767294960381293877">अर्ध्या उंचीवर उघडलेल्या टॅबसह शेअर करण्यासाठी डिव्हाइसची सूची.</translation>
 <translation id="6783942555455976443">हे पेज नंतर वाचण्यासाठी सेव्ह करा आणि रिमाइंडर मिळवा</translation>
 <translation id="6811034713472274749">पेज पाहाण्यासाठी तयार आहे</translation>
+<translation id="6813446258015311409">Chrome मध्ये साइन इन करा, उघडले.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> हा टॅब निवडला</translation>
 <translation id="6833996806551876956">गोपनीयता सॅंडबॉक्स याची चाचणी</translation>
@@ -935,7 +936,6 @@
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="751961395872307827">साइटशी कनेक्ट करु शकत नाही</translation>
 <translation id="753225086557513863">नंतर सुरू करण्यासाठी शेड्युल केलेले</translation>
-<translation id="7542481630195938534">सूचना मिळवू शकत नाही</translation>
 <translation id="7559975015014302720">लाइट मोड बंद आहे</translation>
 <translation id="7562080006725997899">ब्राउझिंग डेटा साफ करत आहे</translation>
 <translation id="756809126120519699">Chrome डेटा साफ केला</translation>
@@ -1095,6 +1095,7 @@
 <translation id="8583805026567836021">खाते डेटा साफ करत आहे</translation>
 <translation id="8587585930972369234">शोधण्यासाठी स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="860043288473659153">कार्डधारकाचे नाव</translation>
+<translation id="8602358303461588329">Chrome मध्ये साइन इन करा, बंद केले.</translation>
 <translation id="860282621117673749">किमतीमध्ये घट झाल्याच्या सूचना</translation>
 <translation id="8616006591992756292">तुमच्या Google खात्यात <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची अन्य स्वरूपे असू शकतात.</translation>
 <translation id="8617240290563765734">डाउनलोड केलेल्या आशयमध्ये नमूद केलेली सुचविलेली URL उघडायची?</translation>

@@ -350,7 +350,6 @@
 
       注意：請以半形逗號分隔伺服器名稱，可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。</translation>
 <translation id="1502843533062797703">啟用禁止第三方軟體置入可執行程式碼的政策</translation>
-<translation id="1506017854924185821">是否要在瀏覽器啟動時顯示設定檔選擇畫面</translation>
 <translation id="1509377996969000672">你可以透過這項政策設定已連接到裝置的企業印表機。其格式與 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 條目相符，且針對每台印表機另外設有「id」或「guid」必填欄位，用於指明要加入許可清單或拒絕清單。相關檔案大小不得超過 5 MB，且必須採用 JSON 格式。一個 5 MB 的編碼檔案可包含約 21,000 台印表機的資料。加密編譯雜湊的作用是驗證下載內容的完整性。系統會下載及快取這個檔案，而且只要網址或雜湊一有變動，就會重新下載檔案。<ph name="PRODUCT_OS_NAME" />會下載這個檔案來設定印表機，並依據 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 開放使用印表機。
 
       這項政策：

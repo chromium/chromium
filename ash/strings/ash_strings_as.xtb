@@ -21,7 +21,7 @@
 <translation id="1119348796022671382">থীমযুক্ত ৰঙৰ ম'ডটোৱে ইণ্টাৰফে’চটো পাতলকৈ ৰঙীন কৰিবলৈ আপোনাৰ ৱালপেপাৰৰ পৰা আহৰণ কৰা ৰংবোৰ ব্যৱহাৰ কৰে।</translation>
 <translation id="112308213915226829">শ্বেল্ফ স্বয়ংক্রিয়ভাৱে লুকুৱাওক</translation>
 <translation id="1153356358378277386">যোৰা লগোৱা ডিভাইচ</translation>
-<translation id="1165712434476988950">আপডে'টটো প্ৰয়োগ কৰিবলৈ ডিভাইচটো ৰিষ্টাৰ্ট কৰাৰ আৱশ্যক।</translation>
+<translation id="1165712434476988950">আপডে’টটো প্ৰয়োগ কৰিবলৈ ডিভাইচটো ৰিষ্টাৰ্ট কৰাৰ আৱশ্যক।</translation>
 <translation id="1175572348579024023">স্ক্ৰ’ল কৰক</translation>
 <translation id="1178581264944972037">পজ কৰক</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
@@ -577,7 +577,7 @@
 <translation id="5992218262414051481">উচ্চ বৈষাদৃশ্যৰ ম’ড সক্ষম কৰা হ’ল। ইয়াক ট’গল অফ কৰিবলৈ আকৌ Ctrl+Search+H টিপক।</translation>
 <translation id="6018164090099858612">প্ৰতিবিম্বকৰণ ম’ড বন্ধ কৰি আছে</translation>
 <translation id="602001110135236999">বাওঁফাললৈ স্ক্ৰ’ল কৰক</translation>
-<translation id="602472752137106327">আটাইবোৰ ডেস্ক ম'ডটোৰ পৰা ৱিণ্ড' দেখুৱাওক, ৰেডিঅ'ৰ বুটাম বাছনি কৰা হ'ল</translation>
+<translation id="602472752137106327">আটাইবোৰ ডেস্ক ম'ডটোৰ পৰা ৱিণ্ড' দেখুৱাওক, ৰেডিঅ’ বুটাম বাছনি কৰা হ'ল</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="6030495522958826102">স্ক্ৰীনখনৰ তলৰ বাওঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
 <translation id="6032620807120418574">পূৰ্ণ স্ক্ৰীন ৰেকৰ্ড কৰিবলৈ যিকোনো ঠাইত ক্লিক কৰক</translation>
@@ -694,6 +694,7 @@
 <translation id="7029814467594812963">ছেশ্বনৰ পৰা প্ৰস্থান</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">বিভিন্ন স্থিতি দেখুওৱা ঠাই সংকোচন কৰক</translation>
+<translation id="7055910611768509537">এসপ্তাহ ধৰি ষ্টাইলাছ ব্যৱহাৰ কৰা হোৱা নাই</translation>
 <translation id="7066646422045619941">এই নেটৱৰ্কটো আপোনাৰ প্ৰশাসকে অক্ষম কৰি থৈছে।</translation>
 <translation id="7067196344162293536">স্বয়ং-ঘূৰ্ণন</translation>
 <translation id="7068360136237591149">ফাইলসমূহ খোলক</translation>
@@ -863,7 +864,7 @@
 <translation id="8477270416194247200">বাতিল কৰিবলৈ Alt+Search বা Shift টিপক।</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> সমৰ্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" />লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
 <translation id="8513108775083588393">স্বয়ং-ঘূৰ্ণন</translation>
-<translation id="851458219935658693">বৰ্তমানৰ ডেস্ক ম'ডটোৰ পৰা ৱিণ্ড' দেখুৱাওক, ৰেডিঅ'ৰ বুটাম বাছনি কৰা হ'ল</translation>
+<translation id="851458219935658693">বৰ্তমানৰ ডেস্ক ম'ডটোৰ পৰা ৱিণ্ড' দেখুৱাওক, ৰেডিঅ’ বুটাম বাছনি কৰা হ'ল</translation>
 <translation id="8517041960877371778">আপোনাৰ <ph name="DEVICE_TYPE" /> অন কৰি থোৱা অৱস্থাত চার্জ নহ'ব পাৰে।</translation>
 <translation id="8553395910833293175">ইতিমধ্যে আটাইবোৰ ডেস্কক দায়িত্ব প্ৰদান কৰা হৈছে।</translation>
 <translation id="8563862697512465947">জাননীৰ ছেটিংসমূহ</translation>
@@ -943,7 +944,7 @@
 <translation id="9089416786594320554">ইনপুট পদ্ধতি</translation>
 <translation id="9091626656156419976">ডিছপ্লে' <ph name="DISPLAY_NAME" /> আঁতৰোৱা হ'ল</translation>
 <translation id="9098969848082897657">ফ’নটো নীৰৱ কৰক</translation>
-<translation id="9099154003160514616">Lacrosৰ আপডে'ট উপলব্ধ</translation>
+<translation id="9099154003160514616">Lacrosৰ আপডে’ট উপলব্ধ</translation>
 <translation id="9133335900048457298">সুৰক্ষিত সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="9151726767154816831">আপডে’ট কৰিবলৈ ৰিষ্টাৰ্ট আৰু পাৱাৰৱাশ্ব কৰক</translation>
 <translation id="9166331175924255663">নিকটৱৰ্তী শ্বেয়াৰৰ উচ্চ দৃশ্যমানতা ট’গল কৰক।</translation>

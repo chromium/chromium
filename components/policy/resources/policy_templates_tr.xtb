@@ -351,7 +351,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Not: Birden fazla sunucu adını virgülle ayırın. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.</translation>
 <translation id="1502843533062797703">Üçüncü taraf yazılımı yerleştirme engellemesini etkinleştirin</translation>
-<translation id="1506017854924185821">Başlangıçta profil seçiciyi etkinleştir</translation>
 <translation id="1509377996969000672">Politika ayarlanırsa cihazlara bağlı kurumsal yazıcılar için yapılandırmalar sağlanır. Biçimi, <ph name="NATIVE_PRINTERS_POLICY_NAME" /> sözlüğü ile aynı olmakla birlikte izin verilenler veya engellenenler listelerine eklenecek her yazıcı için gerekli ek "id" veya "guid" alanlarını içerir. Dosya biçimi JSON olup boyutu 5 MB'tan büyük olamaz. Yaklaşık 21.000 yazıcı içeren bir dosya, 5 MB boyutunda olur. Şifreleme karma değeri, indirmenin bütünlüğünü doğrulamaya yardımcı olur. URL veya karma değer değiştiğinde dosya indirilir, önbelleğe alınır ve yeniden indirilir. <ph name="PRODUCT_OS_NAME" />, yazıcı yapılandırmalarına ait dosyayı indirerek <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> ve <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> ile birlikte yazıcıları kullanılabilir hale getirir.
 
       Bu politika:

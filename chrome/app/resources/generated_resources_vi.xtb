@@ -1625,6 +1625,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2804043232879091219">Không thể mở trình duyệt thay thế</translation>
 <translation id="2804667941345577550">Bạn sẽ bị đăng xuất khỏi trang web này, bao gồm cả các thẻ đang mở</translation>
 <translation id="2804680522274557040">Đã tắt máy ảnh</translation>
+<translation id="2805539617243680210">Bạn đã hoàn tất!</translation>
 <translation id="2805646850212350655">Hệ thống Tệp Mã hóa của Microsoft</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2805760958323556153">Giá trị ExtensionInstallForcelist của chính sách là không hợp lệ. Vui lòng liên hệ với quản trị viên của bạn.</translation>
@@ -3120,6 +3121,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4538417792467843292">Xóa từ</translation>
 <translation id="4538684596480161368">Luôn chặn các plugin không có hộp cát trên <ph name="HOST" /></translation>
 <translation id="4538792345715658285">Được cài đặt theo chính sách doanh nghiệp.</translation>
+<translation id="4541123282641193691">Không thể xác minh tài khoản của bạn. Vui lòng thử lại hoặc khởi động lại Chromebook.</translation>
 <translation id="4541662893742891060">Không thể kết nối với hồ sơ này. Nếu cần hỗ trợ kỹ thuật, hãy liên hệ với nhà mạng của bạn.</translation>
 <translation id="4542520061254486227">Đọc dữ liệu của bạn trên <ph name="WEBSITE_1" /> và <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Trình quản lý chứng chỉ</translation>
@@ -4138,6 +4140,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="574209121243317957">Cao độ</translation>
 <translation id="5742505912938664543">Khi thêm một tài khoản phụ vào đây, bạn có thể dùng tài khoản đó để duyệt web, tải các ứng dụng xuống, kiểm tra Gmail và sử dụng các dịch vụ khác của Google.</translation>
 <translation id="5746169159649715125">Lưu dưới dạng PDF</translation>
+<translation id="5746261205461426123">Mở hướng dẫn thiết lập</translation>
 <translation id="5747552184818312860">Hết hạn</translation>
 <translation id="5747785204778348146">Nhà phát triển - không chính thức</translation>
 <translation id="5747809636523347288">Dá&amp;n và truy cập <ph name="URL" /></translation>
@@ -5289,6 +5292,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="708278670402572152">Ngắt kết nối để bật tính năng quét</translation>
 <translation id="7084321615353200053">Các trang web có thể yêu cầu sử dụng máy ảnh của bạn (khuyến nghị)</translation>
 <translation id="7085389578340536476">Bạn có muốn cho phép Chrome ghi âm không?</translation>
+<translation id="7085805695634549980">Không thể kết nối với các dịch vụ của Google. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">Thêm các tệp nhật ký của Chrome vào mục lưu trữ.</translation>
 <translation id="7088434364990739311">Không thể bắt đầu kiểm tra cập nhật (mã lỗi <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver - Mở và nén tệp ZIP trong ứng dụng Tệp.</translation>

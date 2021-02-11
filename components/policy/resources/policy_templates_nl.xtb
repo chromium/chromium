@@ -352,7 +352,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
       Opmerking: Gebruik bij meerdere servernamen een komma als scheidingsteken. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="1502843533062797703">Blokkering van injectie van software van derden inschakelen</translation>
-<translation id="1506017854924185821">Beschikbaarheid van profielkiezer bij opstarten</translation>
 <translation id="150857982247452081">Hiermee kun je een lijst met protocollen instellen (en voor elk protocol een gekoppelde lijst met toegestane herkomstpatronen) die een externe app kunnen starten zonder prompt aan de gebruiker. Het scheidingsteken achteraan moet niet worden opgenomen bij de vermelding van het protocol. Vermeld bijvoorbeeld 'skype' in plaats van 'skype:' of 'skype://'.
 
       Als dit beleid is ingesteld, kan een protocol volgens het beleid een externe app alleen starten zonder prompt aan de gebruiker als het protocol in de lijst wordt vermeld en de herkomst van de site die probeert het protocol te starten, overeenkomt met een van de herkomstpatronen in de lijst allowed_origins van dat protocol. Als een van de voorwaarden False is, wordt de prompt voor starten via een extern protocol volgens het beleid niet overgeslagen.

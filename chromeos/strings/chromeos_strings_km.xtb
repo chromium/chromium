@@ -178,7 +178,6 @@
 <translation id="5142961317498132443">ការ​ផ្ទៀងផ្ទាត់​</translation>
 <translation id="5154917547274118687">មេម៉ូរី</translation>
 <translation id="5168185087976003268">គុណភាព​ថ្ម</translation>
-<translation id="520299634122159966">មិនមាន​ឧបករណ៍ស្កេន​ទេ</translation>
 <translation id="5212543919916444558">ខ្ញុំរកមិនឃើញអ្វីដែលខ្ញុំអាចជួយបាននៅលើអេក្រង់របស់អ្នកទេ។ សាកល្បងចុចមីក្រូហ្វូន ដើម្បីសួរខ្ញុំអំពីអ្វីម្យ៉ាង។</translation>
 <translation id="5222676887888702881">ចាកចេញ</translation>
 <translation id="5252456968953390977">រ៉ូមីង</translation>
@@ -208,7 +207,6 @@
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">គ្រួសារ</translation>
 <translation id="5760715441271661976">ស្ថានភាពច្រក</translation>
-<translation id="5781694279199921985">រក្សាទុកកំណត់ហេតុវគ្គ</translation>
 <translation id="5797428682393400134">ជោគជ័យ</translation>
 <translation id="5832805196449965646">បន្ថែមបុគ្គល</translation>
 <translation id="5844247382766192936">តេស្ត <ph name="TEST_NAME" /> ត្រូវបានបោះបង់</translation>
@@ -258,7 +256,6 @@
 <translation id="6756731097889387912">មិនអាចបោះបង់ការស្កេនបានទេ</translation>
 <translation id="6766275201586212568">កម្រិតច្បាស់ DNS ដែលមិនដំណើរការ</translation>
 <translation id="6768237774506518020">អត្រាមិនដំណើរការ​នៃកម្រិតច្បាស់ DNS ខ្ពស់</translation>
-<translation id="6839141349259399400">មិនអាច​ភ្ជាប់​ម៉ាស៊ីនស្កេន​បានទេឬ​?</translation>
 <translation id="6853312040151791195">អត្រា​ឈប់សាកថ្ម</translation>
 <translation id="6898743098396957679">មិនអាច​បញ្ចប់​ការស្កេនបានទេ</translation>
 <translation id="6911383237894364323">មិនអាចភ្ជាប់​ម៉ាស៊ីនមេ​មេឌៀបានទេ</translation>
@@ -269,6 +266,7 @@
 <translation id="7059230779847288458">កំពុងសាកថ្ម <ph name="TIME_VALUE" /> ទៀត​ទើបពេញ</translation>
 <translation id="708426984172631313">បានឈប់</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
+<translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="714876143603641390">ការតភ្ជាប់ Lan</translation>
 <translation id="7162487448488904999">សាល​រូបភាព</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>

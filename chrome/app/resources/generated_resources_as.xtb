@@ -1627,6 +1627,7 @@
 <translation id="2804043232879091219">বিকল্প ব্ৰাউজাৰটো খুলিব পৰা নগ'ল</translation>
 <translation id="2804667941345577550">খোলা থকা টেবসমূহকে ধৰি আপুনি এই ছাইটটোৰ পৰা ছাইন আউট হৈ যাব</translation>
 <translation id="2804680522274557040">কেমেৰা অফ কৰা আছে</translation>
+<translation id="2805539617243680210">আপুনি সম্পূৰ্ণ সাজু!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="2805760958323556153">ExtensionInstallForcelistৰ নীতিৰ মানটো অমান্য। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
@@ -3123,6 +3124,7 @@
 <translation id="4538417792467843292">শব্দ মচক</translation>
 <translation id="4538684596480161368"><ph name="HOST" />ত সদায় আনছেণ্ডবক্স কৰা প্লাগইন অৱৰোধ কৰক</translation>
 <translation id="4538792345715658285">এণ্টাৰপ্ৰাইজৰ নীতিয়ে ইনষ্টল কৰিছে।</translation>
+<translation id="4541123282641193691">আপোনাৰ একাউণ্টটো সত্যাপন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক।</translation>
 <translation id="4541662893742891060">এই প্ৰ'ফাইলটোৰ সৈতে সংযোগ কৰিবলৈ সক্ষম নহ'ল। কাৰিকৰী সহায়ৰ বাবে অনুগ্ৰহ কৰি আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="4542520061254486227">আপোনাৰ ডেটা <ph name="WEBSITE_1" /> আৰু <ph name="WEBSITE_2" />ত পঢ়ক</translation>
 <translation id="4543778593405494224">প্ৰমাণপত্ৰৰ পৰিচালক</translation>
@@ -4144,6 +4146,7 @@
 <translation id="574209121243317957">পিচ্চ</translation>
 <translation id="5742505912938664543">আপুনি ইয়াত এটা গৌণ একাউণ্ট যোগ দিলে, সেই একাউণ্টটো ব্যৱহাৰ কৰি আপুনি ৱেব ব্ৰাউজ কৰিব পাৰিব, এপ্‌ ডাউনল’ড কৰিব পাৰিব, নিজৰ Gmail আৰু অন্য Google সেৱাসমূহ ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="5746169159649715125">PDF হিচাপে ছেভ কৰক</translation>
+<translation id="5746261205461426123">ছেট আপৰ গাইড খোলক</translation>
 <translation id="5747552184818312860">এই সময়ত ম্যাদ উকলিব</translation>
 <translation id="5747785204778348146">বিকাশকৰ্তা - বিকাশ সম্পূৰ্ণ হোৱা নাই</translation>
 <translation id="5747809636523347288">পে&amp;ষ্ট কৰি <ph name="URL" />লৈ যাওক</translation>
@@ -5292,6 +5295,7 @@
 <translation id="708278670402572152">স্কেনিং সক্ষম কৰিবলৈ সংযোগ বিচ্ছিন্ন কৰক</translation>
 <translation id="7084321615353200053">ছাইটসমূহে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে (চুপাৰিছ কৰা)</translation>
 <translation id="7085389578340536476">Chromeক অডিঅ’ ৰেকৰ্ড কৰাৰ অনুমতি দিবনে?</translation>
+<translation id="7085805695634549980">Googleৰ সেৱাৰ সৈতে সংযোগ কৰিব পৰা নগ’ল। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="7086672505018440886">আৰ্কাইভটোত Chromeৰ লগ ফাইলসমূহ অন্তৰ্ভুক্ত কৰক।</translation>
 <translation id="7088434364990739311">আপডে‘টৰ পৰীক্ষণ কৰিব পৰা নগ‘ল (আসোঁৱাহ ক‘ড <ph name="ERROR" />)।</translation>
 <translation id="7088561041432335295">Zip Archiver - Files এপত জিপ ফাইলসমূহ খোলক আৰু পেক কৰক।</translation>
@@ -5529,6 +5533,7 @@
 <translation id="7374376573160927383">ইউএছবি ডিভাইচসমূহ পৰিচালনা কৰক</translation>
 <translation id="7375235221357833624">{0,plural, =1{এঘণ্টাৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# ঘণ্টাৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# ঘণ্টাৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
 <translation id="7376553024552204454">গতি কৰিলে মাউছৰ কাৰ্ছৰ হাইলাইট কৰক</translation>
+<translation id="737728204345822099">আপুনি এই ছাইটটোলৈ যোৱাৰ এটা ৰেকৰ্ড আপোনাৰ সুৰক্ষা চাবিত ৰখা হ’ব পাৰে।</translation>
 <translation id="7377451353532943397">ছেন্সৰৰ এক্সেছ অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="7378611153938412599">দুৰ্বল পাছৱৰ্ডসমূহ অনুমান কৰিবলৈ সহজ। আপুনি শক্তিশালী পাছৱৰ্ড সৃষ্টি কৰি আছে বুলি নিশ্চিত হৈ লওক। <ph name="BEGIN_LINK" />সুৰক্ষা সম্পৰ্কীয় অধিক কিটিপ চাওক।<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Chrome Web Store খোলক</translation>

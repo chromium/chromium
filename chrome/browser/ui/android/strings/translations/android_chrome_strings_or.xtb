@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ସେୟାର୍ କରାଯାଇ ପାରିବ ନାହିଁ</translation>
 <translation id="1477626028522505441">ସର୍ଭର୍ ସମସ୍ୟା ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହେବାରେ ବିଫଳ ହେଲା।</translation>
+<translation id="1497470209855416291">ଟ୍ରାଏଲ୍ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="1506061864768559482">ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
 <translation id="1513352483775369820">ବୁକ୍‌ମାର୍କ ଏବଂ ୱେବ୍ ଇତିବୃତ୍ତି</translation>
 <translation id="1513858653616922153">ପାସ୍‍ୱାର୍ଡକୁ ଡିଲିଟ୍ କରନ୍ତୁ</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">ପରବର୍ତ୍ତୀ ଭିଡିଓ ଦେଖନ୍ତୁ</translation>
 <translation id="2074143993849053708">Assistantର ଭଏସ୍ ମାଧ୍ୟମରେ ସନ୍ଧାନ ପାଇଁ ସମ୍ମତିର ui ବନ୍ଦ ହୋଇଛି</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />ର <ph name="RESULT_NUMBER" />ଟି ଫଳାଫଳ</translation>
+<translation id="2083113399121613785">ଟ୍ରାଏଲ୍ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="2096012225669085171">ସମସ୍ତ ଡିଭାଇସ୍‌ରେ ସିଙ୍କ୍ ଏବଂ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>
 <translation id="2100273922101894616">ସ୍ୱତଃ ସାଇନ୍-ଇନ୍‌</translation>
 <translation id="2100314319871056947">ଛୋଟ ଛୋଟ ଭାଗରେ ଟେକ୍ସଟ୍ ସେୟାର୍ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -565,7 +567,6 @@
 <translation id="5004416275253351869">Google କାର୍ଯ୍ୟକଳାପ ନିୟନ୍ତ୍ରଣ</translation>
 <translation id="5005498671520578047">ପାସ୍‍ୱର୍ଡ କପି କରନ୍ତୁ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ସଂଯୋଗ ହେବାକୁ ଚାହୁଁଛି</translation>
-<translation id="5013696553129441713">କୌଣସି ନୂଆ ପ୍ରସ୍ତାବ ନାହିଁ</translation>
 <translation id="5016205925109358554">ସେରିଫ୍‌</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
 <translation id="5040262127954254034">ଗୋପନୀୟତା</translation>
@@ -935,7 +936,6 @@
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="751961395872307827">ସାଇଟ୍‍କୁ ସଂଯୋଗ କରିପାରିବ ନାହିଁ।</translation>
 <translation id="753225086557513863">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ସିଡୁଲ୍ କରାଯାଇଛି</translation>
-<translation id="7542481630195938534">ପରାମର୍ଶ ପ୍ରାପ୍ତ କରିପାରିଲା ନାହିଁ</translation>
 <translation id="7559975015014302720">ଲାଇଟ୍ ମୋଡ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="7562080006725997899">ବ୍ରାଇଜିଂ ଡାଟା ଖାଲି ହେଉଛି</translation>
 <translation id="756809126120519699">Chrome ଡାଟା ଖାଲି କରାଯାଇଛି</translation>

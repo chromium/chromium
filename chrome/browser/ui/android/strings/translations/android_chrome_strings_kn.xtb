@@ -565,7 +565,6 @@
 <translation id="5004416275253351869">Google ಚಟುವಟಿಕೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ನಕಲಿಸಿ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
-<translation id="5013696553129441713">ಯಾವುದೇ ಹೊಸ ಸಲಹೆಗಳಿಲ್ಲ</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
 <translation id="5040262127954254034">ಗೌಪ್ಯತೆ</translation>
@@ -591,6 +590,7 @@
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="5230560987958996918">ಸಮೀಪದಲ್ಲಿರುವ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳಿಗಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು <ph name="SITE" /> ಬಯಸುತ್ತದೆ. ಈ ಕೆಳಗಿನ ಸಾಧನಗಳು ಕಂಡುಬಂದಿವೆ:</translation>
 <translation id="5233638681132016545">ಹೊಸ ಟ್ಯಾಬ್</translation>
+<translation id="5250483651202458397">ಸ್ಕ್ರೀನ್‌ಶಾಟ್. ಮುಚ್ಚಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="526421993248218238">ಈ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5271967389191913893">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಬೇಕಾದ ವಿಷಯವನ್ನು ಸಾಧನಕ್ಕೆ ತೆರೆಯಲಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="5292796745632149097">ಇಲ್ಲಿಗೆ ಕಳುಹಿಸಿ</translation>
@@ -836,6 +836,7 @@
 <translation id="6767294960381293877">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="6783942555455976443">ನಂತರದ ಬಳಕೆಗಾಗಿ ಈ ಪುಟವನ್ನು ಉಳಿಸಿ ಮತ್ತು ಜ್ಞಾಪನೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="6811034713472274749">ವೀಕ್ಷಿಸಲು ಪುಟ ಸಿದ್ಧವಾಗಿದೆ</translation>
+<translation id="6813446258015311409">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ, ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6833996806551876956">ಗೌಪ್ಯತೆ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್ ಪ್ರಯೋಗ</translation>
@@ -936,7 +937,6 @@
 <translation id="7514365320538308">ಡೌನ್‌ಲೋಡ್</translation>
 <translation id="751961395872307827">ಸೈಟ್‌ಗೆ ಸಂಪರ್ಕಪಡಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="753225086557513863">ನಂತರ ಪ್ರಾರಂಭಿಸಲು ನಿಗದಿಪಡಿಸಲಾಗಿದೆ</translation>
-<translation id="7542481630195938534">ಸಲಹೆಗಳನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7559975015014302720">ಲೈಟ್ ಮೋಡ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="7562080006725997899">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="756809126120519699">Chrome ಡೇಟಾ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -1096,6 +1096,7 @@
 <translation id="8583805026567836021">ಖಾತೆಯ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8587585930972369234">ಹುಡುಕಲು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿ</translation>
 <translation id="860043288473659153">ಕಾರ್ಡ್‌ಹೋಲ್ಡರ್ ಹೆಸರು</translation>
+<translation id="8602358303461588329">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ, ಮುಚ್ಚಲಾಗಿದೆ.</translation>
 <translation id="860282621117673749">ಬೆಲೆ ಕುಸಿತ ಎಚ್ಚರಿಕೆಗಳು</translation>
 <translation id="8616006591992756292">ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="8617240290563765734">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾದ ವಿಷಯದಲ್ಲಿ ಸೂಚಿಸಲಾದ ನಿರ್ದಿಷ್ಟ URL ತೆರೆಯುವುದೇ?</translation>

@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> പങ്കിടാനാവുന്നില്ല</translation>
 <translation id="1477626028522505441">സെർവർ പ്രശ്‌നങ്ങൾ കാരണം <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
+<translation id="1497470209855416291">ട്രയൽ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="1506061864768559482">തിരയൽ യന്ത്രം</translation>
 <translation id="1513352483775369820">ബുക്ക്‌മാർക്കുകളും വെബ് ചരിത്രവും</translation>
 <translation id="1513858653616922153">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">അടുത്ത വീഡിയോ കാണുക</translation>
 <translation id="2074143993849053708">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI അടച്ചു</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /> ഫലം</translation>
+<translation id="2083113399121613785">ട്രയൽ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="2096012225669085171">ഉപകരണങ്ങളിലുടനീളം സമന്വയിപ്പിക്കലും വ്യക്തിപരമാക്കലും നടത്തുക.</translation>
 <translation id="2100273922101894616">സ്വയമേവയുള്ള സൈൻ ഇൻ</translation>
 <translation id="2100314319871056947">ചെറിയ ഭാഗങ്ങളായി ടെക്‌സ്‌റ്റ് പങ്കിടാൻ ശ്രമിക്കൂ</translation>
@@ -565,7 +567,6 @@
 <translation id="5004416275253351869">Google പ്രവർത്തന നിയന്ത്രണങ്ങൾ</translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> കണക്‌റ്റുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
-<translation id="5013696553129441713">പുതിയ നിർദ്ദേശങ്ങളൊന്നുമില്ല</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5040262127954254034">സ്വകാര്യത</translation>
@@ -938,7 +939,6 @@
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="751961395872307827">സൈറ്റിലേക്ക് കണ‌ക്‌റ്റ് ചെയ്യാനാവുന്നില്ല</translation>
 <translation id="753225086557513863">പിന്നീട് ഡൗൺലോഡ് ചെയ്യാൻ ഷെഡ്യൂൾ ചെയ്‌തു</translation>
-<translation id="7542481630195938534">നിർദ്ദേശങ്ങൾ സ്വീകരിക്കാനാവില്ല</translation>
 <translation id="7559975015014302720">ലൈറ്റ് മോഡ് ഓഫാണ്</translation>
 <translation id="7562080006725997899">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കൽ</translation>
 <translation id="756809126120519699">Chrome ഡാറ്റ മായ്‌ച്ചു</translation>

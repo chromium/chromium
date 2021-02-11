@@ -1631,6 +1631,7 @@
 <translation id="2804043232879091219">वैकल्पिक ब्राउज़र नहीं खोला जा सका</translation>
 <translation id="2804667941345577550">आपको इस साइट और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
 <translation id="2804680522274557040">कैमरा बंद किया गया</translation>
+<translation id="2805539617243680210">अब आप बिल्कुल तैयार हैं!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="2805760958323556153">नीति का ExtensionInstallForcelist मान अमान्य है. कृपया अपने एडमिन से संपर्क करें.</translation>
@@ -3130,6 +3131,7 @@
 <translation id="4538417792467843292">शब्‍द मिटाएं</translation>
 <translation id="4538684596480161368">सैंडबॉक्‍स नहीं किए गए प्‍लग इन को <ph name="HOST" /> पर हमेशा ब्लॉक करें</translation>
 <translation id="4538792345715658285">एंटरप्राइज़ नीति द्वारा इंस्टॉल किया गया.</translation>
+<translation id="4541123282641193691">आपके खाते की पुष्टि नहीं हो सकी. कृपया फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="4541662893742891060">इस प्रोफ़ाइल से कनेक्ट नहीं किया जा सकता. तकनीकी सहायता के लिए, कृपया मोबाइल और इंटरनेट सेवा देने वाली अपनी कंपनी से संपर्क करें.</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> और <ph name="WEBSITE_2" /> पर अपना डेटा पढ़ें</translation>
 <translation id="4543778593405494224">प्रमाणपत्र मैनेजर</translation>
@@ -4152,6 +4154,7 @@
 <translation id="574209121243317957">पिच</translation>
 <translation id="5742505912938664543">जब आप दूसरा खाता जोड़ते हैं, तब आप उस खाते से वेब को ब्राउज़ कर सकते हैं, ऐप्लिकेशन डाउनलोड कर सकते हैं, और Gmail और अन्य Google सेवाओं का इस्तेमाल कर सकते हैं.</translation>
 <translation id="5746169159649715125">PDF के रूप में सेव करें</translation>
+<translation id="5746261205461426123">सेट अप गाइड खाेलें</translation>
 <translation id="5747552184818312860">समय सीमा समाप्ति तारीख</translation>
 <translation id="5747785204778348146">डेवलपर - अस्थिर</translation>
 <translation id="5747809636523347288"><ph name="URL" /> चिपकाएं और इस पर जाएं</translation>
@@ -5304,6 +5307,7 @@
 <translation id="708278670402572152">स्कैन करना चालू करने के लिए डिसकनेक्ट करें</translation>
 <translation id="7084321615353200053">साइटें आपके कैमरे का इस्तेमाल करने के लिए पूछ सकती हैं (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="7085389578340536476">Chrome को ऑडियो रिकॉर्ड करने दें?</translation>
+<translation id="7085805695634549980">Google की सेवाओं से कनेक्ट नहीं किया जा सका. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">संग्रह में Chrome लॉग फ़ाइलों को शामिल करें.</translation>
 <translation id="7088434364990739311">अपडेट की जाँच शुरू नहीं की जा सकी (गड़बड़ी कोड <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver - Files ऐप्लिकेशन में ZIP फ़ाइलें खोलें और पैक करें.</translation>

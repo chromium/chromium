@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> શેર કરી શકતાં નથી</translation>
 <translation id="1477626028522505441">સર્વર સમસ્યાઓને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
+<translation id="1497470209855416291">અજમાયશ બંધ છે</translation>
 <translation id="1506061864768559482">શોધ એન્જિન</translation>
 <translation id="1513352483775369820">બુકમાર્ક્સ અને વેબ ઇતિહાસ</translation>
 <translation id="1513858653616922153">પાસવર્ડ ડિલીટ કરો</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">આગલો વીડિયો જુઓ</translation>
 <translation id="2074143993849053708">Assistant વૉઇસ શોધની સંમતિ માટેનું UI બંધ કર્યું</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> માંથી <ph name="RESULT_NUMBER" /> પરિણામ</translation>
+<translation id="2083113399121613785">અજમાયશ ચાલુ છે</translation>
 <translation id="2096012225669085171">સમગ્ર ઉપકરણો પર સિંક કરો અને વ્યક્તિગત બનાવો</translation>
 <translation id="2100273922101894616">સ્વતઃ સાઇન-ઇન</translation>
 <translation id="2100314319871056947">ટેક્સ્ટને નાના-નાના ટૂકડામાં શેર કરી જુઓ</translation>
@@ -565,7 +567,6 @@
 <translation id="5004416275253351869">Google પ્રવૃત્તિ નિયંત્રણો</translation>
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5011311129201317034"><ph name="SITE" />, કનેક્ટ કરવા માગે છે</translation>
-<translation id="5013696553129441713">કોઈ નવા સૂચનો નથી</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
@@ -936,7 +937,6 @@
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="751961395872307827">સાઇટ સાથે કનેક્ટ કરી શકાતું નથી</translation>
 <translation id="753225086557513863">પછી માટે શેડ્યૂલ કરેલું</translation>
-<translation id="7542481630195938534">સૂચનો મેળવી શકતાં નથી</translation>
 <translation id="7559975015014302720">લાઇટ મોડ બંધ છે</translation>
 <translation id="7562080006725997899">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="756809126120519699">Chrome ડેટા સાફ કર્યો</translation>

@@ -13,7 +13,7 @@
 <translation id="1067922213147265141">他の Google サービス</translation>
 <translation id="107147699690128016">ファイル拡張子を変更すると、ファイルが別のアプリケーションで開かれる可能性があり、場合によってはデバイスに損害が生じます。</translation>
 <translation id="1100066534610197918">新しいタブをグループで開く</translation>
-<translation id="1105960400813249514">画面キャプチャ</translation>
+<translation id="1105960400813249514">スクリーン キャプチャ</translation>
 <translation id="1111673857033749125">他のデバイスに保存されているブックマークがここに表示されます。</translation>
 <translation id="1113597929977215864">簡易表示する</translation>
 <translation id="1118561384561215815">ウェブ上のタスクのサポート</translation>
@@ -565,7 +565,6 @@
 <translation id="5004416275253351869">Google アクティビティ管理</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> が接続を要求しています</translation>
-<translation id="5013696553129441713">新しいおすすめ記事はありません</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">許可</translation>
 <translation id="5040262127954254034">プライバシー</translation>
@@ -936,7 +935,6 @@
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="751961395872307827">サイトに接続できません</translation>
 <translation id="753225086557513863">後で開始</translation>
-<translation id="7542481630195938534">おすすめの記事を取得できません</translation>
 <translation id="7559975015014302720">ライトモードはオフです</translation>
 <translation id="7562080006725997899">閲覧データの消去</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>

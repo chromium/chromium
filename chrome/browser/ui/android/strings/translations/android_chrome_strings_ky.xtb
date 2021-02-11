@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> менен бөлүшүү мүмкүн эмес</translation>
 <translation id="1477626028522505441">Сервердеги маселелерден улам <ph name="FILE_NAME" /> жүктөлүп алынган жок.</translation>
+<translation id="1497470209855416291">Сыноо өчүрүлдү</translation>
 <translation id="1506061864768559482">Издөө каражаты</translation>
 <translation id="1513352483775369820">Кыстармалар жана издөө таржымалы</translation>
 <translation id="1513858653616922153">Сырсөздү жок кылуу</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">Кийинки видеону көрүү</translation>
 <translation id="2074143993849053708">Жардамчыга айтып издөөгө уруксат берүү интерфейси жабылды</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ичинен <ph name="RESULT_NUMBER" /> натыйжа</translation>
+<translation id="2083113399121613785">Сыноо иштетилди</translation>
 <translation id="2096012225669085171">Бардык түзмөктөрдө шайкештирүү жана жекечелештирүү</translation>
 <translation id="2100273922101894616">Авто кирүү</translation>
 <translation id="2100314319871056947">Текстти бир нече бөлүккө бөлүп анан бөлүшүп көрүңүз</translation>
@@ -565,7 +567,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5004416275253351869">Google'дагы аракеттерди көзөмөлдөө</translation>
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сайты туташканы жатат</translation>
-<translation id="5013696553129441713">Жаңы сунуш жок</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5040262127954254034">Купуялык</translation>
@@ -936,7 +937,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="751961395872307827">Сайтка туташпай жатат</translation>
 <translation id="753225086557513863">Кийинкиге графикке киргизүү</translation>
-<translation id="7542481630195938534">Сунуштар жүктөлгөн жок</translation>
 <translation id="7559975015014302720">Жөнөкөй режим өчүк</translation>
 <translation id="7562080006725997899">Серептөө дайындары тазаланууда</translation>
 <translation id="756809126120519699">Chrome дайындары тазаланды</translation>

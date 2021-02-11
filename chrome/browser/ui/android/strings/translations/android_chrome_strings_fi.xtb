@@ -567,7 +567,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5004416275253351869">Google-toimintojen hallinta</translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> haluaa muodostaa yhteyden</translation>
-<translation id="5013696553129441713">Ei uusia ehdotuksia</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5040262127954254034">Tietosuoja</translation>
@@ -938,7 +937,6 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7514365320538308">Lataa</translation>
 <translation id="751961395872307827">Yhteyden muodostaminen sivustoon epäonnistui</translation>
 <translation id="753225086557513863">Ajoitettu myöhemmäksi</translation>
-<translation id="7542481630195938534">Ehdotusten haku epäonnistui</translation>
 <translation id="7559975015014302720">Yksinkertaistettu tila on pois päältä</translation>
 <translation id="7562080006725997899">Selaustietoja poistetaan</translation>
 <translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>

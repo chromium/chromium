@@ -440,7 +440,7 @@
 <translation id="4170011742729630528">सेवा उपलब्ध नहीं है; बाद में फिर से प्रयास करें.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> इस्तेमाल किए गए</translation>
 <translation id="4181841719683918333">भाषाएं</translation>
-<translation id="4183868528246477015">'Google लेंस' से खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
+<translation id="4183868528246477015">Google Lens से खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4198423547019359126">डाउनलोड करने की कोई जगह उपलब्ध नहीं है</translation>
 <translation id="4209895695669353772">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, 'सिंक करें' को चालू करें</translation>
@@ -567,7 +567,6 @@
 <translation id="5004416275253351869">Google गतिविधि नियंत्रण</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करें</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करना चाहती है</translation>
-<translation id="5013696553129441713">कोई नया सुझाव नहीं है</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
@@ -593,6 +592,7 @@
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> आस-पास मौजूद ब्लूटूथ वाले डिवाइस स्कैन करना चाहती है. ये डिवाइस मिले हैं:</translation>
 <translation id="5233638681132016545">नया टैब</translation>
+<translation id="5250483651202458397">स्क्रीनशॉट. बंद करने के लिए इस पर टैप करें.</translation>
 <translation id="526421993248218238">यह पेज लोड नहीं हो पा रहा है</translation>
 <translation id="5271967389191913893">डाउनलोड की जाने वाली सामग्री को डिवाइस नहीं खोल सकता.</translation>
 <translation id="5292796745632149097">इस पर भेजें</translation>
@@ -838,6 +838,7 @@
 <translation id="6767294960381293877">टैब शेयर करने के लिए चुने जाने वाले डिवाइस की सूची आधी खुली हुई है.</translation>
 <translation id="6783942555455976443">इस पेज को बाद के लिए सेव करें और रिमाइंडर पाएं</translation>
 <translation id="6811034713472274749">पेज देखने के लिए तैयार है</translation>
+<translation id="6813446258015311409">'Chrome में साइन इन करें' पेज खोला गया.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, टैब, चुना गया</translation>
 <translation id="6833996806551876956">निजता सैंडबॉक्स ट्रायल</translation>
@@ -938,7 +939,6 @@
 <translation id="7514365320538308">डाउनलोड करें</translation>
 <translation id="751961395872307827">साइट से कनेक्ट नहीं किया जा सका</translation>
 <translation id="753225086557513863">बाद में शुरू करने के लिए शेड्यूल किया गया</translation>
-<translation id="7542481630195938534">सुझाव नहीं मिल पा रहे हैं</translation>
 <translation id="7559975015014302720">लाइट मोड बंद है</translation>
 <translation id="7562080006725997899">ब्राउज़िंग डेटा साफ़ हो रहा है</translation>
 <translation id="756809126120519699">साफ़ किया गया Chrome डेटा</translation>
@@ -1098,6 +1098,7 @@
 <translation id="8583805026567836021">खाते का डेटा साफ़ हो रहा है</translation>
 <translation id="8587585930972369234">खोजने के लिए दबाकर रखें</translation>
 <translation id="860043288473659153">कार्डधारक का नाम</translation>
+<translation id="8602358303461588329">'Chrome में साइन इन करें' पेज बंद किया गया.</translation>
 <translation id="860282621117673749">कीमत में कमी की सूचनाएं</translation>
 <translation id="8616006591992756292">आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="8617240290563765734">सुझाया गया वह URL खोलें जिसे डाउनलोड की गई सामग्री में बताया गया है?</translation>

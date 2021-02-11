@@ -579,7 +579,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5992218262414051481">Se habilitó el modo de contraste alto. Presiona Ctrl+Buscar+H de nuevo para desactivarlo.</translation>
 <translation id="6018164090099858612">Saliendo del modo de espejo</translation>
 <translation id="602001110135236999">Desplazar hacia la izquierda</translation>
-<translation id="602472752137106327">Botón de selección que muestra las ventanas de todos los escritorios seleccionado</translation>
+<translation id="602472752137106327">Está seleccionado el botón que muestra las ventanas de todos los escritorios</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="6030495522958826102">El menú se movió a la esquina inferior izquierda de la pantalla.</translation>
 <translation id="6032620807120418574">Haz clic en cualquier parte para grabar la pantalla completa</translation>
@@ -869,7 +869,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8477270416194247200">Presiona Alt y la tecla de búsqueda o mayúscula para cancelarlo.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> no admite la resolución <ph name="SPECIFIED_RESOLUTION" />. Se cambió la resolución a <ph name="FALLBACK_RESOLUTION" />. Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
 <translation id="8513108775083588393">Giro autom.</translation>
-<translation id="851458219935658693">Botón de selección que muestra las ventanas del escritorio actual seleccionado</translation>
+<translation id="851458219935658693">Está seleccionado el botón que muestra las ventanas del escritorio actual</translation>
 <translation id="8517041960877371778">Tu <ph name="DEVICE_TYPE" /> podría no cargarse si el dispositivo está encendido.</translation>
 <translation id="8553395910833293175">Ya se asignó a todos los escritorios.</translation>
 <translation id="8563862697512465947">Configuración de notificación</translation>

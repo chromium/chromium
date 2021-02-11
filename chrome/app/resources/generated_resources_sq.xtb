@@ -1631,6 +1631,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2804043232879091219">Shfletuesi alternativ nuk mund të hapej</translation>
 <translation id="2804667941345577550">Do të nxirresh nga ky sajt, duke përfshirë edhe në skedat e hapura</translation>
 <translation id="2804680522274557040">Kamera është çaktivizuar</translation>
+<translation id="2805539617243680210">Je plotësisht gati!</translation>
 <translation id="2805646850212350655">Sistemi i skedarëve të enkriptimit të Microsoft</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2805760958323556153">Vlera e politikës për ExtensionInstallForcelist është e pavlefshme. Kontakto me administratorin tënd.</translation>
@@ -4021,6 +4022,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5582839680698949063">Menyja kryesore</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5584088138253955452">Të ruhet emri i përdoruesit?</translation>
+<translation id="5584091888252706332">Në nisje</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Ky është informacion i përgjithshëm për pajisjen tënde dhe se si e përdor (si p.sh. niveli i baterisë, aktiviteti dhe gabimet e sistemit dhe të aplikacioneve). Të dhënat do të përdoren për të përmirësuar Android, ndërsa disa informacione të grumbulluara do të ndihmojnë gjithashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android, për të përmirësuar aplikacionet dhe produktet e tyre.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Çaktivizimi i këtij funksioni nuk ndikon në aftësinë e pajisjes sate për të dërguar informacionin që nevojitet për shërbime bazë si p.sh. përditësimet dhe siguria e sistemit.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Zotëruesi mund ta kontrollojë këtë veçori nga "Cilësimet &gt; "Të përparuara" &gt; "Dërgoji automatikisht te Google të dhënat diagnostikuese dhe të përdorimit".<ph name="END_PARAGRAPH3" />

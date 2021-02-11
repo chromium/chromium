@@ -351,7 +351,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="1502843533062797703">Aktifkan pemblokiran injeksi software pihak ketiga</translation>
-<translation id="1506017854924185821">Ketersediaan alat pilih profil saat browser dimulai</translation>
 <translation id="1509377996969000672">Jika kebijakan disetel, konfigurasi untuk printer perusahaan yang terikat ke perangkat akan tersedia. Jika formatnya cocok dengan kamus <ph name="NATIVE_PRINTERS_POLICY_NAME" />, dengan tambahan kolom "id" atau "guid" yang diperlukan agar setiap printer dapat mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5 MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5 MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, dan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Kebijakan ini:

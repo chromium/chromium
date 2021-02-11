@@ -1622,6 +1622,7 @@
 <translation id="2804043232879091219">पर्यायी ब्राउझर उघडता आला नाही</translation>
 <translation id="2804667941345577550">उघड्या असलेल्या टॅबच्या समावेशासह तुम्हाला या साइटमधून साइन आउट केले जाईल.</translation>
 <translation id="2804680522274557040">कॅमेरा बंद केला आहे</translation>
+<translation id="2805539617243680210">तुम्ही पूर्णपणे तयार आहात!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2805760958323556153">ExtensionInstallForcelist चे धोरण मूल्य चुकीचे आहे. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
@@ -3114,6 +3115,7 @@
 <translation id="4538417792467843292">शब्द हटवा </translation>
 <translation id="4538684596480161368">नेहमी सॅन्डबॉक्स नसलेल्या प्लगिन <ph name="HOST" /> वर अवरोधित करा</translation>
 <translation id="4538792345715658285">एंटरप्राइज धोरणाद्वारे इंस्टॉल केले.</translation>
+<translation id="4541123282641193691">तुमच्या खात्याची पडताळणी करता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="4541662893742891060">या प्रोफाइलशी कनेक्ट करता आले नाही. तांत्रिक सपोर्टसाठी, कृपया तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> आणि <ph name="WEBSITE_2" /> वर तुमचा डेटा वाचा</translation>
 <translation id="4543778593405494224">सर्टिफिकेट व्यवस्थापक</translation>
@@ -3992,7 +3994,7 @@
 <translation id="5582839680698949063">मुख्य मेनू</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">वापरकर्ता नाव सेव्ह करायचे?</translation>
-<translation id="5584091888252706332">स्टार्टअप वर</translation>
+<translation id="5584091888252706332">सुरू केल्यावर</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />तुमचे डिव्हाइस आणि तुम्ही ते कसे वापरता याविषयी ही सर्वसाधारण माहिती आहे (जसे की, बॅटरी पातळी, सिस्टम आणि ॲप ॲक्टिव्हिटी आणि एरर). डेटाचा वापर Android सुधारित करण्यासाठी केला जाईल आणि काही एकत्रित केलेली माहिती Google ॲप्स आणि Android डेव्हलपरसारख्या भागीदारांना त्यांची ॲप्स आणि उत्पादने आणखी उत्तम बनवण्यातदेखील मदत करेल.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ही वैशिष्ट्ये बंद केल्याने तुमच्या डिव्हाइसच्या सिस्टम अपडेट आणि सुरक्षितता यांसारख्या अत्यावश्यक सेवांसाठी आवश्यक असलेली माहिती पाठवण्याच्या या डिव्हाइसच्या क्षमतेवर परिणाम होत नाही.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />सेटिंग्ज &gt; प्रगत &gt; Google ला आपोआप निदान आणि वापरलेला डेटा पाठवा वरून मालक हे वैशिष्ट्य नियंत्रित करू शकतो.<ph name="END_PARAGRAPH3" />
@@ -4131,6 +4133,7 @@
 <translation id="574209121243317957">पिच</translation>
 <translation id="5742505912938664543">तुम्ही येथे दुय्यम खाते जोडल्यावर, ते खाते वापरून तुम्ही वेब ब्राउझ करू शकता, अ‍ॅप्स डाउनलोड करू शकता, तुमचे Gmail आणि इतर Google सेवा तपासू शकता.</translation>
 <translation id="5746169159649715125">पीडीएफ म्हणून सेव्ह करा</translation>
+<translation id="5746261205461426123">सेटअप मार्गदर्शक उघडा</translation>
 <translation id="5747552184818312860">कालबाह्य होईल</translation>
 <translation id="5747785204778348146">डेव्हलपर - अस्थिर</translation>
 <translation id="5747809636523347288">पेस्ट करा आणि <ph name="URL" /> वर जा</translation>
@@ -5281,6 +5284,7 @@
 <translation id="708278670402572152">स्कॅनिंग सुरू करण्यासाठी डिस्कनेक्ट करा</translation>
 <translation id="7084321615353200053">साइट तुमचा कॅमेरा वापरण्यासाठी विचारू शकतात (शिफारस केलेले)</translation>
 <translation id="7085389578340536476">Chrome ला ऑडिओ रेकॉर्ड करण्‍याची अनुमती द्यायची का?</translation>
+<translation id="7085805695634549980">Google सेवांशी कनेक्ट करता आले नाही. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="7086672505018440886">संग्रहणामध्ये Chrome लॉग फाइलचा समावेश करा.</translation>
 <translation id="7088434364990739311">अपडेट तपासणी सुरू होण्‍यात अयशस्वी (एरर कोड <ph name="ERROR" />).</translation>
 <translation id="7088561041432335295">Zip Archiver - Files ॲपमध्ये झिप फाइल उघडा आणि पॅक करा.</translation>
@@ -5997,6 +6001,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7904526211178107182">तुमच्या नेटवर्कवरील इतर डिव्हाइसना Linux पोर्ट उपलब्ध करून द्या.</translation>
 <translation id="7907837847548254634">फोकस केलेल्या ऑब्जेक्टवर झटपट हायलाइट दाखवा</translation>
 <translation id="7908378463497120834">सॉरी, तुमच्या बाह्य डिव्हाइस स्टोरेजमधील कमीत कमी एक विभाग बसविला जाऊ शकत नाही.</translation>
+<translation id="7909324225945368569">तुमच्या प्रोफाइलचे नाव बदला</translation>
 <translation id="7909969815743704077">गुप्त मध्ये डाउनलोड केले</translation>
 <translation id="7910768399700579500">&amp;नवीन फोल्‍डर</translation>
 <translation id="7911118814695487383">Linux</translation>

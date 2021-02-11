@@ -346,7 +346,6 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 
       Trennen Sie mehrere Servernamen durch Kommas. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
 <translation id="1502843533062797703">Blockieren von Codeeinschleusungen durch Drittanbieter-Software aktivieren</translation>
-<translation id="1506017854924185821">Profil-Picker beim Start verfügbar</translation>
 <translation id="1509377996969000672">Wenn die Richtlinie festgelegt ist, werden Konfigurationen für gerätegebundene Unternehmensdrucker bereitgestellt. Das Format entspricht dem <ph name="NATIVE_PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein „id“- oder „guid“-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker gemäß <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> und <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> verfügbar gemacht werden.
 
       Diese Richtlinie:
@@ -806,6 +805,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="2170233653554726857">WPAD-Optimierung aktivieren</translation>
 <translation id="2171952274731262470">Verzögerungen und Aktionen, die ausgeführt werden sollen, wenn das Gerät im Akkubetrieb inaktiv ist</translation>
 <translation id="2175353308236295184">App-spezifisches JSON-Konfigurationsobjekt mit einem Satz von Schlüssel/Wert-Paaren, z. B. „"managedConfiguration": { "schlüssel1": wert1, "schlüssel2": wert2 }“. Die Schlüssel sind im App-Manifest definiert.</translation>
+<translation id="2176115444876446233">Nutzer daran hindern, eine systemweite Leistungs-Trace zu erfassen.</translation>
 <translation id="2178899310296064282">Mindestens den moderaten eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="2182291258410176649">Der Nutzer entscheidet, ob "Sicherung und Wiederherstellung" aktiviert werden soll</translation>
 <translation id="219297066914002620"><ph name="PRODUCT_OS_NAME" /> wird angewiesen, die Konsolentools zur Verwaltung virtueller Maschinen zu aktivieren oder zu deaktivieren.
@@ -1221,6 +1221,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Ist die Richtlinie deaktiviert, kann <ph name="PRODUCT_NAME" /> diese Hosts nur verwenden, wenn sie auf Systemebene installiert wurden.</translation>
 <translation id="2753637905605932878">Den von WebRTC verwendeten Bereich lokaler UDP-Ports einschränken</translation>
+<translation id="2755847332939882873">Speichern einer systemweiten Leistungs-Trace erlauben</translation>
 <translation id="2757054304033424106">Typen von Erweiterungen bzw. Apps, die installiert werden können</translation>
 <translation id="2759224876420453487">Nutzerverhalten in Mehrfachprofil-Sitzung steuern</translation>
 <translation id="2761483219396643566">Inaktivitätsspanne bis zur Warnung im Akkubetrieb</translation>
@@ -1357,6 +1358,12 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn diese Richtlinie nicht konfiguriert ist, gibt es keine Einschränkungen im Hinblick auf die Nutzer, die sich anmelden dürfen. Zum Erstellen neuer Nutzer muss aber weiterhin die Richtlinie <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> entsprechend konfiguriert werden.
       Wenn <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> aktiviert ist, dürfen sich neben den in der Richtlinie festgelegten Konten auch Nutzer von Family Link anmelden.</translation>
+<translation id="2920795918401557243">Mit dieser Einstellung können Nutzer über den Dienst für die Ablaufverfolgung eine systemweite Leistungs-Trace erfassen.
+
+      Wenn die Richtlinie deaktiviert ist, können Nutzer keine systemweite Trace mithilfe des Dienstes für die Ablaufverfolgung erfassen.
+      Ist die Richtlinie aktiviert, können Nutzer eine systemweite Trace mithilfe des Dienstes für die Ablaufverfolgung erfassen.
+      Wenn die Richtlinie nicht konfiguriert ist, wird sie für verwaltete Geräte deaktiviert und für nutzereigene Geräte aktiviert.
+      Bitte beachten Sie, dass beim Deaktivieren nur die systemweite Trace-Erfassung deaktiviert wird. Die Erfassung von Browser-Traces ist von dieser Richtlinie nicht betroffen.</translation>
 <translation id="2921222258441684334">Wenn die Richtlinie auf "1" gesetzt ist, können Websites standardmäßig den physischen Standort der Nutzer verfolgen. Wenn die Richtlinie auf "2" gesetzt ist, wird die Standortermittlung standardmäßig verweigert. Sie können festlegen, dass nachgefragt wird, wenn eine Website den physischen Standort der Nutzer verfolgen möchte.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_GEOLOCATION_POLICY_NAME" /> angewandt, aber Nutzer können diese Einstellung ändern.</translation>
@@ -2149,6 +2156,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
       Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die Entwicklertools oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.</translation>
 <translation id="3950110092991281616">Aktiviert die passive Authentifizierung nur für reguläre Sitzungen.</translation>
 <translation id="3950239119790560549">Zeitbeschränkungen aktualisieren</translation>
+<translation id="3956573780915784996">Nutzern erlauben, eine systemweite Leistungs-Trace zu erfassen.</translation>
 <translation id="3956686688560604829">Richtlinie "SiteList" von Internet Explorer zur Unterstützung älterer Browser verwenden.</translation>
 <translation id="3958586912393694012">Verwendung von Smart Lock erlauben</translation>
 <translation id="3962445567482559878">EDU-Modus für das Einrichten von Assistant verwenden</translation>
@@ -4485,6 +4493,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn diese Richtlinie nicht konfiguriert ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können die Funktion nicht verwenden, während sie für nicht verwaltete Nutzer zur Verfügung steht.</translation>
 <translation id="7295019613773647480">Betreute Nutzer aktivieren</translation>
 <translation id="7302043767260300182">Verzögerung für die Bildschirmsperre im Netzbetrieb</translation>
+<translation id="7303902834678570827">Nutzer verwalteter Gastsitzungen können keine Anzeigeeinstellungen für das ganze Gerät speichern</translation>
 <translation id="731208205557053914">VPD-Informationen melden</translation>
 <translation id="7313672174502374994">SHA-256-Hash des Hintergrundbilds.</translation>
 <translation id="7322825363493984512">Passwort zur Authentifizierung der Systemdienste für den Remote-Web-Proxy.</translation>
@@ -5169,6 +5178,7 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 
       Wenn Sie diese Richtlinie konfigurieren, können Nutzer sie nicht ändern. Wird die Richtlinie nicht konfiguriert, ist sie aktiviert, aber Nutzer können die Einstellung ändern.</translation>
 <translation id="8300992833374611099">Festlegen, wo Entwicklertools verwendet werden können</translation>
+<translation id="8301065459352777588">Nutzer verwalteter Gastsitzungen können Anzeigeeinstellungen für das ganze Gerät speichern</translation>
 <translation id="8306117673860983372">Anmeldeeinstellungen</translation>
 <translation id="8312129124898414409">Ermöglicht Ihnen, festzulegen, ob die Schlüsselgenerierung für Websites zugelassen wird. Die Schlüsselgenerierung kann entweder für alle Websites zugelassen oder für alle Websites verboten werden.
 

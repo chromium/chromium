@@ -21,6 +21,7 @@
 <translation id="1119348796022671382">ਥੀਮਡ ਰੰਗ ਮੋਡ ਇੰਟਰਫੇਸ ਨੂੰ ਹਲਕਾ ਰੰਗੀਨ ਕਰਨ ਲਈ ਅਜਿਹੇ ਰੰਗਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ ਜੋ ਤੁਹਾਡੇ ਵਾਲਪੇਪਰ ਤੋਂ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="112308213915226829">ਸ਼ੈਲਫ ਆਟੋਲੁਕਾਓ</translation>
 <translation id="1153356358378277386">ਜੋੜਾਬੱਧ ਕੀਤੀਆਂ ਡੀਵਾਈਸਾਂ</translation>
+<translation id="1165712434476988950">ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="1175572348579024023">ਸਕ੍ਰੋਲ</translation>
 <translation id="1178581264944972037">ਰੋਕੋ</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
@@ -126,6 +127,7 @@
 <translation id="1989113344093894667">ਸਮੱਗਰੀ ਨੂੰ ਕੈਪਚਰ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1993072747612765854">ਨਵੀਨਤਮ <ph name="SYSTEM_APP_NAME" /> ਅੱਪਡੇਟ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="1995660704900986789">ਪਾਵਰ ਬੰਦ ਕਰੋ</translation>
+<translation id="1998100899771863792">ਮੌਜੂਦਾ ਡੈਸਕ</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">ਕੋਈ ਸੁਨੇਹਾ ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2018630726571919839">ਮੈਨੂੰ ਕੋਈ ਚੁਟਕਲਾ ਸੁਣਾਓ</translation>
@@ -946,6 +948,7 @@
 <translation id="9089416786594320554">ਇਨਪੁਟ ਵਿਧੀਆਂ</translation>
 <translation id="9091626656156419976">ਡਿਲਪਲੇ <ph name="DISPLAY_NAME" /> ਨੂੰ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="9098969848082897657">ਫ਼ੋਨ ਖਮੋਸ਼ ਕਰੋ</translation>
+<translation id="9099154003160514616">Lacros ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="9133335900048457298">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਨੂੰ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="9151726767154816831">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਅਤੇ ਪਾਵਰਵਾਸ਼ ਕਰੋ</translation>
 <translation id="9166331175924255663">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਉੱਚ ਦਿਖਣਯੋਗਤਾ ਨੂੰ ਟੌਗਲ ਕਰੋ।</translation>
@@ -957,6 +960,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੂੰ <ph name="RESOLUTION" /> 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="9210037371811586452">'ਯੂਨੀਫਾਈਡ ਡੈਸਕਟਾਪ ਮੋਡ' ਤੋਂ ਬਾਹਰ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="9211490828691860325">ਸਾਰੇ ਡੈਸਕ</translation>
 <translation id="9211681782751733685">ਬੈਟਰੀ ਦੇ ਪੂਰਾ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME_REMAINING" /> ਬਾਕੀ।</translation>
 <translation id="9215934040295798075">ਵਾਲਪੇਪਰ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="921989828232331238">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ ਅੱਜ ਦੇ ਦਿਨ ਲਈ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>

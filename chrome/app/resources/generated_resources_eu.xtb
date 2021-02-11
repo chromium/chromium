@@ -1634,6 +1634,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2804043232879091219">Ezin izan da ireki beste arakatzaile bat</translation>
 <translation id="2804667941345577550">Webguneko saioa amaituko da, baita irekita dauden fitxetakoa ere</translation>
 <translation id="2804680522274557040">Kamera erabiltzeko baimena desaktibatuta dago</translation>
+<translation id="2805539617243680210">Dena prest!</translation>
 <translation id="2805646850212350655">Fitxategiak enkriptatzeko Microsoft sistema (EFS)</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2805760958323556153">Ez du balio ExtensionInstallForcelist gidalerro-balioak. Jarri administratzailearekin harremanetan.</translation>
@@ -4024,6 +4025,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5582839680698949063">Menu nagusia</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5584088138253955452">Erabiltzaile-izena gorde nahi duzu?</translation>
+<translation id="5584091888252706332">Abioan</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da hori (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Eginbidea desaktibatuta ere, gailuak beharrezko informazioa bidaltzen jarraitu ahal izango du funtsezko zerbitzuak jasotzeko, hala nola sistemaren eguneratzeak eta segurtasun-neurriak.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Jabeak kontrolatu nahi badu, atal honetara joan beharko du: Ezarpenak &gt; Aurreratuak &gt; Bidali Google-ri diagnostikoak eta erabilera-datuak automatikoki.<ph name="END_PARAGRAPH3" />

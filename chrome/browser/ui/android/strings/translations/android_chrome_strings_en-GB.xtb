@@ -565,7 +565,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5004416275253351869">Google activity controls</translation>
 <translation id="5005498671520578047">Copy password</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
-<translation id="5013696553129441713">No new suggestions</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -936,7 +935,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7514365320538308">Download</translation>
 <translation id="751961395872307827">Can't connect to the site</translation>
 <translation id="753225086557513863">Scheduled for later</translation>
-<translation id="7542481630195938534">Can’t get suggestions</translation>
 <translation id="7559975015014302720">Lite mode is off</translation>
 <translation id="7562080006725997899">Clear browsing data</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>

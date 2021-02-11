@@ -352,7 +352,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.</translation>
 <translation id="1502843533062797703">Attiva blocco inserimento da software di terze parti</translation>
-<translation id="1506017854924185821">Disponibilità selettore profilo all'avvio</translation>
 <translation id="1509377996969000672">La configurazione del criterio consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi. Il formato corrisponde a quello del dizionario <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" aggiuntivo obbligatorio per ogni stampante ai fini dell'inserimento in una lista consentita o in una lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Questo criterio:

@@ -567,7 +567,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5004416275253351869">Kiểm soát hoạt động trên Google</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> muốn kết nối</translation>
-<translation id="5013696553129441713">Không có nội dung đề xuất mới</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5040262127954254034">Quyền riêng tư</translation>
@@ -593,6 +592,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> muốn quét tìm các thiết bị Bluetooth ở gần và đã tìm thấy các thiết bị sau đây:</translation>
 <translation id="5233638681132016545">Thẻ mới</translation>
+<translation id="5250483651202458397">Ảnh chụp màn hình. Nhấn để đóng.</translation>
 <translation id="526421993248218238">Không thể tải trang này</translation>
 <translation id="5271967389191913893">Thiết bị không thể mở nội dung được tải xuống.</translation>
 <translation id="5292796745632149097">Gửi đến</translation>
@@ -838,6 +838,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6767294960381293877">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở ở nửa dưới của màn hình.</translation>
 <translation id="6783942555455976443">Lưu trang này để đọc sau và nhận lời nhắc</translation>
 <translation id="6811034713472274749">Trang hiện đã sẵn sàng cho bạn xem</translation>
+<translation id="6813446258015311409">Đã mở trang Đăng nhập vào Chrome.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, thẻ, đã chọn</translation>
 <translation id="6833996806551876956">Dùng thử hộp cát bảo vệ quyền riêng tư</translation>
@@ -938,7 +939,6 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="751961395872307827">Không thể kết nối với trang web</translation>
 <translation id="753225086557513863">Đã lên lịch tải xuống</translation>
-<translation id="7542481630195938534">Không thể nhận nội dung đề xuất</translation>
 <translation id="7559975015014302720">Chế độ thu gọn đang tắt</translation>
 <translation id="7562080006725997899">Xóa dữ liệu duyệt web</translation>
 <translation id="756809126120519699">Đã xóa dữ liệu Chrome</translation>
@@ -1098,6 +1098,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8583805026567836021">Xóa dữ liệu tài khoản</translation>
 <translation id="8587585930972369234">Chạm và giữ để tìm kiếm</translation>
 <translation id="860043288473659153">Tên chủ thẻ</translation>
+<translation id="8602358303461588329">Đã đóng trang Đăng nhập vào Chrome.</translation>
 <translation id="860282621117673749">Thông báo khi có mặt hàng giảm giá</translation>
 <translation id="8616006591992756292">Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Mở URL đề xuất được chỉ định trong nội dung được tải xuống?</translation>

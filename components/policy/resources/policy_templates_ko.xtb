@@ -352,7 +352,6 @@
 
       참고: 서로 다른 서버 이름은 쉼표로 구분하세요. 와일드 카드(<ph name="WILDCARD_VALUE" />)를 사용할 수 있습니다.</translation>
 <translation id="1502843533062797703">타사 소프트웨어 삽입 차단 사용</translation>
-<translation id="1506017854924185821">시작 시 프로필 선택도구 사용 가능 여부</translation>
 <translation id="1509377996969000672">정책을 설정하면 기기에 연결된 회사 프린터의 설정이 제공됩니다. 형식은 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 사전과 일치하며 허용 목록 또는 차단 목록을 사용하려면 프린터마다 'id' 또는 'guid' 필드가 추가로 필요합니다. 파일 크기는 5MB를 초과할 수 없으며 JSON 형식입니다. 약 21,000대의 프린터가 포함된 파일은 5MB 크기의 파일로 인코딩됩니다. 암호화 해시로 다운로드 파일의 무결성을 확인할 수 있습니다. 파일이 다운로드되고 캐시되며 이후 URL 또는 해시가 변경되면 다시 다운로드됩니다. <ph name="PRODUCT_OS_NAME" />에서 프린터 설정 파일을 다운로드하고 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />에 따라 프린터를 사용할 수 있게 합니다.
 
       이 정책은

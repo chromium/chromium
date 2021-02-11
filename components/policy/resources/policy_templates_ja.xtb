@@ -348,7 +348,6 @@
 
       注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。</translation>
 <translation id="1502843533062797703">第三者ソフトウェアからのコードの挿入をブロックする</translation>
-<translation id="1506017854924185821">起動時のプロフィール選択画面の状態</translation>
 <translation id="1509377996969000672">このポリシーでは、デバイスに接続された企業プリンタの設定を指定できます。フォーマットは <ph name="NATIVE_PRINTERS_POLICY_NAME" /> ディクショナリと一致させ、許可リストまたは拒否リストに登録するプリンタごとに「id」または「guid」フィールドを追加で指定する必要があります。ファイルのサイズは 5 MB 以下とし、JSON 形式にします。5 MB は、約 21,000 台のプリンタを指定してエンコードしたファイルに相当します。ダウンロードの整合性の確認には暗号化ハッシュが使用されます。このファイルはダウンロードされた後、キャッシュされ、URL またはハッシュに変更があった場合は再度ダウンロードされます。<ph name="PRODUCT_OS_NAME" /> ではプリンタ設定ファイルがダウンロードされ、<ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> に沿ってプリンタが利用可能になります。
 
       このポリシーに関する留意事項:

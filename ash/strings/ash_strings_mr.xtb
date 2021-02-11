@@ -578,6 +578,7 @@
 <translation id="5992218262414051481">उच्च तीव्रता मोड सुरू केला आहे. तो बंदवर टॉगल करण्यासाठी Ctrl+Search+H दाबा.</translation>
 <translation id="6018164090099858612">मिरर मोडमधून बाहेर पडत आहे</translation>
 <translation id="602001110135236999">डावीकडे स्‍क्रोल करा</translation>
+<translation id="602472752137106327">सर्व डेस्कवरील विंडो दाखवा, रेडिओ बटण निवडले</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="6030495522958826102">मेनू स्क्रीनच्या तळाशी डाव्या कोपर्‍यात हलवला.</translation>
 <translation id="6032620807120418574">फुल स्क्रीन रेकॉर्ड करण्यासाठी कुठेही क्लिक करा</translation>
@@ -676,6 +677,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एक अंक शिल्लक आहे}other{# अंक शिल्लक आहेत}}</translation>
 <translation id="6878400149835617132">शॉर्टकट बंद केला आहे</translation>
 <translation id="6886172995547742638">तुमच्या <ph name="DEVICE_TYPE" /> चा परफॉर्मन्स कमी होऊ शकतो. प्रमाणित <ph name="PREFERRED_MINIMUM_POWER" />W किंवा त्यावरील USB-C पॉवर अडॅप्टर वापरा.</translation>
+<translation id="688631446150864480">विंडो स्विच करण्यासाठी डाउन अ‍ॅरो की दाबा</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6910714959251846841">या अपडेटसाठी तुमचे डिव्हाइस Powerwash करणे आवश्यक आहे. <ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या.</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
@@ -693,6 +695,7 @@
 <translation id="7029814467594812963">सेशनमधून बाहेर पडा</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">स्थिती क्षेत्र कोलॅप्स करा</translation>
+<translation id="7055910611768509537">एका आठवड्यापेक्षा जास्त वेळापासून स्टायलस वापरले नाही</translation>
 <translation id="7066646422045619941">हे नेटवर्क तुमच्या ॲडमिनिस्ट्रेटरने अक्षम केले आहे.</translation>
 <translation id="7067196344162293536">स्वयं फिरवा</translation>
 <translation id="7068360136237591149">फाइल उघडा</translation>
@@ -841,6 +844,7 @@
 <translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8308637677604853869">मागील मेनू</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> विंडो निवडली</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>
 <translation id="8371779926711439835">एक अक्षर पुढे जा</translation>
 <translation id="8375916635258623388">हे <ph name="DEVICE_NAME" />आणि तुमचा फोन आपोआप कनेक्ट होतील</translation>
@@ -864,6 +868,7 @@
 <translation id="8477270416194247200">रद्द करण्यासाठी Alt+Search किंवा Shift दाबा.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> वर बदलले. बदल ठेवण्यासाठी खात्री करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>
+<translation id="851458219935658693">सध्याच्या डेस्कवरील विंडो दाखवा, रेडिओ बटण निवडले</translation>
 <translation id="8517041960877371778">तुमचे <ph name="DEVICE_TYPE" /> सुरू केले असताना कदाचित चार्ज होणार नाही.</translation>
 <translation id="8553395910833293175">सर्व डेस्कना आधीपासून असाइन केले आहे.</translation>
 <translation id="8563862697512465947">सूचना सेटिंग्ज</translation>

@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
+<translation id="1497470209855416291">ట్రయల్ డిజేబుల్ చేయబడింది</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1513352483775369820">బుక్‌మార్క్‌లు మరియు వెబ్ చరిత్ర</translation>
 <translation id="1513858653616922153">పాస్‌వర్డ్‌ను తొలగించు</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">తర్వాతి వీడియోను చూడండి</translation>
 <translation id="2074143993849053708">Assistant వాయిస్ సెర్చ్ సమ్మతి UI మూసివేయబడింది</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />లో <ph name="RESULT_NUMBER" />వ ఫలితం</translation>
+<translation id="2083113399121613785">ట్రయల్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="2096012225669085171">అన్ని పరికరాలలో సింక్ చేయండి మరియు వ్యక్తిగతీకరించండి</translation>
 <translation id="2100273922101894616">ఆటోమేటిక్ సైన్-ఇన్</translation>
 <translation id="2100314319871056947">వచనాన్ని చిన్న భాగాలుగా చేసి షేర్ చేయడానికి ప్రయత్నించండి</translation>
@@ -565,7 +567,6 @@
 <translation id="5004416275253351869">Google కార్యకలాప నియంత్రణలు</translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
-<translation id="5013696553129441713">కొత్త సూచనలు ఏవీ లేవు</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5040262127954254034">గోప్యత</translation>
@@ -938,7 +939,6 @@
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
 <translation id="751961395872307827">సైట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="753225086557513863">తరువాత డౌన్‌లోడ్ చేయడానికి షెడ్యూల్ చేయబడింది</translation>
-<translation id="7542481630195938534">సూచనలను పొందడం సాధ్యపడదు</translation>
 <translation id="7559975015014302720">లైట్ మోడ్ ఆఫ్ చేయబడింది</translation>
 <translation id="7562080006725997899">బ్రౌజింగ్ డేటాను తీసివేస్తోంది</translation>
 <translation id="756809126120519699">Chrome డేటా తీసివేయబడింది</translation>

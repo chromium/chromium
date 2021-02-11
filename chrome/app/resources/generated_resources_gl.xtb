@@ -1633,6 +1633,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2804043232879091219">Non se puido abrir o navegador alternativo</translation>
 <translation id="2804667941345577550">Pecharase sesión neste sitio, aínda que o teñas aberto en pestanas</translation>
 <translation id="2804680522274557040">Desactivouse a cámara</translation>
+<translation id="2805539617243680210">Todo listo</translation>
 <translation id="2805646850212350655">Sistema de ficheiros de cifrado de Microsoft</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2805760958323556153">O valor da política ExtensionInstallForcelist non é válido. Ponte en contacto co teu administrador.</translation>
@@ -4023,6 +4024,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5582839680698949063">Menú principal</translation>
 <translation id="5583640892426849032">Retroceso</translation>
 <translation id="5584088138253955452">Queres gardar o nome de usuario?</translation>
+<translation id="5584091888252706332">No inicio</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Trátase de información xeral acerca do teu dispositivo e do seu uso, como o nivel de batería, a actividade da aplicación e do sistema, e os erros. Os datos utilizaranse coa finalidade de mellorar Android e algunha información adicional tamén axudará ás aplicacións de Google e aos socios, como os programadores de Android, a mellorar as súas aplicacións e os produtos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />A desactivación desta función non afecta á capacidade do teu dispositivo de enviar a información necesaria para os servizos esenciais, como a seguranza e as actualizacións do sistema.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />O propietario pode controlar esta función desde Configuración &gt; Avanzada &gt; Enviar de forma automática datos de uso e diagnóstico a Google.<ph name="END_PARAGRAPH3" />

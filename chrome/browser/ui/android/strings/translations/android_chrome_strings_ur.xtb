@@ -72,6 +72,7 @@
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> کا اشتراک نہیں کیا جا سکتا</translation>
 <translation id="1477626028522505441">سروس کے مسائل کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
+<translation id="1497470209855416291">ٹرائل غیر فعال ہے</translation>
 <translation id="1506061864768559482">تلاش انجن</translation>
 <translation id="1513352483775369820">بُک مارکس اور ویب سرگزشت</translation>
 <translation id="1513858653616922153">پاس ورڈ حذف کریں</translation>
@@ -152,6 +153,7 @@
 <translation id="2068748236079642969">اگلی ویڈیو دیکھیں</translation>
 <translation id="2074143993849053708">‏اسسٹنٹ صوتی تلاش کی رضامندی ui بند کی گئی ہے</translation>
 <translation id="2082238445998314030">نتیجہ <ph name="RESULT_NUMBER" /> از <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083113399121613785">ٹرائل فعال ہے</translation>
 <translation id="2096012225669085171">سبھی آلات پر مطابقت پذیری اور ذاتی نوعیت سازی کریں</translation>
 <translation id="2100273922101894616">خودکار سائن ان</translation>
 <translation id="2100314319871056947">چھوٹے ٹکڑوں میں متن کا اشتراک کرنے کی کوشش کریں</translation>
@@ -565,7 +567,6 @@
 <translation id="5004416275253351869">‏Google سرگرمی کنٹرولز</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> منسلک ہونا چاہتی ہے</translation>
-<translation id="5013696553129441713">کوئی نئی تجاویز نہیں</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5040262127954254034">رازداری</translation>
@@ -938,7 +939,6 @@
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="751961395872307827">سائٹ سے منسلک نہیں کیا جا سکتا</translation>
 <translation id="753225086557513863">بعد کیلئے شیڈول کیا گیا</translation>
-<translation id="7542481630195938534">تجاویز حاصل نہیں کی جا سکیں</translation>
 <translation id="7559975015014302720">لائٹ موڈ آف ہے</translation>
 <translation id="7562080006725997899">براؤزنگ ڈیٹا صاف کرنا</translation>
 <translation id="756809126120519699">‏Chrome ڈیٹا صاف کر دیا گیا</translation>
