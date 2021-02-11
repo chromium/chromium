@@ -7,6 +7,7 @@ from __future__ import print_function
 import ast
 import argparse
 import importlib
+import json
 import logging
 import os
 import pprint
@@ -94,6 +95,10 @@ def ParseArgs():
                       default=None,
                       help=('Path to trace_processor shell. '
                             'Default: Binary downloaded from cloud storage.'))
+  parser.add_argument('--force-recompute-tbmv2',
+                      action='store_true',
+                      help=('Recompute TBMv2 Metrics. Otherwise it will use '
+                            'a cached result when available.'))
   parser.add_argument('-v', '--verbose', action='store_true')
   args = parser.parse_args()
   return args
@@ -121,6 +126,7 @@ class ValidatorContext(object):
                       args.trace_processor_path)
 
     self.traces_dir = args.traces_dir
+    self.force_recompute_tbmv2 = args.force_recompute_tbmv2
 
 
 class TraceInfo(object):
@@ -177,9 +183,25 @@ def CreateTraceInfoFromArgs(args):
   return TraceInfo(json_trace, proto_trace)
 
 
-def RunTBMv2Metric(tbmv2_metric, json_trace):
+def GetV2CachedResultPath(tbmv2_metric, json_trace):
+  dirname = os.path.dirname(json_trace)
+  basename = os.path.basename(json_trace) + '.' + tbmv2_metric + '.json'
+  return os.path.join(dirname, basename)
+
+
+def RunTBMv2Metric(tbmv2_metric, json_trace, force_recompute=False):
   message = 'Running TBMv2 Metric...'
   PrintNoLn(message)
+  hset = histogram_set.HistogramSet()
+
+  cached_results = GetV2CachedResultPath(tbmv2_metric, json_trace)
+
+  if not force_recompute and os.path.exists(cached_results):
+    with open(cached_results) as f:
+      hset.ImportDicts(json.load(f))
+    CursorErase(len(message))
+    return hset
+
   metrics = [tbmv2_metric]
   TEN_MINUTES = 60 * 10
   trace_abspath = os.path.abspath(json_trace)
@@ -193,8 +215,10 @@ def RunTBMv2Metric(tbmv2_metric, json_trace):
     raise Exception("Metric %s is empty for trace %s" %
                     (tbmv2_metric, json_trace))
   histograms = mre_result.pairs['histograms']
-  hset = histogram_set.HistogramSet()
   hset.ImportDicts(histograms)
+  with open(cached_results, 'w') as f:
+    json.dump(histograms, f)
+
   CursorErase(len(message))
   return hset
 
@@ -215,7 +239,9 @@ def ValidateSingleTrace(ctx, trace_info):
         self.simple_config = ctx.simple_config
 
     def RunTBMv2(self, metric):
-      return RunTBMv2Metric(metric, trace_info.json_trace)
+      return RunTBMv2Metric(metric,
+                            trace_info.json_trace,
+                            force_recompute=ctx.force_recompute_tbmv2)
 
     def RunTBMv3(self, metric):
       return RunTBMv3Metric(ctx.trace_processor_path, metric,
