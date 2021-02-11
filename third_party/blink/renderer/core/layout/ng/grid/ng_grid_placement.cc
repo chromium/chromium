@@ -30,8 +30,7 @@ NGGridPlacement::NGGridPlacement(const ComputedStyle& grid_style,
       row_auto_repetitions_(row_auto_repetitions) {}
 
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
-void NGGridPlacement::RunAutoPlacementAlgorithm(
-    Vector<GridItemData>* grid_items) {
+void NGGridPlacement::RunAutoPlacementAlgorithm(GridItems* grid_items) {
   DCHECK(grid_items);
   minor_max_end_line_ = (minor_direction_ == kForColumns)
                             ? GridPositionsResolver::ExplicitGridColumnCount(
@@ -57,7 +56,7 @@ void NGGridPlacement::RunAutoPlacementAlgorithm(
 
   // Step 4. Position remaining grid items.
   AutoPlacementCursor placement_cursor;
-  for (GridItemData& grid_item : *grid_items) {
+  for (GridItemData& grid_item : grid_items->item_data) {
     switch (grid_item.AutoPlacement(major_direction_)) {
       case AutoPlacementType::kBoth:
         PlaceAutoBothAxisGridItem(&grid_item, &placement_cursor, *grid_items);
@@ -75,11 +74,11 @@ void NGGridPlacement::RunAutoPlacementAlgorithm(
 }
 
 wtf_size_t NGGridPlacement::DetermineTrackStartOffset(
-    const Vector<GridItemData>& grid_items,
+    const GridItems& grid_items,
     GridTrackSizingDirection track_direction) const {
   wtf_size_t track_start_offset = 0;
 
-  for (const GridItemData& grid_item : grid_items) {
+  for (const auto& grid_item : grid_items.item_data) {
     GridSpan grid_item_span =
         GridPositionsResolver::ResolveGridPositionsFromStyle(
             grid_style_, grid_item.node.Style(), track_direction,
@@ -94,11 +93,11 @@ wtf_size_t NGGridPlacement::DetermineTrackStartOffset(
   return track_start_offset;
 }
 
-bool NGGridPlacement::PlaceNonAutoGridItems(Vector<GridItemData>* grid_items) {
+bool NGGridPlacement::PlaceNonAutoGridItems(GridItems* grid_items) {
   DCHECK(grid_items);
   bool has_auto_placed_items = false;
 
-  for (GridItemData& grid_item : *grid_items) {
+  for (GridItemData& grid_item : grid_items->item_data) {
     bool has_definite_major_placement =
         PlaceGridItem(&grid_item, major_direction_);
     bool has_definite_minor_placement =
@@ -118,8 +117,7 @@ bool NGGridPlacement::PlaceNonAutoGridItems(Vector<GridItemData>* grid_items) {
   return has_auto_placed_items;
 }
 
-void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
-    Vector<GridItemData>* grid_items) {
+void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(GridItems* grid_items) {
   DCHECK(grid_items);
 
   // Mapping between the major axis tracks and the last auto-placed item's end
@@ -128,7 +126,7 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
   // See https://drafts.csswg.org/css-grid/#auto-placement-algo.
   HashMap<wtf_size_t, wtf_size_t> minor_cursors;
 
-  for (GridItemData& grid_item : *grid_items) {
+  for (GridItemData& grid_item : grid_items->item_data) {
     // Only consider grid items that require minor axis auto-placement.
     if (grid_item.AutoPlacement(major_direction_) != AutoPlacementType::kMinor)
       continue;
@@ -165,7 +163,7 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
 void NGGridPlacement::PlaceAutoMajorAxisGridItem(
     GridItemData* grid_item,
     AutoPlacementCursor* placement_cursor,
-    const Vector<GridItemData>& grid_items) {
+    const GridItems& grid_items) {
   DCHECK(grid_item);
 
   if (HasSparsePacking()) {
@@ -205,7 +203,7 @@ void NGGridPlacement::PlaceAutoMajorAxisGridItem(
 void NGGridPlacement::PlaceAutoBothAxisGridItem(
     GridItemData* grid_item,
     AutoPlacementCursor* placement_cursor,
-    const Vector<GridItemData>& grid_items) {
+    const GridItems& grid_items) {
   DCHECK(grid_item);
 
   // For dense packing, set the cursor’s major and minor positions to the
@@ -269,17 +267,16 @@ bool NGGridPlacement::PlaceGridItem(
   return true;
 }
 
-bool NGGridPlacement::DoesItemOverlap(
-    wtf_size_t major_start,
-    wtf_size_t major_end,
-    wtf_size_t minor_start,
-    wtf_size_t minor_end,
-    const Vector<GridItemData>& grid_items) const {
+bool NGGridPlacement::DoesItemOverlap(wtf_size_t major_start,
+                                      wtf_size_t major_end,
+                                      wtf_size_t minor_start,
+                                      wtf_size_t minor_end,
+                                      const GridItems& grid_items) const {
   DCHECK_LE(major_start, major_end);
   DCHECK_LE(minor_start, minor_end);
   // TODO(janewman): Implement smarter collision detection, iterating over all
   // items is not ideal and has large performance implications.
-  for (const GridItemData& grid_item : grid_items) {
+  for (const auto& grid_item : grid_items.item_data) {
     if (grid_item.Span(major_direction_).IsIndefinite())
       continue;
     // Only test against definite positions.

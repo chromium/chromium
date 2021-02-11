@@ -97,6 +97,56 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     base::Optional<ItemSetIndices> row_set_indices;
   };
 
+  struct GridItems {
+    class Iterator
+        : public std::iterator<std::input_iterator_tag, GridItemData> {
+     public:
+      Iterator(Vector<GridItemData>* item_data,
+               Vector<wtf_size_t>::const_iterator current_index)
+          : item_data_(item_data), current_index_(current_index) {
+        DCHECK(item_data_);
+      }
+
+      bool operator!=(const Iterator& other) const {
+        return current_index_ != other.current_index_ ||
+               item_data_ != other.item_data_;
+      }
+
+      Iterator& operator++() {
+        ++current_index_;
+        return *this;
+      }
+
+      GridItemData* operator->() {
+        DCHECK(current_index_ && *current_index_ < item_data_->size());
+        return &(item_data_->at(*current_index_));
+      }
+
+      GridItemData& operator*() {
+        DCHECK(current_index_ && *current_index_ < item_data_->size());
+        return item_data_->at(*current_index_);
+      }
+
+     private:
+      Vector<GridItemData>* item_data_;
+      Vector<wtf_size_t>::const_iterator current_index_;
+    };
+
+    Iterator begin();
+    Iterator end();
+
+    void Append(const GridItemData& new_item_data);
+
+    bool IsEmpty() const;
+
+    // Grid items are appended to |item_data_| in the same order provided by
+    // |NGGridChildIterator|, which iterates over its children in order-modified
+    // document order; we want to keep such order since auto-placement and
+    // painting order rely on it later in the algorithm.
+    Vector<GridItemData> item_data;
+    Vector<wtf_size_t> reordered_item_indices;
+  };
+
   explicit NGGridLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   scoped_refptr<const NGLayoutResult> Layout() override;
@@ -106,34 +156,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   friend class NGGridLayoutAlgorithmTest;
 
   enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
-
-  class ReorderedGridItems {
-   public:
-    class Iterator
-        : public std::iterator<std::input_iterator_tag, GridItemData> {
-     public:
-      Iterator(Vector<wtf_size_t>::const_iterator current_index,
-               Vector<GridItemData>* grid_items);
-
-      bool operator!=(const Iterator& other) const;
-      GridItemData* operator->();
-      GridItemData& operator*();
-      Iterator& operator++();
-
-     private:
-      Vector<wtf_size_t>::const_iterator current_index_;
-      Vector<GridItemData>* grid_items_;
-    };
-
-    ReorderedGridItems(const Vector<wtf_size_t>& reordered_item_indices,
-                       Vector<GridItemData>& grid_items);
-    Iterator begin();
-    Iterator end();
-
-   private:
-    const Vector<wtf_size_t>& reordered_item_indices_;
-    Vector<GridItemData>& grid_items_;
-  };
 
   // Returns the size that a grid item will distribute across the tracks with an
   // intrinsic sizing function it spans in the relevant track direction.
@@ -146,18 +168,18 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridTrackSizingDirection track_direction) const;
 
   void ConstructAndAppendGridItems(
-      Vector<GridItemData>* grid_items,
+      GridItems* grid_items,
       Vector<GridItemData>* out_of_flow_items = nullptr) const;
   GridItemData MeasureGridItem(const NGBlockNode node) const;
 
   void BuildBlockTrackCollections(
-      Vector<GridItemData>* grid_items,
+      GridItems* grid_items,
       NGGridBlockTrackCollection* column_track_collection,
       NGGridBlockTrackCollection* row_track_collection,
       NGGridPlacement* grid_placement) const;
 
   void BuildAlgorithmTrackCollections(
-      Vector<GridItemData>* grid_items,
+      GridItems* grid_items,
       NGGridLayoutAlgorithmTrackCollection* column_track_collection,
       NGGridLayoutAlgorithmTrackCollection* row_track_collection,
       NGGridPlacement* grid_placement) const;
@@ -167,33 +189,30 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                           NGGridBlockTrackCollection* track_collection) const;
   // Ensure coverage in block collection after grid items have been placed.
   void EnsureTrackCoverageForGridItems(
-      const Vector<GridItemData>& grid_items,
+      const GridItems& grid_items,
       NGGridBlockTrackCollection* track_collection) const;
 
   // For every grid item, caches properties of the track sizing functions it
   // spans (i.e. whether an item spans intrinsic or flexible tracks).
   void CacheGridItemsTrackSpanProperties(
       const NGGridLayoutAlgorithmTrackCollection& track_collection,
-      Vector<GridItemData>* grid_items,
-      Vector<wtf_size_t>* reordered_item_indices) const;
+      GridItems* grid_items) const;
 
   // Calculates from the min and max track sizing functions the used track size.
   void ComputeUsedTrackSizes(
       SizingConstraint sizing_constraint,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
-      Vector<GridItemData>* grid_items,
-      Vector<wtf_size_t>* reordered_item_indices) const;
+      GridItems* grid_items) const;
 
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.
   void ResolveIntrinsicTrackSizes(
       NGGridLayoutAlgorithmTrackCollection* track_collection,
-      Vector<GridItemData>* grid_items,
-      Vector<wtf_size_t>* reordered_item_indices) const;
+      GridItems* grid_items) const;
 
   void IncreaseTrackSizesToAccommodateGridItems(
-      ReorderedGridItems::Iterator group_begin,
-      ReorderedGridItems::Iterator group_end,
+      GridItems::Iterator group_begin,
+      GridItems::Iterator group_end,
       const bool is_group_spanning_flex_track,
       GridItemContributionType contribution_type,
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
@@ -225,7 +244,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
 
   // Layout the |grid_items| based on the offsets provided.
-  void PlaceGridItems(const Vector<GridItemData>& grid_items,
+  void PlaceGridItems(const GridItems& grid_items,
                       const SetGeometry& column_set_geometry,
                       const SetGeometry& row_set_geometry,
                       LayoutUnit block_size);

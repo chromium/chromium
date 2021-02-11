@@ -300,8 +300,8 @@ class CORE_EXPORT NGGridLayoutAlgorithmTrackCollection
     wtf_size_t end_set_index_;
   };
 
-  using SetIterator = SetIteratorBase<false>;
-  using ConstSetIterator = SetIteratorBase<true>;
+  typedef SetIteratorBase<false> SetIterator;
+  typedef SetIteratorBase<true> ConstSetIterator;
 
   NGGridLayoutAlgorithmTrackCollection() = default;
   // |is_content_box_size_indefinite| is used to normalize percentage track
