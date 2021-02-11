@@ -491,6 +491,8 @@ void PageLoadTracker::OnInputEvent(const blink::WebInputEvent& event) {
 }
 
 void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
+  metrics_update_dispatcher()->FlushPendingTimingUpdates();
+
   if (!app_entered_background_) {
     RecordAppBackgroundPageLoadCompleted(false);
     app_entered_background_ = true;
