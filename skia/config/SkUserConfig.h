@@ -228,8 +228,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_CONVEXITY_DIRECTION_CHANGE
 
-#define SK_USE_LEGACY_VK_ALLOCATOR_USAGE_NAMES
-
 // Remove once we have imported the functionality we need into chrome
 // SkDrawLooper is unsupported in skia
 #define SK_SUPPORT_LEGACY_DRAWLOOPER

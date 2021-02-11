@@ -20,22 +20,8 @@ namespace {
 
 class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
  public:
-  explicit GrVkMemoryAllocatorImpl(const VkPhysicalDeviceProperties& properties,
-                                   VmaAllocator allocator)
-      : allocator_(allocator) {
-    // On mobile GPUs we avoid using cached cpu memory. The memory is shared
-    // between the gpu and cpu and there probably isn't any win keeping a cached
-    // copy local on the CPU. We have seen examples on ARM where coherent
-    // non-cached memory writes are faster on the cpu than using cached
-    // non-coherent memory. Additionally we don't do a lot of read and writes to
-    // cpu memory in between GPU usues. Our uses are mostly write on CPU then
-    // read on GPU.
-    const auto& vendor_id = properties.vendorID;
-    if (kVendorQualcomm == vendor_id || kVendorARM == vendor_id ||
-        kVendorImagination == vendor_id) {
-      prefer_cached_memory_ = false;
-    }
-  }
+  explicit GrVkMemoryAllocatorImpl(VmaAllocator allocator)
+      : allocator_(allocator) {}
   ~GrVkMemoryAllocatorImpl() override = default;
 
   GrVkMemoryAllocatorImpl(const GrVkMemoryAllocatorImpl&) = delete;
@@ -94,22 +80,18 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
         info.requiredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
         info.preferredFlags = 0;
         break;
-      case BufferUsage::kCpuOnly:
+      case BufferUsage::kCpuWritesGpuReads:
         info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                              VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-        info.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
-        break;
-      case BufferUsage::kCpuWritesGpuReads:
-        info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-        if (prefer_cached_memory_)
-          info.requiredFlags |= VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
-
         info.preferredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
         break;
-      case BufferUsage::kGpuWritesCpuReads:
+      case BufferUsage::kTransfersFromCpuToGpu:
+        info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+        break;
+      case BufferUsage::kTransfersFromGpuToCpu:
         info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-        info.preferredFlags = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
-                              VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+        info.preferredFlags = VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
         break;
     }
 
@@ -130,15 +112,6 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
     VmaAllocation allocation;
     VkResult result = vma::AllocateMemoryForBuffer(allocator_, buffer, &info,
                                                    &allocation, nullptr);
-    if (VK_SUCCESS != result) {
-      if (usage == BufferUsage::kCpuWritesGpuReads) {
-        // We try again but this time drop the requirement for cached
-        info.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
-        result = vma::AllocateMemoryForBuffer(allocator_, buffer, &info,
-                                              &allocation, nullptr);
-      }
-    }
-
     if (VK_SUCCESS == result)
       *backend_memory = reinterpret_cast<GrVkBackendMemory>(allocation);
 
@@ -227,16 +200,13 @@ class GrVkMemoryAllocatorImpl : public GrVkMemoryAllocator {
   }
 
   const VmaAllocator allocator_;
-  bool prefer_cached_memory_ = true;
 };
 
 }  // namespace
 
 sk_sp<GrVkMemoryAllocator> CreateGrVkMemoryAllocator(
     VulkanDeviceQueue* device_queue) {
-  return sk_make_sp<GrVkMemoryAllocatorImpl>(
-      device_queue->vk_physical_device_properties(),
-      device_queue->vma_allocator());
+  return sk_make_sp<GrVkMemoryAllocatorImpl>(device_queue->vma_allocator());
 }
 
 }  // namespace gpu
