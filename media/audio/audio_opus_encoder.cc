@@ -220,15 +220,18 @@ void AudioOpusEncoder::EncodeAudioImpl(const AudioBus& audio_bus,
   // timestamp for the next audio sample. It means there is a gap/overlap,
   // if it's big enough we flash and start anew, otherwise we ignore it.
   auto capture_ts = ComputeTimestamp(audio_bus.frames(), capture_time);
-  auto end_of_existing_buffer_ts =
-      next_timestamp_ +
-      AudioTimestampHelper::FramesToTime(fifo_.queued_frames(),
-                                         audio_input_params().sample_rate());
+  auto existing_buffer_duration = AudioTimestampHelper::FramesToTime(
+      fifo_.queued_frames(), audio_input_params().sample_rate());
+  auto end_of_existing_buffer_ts = next_timestamp_ + existing_buffer_duration;
   base::TimeDelta gap = (capture_ts - end_of_existing_buffer_ts).magnitude();
   constexpr base::TimeDelta max_gap = base::TimeDelta::FromMilliseconds(1);
   if (gap > max_gap) {
-    DLOG(ERROR) << "Large gap in sound. Forced flush. "
-                << "Gap/overlap duration: " << gap;
+    DLOG(ERROR) << "Large gap in sound. Forced flush."
+                << " Gap/overlap duration: " << gap
+                << " capture_ts: " << capture_ts
+                << " next_timestamp_: " << next_timestamp_
+                << " existing_buffer_duration: " << existing_buffer_duration
+                << " end_of_existing_buffer_ts: " << end_of_existing_buffer_ts;
     FlushImpl();
     next_timestamp_ = capture_ts;
   }
