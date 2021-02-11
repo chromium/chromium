@@ -19,7 +19,6 @@ cc_component("animation") {
     "animation_host.h",
     "animation_id_provider.cc",
     "animation_id_provider.h",
-    "animation_target.h",
     "animation_timeline.cc",
     "animation_timeline.h",
     "element_animations.cc",

@@ -466,15 +466,6 @@ FilterOperations KeyframedFilterAnimationCurve::GetValue(
   return keyframes_[i + 1]->Value().Blend(keyframes_[i]->Value(), progress);
 }
 
-bool KeyframedFilterAnimationCurve::HasFilterThatMovesPixels() const {
-  for (const auto& keyframe : keyframes_) {
-    if (keyframe->Value().HasFilterThatMovesPixels()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 std::unique_ptr<KeyframedSizeAnimationCurve>
 KeyframedSizeAnimationCurve::Create() {
   return base::WrapUnique(new KeyframedSizeAnimationCurve);

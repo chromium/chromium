@@ -205,10 +205,9 @@ bool ElementAnimations::ScrollOffsetAnimationWasInterrupted() const {
   return false;
 }
 
-void ElementAnimations::NotifyClientFloatAnimated(
-    float value,
-    int target_property_id,
-    KeyframeModel* keyframe_model) {
+void ElementAnimations::OnFloatAnimated(const float& value,
+                                        int target_property_id,
+                                        KeyframeModel* keyframe_model) {
   switch (keyframe_model->target_property_type()) {
     case TargetProperty::CSS_CUSTOM_PROPERTY:
     case TargetProperty::NATIVE_PROPERTY:
@@ -233,10 +232,9 @@ void ElementAnimations::NotifyClientFloatAnimated(
   }
 }
 
-void ElementAnimations::NotifyClientFilterAnimated(
-    const FilterOperations& filters,
-    int target_property_id,
-    KeyframeModel* keyframe_model) {
+void ElementAnimations::OnFilterAnimated(const FilterOperations& filters,
+                                         int target_property_id,
+                                         KeyframeModel* keyframe_model) {
   switch (keyframe_model->target_property_type()) {
     case TargetProperty::BACKDROP_FILTER:
       if (KeyframeModelAffectsActiveElements(keyframe_model))
@@ -257,17 +255,16 @@ void ElementAnimations::NotifyClientFilterAnimated(
   }
 }
 
-void ElementAnimations::NotifyClientColorAnimated(
-    SkColor value,
-    int target_property_id,
-    KeyframeModel* keyframe_model) {
+void ElementAnimations::OnColorAnimated(const SkColor& value,
+                                        int target_property_id,
+                                        KeyframeModel* keyframe_model) {
   DCHECK_EQ(keyframe_model->target_property_type(),
             TargetProperty::CSS_CUSTOM_PROPERTY);
   OnCustomPropertyAnimated(PaintWorkletInput::PropertyValue(value),
                            keyframe_model, target_property_id);
 }
 
-void ElementAnimations::NotifyClientTransformOperationsAnimated(
+void ElementAnimations::OnTransformAnimated(
     const gfx::TransformOperations& operations,
     int target_property_id,
     KeyframeModel* keyframe_model) {
@@ -278,7 +275,7 @@ void ElementAnimations::NotifyClientTransformOperationsAnimated(
     OnTransformAnimated(ElementListType::PENDING, transform, keyframe_model);
 }
 
-void ElementAnimations::NotifyClientScrollOffsetAnimated(
+void ElementAnimations::OnScrollOffsetAnimated(
     const gfx::ScrollOffset& scroll_offset,
     int target_property_id,
     KeyframeModel* keyframe_model) {
@@ -367,6 +364,30 @@ void ElementAnimations::UpdateClientAnimationState() {
           transform_element_id, ElementListType::PENDING, maximum_scale);
       pending_maximum_scale_ = maximum_scale;
     }
+  }
+}
+
+void ElementAnimations::AttachToCurve(AnimationCurve* c) {
+  switch (c->Type()) {
+    case AnimationCurve::COLOR:
+      ColorAnimationCurve::ToColorAnimationCurve(c)->set_target(this);
+      break;
+    case AnimationCurve::FLOAT:
+      FloatAnimationCurve::ToFloatAnimationCurve(c)->set_target(this);
+      break;
+    case AnimationCurve::TRANSFORM:
+      TransformAnimationCurve::ToTransformAnimationCurve(c)->set_target(this);
+      break;
+    case AnimationCurve::FILTER:
+      FilterAnimationCurve::ToFilterAnimationCurve(c)->set_target(this);
+      break;
+    case AnimationCurve::SCROLL_OFFSET:
+      ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(c)->set_target(
+          this);
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
 }
 

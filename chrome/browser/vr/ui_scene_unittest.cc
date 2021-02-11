@@ -200,7 +200,7 @@ TEST(UiScene, InvisibleElementsDoNotCauseAnimationDirtiness) {
   UiScene scene;
   auto element = std::make_unique<UiElement>();
   element->AddKeyframeModel(CreateBackgroundColorAnimation(
-      1, 1, SK_ColorBLACK, SK_ColorWHITE, MsToDelta(1000)));
+      element.get(), 1, 1, SK_ColorBLACK, SK_ColorWHITE, MsToDelta(1000)));
   UiElement* element_ptr = element.get();
   scene.AddUiElement(kRoot, std::move(element));
   EXPECT_TRUE(scene.OnBeginFrame(MsToTicks(1), kStartHeadPose));

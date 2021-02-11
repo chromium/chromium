@@ -81,8 +81,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect {
 
   virtual void Tick(base::TimeTicks monotonic_time);
   static void TickKeyframeModel(base::TimeTicks monotonic_time,
-                                KeyframeModel* keyframe_model,
-                                AnimationTarget* target);
+                                KeyframeModel* keyframe_model);
   void RemoveFromTicking();
 
   void UpdateState(bool start_ready_keyframe_models, AnimationEvents* events);

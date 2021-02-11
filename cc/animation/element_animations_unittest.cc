@@ -276,11 +276,11 @@ TEST_F(ElementAnimationsTest,
       KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   animation_->AddKeyframeModel(std::move(animation_fixed));
   PushProperties();
-  EXPECT_VECTOR2DF_EQ(initial_value, animation_impl_->keyframe_effect()
-                                         ->GetKeyframeModelById(animation1_id)
-                                         ->curve()
-                                         ->ToScrollOffsetAnimationCurve()
-                                         ->GetValue(base::TimeDelta()));
+  auto* scroll_curve = ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+      animation_impl_->keyframe_effect()
+          ->GetKeyframeModelById(animation1_id)
+          ->curve());
+  EXPECT_VECTOR2DF_EQ(initial_value, scroll_curve->GetValue(base::TimeDelta()));
   animation_->RemoveKeyframeModel(animation1_id);
 
   // Animation without initial value set.
@@ -293,12 +293,12 @@ TEST_F(ElementAnimationsTest,
       KeyframeModel::TargetPropertyId(TargetProperty::SCROLL_OFFSET)));
   animation_->AddKeyframeModel(std::move(keyframe_model));
   PushProperties();
+  scroll_curve = static_cast<ScrollOffsetAnimationCurve*>(
+      animation_impl_->keyframe_effect()
+          ->GetKeyframeModelById(animation2_id)
+          ->curve());
   EXPECT_VECTOR2DF_EQ(provider_initial_value,
-                      animation_impl_->keyframe_effect()
-                          ->GetKeyframeModelById(animation2_id)
-                          ->curve()
-                          ->ToScrollOffsetAnimationCurve()
-                          ->GetValue(base::TimeDelta()));
+                      scroll_curve->GetValue(base::TimeDelta()));
   animation_->RemoveKeyframeModel(animation2_id);
 }
 
@@ -2092,9 +2092,9 @@ TEST_F(ElementAnimationsTest, ImplThreadTakeoverAnimationGetsDeleted) {
   EXPECT_EQ(1u, events->events_.size());
   EXPECT_EQ(AnimationEvent::TAKEOVER, events->events_[0].type);
   EXPECT_EQ(TicksFromSecondsF(123), events->events_[0].animation_start_time);
-  EXPECT_EQ(
-      target_value,
-      events->events_[0].curve->ToScrollOffsetAnimationCurve()->target_value());
+  EXPECT_EQ(target_value, static_cast<ScrollOffsetAnimationCurve*>(
+                              events->events_[0].curve.get())
+                              ->target_value());
   EXPECT_EQ(nullptr,
             animation_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET));
 

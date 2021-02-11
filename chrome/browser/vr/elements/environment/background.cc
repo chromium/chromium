@@ -187,18 +187,19 @@ void Background::SetGradientImages(
 }
 
 void Background::SetNormalFactor(float factor) {
-  animation().TransitionFloatTo(last_frame_time(), NORMAL_COLOR_FACTOR,
+  animation().TransitionFloatTo(this, last_frame_time(), NORMAL_COLOR_FACTOR,
                                 normal_factor_, factor);
 }
 
 void Background::SetIncognitoFactor(float factor) {
-  animation().TransitionFloatTo(last_frame_time(), INCOGNITO_COLOR_FACTOR,
+  animation().TransitionFloatTo(this, last_frame_time(), INCOGNITO_COLOR_FACTOR,
                                 incognito_factor_, factor);
 }
 
 void Background::SetFullscreenFactor(float factor) {
-  animation().TransitionFloatTo(last_frame_time(), FULLSCREEN_COLOR_FACTOR,
-                                fullscreen_factor_, factor);
+  animation().TransitionFloatTo(this, last_frame_time(),
+                                FULLSCREEN_COLOR_FACTOR, fullscreen_factor_,
+                                factor);
 }
 
 void Background::CreateBackgroundTexture() {
@@ -221,9 +222,9 @@ void Background::CreateGradientTextures() {
                   provider_, &fullscreen_gradient_surface_);
 }
 
-void Background::NotifyClientFloatAnimated(float value,
-                                           int target_property_id,
-                                           cc::KeyframeModel* keyframe_model) {
+void Background::OnFloatAnimated(const float& value,
+                                 int target_property_id,
+                                 cc::KeyframeModel* keyframe_model) {
   switch (target_property_id) {
     case NORMAL_COLOR_FACTOR:
       normal_factor_ = value;
@@ -235,8 +236,7 @@ void Background::NotifyClientFloatAnimated(float value,
       fullscreen_factor_ = value;
       break;
     default:
-      UiElement::NotifyClientFloatAnimated(value, target_property_id,
-                                           keyframe_model);
+      UiElement::OnFloatAnimated(value, target_property_id, keyframe_model);
   }
 }
 

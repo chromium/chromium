@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_curve.h"
-#include "cc/animation/animation_target.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframed_animation_curve.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -1003,6 +1002,8 @@ void BindIndicatorTranscienceForWin(
       cc::CubicBezierTimingFunction::CreatePreset(
           cc::CubicBezierTimingFunction::EaseType::EASE)));
 
+  curve->set_target(e);
+
   e->AddKeyframeModel(cc::KeyframeModel::Create(
       std::move(curve), Animation::GetNextKeyframeModelId(),
       Animation::GetNextGroupId(),
@@ -1088,6 +1089,8 @@ void BindIndicatorTranscience(
       value_3,
       cc::CubicBezierTimingFunction::CreatePreset(
           cc::CubicBezierTimingFunction::EaseType::EASE)));
+
+  curve->set_target(e);
 
   e->AddKeyframeModel(cc::KeyframeModel::Create(
       std::move(curve), Animation::GetNextKeyframeModelId(),

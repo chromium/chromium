@@ -115,7 +115,8 @@ bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
     return true;
 
   ScrollOffsetAnimationCurve* curve =
-      keyframe_model->curve()->ToScrollOffsetAnimationCurve();
+      ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+          keyframe_model->curve());
 
   gfx::ScrollOffset new_target =
       gfx::ScrollOffsetWithDelta(curve->target_value(), scroll_delta);
@@ -168,8 +169,8 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationApplyAdjustment(
   }
 
   std::unique_ptr<ScrollOffsetAnimationCurve> new_curve =
-      keyframe_model->curve()
-          ->ToScrollOffsetAnimationCurve()
+      ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+          keyframe_model->curve())
           ->CloneToScrollOffsetAnimationCurve();
   new_curve->ApplyAdjustment(adjustment);
 

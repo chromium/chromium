@@ -36,14 +36,6 @@ static_assert(static_cast<int>(cc::KeyframeModel::LAST_RUN_STATE) + 1 ==
               "RunStateEnumSize should equal the number of elements in "
               "s_runStateNames");
 
-static const char* const s_curveTypeNames[] = {
-    "COLOR", "FLOAT", "TRANSFORM", "FILTER", "SCROLL_OFFSET", "SIZE"};
-
-static_assert(static_cast<int>(cc::AnimationCurve::LAST_CURVE_TYPE) + 1 ==
-                  base::size(s_curveTypeNames),
-              "CurveType enum should equal the number of elements in "
-              "s_runStateNames");
-
 }  // namespace
 
 namespace cc {
@@ -138,8 +130,8 @@ void KeyframeModel::SetRunState(RunState run_state,
                                 base::TimeTicks monotonic_time) {
   char name_buffer[256];
   base::snprintf(name_buffer, sizeof(name_buffer), "%s-%d-%d",
-                 s_curveTypeNames[curve_->Type()],
-                 target_property_id_.target_property_type(), group_);
+                 curve_->TypeName(), target_property_id_.target_property_type(),
+                 group_);
 
   bool is_waiting_to_start =
       run_state_ == WAITING_FOR_TARGET_AVAILABILITY || run_state_ == STARTING;

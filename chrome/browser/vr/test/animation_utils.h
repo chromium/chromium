@@ -16,6 +16,7 @@ namespace vr {
 class UiElement;
 
 std::unique_ptr<cc::KeyframeModel> CreateTransformAnimation(
+    cc::TransformAnimationCurve::Target* target,
     int id,
     int group,
     const gfx::TransformOperations& from,
@@ -23,6 +24,7 @@ std::unique_ptr<cc::KeyframeModel> CreateTransformAnimation(
     base::TimeDelta duration);
 
 std::unique_ptr<cc::KeyframeModel> CreateBoundsAnimation(
+    cc::SizeAnimationCurve::Target* target,
     int id,
     int group,
     const gfx::SizeF& from,
@@ -30,6 +32,7 @@ std::unique_ptr<cc::KeyframeModel> CreateBoundsAnimation(
     base::TimeDelta duration);
 
 std::unique_ptr<cc::KeyframeModel> CreateOpacityAnimation(
+    cc::FloatAnimationCurve::Target* target,
     int id,
     int group,
     float from,
@@ -37,6 +40,7 @@ std::unique_ptr<cc::KeyframeModel> CreateOpacityAnimation(
     base::TimeDelta duration);
 
 std::unique_ptr<cc::KeyframeModel> CreateBackgroundColorAnimation(
+    cc::ColorAnimationCurve::Target* target,
     int id,
     int group,
     SkColor from,

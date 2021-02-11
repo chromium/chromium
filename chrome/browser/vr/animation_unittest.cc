@@ -4,7 +4,7 @@
 
 #include "chrome/browser/vr/animation.h"
 
-#include "cc/animation/animation_target.h"
+#include "cc/animation/animation_curve.h"
 #include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/target_property.h"
 #include "chrome/browser/vr/test/animation_utils.h"
@@ -18,7 +18,10 @@ namespace vr {
 
 static constexpr float kNoise = 1e-6f;
 
-class TestAnimationTarget : public cc::AnimationTarget {
+class TestAnimationTarget : public cc::SizeAnimationCurve::Target,
+                            public cc::TransformAnimationCurve::Target,
+                            public cc::FloatAnimationCurve::Target,
+                            public cc::ColorAnimationCurve::Target {
  public:
   TestAnimationTarget() {
     layout_offset_.AppendTranslate(0, 0, 0);
@@ -35,16 +38,15 @@ class TestAnimationTarget : public cc::AnimationTarget {
   float opacity() const { return opacity_; }
   SkColor background_color() const { return background_color_; }
 
-  void NotifyClientSizeAnimated(const gfx::SizeF& size,
-                                int target_property_id,
-                                cc::KeyframeModel* keyframe_model) override {
+  void OnSizeAnimated(const gfx::SizeF& size,
+                      int target_property_id,
+                      cc::KeyframeModel* keyframe_model) override {
     size_ = size;
   }
 
-  void NotifyClientTransformOperationsAnimated(
-      const gfx::TransformOperations& operations,
-      int target_property_id,
-      cc::KeyframeModel* keyframe_model) override {
+  void OnTransformAnimated(const gfx::TransformOperations& operations,
+                           int target_property_id,
+                           cc::KeyframeModel* keyframe_model) override {
     if (target_property_id == LAYOUT_OFFSET) {
       layout_offset_ = operations;
     } else {
@@ -52,24 +54,17 @@ class TestAnimationTarget : public cc::AnimationTarget {
     }
   }
 
-  void NotifyClientFloatAnimated(float opacity,
-                                 int target_property_id,
-                                 cc::KeyframeModel* keyframe_model) override {
+  void OnFloatAnimated(const float& opacity,
+                       int target_property_id,
+                       cc::KeyframeModel* keyframe_model) override {
     opacity_ = opacity;
   }
 
-  void NotifyClientColorAnimated(SkColor color,
-                                 int target_property_id,
-                                 cc::KeyframeModel* keyframe_model) override {
+  void OnColorAnimated(const SkColor& color,
+                       int target_property_id,
+                       cc::KeyframeModel* keyframe_model) override {
     background_color_ = color;
   }
-  void NotifyClientFilterAnimated(const cc::FilterOperations& filter,
-                                  int target_property_id,
-                                  cc::KeyframeModel* keyframe_model) override {}
-  void NotifyClientScrollOffsetAnimated(
-      const gfx::ScrollOffset& scroll_offset,
-      int target_property_id,
-      cc::KeyframeModel* keyframe_model) override {}
 
  private:
   gfx::TransformOperations layout_offset_;
@@ -82,10 +77,11 @@ class TestAnimationTarget : public cc::AnimationTarget {
 TEST(AnimationTest, AddRemoveKeyframeModels) {
   Animation animation;
   EXPECT_TRUE(animation.keyframe_models().empty());
+  TestAnimationTarget target;
 
-  animation.AddKeyframeModel(CreateBoundsAnimation(1, 1, gfx::SizeF(10, 100),
-                                                   gfx::SizeF(20, 200),
-                                                   MicrosecondsToDelta(10000)));
+  animation.AddKeyframeModel(
+      CreateBoundsAnimation(&target, 1, 1, gfx::SizeF(10, 100),
+                            gfx::SizeF(20, 200), MicrosecondsToDelta(10000)));
   EXPECT_EQ(1ul, animation.keyframe_models().size());
   EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_type());
 
@@ -93,14 +89,16 @@ TEST(AnimationTest, AddRemoveKeyframeModels) {
   from_operations.AppendTranslate(10, 100, 1000);
   gfx::TransformOperations to_operations;
   to_operations.AppendTranslate(20, 200, 2000);
-  animation.AddKeyframeModel(CreateTransformAnimation(
-      2, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));
+  animation.AddKeyframeModel(
+      CreateTransformAnimation(&target, 2, 2, from_operations, to_operations,
+                               MicrosecondsToDelta(10000)));
 
   EXPECT_EQ(2ul, animation.keyframe_models().size());
   EXPECT_EQ(TRANSFORM, animation.keyframe_models()[1]->target_property_type());
 
-  animation.AddKeyframeModel(CreateTransformAnimation(
-      3, 3, from_operations, to_operations, MicrosecondsToDelta(10000)));
+  animation.AddKeyframeModel(
+      CreateTransformAnimation(&target, 3, 3, from_operations, to_operations,
+                               MicrosecondsToDelta(10000)));
   EXPECT_EQ(3ul, animation.keyframe_models().size());
   EXPECT_EQ(TRANSFORM, animation.keyframe_models()[2]->target_property_type());
 
@@ -115,11 +113,10 @@ TEST(AnimationTest, AddRemoveKeyframeModels) {
 TEST(AnimationTest, AnimationLifecycle) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
 
-  animation.AddKeyframeModel(CreateBoundsAnimation(1, 1, gfx::SizeF(10, 100),
-                                                   gfx::SizeF(20, 200),
-                                                   MicrosecondsToDelta(10000)));
+  animation.AddKeyframeModel(
+      CreateBoundsAnimation(&target, 1, 1, gfx::SizeF(10, 100),
+                            gfx::SizeF(20, 200), MicrosecondsToDelta(10000)));
   EXPECT_EQ(1ul, animation.keyframe_models().size());
   EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_type());
   EXPECT_EQ(cc::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
@@ -144,11 +141,10 @@ TEST(AnimationTest, AnimationLifecycle) {
 TEST(AnimationTest, AnimationQueue) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
 
-  animation.AddKeyframeModel(CreateBoundsAnimation(1, 1, gfx::SizeF(10, 100),
-                                                   gfx::SizeF(20, 200),
-                                                   MicrosecondsToDelta(10000)));
+  animation.AddKeyframeModel(
+      CreateBoundsAnimation(&target, 1, 1, gfx::SizeF(10, 100),
+                            gfx::SizeF(20, 200), MicrosecondsToDelta(10000)));
   EXPECT_EQ(1ul, animation.keyframe_models().size());
   EXPECT_EQ(BOUNDS, animation.keyframe_models()[0]->target_property_type());
   EXPECT_EQ(cc::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
@@ -160,16 +156,17 @@ TEST(AnimationTest, AnimationQueue) {
             animation.keyframe_models()[0]->run_state());
   EXPECT_SIZEF_EQ(gfx::SizeF(10, 100), target.size());
 
-  animation.AddKeyframeModel(CreateBoundsAnimation(2, 2, gfx::SizeF(10, 100),
-                                                   gfx::SizeF(20, 200),
-                                                   MicrosecondsToDelta(10000)));
+  animation.AddKeyframeModel(
+      CreateBoundsAnimation(&target, 2, 2, gfx::SizeF(10, 100),
+                            gfx::SizeF(20, 200), MicrosecondsToDelta(10000)));
 
   gfx::TransformOperations from_operations;
   from_operations.AppendTranslate(10, 100, 1000);
   gfx::TransformOperations to_operations;
   to_operations.AppendTranslate(20, 200, 2000);
-  animation.AddKeyframeModel(CreateTransformAnimation(
-      3, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));
+  animation.AddKeyframeModel(
+      CreateTransformAnimation(&target, 3, 2, from_operations, to_operations,
+                               MicrosecondsToDelta(10000)));
 
   EXPECT_EQ(3ul, animation.keyframe_models().size());
   EXPECT_EQ(BOUNDS, animation.keyframe_models()[1]->target_property_type());
@@ -202,7 +199,6 @@ TEST(AnimationTest, AnimationQueue) {
 TEST(AnimationTest, FinishedTransition) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {OPACITY};
   transition.duration = MsToDelta(10);
@@ -213,7 +209,7 @@ TEST(AnimationTest, FinishedTransition) {
 
   float from = 1.0f;
   float to = 0.0f;
-  animation.TransitionFloatTo(start_time, OPACITY, from, to);
+  animation.TransitionFloatTo(&target, start_time, OPACITY, from, to);
 
   animation.Tick(start_time);
   EXPECT_EQ(from, target.opacity());
@@ -221,7 +217,7 @@ TEST(AnimationTest, FinishedTransition) {
   // We now simulate a long pause where the element hasn't been ticked (eg, it
   // may have been hidden). If this happens, the unticked transition must still
   // be treated as having finished.
-  animation.TransitionFloatTo(start_time + MsToDelta(1000), OPACITY,
+  animation.TransitionFloatTo(&target, start_time + MsToDelta(1000), OPACITY,
                               target.opacity(), 1.0f);
 
   animation.Tick(start_time + MsToDelta(1000));
@@ -231,7 +227,6 @@ TEST(AnimationTest, FinishedTransition) {
 TEST(AnimationTest, OpacityTransitions) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {OPACITY};
   transition.duration = MicrosecondsToDelta(10000);
@@ -242,7 +237,7 @@ TEST(AnimationTest, OpacityTransitions) {
 
   float from = 1.0f;
   float to = 0.5f;
-  animation.TransitionFloatTo(start_time, OPACITY, from, to);
+  animation.TransitionFloatTo(&target, start_time, OPACITY, from, to);
 
   EXPECT_EQ(from, target.opacity());
   animation.Tick(start_time);
@@ -250,7 +245,7 @@ TEST(AnimationTest, OpacityTransitions) {
   // Scheduling a redundant, approximately equal transition should be ignored.
   int keyframe_model_id = animation.keyframe_models().front()->id();
   float nearby = to + kNoise;
-  animation.TransitionFloatTo(start_time, OPACITY, from, nearby);
+  animation.TransitionFloatTo(&target, start_time, OPACITY, from, nearby);
   EXPECT_EQ(keyframe_model_id, animation.keyframe_models().front()->id());
 
   animation.Tick(start_time + MicrosecondsToDelta(5000));
@@ -264,7 +259,6 @@ TEST(AnimationTest, OpacityTransitions) {
 TEST(AnimationTest, ReversedOpacityTransitions) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {OPACITY};
   transition.duration = MicrosecondsToDelta(10000);
@@ -275,7 +269,7 @@ TEST(AnimationTest, ReversedOpacityTransitions) {
 
   float from = 1.0f;
   float to = 0.5f;
-  animation.TransitionFloatTo(start_time, OPACITY, from, to);
+  animation.TransitionFloatTo(&target, start_time, OPACITY, from, to);
 
   EXPECT_EQ(from, target.opacity());
   animation.Tick(start_time);
@@ -285,8 +279,8 @@ TEST(AnimationTest, ReversedOpacityTransitions) {
   EXPECT_GT(from, value_before_reversing);
   EXPECT_LT(to, value_before_reversing);
 
-  animation.TransitionFloatTo(start_time + MicrosecondsToDelta(1000), OPACITY,
-                              target.opacity(), from);
+  animation.TransitionFloatTo(&target, start_time + MicrosecondsToDelta(1000),
+                              OPACITY, target.opacity(), from);
   animation.Tick(start_time + MicrosecondsToDelta(1000));
   EXPECT_FLOAT_EQ(value_before_reversing, target.opacity());
 
@@ -299,7 +293,6 @@ TEST(AnimationTest, LayoutOffsetTransitions) {
   float tolerance = 0.0f;
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {LAYOUT_OFFSET};
   transition.duration = MicrosecondsToDelta(10000);
@@ -312,8 +305,8 @@ TEST(AnimationTest, LayoutOffsetTransitions) {
   gfx::TransformOperations to;
   to.AppendTranslate(8, 0, 0);
 
-  animation.TransitionTransformOperationsTo(start_time, LAYOUT_OFFSET, from,
-                                            to);
+  animation.TransitionTransformOperationsTo(&target, start_time, LAYOUT_OFFSET,
+                                            from, to);
 
   EXPECT_TRUE(from.ApproximatelyEqual(target.layout_offset(), tolerance));
   animation.Tick(start_time);
@@ -322,8 +315,8 @@ TEST(AnimationTest, LayoutOffsetTransitions) {
   int keyframe_model_id = animation.keyframe_models().front()->id();
   gfx::TransformOperations nearby = to;
   nearby.at(0).translate.x += kNoise;
-  animation.TransitionTransformOperationsTo(start_time, LAYOUT_OFFSET, from,
-                                            nearby);
+  animation.TransitionTransformOperationsTo(&target, start_time, LAYOUT_OFFSET,
+                                            from, nearby);
   EXPECT_EQ(keyframe_model_id, animation.keyframe_models().front()->id());
 
   animation.Tick(start_time + MicrosecondsToDelta(5000));
@@ -339,7 +332,6 @@ TEST(AnimationTest, TransformTransitions) {
   float tolerance = 0.0f;
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {TRANSFORM};
   transition.duration = MicrosecondsToDelta(10000);
@@ -354,7 +346,8 @@ TEST(AnimationTest, TransformTransitions) {
   to.AppendRotate(1, 0, 0, 0);
   to.AppendScale(1, 1, 1);
 
-  animation.TransitionTransformOperationsTo(start_time, TRANSFORM, from, to);
+  animation.TransitionTransformOperationsTo(&target, start_time, TRANSFORM,
+                                            from, to);
 
   EXPECT_TRUE(from.ApproximatelyEqual(target.operations(), tolerance));
   animation.Tick(start_time);
@@ -363,8 +356,8 @@ TEST(AnimationTest, TransformTransitions) {
   int keyframe_model_id = animation.keyframe_models().front()->id();
   gfx::TransformOperations nearby = to;
   nearby.at(0).translate.x += kNoise;
-  animation.TransitionTransformOperationsTo(start_time, TRANSFORM, from,
-                                            nearby);
+  animation.TransitionTransformOperationsTo(&target, start_time, TRANSFORM,
+                                            from, nearby);
   EXPECT_EQ(keyframe_model_id, animation.keyframe_models().front()->id());
 
   animation.Tick(start_time + MicrosecondsToDelta(5000));
@@ -380,7 +373,6 @@ TEST(AnimationTest, ReversedTransformTransitions) {
   float tolerance = 0.0f;
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {TRANSFORM};
   transition.duration = MicrosecondsToDelta(10000);
@@ -395,7 +387,8 @@ TEST(AnimationTest, ReversedTransformTransitions) {
   to.AppendRotate(1, 0, 0, 0);
   to.AppendScale(1, 1, 1);
 
-  animation.TransitionTransformOperationsTo(start_time, TRANSFORM, from, to);
+  animation.TransitionTransformOperationsTo(&target, start_time, TRANSFORM,
+                                            from, to);
 
   EXPECT_TRUE(from.ApproximatelyEqual(target.operations(), tolerance));
   animation.Tick(start_time);
@@ -406,8 +399,8 @@ TEST(AnimationTest, ReversedTransformTransitions) {
   EXPECT_GT(to.at(0).translate.x, target.operations().at(0).translate.x);
 
   animation.TransitionTransformOperationsTo(
-      start_time + MicrosecondsToDelta(1000), TRANSFORM, target.operations(),
-      from);
+      &target, start_time + MicrosecondsToDelta(1000), TRANSFORM,
+      target.operations(), from);
   animation.Tick(start_time + MicrosecondsToDelta(1000));
   EXPECT_TRUE(value_before_reversing.ApproximatelyEqual(target.operations(),
                                                         tolerance));
@@ -419,7 +412,6 @@ TEST(AnimationTest, ReversedTransformTransitions) {
 TEST(AnimationTest, BoundsTransitions) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {BOUNDS};
   transition.duration = MicrosecondsToDelta(10000);
@@ -430,7 +422,7 @@ TEST(AnimationTest, BoundsTransitions) {
   gfx::SizeF from = target.size();
   gfx::SizeF to(20.0f, 20.0f);
 
-  animation.TransitionSizeTo(start_time, BOUNDS, from, to);
+  animation.TransitionSizeTo(&target, start_time, BOUNDS, from, to);
 
   EXPECT_FLOAT_SIZE_EQ(from, target.size());
   animation.Tick(start_time);
@@ -439,7 +431,7 @@ TEST(AnimationTest, BoundsTransitions) {
   int keyframe_model_id = animation.keyframe_models().front()->id();
   gfx::SizeF nearby = to;
   nearby.set_width(to.width() + kNoise);
-  animation.TransitionSizeTo(start_time, BOUNDS, from, nearby);
+  animation.TransitionSizeTo(&target, start_time, BOUNDS, from, nearby);
   EXPECT_EQ(keyframe_model_id, animation.keyframe_models().front()->id());
 
   animation.Tick(start_time + MicrosecondsToDelta(5000));
@@ -455,7 +447,6 @@ TEST(AnimationTest, BoundsTransitions) {
 TEST(AnimationTest, ReversedBoundsTransitions) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {BOUNDS};
   transition.duration = MicrosecondsToDelta(10000);
@@ -466,7 +457,7 @@ TEST(AnimationTest, ReversedBoundsTransitions) {
   gfx::SizeF from = target.size();
   gfx::SizeF to(20.0f, 20.0f);
 
-  animation.TransitionSizeTo(start_time, BOUNDS, from, to);
+  animation.TransitionSizeTo(&target, start_time, BOUNDS, from, to);
 
   EXPECT_FLOAT_SIZE_EQ(from, target.size());
   animation.Tick(start_time);
@@ -478,8 +469,8 @@ TEST(AnimationTest, ReversedBoundsTransitions) {
   EXPECT_LT(from.height(), target.size().height());
   EXPECT_GT(to.height(), target.size().height());
 
-  animation.TransitionSizeTo(start_time + MicrosecondsToDelta(1000), BOUNDS,
-                             target.size(), from);
+  animation.TransitionSizeTo(&target, start_time + MicrosecondsToDelta(1000),
+                             BOUNDS, target.size(), from);
   animation.Tick(start_time + MicrosecondsToDelta(1000));
   EXPECT_FLOAT_SIZE_EQ(value_before_reversing, target.size());
 
@@ -490,7 +481,6 @@ TEST(AnimationTest, ReversedBoundsTransitions) {
 TEST(AnimationTest, BackgroundColorTransitions) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {BACKGROUND_COLOR};
   transition.duration = MicrosecondsToDelta(10000);
@@ -501,7 +491,7 @@ TEST(AnimationTest, BackgroundColorTransitions) {
   SkColor from = SK_ColorRED;
   SkColor to = SK_ColorGREEN;
 
-  animation.TransitionColorTo(start_time, BACKGROUND_COLOR, from, to);
+  animation.TransitionColorTo(&target, start_time, BACKGROUND_COLOR, from, to);
 
   EXPECT_EQ(from, target.background_color());
   animation.Tick(start_time);
@@ -521,7 +511,6 @@ TEST(AnimationTest, BackgroundColorTransitions) {
 TEST(AnimationTest, ReversedBackgroundColorTransitions) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {BACKGROUND_COLOR};
   transition.duration = MicrosecondsToDelta(10000);
@@ -532,7 +521,7 @@ TEST(AnimationTest, ReversedBackgroundColorTransitions) {
   SkColor from = SK_ColorRED;
   SkColor to = SK_ColorGREEN;
 
-  animation.TransitionColorTo(start_time, BACKGROUND_COLOR, from, to);
+  animation.TransitionColorTo(&target, start_time, BACKGROUND_COLOR, from, to);
 
   EXPECT_EQ(from, target.background_color());
   animation.Tick(start_time);
@@ -546,7 +535,7 @@ TEST(AnimationTest, ReversedBackgroundColorTransitions) {
   EXPECT_EQ(0u, SkColorGetB(target.background_color()));
   EXPECT_EQ(255u, SkColorGetA(target.background_color()));
 
-  animation.TransitionColorTo(start_time + MicrosecondsToDelta(1000),
+  animation.TransitionColorTo(&target, start_time + MicrosecondsToDelta(1000),
                               BACKGROUND_COLOR, target.background_color(),
                               from);
   animation.Tick(start_time + MicrosecondsToDelta(1000));
@@ -559,7 +548,6 @@ TEST(AnimationTest, ReversedBackgroundColorTransitions) {
 TEST(AnimationTest, DoubleReversedTransitions) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {OPACITY};
   transition.duration = MicrosecondsToDelta(10000);
@@ -570,7 +558,7 @@ TEST(AnimationTest, DoubleReversedTransitions) {
 
   float from = 1.0f;
   float to = 0.5f;
-  animation.TransitionFloatTo(start_time, OPACITY, from, to);
+  animation.TransitionFloatTo(&target, start_time, OPACITY, from, to);
 
   EXPECT_EQ(from, target.opacity());
   animation.Tick(start_time);
@@ -580,8 +568,8 @@ TEST(AnimationTest, DoubleReversedTransitions) {
   EXPECT_GT(from, value_before_reversing);
   EXPECT_LT(to, value_before_reversing);
 
-  animation.TransitionFloatTo(start_time + MicrosecondsToDelta(1000), OPACITY,
-                              target.opacity(), from);
+  animation.TransitionFloatTo(&target, start_time + MicrosecondsToDelta(1000),
+                              OPACITY, target.opacity(), from);
   animation.Tick(start_time + MicrosecondsToDelta(1000));
   EXPECT_FLOAT_EQ(value_before_reversing, target.opacity());
 
@@ -589,8 +577,8 @@ TEST(AnimationTest, DoubleReversedTransitions) {
   value_before_reversing = target.opacity();
   // If the code for reversing transitions does not account for an existing time
   // offset, then reversing a second time will give incorrect values.
-  animation.TransitionFloatTo(start_time + MicrosecondsToDelta(1500), OPACITY,
-                              target.opacity(), to);
+  animation.TransitionFloatTo(&target, start_time + MicrosecondsToDelta(1500),
+                              OPACITY, target.opacity(), to);
   animation.Tick(start_time + MicrosecondsToDelta(1500));
   EXPECT_FLOAT_EQ(value_before_reversing, target.opacity());
 }
@@ -598,7 +586,6 @@ TEST(AnimationTest, DoubleReversedTransitions) {
 TEST(AnimationTest, RedundantTransition) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {OPACITY};
   transition.duration = MicrosecondsToDelta(10000);
@@ -609,7 +596,7 @@ TEST(AnimationTest, RedundantTransition) {
 
   float from = 1.0f;
   float to = 0.5f;
-  animation.TransitionFloatTo(start_time, OPACITY, from, to);
+  animation.TransitionFloatTo(&target, start_time, OPACITY, from, to);
 
   EXPECT_EQ(from, target.opacity());
   animation.Tick(start_time);
@@ -619,7 +606,8 @@ TEST(AnimationTest, RedundantTransition) {
 
   // While an existing transition is in progress to the same value, we should
   // not start a new transition.
-  animation.TransitionFloatTo(start_time, OPACITY, target.opacity(), to);
+  animation.TransitionFloatTo(&target, start_time, OPACITY, target.opacity(),
+                              to);
 
   EXPECT_EQ(1lu, animation.keyframe_models().size());
   EXPECT_EQ(value_before_redundant_transition, target.opacity());
@@ -628,7 +616,6 @@ TEST(AnimationTest, RedundantTransition) {
 TEST(AnimationTest, TransitionToSameValue) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   Transition transition;
   transition.target_properties = {OPACITY};
   transition.duration = MicrosecondsToDelta(10000);
@@ -640,7 +627,7 @@ TEST(AnimationTest, TransitionToSameValue) {
   // Transitioning to the same value should be a no-op.
   float from = 1.0f;
   float to = 1.0f;
-  animation.TransitionFloatTo(start_time, OPACITY, from, to);
+  animation.TransitionFloatTo(&target, start_time, OPACITY, from, to);
   EXPECT_EQ(from, target.opacity());
   EXPECT_TRUE(animation.keyframe_models().empty());
 }
@@ -648,7 +635,6 @@ TEST(AnimationTest, TransitionToSameValue) {
 TEST(AnimationTest, CorrectTargetValue) {
   TestAnimationTarget target;
   Animation animation;
-  animation.set_target(&target);
   base::TimeDelta duration = MicrosecondsToDelta(10000);
 
   float from_opacity = 1.0f;
@@ -673,14 +659,14 @@ TEST(AnimationTest, CorrectTargetValue) {
       kEpsilon));
 
   // Add keyframe_models.
+  animation.AddKeyframeModel(CreateOpacityAnimation(&target, 2, 1, from_opacity,
+                                                    to_opacity, duration));
   animation.AddKeyframeModel(
-      CreateOpacityAnimation(2, 1, from_opacity, to_opacity, duration));
-  animation.AddKeyframeModel(
-      CreateBoundsAnimation(1, 1, from_bounds, to_bounds, duration));
-  animation.AddKeyframeModel(
-      CreateBackgroundColorAnimation(3, 1, from_color, to_color, duration));
-  animation.AddKeyframeModel(
-      CreateTransformAnimation(4, 1, from_transform, to_transform, duration));
+      CreateBoundsAnimation(&target, 1, 1, from_bounds, to_bounds, duration));
+  animation.AddKeyframeModel(CreateBackgroundColorAnimation(
+      &target, 3, 1, from_color, to_color, duration));
+  animation.AddKeyframeModel(CreateTransformAnimation(
+      &target, 4, 1, from_transform, to_transform, duration));
 
   base::TimeTicks start_time = MicrosecondsToTicks(1000000);
   animation.Tick(start_time);

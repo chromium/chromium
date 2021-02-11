@@ -77,7 +77,6 @@ TEST(ScrollOffsetAnimationCurveTest, GetValue) {
   EXPECT_GT(curve->Duration().InSecondsF(), 0);
   EXPECT_LT(curve->Duration().InSecondsF(), 0.1);
 
-  EXPECT_EQ(AnimationCurve::SCROLL_OFFSET, curve->Type());
   EXPECT_EQ(duration, curve->Duration());
 
   EXPECT_VECTOR2DF_EQ(initial_value,
@@ -108,28 +107,23 @@ TEST(ScrollOffsetAnimationCurveTest, Clone) {
 
   std::unique_ptr<AnimationCurve> clone(curve->Clone());
 
-  EXPECT_EQ(AnimationCurve::SCROLL_OFFSET, clone->Type());
   EXPECT_EQ(duration, clone->Duration());
 
-  EXPECT_VECTOR2DF_EQ(initial_value,
-                      clone->ToScrollOffsetAnimationCurve()->GetValue(
-                          base::TimeDelta::FromSecondsD(-1.0)));
+  ScrollOffsetAnimationCurve* cloned_curve =
+      ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(clone.get());
+
+  EXPECT_VECTOR2DF_EQ(initial_value, cloned_curve->GetValue(
+                                         base::TimeDelta::FromSecondsD(-1.0)));
+  EXPECT_VECTOR2DF_EQ(initial_value, cloned_curve->GetValue(base::TimeDelta()));
+  EXPECT_VECTOR2DF_NEAR(gfx::ScrollOffset(6.f, 30.f),
+                        cloned_curve->GetValue(duration * 0.5f), 0.00025);
+  EXPECT_VECTOR2DF_EQ(target_value, cloned_curve->GetValue(duration));
   EXPECT_VECTOR2DF_EQ(
-      initial_value,
-      clone->ToScrollOffsetAnimationCurve()->GetValue(base::TimeDelta()));
-  EXPECT_VECTOR2DF_NEAR(
-      gfx::ScrollOffset(6.f, 30.f),
-      clone->ToScrollOffsetAnimationCurve()->GetValue(duration * 0.5f),
-      0.00025);
-  EXPECT_VECTOR2DF_EQ(
-      target_value, clone->ToScrollOffsetAnimationCurve()->GetValue(duration));
-  EXPECT_VECTOR2DF_EQ(target_value,
-                      clone->ToScrollOffsetAnimationCurve()->GetValue(
-                          duration + base::TimeDelta::FromSecondsD(1.f)));
+      target_value,
+      cloned_curve->GetValue(duration + base::TimeDelta::FromSecondsD(1.f)));
 
   // Verify that the timing function was cloned correctly.
-  gfx::ScrollOffset value =
-      clone->ToScrollOffsetAnimationCurve()->GetValue(duration * 0.25f);
+  gfx::ScrollOffset value = cloned_curve->GetValue(duration * 0.25f);
   EXPECT_NEAR(3.0333f, value.x(), 0.0002f);
   EXPECT_NEAR(37.4168f, value.y(), 0.0002f);
 }

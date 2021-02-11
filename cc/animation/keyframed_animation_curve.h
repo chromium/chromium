@@ -292,7 +292,6 @@ class CC_ANIMATION_EXPORT KeyframedFilterAnimationCurve
 
   // FilterAnimationCurve implementation
   FilterOperations GetValue(base::TimeDelta t) const override;
-  bool HasFilterThatMovesPixels() const override;
 
  private:
   KeyframedFilterAnimationCurve();

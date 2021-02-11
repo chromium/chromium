@@ -253,9 +253,9 @@ TEST(UiElement, AnimateSize) {
   scene.RunFirstFrameForTest();
   auto rect = std::make_unique<UiElement>();
   rect->SetSize(10, 100);
-  rect->AddKeyframeModel(CreateBoundsAnimation(1, 1, gfx::SizeF(10, 100),
-                                               gfx::SizeF(20, 200),
-                                               MicrosecondsToDelta(10000)));
+  rect->AddKeyframeModel(
+      CreateBoundsAnimation(rect.get(), 1, 1, gfx::SizeF(10, 100),
+                            gfx::SizeF(20, 200), MicrosecondsToDelta(10000)));
   UiElement* rect_ptr = rect.get();
   scene.AddUiElement(kRoot, std::move(rect));
   base::TimeTicks start_time = MicrosecondsToTicks(1);
@@ -277,8 +277,9 @@ TEST(UiElement, AnimationAffectsInheritableTransform) {
   from_operations.AppendTranslate(10, 100, 1000);
   gfx::TransformOperations to_operations;
   to_operations.AppendTranslate(20, 200, 2000);
-  rect_ptr->AddKeyframeModel(CreateTransformAnimation(
-      2, 2, from_operations, to_operations, MicrosecondsToDelta(10000)));
+  rect_ptr->AddKeyframeModel(
+      CreateTransformAnimation(rect_ptr, 2, 2, from_operations, to_operations,
+                               MicrosecondsToDelta(10000)));
 
   base::TimeTicks start_time = MicrosecondsToTicks(1);
   EXPECT_TRUE(scene.OnBeginFrame(start_time, kStartHeadPose));

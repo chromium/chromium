@@ -92,16 +92,13 @@ EventHandlers::~EventHandlers() = default;
 EventHandlers::EventHandlers(const EventHandlers& other) = default;
 
 UiElement::UiElement() : id_(AllocateId()) {
-  animation_.set_target(this);
   layout_offset_.AppendTranslate(0, 0, 0);
   transform_operations_.AppendTranslate(0, 0, 0);
   transform_operations_.AppendRotate(1, 0, 0, 0);
   transform_operations_.AppendScale(1, 1, 1);
 }
 
-UiElement::~UiElement() {
-  animation_.set_target(nullptr);
-}
+UiElement::~UiElement() = default;
 
 void UiElement::SetName(UiElementName name) {
   name_ = name;
@@ -309,7 +306,7 @@ bool UiElement::IsHitTestable() const {
 }
 
 void UiElement::SetSize(float width, float height) {
-  animation_.TransitionSizeTo(last_frame_time_, BOUNDS, size_,
+  animation_.TransitionSizeTo(this, last_frame_time_, BOUNDS, size_,
                               gfx::SizeF(width, height));
   OnSetSize(gfx::SizeF(width, height));
 }
@@ -384,8 +381,8 @@ void UiElement::SetLayoutOffset(float x, float y) {
   gfx::TransformOperation& op = operations.at(0);
   op.translate = {x, y, 0};
   op.Bake();
-  animation_.TransitionTransformOperationsTo(last_frame_time_, LAYOUT_OFFSET,
-                                             layout_offset_, operations);
+  animation_.TransitionTransformOperationsTo(
+      this, last_frame_time_, LAYOUT_OFFSET, layout_offset_, operations);
 }
 
 void UiElement::SetTranslate(float x, float y, float z) {
@@ -400,7 +397,7 @@ void UiElement::SetTranslate(float x, float y, float z) {
   gfx::TransformOperation& op = operations.at(kTranslateIndex);
   op.translate = {x, y, z};
   op.Bake();
-  animation_.TransitionTransformOperationsTo(last_frame_time_, TRANSFORM,
+  animation_.TransitionTransformOperationsTo(this, last_frame_time_, TRANSFORM,
                                              transform_operations_, operations);
 }
 
@@ -420,7 +417,7 @@ void UiElement::SetRotate(float x, float y, float z, float radians) {
   op.rotate.axis = {x, y, z};
   op.rotate.angle = degrees;
   op.Bake();
-  animation_.TransitionTransformOperationsTo(last_frame_time_, TRANSFORM,
+  animation_.TransitionTransformOperationsTo(this, last_frame_time_, TRANSFORM,
                                              transform_operations_, operations);
 }
 
@@ -436,12 +433,13 @@ void UiElement::SetScale(float x, float y, float z) {
   gfx::TransformOperation& op = operations.at(kScaleIndex);
   op.scale = {x, y, z};
   op.Bake();
-  animation_.TransitionTransformOperationsTo(last_frame_time_, TRANSFORM,
+  animation_.TransitionTransformOperationsTo(this, last_frame_time_, TRANSFORM,
                                              transform_operations_, operations);
 }
 
 void UiElement::SetOpacity(float opacity) {
-  animation_.TransitionFloatTo(last_frame_time_, OPACITY, opacity_, opacity);
+  animation_.TransitionFloatTo(this, last_frame_time_, OPACITY, opacity_,
+                               opacity);
 }
 
 void UiElement::SetCornerRadii(const CornerRadii& radii) {
@@ -765,16 +763,15 @@ bool UiElement::GetRayDistance(const gfx::Point3F& ray_origin,
                              distance);
 }
 
-void UiElement::NotifyClientFloatAnimated(float value,
-                                          int target_property_id,
-                                          cc::KeyframeModel* keyframe_model) {
+void UiElement::OnFloatAnimated(const float& value,
+                                int target_property_id,
+                                cc::KeyframeModel* keyframe_model) {
   opacity_ = base::ClampToRange(value, 0.0f, 1.0f);
 }
 
-void UiElement::NotifyClientTransformOperationsAnimated(
-    const gfx::TransformOperations& operations,
-    int target_property_id,
-    cc::KeyframeModel* keyframe_model) {
+void UiElement::OnTransformAnimated(const gfx::TransformOperations& operations,
+                                    int target_property_id,
+                                    cc::KeyframeModel* keyframe_model) {
   if (target_property_id == TRANSFORM) {
     transform_operations_ = operations;
   } else if (target_property_id == LAYOUT_OFFSET) {
@@ -786,14 +783,18 @@ void UiElement::NotifyClientTransformOperationsAnimated(
   world_space_transform_dirty_ = true;
 }
 
-void UiElement::NotifyClientSizeAnimated(const gfx::SizeF& size,
-                                         int target_property_id,
-                                         cc::KeyframeModel* keyframe_model) {
+void UiElement::OnSizeAnimated(const gfx::SizeF& size,
+                               int target_property_id,
+                               cc::KeyframeModel* keyframe_model) {
   if (size_ == size)
     return;
   size_ = size;
   world_space_transform_dirty_ = true;
 }
+
+void UiElement::OnColorAnimated(const SkColor& size,
+                                int target_property_id,
+                                cc::KeyframeModel* keyframe_model) {}
 
 void UiElement::SetTransitionedProperties(
     const std::set<TargetProperty>& properties) {

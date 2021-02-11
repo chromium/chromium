@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "cc/animation/animation_target.h"
+#include "cc/animation/animation_curve.h"
 #include "chrome/browser/vr/animation.h"
 #include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
@@ -96,7 +96,10 @@ struct HitTestResult {
   float distance_to_plane;
 };
 
-class VR_UI_EXPORT UiElement : public cc::AnimationTarget {
+class VR_UI_EXPORT UiElement : public cc::FloatAnimationCurve::Target,
+                               public cc::TransformAnimationCurve::Target,
+                               public cc::SizeAnimationCurve::Target,
+                               public cc::ColorAnimationCurve::Target {
  public:
   UiElement();
   ~UiElement() override;
@@ -390,27 +393,18 @@ class VR_UI_EXPORT UiElement : public cc::AnimationTarget {
   gfx::PointF GetUnitRectangleCoordinates(
       const gfx::Point3F& world_point) const;
 
-  // cc::AnimationTarget
-  void NotifyClientFloatAnimated(float value,
-                                 int target_property_id,
-                                 cc::KeyframeModel* keyframe_model) override;
-  void NotifyClientTransformOperationsAnimated(
-      const gfx::TransformOperations& operations,
-      int target_property_id,
-      cc::KeyframeModel* keyframe_model) override;
-  void NotifyClientSizeAnimated(const gfx::SizeF& size,
-                                int target_property_id,
-                                cc::KeyframeModel* keyframe_model) override;
-  void NotifyClientFilterAnimated(const cc::FilterOperations& filter,
-                                  int target_property_id,
-                                  cc::KeyframeModel* keyframe_model) override {}
-  void NotifyClientColorAnimated(SkColor color,
-                                 int target_property_id,
-                                 cc::KeyframeModel* keyframe_model) override {}
-  void NotifyClientScrollOffsetAnimated(
-      const gfx::ScrollOffset& scroll_offset,
-      int target_property_id,
-      cc::KeyframeModel* keyframe_model) override {}
+  void OnFloatAnimated(const float& value,
+                       int target_property_id,
+                       cc::KeyframeModel* keyframe_model) override;
+  void OnTransformAnimated(const gfx::TransformOperations& operations,
+                           int target_property_id,
+                           cc::KeyframeModel* keyframe_model) override;
+  void OnSizeAnimated(const gfx::SizeF& size,
+                      int target_property_id,
+                      cc::KeyframeModel* keyframe_model) override;
+  void OnColorAnimated(const SkColor& size,
+                       int target_property_id,
+                       cc::KeyframeModel* keyframe_model) override;
 
   void SetTransitionedProperties(const std::set<TargetProperty>& properties);
   void SetTransitionDuration(base::TimeDelta delta);

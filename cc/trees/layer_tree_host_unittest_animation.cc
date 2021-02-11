@@ -377,7 +377,7 @@ class LayerTreeHostAnimationTestAddKeyframeModelWithTimingFunction
         animation_child_impl->GetKeyframeModel(TargetProperty::OPACITY);
 
     const FloatAnimationCurve* curve =
-        keyframe_model->curve()->ToFloatAnimationCurve();
+        FloatAnimationCurve::ToFloatAnimationCurve(keyframe_model->curve());
     float start_opacity = curve->GetValue(base::TimeDelta());
     float end_opacity = curve->GetValue(curve->Duration());
     float linearly_interpolated_opacity =
@@ -938,8 +938,9 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
           ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
-      ScrollOffsetAnimationCurve* curve =
-          keyframe_model->curve()->ToScrollOffsetAnimationCurve();
+      const ScrollOffsetAnimationCurve* curve =
+          ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+              keyframe_model->curve());
 
       // Verifiy the initial and target position before the scroll offset
       // update from MT.
@@ -963,8 +964,9 @@ class LayerTreeHostAnimationTestScrollOffsetAnimationAdjusted
           ScrollOffsetKeyframeEffect(*host_impl, scroll_layer_)
               .GetKeyframeModel(TargetProperty::SCROLL_OFFSET);
       DCHECK(keyframe_model);
-      ScrollOffsetAnimationCurve* curve =
-          keyframe_model->curve()->ToScrollOffsetAnimationCurve();
+      const ScrollOffsetAnimationCurve* curve =
+          ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+              keyframe_model->curve());
       // Verifiy the initial and target position after the scroll offset
       // update from MT
       EXPECT_EQ(KeyframeModel::RunState::STARTING, keyframe_model->run_state());

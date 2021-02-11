@@ -10,8 +10,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_export.h"
-#include "cc/animation/animation_target.h"
+#include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/paint_worklet_input.h"
 #include "cc/trees/property_animation_state.h"
@@ -37,7 +38,11 @@ enum class ElementListType;
 // of the word; this naming is a legacy leftover. A target is just an amorphous
 // blob that has properties that can be animated.
 class CC_ANIMATION_EXPORT ElementAnimations
-    : public AnimationTarget,
+    : public FloatAnimationCurve::Target,
+      public FilterAnimationCurve::Target,
+      public ColorAnimationCurve::Target,
+      public TransformAnimationCurve::Target,
+      public ScrollOffsetAnimationCurve::Target,
       public base::RefCounted<ElementAnimations> {
  public:
   static scoped_refptr<ElementAnimations> Create(AnimationHost* host,
@@ -127,25 +132,28 @@ class CC_ANIMATION_EXPORT ElementAnimations
   // that have changed since the last update.
   void UpdateClientAnimationState();
 
-  void NotifyClientFloatAnimated(float value,
-                                 int target_property_id,
-                                 KeyframeModel* keyframe_model) override;
-  void NotifyClientFilterAnimated(const FilterOperations& filter,
-                                  int target_property_id,
-                                  KeyframeModel* keyframe_model) override;
-  void NotifyClientSizeAnimated(const gfx::SizeF& size,
-                                int target_property_id,
-                                KeyframeModel* keyframe_model) override {}
-  void NotifyClientColorAnimated(SkColor color,
-                                 int target_property_id,
-                                 KeyframeModel* keyframe_model) override;
-  void NotifyClientTransformOperationsAnimated(
-      const gfx::TransformOperations& operations,
-      int target_property_id,
-      KeyframeModel* keyframe_model) override;
-  void NotifyClientScrollOffsetAnimated(const gfx::ScrollOffset& scroll_offset,
-                                        int target_property_id,
-                                        KeyframeModel* keyframe_model) override;
+  // TODO(crbug.com/1176334): Animation targets should be attached to curves
+  // when they're created and the concrete subclass is known. This function
+  // exists as a stopgap: the animation machinery previously expected to
+  // announce a target and then pass curves that would implicitly animate the
+  // target (i.e., the machinery handled the attachment).
+  void AttachToCurve(AnimationCurve* c);
+
+  void OnFloatAnimated(const float& value,
+                       int target_property_id,
+                       KeyframeModel* keyframe_model) override;
+  void OnFilterAnimated(const FilterOperations& filter,
+                        int target_property_id,
+                        KeyframeModel* keyframe_model) override;
+  void OnColorAnimated(const SkColor& color,
+                       int target_property_id,
+                       KeyframeModel* keyframe_model) override;
+  void OnTransformAnimated(const gfx::TransformOperations& operations,
+                           int target_property_id,
+                           KeyframeModel* keyframe_model) override;
+  void OnScrollOffsetAnimated(const gfx::ScrollOffset& scroll_offset,
+                              int target_property_id,
+                              KeyframeModel* keyframe_model) override;
 
   gfx::ScrollOffset ScrollOffsetForAnimation() const;
 

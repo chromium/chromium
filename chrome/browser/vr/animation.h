@@ -9,14 +9,11 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "cc/animation/animation_curve.h"
 #include "cc/animation/keyframe_model.h"
 #include "chrome/browser/vr/transition.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "third_party/skia/include/core/SkColor.h"
-
-namespace cc {
-class AnimationTarget;
-}  // namespace cc
 
 namespace gfx {
 class SizeF;
@@ -39,9 +36,6 @@ class VR_UI_EXPORT Animation final {
 
   Animation();
   ~Animation();
-
-  cc::AnimationTarget* target() const { return target_; }
-  void set_target(cc::AnimationTarget* target) { target_ = target; }
 
   void AddKeyframeModel(std::unique_ptr<cc::KeyframeModel> keyframe_model);
   void RemoveKeyframeModel(int keyframe_model_id);
@@ -68,22 +62,27 @@ class VR_UI_EXPORT Animation final {
 
   // TODO(754820): Remove duplicate code from the transition functions
   // by using templates.
-  void TransitionFloatTo(base::TimeTicks monotonic_time,
+  void TransitionFloatTo(cc::FloatAnimationCurve::Target* target,
+                         base::TimeTicks monotonic_time,
                          int target_property,
-                         float current,
-                         float target);
-  void TransitionTransformOperationsTo(base::TimeTicks monotonic_time,
-                                       int target_property,
-                                       const gfx::TransformOperations& current,
-                                       const gfx::TransformOperations& target);
-  void TransitionSizeTo(base::TimeTicks monotonic_time,
+                         float from,
+                         float to);
+  void TransitionTransformOperationsTo(
+      cc::TransformAnimationCurve::Target* target,
+      base::TimeTicks monotonic_time,
+      int target_property,
+      const gfx::TransformOperations& from,
+      const gfx::TransformOperations& to);
+  void TransitionSizeTo(cc::SizeAnimationCurve::Target* target,
+                        base::TimeTicks monotonic_time,
                         int target_property,
-                        const gfx::SizeF& current,
-                        const gfx::SizeF& target);
-  void TransitionColorTo(base::TimeTicks monotonic_time,
+                        const gfx::SizeF& from,
+                        const gfx::SizeF& to);
+  void TransitionColorTo(cc::ColorAnimationCurve::Target* target,
+                         base::TimeTicks monotonic_time,
                          int target_property,
-                         SkColor current,
-                         SkColor target);
+                         SkColor from,
+                         SkColor to);
 
   bool IsAnimatingProperty(int property) const;
 
@@ -94,25 +93,19 @@ class VR_UI_EXPORT Animation final {
   gfx::SizeF GetTargetSizeValue(int target_property,
                                 const gfx::SizeF& default_value) const;
   SkColor GetTargetColorValue(int target_property, SkColor default_value) const;
+  cc::KeyframeModel* GetRunningKeyframeModelForProperty(
+      int target_property) const;
 
  private:
   void TickInternal(base::TimeTicks monotonic_time,
                     bool include_infinite_animations);
   void StartKeyframeModels(base::TimeTicks monotonic_time,
                            bool include_infinite_animations);
-  template <typename ValueType>
-  void TransitionValueTo(base::TimeTicks monotonic_time,
-                         int target_property,
-                         const ValueType& current,
-                         const ValueType& target);
-  cc::KeyframeModel* GetRunningKeyframeModelForProperty(
-      int target_property) const;
   cc::KeyframeModel* GetKeyframeModelForProperty(int target_property) const;
   template <typename ValueType>
   ValueType GetTargetValue(int target_property,
                            const ValueType& default_value) const;
 
-  cc::AnimationTarget* target_ = nullptr;
   KeyframeModels keyframe_models_;
   Transition transition_;
 

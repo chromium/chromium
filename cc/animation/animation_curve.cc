@@ -9,61 +9,38 @@
 
 namespace cc {
 
-const ColorAnimationCurve* AnimationCurve::ToColorAnimationCurve() const {
-  DCHECK(Type() == AnimationCurve::COLOR);
-  return static_cast<const ColorAnimationCurve*>(this);
+bool AnimationCurve::PreservesAxisAlignment() const {
+  return true;
 }
 
-AnimationCurve::CurveType ColorAnimationCurve::Type() const {
-  return COLOR;
+bool AnimationCurve::MaximumScale(float* max_scale) const {
+  return false;
 }
 
-const FloatAnimationCurve* AnimationCurve::ToFloatAnimationCurve() const {
-  DCHECK(Type() == AnimationCurve::FLOAT);
-  return static_cast<const FloatAnimationCurve*>(this);
-}
+#define DEFINE_ANIMATION_CURVE(Name, CurveType)                                \
+  void Name##AnimationCurve::Tick(base::TimeDelta t, int property_id,          \
+                                  KeyframeModel* keyframe_model) const {       \
+    if (target_) {                                                             \
+      target_->On##Name##Animated(GetValue(t), property_id, keyframe_model);   \
+    }                                                                          \
+  }                                                                            \
+  int Name##AnimationCurve::Type() const { return AnimationCurve::CurveType; } \
+  const char* Name##AnimationCurve::TypeName() const { return #Name; }         \
+  const Name##AnimationCurve* Name##AnimationCurve::To##Name##AnimationCurve(  \
+      const AnimationCurve* c) {                                               \
+    DCHECK_EQ(AnimationCurve::CurveType, c->Type());                           \
+    return static_cast<const Name##AnimationCurve*>(c);                        \
+  }                                                                            \
+  Name##AnimationCurve* Name##AnimationCurve::To##Name##AnimationCurve(        \
+      AnimationCurve* c) {                                                     \
+    DCHECK_EQ(AnimationCurve::CurveType, c->Type());                           \
+    return static_cast<Name##AnimationCurve*>(c);                              \
+  }
 
-AnimationCurve::CurveType FloatAnimationCurve::Type() const {
-  return FLOAT;
-}
-
-const TransformAnimationCurve* AnimationCurve::ToTransformAnimationCurve()
-    const {
-  DCHECK(Type() == AnimationCurve::TRANSFORM);
-  return static_cast<const TransformAnimationCurve*>(this);
-}
-
-AnimationCurve::CurveType TransformAnimationCurve::Type() const {
-  return TRANSFORM;
-}
-
-const FilterAnimationCurve* AnimationCurve::ToFilterAnimationCurve() const {
-  DCHECK(Type() == AnimationCurve::FILTER);
-  return static_cast<const FilterAnimationCurve*>(this);
-}
-
-AnimationCurve::CurveType FilterAnimationCurve::Type() const {
-  return FILTER;
-}
-
-const ScrollOffsetAnimationCurve* AnimationCurve::ToScrollOffsetAnimationCurve()
-    const {
-  DCHECK(Type() == AnimationCurve::SCROLL_OFFSET);
-  return static_cast<const ScrollOffsetAnimationCurve*>(this);
-}
-
-ScrollOffsetAnimationCurve* AnimationCurve::ToScrollOffsetAnimationCurve() {
-  DCHECK(Type() == AnimationCurve::SCROLL_OFFSET);
-  return static_cast<ScrollOffsetAnimationCurve*>(this);
-}
-
-const SizeAnimationCurve* AnimationCurve::ToSizeAnimationCurve() const {
-  DCHECK(Type() == AnimationCurve::SIZE);
-  return static_cast<const SizeAnimationCurve*>(this);
-}
-
-AnimationCurve::CurveType SizeAnimationCurve::Type() const {
-  return SIZE;
-}
+DEFINE_ANIMATION_CURVE(Transform, TRANSFORM)
+DEFINE_ANIMATION_CURVE(Float, FLOAT)
+DEFINE_ANIMATION_CURVE(Size, SIZE)
+DEFINE_ANIMATION_CURVE(Filter, FILTER)
+DEFINE_ANIMATION_CURVE(Color, COLOR)
 
 }  // namespace cc

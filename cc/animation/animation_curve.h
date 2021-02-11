@@ -12,6 +12,7 @@
 #include "cc/paint/filter_operations.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/transform_operations.h"
 
 namespace gfx {
 class TransformOperations;
@@ -19,16 +20,16 @@ class TransformOperations;
 
 namespace cc {
 
-class ColorAnimationCurve;
-class FilterAnimationCurve;
-class FloatAnimationCurve;
-class ScrollOffsetAnimationCurve;
-class SizeAnimationCurve;
-class TransformAnimationCurve;
+class KeyframeModel;
+class AnimationCurve;
 
 // An animation curve is a function that returns a value given a time.
 class CC_ANIMATION_EXPORT AnimationCurve {
  public:
+  // TODO(crbug.com/1176334): we shouldn't need the curve type, long term.
+  //
+  // In the meanime, external clients of the animation machinery may well have
+  // other curve types and should be added to this enum to ensure uniqueness.
   enum CurveType {
     COLOR = 0,
     FLOAT,
@@ -40,74 +41,66 @@ class CC_ANIMATION_EXPORT AnimationCurve {
     LAST_CURVE_TYPE = SIZE,
   };
 
-  virtual ~AnimationCurve() {}
+  virtual ~AnimationCurve() = default;
 
   virtual base::TimeDelta Duration() const = 0;
-  virtual CurveType Type() const = 0;
+  virtual int Type() const = 0;
+  virtual const char* TypeName() const = 0;
   virtual std::unique_ptr<AnimationCurve> Clone() const = 0;
-
-  const ColorAnimationCurve* ToColorAnimationCurve() const;
-  const FloatAnimationCurve* ToFloatAnimationCurve() const;
-  const TransformAnimationCurve* ToTransformAnimationCurve() const;
-  const FilterAnimationCurve* ToFilterAnimationCurve() const;
-  const ScrollOffsetAnimationCurve* ToScrollOffsetAnimationCurve() const;
-  const SizeAnimationCurve* ToSizeAnimationCurve() const;
-
-  ScrollOffsetAnimationCurve* ToScrollOffsetAnimationCurve();
-};
-
-class CC_ANIMATION_EXPORT ColorAnimationCurve : public AnimationCurve {
- public:
-  ~ColorAnimationCurve() override {}
-
-  virtual SkColor GetValue(base::TimeDelta t) const = 0;
-
-  CurveType Type() const override;
-};
-
-class CC_ANIMATION_EXPORT FloatAnimationCurve : public AnimationCurve {
- public:
-  ~FloatAnimationCurve() override {}
-
-  virtual float GetValue(base::TimeDelta t) const = 0;
-
-  CurveType Type() const override;
-};
-
-class CC_ANIMATION_EXPORT TransformAnimationCurve : public AnimationCurve {
- public:
-  ~TransformAnimationCurve() override {}
-
-  virtual gfx::TransformOperations GetValue(base::TimeDelta t) const = 0;
+  virtual void Tick(base::TimeDelta t,
+                    int property_id,
+                    KeyframeModel* keyframe_model) const = 0;
 
   // Returns true if this animation preserves axis alignment.
-  virtual bool PreservesAxisAlignment() const = 0;
+  virtual bool PreservesAxisAlignment() const;
 
   // Set |max_scale| to the maximum scale along any dimension during the
   // animation, of all steps (keyframes) with calculatable scale. Returns
   // false if none of the steps can calculate a scale.
-  virtual bool MaximumScale(float* max_scale) const = 0;
-
-  CurveType Type() const override;
+  virtual bool MaximumScale(float* max_scale) const;
 };
 
-class CC_ANIMATION_EXPORT FilterAnimationCurve : public AnimationCurve {
- public:
-  ~FilterAnimationCurve() override {}
+#define DECLARE_ANIMATION_CURVE_BODY(T, Name)                                  \
+ public:                                                                       \
+  static const Name##AnimationCurve* To##Name##AnimationCurve(                 \
+      const AnimationCurve* c);                                                \
+  static Name##AnimationCurve* To##Name##AnimationCurve(AnimationCurve* c);    \
+  class Target {                                                               \
+   public:                                                                     \
+    virtual ~Target() = default;                                               \
+    virtual void On##Name##Animated(const T& value,                            \
+                                    int target_property_id,                    \
+                                    KeyframeModel* keyframe_model) = 0;        \
+  };                                                                           \
+  ~Name##AnimationCurve() override = default;                                  \
+  virtual T GetValue(base::TimeDelta t) const = 0;                             \
+  void Tick(base::TimeDelta t, int property_id, KeyframeModel* keyframe_model) \
+      const override;                                                          \
+  void set_target(Target* target) { target_ = target; }                        \
+  int Type() const override;                                                   \
+  const char* TypeName() const override;                                       \
+                                                                               \
+ private:                                                                      \
+  Target* target_ = nullptr;
 
-  virtual FilterOperations GetValue(base::TimeDelta t) const = 0;
-  virtual bool HasFilterThatMovesPixels() const = 0;
+class CC_ANIMATION_EXPORT ColorAnimationCurve : public AnimationCurve {
+  DECLARE_ANIMATION_CURVE_BODY(SkColor, Color)
+};
 
-  CurveType Type() const override;
+class CC_ANIMATION_EXPORT FloatAnimationCurve : public AnimationCurve {
+  DECLARE_ANIMATION_CURVE_BODY(float, Float)
 };
 
 class CC_ANIMATION_EXPORT SizeAnimationCurve : public AnimationCurve {
- public:
-  ~SizeAnimationCurve() override {}
+  DECLARE_ANIMATION_CURVE_BODY(gfx::SizeF, Size)
+};
 
-  virtual gfx::SizeF GetValue(base::TimeDelta t) const = 0;
+class CC_ANIMATION_EXPORT FilterAnimationCurve : public AnimationCurve {
+  DECLARE_ANIMATION_CURVE_BODY(FilterOperations, Filter)
+};
 
-  CurveType Type() const override;
+class CC_ANIMATION_EXPORT TransformAnimationCurve : public AnimationCurve {
+  DECLARE_ANIMATION_CURVE_BODY(gfx::TransformOperations, Transform)
 };
 
 }  // namespace cc

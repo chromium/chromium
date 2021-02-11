@@ -316,12 +316,24 @@ base::TimeDelta ScrollOffsetAnimationCurve::Duration() const {
   return total_animation_duration_;
 }
 
-AnimationCurve::CurveType ScrollOffsetAnimationCurve::Type() const {
-  return SCROLL_OFFSET;
+int ScrollOffsetAnimationCurve::Type() const {
+  return AnimationCurve::SCROLL_OFFSET;
+}
+
+const char* ScrollOffsetAnimationCurve::TypeName() const {
+  return "ScrollOffset";
 }
 
 std::unique_ptr<AnimationCurve> ScrollOffsetAnimationCurve::Clone() const {
   return CloneToScrollOffsetAnimationCurve();
+}
+
+void ScrollOffsetAnimationCurve::Tick(base::TimeDelta t,
+                                      int property_id,
+                                      KeyframeModel* keyframe_model) const {
+  if (target_) {
+    target_->OnScrollOffsetAnimated(GetValue(t), property_id, keyframe_model);
+  }
 }
 
 std::unique_ptr<ScrollOffsetAnimationCurve>
@@ -436,6 +448,19 @@ void ScrollOffsetAnimationCurve::UpdateTarget(
   target_value_ = new_target;
   total_animation_duration_ = t + new_duration;
   last_retarget_ = t;
+}
+
+const ScrollOffsetAnimationCurve*
+ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
+    const AnimationCurve* c) {
+  DCHECK_EQ(ScrollOffsetAnimationCurve::SCROLL_OFFSET, c->Type());
+  return static_cast<const ScrollOffsetAnimationCurve*>(c);
+}
+
+ScrollOffsetAnimationCurve*
+ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(AnimationCurve* c) {
+  DCHECK_EQ(ScrollOffsetAnimationCurve::SCROLL_OFFSET, c->Type());
+  return static_cast<ScrollOffsetAnimationCurve*>(c);
 }
 
 }  // namespace cc

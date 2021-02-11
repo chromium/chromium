@@ -18,9 +18,9 @@ class VR_UI_EXPORT Throbber : public Rect {
   Throbber();
   ~Throbber() override;
 
-  void NotifyClientFloatAnimated(float value,
-                                 int target_property_id,
-                                 cc::KeyframeModel* keyframe_model) override;
+  void OnFloatAnimated(const float& value,
+                       int target_property_id,
+                       cc::KeyframeModel* keyframe_model) override;
 
   void SetCircleGrowAnimationEnabled(bool enabled);
 

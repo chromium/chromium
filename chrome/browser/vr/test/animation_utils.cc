@@ -10,6 +10,7 @@
 namespace vr {
 
 std::unique_ptr<cc::KeyframeModel> CreateTransformAnimation(
+    cc::TransformAnimationCurve::Target* target,
     int id,
     int group,
     const gfx::TransformOperations& from,
@@ -20,6 +21,7 @@ std::unique_ptr<cc::KeyframeModel> CreateTransformAnimation(
   curve->AddKeyframe(
       cc::TransformKeyframe::Create(base::TimeDelta(), from, nullptr));
   curve->AddKeyframe(cc::TransformKeyframe::Create(duration, to, nullptr));
+  curve->set_target(target);
   std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(
       std::move(curve), id, group,
       cc::KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
@@ -27,6 +29,7 @@ std::unique_ptr<cc::KeyframeModel> CreateTransformAnimation(
 }
 
 std::unique_ptr<cc::KeyframeModel> CreateBoundsAnimation(
+    cc::SizeAnimationCurve::Target* target,
     int id,
     int group,
     const gfx::SizeF& from,
@@ -37,6 +40,7 @@ std::unique_ptr<cc::KeyframeModel> CreateBoundsAnimation(
   curve->AddKeyframe(
       cc::SizeKeyframe::Create(base::TimeDelta(), from, nullptr));
   curve->AddKeyframe(cc::SizeKeyframe::Create(duration, to, nullptr));
+  curve->set_target(target);
   std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(
       std::move(curve), id, group,
       cc::KeyframeModel::TargetPropertyId(TargetProperty::BOUNDS)));
@@ -44,6 +48,7 @@ std::unique_ptr<cc::KeyframeModel> CreateBoundsAnimation(
 }
 
 std::unique_ptr<cc::KeyframeModel> CreateOpacityAnimation(
+    cc::FloatAnimationCurve::Target* target,
     int id,
     int group,
     float from,
@@ -54,6 +59,7 @@ std::unique_ptr<cc::KeyframeModel> CreateOpacityAnimation(
   curve->AddKeyframe(
       cc::FloatKeyframe::Create(base::TimeDelta(), from, nullptr));
   curve->AddKeyframe(cc::FloatKeyframe::Create(duration, to, nullptr));
+  curve->set_target(target);
   std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(
       std::move(curve), id, group,
       cc::KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
@@ -61,6 +67,7 @@ std::unique_ptr<cc::KeyframeModel> CreateOpacityAnimation(
 }
 
 std::unique_ptr<cc::KeyframeModel> CreateBackgroundColorAnimation(
+    cc::ColorAnimationCurve::Target* target,
     int id,
     int group,
     SkColor from,
@@ -71,6 +78,7 @@ std::unique_ptr<cc::KeyframeModel> CreateBackgroundColorAnimation(
   curve->AddKeyframe(
       cc::ColorKeyframe::Create(base::TimeDelta(), from, nullptr));
   curve->AddKeyframe(cc::ColorKeyframe::Create(duration, to, nullptr));
+  curve->set_target(target);
   std::unique_ptr<cc::KeyframeModel> keyframe_model(cc::KeyframeModel::Create(
       std::move(curve), id, group,
       cc::KeyframeModel::TargetPropertyId(TargetProperty::BACKGROUND_COLOR)));
