@@ -8,6 +8,7 @@
 #include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/dialog_delegate.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "content/public/browser/browser_context.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace chromeos {
 
@@ -42,6 +43,9 @@ void WebDialogView::OnFocusLeavingSystemTray(bool reverse) {
   web_contents()->FocusThroughTabTraversal(reverse);
   web_contents()->Focus();
 }
+
+BEGIN_METADATA(WebDialogView, views::WebDialogView)
+END_METADATA
 
 }  // namespace login_screen_extension_ui
 

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/system_tray_focus_observer.h"
 #include "base/macros.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
 namespace content {
@@ -29,11 +30,14 @@ class DialogDelegate;
 class WebDialogView : public views::WebDialogView,
                       public ash::SystemTrayFocusObserver {
  public:
+  METADATA_HEADER(WebDialogView);
   explicit WebDialogView(
       content::BrowserContext* context,
       DialogDelegate* delegate,
       std::unique_ptr<ui::WebDialogWebContentsDelegate::WebContentsHandler>
           handler);
+  WebDialogView(const WebDialogView&) = delete;
+  WebDialogView& operator=(const WebDialogView&) = delete;
   ~WebDialogView() override;
 
   // views::WebDialogView
@@ -44,8 +48,6 @@ class WebDialogView : public views::WebDialogView,
 
  private:
   DialogDelegate* delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogView);
 };
 
 }  // namespace login_screen_extension_ui
