@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="GPU.AcceleratedSurfaceRefreshRate" units="hz"
-    expires_after="M90">
+    expires_after="M97">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

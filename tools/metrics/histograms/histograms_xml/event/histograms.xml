@@ -215,7 +215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.OverPrediction"
-    units="pixels" expires_after="M85">
+    units="pixels" expires_after="M97">
   <owner>eirage@chromium.org</owner>
   <owner>axantoine@google.com</owner>
   <summary>
@@ -228,7 +228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.PredictionJitter"
-    units="pixels" expires_after="M85">
+    units="pixels" expires_after="M97">
   <owner>eirage@chromium.org</owner>
   <owner>axantoine@google.com</owner>
   <summary>
@@ -242,7 +242,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.UnderPrediction"
-    units="pixels" expires_after="M85">
+    units="pixels" expires_after="M97">
   <owner>eirage@chromium.org</owner>
   <owner>axantoine@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.VisualJitter" units="pixels"
-    expires_after="M85">
+    expires_after="M97">
   <owner>eirage@chromium.org</owner>
   <owner>axantoine@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.InputEventPrediction.Scroll.WrongDirection"
-    enum="Boolean" expires_after="M85">
+    enum="Boolean" expires_after="M97">
   <owner>eirage@chromium.org</owner>
   <owner>axantoine@google.com</owner>
   <summary>
@@ -602,7 +602,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.AverageLag" units="pixels"
-    expires_after="2021-06-20">
+    expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -620,7 +620,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.AverageLagPresentation"
-    units="pixels" expires_after="2021-06-20">
+    units="pixels" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1077,7 +1077,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLag" units="pixels"
-    expires_after="2021-06-20">
+    expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1138,7 +1138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation"
-    units="pixels" expires_after="2021-06-20">
+    units="pixels" expires_after="M97">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
