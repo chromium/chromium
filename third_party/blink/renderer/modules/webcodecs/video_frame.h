@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/optional.h"
-#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/plane.h"
@@ -17,6 +16,13 @@
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+// Note: Don't include "media/base/video_frame.h" here without good reason,
+// since it includes a lot of non-blink types which can pollute the namespace.
+
+namespace media {
+class VideoFrame;
+}
 
 namespace blink {
 
@@ -86,18 +92,14 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                   const ImageBitmapOptions*,
                                   ExceptionState&);
 
-  scoped_refptr<VideoFrameHandle> handle();
-
   // Convenience functions
-  scoped_refptr<media::VideoFrame> frame();
-  scoped_refptr<const media::VideoFrame> frame() const;
+  scoped_refptr<VideoFrameHandle> handle() const { return handle_; }
+  scoped_refptr<media::VideoFrame> frame() const { return handle_->frame(); }
 
   // GarbageCollected override
   void Trace(Visitor*) const override;
 
  private:
-  static bool IsSupportedPlanarFormat(media::VideoFrame*);
-
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
   IntSize BitmapSourceSize() const override;

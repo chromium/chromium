@@ -41,23 +41,6 @@ namespace blink {
 
 namespace {
 
-bool IsValidSkColorSpace(sk_sp<SkColorSpace> sk_color_space) {
-  // Refer to CanvasColorSpaceToGfxColorSpace in CanvasColorParams.
-  sk_sp<SkColorSpace> valid_sk_color_spaces[] = {
-      gfx::ColorSpace::CreateSRGB().ToSkColorSpace(),
-      gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace(),
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                      gfx::ColorSpace::TransferID::GAMMA24)
-          .ToSkColorSpace()};
-  for (auto& valid_sk_color_space : valid_sk_color_spaces) {
-    if (SkColorSpace::Equals(sk_color_space.get(),
-                             valid_sk_color_space.get())) {
-      return true;
-    }
-  }
-  return false;
-}
-
 struct YUVReadbackContext {
   gfx::Size coded_size;
   gfx::Rect visible_rect;
@@ -189,18 +172,224 @@ const char CachedVideoFramePool::kSupplementName[] = "CachedVideoFramePool";
 const base::TimeDelta CachedVideoFramePool::kIdleTimeout =
     base::TimeDelta::FromSeconds(10);
 
+scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
+  auto wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!wrapper)
+    return nullptr;
+
+  if (auto* provider = wrapper->ContextProvider())
+    return base::WrapRefCounted(provider->RasterContextProvider());
+
+  return nullptr;
+}
+
+bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
+  // SharedImage optimization: create AcceleratedStaticBitmapImage directly.
+  // Disabled on Android because the hardware decode implementation may neuter
+  // frames, which would violate ImageBitmap requirements.
+  // TODO(sandersd): Handle YUV pixel formats.
+  // TODO(sandersd): Handle high bit depth formats.
+#if defined(OS_ANDROID)
+  return false;
+#else
+  return frame.NumTextures() == 1 &&
+         frame.mailbox_holder(0).mailbox.IsSharedImage() &&
+         (frame.format() == media::PIXEL_FORMAT_ARGB ||
+          frame.format() == media::PIXEL_FORMAT_XRGB ||
+          frame.format() == media::PIXEL_FORMAT_ABGR ||
+          frame.format() == media::PIXEL_FORMAT_XBGR ||
+          frame.format() == media::PIXEL_FORMAT_BGRA);
+#endif
+}
+
+bool PreferAcceleratedImages(const media::VideoFrame& frame) {
+  if (frame.format() == media::PIXEL_FORMAT_I420A)
+    return false;
+
+  if (frame.HasTextures())
+    return true;
+
+  if (frame.format() == media::PIXEL_FORMAT_ARGB ||
+      frame.format() == media::PIXEL_FORMAT_XRGB ||
+      frame.format() == media::PIXEL_FORMAT_ABGR ||
+      frame.format() == media::PIXEL_FORMAT_XBGR) {
+    return false;
+  }
+
+  constexpr int kCpuEfficientFrameSize = 320u * 240u;
+  return frame.visible_rect().size().GetArea() > kCpuEfficientFrameSize;
+}
+
+scoped_refptr<StaticBitmapImage> CreateImage(
+    scoped_refptr<media::VideoFrame> frame) {
+  // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
+  // may never happen, and SkColorSpace doesn't know about it.
+  auto sk_color_space =
+      frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
+  if (!sk_color_space)
+    sk_color_space = SkColorSpace::MakeSRGB();
+
+  if (CanUseZeroCopyImages(*frame)) {
+    const SkImageInfo sk_image_info = SkImageInfo::Make(
+        frame->coded_size().width(), frame->coded_size().height(),
+        kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
+
+    // Hold a ref by storing it in the release callback.
+    auto release_callback = viz::SingleReleaseCallback::Create(
+        WTF::Bind([](scoped_refptr<media::VideoFrame> frame,
+                     const gpu::SyncToken& sync_token, bool is_lost) {},
+                  frame));
+
+    return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
+        frame->mailbox_holder(0).mailbox, frame->mailbox_holder(0).sync_token,
+        0u, sk_image_info, frame->mailbox_holder(0).texture_target, true,
+        // Pass nullptr for |context_provider_wrapper|, because we don't
+        // know which context the mailbox came from. It is used only to
+        // detect when the mailbox is invalid due to context loss, and is
+        // ignored when |is_cross_thread|.
+        base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
+        // Pass null |context_thread_ref|, again because we don't know
+        // which context the mailbox came from. This should always trigger
+        // |is_cross_thread|.
+        base::PlatformThreadRef(),
+        // The task runner is only used for |release_callback|.
+        Thread::Current()->GetTaskRunner(), std::move(release_callback));
+  }
+
+  const bool is_mappable =
+      frame->IsMappable() && (frame->format() == media::PIXEL_FORMAT_I420 ||
+                              frame->format() == media::PIXEL_FORMAT_I420A);
+  const bool is_texturable =
+      frame->HasTextures() && (frame->format() == media::PIXEL_FORMAT_I420 ||
+                               frame->format() == media::PIXEL_FORMAT_I420A ||
+                               frame->format() == media::PIXEL_FORMAT_NV12);
+  const bool is_rgb = frame->format() == media::PIXEL_FORMAT_ARGB ||
+                      frame->format() == media::PIXEL_FORMAT_XRGB ||
+                      frame->format() == media::PIXEL_FORMAT_ABGR ||
+                      frame->format() == media::PIXEL_FORMAT_XBGR;
+
+  if (!is_mappable && !is_texturable && !is_rgb) {
+    DLOG(ERROR) << "Unsupported VideoFrame: " << frame->AsHumanReadableString();
+    return nullptr;
+  }
+
+  if (!PreferAcceleratedImages(*frame)) {
+    auto info = SkImageInfo::Make(
+        frame->visible_rect().width(), frame->visible_rect().height(),
+        kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
+
+    sk_sp<SkData> image_pixels = TryAllocateSkData(info.computeMinByteSize());
+    if (!image_pixels)
+      return nullptr;
+
+    media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
+        frame.get(), image_pixels->writable_data(), info.minRowBytes());
+    return UnacceleratedStaticBitmapImage::Create(SkImage::MakeRasterData(
+        info, std::move(image_pixels), info.minRowBytes()));
+  }
+
+  auto raster_context_provider = GetRasterContextProvider();
+  if (!raster_context_provider) {
+    DLOG(ERROR) << "Graphics context unavailable.";
+    return nullptr;
+  }
+
+  auto* ri = raster_context_provider->RasterInterface();
+  auto* shared_image_interface =
+      raster_context_provider->SharedImageInterface();
+  uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+  if (raster_context_provider->ContextCapabilities().supports_oop_raster) {
+    usage |= gpu::SHARED_IMAGE_USAGE_RASTER |
+             gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+  }
+
+  gpu::MailboxHolder dest_holder;
+  // Use coded_size() to comply with media::ConvertFromVideoFrameYUV.
+  dest_holder.mailbox = shared_image_interface->CreateSharedImage(
+      viz::ResourceFormat::RGBA_8888, frame->coded_size(), gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      gpu::kNullSurfaceHandle);
+  dest_holder.sync_token = shared_image_interface->GenUnverifiedSyncToken();
+  dest_holder.texture_target = GL_TEXTURE_2D;
+
+  if (frame->NumTextures() == 1) {
+    ri->WaitSyncTokenCHROMIUM(dest_holder.sync_token.GetConstData());
+    ri->CopySubTexture(frame->mailbox_holder(0).mailbox, dest_holder.mailbox,
+                       GL_TEXTURE_2D, 0, 0, 0, 0, frame->coded_size().width(),
+                       frame->coded_size().height(), GL_FALSE, GL_FALSE);
+  } else {
+    media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+        frame.get(), raster_context_provider.get(), dest_holder);
+  }
+
+  gpu::SyncToken sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+
+  auto release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
+      [](scoped_refptr<viz::RasterContextProvider> provider,
+         gpu::Mailbox mailbox, const gpu::SyncToken& sync_token, bool is_lost) {
+        provider->SharedImageInterface()->DestroySharedImage(sync_token,
+                                                             mailbox);
+      },
+      raster_context_provider, dest_holder.mailbox));
+
+  const auto sk_image_info = SkImageInfo::Make(
+      frame->coded_size().width(), frame->coded_size().height(),
+      kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
+
+  auto image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
+      dest_holder.mailbox, sync_token, 0u, sk_image_info,
+      dest_holder.texture_target, true,
+      SharedGpuContext::ContextProviderWrapper(),
+      base::PlatformThread::CurrentRef(), Thread::Current()->GetTaskRunner(),
+      std::move(release_callback));
+
+  if (frame->HasTextures()) {
+    // Attach a new sync token to |frame|, so it's not destroyed
+    // before |image| is fully created.
+    media::WaitAndReplaceSyncTokenClient client(ri);
+    frame->UpdateReleaseSyncToken(&client);
+  }
+  return image;
+}
+
+bool IsSupportedPlanarFormat(const media::VideoFrame& frame) {
+  if (!frame.IsMappable() && !frame.HasGpuMemoryBuffer())
+    return false;
+
+  const size_t num_planes = frame.layout().num_planes();
+  switch (frame.format()) {
+    case media::PIXEL_FORMAT_I420:
+      return num_planes == 3;
+    case media::PIXEL_FORMAT_I420A:
+      return num_planes == 4;
+    case media::PIXEL_FORMAT_NV12:
+      return num_planes == 2;
+    case media::PIXEL_FORMAT_XBGR:
+    case media::PIXEL_FORMAT_XRGB:
+    case media::PIXEL_FORMAT_ABGR:
+    case media::PIXEL_FORMAT_ARGB:
+      return num_planes == 1;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
-                       ExecutionContext* context)
-    : handle_(
-          base::MakeRefCounted<VideoFrameHandle>(std::move(frame), context)) {
-  DCHECK(handle_->frame());
+                       ExecutionContext* context) {
+  DCHECK(frame);
+  handle_ = base::MakeRefCounted<VideoFrameHandle>(std::move(frame), context);
 }
 
 VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
     : handle_(std::move(handle)) {
   DCHECK(handle_);
+
+  // Note: The provided |handle| may be invalid if close() has been called while
+  // a frame is in transit to another thread.
 }
 
 // static
@@ -234,7 +423,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   auto sk_color_space = sk_image_info.refColorSpace();
   if (!sk_color_space)
     sk_color_space = SkColorSpace::MakeSRGB();
-  if (!IsValidSkColorSpace(sk_color_space)) {
+
+  const auto gfx_color_space = gfx::ColorSpace(*sk_color_space);
+  if (!gfx_color_space.IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid color space");
     return nullptr;
@@ -274,6 +465,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     }
 
     frame = std::move(result.frame);
+    frame->set_color_space(gfx_color_space);
     return MakeGarbageCollected<VideoFrame>(
         std::move(frame), ExecutionContext::From(script_state));
   }
@@ -285,7 +477,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                       "Failed to create video frame");
     return nullptr;
   }
-  frame->set_color_space(gfx::ColorSpace(*sk_color_space));
+  frame->set_color_space(gfx_color_space);
   return MakeGarbageCollected<VideoFrame>(
       base::MakeRefCounted<VideoFrameHandle>(
           std::move(frame), std::move(sk_image),
@@ -463,35 +655,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                           ExecutionContext::From(script_state));
 }
 
-// static
-bool VideoFrame::IsSupportedPlanarFormat(media::VideoFrame* frame) {
-  if (!frame)
-    return false;
-
-  if (!frame->IsMappable() && !frame->HasGpuMemoryBuffer())
-    return false;
-
-  const size_t num_planes = frame->layout().num_planes();
-  switch (frame->format()) {
-    case media::PIXEL_FORMAT_I420:
-      return num_planes == 3;
-    case media::PIXEL_FORMAT_I420A:
-      return num_planes == 4;
-    case media::PIXEL_FORMAT_NV12:
-      return num_planes == 2;
-    case media::PIXEL_FORMAT_XBGR:
-    case media::PIXEL_FORMAT_XRGB:
-    case media::PIXEL_FORMAT_ABGR:
-    case media::PIXEL_FORMAT_ARGB:
-      return num_planes == 1;
-    default:
-      return false;
-  }
-}
-
 String VideoFrame::format() const {
   auto local_frame = handle_->frame();
-  if (!local_frame || !IsSupportedPlanarFormat(local_frame.get()))
+  if (!local_frame || !IsSupportedPlanarFormat(*local_frame))
     return String();
 
   switch (local_frame->format()) {
@@ -518,7 +684,7 @@ base::Optional<HeapVector<Member<Plane>>> VideoFrame::planes() {
   // Verify that |this| has not been invalidated, and that the format is
   // supported.
   auto local_frame = handle_->frame();
-  if (!local_frame || !IsSupportedPlanarFormat(local_frame.get()))
+  if (!local_frame || !IsSupportedPlanarFormat(*local_frame))
     return base::nullopt;
 
   // Create a Plane for each VideoFrame plane, but only the first time.
@@ -604,7 +770,6 @@ base::Optional<uint64_t> VideoFrame::duration() const {
 }
 
 void VideoFrame::close() {
-  // TODO(tguilbert): Add a warning when closing already closed frames?
   handle_->Invalidate();
 }
 
@@ -635,23 +800,10 @@ VideoFrame* VideoFrame::CloneFromNative(ExecutionContext* context) {
   return handle ? MakeGarbageCollected<VideoFrame>(std::move(handle)) : nullptr;
 }
 
-scoped_refptr<VideoFrameHandle> VideoFrame::handle() {
-  return handle_;
-}
-
-scoped_refptr<media::VideoFrame> VideoFrame::frame() {
-  return handle_->frame();
-}
-
-scoped_refptr<const media::VideoFrame> VideoFrame::frame() const {
-  return handle_->frame();
-}
-
 ScriptPromise VideoFrame::createImageBitmap(ScriptState* script_state,
                                             const ImageBitmapOptions* options,
                                             ExceptionState& exception_state) {
   base::Optional<IntRect> crop_rect;
-
   if (auto local_frame = handle_->frame())
     crop_rect = IntRect(local_frame->visible_rect());
 
@@ -661,13 +813,23 @@ ScriptPromise VideoFrame::createImageBitmap(ScriptState* script_state,
 
 IntSize VideoFrame::BitmapSourceSize() const {
   // TODO(crbug.com/1096724): Should be scaled to display size.
-  return IntSize(cropWidth(), cropHeight());
+  if (auto local_frame = handle_->frame())
+    return IntSize(local_frame->visible_rect().size());
+  return IntSize();
 }
 
 ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                             base::Optional<IntRect> crop_rect,
                                             const ImageBitmapOptions* options,
                                             ExceptionState& exception_state) {
+  const auto& frame = handle_->frame();
+  if (!frame) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot create ImageBitmap from destroyed VideoFrame.");
+    return ScriptPromise();
+  }
+
   if (auto sk_img = handle_->sk_image()) {
     auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
         UnacceleratedStaticBitmapImage::Create(std::move(sk_img)), crop_rect,
@@ -676,199 +838,19 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                                  exception_state);
   }
 
-  auto local_frame = frame();
-  if (!local_frame) {
+  const auto image = CreateImage(frame);
+  if (!image) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Cannot create ImageBitmap from destroyed VideoFrame.");
+        DOMExceptionCode::kNotSupportedError,
+        String(("Unsupported VideoFrame: " + frame->AsHumanReadableString())
+                   .c_str()));
     return ScriptPromise();
   }
 
-  // SharedImage optimization: create AcceleratedStaticBitmapImage directly.
-  // Disabled on Android because the hardware decode implementation may neuter
-  // frames, which would violate ImageBitmap requirements.
-  // TODO(sandersd): Handle YUV pixel formats.
-  // TODO(sandersd): Handle high bit depth formats.
-#if !defined(OS_ANDROID)
-  if (local_frame->NumTextures() == 1 &&
-      local_frame->mailbox_holder(0).mailbox.IsSharedImage() &&
-      (local_frame->format() == media::PIXEL_FORMAT_ARGB ||
-       local_frame->format() == media::PIXEL_FORMAT_XRGB ||
-       local_frame->format() == media::PIXEL_FORMAT_ABGR ||
-       local_frame->format() == media::PIXEL_FORMAT_XBGR ||
-       local_frame->format() == media::PIXEL_FORMAT_BGRA)) {
-    // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
-    // may never happen, and SkColorSpace doesn't know about it.
-    auto sk_color_space =
-        local_frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
-    if (!sk_color_space)
-      sk_color_space = SkColorSpace::MakeSRGB();
-
-    const SkImageInfo sk_image_info = SkImageInfo::Make(
-        local_frame->coded_size().width(), local_frame->coded_size().height(),
-        kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
-
-    // Hold a ref by storing it in the release callback.
-    auto release_callback = viz::SingleReleaseCallback::Create(
-        WTF::Bind([](scoped_refptr<media::VideoFrame> frame,
-                     const gpu::SyncToken& sync_token, bool is_lost) {},
-                  local_frame));
-
-    scoped_refptr<StaticBitmapImage> image =
-        AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-            local_frame->mailbox_holder(0).mailbox,
-            local_frame->mailbox_holder(0).sync_token, 0u, sk_image_info,
-            local_frame->mailbox_holder(0).texture_target, true,
-            // Pass nullptr for |context_provider_wrapper|, because we don't
-            // know which context the mailbox came from. It is used only to
-            // detect when the mailbox is invalid due to context loss, and is
-            // ignored when |is_cross_thread|.
-            base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
-            // Pass null |context_thread_ref|, again because we don't know
-            // which context the mailbox came from. This should always trigger
-            // |is_cross_thread|.
-            base::PlatformThreadRef(),
-            // The task runner is only used for |release_callback|.
-            Thread::Current()->GetTaskRunner(), std::move(release_callback));
-    ImageBitmap* image_bitmap =
-        MakeGarbageCollected<ImageBitmap>(image, crop_rect, options);
-    return ImageBitmapSource::FulfillImageBitmap(script_state, image_bitmap,
-                                                 exception_state);
-  }
-#endif  // !defined(OS_ANDROID)
-
-  const bool is_rgb = local_frame->format() == media::PIXEL_FORMAT_ARGB ||
-                      local_frame->format() == media::PIXEL_FORMAT_XRGB ||
-                      local_frame->format() == media::PIXEL_FORMAT_ABGR ||
-                      local_frame->format() == media::PIXEL_FORMAT_XBGR;
-
-  if ((local_frame->IsMappable() &&
-       (local_frame->format() == media::PIXEL_FORMAT_I420 ||
-        local_frame->format() == media::PIXEL_FORMAT_I420A)) ||
-      (local_frame->HasTextures() &&
-       (local_frame->format() == media::PIXEL_FORMAT_I420 ||
-        local_frame->format() == media::PIXEL_FORMAT_I420A ||
-        local_frame->format() == media::PIXEL_FORMAT_NV12)) ||
-      is_rgb) {
-    scoped_refptr<StaticBitmapImage> image;
-    gfx::ColorSpace gfx_color_space = local_frame->ColorSpace();
-    gfx_color_space = gfx_color_space.GetWithMatrixAndRange(
-        gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL);
-    auto sk_color_space = gfx_color_space.ToSkColorSpace();
-    if (!sk_color_space)
-      sk_color_space = SkColorSpace::MakeSRGB();
-
-    const bool prefer_accelerated_image_bitmap =
-        local_frame->format() != media::PIXEL_FORMAT_I420A &&
-        (BitmapSourceSize().Area() > kCpuEfficientFrameSize ||
-         local_frame->HasTextures()) &&
-        (!is_rgb || local_frame->HasTextures());
-
-    if (!prefer_accelerated_image_bitmap) {
-      size_t bytes_per_row = sizeof(SkColor) * cropWidth();
-      size_t image_pixels_size = bytes_per_row * cropHeight();
-
-      sk_sp<SkData> image_pixels = TryAllocateSkData(image_pixels_size);
-      if (!image_pixels) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kBufferOverrunError,
-                                          "Out of memory.");
-        return ScriptPromise();
-      }
-      media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-          local_frame.get(), image_pixels->writable_data(), bytes_per_row);
-
-      SkImageInfo info =
-          SkImageInfo::Make(cropWidth(), cropHeight(), kN32_SkColorType,
-                            kUnpremul_SkAlphaType, std::move(sk_color_space));
-      sk_sp<SkImage> skImage =
-          SkImage::MakeRasterData(info, image_pixels, bytes_per_row);
-      image = UnacceleratedStaticBitmapImage::Create(std::move(skImage));
-    } else {
-      scoped_refptr<viz::RasterContextProvider> raster_context_provider;
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper> wrapper =
-          SharedGpuContext::ContextProviderWrapper();
-      if (wrapper && wrapper->ContextProvider()) {
-        raster_context_provider = base::WrapRefCounted(
-            wrapper->ContextProvider()->RasterContextProvider());
-      }
-      if (!raster_context_provider) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                          "Graphics context unavailable.");
-        return ScriptPromise();
-      }
-
-      auto* ri = raster_context_provider->RasterInterface();
-      gpu::SharedImageInterface* shared_image_interface =
-          raster_context_provider->SharedImageInterface();
-      uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY;
-      if (raster_context_provider->ContextCapabilities().supports_oop_raster) {
-        usage |= gpu::SHARED_IMAGE_USAGE_RASTER |
-                 gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-      }
-
-      gpu::MailboxHolder dest_holder;
-      // Use coded_size() to comply with media::ConvertFromVideoFrameYUV.
-      dest_holder.mailbox = shared_image_interface->CreateSharedImage(
-          viz::ResourceFormat::RGBA_8888, local_frame->coded_size(),
-          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          usage, gpu::kNullSurfaceHandle);
-      dest_holder.sync_token = shared_image_interface->GenUnverifiedSyncToken();
-      dest_holder.texture_target = GL_TEXTURE_2D;
-
-      if (local_frame->NumTextures() == 1) {
-        ri->WaitSyncTokenCHROMIUM(dest_holder.sync_token.GetConstData());
-        ri->CopySubTexture(
-            local_frame->mailbox_holder(0).mailbox, dest_holder.mailbox,
-            GL_TEXTURE_2D, 0, 0, 0, 0, local_frame->coded_size().width(),
-            local_frame->coded_size().height(), GL_FALSE, GL_FALSE);
-      } else {
-        media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-            local_frame.get(), raster_context_provider.get(), dest_holder);
-      }
-
-      gpu::SyncToken sync_token;
-      ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-      auto release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
-          [](scoped_refptr<viz::RasterContextProvider> provider,
-             gpu::Mailbox mailbox, const gpu::SyncToken& sync_token,
-             bool is_lost) {
-            provider->SharedImageInterface()->DestroySharedImage(sync_token,
-                                                                 mailbox);
-          },
-          raster_context_provider, dest_holder.mailbox));
-
-      const SkImageInfo sk_image_info =
-          SkImageInfo::Make(codedWidth(), codedHeight(), kN32_SkColorType,
-                            kUnpremul_SkAlphaType, std::move(sk_color_space));
-
-      image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-          dest_holder.mailbox, sync_token, 0u, sk_image_info,
-          dest_holder.texture_target, true,
-          SharedGpuContext::ContextProviderWrapper(),
-          base::PlatformThread::CurrentRef(),
-          Thread::Current()->GetTaskRunner(), std::move(release_callback));
-
-      if (local_frame->HasTextures()) {
-        // Attach a new sync token to |local_frame|, so it's not destroyed
-        // before |image| is fully created.
-        media::WaitAndReplaceSyncTokenClient client(ri);
-        local_frame->UpdateReleaseSyncToken(&client);
-      }
-    }
-
-    ImageBitmap* image_bitmap =
-        MakeGarbageCollected<ImageBitmap>(image, crop_rect, options);
-    return ImageBitmapSource::FulfillImageBitmap(script_state, image_bitmap,
-                                                 exception_state);
-  }
-
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kNotSupportedError,
-      String(("Unsupported VideoFrame: " + local_frame->AsHumanReadableString())
-                 .c_str()));
-  return ScriptPromise();
+  auto* image_bitmap =
+      MakeGarbageCollected<ImageBitmap>(image, crop_rect, options);
+  return ImageBitmapSource::FulfillImageBitmap(script_state, image_bitmap,
+                                               exception_state);
 }
 
 void VideoFrame::Trace(Visitor* visitor) const {

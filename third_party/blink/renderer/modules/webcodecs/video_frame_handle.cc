@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 
+#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/skia/include/core/SkImage.h"
 

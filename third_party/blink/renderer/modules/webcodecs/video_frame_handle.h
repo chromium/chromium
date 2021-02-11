@@ -6,14 +6,20 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_VIDEO_FRAME_HANDLE_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_logger.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
+// Note: Don't include "media/base/video_frame.h" here without good reason,
+// since it includes a lot of non-blink types which can pollute the namespace.
+
 class SkImage;
+
+namespace media {
+class VideoFrame;
+}
 
 namespace blink {
 
