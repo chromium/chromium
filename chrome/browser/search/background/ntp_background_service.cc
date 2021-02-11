@@ -5,11 +5,13 @@
 #include "chrome/browser/search/background/ntp_background_service.h"
 
 #include "base/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/search/background/ntp_background.pb.h"
 #include "chrome/browser/search/background/ntp_backgrounds.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
@@ -38,6 +40,9 @@ constexpr char kNextCollectionImageUrl[] =
 // etc. Options appear on an image URL after the '=' character.
 // TODO(crbug.com/874339): Set options based on display resolution capability.
 constexpr char kImageOptions[] = "=w3840-h2160-p-k-no-nd-mv";
+
+// Label added to request to filter out unwanted collections.
+constexpr char kFilteringLabel[] = "chrome_desktop_ntp";
 
 }  // namespace
 
@@ -98,6 +103,11 @@ void NtpBackgroundService::FetchCollectionInfo() {
   ntp::background::GetCollectionsRequest request;
   // The language field may include the country code (e.g. "en-US").
   request.set_language(g_browser_process->GetApplicationLocale());
+  request.add_filtering_label(kFilteringLabel);
+  // Add some extra filtering information in case we need to target a specific
+  // milestone post release.
+  request.add_filtering_label(base::StrCat(
+      {kFilteringLabel, ".M", version_info::GetMajorVersionNumber()}));
   std::string serialized_proto;
   request.SerializeToString(&serialized_proto);
 
