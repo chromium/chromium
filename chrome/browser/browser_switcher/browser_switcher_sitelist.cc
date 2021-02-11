@@ -35,16 +35,35 @@ struct NoCopyUrl {
   base::StringPiece spec_without_port;
 };
 
-// Returns true if |input| contains |token|, ignoring case for ASCII
-// characters.
-bool StringContainsInsensitiveASCII(base::StringPiece input,
-                                    base::StringPiece token) {
-  const char* found =
-      std::search(input.begin(), input.end(), token.begin(), token.end(),
-                  [](char a, char b) {
+// Case-insensitively compare the hostname of |host_and_port| with the hostname
+// pattern |pattern|.
+bool MatchesHostNameAtEnd(base::StringPiece host_and_port,
+                          base::StringPiece pattern) {
+  // Use reverse_iterator to search from the *end* of the string.
+  std::reverse_iterator<const char*> found =
+      std::search(host_and_port.rbegin(), host_and_port.rend(),
+                  pattern.rbegin(), pattern.rend(), [](char a, char b) {
                     return base::ToLowerASCII(a) == base::ToLowerASCII(b);
                   });
-  return found != input.end();
+  if (found == host_and_port.rend())
+    return false;
+
+  const char* beginning = found.base() - pattern.size();
+  const char* end = found.base();
+
+  // The match should be at a domain boundary, i.e. preceded by:
+  //   (a) the beginning of the string, or
+  //   (b) a dot.
+  if (beginning != host_and_port.begin() && *(beginning - 1) != '.')
+    return false;
+
+  // The match should be at the end, i.e. followed by:
+  //   (a) the end of the string, or
+  //   (b) a port number.
+  if (*end != '\0' && *end != ':')
+    return false;
+
+  return true;
 }
 
 // Checks if the omitted prefix for a non-fully specific prefix is one of the
@@ -81,7 +100,7 @@ bool UrlMatchesPattern(const NoCopyUrl& url, base::StringPiece pattern) {
     return false;
   }
   // Compare hosts and ports, case-insensitive.
-  return StringContainsInsensitiveASCII(url.host_and_port, pattern);
+  return MatchesHostNameAtEnd(url.host_and_port, pattern);
 }
 
 // Checks whether |patterns| contains a pattern that matches |url|, and returns
