@@ -606,23 +606,24 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return ShouldApplyLayoutContainment(StyleRef());
   }
 
+  inline bool IsEligibleForSizeContainment() const {
+    NOT_DESTROYED();
+    return (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
+           (!IsTablePart() || IsTableCaption()) && !IsTable();
+  }
   inline bool ShouldApplySizeContainment() const {
     NOT_DESTROYED();
-    return StyleRef().ContainsSize() &&
-           (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
-           (!IsTablePart() || IsTableCaption()) && !IsTable();
+    return StyleRef().ContainsSize() && IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyInlineSizeContainment() const {
     NOT_DESTROYED();
     return (StyleRef().ContainsInlineSize() || StyleRef().ContainsSize()) &&
-           (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
-           (!IsTablePart() || IsTableCaption()) && !IsTable();
+           IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyBlockSizeContainment() const {
     NOT_DESTROYED();
     return (StyleRef().ContainsBlockSize() || StyleRef().ContainsSize()) &&
-           (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
-           (!IsTablePart() || IsTableCaption()) && !IsTable();
+           IsEligibleForSizeContainment();
   }
   inline bool ShouldApplyStyleContainment() const {
     NOT_DESTROYED();
