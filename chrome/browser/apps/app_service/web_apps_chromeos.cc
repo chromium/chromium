@@ -471,36 +471,8 @@ void WebAppsChromeOs::OnRequestUpdate(int render_process_id,
     return;
   }
 
-  if (media_requests_.IsNewRequest(app_id.value(), web_contents, state)) {
-    content::WebContentsUserData<AppWebContentsData>::CreateForWebContents(
-        web_contents, this);
-  }
-
   auto result = media_requests_.UpdateRequests(app_id.value(), web_contents,
                                                stream_type, state);
-  ModifyCapabilityAccess(subscribers(), app_id.value(), result.camera,
-                         result.microphone);
-}
-
-void WebAppsChromeOs::OnWebContentsDestroyed(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  base::Optional<web_app::AppId> app_id =
-      web_app::FindInstalledAppWithUrlInScope(
-          profile(), web_contents->GetLastCommittedURL(),
-          /*window_only=*/false);
-  if (!app_id.has_value()) {
-    return;
-  }
-
-  const web_app::WebApp* web_app = GetWebApp(app_id.value());
-  if (!web_app || !Accepts(app_id.value())) {
-    return;
-  }
-
-  auto result =
-      media_requests_.OnWebContentsDestroyed(app_id.value(), web_contents);
   ModifyCapabilityAccess(subscribers(), app_id.value(), result.camera,
                          result.microphone);
 }

@@ -11,7 +11,6 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
-#include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
@@ -41,8 +40,7 @@ namespace apps {
 class WebAppsChromeOs : public WebAppsBase,
                         public ArcAppListPrefs::Observer,
                         public NotificationDisplayService::Observer,
-                        public MediaCaptureDevicesDispatcher::Observer,
-                        public AppWebContentsData::Client {
+                        public MediaCaptureDevicesDispatcher::Observer {
  public:
   WebAppsChromeOs(const mojo::Remote<apps::mojom::AppService>& app_service,
                   Profile* profile,
@@ -115,9 +113,6 @@ class WebAppsChromeOs : public WebAppsBase,
                        int render_frame_id,
                        blink::mojom::MediaStreamType stream_type,
                        const content::MediaRequestState state) override;
-
-  // AppWebContentsData::Observer:
-  void OnWebContentsDestroyed(content::WebContents* contents) override;
 
   // NotificationDisplayService::Observer overrides.
   void OnNotificationDisplayed(

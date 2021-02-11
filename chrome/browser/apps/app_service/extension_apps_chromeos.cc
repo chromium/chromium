@@ -426,33 +426,8 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
     app_id = extension->id();
   }
 
-  if (media_requests_.IsNewRequest(app_id, web_contents, state)) {
-    content::WebContentsUserData<AppWebContentsData>::CreateForWebContents(
-        web_contents, this);
-  }
-
   auto result =
       media_requests_.UpdateRequests(app_id, web_contents, stream_type, state);
-  ModifyCapabilityAccess(subscribers(), app_id, result.camera,
-                         result.microphone);
-}
-
-void ExtensionAppsChromeOs::OnWebContentsDestroyed(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  std::string app_id = extension_misc::kChromeAppId;
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile());
-  DCHECK(registry);
-  const extensions::ExtensionSet& extensions = registry->enabled_extensions();
-  const extensions::Extension* extension =
-      extensions.GetAppByURL(web_contents->GetLastCommittedURL());
-  if (extension && Accepts(extension)) {
-    app_id = extension->id();
-  }
-
-  auto result = media_requests_.OnWebContentsDestroyed(app_id, web_contents);
   ModifyCapabilityAccess(subscribers(), app_id, result.camera,
                          result.microphone);
 }
