@@ -91,16 +91,6 @@
         await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
     chrome.test.assertEq(expectedLabelText, label.text);
 
-    // Focus another button that has a tooltip: the view button.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('focus', appId, [viewButton]));
-    await getActiveElementById(appId, 'view-button');
-
-    // Check: the view button tooltip should be visible.
-    label =
-        await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq('Switch to thumbnail view', label.text);
-
     // Focus an element that has no tooltip: the file-list.
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('focus', appId, [fileList]));
