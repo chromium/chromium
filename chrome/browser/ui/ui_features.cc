@@ -169,7 +169,7 @@ const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
 // Enables a separate group of settings (speed, button swap, and acceleration)
 // for pointing sticks (such as TrackPoints).
 const base::Feature kSeparatePointingStickSettings{
-    "SeparatePointingStickSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SeparatePointingStickSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features
