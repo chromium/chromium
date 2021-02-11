@@ -14,6 +14,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "fuchsia/engine/common/cast_streaming.h"
+#include "fuchsia/engine/features.h"
 #include "fuchsia/engine/renderer/cast_streaming_demuxer.h"
 #include "fuchsia/engine/renderer/web_engine_url_loader_throttle_provider.h"
 #include "fuchsia/engine/switches.h"
@@ -132,6 +133,9 @@ void WebEngineContentRendererClient::RenderThreadStarted() {
   // Behavior of browser tests should not depend on things outside of their
   // control (like the amount of memory on the system running the tests).
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kBrowserTest))
+    return;
+
+  if (!base::FeatureList::IsEnabled(features::kHandleMemoryPressureInRenderer))
     return;
 
   memory_pressure_monitor_ =
