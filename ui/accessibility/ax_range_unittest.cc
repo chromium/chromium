@@ -170,8 +170,9 @@ void AXRangeTest::SetUp() {
 
   button_.role = ax::mojom::Role::kButton;
   button_.SetHasPopup(ax::mojom::HasPopup::kMenu);
-  button_.SetName(BUTTON);
+  button_.SetName("Button");
   button_.SetNameFrom(ax::mojom::NameFrom::kValue);
+  button_.SetValue("Button");
   button_.relative_bounds.bounds = gfx::RectF(20, 20, 100, 30);
   button_.AddIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
                           check_box1_.id);

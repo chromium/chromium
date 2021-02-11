@@ -379,36 +379,39 @@ OptionalNSObject TextMarkerRangeGetStartMarker(const OptionalNSObject& obj) {
   if (!IsAXTextMarkerRange(*obj))
     return OptionalNSObject::NotApplicable();
 
-  BrowserAccessibilityPosition::AXRangeType range =
-      AXTextMarkerRangeToRange(*obj);
+  const BrowserAccessibility::AXRange range = AXTextMarkerRangeToAXRange(*obj);
   if (range.IsNull())
     return OptionalNSObject::Error();
 
-  BrowserAccessibilityPosition::AXPositionInstance::pointer position =
-      range.anchor();
-  const BrowserAccessibility* node = position->GetAnchor();
+  auto* manager =
+      BrowserAccessibilityManager::FromID(range.anchor()->tree_id());
+  DCHECK(manager) << "A non-null range should have an associated AX tree.";
+  const BrowserAccessibility* node =
+      manager->GetFromID(range.anchor()->anchor_id());
+  DCHECK(node) << "A non-null range should have a non-null anchor node.";
   const BrowserAccessibilityCocoa* cocoa_node =
       ToBrowserAccessibilityCocoa(node);
   return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
-      cocoa_node, position->text_offset(), position->affinity()));
+      cocoa_node, range.anchor()->text_offset(), range.anchor()->affinity()));
 }
 
 OptionalNSObject TextMarkerRangeGetEndMarker(const OptionalNSObject& obj) {
   if (!IsAXTextMarkerRange(*obj))
     return OptionalNSObject::NotApplicable();
 
-  BrowserAccessibilityPosition::AXRangeType range =
-      AXTextMarkerRangeToRange(*obj);
+  const BrowserAccessibility::AXRange range = AXTextMarkerRangeToAXRange(*obj);
   if (range.IsNull())
     return OptionalNSObject::Error();
 
-  BrowserAccessibilityPosition::AXPositionInstance::pointer position =
-      range.focus();
-  const BrowserAccessibility* node = position->GetAnchor();
+  auto* manager = BrowserAccessibilityManager::FromID(range.focus()->tree_id());
+  DCHECK(manager) << "A non-null range should have an associated AX tree.";
+  const BrowserAccessibility* node =
+      manager->GetFromID(range.focus()->anchor_id());
+  DCHECK(node) << "A non-null range should have a non-null focus node.";
   const BrowserAccessibilityCocoa* cocoa_node =
       ToBrowserAccessibilityCocoa(node);
   return OptionalNSObject::NotNilOrError(content::AXTextMarkerFrom(
-      cocoa_node, position->text_offset(), position->affinity()));
+      cocoa_node, range.focus()->text_offset(), range.focus()->affinity()));
 }
 
 OptionalNSObject MakePairArray(const OptionalNSObject& obj1,

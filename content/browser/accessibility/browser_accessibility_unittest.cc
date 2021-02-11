@@ -9,6 +9,7 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_node_position.h"
 
 namespace content {
 
@@ -803,8 +804,9 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
   ASSERT_NE(nullptr, input_accessible);
 
   // Create a text position at offset 0 in the input control
-  auto position = input_accessible->CreatePositionAt(
-      0, ax::mojom::TextAffinity::kDownstream);
+  BrowserAccessibility::AXPosition position =
+      input_accessible->CreatePositionAt(0,
+                                         ax::mojom::TextAffinity::kDownstream);
 
   // On platforms that expose IA2 or ATK hypertext, moving by word should work
   // the same as if the value of the text field is equal to the placeholder
@@ -816,8 +818,9 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
   // "read current line". Only once the user starts typing should the
   // placeholder disappear.
 
-  auto next_word_start = position->CreateNextWordStartPosition(
-      ui::AXBoundaryBehavior::CrossBoundary);
+  BrowserAccessibility::AXPosition next_word_start =
+      position->CreateNextWordStartPosition(
+          ui::AXBoundaryBehavior::CrossBoundary);
   if (position->MaxTextOffset() == 0) {
     EXPECT_TRUE(next_word_start->IsNullPosition());
   } else {
@@ -827,8 +830,9 @@ TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {
         next_word_start->ToString());
   }
 
-  auto next_word_end = position->CreateNextWordEndPosition(
-      ui::AXBoundaryBehavior::CrossBoundary);
+  BrowserAccessibility::AXPosition next_word_end =
+      position->CreateNextWordEndPosition(
+          ui::AXBoundaryBehavior::CrossBoundary);
   if (position->MaxTextOffset() == 0) {
     EXPECT_TRUE(next_word_end->IsNullPosition());
   } else {
