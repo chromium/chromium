@@ -32,7 +32,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     private InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
     private long mLastNavigationWithUserGestureTime = RedirectHandler.INVALID_TIME;
     private boolean mDestroyed;
-    private boolean mAllowIntentLaunchesInBackgroundForCurrentNavigation;
 
     InterceptNavigationDelegateClientImpl(TabImpl tab) {
         mTab = tab;
@@ -104,15 +103,16 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     @Override
     public boolean isHidden() {
-        // The tab is never considered hidden for the purpose of intent launching if the embedder
-        // has specified that intent launches should be allowed in the background on the current
-        // navigation.
-        // TODO(crbug.com/1162267): Pass this state into ExternalNavigationHandler so that
-        // it can consider this case explicitly and eliminate the need to have special-case
-        // logic in this method.
-        if (mAllowIntentLaunchesInBackgroundForCurrentNavigation) return false;
-
         return !mTab.isVisible();
+    }
+
+    @Override
+    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationParams params) {
+        NavigationImpl navigation =
+                mTab.getNavigationControllerImpl().getNavigationImplFromId(params.navigationId);
+        if (navigation == null) return false;
+
+        return navigation.areIntentLaunchesAllowedInBackground();
     }
 
     @Override
@@ -145,19 +145,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
         if (params.hasUserGesture || params.hasUserGestureCarryover) {
             mLastNavigationWithUserGestureTime = SystemClock.elapsedRealtime();
         }
-
-        NavigationImpl navigation =
-                mTab.getNavigationControllerImpl().getNavigationImplFromId(params.navigationId);
-        // As the navigation is ongoing at this point there should be a NavigationImpl instance for
-        // it.
-        assert navigation != null;
-
-        // Save the information of whether intent launches are allowed in the background for use
-        // later in the calculation of the decision for this navigation.
-        // TODO(crbug.com/1162267): Pass this state into ExternalNavigationHandler so that
-        // it can consider this case explicitly and eliminate the need to track this state here.
-        mAllowIntentLaunchesInBackgroundForCurrentNavigation =
-                navigation.areIntentLaunchesAllowedInBackground();
     }
 
     @Override

@@ -180,6 +180,8 @@ public class InterceptNavigationDelegateImpl implements InterceptNavigationDeleg
                 .setRedirectHandler(redirectHandler)
                 .setOpenInNewTab(shouldCloseTab)
                 .setIsBackgroundTabNavigation(mClient.isHidden() && !isInitialTabLaunchInBackground)
+                .setIntentLaunchesAllowedInBackgroundTabs(
+                        mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationParams))
                 .setIsMainFrame(navigationParams.isMainFrame)
                 .setHasUserGesture(navigationParams.hasUserGesture)
                 .setShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent(

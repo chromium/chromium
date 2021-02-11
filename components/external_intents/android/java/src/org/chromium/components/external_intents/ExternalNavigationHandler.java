@@ -454,7 +454,8 @@ public class ExternalNavigationHandler {
 
     /** http://crbug.com/464669 : Disallow firing external intent from background tab. */
     private boolean blockExternalNavFromBackgroundTab(ExternalNavigationParams params) {
-        if (params.isBackgroundTabNavigation()) {
+        if (params.isBackgroundTabNavigation()
+                && !params.areIntentLaunchesAllowedInBackgroundTabs()) {
             if (DEBUG) Log.i(TAG, "Navigation in background tab");
             return true;
         }
