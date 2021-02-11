@@ -1387,7 +1387,8 @@ void DragToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Flaky. https://crbug.com/1176998
+#if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragToSeparateWindow DISABLED_DragToSeparateWindow
 #else
@@ -2059,8 +2060,8 @@ void DragAllToSeparateWindowStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-// Flaky. http://crbug.com/1128774
-#if defined(OS_MAC) || defined(OS_WIN)
+// Flaky. http://crbug.com/1128774 and http://crbug.com/1176998
+#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 // These were flaking on all macs, so commented out ARCH_ above for
 // crbug.com/1160917 too.
@@ -2696,7 +2697,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             browser2->window()->GetBounds().ToString());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+// Flaky. https://crbug.com/1176998
+#if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_LINUX)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_DragSingleTabToSeparateWindow \
   DISABLED_DragSingleTabToSeparateWindow
