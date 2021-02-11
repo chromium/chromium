@@ -256,7 +256,8 @@ void AudioProcessorBenchmark(AudioPostProcessor2* pp,
       ::testing::UnitTest::GetInstance()->current_test_info();
   LOG(INFO) << test_info->test_suite_name() << "." << test_info->name()
             << " At " << sample_rate
-            << " frames per second CPU usage: " << std::defaultfloat
+            << " frames per second and channels number " << num_input_channels
+            << " CPU usage: " << std::defaultfloat
             << 100.0 * (stop_clock - start_clock) /
                    (CLOCKS_PER_SEC * effective_duration)
             << "%";
