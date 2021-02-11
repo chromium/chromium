@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
+#include "base/location.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
 
@@ -30,6 +31,13 @@ struct BASE_EXPORT TraceSourceLocation {
       : function_name(function_name),
         file_name(file_name),
         line_number(line_number) {}
+  // Construct a new source location from an existing base::Location, the only
+  // attributes that are read are |function_name|, |file_name| and
+  // |line_number|.
+  explicit TraceSourceLocation(const base::Location& location)
+      : function_name(location.function_name()),
+        file_name(location.file_name()),
+        line_number(location.line_number()) {}
 
   bool operator==(const TraceSourceLocation& other) const {
     return file_name == other.file_name &&

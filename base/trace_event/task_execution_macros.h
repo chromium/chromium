@@ -18,10 +18,8 @@
   TRACE_EVENT("toplevel", run_function, [&](perfetto::EventContext ctx) { \
     ctx.event()->set_task_execution()->set_posted_from_iid(               \
         base::trace_event::InternedSourceLocation::Get(                   \
-            &ctx, base::trace_event::TraceSourceLocation(                 \
-                      (task).posted_from.function_name(),                 \
-                      (task).posted_from.file_name(),                     \
-                      (task).posted_from.line_number())));                \
+            &ctx,                                                         \
+            base::trace_event::TraceSourceLocation((task).posted_from))); \
   });                                                                     \
   TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION INTERNAL_TRACE_EVENT_UID( \
       task_event)((task).posted_from.file_name());                        \

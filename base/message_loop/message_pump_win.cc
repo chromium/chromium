@@ -781,9 +781,15 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout, IOHandler* filter) {
     // Save this item for later
     completed_io_.push_back(item);
   } else {
-    TRACE_EVENT2("base,toplevel", "IOHandler::OnIOCompleted", "dest_file",
-                 item.handler->io_handler_location().file_name(), "dest_func",
-                 item.handler->io_handler_location().function_name());
+    TRACE_EVENT(
+        "base,toplevel", "IOHandler::OnIOCompleted",
+        [&](perfetto::EventContext ctx) {
+          ctx.event()->set_chrome_message_pump()->set_io_handler_location_iid(
+              base::trace_event::InternedSourceLocation::Get(
+                  &ctx, base::trace_event::TraceSourceLocation(
+                            item.handler->io_handler_location())));
+        });
+
     item.handler->OnIOCompleted(item.context, item.bytes_transfered,
                                 item.error);
   }

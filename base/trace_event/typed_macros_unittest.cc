@@ -193,6 +193,15 @@ TEST_F(TypedTraceEventTest, InternedData) {
     size_t iid3 = InternedSourceLocation::Get(&ctx, location2);
     EXPECT_NE(0u, iid3);
     EXPECT_NE(iid, iid3);
+
+    // Test getting an interned ID directly from a base::Location object, the
+    // only attributes that are compared are function_name, file_name and
+    // line_number.
+    base::Location base_location =
+        base::Location::Current("TestFunction", "test.cc", 123);
+    TraceSourceLocation location3(base_location);
+    size_t iid4 = InternedSourceLocation::Get(&ctx, location3);
+    EXPECT_EQ(iid, iid4);
   });
 
   auto serialized_data =
