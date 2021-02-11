@@ -140,8 +140,7 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
 }
 
 void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
-  if (safe_browsing::GetSafeBrowsingState(*pref_service_) !=
-      SafeBrowsingState::ENHANCED_PROTECTION) {
+  if (!pref_service_->GetBoolean(prefs::kSafeBrowsingEnhanced)) {
     LogEnhancedProtectionDisabledMetrics();
   }
 }

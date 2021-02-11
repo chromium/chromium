@@ -263,6 +263,11 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
       "SafeBrowsing.EsbDisabled.LastBypassEventType",
       /* sample */ EventType::REAL_TIME_INTERSTITIAL_BYPASS,
       /* expected_count */ 1);
+
+  // Changing no protection to enhanced protection shouldn't log the metric.
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 2);
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
