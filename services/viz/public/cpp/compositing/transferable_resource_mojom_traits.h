@@ -15,15 +15,22 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<viz::mojom::ResourceFormat, viz::ResourceFormat> {
+  static viz::mojom::ResourceFormat ToMojom(viz::ResourceFormat type);
+
+  static bool FromMojom(viz::mojom::ResourceFormat input,
+                        viz::ResourceFormat* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::TransferableResourceDataView,
                     viz::TransferableResource> {
   static uint32_t id(const viz::TransferableResource& resource) {
     return resource.id;
   }
 
-  static viz::mojom::ResourceFormat format(
-      const viz::TransferableResource& resource) {
-    return static_cast<viz::mojom::ResourceFormat>(resource.format);
+  static viz::ResourceFormat format(const viz::TransferableResource& resource) {
+    return resource.format;
   }
 
   static uint32_t filter(const viz::TransferableResource& resource) {
