@@ -232,7 +232,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
             ->GetInputDeviceCapabilities()
             ->FiresTouchEvents(mouse_event->FromTouch());
     select_->focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
-                               mojom::blink::FocusType::kNone,
+                               mojom::blink::FocusType::kMouse,
                                source_capabilities));
     if (select_->GetLayoutObject() && !will_be_destroyed_ &&
         !select_->IsDisabledFormControl()) {
