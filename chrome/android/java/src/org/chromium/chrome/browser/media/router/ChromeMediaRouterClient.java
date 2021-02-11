@@ -41,7 +41,8 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
 
     @Override
     public Intent createBringTabToFrontIntent(int tabId) {
-        return IntentHandler.createTrustedBringTabToFrontIntent(tabId);
+        return IntentHandler.createTrustedBringTabToFrontIntent(
+                tabId, IntentHandler.BringToFrontSource.NOTIFICATION);
     }
 
     @Override

@@ -199,7 +199,8 @@ public class WebappModeTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Bring the WebappActivity back via an Intent.
-        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(webappTabId);
+        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
+                webappTabId, IntentHandler.BringToFrontSource.NOTIFICATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
 

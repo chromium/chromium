@@ -85,7 +85,8 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
 
     @Override
     public Intent createBringTabToFrontIntent() {
-        return IntentHandler.createTrustedBringTabToFrontIntent(mTab.getId());
+        return IntentHandler.createTrustedBringTabToFrontIntent(
+                mTab.getId(), IntentHandler.BringToFrontSource.NOTIFICATION);
     }
 
     @Override

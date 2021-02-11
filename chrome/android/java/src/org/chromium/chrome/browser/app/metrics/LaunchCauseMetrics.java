@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.metrics;
+package org.chromium.chrome.browser.app.metrics;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.Display;
 
@@ -17,6 +18,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.lang.annotation.Retention;
@@ -25,7 +27,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Computes and records metrics for what caused Chrome to be launched.
  */
-public abstract class LaunchCauseMetrics implements ApplicationStatus.ApplicationStateListener {
+public abstract class LaunchCauseMetrics implements ApplicationStatus.ApplicationStateListener,
+                                                    ApplicationStatus.ActivityStateListener {
     private static final boolean DEBUG = false;
     private static final String TAG = "LaunchCauseMetrics";
 
@@ -38,11 +41,26 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
 
     private PerLaunchState mPerLaunchState = new PerLaunchState();
     private BetweenLaunchState mBetweenLaunchState = new BetweenLaunchState();
+    private final Activity mActivity;
+
+    @SuppressLint("StaticFieldLeak")
+    private static Activity sLastResumedActivity;
+    static {
+        ApplicationStatus.registerStateListenerForAllActivities((activity, newState) -> {
+            if (newState == ActivityState.RESUMED) sLastResumedActivity = activity;
+            if (newState == ActivityState.DESTROYED) {
+                if (activity == sLastResumedActivity) sLastResumedActivity = null;
+            }
+        });
+    }
 
     // State pertaining to the current launch, reset when Chrome is backgrounded,
     // and after computing LaunchCause.
     private static class PerLaunchState {
         boolean mReceivedIntent;
+        // Whether a ChromeActivity other than |mActivity| was last focused, used to track
+        // intentional transitions between different types of ChromeActivity.
+        boolean mOtherChromeActivityLastFocused;
         boolean mLaunchedFromRecents;
     }
 
@@ -58,7 +76,7 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
             LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED,
             LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT,
             LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU,
-            LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT})
+            LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT, LaunchCause.NOTIFICATION})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
         int OTHER = 0;
@@ -72,8 +90,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         int HOME_SCREEN_WIDGET = 8;
         int OPEN_IN_BROWSER_FROM_MENU = 9;
         int EXTERNAL_SEARCH_ACTION_INTENT = 10;
+        int NOTIFICATION = 11;
 
-        int NUM_ENTRIES = 11;
+        int NUM_ENTRIES = 12;
     }
 
     /**
@@ -81,15 +100,21 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
      *         Display, etc.
      */
     public LaunchCauseMetrics(final Activity activity) {
+        mActivity = activity;
         ApplicationStatus.registerApplicationStateListener(this);
-        ApplicationStatus.registerStateListenerForActivity((a, newState) -> {
-            if (newState == ActivityState.PAUSED) {
-                mBetweenLaunchState.mScreenOffWhenPaused = isDisplayOff(a);
-            }
-            if (newState == ActivityState.DESTROYED) {
-                ApplicationStatus.unregisterApplicationStateListener(this);
-            }
-        }, activity);
+        ApplicationStatus.registerStateListenerForActivity(this, activity);
+    }
+
+    @Override
+    public void onActivityStateChange(Activity activity, @ActivityState int newState) {
+        assert activity == mActivity;
+        if (newState == ActivityState.DESTROYED) {
+            ApplicationStatus.unregisterApplicationStateListener(this);
+            ApplicationStatus.unregisterActivityStateListener(this);
+        }
+        if (newState == ActivityState.PAUSED) {
+            mBetweenLaunchState.mScreenOffWhenPaused = isDisplayOff(mActivity);
+        }
     }
 
     @Override
@@ -154,12 +179,13 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
 
             RecordHistogram.recordEnumeratedHistogram(
                     LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
-        } else {
+        } else if (mPerLaunchState.mOtherChromeActivityLastFocused) {
             // Handle the case where we're intentionally transitioning between two Chrome
             // Activities while Chrome is in the foreground, and want to count that as a Launch.
             @LaunchCause
             int cause = getIntentionalTransitionCauseOrOther();
             if (cause != LaunchCause.OTHER) {
+                if (DEBUG) logLaunchCause(cause);
                 RecordHistogram.recordEnumeratedHistogram(
                         LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
             }
@@ -201,6 +227,8 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
      * arbitrary explicit intents targeting Chrome.
      */
     public void onReceivedIntent() {
+        mPerLaunchState.mOtherChromeActivityLastFocused =
+                sLastResumedActivity != mActivity && sLastResumedActivity instanceof ChromeActivity;
         mPerLaunchState.mReceivedIntent = true;
     }
 
@@ -262,6 +290,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
                 break;
             case LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT:
                 launchCause = "EXTERNAL_SEARCH_ACTION_INTENT";
+                break;
+            case LaunchCause.NOTIFICATION:
+                launchCause = "NOTIFICATION";
                 break;
         }
         Log.d(TAG, "Launch Cause: " + launchCause);

@@ -21,8 +21,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**

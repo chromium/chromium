@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.metrics;
+package org.chromium.chrome.browser.app.metrics;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,9 +10,11 @@ import android.speech.RecognizerResultsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.webapps.ShortcutSource;
 
 /**
@@ -63,6 +65,13 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT;
         }
 
+        if (isNotificationLaunch(launchIntent)) return LaunchCause.NOTIFICATION;
+
+        if (IntentHandler.BringToFrontSource.SEARCH_ACTIVITY
+                == getBringTabToFrontSource(launchIntent)) {
+            return LaunchCause.HOME_SCREEN_WIDGET;
+        }
+
         // This is unlikely to be hit here (much more likely to see Open In Browser intents in
         // getIntentionalTransitionCauseOrOther() below), but an Intent Picker dialog could cause
         // Chrome to be backgrounded on some Android distributions, or on tiny screens. This will
@@ -89,6 +98,40 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.OPEN_IN_BROWSER_FROM_MENU;
         }
 
+        // Notifications should still count as an intentional transition when moving between
+        // ChromeActivitys.
+        if (isNotificationLaunch(launchIntent)) return LaunchCause.NOTIFICATION;
+
         return LaunchCause.OTHER;
+    }
+
+    private boolean isNotificationLaunch(Intent intent) {
+        // ServiceWorker notification to open a new window.
+        if (intent.hasExtra(ServiceTabLauncher.LAUNCH_REQUEST_ID_EXTRA)) {
+            return true;
+        }
+
+        // For now, just assume that a source of ACTIVATE_TAB counts as a notification, as there are
+        // many reasons why a tab/webcontents might get Activated by Chrome (and plumbing all
+        // sources of tab activation is impractical), but the only ones that should be triggerable
+        // while Chrome is in the background (outside of tests) are from media/ServiceWorker
+        // notifications.
+        @IntentHandler.BringToFrontSource
+        int source = getBringTabToFrontSource(intent);
+        if (IntentHandler.BringToFrontSource.NOTIFICATION == source
+                || IntentHandler.BringToFrontSource.ACTIVATE_TAB == source) {
+            return true;
+        }
+        return false;
+    }
+
+    // Returns the source of the BringTabToFront intent, or null if it's not a BringTabToFront
+    // intent.
+    private int getBringTabToFrontSource(Intent intent) {
+        if (IntentHandler.getBringTabToFrontId(intent) == Tab.INVALID_TAB_ID) {
+            return IntentHandler.BringToFrontSource.INVALID;
+        }
+        return IntentUtils.safeGetIntExtra(intent, IntentHandler.BRING_TAB_TO_FRONT_SOURCE_EXTRA,
+                IntentHandler.BringToFrontSource.INVALID);
     }
 }

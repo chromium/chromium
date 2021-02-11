@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.metrics;
+package org.chromium.chrome.browser.app.metrics;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -24,9 +24,14 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.android.support.PackageManagerWrapper;
 import org.chromium.base.ActivityState;
@@ -39,17 +44,24 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
+import org.chromium.chrome.browser.ServiceTabLauncher;
+import org.chromium.chrome.browser.ServiceTabLauncherJni;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+import org.chromium.network.mojom.ReferrerPolicy;
+import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,6 +76,18 @@ public final class TabbedActivityLaunchCauseMetricsTest {
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
+    @ClassRule
+    public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
+
+    @Rule
+    public final JniMocker mJniMocker = new JniMocker();
+
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Mock
+    private ServiceTabLauncher.Natives mServiceTabLauncherJni;
 
     private static int histogramCountForValue(int value) {
         if (!LibraryLoader.getInstance().isInitialized()) return 0;
@@ -211,5 +235,22 @@ public final class TabbedActivityLaunchCauseMetricsTest {
         ApplicationTestUtils.finishActivity(cta);
         ApplicationTestUtils.finishActivity(searchActivity);
         ContextUtils.initApplicationContextForTests(contextToRestore);
+    }
+
+    @Test
+    @MediumTest
+    public void testServiceWorkerTabLaunch() throws Throwable {
+        final int count = 1 + histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION);
+        mJniMocker.mock(ServiceTabLauncherJni.TEST_HOOKS, mServiceTabLauncherJni);
+        mActivityTestRule.setActivity(ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class, Stage.RESUMED, () -> {
+                    ServiceTabLauncher.launchTab(0, false, new GURL("about:blank"),
+                            WindowOpenDisposition.NEW_FOREGROUND_TAB, "", ReferrerPolicy.DEFAULT,
+                            "", null);
+                }));
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION),
+                    Matchers.is(count));
+        }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }

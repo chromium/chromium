@@ -594,7 +594,8 @@ public class IntentHandlerUnitTest {
     @SmallTest
     public void testIgnoreUnauthenticatedBringToFront() {
         int tabId = 1;
-        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(tabId);
+        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
+                tabId, IntentHandler.BringToFrontSource.ACTIVATE_TAB);
         assertEquals(tabId, IntentHandler.getBringTabToFrontId(intent));
 
         intent.removeExtra("trusted_application_code_extra");

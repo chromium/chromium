@@ -481,7 +481,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
         } else {
             // Browser is in background, bring to to foreground and switch to the tab.
-            Intent newIntent = IntentHandler.createTrustedBringTabToFrontIntent(tab.getId());
+            Intent newIntent = IntentHandler.createTrustedBringTabToFrontIntent(
+                    tab.getId(), IntentHandler.BringToFrontSource.SEARCH_ACTIVITY);
             if (newIntent != null) {
                 newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);

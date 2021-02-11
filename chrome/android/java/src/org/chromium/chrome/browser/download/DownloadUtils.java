@@ -130,8 +130,10 @@ public class DownloadUtils {
                 // the ChromeTabbedActivity.
                 tab.loadUrl(params);
 
-                // Bring Chrome to the foreground, if possible.
-                Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(tab.getId());
+                // Bring Chrome to the foreground, if possible. Unless Chrome is already in the
+                // foreground, this request is most likely coming from a notification.
+                Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
+                        tab.getId(), IntentHandler.BringToFrontSource.NOTIFICATION);
                 if (intent != null) {
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     IntentUtils.safeStartActivity(appContext, intent);

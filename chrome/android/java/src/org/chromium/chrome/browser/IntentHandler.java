@@ -217,6 +217,7 @@ public class IntentHandler {
     private static final String YOUTUBE_LINK_PREFIX_HTTPS = "https://www.youtube.com/redirect?";
     private static final String YOUTUBE_LINK_PREFIX_HTTP = "http://www.youtube.com/redirect?";
     private static final String BRING_TAB_TO_FRONT_EXTRA = "BRING_TAB_TO_FRONT";
+    public static final String BRING_TAB_TO_FRONT_SOURCE_EXTRA = "BRING_TAB_TO_FRONT_SOURCE";
 
     /**
      * Represents popular external applications that can load a page in Chrome via intent.
@@ -306,6 +307,16 @@ public class IntentHandler {
 
         String REUSE_TAB_MATCHING_ID_STRING = "REUSE_TAB_MATCHING_ID";
         String REUSE_TAB_ORIGINAL_URL_STRING = "REUSE_TAB_ORIGINAL_URL";
+    }
+
+    @IntDef({BringToFrontSource.ACTIVATE_TAB, BringToFrontSource.NOTIFICATION,
+            BringToFrontSource.SEARCH_ACTIVITY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BringToFrontSource {
+        int INVALID = -1;
+        int ACTIVATE_TAB = 0;
+        int NOTIFICATION = 1;
+        int SEARCH_ACTIVITY = 2;
     }
 
     /**
@@ -1426,10 +1437,13 @@ public class IntentHandler {
      * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the
      * foreground.
      * @param tabId The id of the Tab to bring to the foreground.
+     * @param bringToFrontSource The source of the bring to front Intent, used for gathering
+     *         metrics.
      * @return Created Intent or null if this operation isn't possible.
      */
     @Nullable
-    public static Intent createTrustedBringTabToFrontIntent(int tabId) {
+    public static Intent createTrustedBringTabToFrontIntent(
+            int tabId, @BringToFrontSource int bringToFrontSource) {
         // Iterate through all {@link CustomTab}s and check whether the given tabId belongs to a
         // {@link CustomTab}. If so, return null as the client app's task cannot be foregrounded.
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
@@ -1444,6 +1458,7 @@ public class IntentHandler {
         Intent intent = new Intent(context, ChromeLauncherActivity.class);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(BRING_TAB_TO_FRONT_EXTRA, tabId);
+        intent.putExtra(BRING_TAB_TO_FRONT_SOURCE_EXTRA, bringToFrontSource);
         IntentHandler.addTrustedIntentExtras(intent);
         return intent;
     }

@@ -173,7 +173,8 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                                 NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
                                 NOTIFICATION_NAMESPACE, notificationId));
 
-        Intent tabIntent = IntentHandler.createTrustedBringTabToFrontIntent(notificationId);
+        Intent tabIntent = IntentHandler.createTrustedBringTabToFrontIntent(
+                notificationId, IntentHandler.BringToFrontSource.NOTIFICATION);
         PendingIntentProvider contentIntent = tabIntent == null
                 ? null
                 : PendingIntentProvider.getActivity(appContext, notificationId, tabIntent, 0);

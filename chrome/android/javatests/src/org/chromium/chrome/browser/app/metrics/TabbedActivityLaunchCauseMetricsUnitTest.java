@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.metrics;
+package org.chromium.chrome.browser.app.metrics;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,7 +29,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
@@ -69,6 +71,7 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void testOpenInBrowserMetrics() throws Throwable {
         int count =
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU);
@@ -85,6 +88,13 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         ++count;
         Assert.assertEquals(count,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
+
+        // Resume a different ChromeActivity to make it look like we're transitioning between
+        // ChromeActivitys.
+        ChromeTabbedActivity chromeActivity = new ChromeTabbedActivity();
+        ApplicationStatus.onStateChangeForTesting(chromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(chromeActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(chromeActivity, ActivityState.RESUMED);
 
         // Ensures we record this metric even when Chrome has already recorded a launch.
         metrics.onReceivedIntent();
@@ -111,6 +121,7 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void testVoiceSearchResultsMetrics() throws Throwable {
         int count = histogramCountForValue(
                 LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT);
@@ -119,8 +130,6 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
 
         TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
 
-        // Tests the case where Chrome is backgrounded either by the intent picker, or by
-        // cross-channel Open In Browser.
         metrics.onReceivedIntent();
         metrics.recordLaunchCause();
         ++count;
@@ -134,5 +143,72 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         Assert.assertEquals(count,
                 histogramCountForValue(
                         LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testBringToFrontNotification() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION);
+        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
+                1, IntentHandler.BringToFrontSource.NOTIFICATION);
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION));
+
+        // Resume a different ChromeActivity to make it look like we're transitioning between
+        // ChromeActivitys.
+        ChromeTabbedActivity chromeActivity = new ChromeTabbedActivity();
+        ApplicationStatus.onStateChangeForTesting(chromeActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(chromeActivity, ActivityState.STARTED);
+        ApplicationStatus.onStateChangeForTesting(chromeActivity, ActivityState.RESUMED);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testBringToFrontSearch() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET);
+        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
+                1, IntentHandler.BringToFrontSource.SEARCH_ACTIVITY);
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testBringToFrontActiviteTab() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION);
+        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
+                1, IntentHandler.BringToFrontSource.ACTIVATE_TAB);
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION));
     }
 }

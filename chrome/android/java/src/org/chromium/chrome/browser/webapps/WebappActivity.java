@@ -17,9 +17,9 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 
 /**
  * Displays a webapp in a nearly UI-less Chrome (InfoBars still appear).

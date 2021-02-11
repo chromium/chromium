@@ -189,7 +189,7 @@ public class ServiceTabLauncher {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void onWebContentsForRequestAvailable(int requestId, WebContents webContents);
     }
 }

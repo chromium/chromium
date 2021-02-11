@@ -239,7 +239,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // Note that calling only the intent in order to activate the tab is slightly slower
         // because it will change the tab when the intent is handled, which happens after
         // Chrome gets back to the foreground.
-        Intent newIntent = IntentHandler.createTrustedBringTabToFrontIntent(mTab.getId());
+        Intent newIntent = IntentHandler.createTrustedBringTabToFrontIntent(
+                mTab.getId(), IntentHandler.BringToFrontSource.ACTIVATE_TAB);
         if (newIntent != null) {
             newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ContextUtils.getApplicationContext().startActivity(newIntent);

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
 
-import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 
 /**
  * LaunchCauseMetrics for WebappActivity.
