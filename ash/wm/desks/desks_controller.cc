@@ -264,6 +264,18 @@ const Desk* DesksController::GetTargetActiveDesk() const {
   return active_desk();
 }
 
+base::flat_set<aura::Window*>
+DesksController::GetVisibleOnAllDesksWindowsOnRoot(
+    aura::Window* root_window) const {
+  DCHECK(root_window->IsRootWindow());
+  base::flat_set<aura::Window*> filtered_visible_on_all_desks_windows;
+  for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
+    if (visible_on_all_desks_window->GetRootWindow() == root_window)
+      filtered_visible_on_all_desks_windows.insert(visible_on_all_desks_window);
+  }
+  return filtered_visible_on_all_desks_windows;
+}
+
 void DesksController::RestorePrimaryUserActiveDeskIndex(int active_desk_index) {
   DCHECK_GE(active_desk_index, 0);
   DCHECK_LT(active_desk_index, int{desks_.size()});
