@@ -4,6 +4,7 @@
 
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 
 config("config") {
   include_dirs = [
@@ -26,6 +27,7 @@ config("config") {
     "//ios/third_party/earl_grey2/src/CommonLib/Error",
     "//ios/third_party/earl_grey2/src/CommonLib/Event",
     "//ios/third_party/earl_grey2/src/CommonLib/Exceptions",
+    "//ios/third_party/earl_grey2/src/CommonLib/Interposer",
     "//ios/third_party/earl_grey2/src/CommonLib/Matcher",
     "//ios/third_party/earl_grey2/src/CommonLib/Provider",
     "//ios/third_party/earl_grey2/src/UILib",
@@ -124,6 +126,7 @@ source_set("common_lib") {
     "src/CommonLib/GREYStopwatch.m",
     "src/CommonLib/GREYSwizzler.h",
     "src/CommonLib/GREYSwizzler.m",
+    "src/CommonLib/Interposer/GREYDispatchQueueInterposer.h",
     "src/CommonLib/Matcher/GREYBaseMatcher.h",
     "src/CommonLib/Matcher/GREYBaseMatcher.m",
     "src/CommonLib/Matcher/GREYDescription.h",
@@ -137,6 +140,12 @@ source_set("common_lib") {
     "src/CommonLib/Matcher/GREYStringDescription.m",
     "src/CommonLib/Provider/GREYProvider.h",
   ]
+
+  # Build in interposer only when using supported sanitizers. Sync with
+  # src/CommonLib/GREYDefines.h.
+  if (is_asan || is_tsan || is_ubsan || is_msan) {
+    sources += [ "src/CommonLib/Interposer/GREYDispatchQueueInterposer.m" ]
+  }
 
   deps = [
     "//ios/third_party/edo",
