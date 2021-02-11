@@ -72,7 +72,8 @@ class PrerenderBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender) {
+// Disabled flaky test. https://crbug.com/1156141
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DISABLED_LinkRelPrerender) {
   const GURL kInitialUrl = GetUrl("/prerender/single_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -111,7 +112,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
+// Disabled flaky test. https://crbug.com/1156141
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DISABLED_LinkRelPrerender_Multiple) {
   const GURL kInitialUrl = GetUrl("/prerender/multiple_prerenders.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
@@ -159,7 +162,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Multiple) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
+// Disabled flaky test. https://crbug.com/1156141
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DISABLED_LinkRelPrerender_Duplicate) {
   const GURL kInitialUrl = GetUrl("/prerender/duplicate_prerenders.html");
   const GURL kPrerenderingUrl1 = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
