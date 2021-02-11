@@ -392,11 +392,8 @@
       <message name="IDS_PRICE_DROP_ALERTS_CARD_TITLE" desc="This text shows on the price drop alerts message card if any item in the open tabs has a price drop. It familiarizes users with the feature getting price drop alerts.">
         Get alerts for price drops?
       </message>
-      <message name="IDS_PRICE_DROP_ALERTS_CARD_CONTENT" desc="This text shows below 'Get alerts for price drops?'. It describes what will happen when clicking 'Get notified' button. Placeholder SETTINGS will always be filled with string IDS_PRICE_DROP_ALERTS_CARD_SETTINGS which is 'settings'. We are leaving it as a placeholder to make it clickable.">
-        You'll get an alert when there's a lower price in an open tab. You can turn off alerts in <ph name="SETTINGS">%1$s<ex>settings</ex></ph>.
-      </message>
-      <message name="IDS_PRICE_DROP_ALERTS_CARD_SETTINGS" desc="This text shows within string IDS_PRICE_DROP_ALERTS_CARD_CONTENT which is 'You'll get an alert when there's a lower price in an open tab. You can turn off alerts in settings'.">
-        settings
+      <message name="IDS_PRICE_DROP_ALERTS_CARD_CONTENT" desc="This text shows below 'Get alerts for price drops?'. It describes what will happen when clicking 'Get notified' button.">
+        You'll get an alert when there's a lower price in an open tab
       </message>
       <message name="IDS_PRICE_DROP_ALERTS_CARD_GET_NOTIFIED" desc="This text button shows below 'Get alerts for price drops?'. When user clicks on the text button, the price drop notifications feature will be turned on.">
         Get notified
