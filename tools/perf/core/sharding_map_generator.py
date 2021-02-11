@@ -139,7 +139,8 @@ def generate_sharding_map(benchmarks_to_shard,
     _add_benchmarks_to_shard(sharding_map, i, stories_in_shard,
                              stories_by_benchmark, benchmark_name_to_config)
 
-    sharding_map_benchmarks = sharding_map[str(i)]['benchmarks']
+    sharding_map_benchmarks = sharding_map[str(i)].get(
+        'benchmarks', collections.OrderedDict())
     benchmark_sections = collections.OrderedDict()
     for benchmark, config in sharding_map_benchmarks.iteritems():
       if 'sections' in config:

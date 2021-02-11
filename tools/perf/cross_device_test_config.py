@@ -28,5 +28,47 @@ TARGET_DEVICES = {
             'css_transitions_triggered_style_element': 4,
             'canvas_animation_no_clear': 4
         }
-    }
+    },
+    'android-pixel2_weblayer-perf': {
+        'startup.mobile': {
+            'intent:coldish:bbc': 4,
+            'intent:warm:bbc': 4,
+            'cct:coldish:bbc': 4
+        }
+    },
+    'android-pixel2-perf': {
+        'startup.mobile': {
+            'intent:coldish:bbc': 10,
+            'intent:warm:bbc': 10,
+            'cct:coldish:bbc': 10
+        }
+    },
+    'Android Nexus5 Perf': {
+        'startup.mobile': {
+            'intent:coldish:bbc': 10,
+            'intent:warm:bbc': 10,
+            'cct:coldish:bbc': 10
+        }
+    },
+    'android-go-perf': {
+        'startup.mobile': {
+            'intent:coldish:bbc': 10,
+            'intent:warm:bbc': 10,
+            'cct:coldish:bbc': 10
+        }
+    },
+    'android-pixel4-perf': {
+        'startup.mobile': {
+            'intent:coldish:bbc': 10,
+            'intent:warm:bbc': 10,
+            'cct:coldish:bbc': 10
+        }
+    },
+    'android-pixel4_weblayer-perf': {
+        'startup.mobile': {
+            'intent:coldish:bbc': 4,
+            'intent:warm:bbc': 4,
+            'cct:coldish:bbc': 4
+        }
+    },
 }

@@ -392,8 +392,8 @@ _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
         'system_health.weblayer_startup',
         'v8.browsing_mobile-future',
     ])
-_ANDROID_PIXEL2_BENCHMARK_CONFIGS = PerfSuite(_OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(
-    ['system_health.weblayer_startup'])
+_ANDROID_PIXEL2_BENCHMARK_CONFIGS = PerfSuite(
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(['system_health.weblayer_startup'])
 _ANDROID_PIXEL2_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
@@ -410,8 +410,8 @@ _ANDROID_PIXEL2_WEBLAYER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('startup.mobile'),
     _GetBenchmarkConfig('system_health.weblayer_startup')
 ])
-_ANDROID_PIXEL4_BENCHMARK_CONFIGS = PerfSuite(_OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(
-    ['system_health.weblayer_startup'])
+_ANDROID_PIXEL4_BENCHMARK_CONFIGS = PerfSuite(
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Remove(['system_health.weblayer_startup'])
 _ANDROID_PIXEL4_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
@@ -528,9 +528,12 @@ ANDROID_GO_WEBVIEW = PerfPlatform('android-go_webview-perf',
                                   'Android OPM1.171019.021 (gobo)',
                                   _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 13,
                                   'android')
-ANDROID_NEXUS_5 = PerfPlatform(
-    'Android Nexus5 Perf', 'Android KOT49H', _ANDROID_NEXUS_5_BENCHMARK_CONFIGS,
-    8, 'android', executables=_ANDROID_NEXUS_5_EXECUTABLE_CONFIGS)
+ANDROID_NEXUS_5 = PerfPlatform('Android Nexus5 Perf',
+                               'Android KOT49H',
+                               _ANDROID_NEXUS_5_BENCHMARK_CONFIGS,
+                               10,
+                               'android',
+                               executables=_ANDROID_NEXUS_5_EXECUTABLE_CONFIGS)
 ANDROID_NEXUS_5X_WEBVIEW = PerfPlatform(
     'Android Nexus5X WebView Perf', 'Android AOSP MOB30K',
     _ANDROID_NEXUS_5X_WEBVIEW_BENCHMARK_CONFIGS, 16, 'android')
