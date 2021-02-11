@@ -7326,18 +7326,16 @@ bool RenderFrameHostImpl::IsRenderFrameLive() {
 }
 
 bool RenderFrameHostImpl::IsCurrent() {
-  RenderFrameHostImpl* rfh = this;
-  // Check this RenderFrameHost and all its ancestors to see if they are the
-  // current ones in their respective FrameTreeNodes.
-  // It is important to check for all ancestors as when navigation commits a new
-  // RenderFrameHost may replace one of the parents, swapping out the old with
-  // its entire subtree but |this| will still be a current one in its
-  // FrameTreeNode.
-  while (rfh) {
-    if (rfh->frame_tree_node()->current_frame_host() != rfh)
-      return false;
-    rfh = rfh->GetParent();
-  }
+  // Only documents in the kActive lifecycle state are considered current.
+  if (lifecycle_state_ != LifecycleState::kActive)
+    return false;
+
+  // When the document is transitioning away from kActive to a
+  // yet-to-be-determined state, the RenderFrameHostManager has already
+  // updated its current RenderFrameHost, and the old document is no longer
+  // the current one. In that case, return false.
+  if (has_pending_lifecycle_state_update_)
+    return false;
   return true;
 }
 
@@ -7371,6 +7369,13 @@ bool RenderFrameHostImpl::CanAccessFilesOfPageState(
 void RenderFrameHostImpl::GrantFileAccessFromPageState(
     const blink::PageState& state) {
   GrantFileAccess(GetProcess()->GetID(), state.GetReferencedFiles());
+}
+
+void RenderFrameHostImpl::SetHasPendingLifecycleStateUpdate() {
+  DCHECK(!has_pending_lifecycle_state_update_);
+  for (auto& child : children_)
+    child->current_frame_host()->SetHasPendingLifecycleStateUpdate();
+  has_pending_lifecycle_state_update_ = true;
 }
 
 void RenderFrameHostImpl::GrantFileAccessFromResourceRequestBody(
@@ -10381,6 +10386,16 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
 
   LifecycleState old_state = lifecycle_state_;
   lifecycle_state_ = state;
+
+  // Unset the |has_pending_lifecycle_state_update_| value once the
+  // LifecycleState is updated.
+  if (has_pending_lifecycle_state_update_) {
+    DCHECK(IsInBackForwardCache() || IsPendingDeletion())
+        << "Transitioned to unexpected state with resetting "
+           "|has_pending_lifecycle_state_update_|\n ";
+    has_pending_lifecycle_state_update_ = false;
+  }
+
   // Notify the delegate about change in |lifecycle_state_|.
   delegate_->RenderFrameHostStateChanged(this, old_state, lifecycle_state_);
 }

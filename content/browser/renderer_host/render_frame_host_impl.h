@@ -833,6 +833,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   LifecycleState lifecycle_state() const { return lifecycle_state_; }
   void SetLifecycleStateToActive();
 
+  // Sets |has_pending_lifecycle_state_update_| to true for this RenderFrameHost
+  // and its children. Called when this RenderFrameHost stops being the current
+  // one in the RenderFrameHostManager, but its new LifecycleState is not
+  // immediately determined. This boolean is reset when this RenderFrameHost
+  // enters the back-forward-cache or the pending deletion list.
+  void SetHasPendingLifecycleStateUpdate();
+
   enum class BeforeUnloadType {
     BROWSER_INITIATED_NAVIGATION,
     RENDERER_INITIATED_NAVIGATION,
@@ -3021,6 +3028,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // event notifying the web authors that Virtual keyboard has occluded the
   // content.
   bool should_virtual_keyboard_overlay_content_ = false;
+
+  // If true, then this RenderFrameHost is waiting to update its LifecycleState.
+  // Happens when the old RenderFrameHost is waiting to either enter
+  // BackForwardCache or PendingDeletion. In this case, the old
+  // RenderFrameHost's lifecycle state remains in kActive. During this period,
+  // the RenderFrameHost is no longer the current one. The flag is again
+  // updated once the lifecycle state changes.
+  //
+  // TODO(https://crbug.com/1177198): Remove this bool and refactor
+  // RenderFrameHostManager::CommitPending() to avoid having a time window where
+  // we don't know what the old RenderFrameHost's next lifecycle state should
+  // be.
+  bool has_pending_lifecycle_state_update_ = false;
 
   // Used for tracking the latest size of the RenderFrame.
   base::Optional<gfx::Size> frame_size_;

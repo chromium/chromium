@@ -3258,6 +3258,15 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
     render_frame_host_->SetLifecycleStateToActive();
   }
 
+  if (old_render_frame_host &&
+      old_render_frame_host->lifecycle_state() ==
+          RenderFrameHostImpl::LifecycleState::kActive) {
+    // After the old RenderFrameHost is no longer the current one and is in
+    // LifecycleState::kActive state, set the value of
+    // |has_pending_lifecycle_state_update_| to true if it is not null.
+    old_render_frame_host->SetHasPendingLifecycleStateUpdate();
+  }
+
   if (frame_tree_node_->IsMainFrame()) {
     // Update the count of top-level frames using this SiteInstance.  All
     // subframes are in the same BrowsingInstance as the main frame, so we only
