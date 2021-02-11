@@ -297,7 +297,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/ui/webui/supervised_user_internals/supervised_user_internals_ui.h"
+#include "chrome/browser/ui/webui/family_link_user_internals/family_link_user_internals_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -989,8 +989,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (url.host_piece() == chrome::kChromeUISupervisedUserInternalsHost)
-    return &NewWebUI<SupervisedUserInternalsUI>;
+  if (url.host_piece() == chrome::kChromeUIFamilyLinkUserInternalsHost)
+    return &NewWebUI<FamilyLinkUserInternalsUI>;
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

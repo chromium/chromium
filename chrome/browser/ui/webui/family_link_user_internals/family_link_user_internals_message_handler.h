@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_MESSAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_MESSAGE_HANDLER_H_
 
 #include "base/callback_list.h"
 #include "base/macros.h"
@@ -19,14 +19,14 @@ namespace base {
 class ListValue;
 }  // namespace base
 
-// The implementation for the chrome://supervised-user-internals page.
-class SupervisedUserInternalsMessageHandler
+// The implementation for the chrome://family-link-user-internals page.
+class FamilyLinkUserInternalsMessageHandler
     : public content::WebUIMessageHandler,
       public SupervisedUserServiceObserver,
       public SupervisedUserURLFilter::Observer {
  public:
-  SupervisedUserInternalsMessageHandler();
-  ~SupervisedUserInternalsMessageHandler() override;
+  FamilyLinkUserInternalsMessageHandler();
+  ~FamilyLinkUserInternalsMessageHandler() override;
 
  private:
   // content::WebUIMessageHandler:
@@ -43,7 +43,7 @@ class SupervisedUserInternalsMessageHandler
   void HandleTryURL(const base::ListValue* args);
 
   void SendBasicInfo();
-  void SendSupervisedUserSettings(const base::DictionaryValue* settings);
+  void SendFamilyLinkUserSettings(const base::DictionaryValue* settings);
 
   void OnTryURLResult(
       const std::map<std::string, base::string16>& allowlists,
@@ -65,10 +65,10 @@ class SupervisedUserInternalsMessageHandler
                           SupervisedUserURLFilter::Observer>
       scoped_observation_{this};
 
-  base::WeakPtrFactory<SupervisedUserInternalsMessageHandler> weak_factory_{
+  base::WeakPtrFactory<FamilyLinkUserInternalsMessageHandler> weak_factory_{
       this};
 
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserInternalsMessageHandler);
+  DISALLOW_COPY_AND_ASSIGN(FamilyLinkUserInternalsMessageHandler);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SUPERVISED_USER_INTERNALS_SUPERVISED_USER_INTERNALS_MESSAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_MESSAGE_HANDLER_H_

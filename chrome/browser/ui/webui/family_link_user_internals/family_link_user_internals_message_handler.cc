@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/supervised_user_internals/supervised_user_internals_message_handler.h"
+#include "chrome/browser/ui/webui/family_link_user_internals/family_link_user_internals_message_handler.h"
 
 #include <memory>
 #include <utility>
@@ -35,7 +35,7 @@ using content::BrowserThread;
 
 namespace {
 
-// Creates a 'section' for display on about:supervised-user-internals,
+// Creates a 'section' for display on about:family-link-user-internals,
 // consisting of a title and a list of fields. Returns a pointer to the new
 // section's contents, for use with |AddSectionEntry| below. Note that
 // |parent_list|, not the caller, owns the newly added section.
@@ -119,50 +119,50 @@ std::string FilteringBehaviorReasonToString(
 
 }  // namespace
 
-SupervisedUserInternalsMessageHandler::SupervisedUserInternalsMessageHandler() =
+FamilyLinkUserInternalsMessageHandler::FamilyLinkUserInternalsMessageHandler() =
     default;
 
-SupervisedUserInternalsMessageHandler::
-    ~SupervisedUserInternalsMessageHandler() = default;
+FamilyLinkUserInternalsMessageHandler::
+    ~FamilyLinkUserInternalsMessageHandler() = default;
 
-void SupervisedUserInternalsMessageHandler::RegisterMessages() {
+void FamilyLinkUserInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   web_ui()->RegisterMessageCallback(
       "registerForEvents",
       base::BindRepeating(
-          &SupervisedUserInternalsMessageHandler::HandleRegisterForEvents,
+          &FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents,
           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "getBasicInfo",
       base::BindRepeating(
-          &SupervisedUserInternalsMessageHandler::HandleGetBasicInfo,
+          &FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo,
           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "tryURL",
-      base::BindRepeating(&SupervisedUserInternalsMessageHandler::HandleTryURL,
+      base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::HandleTryURL,
                           base::Unretained(this)));
 }
 
-void SupervisedUserInternalsMessageHandler::OnJavascriptDisallowed() {
+void FamilyLinkUserInternalsMessageHandler::OnJavascriptDisallowed() {
   scoped_observation_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void SupervisedUserInternalsMessageHandler::OnURLFilterChanged() {
+void FamilyLinkUserInternalsMessageHandler::OnURLFilterChanged() {
   SendBasicInfo();
 }
 
 SupervisedUserService*
-SupervisedUserInternalsMessageHandler::GetSupervisedUserService() {
+FamilyLinkUserInternalsMessageHandler::GetSupervisedUserService() {
   Profile* profile = Profile::FromWebUI(web_ui());
   return SupervisedUserServiceFactory::GetForProfile(
       profile->GetOriginalProfile());
 }
 
-void SupervisedUserInternalsMessageHandler::HandleRegisterForEvents(
+void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::ListValue* args) {
   DCHECK(args->empty());
   AllowJavascript();
@@ -172,12 +172,12 @@ void SupervisedUserInternalsMessageHandler::HandleRegisterForEvents(
   scoped_observation_.Observe(GetSupervisedUserService()->GetURLFilter());
 }
 
-void SupervisedUserInternalsMessageHandler::HandleGetBasicInfo(
+void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
     const base::ListValue* args) {
   SendBasicInfo();
 }
 
-void SupervisedUserInternalsMessageHandler::HandleTryURL(
+void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
     const base::ListValue* args) {
   DCHECK_EQ(2u, args->GetSize());
   std::string callback_id;
@@ -203,12 +203,12 @@ void SupervisedUserInternalsMessageHandler::HandleTryURL(
       filter->GetMatchingAllowlistTitles(url);
   filter->GetFilteringBehaviorForURLWithAsyncChecks(
       url,
-      base::BindOnce(&SupervisedUserInternalsMessageHandler::OnTryURLResult,
+      base::BindOnce(&FamilyLinkUserInternalsMessageHandler::OnTryURLResult,
                      weak_factory_.GetWeakPtr(), allowlists, callback_id),
       skip_manual_parent_filter);
 }
 
-void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
+void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   std::unique_ptr<base::ListValue> section_list(new base::ListValue);
 
   base::ListValue* section_general = AddSection(section_list.get(), "General");
@@ -261,18 +261,18 @@ void SupervisedUserInternalsMessageHandler::SendBasicInfo() {
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   user_settings_subscription_ =
       settings_service->SubscribeForSettingsChange(base::BindRepeating(
-          &SupervisedUserInternalsMessageHandler::SendSupervisedUserSettings,
+          &FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings,
           weak_factory_.GetWeakPtr()));
 }
 
-void SupervisedUserInternalsMessageHandler::SendSupervisedUserSettings(
+void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
     const base::DictionaryValue* settings) {
   FireWebUIListener(
       "user-settings-received",
       *(settings ? settings : std::make_unique<base::Value>().get()));
 }
 
-void SupervisedUserInternalsMessageHandler::OnTryURLResult(
+void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
     const std::map<std::string, base::string16>& allowlists,
     const std::string& callback_id,
     SupervisedUserURLFilter::FilteringBehavior behavior,
@@ -294,9 +294,9 @@ void SupervisedUserInternalsMessageHandler::OnTryURLResult(
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
-void SupervisedUserInternalsMessageHandler::OnSiteListUpdated() {}
+void FamilyLinkUserInternalsMessageHandler::OnSiteListUpdated() {}
 
-void SupervisedUserInternalsMessageHandler::OnURLChecked(
+void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
     const GURL& url,
     SupervisedUserURLFilter::FilteringBehavior behavior,
     supervised_user_error_page::FilteringBehaviorReason reason,

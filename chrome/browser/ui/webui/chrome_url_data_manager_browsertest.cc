@@ -302,6 +302,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://crostini-installer",
     "chrome://cryptohome",
     "chrome://drive-internals",
+    "chrome://family-link-user-internals",
     "chrome://help-app",
     "chrome://internet-config-dialog",
     "chrome://internet-detail-dialog",
@@ -318,7 +319,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://slow",
     "chrome://smb-credentials-dialog",
     "chrome://smb-share-dialog",
-    "chrome://supervised-user-internals",
     "chrome://sys-internals",
     "chrome-untrusted://terminal",
 #endif

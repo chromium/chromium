@@ -77,6 +77,10 @@ const char kChromeUIExtensionIconURL[] = "chrome://extension-icon/";
 const char kChromeUIExtensionsHost[] = "extensions";
 const char kChromeUIExtensionsInternalsHost[] = "extensions-internals";
 const char kChromeUIExtensionsURL[] = "chrome://extensions/";
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+const char kChromeUIFamilyLinkUserInternalsHost[] =
+    "family-link-user-internals";
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 const char kChromeUIFaviconHost[] = "favicon";
 const char kChromeUIFaviconURL[] = "chrome://favicon/";
 const char kChromeUIFavicon2Host[] = "favicon2";
@@ -159,7 +163,6 @@ const char kChromeUISiteDetailsPrefixURL[] =
 const char kChromeUISiteEngagementHost[] = "site-engagement";
 const char kChromeUISuggestionsHost[] = "suggestions";
 const char kChromeUISuggestionsURL[] = "chrome://suggestions/";
-const char kChromeUISupervisedUserInternalsHost[] = "supervised-user-internals";
 const char kChromeUISupervisedUserPassphrasePageHost[] =
     "managed-user-passphrase";
 const char kChromeUISyncConfirmationHost[] = "sync-confirmation";
@@ -474,6 +477,9 @@ const char* const kChromeHostURLs[] = {
 #endif
     kChromeUIDeviceLogHost,
     kChromeUIDownloadInternalsHost,
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    kChromeUIFamilyLinkUserInternalsHost,
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     kChromeUIFlagsHost,
     kChromeUIGCMInternalsHost,
     kChromeUIHistoryHost,
@@ -502,7 +508,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUINTPTilesInternalsHost,
     safe_browsing::kChromeUISafeBrowsingHost,
     kChromeUISuggestionsHost,
-    kChromeUISupervisedUserInternalsHost,
     kChromeUISyncInternalsHost,
 #if !defined(OS_ANDROID)
     kChromeUITermsHost,

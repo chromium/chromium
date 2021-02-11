@@ -1638,10 +1638,10 @@ static_library("ui") {
 
   if (enable_supervised_users) {
     sources += [
-      "webui/supervised_user_internals/supervised_user_internals_message_handler.cc",
-      "webui/supervised_user_internals/supervised_user_internals_message_handler.h",
-      "webui/supervised_user_internals/supervised_user_internals_ui.cc",
-      "webui/supervised_user_internals/supervised_user_internals_ui.h",
+      "webui/family_link_user_internals/family_link_user_internals_message_handler.cc",
+      "webui/family_link_user_internals/family_link_user_internals_message_handler.h",
+      "webui/family_link_user_internals/family_link_user_internals_ui.cc",
+      "webui/family_link_user_internals/family_link_user_internals_ui.h",
     ]
     deps += [ "//chrome/browser/supervised_user/supervised_user_error_page" ]
   }
