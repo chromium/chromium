@@ -32,6 +32,14 @@
      * @public
      */
     this.doneCallback = null;
+
+    /**
+     * @type {boolean} focusCancelButton Set true if the cancel button
+     * should be focused when the dialog is first displayed. Otherwise
+     * (the default) the dialog will focus the confirm button.
+     * @public
+     */
+    this.focusCancelButton = false;
   }
 
   /**
@@ -40,7 +48,40 @@
    */
   initDom() {
     super.initDom();
+    super.hasModalContainer = true;
+
     this.frame.classList.add('files-confirm-dialog');
+  }
+
+  /**
+   * @override
+   * @suppress {accessControls}
+   */
+  show_(...args) {
+    if (!this.showModalElement) {
+      this.parentNode_ = util.getFilesAppModalDialogInstance();
+    }
+
+    if (this.focusCancelButton) {
+      this.setInitialFocusOnCancel();
+    }
+
+    super.show_(...args);
+
+    if (!this.showModalElement) {
+      this.parentNode_.showModal();
+    }
+  }
+
+  /**
+   * @override
+   */
+  hide(...args) {
+    if (!this.showModalElement) {
+      this.parentNode_.close();
+    }
+
+    super.hide(...args);
   }
 
   /**
