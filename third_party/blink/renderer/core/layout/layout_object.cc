@@ -2219,7 +2219,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
         // underlines). MathML elements are not skipped either as some of them
         // do special painting (e.g. fraction bar).
         (IsText() && !IsBR() && To<LayoutText>(this)->HasInlineFragments()) ||
-        (IsSVG() && StyleRef().SvgStyle().IsFillColorCurrentColor()) ||
+        (IsSVG() && StyleRef().IsFillColorCurrentColor()) ||
         (IsSVG() && StyleRef().IsStrokeColorCurrentColor()) ||
         IsListMarkerForNormalContent() || IsDetailsMarker() || IsMathML())
       diff.SetNeedsPaintInvalidation();

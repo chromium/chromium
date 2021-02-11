@@ -198,13 +198,13 @@ void SVGShapePainter::PaintMarkers(const PaintInfo& paint_info) {
   if (!marker_positions || marker_positions->IsEmpty())
     return;
   SVGResourceClient* client = SVGResources::GetClient(layout_svg_shape_);
-  const SVGComputedStyle& svg_style = layout_svg_shape_.StyleRef().SvgStyle();
+  const ComputedStyle& style = layout_svg_shape_.StyleRef();
   auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, svg_style.MarkerStartResource());
+      *client, style.MarkerStartResource());
   auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, svg_style.MarkerMidResource());
+      *client, style.MarkerMidResource());
   auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, svg_style.MarkerEndResource());
+      *client, style.MarkerEndResource());
   if (!marker_start && !marker_mid && !marker_end)
     return;
 

@@ -82,18 +82,18 @@ void LayoutSVGPath::UpdateMarkers() {
   NOT_DESTROYED();
   marker_positions_.clear();
 
-  const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
-  if (!svg_style.HasMarkers())
+  const ComputedStyle& style = StyleRef();
+  if (!style.HasMarkers())
     return;
   SVGElementResourceClient* client = SVGResources::GetClient(*this);
   if (!client)
     return;
   auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, svg_style.MarkerStartResource());
+      *client, style.MarkerStartResource());
   auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, svg_style.MarkerMidResource());
+      *client, style.MarkerMidResource());
   auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, svg_style.MarkerEndResource());
+      *client, style.MarkerEndResource());
   if (!(marker_start || marker_mid || marker_end))
     return;
 

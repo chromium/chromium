@@ -245,8 +245,7 @@ bool LayoutSVGShape::FillContains(const HitTestLocation& location,
   if (!fill_bounding_box_.Contains(location.TransformedPoint()))
     return false;
 
-  if (requires_fill &&
-      !HasPaintServer(*this, StyleRef().SvgStyle().FillPaint()))
+  if (requires_fill && !HasPaintServer(*this, StyleRef().FillPaint()))
     return false;
 
   return ShapeDependentFillContains(location, fill_rule);
@@ -423,7 +422,6 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
 
   // TODO(chrishtr): support rect-based intersections in the cases below.
   const ComputedStyle& style = StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
   if (hit_rules.can_hit_stroke &&
       (style.HasStroke() || !hit_rules.require_stroke) &&
       StrokeContains(local_location, hit_rules.require_stroke))
@@ -431,8 +429,7 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
   WindRule fill_rule = style.FillRule();
   if (request.SvgClipContent())
     fill_rule = style.ClipRule();
-  if (hit_rules.can_hit_fill &&
-      (svg_style.HasFill() || !hit_rules.require_fill) &&
+  if (hit_rules.can_hit_fill && (style.HasFill() || !hit_rules.require_fill) &&
       FillContains(local_location, hit_rules.require_fill, fill_rule))
     return true;
   return false;

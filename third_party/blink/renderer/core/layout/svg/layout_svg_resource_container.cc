@@ -103,16 +103,15 @@ static HeapVector<Member<SVGResource>> CollectResources(
             DynamicTo<ReferenceFilterOperation>(*operation))
       resources.push_back(reference_operation->Resource());
   }
-  const SVGComputedStyle& svg_style = style.SvgStyle();
   if (auto* masker = style.MaskerResource())
     resources.push_back(masker->Resource());
-  if (auto* marker = svg_style.MarkerStartResource())
+  if (auto* marker = style.MarkerStartResource())
     resources.push_back(marker->Resource());
-  if (auto* marker = svg_style.MarkerMidResource())
+  if (auto* marker = style.MarkerMidResource())
     resources.push_back(marker->Resource());
-  if (auto* marker = svg_style.MarkerEndResource())
+  if (auto* marker = style.MarkerEndResource())
     resources.push_back(marker->Resource());
-  if (auto* paint_resource = svg_style.FillPaint().Resource())
+  if (auto* paint_resource = style.FillPaint().Resource())
     resources.push_back(paint_resource->Resource());
   if (auto* paint_resource = style.StrokePaint().Resource())
     resources.push_back(paint_resource->Resource());

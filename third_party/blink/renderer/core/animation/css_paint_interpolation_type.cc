@@ -30,7 +30,7 @@ bool GetColor(const CSSProperty& property,
               StyleColor& result) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kFill:
-      return GetColorFromPaint(style.SvgStyle().FillPaint(), result);
+      return GetColorFromPaint(style.FillPaint(), result);
     case CSSPropertyID::kStroke:
       return GetColorFromPaint(style.StrokePaint(), result);
     default:

@@ -2065,15 +2065,15 @@ bool Marker::ParseShorthand(
 
 const CSSValue* Marker::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
   const CSSValue* marker_start =
-      ComputedStyleUtils::ValueForSVGResource(svg_style.MarkerStartResource());
-  if (*marker_start == *ComputedStyleUtils::ValueForSVGResource(
-                           svg_style.MarkerMidResource()) &&
-      *marker_start == *ComputedStyleUtils::ValueForSVGResource(
-                           svg_style.MarkerEndResource())) {
+      ComputedStyleUtils::ValueForSVGResource(style.MarkerStartResource());
+  if (*marker_start ==
+          *ComputedStyleUtils::ValueForSVGResource(style.MarkerMidResource()) &&
+      *marker_start ==
+          *ComputedStyleUtils::ValueForSVGResource(style.MarkerEndResource())) {
     return marker_start;
   }
   return nullptr;

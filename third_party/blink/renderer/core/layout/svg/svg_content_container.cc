@@ -19,15 +19,15 @@ static void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
     return;
-  const SVGComputedStyle& svg_style = layout_object.StyleRef().SvgStyle();
+  const ComputedStyle& style = layout_object.StyleRef();
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-          *client, svg_style.MarkerStartResource()))
+          *client, style.MarkerStartResource()))
     marker->LayoutIfNeeded();
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-          *client, svg_style.MarkerMidResource()))
+          *client, style.MarkerMidResource()))
     marker->LayoutIfNeeded();
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-          *client, svg_style.MarkerEndResource()))
+          *client, style.MarkerEndResource()))
     marker->LayoutIfNeeded();
 }
 

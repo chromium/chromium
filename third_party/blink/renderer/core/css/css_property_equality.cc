@@ -138,13 +138,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kColor:
       return a.GetColor() == b.GetColor() &&
              a.InternalVisitedColor() == b.InternalVisitedColor();
-    case CSSPropertyID::kFill: {
-      const SVGComputedStyle& a_svg = a.SvgStyle();
-      const SVGComputedStyle& b_svg = b.SvgStyle();
-      return a_svg.FillPaint().EqualTypeOrColor(b_svg.FillPaint()) &&
-             a_svg.InternalVisitedFillPaint().EqualTypeOrColor(
-                 b_svg.InternalVisitedFillPaint());
-    }
+    case CSSPropertyID::kFill:
+      return a.FillPaint().EqualTypeOrColor(b.FillPaint()) &&
+             a.InternalVisitedFillPaint().EqualTypeOrColor(
+                 b.InternalVisitedFillPaint());
     case CSSPropertyID::kFillOpacity:
       return a.FillOpacity() == b.FillOpacity();
     case CSSPropertyID::kFlexBasis:

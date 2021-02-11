@@ -2677,18 +2677,18 @@ const CSSValue* Fill::ParseSingleValue(CSSParserTokenRange& range,
 
 const CSSValue* Fill::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForSVGPaint(svg_style.FillPaint(), style);
+  return ComputedStyleUtils::ValueForSVGPaint(style.FillPaint(), style);
 }
 
 const blink::Color Fill::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(!visited_link);
-  DCHECK(style.SvgStyle().FillPaint().HasColor());
-  StyleColor fill_color = style.SvgStyle().FillPaint().GetColor();
+  DCHECK(style.FillPaint().HasColor());
+  const StyleColor& fill_color = style.FillPaint().GetColor();
   if (style.ShouldForceColor(fill_color))
     return style.GetInternalForcedCurrentColor();
   return fill_color.Resolve(style.GetCurrentColor(), style.UsedColorScheme());
@@ -2702,11 +2702,11 @@ const CSSValue* FillOpacity::ParseSingleValue(
 }
 
 const CSSValue* FillOpacity::CSSValueFromComputedStyleInternal(
-    const ComputedStyle&,
-    const SVGComputedStyle& svg_style,
+    const ComputedStyle& style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return CSSNumericLiteralValue::Create(svg_style.FillOpacity(),
+  return CSSNumericLiteralValue::Create(style.FillOpacity(),
                                         CSSPrimitiveValue::UnitType::kNumber);
 }
 
@@ -3825,7 +3825,7 @@ const blink::Color InternalVisitedFill::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(visited_link);
-  const SVGPaint& paint = style.SvgStyle().InternalVisitedFillPaint();
+  const SVGPaint& paint = style.InternalVisitedFillPaint();
 
   // FIXME: This code doesn't support the uri component of the visited link
   // paint, https://bugs.webkit.org/show_bug.cgi?id=70006
@@ -3833,7 +3833,7 @@ const blink::Color InternalVisitedFill::ColorIncludingFallback(
     return To<Longhand>(GetCSSPropertyFill())
         .ColorIncludingFallback(false, style);
   }
-  StyleColor visited_fill_color = paint.GetColor();
+  const StyleColor& visited_fill_color = paint.GetColor();
   if (style.ShouldForceColor(visited_fill_color))
     return style.GetInternalForcedVisitedCurrentColor();
   return visited_fill_color.Resolve(style.GetInternalVisitedCurrentColor(),
@@ -4664,10 +4664,10 @@ const CSSValue* MarkerEnd::ParseSingleValue(
 
 const CSSValue* MarkerEnd::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForSVGResource(svg_style.MarkerEndResource());
+  return ComputedStyleUtils::ValueForSVGResource(style.MarkerEndResource());
 }
 
 const CSSValue* MarkerMid::ParseSingleValue(
@@ -4681,10 +4681,10 @@ const CSSValue* MarkerMid::ParseSingleValue(
 
 const CSSValue* MarkerMid::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForSVGResource(svg_style.MarkerMidResource());
+  return ComputedStyleUtils::ValueForSVGResource(style.MarkerMidResource());
 }
 
 const CSSValue* MarkerStart::ParseSingleValue(
@@ -4698,11 +4698,10 @@ const CSSValue* MarkerStart::ParseSingleValue(
 
 const CSSValue* MarkerStart::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle& svg_style,
+    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ValueForSVGResource(
-      svg_style.MarkerStartResource());
+  return ComputedStyleUtils::ValueForSVGResource(style.MarkerStartResource());
 }
 
 const CSSValue* Mask::ParseSingleValue(CSSParserTokenRange& range,

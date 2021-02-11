@@ -270,7 +270,6 @@ static bool WriteSVGPaint(WTF::TextStream& ts,
 
 static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   const ComputedStyle& style = object.StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
 
   if (!object.LocalSVGTransform().IsIdentity())
     WriteNameValuePair(ts, "transform", object.LocalSVGTransform());
@@ -303,9 +302,9 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
       ts << "}]";
     }
 
-    if (WriteSVGPaint(ts, object, svg_style.FillPaint(), GetCSSPropertyFill(),
+    if (WriteSVGPaint(ts, object, style.FillPaint(), GetCSSPropertyFill(),
                       "fill")) {
-      WriteIfNotDefault(ts, "opacity", svg_style.FillOpacity(), 1.0f);
+      WriteIfNotDefault(ts, "opacity", style.FillOpacity(), 1.0f);
       WriteIfNotDefault(ts, "fill rule", style.FillRule(), RULE_NONZERO);
       ts << "}]";
     }
@@ -313,11 +312,11 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   }
 
   TreeScope& tree_scope = object.GetDocument();
-  WriteSVGResourceIfNotNull(ts, "start marker", svg_style.MarkerStartResource(),
+  WriteSVGResourceIfNotNull(ts, "start marker", style.MarkerStartResource(),
                             tree_scope);
-  WriteSVGResourceIfNotNull(ts, "middle marker", svg_style.MarkerMidResource(),
+  WriteSVGResourceIfNotNull(ts, "middle marker", style.MarkerMidResource(),
                             tree_scope);
-  WriteSVGResourceIfNotNull(ts, "end marker", svg_style.MarkerEndResource(),
+  WriteSVGResourceIfNotNull(ts, "end marker", style.MarkerEndResource(),
                             tree_scope);
 }
 

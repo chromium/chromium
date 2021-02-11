@@ -1164,6 +1164,18 @@ class ComputedStyle : public ComputedStyleBase,
   }
   WindRule FillRule() const { return SvgStyle().FillRule(); }
 
+  const SVGPaint& FillPaint() const { return SvgStyle().FillPaint(); }
+  const SVGPaint& InternalVisitedFillPaint() const {
+    return SvgStyle().InternalVisitedFillPaint();
+  }
+
+  // fill helpers
+  bool HasFill() const { return !FillPaint().IsNone(); }
+  bool IsFillColorCurrentColor() const {
+    return FillPaint().HasCurrentColor() ||
+           InternalVisitedFillPaint().HasCurrentColor();
+  }
+
   // fill-opacity
   float FillOpacity() const { return SvgStyle().FillOpacity(); }
   void SetFillOpacity(float f) { AccessSVGStyle().SetFillOpacity(f); }
@@ -1193,6 +1205,20 @@ class ComputedStyle : public ComputedStyleBase,
   // stop-opacity
   float StopOpacity() const { return SvgStyle().StopOpacity(); }
   void SetStopOpacity(float f) { AccessSVGStyle().SetStopOpacity(f); }
+
+  // marker-* helpers
+  StyleSVGResource* MarkerStartResource() const {
+    return SvgStyle().MarkerStartResource();
+  }
+  StyleSVGResource* MarkerMidResource() const {
+    return SvgStyle().MarkerMidResource();
+  }
+  StyleSVGResource* MarkerEndResource() const {
+    return SvgStyle().MarkerEndResource();
+  }
+  bool HasMarkers() const {
+    return MarkerStartResource() || MarkerMidResource() || MarkerEndResource();
+  }
 
   // paint-order helper
   EPaintOrder PaintOrder() const { return SvgStyle().PaintOrder(); }
