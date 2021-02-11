@@ -261,6 +261,31 @@ class GTestTest(TestRunnerTest):
           '--test-launcher-shard-index=0 --test-launcher-total-shards=1\n')
       mock_remove.assert_called_once_with('out_eve/Release/device_script.sh')
 
+  def test_gtest_with_vpython(self):
+    """Tests building a gtest with --vpython-dir."""
+    args = mock.MagicMock()
+    args.test_exe = 'base_unittests'
+    args.test_launcher_summary_output = None
+    args.trace_dir = None
+    args.runtime_deps_path = None
+    args.path_to_outdir = self._tmp_dir
+    args.vpython_dir = self._tmp_dir
+
+    # With vpython_dir initially empty, the test_runner should error out
+    # due to missing vpython binaries.
+    gtest = test_runner.GTestTest(args, None)
+    with self.assertRaises(test_runner.TestFormatError):
+      gtest.build_test_command()
+
+    # Create the two expected tools, and the test should be ready to run.
+    with open(os.path.join(args.vpython_dir, 'vpython'), 'w'):
+      pass  # Just touch the file.
+    os.mkdir(os.path.join(args.vpython_dir, 'bin'))
+    with open(os.path.join(args.vpython_dir, 'bin', 'python'), 'w'):
+      pass
+    gtest = test_runner.GTestTest(args, None)
+    gtest.build_test_command()
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -656,9 +656,14 @@
           "can_use_on_swarming_builders": true,
           "cipd_packages": [
             {
+              "cipd_package": "infra/python/cpython/linux-amd64",
+              "location": "vpython_dir_linux_amd64",
+              "revision": "version:2.7.15.chromium14"
+            },
+            {
               "cipd_package": "infra/tools/luci/vpython/linux-amd64",
               "location": "vpython_dir_linux_amd64",
-              "revision": "git_revision:9a931a5307c46b16b1c12e01e8239d4a73830b89"
+              "revision": "git_revision:0f694cdc06ba054b9960aa1ae9766e45b53d02c1"
             }
           ],
           "dimension_sets": [
