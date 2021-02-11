@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * Initiates the request for histograms.
  */
@@ -10,7 +13,7 @@ function requestHistograms() {
   if (document.location.pathname) {
     query = document.location.pathname.substring(1);
   }
-  cr.sendWithPromise('requestHistograms', query).then(addHistograms);
+  sendWithPromise('requestHistograms', query).then(addHistograms);
 }
 
 /**
@@ -29,6 +32,7 @@ function addHistograms(histograms) {
     clone.querySelector('p').textContent = body;
     $('histograms').appendChild(clone);
   }
+  $('histograms').dispatchEvent(new CustomEvent('histograms-updated-for-test'));
 }
 
 /**

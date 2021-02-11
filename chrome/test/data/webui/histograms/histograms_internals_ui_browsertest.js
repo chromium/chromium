@@ -32,31 +32,39 @@ HistogramsInternalsUIBrowserTest.prototype = {
 };
 
 TEST_F('HistogramsInternalsUIBrowserTest', 'RefreshHistograms', function() {
-  test('check refresh button replaces existing histograms', function() {
-    return cr.sendWithPromise('requestHistograms', '')
-        .then(addHistograms)
-        .finally(() => {
+  test(
+      'check refresh button replaces existing histograms', function() {
+        const whenRefreshed = new Promise((resolve, reject) => {
+          document.querySelector('#histograms')
+              .addEventListener('histograms-updated-for-test', resolve);
+        });
+        document.querySelector('#refresh').click();
+        return whenRefreshed.then(() => {
           const histogramHeader = 'Histogram: HTMLOut recorded 5 samples';
           assertEquals(
               document.body.textContent.indexOf(histogramHeader),
               document.body.textContent.lastIndexOf(histogramHeader),
               'refresh should replace existing histograms');
         });
-  });
+      });
 
   mocha.run();
 });
 
 TEST_F('HistogramsInternalsUIBrowserTest', 'NoDummyHistograms', function() {
-  test('check no dummy histogram is present', function() {
-    return cr.sendWithPromise('requestHistograms', '')
-        .then(addHistograms)
-        .finally(() => {
+  test(
+      'check no dummy histogram is present', function() {
+        const whenRefreshed = new Promise((resolve, reject) => {
+          document.querySelector('#histograms')
+              .addEventListener('histograms-updated-for-test', resolve);
+        });
+        document.querySelector('#refresh').click();
+        return whenRefreshed.then(() => {
           document.querySelectorAll('h4').forEach(header => {
             assertNotEquals(header.textContent, '');
           });
         });
-  });
+      });
 
   mocha.run();
 });
