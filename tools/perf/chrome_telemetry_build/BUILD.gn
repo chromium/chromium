@@ -68,7 +68,7 @@ group("telemetry_chrome_test") {
     # CrOS currently has issues with the locally compiled version of
     # crashpad_database_util, so only include it on traditional Linux
     # platforms.
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       data_deps +=
           [ "//third_party/crashpad/crashpad/tools:crashpad_database_util" ]
     }
