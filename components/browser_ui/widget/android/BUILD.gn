@@ -98,7 +98,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/text/TextViewWithCompoundDrawables.java",
     "java/src/org/chromium/components/browser_ui/widget/text/VerticallyFixedEditText.java",
     "java/src/org/chromium/components/browser_ui/widget/textbubble/ArrowBubbleDrawable.java",
-    "java/src/org/chromium/components/browser_ui/widget/textbubble/ImageTextBubble.java",
+    "java/src/org/chromium/components/browser_ui/widget/textbubble/ClickableTextBubble.java",
     "java/src/org/chromium/components/browser_ui/widget/textbubble/TextBubble.java",
   ]
 
