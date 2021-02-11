@@ -210,16 +210,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.navigationItem.leftBarButtonItem = cancelItem;
 
     [self addToolbar];
-  } else {
-    // Add Back button.
-    UIBarButtonItem* backItem =
-        [ChromeIcon templateBarButtonItemWithImage:[ChromeIcon backIcon]
-                                            target:self
-                                            action:@selector(dismiss)];
-    backItem.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BACK_LABEL);
-    backItem.accessibilityIdentifier = @"Back";
-    self.navigationItem.leftBarButtonItem = backItem;
   }
   [self updateEditingState];
   [self setupCollectionViewModel];

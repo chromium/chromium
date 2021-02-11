@@ -170,17 +170,7 @@ using bookmarks::BookmarkNode;
                              action:@selector(cancel:)];
     cancelItem.accessibilityIdentifier = @"Cancel";
     self.navigationItem.leftBarButtonItem = cancelItem;
-  } else {
-    UIBarButtonItem* backItem =
-        [ChromeIcon templateBarButtonItemWithImage:[ChromeIcon backIcon]
-                                            target:self
-                                            action:@selector(back:)];
-    backItem.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BACK_LABEL);
-    backItem.accessibilityIdentifier = @"Back";
-    self.navigationItem.leftBarButtonItem = backItem;
   }
-
   // Configure the table view.
   self.tableView.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -380,10 +370,6 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)cancel:(id)sender {
-  [self.delegate folderPickerDidCancel:self];
-}
-
-- (void)back:(id)sender {
   [self.delegate folderPickerDidCancel:self];
 }
 
