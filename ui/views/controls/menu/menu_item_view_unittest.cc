@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/themed_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
 #include "ui/views/test/menu_test_utils.h"
@@ -203,6 +204,67 @@ TEST_F(MenuItemViewUnitTest, NotifiesSelectedChanged) {
   // Verify we are notified when the MenuItemView becomes deselected.
   menu_item_view->SetSelected(false);
   EXPECT_FALSE(is_selected);
+}
+
+class TouchableMenuItemViewTest : public ViewsTestBase {
+ public:
+  TouchableMenuItemViewTest() = default;
+  ~TouchableMenuItemViewTest() override = default;
+
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    widget_ = CreateTestWidget();
+    widget_->Show();
+
+    menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
+    menu_item_view_ = new TestMenuItemView(menu_delegate_.get());
+    menu_runner_ = std::make_unique<MenuRunner>(
+        menu_item_view_, MenuRunner::USE_TOUCHABLE_LAYOUT);
+    menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(),
+                            MenuAnchorPosition::kTopLeft,
+                            ui::MENU_SOURCE_KEYBOARD);
+  }
+
+  void TearDown() override {
+    widget_->CloseNow();
+    ViewsTestBase::TearDown();
+  }
+
+  gfx::Size AppendItemAndGetSize(int i, const base::string16& title) {
+    return menu_item_view_->AppendMenuItem(i, title)->GetPreferredSize();
+  }
+
+ private:
+  std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
+  std::unique_ptr<MenuRunner> menu_runner_;
+  std::unique_ptr<Widget> widget_;
+
+  // Owned by MenuRunner.
+  TestMenuItemView* menu_item_view_ = nullptr;
+};
+
+// Test that touchable menu items are sized to fit the menu item titles within
+// the allowed minimum and maximum width.
+TEST_F(TouchableMenuItemViewTest, MinAndMaxWidth) {
+  const int min_menu_width = MenuConfig::instance().touchable_menu_min_width;
+  const int max_menu_width = MenuConfig::instance().touchable_menu_max_width;
+
+  // Test a title shorter than the minimum width.
+  gfx::Size item1_size =
+      AppendItemAndGetSize(1, base::ASCIIToUTF16("Item1 Short title"));
+  EXPECT_EQ(item1_size.width(), min_menu_width);
+
+  // Test a title which is between the min and max allowed widths.
+  gfx::Size item2_size = AppendItemAndGetSize(
+      2, base::ASCIIToUTF16("Item2 bigger than min less than max"));
+  EXPECT_GT(item2_size.width(), min_menu_width);
+  EXPECT_LT(item2_size.width(), max_menu_width);
+
+  // Test a title which is longer than the max touchable menu width.
+  gfx::Size item3_size = AppendItemAndGetSize(
+      3, base::ASCIIToUTF16("Item3 Title that is longer than the maximum "
+                            "allowed context menu width"));
+  EXPECT_EQ(item3_size.width(), max_menu_width);
 }
 
 class MenuItemViewLayoutTest : public ViewsTestBase {

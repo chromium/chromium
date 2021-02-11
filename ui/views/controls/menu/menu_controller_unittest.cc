@@ -2164,7 +2164,7 @@ TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   MenuItemView* sub_item = menu_item()->GetSubmenu()->GetMenuItemAt(0);
   sub_item->AppendMenuItem(11, base::ASCIIToUTF16("Subitem.One"));
 
-  const int menu_width = MenuConfig::instance().touchable_menu_width;
+  const int menu_width = MenuConfig::instance().touchable_menu_min_width;
   const gfx::Size parent_size(menu_width, menu_width);
   const gfx::Size parent_size_wide(menu_width * 2, menu_width);
 

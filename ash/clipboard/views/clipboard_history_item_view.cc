@@ -263,7 +263,7 @@ void ClipboardHistoryItemView::MaybeRecordButtonPressedHistogram() const {
 
 gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
   const int preferred_width =
-      views::MenuConfig::instance().touchable_menu_width;
+      views::MenuConfig::instance().touchable_menu_min_width;
   return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
 }
 

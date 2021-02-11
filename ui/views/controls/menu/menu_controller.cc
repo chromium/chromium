@@ -2569,7 +2569,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(MenuItemView* item,
     const bool create_on_right = prefer_leading != layout_is_rtl;
 
     const int width_with_right_inset =
-        menu_config.touchable_menu_width + border_and_shadow_insets.right();
+        menu_config.touchable_menu_min_width + border_and_shadow_insets.right();
     const int x_max = monitor_bounds.right() - width_with_right_inset;
     const int x_left = item_bounds.x() - width_with_right_inset;
     const int x_right = item_bounds.right() - border_and_shadow_insets.left();

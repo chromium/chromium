@@ -111,9 +111,9 @@ void NotificationItemView::UpdateContents(const base::string16& title,
 }
 
 gfx::Size NotificationItemView::CalculatePreferredSize() const {
-  return gfx::Size(
-      views::MenuConfig::instance().touchable_menu_width - kBorderStrokeWidth,
-      kNotificationItemViewHeight);
+  return gfx::Size(views::MenuConfig::instance().touchable_menu_min_width -
+                       kBorderStrokeWidth,
+                   kNotificationItemViewHeight);
 }
 
 void NotificationItemView::Layout() {
@@ -122,7 +122,7 @@ void NotificationItemView::Layout() {
   // result of |text_container_| being too small to hold the full width of its
   // children labels.
   const gfx::Size text_container_size(
-      views::MenuConfig::instance().touchable_menu_width -
+      views::MenuConfig::instance().touchable_menu_min_width -
           kNotificationHorizontalPadding - kIconHorizontalPadding * 2 -
           kProportionalIconViewSize.width(),
       title_label_->GetPreferredSize().height() +

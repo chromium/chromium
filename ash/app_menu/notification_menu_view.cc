@@ -41,7 +41,7 @@ NotificationMenuView::~NotificationMenuView() = default;
 
 gfx::Size NotificationMenuView::CalculatePreferredSize() const {
   return gfx::Size(
-      views::MenuConfig::instance().touchable_menu_width,
+      views::MenuConfig::instance().touchable_menu_min_width,
       double_separator_->GetPreferredSize().height() +
           header_view_->GetPreferredSize().height() +
           kNotificationItemViewHeight +
@@ -50,10 +50,10 @@ gfx::Size NotificationMenuView::CalculatePreferredSize() const {
 
 void NotificationMenuView::Layout() {
   int y = 0;
-  double_separator_->SetBoundsRect(
-      gfx::Rect(gfx::Point(0, y),
-                gfx::Size(views::MenuConfig::instance().touchable_menu_width,
-                          double_separator_->GetPreferredSize().height())));
+  double_separator_->SetBoundsRect(gfx::Rect(
+      gfx::Point(0, y),
+      gfx::Size(views::MenuConfig::instance().touchable_menu_min_width,
+                double_separator_->GetPreferredSize().height())));
   y += double_separator_->GetPreferredSize().height();
 
   header_view_->SetBoundsRect(

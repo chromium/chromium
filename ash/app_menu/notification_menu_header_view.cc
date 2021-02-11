@@ -58,7 +58,7 @@ void NotificationMenuHeaderView::UpdateCounter(int number_of_notifications) {
 
 gfx::Size NotificationMenuHeaderView::CalculatePreferredSize() const {
   return gfx::Size(
-      views::MenuConfig::instance().touchable_menu_width,
+      views::MenuConfig::instance().touchable_menu_min_width,
       GetInsets().height() + notification_title_->GetPreferredSize().height());
 }
 

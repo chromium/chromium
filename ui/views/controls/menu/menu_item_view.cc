@@ -1249,6 +1249,9 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
   dimensions.children_width = child_size.width();
   const MenuConfig& menu_config = MenuConfig::instance();
 
+  MenuDelegate::LabelStyle style;
+  GetLabelStyle(&style);
+
   if (GetMenuController() && GetMenuController()->use_touchable_layout()) {
     dimensions.height = menu_config.touchable_menu_height;
 
@@ -1259,7 +1262,15 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
     if (IsContainer())
       return dimensions;
 
-    dimensions.standard_width = menu_config.touchable_menu_width;
+    // Calculate total item width to make sure the current |title_|
+    // has enough room within the context menu.
+    int label_start = GetLabelStartForThisItem();
+    int string_width = gfx::GetStringWidth(title_, style.font_list);
+    int item_width = string_width + label_start + item_right_margin_;
+
+    item_width = std::max(item_width, menu_config.touchable_menu_min_width);
+    item_width = std::min(item_width, menu_config.touchable_menu_max_width);
+    dimensions.standard_width = item_width;
 
     if (icon_view_) {
       dimensions.height = icon_view_->GetPreferredSize().height() +
@@ -1268,8 +1279,6 @@ MenuItemView::MenuItemDimensions MenuItemView::CalculateDimensions() const {
     return dimensions;
   }
 
-  MenuDelegate::LabelStyle style;
-  GetLabelStyle(&style);
   base::string16 minor_text = GetMinorText();
 
   dimensions.height = child_size.height();
@@ -1358,7 +1367,8 @@ int MenuItemView::GetLabelStartForThisItem() const {
   // Touchable items with icons do not respect |label_start_|.
   if (GetMenuController() && GetMenuController()->use_touchable_layout() &&
       icon_view_) {
-    return 2 * config.touchable_item_horizontal_padding + icon_view_->width();
+    return 2 * config.touchable_item_horizontal_padding +
+           icon_view_->GetPreferredSize().width();
   }
 
   int label_start = label_start_ + left_icon_margin_ + right_icon_margin_;

@@ -138,7 +138,7 @@ gfx::Size NotificationOverflowView::CalculatePreferredSize() const {
   // padding on the bottom due to the corner radius of the root MenuItemView. If
   // the corner radius changes, |kOverflowSeparatorToIconPadding| must be
   // modified to vertically center the overflow icons.
-  return gfx::Size(views::MenuConfig::instance().touchable_menu_width,
+  return gfx::Size(views::MenuConfig::instance().touchable_menu_min_width,
                    separator_->GetPreferredSize().height() +
                        kOverflowSeparatorToIconPadding + kIconLayoutSize);
 }

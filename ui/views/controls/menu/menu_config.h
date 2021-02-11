@@ -184,8 +184,11 @@ struct VIEWS_EXPORT MenuConfig {
   // Height of child MenuItemViews for touchable menus.
   int touchable_menu_height = 36;
 
-  // Width of touchable menus.
-  int touchable_menu_width = 256;
+  // Minimum width of touchable menus.
+  int touchable_menu_min_width = 256;
+
+  // Maximum width of touchable menus.
+  int touchable_menu_max_width = 352;
 
   // Shadow elevation of touchable menus.
   int touchable_menu_shadow_elevation = 12;
