@@ -846,10 +846,9 @@ public class RootUiCoordinator
         BottomSheetControllerFactory.attach(mActivity.getWindowAndroid(), mBottomSheetController);
 
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
-                mActivity.getBrowserControlsManager(), mActivity.getFullscreenManager(),
-                mActivity::getModalDialogManager, this::getBottomSheetSnackbarManager,
-                mTabObscuringHandler, mOmniboxFocusStateSupplier, panelManagerSupplier,
-                mStartSurfaceSupplier);
+                mActivity.getBrowserControlsManager(), mActivity::getModalDialogManager,
+                this::getBottomSheetSnackbarManager, mTabObscuringHandler,
+                mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier);
     }
 
     /**
