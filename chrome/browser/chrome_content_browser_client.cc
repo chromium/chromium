@@ -2128,7 +2128,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #else
   bool enable_crash_reporter = false;
   if (crash_reporter::IsCrashpadEnabled()) {
-    command_line->AppendSwitch(crash_reporter::kEnableCrashpad);
+    command_line->AppendSwitch(switches::kEnableCrashpad);
     enable_crash_reporter = true;
 
     int fd;

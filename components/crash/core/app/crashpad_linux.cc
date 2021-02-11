@@ -9,6 +9,7 @@
 
 #include <limits>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -51,12 +52,9 @@ void SetFirstChanceExceptionHandler(bool (*handler)(int, siginfo_t*, void*)) {
       FirstChanceHandlerHelper);
 }
 
-// TODO(jperaza): Remove kEnableCrashpad and IsCrashpadEnabled() when Crashpad
-// is fully enabled on Linux.
-const char kEnableCrashpad[] = "enable-crashpad";
-
 bool IsCrashpadEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kEnableCrashpad);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableCrashpad);
 }
 
 bool GetHandlerSocket(int* fd, pid_t* pid) {

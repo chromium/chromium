@@ -118,7 +118,7 @@ std::unique_ptr<base::CommandLine> CreateServiceProcessCommandLine() {
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   if (crash_reporter::IsCrashpadEnabled()) {
-    command_line->AppendSwitch(crash_reporter::kEnableCrashpad);
+    command_line->AppendSwitch(switches::kEnableCrashpad);
 
     pid_t pid;
     if (crash_reporter::GetHandlerSocket(nullptr, &pid)) {

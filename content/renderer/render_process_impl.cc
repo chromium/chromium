@@ -189,23 +189,27 @@ RenderProcessImpl::RenderProcessImpl()
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (!command_line->HasSwitch(switches::kEnableCrashReporter) &&
-        !command_line->HasSwitch(switches::kEnableCrashReporterForTesting)) {
-      // If we are using WebAssembly trap handling but both Breakpad and
-      // in-process stack traces are disabled then there will be no signal
-      // handler. In this case, we fall back on V8's default handler
-      // (https://crbug.com/798150).
-      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/true);
+
+    if (command_line->HasSwitch(switches::kEnableCrashpad) ||
+        command_line->HasSwitch(switches::kEnableCrashReporter) ||
+        command_line->HasSwitch(switches::kEnableCrashReporterForTesting)) {
+      // The trap handler is set as the first chance handler for Crashpad or
+      // Breakpad's signal handler.
+      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
     } else if (!command_line->HasSwitch(
                    switches::kDisableInProcessStackTraces)) {
-      // Only enable WebAssembly trap handler if we can set the callback.
       if (base::debug::SetStackDumpFirstChanceCallback(
               v8::TryHandleWebAssemblyTrapPosix)) {
-        // We registered the WebAssembly trap handler callback with the stack
-        // dump signal handler successfully. We can tell V8 that it can enable
-        // WebAssembly trap handler without using the V8 signal handler.
+        // Crashpad and Breakpad are disabled, but the in-process stack dump
+        // handlers are enabled, so set the callback on the stack dump handlers.
         v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
+      } else {
+        // As the registration of the callback failed, we don't enable trap
+        // handlers.
       }
+    } else {
+      // There is no signal handler yet, but it's okay if v8 registers one.
+      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/true);
     }
   }
 #endif

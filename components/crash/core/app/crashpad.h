@@ -39,9 +39,6 @@ class CrashReportDatabase;
 namespace crash_reporter {
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-// TODO(jperaza): Remove kEnableCrashpad and IsCrashpadEnabled() when Crashpad
-// is fully enabled on Linux.
-extern const char kEnableCrashpad[];
 bool IsCrashpadEnabled();
 #endif
 

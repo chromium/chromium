@@ -162,6 +162,11 @@ const char kForceFieldTrialParams[] = "force-fieldtrial-params";
 //
 // This flag requires the BPF sandbox to be disabled.
 const char kEnableThreadInstructionCount[] = "enable-thread-instruction-count";
+
+// TODO(crbug.com/1176772): Remove kEnableCrashpad and IsCrashpadEnabled() when
+// Crashpad is fully enabled on Linux. Indicates that Crashpad should be
+// enabled.
+extern const char kEnableCrashpad[] = "enable-crashpad";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
