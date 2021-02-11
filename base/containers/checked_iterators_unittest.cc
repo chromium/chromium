@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/check_op.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -80,84 +82,77 @@ TEST(CheckedContiguousIterator, ConvertingComparisonOperators) {
   EXPECT_GE(cbegin, begin);
 }
 
-#if defined(_LIBCPP_VERSION)
-// TODO(crbug.com/1166360): This optimization was broken by upstream libc++
-// changes. Work around the issue and re-enable the test.
-#if 0
+}  // namespace base
+
+// ChromeOS does not use the in-tree libc++, but rather a shared library that
+// lags a bit behind.
+// TODO(crbug.com/1166360): Enable this test on ChromeOS once the shared libc++
+// is sufficiently modern.
+#if defined(_LIBCPP_VERSION) && !defined(OS_NACL) && !defined(OS_CHROMEOS)
 namespace {
 
 // Helper template that wraps an iterator and disables its dereference and
 // increment operations.
+// Note: We don't simply delete these operations, because code using these
+// operations still needs to compile, even though the codepath will never be
+// taken at runtime. This will crash at runtime in case code does try to use
+// these operations.
 template <typename Iterator>
 struct DisableDerefAndIncr : Iterator {
   using Iterator::Iterator;
+  constexpr DisableDerefAndIncr(const Iterator& iter) : Iterator(iter) {}
 
-  void operator*() = delete;
-  void operator++() = delete;
-  void operator++(int) = delete;
+  constexpr typename Iterator::reference operator*() {
+    CHECK(false);
+    return Iterator::operator*();
+  }
+
+  constexpr Iterator& operator++() {
+    CHECK(false);
+    return Iterator::operator++();
+  }
+
+  constexpr Iterator operator++(int i) {
+    CHECK(false);
+    return Iterator::operator++(i);
+  }
 };
-
-template <typename Iterator>
-auto __unwrap_iter(DisableDerefAndIncr<Iterator> iter) {
-  return __unwrap_iter(static_cast<Iterator>(iter));
-}
 
 }  // namespace
 
+// Inherit `__is_cpp17_contiguous_iterator` and `pointer_traits` specializations
+// from the base class.
+namespace std {
+template <typename Iter>
+struct __is_cpp17_contiguous_iterator<DisableDerefAndIncr<Iter>>
+    : __is_cpp17_contiguous_iterator<Iter> {};
+
+template <typename Iter>
+struct pointer_traits<DisableDerefAndIncr<Iter>> : pointer_traits<Iter> {};
+}  // namespace std
+
+namespace base {
+
 // Tests that using std::copy with CheckedContiguousIterator<int> results in an
 // optimized code-path that does not invoke the iterator's dereference and
-// increment operations. This would fail to compile if std::copy was not
+// increment operations. This would fail at runtime if std::copy was not
 // optimized.
 TEST(CheckedContiguousIterator, OptimizedCopy) {
   using Iter = DisableDerefAndIncr<CheckedContiguousIterator<int>>;
-  static_assert(std::is_same<int*, decltype(__unwrap_iter(Iter()))>::value,
-                "Error: Iter should unwrap to int*");
 
   int arr_in[5] = {1, 2, 3, 4, 5};
   int arr_out[5];
 
-  Iter begin(std::begin(arr_in), std::end(arr_in));
-  Iter end(std::begin(arr_in), std::end(arr_in), std::end(arr_in));
-  std::copy(begin, end, arr_out);
-
-  EXPECT_TRUE(std::equal(std::begin(arr_in), std::end(arr_in),
-                         std::begin(arr_out), std::end(arr_out)));
-}
-#endif
-
-TEST(CheckedContiguousIterator, UnwrapIter) {
-  static_assert(
-      std::is_same<int*, decltype(__unwrap_iter(
-                             CheckedContiguousIterator<int>()))>::value,
-      "Error: CCI<int> should unwrap to int*");
-
-  static_assert(
-      std::is_same<CheckedContiguousIterator<std::string>,
-                   decltype(__unwrap_iter(
-                       CheckedContiguousIterator<std::string>()))>::value,
-      "Error: CCI<std::string> should unwrap to CCI<std::string>");
-}
-
-// While the result of std::copying into a range via a CCI can't be
-// compared to other iterators, it should be possible to re-use it in another
-// std::copy expresson.
-TEST(CheckedContiguousIterator, ReuseCopyIter) {
-  using Iter = CheckedContiguousIterator<int>;
-
-  int arr_in[5] = {1, 2, 3, 4, 5};
-  int arr_out[5];
-
-  Iter begin(std::begin(arr_in), std::end(arr_in));
-  Iter end(std::begin(arr_in), std::end(arr_in), std::end(arr_in));
+  Iter in_begin(std::begin(arr_in), std::end(arr_in));
+  Iter in_end(std::begin(arr_in), std::end(arr_in), std::end(arr_in));
   Iter out_begin(std::begin(arr_out), std::end(arr_out));
-
-  auto out_middle = std::copy_n(begin, 3, out_begin);
-  std::copy(begin + 3, end, out_middle);
+  Iter out_end = std::copy(in_begin, in_end, out_begin);
+  EXPECT_EQ(out_end, out_begin + (in_end - in_begin));
 
   EXPECT_TRUE(std::equal(std::begin(arr_in), std::end(arr_in),
                          std::begin(arr_out), std::end(arr_out)));
 }
-
-#endif
 
 }  // namespace base
+
+#endif
