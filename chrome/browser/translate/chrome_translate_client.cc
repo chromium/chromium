@@ -19,7 +19,9 @@
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/translate/translate_accept_languages_factory.h"
+#include "chrome/browser/translate/translate_model_service_factory.h"
 #include "chrome/browser/translate/translate_ranker_factory.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/translate/translate_bubble_factory.h"
@@ -30,6 +32,7 @@
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/translate/content/browser/translate_model_service.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/page_translated_details.h"
 #include "components/translate/core/browser/translate_accept_languages.h"
@@ -97,7 +100,10 @@ ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
     translate_driver_ = std::make_unique<translate::ContentTranslateDriver>(
         &web_contents->GetController(),
         UrlLanguageHistogramFactory::GetForBrowserContext(
-            web_contents->GetBrowserContext()));
+            web_contents->GetBrowserContext()),
+        TranslateModelServiceFactory::GetOrBuildForKey(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext())
+                ->GetProfileKey()));
   }
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       this,

@@ -20,6 +20,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_record_page_language.h"
+#include "components/translate/content/browser/translate_model_service.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -57,13 +58,15 @@ const base::Feature kAutoHrefTranslateAllOrigins{
 
 ContentTranslateDriver::ContentTranslateDriver(
     content::NavigationController* nav_controller,
-    language::UrlLanguageHistogram* url_language_histogram)
+    language::UrlLanguageHistogram* url_language_histogram,
+    translate::TranslateModelService* translate_model_service)
     : content::WebContentsObserver(nav_controller->GetWebContents()),
       navigation_controller_(nav_controller),
       translate_manager_(nullptr),
       max_reload_check_attempts_(kMaxTranslateLoadCheckAttempts),
       next_page_seq_no_(0),
-      language_histogram_(url_language_histogram) {
+      language_histogram_(url_language_histogram),
+      translate_model_service_(translate_model_service) {
   DCHECK(navigation_controller_);
 }
 
@@ -331,6 +334,24 @@ void ContentTranslateDriver::OnPageTranslated(
       original_lang, translated_lang, error_type);
   for (auto& observer : translation_observers_)
     observer.OnPageTranslated(original_lang, translated_lang, error_type);
+}
+
+void ContentTranslateDriver::GetLanguageDetectionModel(
+    GetLanguageDetectionModelCallback callback) {
+  if (!translate_model_service_) {
+    std::move(callback).Run(base::File());
+    return;
+  }
+  translate_model_service_->GetLanguageDetectionModelFile(
+      base::BindOnce(&ContentTranslateDriver::OnLanguageDetectionModelFile,
+                     weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContentTranslateDriver::OnLanguageDetectionModelFile(
+    GetLanguageDetectionModelCallback callback,
+    base::File model_file) {
+  DCHECK(model_file.IsValid());
+  std::move(callback).Run(std::move(model_file));
 }
 
 }  // namespace translate

@@ -50,6 +50,8 @@ class FakeContentTranslateDriver
     called_new_page_ = true;
     page_level_translation_critiera_met_ = page_level_translation_critiera_met;
   }
+  void GetLanguageDetectionModel(
+      GetLanguageDetectionModelCallback callback) override {}
 
   bool called_new_page_ = false;
   bool page_level_translation_critiera_met_ = false;

@@ -25,8 +25,10 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/translate/core/common/translate_util.h"
+#include "components/translate/core/language_detection/language_detection_model.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -119,6 +121,15 @@ class TranslateModelServiceBrowserTest
         {});
   }
 
+  void SetUp() override {
+    origin_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    origin_server_->ServeFilesFromSourceDirectory("chrome/test/data/translate");
+    ASSERT_TRUE(origin_server_->Start());
+    english_url_ = origin_server_->GetURL("/english_page.html");
+    InProcessBrowserTest::SetUp();
+  }
+
   ~TranslateModelServiceBrowserTest() override = default;
 
   translate::TranslateModelService* translate_model_service() {
@@ -126,8 +137,12 @@ class TranslateModelServiceBrowserTest
         browser()->profile()->GetProfileKey());
   }
 
+  const GURL& english_url() const { return english_url_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  GURL english_url_;
+  std::unique_ptr<net::EmbeddedTestServer> origin_server_;
 };
 
 base::FilePath model_file_path() {
@@ -223,10 +238,33 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        LanguageDetectionModelCreated) {
   base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(browser(), GURL("https://test.com"));
+  ui_test_utils::NavigateToURL(browser(), english_url());
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 1);
   histogram_tester.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
+                       LanguageDetectionModelAvailableForDetection) {
+  base::HistogramTester histogram_tester;
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelFileForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          /*model_metadata=*/base::nullopt, model_file_path());
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "LanguageDetection.TFLiteModel.LanguageDetectionModelState", 1);
+  histogram_tester.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
+      translate::LanguageDetectionModelState::kModelFileValidAndMemoryMapped,
+      1);
+
+  ui_test_utils::NavigateToURL(browser(), english_url());
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 1);
+  histogram_tester.ExpectBucketCount(
+      "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", true, 1);
 }
