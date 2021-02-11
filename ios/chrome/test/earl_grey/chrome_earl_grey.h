@@ -367,6 +367,10 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 // Opens a new window.
 - (void)openNewWindow;
 
+// Opens a new tab in window with given number and waits for the new tab
+// animation to complete within a timeout, or a GREYAssert is induced.
+- (void)openNewTabInWindowWithNumber:(int)windowNumber;
+
 // Closes the window with given number. Note that numbering doesn't change and
 // if a new window is to be added in a test, a renumbering might be needed.
 - (void)closeWindowWithNumber:(int)windowNumber;

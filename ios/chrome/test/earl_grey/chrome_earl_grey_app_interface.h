@@ -187,6 +187,10 @@
 // Open a new window. Returns an error if multiwindow is not supported.
 + (NSError*)openNewWindow;
 
+// Opens a new tab in window with given number, and does not wait for animations
+// to complete.
++ (void)openNewTabInWindowWithNumber:(int)windowNumber;
+
 // Closes the window with given number.
 + (void)closeWindowWithNumber:(int)windowNumber;
 

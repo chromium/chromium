@@ -648,6 +648,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       collectionViewUpdatesCompletion:completion];
 
   [self updateVisibleCellZIndex];
+  [self updateVisibleCellIdentifiers];
 }
 
 - (void)removeItemWithID:(NSString*)removedItemID
@@ -679,6 +680,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       collectionViewUpdatesCompletion:completion];
 
   [self updateVisibleCellZIndex];
+  [self updateVisibleCellIdentifiers];
 }
 
 - (void)selectItemWithID:(NSString*)selectedItemID {
@@ -735,6 +737,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       collectionViewUpdatesCompletion:completion];
 
   [self updateVisibleCellZIndex];
+  [self updateVisibleCellIdentifiers];
 }
 
 #pragma mark - LayoutSwitcher
@@ -963,6 +966,18 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     UICollectionViewCell* cell =
         [self.collectionView cellForItemAtIndexPath:indexPath];
     cell.layer.zPosition = self.items.count - indexPath.item;
+  }
+}
+
+// Update visible cells identifier, following a reorg of cells.
+- (void)updateVisibleCellIdentifiers {
+  for (NSIndexPath* indexPath in self.collectionView
+           .indexPathsForVisibleItems) {
+    UICollectionViewCell* cell =
+        [self.collectionView cellForItemAtIndexPath:indexPath];
+    NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
+    cell.accessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, itemIndex];
   }
 }
 

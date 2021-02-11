@@ -279,7 +279,7 @@ id<GREYMatcher> SettingsMenuBackButton();
 
 // Returns matcher for the back button on a settings menu in given window
 // number.
-id<GREYMatcher> SettingsMenuBackButton(int windowNumber);
+id<GREYMatcher> SettingsMenuBackButton(int window_number);
 
 // Returns matcher for the Privacy cell on the main Settings screen.
 id<GREYMatcher> SettingsMenuPrivacyButton();

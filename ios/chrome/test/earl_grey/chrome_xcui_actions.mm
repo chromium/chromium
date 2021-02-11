@@ -11,43 +11,116 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Returns a normalized vector for the given edge.
+CGVector GetNormalizedEdgeVector(GREYContentEdge edge) {
+  switch (edge) {
+    case kGREYContentEdgeLeft:
+      return CGVectorMake(0.0, 0.5);
+      break;
+    case kGREYContentEdgeRight:
+      return CGVectorMake(1.0, 0.5);
+      break;
+    case kGREYContentEdgeTop:
+      return CGVectorMake(0.5, 0.0);
+      break;
+    case kGREYContentEdgeBottom:
+      return CGVectorMake(0.5, 1.0);
+      break;
+    default:
+      return CGVectorMake(0.5, 0.5);
+  }
+}
+
+// Creates a query for the given identifier in given window, where the
+// identifier can be the window itself.
+XCUIElementQuery* GetQueryMatchingIdentifierInWindow(XCUIApplication* app,
+                                                     NSString* identifier,
+                                                     int window_number) {
+  // Check for matching descendants.
+  XCUIElementQuery* query = [[[app.windows
+      matchingIdentifier:[NSString stringWithFormat:@"%d", window_number]]
+      descendantsMatchingType:XCUIElementTypeAny]
+      matchingIdentifier:identifier];
+  if (query.count)
+    return query;
+  // Or else try for a window itself.
+  return [app.windows matchingIdentifier:identifier];
+}
+
+}  // namespace
+
 namespace chrome_test_util {
 
-BOOL LongPressAndDragToEdge(NSString* accessibilityIdentifier,
-                            GREYContentEdge edge) {
+BOOL LongPressAndDragToEdge(NSString* accessibility_identifier,
+                            GREYContentEdge edge,
+                            int window_number) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
-  XCUIElementQuery* query =
-      [[app.windows descendantsMatchingType:XCUIElementTypeAny]
-          matchingIdentifier:accessibilityIdentifier];
+  XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
+      app, accessibility_identifier, window_number);
 
   if (query.count == 0)
     return NO;
-  XCUIElement* dragElement = [query elementBoundByIndex:0];
+  XCUIElement* drag_element = [query elementBoundByIndex:0];
 
-  CGVector edgeCenter;
-  switch (edge) {
-    case kGREYContentEdgeLeft:
-      edgeCenter = CGVectorMake(0.0, 0.5);
-      break;
-    case kGREYContentEdgeRight:
-      edgeCenter = CGVectorMake(1.0, 0.5);
-      break;
-    case kGREYContentEdgeTop:
-      edgeCenter = CGVectorMake(0.5, 0.0);
-      break;
-    case kGREYContentEdgeBottom:
-      edgeCenter = CGVectorMake(0.5, 1.0);
-      break;
-  }
+  XCUICoordinate* start_point =
+      [drag_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+  XCUICoordinate* end_point =
+      [app coordinateWithNormalizedOffset:GetNormalizedEdgeVector(edge)];
 
-  XCUICoordinate* startPoint =
-      [dragElement coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
-  XCUICoordinate* endPoint = [app coordinateWithNormalizedOffset:edgeCenter];
+  [start_point pressForDuration:1.5
+           thenDragToCoordinate:end_point
+                   withVelocity:XCUIGestureVelocityDefault
+            thenHoldForDuration:1.0];
 
-  [startPoint pressForDuration:1.5
-          thenDragToCoordinate:endPoint
-                  withVelocity:XCUIGestureVelocityDefault
-           thenHoldForDuration:1.0];
+  return YES;
+}
+
+BOOL LongPressAndDragToOffsetOf(NSString* src_accessibility_identifier,
+                                int src_window_number,
+                                NSString* dst_accessibility_identifier,
+                                int dst_window_number,
+                                CGVector dst_normalized_offset) {
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElementQuery* src_query = GetQueryMatchingIdentifierInWindow(
+      app, src_accessibility_identifier, src_window_number);
+
+  XCUIElementQuery* dst_query = GetQueryMatchingIdentifierInWindow(
+      app, dst_accessibility_identifier, dst_window_number);
+
+  if (src_query.count == 0 || dst_query.count == 0)
+    return NO;
+  XCUIElement* src_element = [src_query elementBoundByIndex:0];
+  XCUIElement* dst_element = [dst_query elementBoundByIndex:0];
+
+  XCUICoordinate* start_point =
+      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+  XCUICoordinate* end_point =
+      [dst_element coordinateWithNormalizedOffset:dst_normalized_offset];
+
+  [start_point pressForDuration:1.5
+           thenDragToCoordinate:end_point
+                   withVelocity:XCUIGestureVelocityDefault
+            thenHoldForDuration:1.0];
+
+  return YES;
+}
+
+BOOL TapAtOffsetOf(NSString* accessibility_identifier,
+                   int window_number,
+                   CGVector normalized_offset) {
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
+      app, accessibility_identifier, window_number);
+
+  if (query.count == 0)
+    return NO;
+
+  XCUIElement* element = [query elementBoundByIndex:0];
+  XCUICoordinate* tap_point =
+      [element coordinateWithNormalizedOffset:normalized_offset];
+  [tap_point tap];
 
   return YES;
 }

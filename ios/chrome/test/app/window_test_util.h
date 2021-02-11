@@ -25,6 +25,9 @@ NSUInteger GetMainTabCountForWindowWithNumber(int windowNumber);
 // Returns the number of incognito tabs, in window with given number.
 NSUInteger GetIncognitoTabCountForWindowWithNumber(int windowNumber);
 
+// Opens a new tab, in window with given number.
+void OpenNewTabInWindowWithNumber(int windowNumber);
+
 }  // namespace chrome_test_util
 
 #endif

@@ -874,6 +874,12 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface openNewWindow]);
 }
 
+- (void)openNewTabInWindowWithNumber:(int)windowNumber {
+  [ChromeEarlGreyAppInterface openNewTabInWindowWithNumber:windowNumber];
+  [self waitForPageToFinishLoadingInWindowWithNumber:windowNumber];
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
 - (void)closeWindowWithNumber:(int)windowNumber {
   [ChromeEarlGreyAppInterface closeWindowWithNumber:windowNumber];
 }

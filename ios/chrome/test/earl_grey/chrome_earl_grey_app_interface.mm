@@ -375,6 +375,10 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
       @"Multiwindow supported on iOS13+ only");
 }
 
++ (void)openNewTabInWindowWithNumber:(int)windowNumber {
+  chrome_test_util::OpenNewTabInWindowWithNumber(windowNumber);
+}
+
 + (void)changeWindowWithNumber:(int)windowNumber
                    toNewNumber:(int)newWindowNumber {
   NSArray<SceneState*>* connectedScenes =

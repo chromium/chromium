@@ -351,9 +351,9 @@ id<GREYMatcher> SettingsMenuBackButton() {
   return [ChromeMatchersAppInterface settingsMenuBackButton];
 }
 
-id<GREYMatcher> SettingsMenuBackButton(int windowNumber) {
+id<GREYMatcher> SettingsMenuBackButton(int window_number) {
   return [ChromeMatchersAppInterface
-      settingsMenuBackButtonInWindowWithNumber:windowNumber];
+      settingsMenuBackButtonInWindowWithNumber:window_number];
 }
 
 id<GREYMatcher> SettingsMenuPrivacyButton() {
