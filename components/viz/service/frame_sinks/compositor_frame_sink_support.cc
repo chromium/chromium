@@ -13,6 +13,9 @@
 #include "base/stl_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -59,7 +62,10 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       frame_sink_id_(frame_sink_id),
       surface_resource_holder_(this),
       is_root_(is_root),
-      allow_copy_output_requests_(is_root) {
+      allow_copy_output_requests_(is_root),
+      animation_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Animation")) {
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
 }
@@ -755,10 +761,15 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
     return;
 
   added_frame_observer_ = needs_begin_frame;
-  if (needs_begin_frame)
+  if (needs_begin_frame) {
     begin_frame_source_->AddObserver(this);
-  else
+    animation_power_mode_voter_->VoteFor(
+        power_scheduler::PowerMode::kAnimation);
+  } else {
     begin_frame_source_->RemoveObserver(this);
+    animation_power_mode_voter_->ResetVoteAfterTimeout(
+        power_scheduler::PowerModeVoter::kAnimationTimeout);
+  }
 }
 
 void CompositorFrameSinkSupport::AttachCaptureClient(

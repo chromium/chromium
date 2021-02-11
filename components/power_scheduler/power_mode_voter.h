@@ -31,6 +31,12 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   static constexpr base::TimeDelta kResponseTimeout =
       base::TimeDelta::FromMilliseconds(100);
 
+  // Animations often have brief idle periods where no frames are produced. This
+  // timeout is applied before resetting animation votes to avoid frequent vote
+  // reversals.
+  static constexpr base::TimeDelta kAnimationTimeout =
+      base::TimeDelta::FromMilliseconds(50);
+
   // Avoid getting stuck in loading stage forever. More than 99.9% of
   // navigations load (to largest contentful paint) in less than a minute.
   static constexpr base::TimeDelta kLoadingTimeout =

@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 
@@ -59,6 +60,8 @@ class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
   BeginFrameSourceWebView* parent_ = nullptr;
   std::unique_ptr<BeginFrameObserver> parent_observer_;
   bool inside_begin_frame_ = false;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 };
 
 // RootBeginFrameSourceWebView is subclass of BeginFrameSourceWebView that

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -361,6 +362,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // surface. In part implements "Shared Element Transition" feature for
   // single-page-app transitions.
   SurfaceAnimationManager surface_animation_manager_;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 

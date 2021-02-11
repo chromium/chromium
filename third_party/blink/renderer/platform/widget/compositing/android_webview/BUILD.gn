@@ -11,6 +11,10 @@ blink_platform_sources("android_webview") {
     "synchronous_layer_tree_frame_sink.h",
   ]
 
-  # TODO(crbug.com/805739): This should not be depended on from the renderer.
-  deps = [ "//components/viz/service" ]
+  deps = [
+    "//components/power_scheduler",
+
+    # TODO(crbug.com/805739): This should not be depended on from the renderer.
+    "//components/viz/service",
+  ]
 }

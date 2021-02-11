@@ -14,6 +14,7 @@
 #include "base/single_thread_task_runner.h"
 #include "cc/mojo_embedder/mojo_embedder_export.h"
 #include "cc/trees/layer_tree_frame_sink.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -139,6 +140,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   viz::LocalSurfaceId last_submitted_local_surface_id_;
   float last_submitted_device_scale_factor_ = 1.f;
   gfx::Size last_submitted_size_in_pixels_;
+
+  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
   base::WeakPtrFactory<AsyncLayerTreeFrameSink> weak_factory_{this};
 };

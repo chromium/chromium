@@ -13,6 +13,9 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/base/histograms.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "components/power_scheduler/power_mode.h"
+#include "components/power_scheduler/power_mode_arbiter.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -47,8 +50,10 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
       synthetic_begin_frame_source_(
           std::move(params->synthetic_begin_frame_source)),
       pipes_(std::move(params->pipes)),
-      wants_animate_only_begin_frames_(
-          params->wants_animate_only_begin_frames) {
+      wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
+      animation_power_mode_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Animation")) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -275,11 +280,15 @@ void AsyncLayerTreeFrameSink::ReclaimResources(
 void AsyncLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
   DCHECK(compositor_frame_sink_ptr_);
   if (needs_begin_frames_ != needs_begin_frames) {
-    if (needs_begin_frames_) {
-      TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
-    } else {
+    if (needs_begin_frames) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames",
                                         this);
+      animation_power_mode_voter_->VoteFor(
+          power_scheduler::PowerMode::kAnimation);
+    } else {
+      TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
+      animation_power_mode_voter_->ResetVoteAfterTimeout(
+          power_scheduler::PowerModeVoter::kAnimationTimeout);
     }
   }
   needs_begin_frames_ = needs_begin_frames;
