@@ -511,7 +511,8 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   }
 
   auto notification = phonehub::Notification(
-      id, app_metadata, timestamp, importance, inline_reply_id, opt_title,
+      id, app_metadata, timestamp, importance, inline_reply_id,
+      phonehub::Notification::InteractionBehavior::kNone, opt_title,
       opt_text_content, opt_shared_image, opt_contact_image);
 
   PA_LOG(VERBOSE) << "Set notification" << notification;

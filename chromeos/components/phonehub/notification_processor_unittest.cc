@@ -22,6 +22,8 @@ constexpr int64_t kNotificationIdB = 2;
 constexpr int64_t kInlineReplyIdA = 3;
 constexpr int64_t kInlineReplyIdB = 4;
 
+constexpr int64_t kOpenableActionId = -2;
+
 const char kIconDataA[] = "icon_a";
 const char kIconDataB[] = "icon_b";
 
@@ -112,12 +114,25 @@ class NotificationProcessorTest : public testing::Test {
     return notification_processor()->pending_notification_requests_.size();
   }
 
+  proto::Notification CreateNewInlineReplyableOpenableNotification(
+      int64_t notification_id,
+      int64_t inline_reply_id,
+      Notification::InteractionBehavior behavior) {
+    return CreateNewInlineReplyableNotification(
+        notification_id, inline_reply_id,
+        /* icon= */ std::string(),
+        /* shared_image= */ std::string(),
+        /* contact_image= */ std::string(), behavior);
+  }
+
   proto::Notification CreateNewInlineReplyableNotification(
       int64_t notification_id,
       int64_t inline_reply_id,
       std::string icon = std::string(),
       std::string shared_image = std::string(),
-      std::string contact_image = std::string()) {
+      std::string contact_image = std::string(),
+      Notification::InteractionBehavior behavior =
+          Notification::InteractionBehavior::kNone) {
     auto origin_app = std::make_unique<proto::App>();
     origin_app->set_icon(icon);
 
@@ -132,6 +147,12 @@ class NotificationProcessorTest : public testing::Test {
     mutable_action->set_id(inline_reply_id);
     mutable_action->set_type(proto::Action_InputType::Action_InputType_TEXT);
 
+    if (behavior == Notification::InteractionBehavior::kOpenable) {
+      notification.add_actions();
+      proto::Action* open_action = notification.mutable_actions(1);
+      open_action->set_id(kOpenableActionId);
+      open_action->set_type(proto::Action_InputType::Action_InputType_OPEN);
+    }
     return notification;
   }
 
@@ -324,6 +345,35 @@ TEST_F(NotificationProcessorTest, AddClearAllWithRace) {
   EXPECT_EQ(0u, fake_notification_manager()->num_notifications());
   EXPECT_FALSE(fake_notification_manager()->GetNotification(kNotificationIdA));
   EXPECT_FALSE(fake_notification_manager()->GetNotification(kNotificationIdB));
+}
+
+TEST_F(NotificationProcessorTest, InteractionBehaviorPopulatedCorrectly) {
+  std::vector<proto::Notification> first_set_of_notifications;
+
+  // The notification should be openable if a OPEN action is specified.
+  first_set_of_notifications.emplace_back(
+      CreateNewInlineReplyableOpenableNotification(
+          kNotificationIdA, kInlineReplyIdA,
+          Notification::InteractionBehavior::kOpenable));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  const Notification* notification =
+      fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_EQ(Notification::InteractionBehavior::kOpenable,
+            notification->interaction_behavior());
+
+  // The notification should not specify interaction behaviors if none are
+  // available.
+  first_set_of_notifications.clear();
+  first_set_of_notifications.emplace_back(
+      CreateNewInlineReplyableNotification(kNotificationIdA, kInlineReplyIdA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunAllCallbacks();
+
+  notification = fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_EQ(Notification::InteractionBehavior::kNone,
+            notification->interaction_behavior());
 }
 
 }  // namespace phonehub

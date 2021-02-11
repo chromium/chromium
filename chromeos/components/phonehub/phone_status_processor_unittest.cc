@@ -44,10 +44,11 @@ class FakeNotificationProcessor : public NotificationProcessor {
       const std::vector<proto::Notification>& notification_protos) override {
     base::flat_set<Notification> notifications;
     for (const auto& proto : notification_protos) {
-      notifications.emplace(
-          Notification(proto.id(), CreateFakeAppMetadata(), base::Time(),
-                       Notification::Importance::kDefault, 0, base::nullopt,
-                       base::nullopt, base::nullopt, base::nullopt));
+      notifications.emplace(Notification(
+          proto.id(), CreateFakeAppMetadata(), base::Time(),
+          Notification::Importance::kDefault, /*inline_reply_id=*/0,
+          Notification::InteractionBehavior::kNone, base::nullopt,
+          base::nullopt, base::nullopt, base::nullopt));
     }
     notification_manager_->SetNotificationsInternal(notifications);
   }

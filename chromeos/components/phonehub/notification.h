@@ -37,6 +37,15 @@ class Notification {
     gfx::Image icon;
   };
 
+  // Interaction behavior for integration with other features.
+  enum class InteractionBehavior {
+    // Default value. No interactions available.
+    kNone,
+
+    // Notification can be opened.
+    kOpenable
+  };
+
   // Notification importance; for more details, see
   // https://developer.android.com/reference/android/app/NotificationManager.
   enum class Importance {
@@ -70,6 +79,7 @@ class Notification {
       const base::Time& timestamp,
       Importance importance,
       int64_t inline_reply_id,
+      InteractionBehavior interaction_behavior,
       const base::Optional<base::string16>& title = base::nullopt,
       const base::Optional<base::string16>& text_content = base::nullopt,
       const base::Optional<gfx::Image>& shared_image = base::nullopt,
@@ -86,6 +96,9 @@ class Notification {
   base::Time timestamp() const { return timestamp_; }
   Importance importance() const { return importance_; }
   int64_t inline_reply_id() const { return inline_reply_id_; }
+  InteractionBehavior interaction_behavior() const {
+    return interaction_behavior_;
+  }
   const base::Optional<base::string16>& title() const { return title_; }
   const base::Optional<base::string16>& text_content() const {
     return text_content_;
@@ -103,6 +116,7 @@ class Notification {
   base::Time timestamp_;
   Importance importance_;
   int64_t inline_reply_id_;
+  InteractionBehavior interaction_behavior_;
   base::Optional<base::string16> title_;
   base::Optional<base::string16> text_content_;
   base::Optional<gfx::Image> shared_image_;
@@ -115,7 +129,8 @@ std::ostream& operator<<(std::ostream& stream,
                          Notification::Importance importance);
 std::ostream& operator<<(std::ostream& stream,
                          const Notification& notification);
-
+std::ostream& operator<<(std::ostream& stream,
+                         const Notification::InteractionBehavior behavior);
 }  // namespace phonehub
 }  // namespace chromeos
 

@@ -58,6 +58,12 @@ Notification CreateInlineReplyNotification(const proto::Notification& proto,
   base::Optional<int64_t> inline_reply_id = GetInlineReplyIdFromProto(proto);
   DCHECK(inline_reply_id.has_value());
 
+  auto actions_it = std::find_if(
+      proto.actions().begin(), proto.actions().end(), [](const auto& action) {
+        return action.type() == proto::Action_InputType::Action_InputType_OPEN;
+      });
+  bool includes_open_action = actions_it != proto.actions().end();
+
   base::Optional<base::string16> title = base::nullopt;
   if (!proto.title().empty())
     title = base::UTF8ToUTF16(proto.title());
@@ -74,14 +80,16 @@ Notification CreateInlineReplyNotification(const proto::Notification& proto,
   if (!contact_image.IsEmpty())
     opt_contact_image = contact_image;
 
-  return Notification(proto.id(),
-                      Notification::AppMetadata(
-                          base::UTF8ToUTF16(proto.origin_app().visible_name()),
-                          proto.origin_app().package_name(), icon),
-                      base::Time::FromJsTime(proto.epoch_time_millis()),
-                      GetNotificationImportanceFromProto(proto.importance()),
-                      *inline_reply_id, title, text_content, opt_shared_image,
-                      opt_contact_image);
+  return Notification(
+      proto.id(),
+      Notification::AppMetadata(
+          base::UTF8ToUTF16(proto.origin_app().visible_name()),
+          proto.origin_app().package_name(), icon),
+      base::Time::FromJsTime(proto.epoch_time_millis()),
+      GetNotificationImportanceFromProto(proto.importance()), *inline_reply_id,
+      includes_open_action ? Notification::InteractionBehavior::kOpenable
+                           : Notification::InteractionBehavior::kNone,
+      title, text_content, opt_shared_image, opt_contact_image);
 }
 
 }  // namespace

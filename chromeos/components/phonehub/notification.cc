@@ -34,6 +34,7 @@ Notification::Notification(int64_t id,
                            const base::Time& timestamp,
                            Importance importance,
                            int64_t inline_reply_id,
+                           InteractionBehavior interaction_behavior,
                            const base::Optional<base::string16>& title,
                            const base::Optional<base::string16>& text_content,
                            const base::Optional<gfx::Image>& shared_image,
@@ -43,6 +44,7 @@ Notification::Notification(int64_t id,
       timestamp_(timestamp),
       importance_(importance),
       inline_reply_id_(inline_reply_id),
+      interaction_behavior_(interaction_behavior),
       title_(title),
       text_content_(text_content),
       shared_image_(shared_image),
@@ -59,8 +61,9 @@ bool Notification::operator<(const Notification& other) const {
 bool Notification::operator==(const Notification& other) const {
   return id_ == other.id_ && app_metadata_ == other.app_metadata_ &&
          timestamp_ == other.timestamp_ && importance_ == other.importance_ &&
-         inline_reply_id_ == other.inline_reply_id_ && title_ == other.title_ &&
-         text_content_ == other.text_content_ &&
+         inline_reply_id_ == other.inline_reply_id_ &&
+         interaction_behavior_ == other.interaction_behavior_ &&
+         title_ == other.title_ && text_content_ == other.text_content_ &&
          shared_image_ == other.shared_image_ &&
          contact_image_ == other.contact_image_;
 }
@@ -102,11 +105,26 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 std::ostream& operator<<(std::ostream& stream,
+                         Notification::InteractionBehavior behavior) {
+  switch (behavior) {
+    case Notification::InteractionBehavior::kNone:
+      stream << "[None]";
+      break;
+    case Notification::InteractionBehavior::kOpenable:
+      stream << "[Openable]";
+      break;
+  }
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream,
                          const Notification& notification) {
   stream << "{Id: " << notification.id() << ", "
          << "App: " << notification.app_metadata() << ", "
          << "Timestamp: " << notification.timestamp() << ", "
-         << "Importance: " << notification.importance() << "}";
+         << "Importance: " << notification.importance() << ", "
+         << "InteractionBehavior: " << notification.interaction_behavior()
+         << "}";
   return stream;
 }
 

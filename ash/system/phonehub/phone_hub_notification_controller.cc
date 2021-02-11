@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/phonehub/notification.h"
+#include "chromeos/components/phonehub/notification_interaction_handler.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/phone_model.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -171,12 +172,14 @@ class PhoneHubNotificationController::NotificationDelegate
 
   void Click(const base::Optional<int>& button_index,
              const base::Optional<base::string16>& reply) override {
-    if (!controller_ || !button_index.has_value())
+    if (!controller_)
       return;
 
-    if (button_index.value() == kReplyButtonIndex && reply.has_value()) {
-      controller_->SendInlineReply(phone_hub_id_, reply.value());
-      return;
+    if (button_index.has_value()) {
+      if (button_index.value() == kReplyButtonIndex && reply.has_value())
+        controller_->SendInlineReply(phone_hub_id_, reply.value());
+    } else {
+      controller_->HandleNotificationBodyClick(phone_hub_id_);
     }
   }
 
@@ -255,6 +258,13 @@ void PhoneHubNotificationController::SetManager(
     phone_model_ = phone_hub_manager->GetPhoneModel();
   else
     phone_model_ = nullptr;
+
+  if (phone_hub_manager) {
+    notification_interaction_handler_ =
+        phone_hub_manager->GetNotificationInteractionHandler();
+  } else {
+    notification_interaction_handler_ = nullptr;
+  }
 }
 
 const base::string16 PhoneHubNotificationController::GetPhoneName() const {
@@ -363,6 +373,22 @@ void PhoneHubNotificationController::DismissNotification(
   manager_->DismissNotification(notification_id);
   phone_hub_metrics::LogNotificationInteraction(
       NotificationInteraction::kDismiss);
+}
+
+void PhoneHubNotificationController::HandleNotificationBodyClick(
+    int64_t notification_id) {
+  CHECK(manager_);
+  if (!notification_interaction_handler_)
+    return;
+  const chromeos::phonehub::Notification* notification =
+      manager_->GetNotification(notification_id);
+  if (!notification)
+    return;
+  if (notification->interaction_behavior() ==
+      chromeos::phonehub::Notification::InteractionBehavior::kOpenable) {
+    notification_interaction_handler_->HandleNotificationClicked(
+        notification_id);
+  }
 }
 
 void PhoneHubNotificationController::SendInlineReply(

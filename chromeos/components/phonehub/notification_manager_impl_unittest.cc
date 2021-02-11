@@ -33,8 +33,8 @@ Notification CreateNotification(int64_t id) {
                                                     kPackageName,
                                                     /*icon=*/gfx::Image()),
       base::Time::Now(), Notification::Importance::kDefault,
-      /*inline_reply_id=*/0, base::UTF8ToUTF16(kTitle),
-      base::UTF8ToUTF16(kTextContent));
+      /*inline_reply_id=*/0, Notification::InteractionBehavior::kNone,
+      base::UTF8ToUTF16(kTitle), base::UTF8ToUTF16(kTextContent));
 }
 
 using multidevice_setup::mojom::Feature;

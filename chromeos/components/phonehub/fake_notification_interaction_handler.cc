@@ -15,7 +15,7 @@ FakeNotificationInteractionHandler::~FakeNotificationInteractionHandler() =
 
 void FakeNotificationInteractionHandler::HandleNotificationClicked(
     int64_t notification_id) {
-  NotifyNotificationClicked(notification_id);
+  handled_notification_count_++;
 }
 
 }  // namespace phonehub

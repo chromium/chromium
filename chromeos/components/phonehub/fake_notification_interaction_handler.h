@@ -17,8 +17,13 @@ class FakeNotificationInteractionHandler
   FakeNotificationInteractionHandler();
   ~FakeNotificationInteractionHandler() override;
 
+  size_t handled_notification_count() const {
+    return handled_notification_count_;
+  }
+
  private:
   void HandleNotificationClicked(int64_t notification_id) override;
+  size_t handled_notification_count_ = 0;
 };
 
 }  // namespace phonehub

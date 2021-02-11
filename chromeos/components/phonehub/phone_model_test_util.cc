@@ -87,6 +87,7 @@ const Notification& CreateFakeNotification() {
       base::Time(),
       Notification::Importance::kDefault,
       kFakeInlineReplyId,
+      Notification::InteractionBehavior::kNone,
       base::UTF8ToUTF16(kFakeNotificationTitle),
       base::UTF8ToUTF16(kFakeNotificationText)};
   return *fake_notification;
