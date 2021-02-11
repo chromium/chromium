@@ -10,6 +10,7 @@ Inspector issue: {
                 sourceCodeLocation : {
                     columnNumber : 55
                     lineNumber : 5
+                    scriptId : <string>
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-trusted-types-sink.php
                 }
                 violatedDirective : require-trusted-types-for

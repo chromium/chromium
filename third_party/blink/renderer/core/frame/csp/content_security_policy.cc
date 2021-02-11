@@ -921,7 +921,8 @@ static String StripURLForUseInReport(const SecurityOrigin* security_origin,
   return SecurityOrigin::Create(url)->ToString();
 }
 
-static void GatherSecurityPolicyViolationEventData(
+namespace {
+std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
     SecurityPolicyViolationEventInit* init,
     ContentSecurityPolicyDelegate* delegate,
     const String& directive_text,
@@ -1050,7 +1051,10 @@ static void GatherSecurityPolicyViolationEventData(
   }
   if (!sample.IsEmpty())
     init->setSample(sample.ToString());
+
+  return source_location;
 }
+}  // namespace
 
 void ContentSecurityPolicy::ReportViolation(
     const String& directive_text,
@@ -1095,7 +1099,9 @@ void ContentSecurityPolicy::ReportViolation(
           ? &context_frame->DomWindow()->GetContentSecurityPolicyDelegate()
           : delegate_.Get();
   DCHECK(relevant_delegate);
-  GatherSecurityPolicyViolationEventData(
+  // Let GatherSecurityPolicyViolationEventData decide which source location to
+  // report.
+  source_location = GatherSecurityPolicyViolationEventData(
       violation_data, relevant_delegate, directive_text, effective_type,
       blocked_url, header, redirect_status, header_type, violation_type,
       std::move(source_location), source, source_prefix);
@@ -1118,7 +1124,8 @@ void ContentSecurityPolicy::ReportViolation(
     delegate_->DispatchViolationEvent(*violation_data, element);
 
   ReportContentSecurityPolicyIssue(*violation_data, header_type, violation_type,
-                                   context_frame, element);
+                                   context_frame, element,
+                                   source_location.get());
 }
 
 void ContentSecurityPolicy::PostViolationReport(
@@ -1418,7 +1425,8 @@ void ContentSecurityPolicy::ReportContentSecurityPolicyIssue(
     ContentSecurityPolicyType header_type,
     ContentSecurityPolicyViolationType violation_type,
     LocalFrame* frame_ancestor,
-    Element* element) {
+    Element* element,
+    SourceLocation* source_location) {
   auto cspDetails = mojom::blink::ContentSecurityPolicyIssueDetails::New();
   cspDetails->is_report_only =
       header_type == ContentSecurityPolicyType::kReport;
@@ -1436,12 +1444,15 @@ void ContentSecurityPolicy::ReportContentSecurityPolicyIssue(
     cspDetails->frame_ancestor = std::move(affected_frame);
   }
   if (violation_data.sourceFile() && violation_data.lineNumber()) {
-    // TODO(chromium:1158782): Try to get a scriptId here as well.
     auto affected_location = mojom::blink::AffectedLocation::New();
     affected_location->url = violation_data.sourceFile();
     // The frontend expects 0-based line numbers.
     affected_location->line = violation_data.lineNumber() - 1;
     affected_location->column = violation_data.columnNumber();
+    if (source_location) {
+      affected_location->script_id =
+          String::Number(source_location->ScriptId());
+    }
     cspDetails->affected_location = std::move(affected_location);
   }
   if (element) {
