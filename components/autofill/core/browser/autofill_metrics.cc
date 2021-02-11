@@ -40,7 +40,8 @@ namespace {
 constexpr double kAutofillEventDataBucketSpacing = 2.0;
 
 // Note: if adding an enum value here, update the corresponding description for
-// AutofillTypeQualityByFieldType in histograms.xml.
+// AutofillFieldPredictionQualityByFieldType in
+// tools/metrics/histograms/enums.xml.
 enum FieldTypeGroupForMetrics {
   GROUP_AMBIGUOUS = 0,
   GROUP_NAME,
@@ -78,6 +79,7 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_ADDRESS_WITH_NAME,
   GROUP_ADDRESS_HOME_FLOOR,
   GROUP_UNKNOWN_TYPE,
+  // Add new entries here and update enums.xml.
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
 
