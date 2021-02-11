@@ -3553,6 +3553,7 @@ source_set("unit_tests") {
     "bluetooth/debug_logs_manager_unittest.cc",
     "borealis/borealis_app_launcher_unittest.cc",
     "borealis/borealis_context_manager_unittest.cc",
+    "borealis/borealis_context_unittest.cc",
     "borealis/borealis_features_unittest.cc",
     "borealis/borealis_installer_unittest.cc",
     "borealis/borealis_launch_watcher_unittest.cc",

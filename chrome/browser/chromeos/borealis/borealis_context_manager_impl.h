@@ -14,6 +14,7 @@
 #include "chrome/browser/chromeos/borealis/infra/described.h"
 #include "chrome/browser/chromeos/borealis/infra/transition.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/dbus/concierge_client.h"
 
 namespace borealis {
 
@@ -21,7 +22,9 @@ class BorealisTask;
 
 // The Borealis Context Manager is a keyed service responsible for managing
 // the Borealis VM startup flow and guaranteeing its state to other processes.
-class BorealisContextManagerImpl : public BorealisContextManager {
+class BorealisContextManagerImpl
+    : public BorealisContextManager,
+      public chromeos::ConciergeClient::VmObserver {
  public:
   explicit BorealisContextManagerImpl(Profile* profile);
   BorealisContextManagerImpl(const BorealisContextManagerImpl&) = delete;
@@ -83,7 +86,12 @@ class BorealisContextManagerImpl : public BorealisContextManager {
   BorealisContextManager::ContextOrFailure GetResult(
       const Startup::Result& completion_result);
 
+  // chromeos::ConciergeClient::VmObserver:
+  void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
+  void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
+
   Profile* const profile_;
+
   std::unique_ptr<Startup> in_progress_startup_;
   std::unique_ptr<BorealisContext> context_;
   base::queue<ResultCallback> callback_queue_;

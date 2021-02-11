@@ -11,9 +11,11 @@
 #include "base/containers/queue.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -106,6 +108,17 @@ class BorealisContextManagerTest : public testing::Test {
     chromeos::DBusThreadManager::Shutdown();
     profile_.reset();
     histogram_tester_.reset();
+  }
+
+  void SendVmStoppedSignal() {
+    auto* concierge_client = static_cast<chromeos::FakeConciergeClient*>(
+        chromeos::DBusThreadManager::Get()->GetConciergeClient());
+
+    vm_tools::concierge::VmStoppedSignal signal;
+    signal.set_name("test_vm_name");
+    signal.set_owner_id(
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_.get()));
+    concierge_client->NotifyVmStopped(signal);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -334,6 +347,60 @@ TEST_F(BorealisContextManagerTest, TasksCanOutliveCompletion) {
   EXPECT_CALL(callback_expectation, Callback(testing::_));
   context_manager.StartBorealis(callback_expectation.GetCallback());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(BorealisContextManagerTest, ShouldNotLogVmStoppedWhenNotRunning) {
+  SendVmStoppedSignal();
+  histogram_tester_->ExpectUniqueSample(kBorealisStabilityHistogram,
+                                        guest_os::FailureClasses::VmStopped, 0);
+}
+
+TEST_F(BorealisContextManagerTest, ShouldNotLogVmStoppedDuringStartup) {
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+
+  BorealisContextManagerImplForTesting context_manager(
+      profile_.get(), /*tasks=*/1, /*success=*/true);
+  context_manager.StartBorealis(callback_expectation.GetCallback());
+
+  SendVmStoppedSignal();
+
+  histogram_tester_->ExpectUniqueSample(kBorealisStabilityHistogram,
+                                        guest_os::FailureClasses::VmStopped, 0);
+}
+
+TEST_F(BorealisContextManagerTest, ShouldNotLogVmStoppedWhenExpected) {
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  // No need to verify the shutdown callback for this test case.
+  ShutdownCallbackHandler shutdown_callback;
+
+  BorealisContextManagerImplForTesting context_manager(
+      profile_.get(), /*tasks=*/1, /*success=*/true);
+  EXPECT_CALL(callback_expectation, Callback(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation.GetCallback());
+  task_environment_.RunUntilIdle();
+
+  context_manager.ShutDownBorealis(shutdown_callback.GetCallback());
+  SendVmStoppedSignal();
+
+  histogram_tester_->ExpectUniqueSample(kBorealisStabilityHistogram,
+                                        guest_os::FailureClasses::VmStopped, 0);
+
+  // Wait for shutdown to complete before destructing |shutdown_callback|.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(BorealisContextManagerTest, LogVmStoppedWhenUnexpected) {
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+
+  BorealisContextManagerImplForTesting context_manager(
+      profile_.get(), /*tasks=*/1, /*success=*/true);
+  EXPECT_CALL(callback_expectation, Callback(IsSuccessResult()));
+  context_manager.StartBorealis(callback_expectation.GetCallback());
+  task_environment_.RunUntilIdle();
+
+  SendVmStoppedSignal();
+  histogram_tester_->ExpectUniqueSample(kBorealisStabilityHistogram,
+                                        guest_os::FailureClasses::VmStopped, 1);
 }
 
 }  // namespace

@@ -62,6 +62,7 @@ class BorealisTasksTest : public testing::Test {
 
   void TearDown() override {
     profile_.reset();
+    context_.reset();  // must destroy before DBus shutdown
 
     chromeos::DlcserviceClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();

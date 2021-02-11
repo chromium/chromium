@@ -12,6 +12,9 @@
 
 class Profile;
 
+namespace guest_os {
+class GuestOsStabilityMonitor;
+}
 namespace borealis {
 
 class BorealisLifetimeObserver;
@@ -41,6 +44,10 @@ class BorealisContext {
   const base::FilePath& disk_path() const { return disk_path_; }
   void set_disk_path(base::FilePath path) { disk_path_ = std::move(path); }
 
+  // Called to signal that this Borealis VM is being unexpectedly shut down.
+  // Not to be called during intentional shutdowns.
+  void NotifyUnexpectedVmShutdown();
+
  private:
   friend class BorealisContextManagerImpl;
 
@@ -53,6 +60,9 @@ class BorealisContext {
   // This instance listens for the session to finish and issues an automatic
   // shutdown when it does.
   std::unique_ptr<BorealisLifetimeObserver> lifetime_observer_;
+
+  std::unique_ptr<guest_os::GuestOsStabilityMonitor>
+      guest_os_stability_monitor_;
 };
 
 }  // namespace borealis

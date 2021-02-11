@@ -81,9 +81,24 @@ void BorealisContextManagerImpl::Startup::Start(
 }
 
 BorealisContextManagerImpl::BorealisContextManagerImpl(Profile* profile)
-    : profile_(profile), weak_factory_(this) {}
+    : profile_(profile), weak_factory_(this) {
+  // DBusThreadManager may not be initialized in tests.
+  if (chromeos::DBusThreadManager::IsInitialized()) {
+    chromeos::DBusThreadManager::Get()->GetConciergeClient()->AddVmObserver(
+        this);
+  }
+}
 
-BorealisContextManagerImpl::~BorealisContextManagerImpl() = default;
+BorealisContextManagerImpl::~BorealisContextManagerImpl() {
+  // Even if initialized, DBusThreadManager may be destroyed prior to
+  // BorealisService/BorealisContextManagerImpl in tests. Therefore we must not
+  // keep a pointer to the observed ConciergeClient, either directly or via
+  // ScopedObservation or similar.
+  if (chromeos::DBusThreadManager::IsInitialized()) {
+    chromeos::DBusThreadManager::Get()->GetConciergeClient()->RemoveVmObserver(
+        this);
+  }
+}
 
 void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
   if (context_) {
@@ -196,6 +211,25 @@ void BorealisContextManagerImpl::Complete(Startup::Result completion_result) {
     ResultCallback callback = std::move(callback_queue_.front());
     callback_queue_.pop();
     std::move(callback).Run(completion_result_for_clients);
+  }
+}
+
+// TODO(b/179620544): Move handling of unexpected shutdowns to
+// BorealisLaunchWatcher.
+void BorealisContextManagerImpl::OnVmStarted(
+    const vm_tools::concierge::VmStartedSignal& signal) {}
+
+void BorealisContextManagerImpl::OnVmStopped(
+    const vm_tools::concierge::VmStoppedSignal& signal) {
+  if (context_ && context_->vm_name() == signal.name() &&
+      signal.owner_id() ==
+          chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_)) {
+    // If |context_| exists, it's a "running" Borealis instance which we didn't
+    // request to shut down.
+    context_->NotifyUnexpectedVmShutdown();
+
+    // Update our state to reflect the unexpected VM exit.
+    context_.reset();
   }
 }
 

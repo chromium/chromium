@@ -13,6 +13,7 @@ const char kBorealisInstallNumAttemptsHistogram[] =
 const char kBorealisInstallResultHistogram[] = "Borealis.Install.Result";
 const char kBorealisInstallOverallTimeHistogram[] =
     "Borealis.Install.OverallTime";
+const char kBorealisStabilityHistogram[] = "Borealis.Stability";
 const char kBorealisStartupNumAttemptsHistogram[] =
     "Borealis.Startup.NumAttempts";
 const char kBorealisStartupResultHistogram[] = "Borealis.Startup.Result";

@@ -6,9 +6,11 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_shutdown_monitor.h"
 #include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_stability_monitor.h"
 
 namespace borealis {
 
@@ -46,9 +48,16 @@ class BorealisLifetimeObserver
 
 BorealisContext::~BorealisContext() = default;
 
+void BorealisContext::NotifyUnexpectedVmShutdown() {
+  guest_os_stability_monitor_->LogUnexpectedVmShutdown();
+}
+
 BorealisContext::BorealisContext(Profile* profile)
     : profile_(profile),
-      lifetime_observer_(std::make_unique<BorealisLifetimeObserver>(profile)) {}
+      lifetime_observer_(std::make_unique<BorealisLifetimeObserver>(profile)),
+      guest_os_stability_monitor_(
+          std::make_unique<guest_os::GuestOsStabilityMonitor>(
+              kBorealisStabilityHistogram)) {}
 
 std::unique_ptr<BorealisContext>
 BorealisContext::CreateBorealisContextForTesting(Profile* profile) {

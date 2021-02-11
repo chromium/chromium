@@ -12,6 +12,7 @@ namespace borealis {
 extern const char kBorealisInstallNumAttemptsHistogram[];
 extern const char kBorealisInstallResultHistogram[];
 extern const char kBorealisInstallOverallTimeHistogram[];
+extern const char kBorealisStabilityHistogram[];
 extern const char kBorealisStartupNumAttemptsHistogram[];
 extern const char kBorealisStartupResultHistogram[];
 extern const char kBorealisStartupOverallTimeHistogram[];
