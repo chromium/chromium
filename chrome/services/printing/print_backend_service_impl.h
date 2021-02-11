@@ -28,6 +28,8 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
  private:
   friend class PrintBackendServiceTestImpl;
 
+  using EnumeratePrintersCallback =
+      base::OnceCallback<void(const base::Optional<PrinterList>& printer_list)>;
   using GetDefaultPrinterCallback =
       base::OnceCallback<void(const base::Optional<std::string>& printer_name)>;
   using GetPrinterSemanticCapsAndDefaultsCallback = base::OnceCallback<void(
@@ -39,6 +41,8 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
   // mojom::PrintBackendService implementation:
   void Init(const std::string& locale) override;
+  void EnumeratePrinters(
+      mojom::PrintBackendService::EnumeratePrintersCallback callback) override;
   void GetDefaultPrinterName(
       mojom::PrintBackendService::GetDefaultPrinterNameCallback callback)
       override;

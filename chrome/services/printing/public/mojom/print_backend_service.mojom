@@ -14,6 +14,11 @@ interface PrintBackendService {
   // interface to the underlying data source.
   Init(string locale);
 
+  // Enumerates the list of installed local and network printers.
+  // No value provided for `printer_list` if there is a failure.
+  EnumeratePrinters()
+    => (array<PrinterBasicInfo>? printer_list);
+
   // Gets the default printer name from the data source.
   // No value for `printer_name` is provided if there is a failure.
   GetDefaultPrinterName()
