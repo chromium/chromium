@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
@@ -58,16 +59,36 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
   base::OnceClosure got_frame_cb_;
 };
 
+MediaStreamSource* CreateConnectedMediaStreamSource(
+    MediaStreamVideoSource* video_source) {
+  MediaStreamSource* media_stream_source =
+      MakeGarbageCollected<MediaStreamSource>(
+          "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
+          false /* remote */);
+  media_stream_source->SetPlatformSource(base::WrapUnique(video_source));
+  return media_stream_source;
+}
+
+WebMediaStreamTrack StartVideoSource(MediaStreamVideoSource* video_source) {
+  return MediaStreamVideoTrack::CreateVideoTrack(
+      video_source, MediaStreamVideoSource::ConstraintsOnceCallback(),
+      /*enabled=*/true);
+}
+
+MediaStreamSource* CreateAndStartMediaStreamSource(
+    MediaStreamVideoSource* video_source) {
+  MediaStreamSource* source = CreateConnectedMediaStreamSource(video_source);
+  StartVideoSource(video_source);
+  return source;
+}
+
 }  // namespace
 
 class PushableMediaStreamVideoSourceTest : public testing::Test {
  public:
   PushableMediaStreamVideoSourceTest() {
     pushable_video_source_ = new PushableMediaStreamVideoSource();
-    stream_source_ = MakeGarbageCollected<MediaStreamSource>(
-        "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
-        false /* remote */);
-    stream_source_->SetPlatformSource(base::WrapUnique(pushable_video_source_));
+    stream_source_ = CreateConnectedMediaStreamSource(pushable_video_source_);
   }
 
   void TearDown() override {
@@ -76,10 +97,7 @@ class PushableMediaStreamVideoSourceTest : public testing::Test {
   }
 
   WebMediaStreamTrack StartSource() {
-    return MediaStreamVideoTrack::CreateVideoTrack(
-        pushable_video_source_,
-        MediaStreamVideoSource::ConstraintsOnceCallback(),
-        /*enabled=*/true);
+    return StartVideoSource(pushable_video_source_);
   }
 
  protected:
@@ -129,6 +147,26 @@ TEST_F(PushableMediaStreamVideoSourceTest, FramesPropagateToSink) {
   EXPECT_EQ(30.0, *metadata.frame_rate);
   EXPECT_EQ(natural_size.width(), 100);
   EXPECT_EQ(natural_size.height(), 50);
+}
+
+TEST_F(PushableMediaStreamVideoSourceTest, ForwardToUpstream) {
+  MockMediaStreamVideoSource* mock_source = new MockMediaStreamVideoSource();
+  PushableMediaStreamVideoSource* pushable_video_source =
+      new PushableMediaStreamVideoSource(mock_source->GetWeakPtr());
+  CreateAndStartMediaStreamSource(mock_source);
+  CreateAndStartMediaStreamSource(pushable_video_source);
+
+  EXPECT_CALL(*mock_source, OnRequestRefreshFrame());
+  pushable_video_source->RequestRefreshFrame();
+
+  EXPECT_CALL(*mock_source,
+              OnFrameDropped(media::VideoCaptureFrameDropReason::
+                                 kResolutionAdapterFrameIsNotValid));
+  pushable_video_source->OnFrameDropped(
+      media::VideoCaptureFrameDropReason::kResolutionAdapterFrameIsNotValid);
+
+  EXPECT_CALL(*mock_source, OnFrameFeedback(media::VideoFrameFeedback()));
+  pushable_video_source->GetFeedbackCallback().Run(media::VideoFrameFeedback());
 }
 
 }  // namespace blink

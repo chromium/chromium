@@ -27,6 +27,8 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   MOCK_METHOD0(OnRequestRefreshFrame, void());
   MOCK_METHOD1(OnCapturingLinkSecured, void(bool));
   MOCK_CONST_METHOD0(SupportsEncodedOutput, bool());
+  MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
+  MOCK_CONST_METHOD1(OnFrameFeedback, void(const media::VideoFrameFeedback&));
 
   // Simulate that the underlying source start successfully.
   void StartMockedSource();
@@ -71,6 +73,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   base::Optional<media::VideoCaptureParams> GetCurrentCaptureParams()
       const override;
   void OnHasConsumers(bool has_consumers) override;
+  VideoCaptureFeedbackCB GetFeedbackCallback() const override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
  protected:

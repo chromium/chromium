@@ -10,6 +10,10 @@
 
 namespace blink {
 
+PushableMediaStreamVideoSource::PushableMediaStreamVideoSource(
+    const base::WeakPtr<MediaStreamVideoSource>& upstream_source)
+    : upstream_source_(upstream_source) {}
+
 void PushableMediaStreamVideoSource::PushFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     base::TimeTicks estimated_capture_time) {
@@ -34,6 +38,38 @@ void PushableMediaStreamVideoSource::PushFrame(
                           estimated_capture_time));
 }
 
+void PushableMediaStreamVideoSource::RequestRefreshFrame() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (upstream_source_)
+    upstream_source_->RequestRefreshFrame();
+}
+
+void PushableMediaStreamVideoSource::OnFrameDropped(
+    media::VideoCaptureFrameDropReason reason) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (upstream_source_)
+    upstream_source_->OnFrameDropped(reason);
+}
+
+VideoCaptureFeedbackCB PushableMediaStreamVideoSource::GetFeedbackCallback()
+    const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (upstream_source_) {
+    return WTF::BindRepeating(
+        [](const base::WeakPtr<MediaStreamVideoSource>& source,
+           const media::VideoFrameFeedback& feedback) {
+          if (!source)
+            return;
+
+          PushableMediaStreamVideoSource* pushable_source =
+              static_cast<PushableMediaStreamVideoSource*>(source.get());
+          pushable_source->GetInternalFeedbackCallback().Run(feedback);
+        },
+        GetWeakPtr());
+  }
+  return VideoCaptureFeedbackCB();
+}
+
 void PushableMediaStreamVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
     EncodedVideoFrameCB encoded_frame_callback) {
@@ -52,6 +88,15 @@ void PushableMediaStreamVideoSource::StopSourceImpl() {
 base::WeakPtr<MediaStreamVideoSource>
 PushableMediaStreamVideoSource::GetWeakPtr() const {
   return weak_factory_.GetWeakPtr();
+}
+
+VideoCaptureFeedbackCB
+PushableMediaStreamVideoSource::GetInternalFeedbackCallback() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!upstream_source_)
+    return VideoCaptureFeedbackCB();
+
+  return upstream_source_->GetFeedbackCallback();
 }
 
 }  // namespace blink
