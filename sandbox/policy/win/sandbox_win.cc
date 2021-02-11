@@ -745,6 +745,41 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
   return SBOX_ALL_OK;
 }
 
+// Launches outside of the sandbox - the process will not be associated with
+// a Policy or TargetProcess. This supports both kNoSandbox and the --no-sandbox
+// command line flag.
+ResultCode LaunchWithoutSandbox(
+    base::CommandLine* cmd_line,
+    const base::HandlesToInheritVector& handles_to_inherit,
+    SandboxDelegate* delegate,
+    base::Process* process) {
+  base::LaunchOptions options;
+  options.handles_to_inherit = handles_to_inherit;
+  // Network process runs in a job even when unsandboxed. This is to ensure it
+  // does not outlive the browser, which could happen if there is a lot of I/O
+  // on process shutdown, in which case TerminateProcess can fail. See
+  // https://crbug.com/820996.
+  if (delegate->ShouldUnsandboxedRunInJob()) {
+    BOOL in_job = true;
+    // Prior to Windows 8 nested jobs aren't possible.
+    if (base::win::GetVersion() >= base::win::Version::WIN8 ||
+        (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
+         !in_job)) {
+      static HANDLE job_object_handle = nullptr;
+      if (!job_object_handle) {
+        Job job_obj;
+        DWORD result = job_obj.Init(JOB_UNPROTECTED, nullptr, 0, 0);
+        if (result != ERROR_SUCCESS)
+          return SBOX_ERROR_CANNOT_INIT_JOB;
+        job_object_handle = job_obj.Take().Take();
+      }
+      options.job_handle = job_object_handle;
+    }
+  }
+  *process = base::LaunchProcess(*cmd_line, options);
+  return SBOX_ALL_OK;
+}
+
 }  // namespace
 
 // static
@@ -921,34 +956,12 @@ ResultCode SandboxWin::StartSandboxedProcess(
   }
 
   SandboxType sandbox_type = delegate->GetSandboxType();
+  // --no-sandbox and kNoSandbox are launched without creating a Policy.
   if (IsUnsandboxedSandboxType(sandbox_type) ||
       cmd_line->HasSwitch(switches::kNoSandbox) ||
       launcher_process_command_line.HasSwitch(switches::kNoSandbox)) {
-    base::LaunchOptions options;
-    options.handles_to_inherit = handles_to_inherit;
-    // Network process runs in a job even when unsandboxed. This is to ensure it
-    // does not outlive the browser, which could happen if there is a lot of I/O
-    // on process shutdown, in which case TerminateProcess can fail. See
-    // https://crbug.com/820996.
-    if (delegate->ShouldUnsandboxedRunInJob()) {
-      BOOL in_job = true;
-      // Prior to Windows 8 nested jobs aren't possible.
-      if (base::win::GetVersion() >= base::win::Version::WIN8 ||
-          (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
-           !in_job)) {
-        static HANDLE job_object_handle = nullptr;
-        if (!job_object_handle) {
-          Job job_obj;
-          DWORD result = job_obj.Init(JOB_UNPROTECTED, nullptr, 0, 0);
-          if (result != ERROR_SUCCESS)
-            return SBOX_ERROR_CANNOT_INIT_JOB;
-          job_object_handle = job_obj.Take().Take();
-        }
-        options.job_handle = job_object_handle;
-      }
-    }
-    *process = base::LaunchProcess(*cmd_line, options);
-    return SBOX_ALL_OK;
+    return LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate,
+                                process);
   }
 
   scoped_refptr<TargetPolicy> policy = g_broker_services->CreatePolicy();
