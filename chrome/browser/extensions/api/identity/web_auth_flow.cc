@@ -84,7 +84,6 @@ WebAuthFlow::~WebAuthFlow() {
 
   // Stop listening to notifications first since some of the code
   // below may generate notifications.
-  registrar_.RemoveAll();
   WebContentsObserver::Observe(nullptr);
 
   if (!app_window_key_.empty()) {
@@ -170,11 +169,6 @@ void WebAuthFlow::OnAppWindowAdded(AppWindow* app_window) {
       app_window->extension_id() == extension_misc::kIdentityApiUiAppId) {
     app_window_ = app_window;
     WebContentsObserver::Observe(app_window->web_contents());
-
-    registrar_.Add(
-        this,
-        content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED,
-        content::NotificationService::AllBrowserContextsAndSources());
   }
 }
 
@@ -182,7 +176,6 @@ void WebAuthFlow::OnAppWindowRemoved(AppWindow* app_window) {
   if (app_window->window_key() == app_window_key_ &&
       app_window->extension_id() == extension_misc::kIdentityApiUiAppId) {
     app_window_ = nullptr;
-    registrar_.RemoveAll();
     WebContentsObserver::Observe(nullptr);
 
     if (delegate_)
@@ -200,27 +193,16 @@ void WebAuthFlow::AfterUrlLoaded() {
     delegate_->OnAuthFlowFailure(WebAuthFlow::INTERACTION_REQUIRED);
 }
 
-void WebAuthFlow::Observe(int type,
-                          const content::NotificationSource& source,
-                          const content::NotificationDetails& details) {
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_RENDER_VIEW_HOST_CREATED, type);
+void WebAuthFlow::InnerWebContentsCreated(
+    content::WebContents* inner_web_contents) {
   DCHECK(app_window_);
 
   if (!delegate_ || embedded_window_created_)
     return;
 
-  RenderViewHost* render_view(content::Details<RenderViewHost>(details).ptr());
-  WebContents* web_contents = WebContents::FromRenderViewHost(render_view);
-  GuestViewBase* guest = GuestViewBase::FromWebContents(web_contents);
-  WebContents* owner = guest ? guest->owner_web_contents() : nullptr;
-  if (!web_contents || owner != WebContentsObserver::web_contents())
-    return;
-
   // Switch from watching the app window to the guest inside it.
   embedded_window_created_ = true;
-  WebContentsObserver::Observe(web_contents);
-
-  registrar_.RemoveAll();
+  WebContentsObserver::Observe(inner_web_contents);
 }
 
 void WebAuthFlow::RenderProcessGone(base::TerminationStatus status) {
