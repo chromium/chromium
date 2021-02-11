@@ -3343,7 +3343,7 @@ TEST_P(RenderFrameHostManagerTest,
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kFooUrl);
   scoped_refptr<SiteInstanceImpl> initial_instance =
       main_test_rfh()->GetSiteInstance();
-  SiteInfo foo_site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
+  SiteInfo foo_site_info = SiteInfo::CreateForTesting(
       initial_instance->GetIsolationContext(), kFooUrl);
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(initial_instance->IsDefaultSiteInstance());
@@ -3363,7 +3363,7 @@ TEST_P(RenderFrameHostManagerTest,
       main_test_rfh()->GetSiteInstance()));
   EXPECT_EQ(kOriginalUrl, main_test_rfh()->GetSiteInstance()->original_url());
 
-  SiteInfo expected_site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
+  SiteInfo expected_site_info = SiteInfo::CreateForTesting(
       main_test_rfh()->GetSiteInstance()->GetIsolationContext(), kOriginalUrl);
   EXPECT_EQ(expected_site_info,
             main_test_rfh()->GetSiteInstance()->GetSiteInfo());

@@ -131,6 +131,59 @@ SiteInfo SiteInfo::CreateForGuest(const GURL& guest_site_url) {
                   true /* is_guest */);
 }
 
+// static
+SiteInfo SiteInfo::Create(
+    const IsolationContext& isolation_context,
+    const UrlInfo& url_info,
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
+  // The call to GetSiteForURL() below is only allowed on the UI thread, due to
+  // its possible use of effective urls.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return CreateInternal(isolation_context, url_info, cross_origin_isolated_info,
+                        /*compute_site_url=*/true);
+}
+
+// static
+SiteInfo SiteInfo::CreateOnIOThread(
+    const IsolationContext& isolation_context,
+    const UrlInfo& url_info,
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return CreateInternal(isolation_context, url_info, cross_origin_isolated_info,
+                        /*compute_site_url=*/false);
+}
+
+// static
+SiteInfo SiteInfo::CreateInternal(
+    const IsolationContext& isolation_context,
+    const UrlInfo& url_info,
+    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info,
+    bool compute_site_url) {
+  if (url_info.url.SchemeIs(kChromeErrorScheme))
+    return CreateForErrorPage(cross_origin_isolated_info);
+
+  GURL lock_url = DetermineProcessLockURL(isolation_context, url_info);
+  GURL site_url = lock_url;
+  if (compute_site_url) {
+    site_url = GetSiteForURLInternal(isolation_context, url_info,
+                                     true /* should_use_effective_urls */);
+  }
+  bool is_origin_keyed =
+      ChildProcessSecurityPolicyImpl::GetInstance()
+          ->ShouldOriginGetOptInIsolation(isolation_context,
+                                          url::Origin::Create(url_info.url),
+                                          url_info.origin_requests_isolation);
+  return SiteInfo(site_url, lock_url, is_origin_keyed,
+                  cross_origin_isolated_info);
+}
+
+// static
+SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
+                                    const GURL& url) {
+  return Create(isolation_context, UrlInfo::CreateForTesting(url),
+                CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+}
+
 SiteInfo::SiteInfo() = default;
 SiteInfo::SiteInfo(const SiteInfo& rhs) = default;
 
@@ -307,6 +360,146 @@ bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
 
 bool SiteInfo::is_error_page() const {
   return !is_guest_ && site_url_ == GetErrorPageSiteAndLockURL();
+}
+
+// static
+GURL SiteInfo::DetermineProcessLockURL(
+    const IsolationContext& isolation_context,
+    const UrlInfo& url_info) {
+  // For WebUI URLs of the form chrome://foo.bar/ compute the LockURL based on
+  // the TLD (ie chrome://bar/). This allows WebUI to continue to differentiate
+  // WebUIType via SiteURL while allowing WebUI with a shared TLD to share a
+  // RenderProcessHost.
+  // TODO(tluk): Remove this and replace it with SiteInstance groups once the
+  // support lands.
+  if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url))
+    return GetProcessLockForWebUIURL(url_info.url);
+
+  // For the process lock URL, convert |url| to a site without resolving |url|
+  // to an effective URL.
+  return GetSiteForURLInternal(isolation_context, url_info,
+                               false /* should_use_effective_urls */);
+}
+
+// static
+GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
+                                     const UrlInfo& real_url_info,
+                                     bool should_use_effective_urls) {
+  const GURL& real_url = real_url_info.url;
+  // Explicitly map all chrome-error: URLs to a single URL so that they all
+  // end up in a dedicated error process.
+  if (real_url.SchemeIs(kChromeErrorScheme))
+    return GetErrorPageSiteAndLockURL();
+
+  if (should_use_effective_urls)
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  GURL url = should_use_effective_urls
+                 ? SiteInstanceImpl::GetEffectiveURL(
+                       isolation_context.browser_or_resource_context()
+                           .ToBrowserContext(),
+                       real_url)
+                 : real_url;
+
+  // Navigations to urn: URLs served from Web Bundles [1] require special care
+  // to use the origin of the bundle rather than the urn: URL, which lacks any
+  // origin information.
+  // [1] bit.ly/subresource-web-bundles-doc
+  // TODO(acolwell): Update this so we can use url::Origin::Resolve() for all
+  // cases.
+  url::Origin origin;
+  if (url.SchemeIs("urn") && real_url_info.origin.opaque()) {
+    auto precursor = real_url_info.origin.GetTupleOrPrecursorTupleIfOpaque();
+    if (precursor.IsValid()) {
+      // Use the precursor as the origin. This should be the origin of the
+      // bundle.
+      origin = url::Origin::CreateFromNormalizedTuple(
+          precursor.scheme(), precursor.host(), precursor.port());
+    } else {
+      origin = url::Origin::Resolve(url, real_url_info.origin);
+    }
+  } else {
+    origin = url::Origin::Create(url);
+  }
+
+  // If the url has a host, then determine the site.  Skip file URLs to avoid a
+  // situation where site URL of file://localhost/ would mismatch Blink's origin
+  // (which ignores the hostname in this case - see https://crbug.com/776160).
+  GURL site_url;
+  if (!origin.host().empty() && origin.scheme() != url::kFileScheme) {
+    // For Strict Origin Isolation, use the full origin instead of site for all
+    // HTTP/HTTPS URLs.  Note that the HTTP/HTTPS restriction guarantees that
+    // we won't hit this for hosted app effective URLs (see
+    // https://crbug.com/961386).
+    if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() &&
+        origin.GetURL().SchemeIsHTTPOrHTTPS())
+      return origin.GetURL();
+
+    site_url = GetSiteForOrigin(origin);
+
+    // Isolated origins should use the full origin as their site URL. A
+    // subdomain of an isolated origin should also use that isolated origin's
+    // site URL. It is important to check |origin| (based on |url|) rather than
+    // |real_url| here, since some effective URLs (such as for NTP) need to be
+    // resolved prior to the isolated origin lookup.
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    url::Origin isolated_origin;
+    if (policy->GetMatchingIsolatedOrigin(
+            isolation_context, origin, real_url_info.origin_requests_isolation,
+            site_url, &isolated_origin)) {
+      return isolated_origin.GetURL();
+    }
+  } else {
+    // If there is no host but there is a scheme, return the scheme.
+    // This is useful for cases like file URLs.
+    if (!origin.opaque()) {
+      // Prefer to use the scheme of |origin| rather than |url|, to correctly
+      // cover blob:file: and filesystem:file: URIs (see also
+      // https://crbug.com/697111).
+      DCHECK(!origin.scheme().empty());
+      site_url = GURL(origin.scheme() + ":");
+    } else if (url.has_scheme()) {
+      // In some cases, it is not safe to use just the scheme as a site URL, as
+      // that might allow two URLs created by different sites to share a
+      // process. See https://crbug.com/863623 and https://crbug.com/863069.
+      //
+      // TODO(alexmos,creis): This should eventually be expanded to certain
+      // other schemes, such as file:.
+      if (url.SchemeIsBlob() || url.scheme() == url::kDataScheme) {
+        // We get here for blob URLs of form blob:null/guid.  Use the full URL
+        // with the guid in that case, which isolates all blob URLs with unique
+        // origins from each other.  We also get here for browser-initiated
+        // navigations to data URLs, which have a unique origin and should only
+        // share a process when they are identical.  Remove hash from the URL in
+        // either case, since same-document navigations shouldn't use a
+        // different site URL.
+        if (url.has_ref()) {
+          GURL::Replacements replacements;
+          replacements.ClearRef();
+          url = url.ReplaceComponents(replacements);
+        }
+        site_url = url;
+      } else {
+        DCHECK(!url.scheme().empty());
+        site_url = GURL(url.scheme() + ":");
+      }
+    } else {
+      // Otherwise the URL should be invalid; return an empty site.
+      DCHECK(!url.is_valid()) << url;
+      return GURL();
+    }
+  }
+
+  return site_url;
+}
+
+// static
+GURL SiteInfo::GetSiteForOrigin(const url::Origin& origin) {
+  // Only keep the scheme and registered domain of |origin|.
+  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
+      origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return SchemeAndHostToSite(origin.scheme(),
+                             domain.empty() ? origin.host() : domain);
 }
 
 class SiteInstanceImpl::DefaultSiteInstanceState {
@@ -735,7 +928,7 @@ void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
   DCHECK(!has_site_);
 
   if (!browsing_instance_->HasDefaultSiteInstance()) {
-    const SiteInfo site_info = ComputeSiteInfo(
+    const SiteInfo site_info = SiteInfo::Create(
         GetIsolationContext(), url_info, GetCoopCoepCrossOriginIsolatedInfo());
     if (CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url_info.url,
                                          site_info)) {
@@ -776,8 +969,8 @@ SiteInfo SiteInstanceImpl::DeriveSiteInfo(const UrlInfo& url_info,
         url_info, /* allow_default_instance */ true);
   }
 
-  return ComputeSiteInfo(GetIsolationContext(), url_info,
-                         GetCoopCoepCrossOriginIsolatedInfo());
+  return SiteInfo::Create(GetIsolationContext(), url_info,
+                          GetCoopCoepCrossOriginIsolatedInfo());
 }
 
 const ProcessLock SiteInstanceImpl::GetProcessLock() const {
@@ -980,8 +1173,8 @@ bool SiteInstanceImpl::IsSameSiteWithURLInfo(const UrlInfo& url_info) {
     // prevent SiteInstances with no site URL from being used for URLs
     // that should be routed to the default SiteInstance.
     DCHECK_EQ(site_info_.site_url(), GetDefaultSiteURL());
-    auto site_info = ComputeSiteInfo(GetIsolationContext(), url_info,
-                                     GetCoopCoepCrossOriginIsolatedInfo());
+    auto site_info = SiteInfo::Create(GetIsolationContext(), url_info,
+                                      GetCoopCoepCrossOriginIsolatedInfo());
     return CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url,
                                             site_info) &&
            !browsing_instance_->HasSiteInstance(site_info);
@@ -1230,8 +1423,8 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
   // TODO(acolwell, ahemery): Update callers to pass in COOP/COEP info into
   // this method. The code is currently safe because the caller checks to make
   // sure the COOP/COEP info matches on this object before calling this method.
-  auto site_info = ComputeSiteInfo(GetIsolationContext(), url_info,
-                                   GetCoopCoepCrossOriginIsolatedInfo());
+  auto site_info = SiteInfo::Create(GetIsolationContext(), url_info,
+                                    GetCoopCoepCrossOriginIsolatedInfo());
   if (kCreateForURLAllowsDefaultSiteInstance &&
       CanBePlacedInDefaultSiteInstance(GetIsolationContext(), url_info.url,
                                        site_info)) {
@@ -1265,205 +1458,10 @@ GURL SiteInstance::GetSiteForURL(BrowserContext* browser_context,
   // where needed.  Eventually, GetSiteForURL should always require an
   // IsolationContext to be passed in, and this implementation should just
   // become SiteInstanceImpl::GetSiteForURL.
-  return SiteInstanceImpl::GetSiteForURL(
-      IsolationContext(browser_context),
-      UrlInfo(url, false /* origin_requests_isolation */));
-}
-
-// static
-SiteInfo SiteInstanceImpl::ComputeSiteInfo(
-    const IsolationContext& isolation_context,
-    const UrlInfo& url_info,
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
-  // The call to GetSiteForURL() below is only allowed on the UI thread, due to
-  // its possible use of effective urls.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (url_info.url.SchemeIs(kChromeErrorScheme))
-    return SiteInfo::CreateForErrorPage(cross_origin_isolated_info);
-
-  // This function will expand as more information is included in SiteInfo.
-  bool is_origin_keyed =
-      ChildProcessSecurityPolicyImpl::GetInstance()
-          ->ShouldOriginGetOptInIsolation(isolation_context,
-                                          url::Origin::Create(url_info.url),
-                                          url_info.origin_requests_isolation);
-
-  return SiteInfo(GetSiteForURL(isolation_context, url_info),
-                  DetermineProcessLockURL(isolation_context, url_info),
-                  is_origin_keyed, cross_origin_isolated_info);
-}
-
-// static
-SiteInfo SiteInstanceImpl::ComputeSiteInfoForTesting(
-    const IsolationContext& isolation_context,
-    const GURL& url) {
-  return ComputeSiteInfo(isolation_context,
-                         UrlInfo(url, false /* origin_requests_isolation */),
-                         CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-}
-
-// static
-ProcessLock SiteInstanceImpl::DetermineProcessLock(
-    const IsolationContext& isolation_context,
-    const UrlInfo& url_info,
-    const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
-  if (BrowserThread::CurrentlyOn(BrowserThread::UI))
-    return ProcessLock(ComputeSiteInfo(isolation_context, url_info,
-                                       cross_origin_isolated_info));
-
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GURL lock_url = DetermineProcessLockURL(isolation_context, url_info);
-  bool is_origin_keyed =
-      ChildProcessSecurityPolicyImpl::GetInstance()
-          ->ShouldOriginGetOptInIsolation(isolation_context,
-                                          url::Origin::Create(url_info.url),
-                                          url_info.origin_requests_isolation);
-  // In the SiteInfo constructor below we pass the lock url as the site URL
-  // also, assuming the IO-thread caller won't be looking at the site url.
-  return ProcessLock(SiteInfo(lock_url, lock_url, is_origin_keyed,
-                              cross_origin_isolated_info));
-}
-
-// static
-// TODO(wjmaclean): remove this if the sole call from the IO thread can be
-// removed.
-GURL SiteInstanceImpl::DetermineProcessLockURL(
-    const IsolationContext& isolation_context,
-    const UrlInfo& url_info) {
-  // For WebUI URLs of the form chrome://foo.bar/ compute the LockURL based on
-  // the TLD (ie chrome://bar/). This allows WebUI to continue to differentiate
-  // WebUIType via SiteURL while allowing WebUI with a shared TLD to share a
-  // RenderProcessHost.
-  // TODO(tluk): Remove this and replace it with SiteInstance groups once the
-  // support lands.
-  if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url))
-    return GetProcessLockForWebUIURL(url_info.url);
-
-  // For the process lock URL, convert |url| to a site without resolving |url|
-  // to an effective URL.
-  return SiteInstanceImpl::GetSiteForURLInternal(
-      isolation_context, url_info, false /* should_use_effective_urls */);
-}
-
-// static
-GURL SiteInstanceImpl::GetSiteForURL(const IsolationContext& isolation_context,
-                                     const UrlInfo& real_url_info) {
-  return GetSiteForURLInternal(isolation_context, real_url_info,
-                               true /* should_use_effective_urls */);
-}
-
-// static
-GURL SiteInstanceImpl::GetSiteForURLInternal(
-    const IsolationContext& isolation_context,
-    const UrlInfo& real_url_info,
-    bool should_use_effective_urls) {
-  const GURL& real_url = real_url_info.url;
-  // Explicitly map all chrome-error: URLs to a single URL so that they all
-  // end up in a dedicated error process.
-  if (real_url.SchemeIs(kChromeErrorScheme))
-    return GetErrorPageSiteAndLockURL();
-
-  if (should_use_effective_urls)
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  GURL url = should_use_effective_urls
-                 ? SiteInstanceImpl::GetEffectiveURL(
-                       isolation_context.browser_or_resource_context()
-                           .ToBrowserContext(),
-                       real_url)
-                 : real_url;
-
-  // Navigations to urn: URLs served from Web Bundles [1] require special care
-  // to use the origin of the bundle rather than the urn: URL, which lacks any
-  // origin information.
-  // [1] bit.ly/subresource-web-bundles-doc
-  // TODO(acolwell): Update this so we can use url::Origin::Resolve() for all
-  // cases.
-  url::Origin origin;
-  if (url.SchemeIs("urn") && real_url_info.origin.opaque()) {
-    auto precursor = real_url_info.origin.GetTupleOrPrecursorTupleIfOpaque();
-    if (precursor.IsValid()) {
-      // Use the precursor as the origin. This should be the origin of the
-      // bundle.
-      origin = url::Origin::CreateFromNormalizedTuple(
-          precursor.scheme(), precursor.host(), precursor.port());
-    } else {
-      origin = url::Origin::Resolve(url, real_url_info.origin);
-    }
-  } else {
-    origin = url::Origin::Create(url);
-  }
-
-  // If the url has a host, then determine the site.  Skip file URLs to avoid a
-  // situation where site URL of file://localhost/ would mismatch Blink's origin
-  // (which ignores the hostname in this case - see https://crbug.com/776160).
-  GURL site_url;
-  if (!origin.host().empty() && origin.scheme() != url::kFileScheme) {
-    // For Strict Origin Isolation, use the full origin instead of site for all
-    // HTTP/HTTPS URLs.  Note that the HTTP/HTTPS restriction guarantees that
-    // we won't hit this for hosted app effective URLs (see
-    // https://crbug.com/961386).
-    if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() &&
-        origin.GetURL().SchemeIsHTTPOrHTTPS())
-      return origin.GetURL();
-
-    site_url = GetSiteForOrigin(origin);
-
-    // Isolated origins should use the full origin as their site URL. A
-    // subdomain of an isolated origin should also use that isolated origin's
-    // site URL. It is important to check |origin| (based on |url|) rather than
-    // |real_url| here, since some effective URLs (such as for NTP) need to be
-    // resolved prior to the isolated origin lookup.
-    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-    url::Origin isolated_origin;
-    if (policy->GetMatchingIsolatedOrigin(
-            isolation_context, origin, real_url_info.origin_requests_isolation,
-            site_url, &isolated_origin)) {
-      return isolated_origin.GetURL();
-    }
-  } else {
-    // If there is no host but there is a scheme, return the scheme.
-    // This is useful for cases like file URLs.
-    if (!origin.opaque()) {
-      // Prefer to use the scheme of |origin| rather than |url|, to correctly
-      // cover blob:file: and filesystem:file: URIs (see also
-      // https://crbug.com/697111).
-      DCHECK(!origin.scheme().empty());
-      site_url = GURL(origin.scheme() + ":");
-    } else if (url.has_scheme()) {
-      // In some cases, it is not safe to use just the scheme as a site URL, as
-      // that might allow two URLs created by different sites to share a
-      // process. See https://crbug.com/863623 and https://crbug.com/863069.
-      //
-      // TODO(alexmos,creis): This should eventually be expanded to certain
-      // other schemes, such as file:.
-      if (url.SchemeIsBlob() || url.scheme() == url::kDataScheme) {
-        // We get here for blob URLs of form blob:null/guid.  Use the full URL
-        // with the guid in that case, which isolates all blob URLs with unique
-        // origins from each other.  We also get here for browser-initiated
-        // navigations to data URLs, which have a unique origin and should only
-        // share a process when they are identical.  Remove hash from the URL in
-        // either case, since same-document navigations shouldn't use a
-        // different site URL.
-        if (url.has_ref()) {
-          GURL::Replacements replacements;
-          replacements.ClearRef();
-          url = url.ReplaceComponents(replacements);
-        }
-        site_url = url;
-      } else {
-        DCHECK(!url.scheme().empty());
-        site_url = GURL(url.scheme() + ":");
-      }
-    } else {
-      // Otherwise the URL should be invalid; return an empty site.
-      DCHECK(!url.is_valid()) << url;
-      return GURL();
-    }
-  }
-
-  return site_url;
+  return SiteInfo::Create(IsolationContext(browser_context),
+                          UrlInfo(url, false /* origin_requests_isolation */),
+                          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated())
+      .site_url();
 }
 
 // static
@@ -1504,15 +1502,6 @@ bool SiteInstanceImpl::CanBePlacedInDefaultSiteInstance(
   // Allow the default SiteInstance to be used for sites that don't need to be
   // isolated in their own process.
   return !site_info.RequiresDedicatedProcess(isolation_context);
-}
-
-// static
-GURL SiteInstanceImpl::GetSiteForOrigin(const url::Origin& origin) {
-  // Only keep the scheme and registered domain of |origin|.
-  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-      origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return SchemeAndHostToSite(origin.scheme(),
-                             domain.empty() ? origin.host() : domain);
 }
 
 // static
@@ -1669,7 +1658,7 @@ void SiteInstance::StartIsolatingSite(BrowserContext* context,
   // Convert |url| to a site, to avoid breaking document.domain.  Note that
   // this doesn't use effective URL resolution or other special cases from
   // GetSiteForURL() and simply converts |origin| to a scheme and eTLD+1.
-  GURL site(SiteInstanceImpl::GetSiteForOrigin(origin));
+  GURL site(SiteInfo::GetSiteForOrigin(origin));
 
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();

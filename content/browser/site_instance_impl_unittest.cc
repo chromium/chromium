@@ -56,7 +56,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
 bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
                                     const GURL& url) {
-  return SiteInstanceImpl::ComputeSiteInfoForTesting(isolation_context, url)
+  return SiteInfo::CreateForTesting(isolation_context, url)
       .RequiresDedicatedProcess(isolation_context);
 }
 
@@ -134,8 +134,11 @@ class SiteInstanceTest : public testing::Test {
 
   GURL GetSiteForURL(const IsolationContext& isolation_context,
                      const GURL& url) {
-    return SiteInstanceImpl::GetSiteForURL(
-        isolation_context, UrlInfo(url, false /* origin_requests_isolation */));
+    return SiteInfo::Create(
+               isolation_context,
+               UrlInfo(url, false /* origin_requests_isolation */),
+               CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated())
+        .site_url();
   }
 
   void SetUp() override {
@@ -189,13 +192,11 @@ class SiteInstanceTest : public testing::Test {
   BrowserContext* context() { return &context_; }
 
   SiteInfo GetSiteInfoForURL(const std::string& url) {
-    return SiteInstanceImpl::ComputeSiteInfoForTesting(
-        IsolationContext(&context_), GURL(url));
+    return SiteInfo::CreateForTesting(IsolationContext(&context_), GURL(url));
   }
 
   SiteInfo GetSiteInfoForURL(const GURL& url) {
-    return SiteInstanceImpl::ComputeSiteInfoForTesting(
-        IsolationContext(&context_), url);
+    return SiteInfo::CreateForTesting(IsolationContext(&context_), url);
   }
 
   static bool IsSameSite(BrowserContext* context,
@@ -677,20 +678,14 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
   IsolationContext isolation_context(browser_context.get());
 
-  // Sanity check that GetSiteForURL's |use_effective_urls| option works
-  // properly.  When it's true, the site URL should correspond to the
-  // effective URL's site (app.com), rather than the original URL's site
+  // Sanity check that SiteInfo fields influenced by effective URLs are set
+  // properly.  The site URL should correspond to the effective URL's site
+  // (app.com), and the process lock URL should refer to the original URL's site
   // (foo.com).
   {
-    GURL site_url = SiteInstanceImpl::GetSiteForURLInternal(
-        isolation_context, UrlInfo::CreateForTesting(test_url),
-        false /* use_effective_urls */);
-    EXPECT_EQ(nonapp_site_url, site_url);
-
-    site_url = SiteInstanceImpl::GetSiteForURLInternal(
-        isolation_context, UrlInfo::CreateForTesting(test_url),
-        true /* use_effective_urls */);
-    EXPECT_EQ(app_url, site_url);
+    auto site_info = SiteInfo::CreateForTesting(isolation_context, test_url);
+    EXPECT_EQ(nonapp_site_url, site_info.process_lock_url());
+    EXPECT_EQ(app_url, site_info.site_url());
   }
 
   SiteInfo expected_site_info(

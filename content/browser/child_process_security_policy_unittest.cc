@@ -136,7 +136,7 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
                               const url::Origin& origin,
                               bool isolate_all_subdomains = false) {
     return std::pair<GURL, std::vector<IsolatedOriginEntry>>(
-        SiteInstanceImpl::GetSiteForOrigin(origin),
+        SiteInfo::GetSiteForOrigin(origin),
         {IsolatedOriginEntry(
             origin,
             BrowsingInstanceId::FromUnsafeValue(min_browsing_instance_id),
@@ -162,10 +162,10 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
                               const url::Origin& origin2,
                               bool origin1_isolate_all_subdomains = false,
                               bool origin2_isolate_all_subdomains = false) {
-    EXPECT_EQ(SiteInstanceImpl::GetSiteForOrigin(origin1),
-              SiteInstanceImpl::GetSiteForOrigin(origin2));
+    EXPECT_EQ(SiteInfo::GetSiteForOrigin(origin1),
+              SiteInfo::GetSiteForOrigin(origin2));
     return std::pair<GURL, std::vector<IsolatedOriginEntry>>(
-        SiteInstanceImpl::GetSiteForOrigin(origin1),
+        SiteInfo::GetSiteForOrigin(origin1),
         {IsolatedOriginEntry(origin1,
                              SiteInstanceImpl::NextBrowsingInstanceId(),
                              nullptr, nullptr, origin1_isolate_all_subdomains,
@@ -193,7 +193,7 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
   int GetIsolatedOriginEntryCount(const url::Origin& origin) {
     ChildProcessSecurityPolicyImpl* p =
         ChildProcessSecurityPolicyImpl::GetInstance();
-    GURL key(SiteInstanceImpl::GetSiteForOrigin(origin));
+    GURL key(SiteInfo::GetSiteForOrigin(origin));
     base::AutoLock isolated_origins_lock(p->isolated_origins_lock_);
     auto origins_for_key = p->isolated_origins_[key];
     return std::count_if(origins_for_key.begin(), origins_for_key.end(),
@@ -205,10 +205,9 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
   void CheckGetSiteForURL(BrowserContext* context,
                           std::map<GURL, GURL> to_test) {
     for (const auto& entry : to_test) {
-      EXPECT_EQ(SiteInstanceImpl::GetSiteForURL(
-                    IsolationContext(context),
-                    UrlInfo::CreateForTesting(entry.first)),
-                entry.second);
+      auto site_info =
+          SiteInfo::CreateForTesting(IsolationContext(context), entry.first);
+      EXPECT_EQ(site_info.site_url(), entry.second);
     }
   }
 
@@ -2642,4 +2641,70 @@ TEST_F(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
   EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 }
 
+TEST_F(ChildProcessSecurityPolicyTest, ProcessLockMatching) {
+  GURL nonapp_url("https://bar.com/");
+  GURL app_url("https://some.app.foo.com/");
+  GURL app_effective_url("https://app.com/");
+  EffectiveURLContentBrowserClient modified_client(
+      app_url, app_effective_url, /* requires_dedicated_process */ true);
+  ContentBrowserClient* original_client =
+      SetBrowserClientForTesting(&modified_client);
+
+  IsolationContext isolation_context(browser_context());
+  const auto coi_info = CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated();
+
+  auto ui_nonapp_url_siteinfo = SiteInfo::Create(
+      isolation_context, UrlInfo::CreateForTesting(nonapp_url), coi_info);
+  auto ui_nonapp_url_lock = ProcessLock::Create(
+      isolation_context, UrlInfo::CreateForTesting(nonapp_url), coi_info);
+
+  auto ui_app_url_lock = ProcessLock::Create(
+      isolation_context, UrlInfo::CreateForTesting(app_url), coi_info);
+  auto ui_app_url_siteinfo = SiteInfo::Create(
+      isolation_context, UrlInfo::CreateForTesting(app_url), coi_info);
+
+  SiteInfo io_nonapp_url_siteinfo;
+  ProcessLock io_nonapp_url_lock;
+  SiteInfo io_app_url_siteinfo;
+  ProcessLock io_app_url_lock;
+
+  base::WaitableEvent io_locks_set_event;
+
+  // Post a task that will compute ProcessLocks for the same URLs in the
+  // IO thread.
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        io_nonapp_url_siteinfo = SiteInfo::CreateOnIOThread(
+            isolation_context, UrlInfo::CreateForTesting(nonapp_url), coi_info);
+        io_nonapp_url_lock = ProcessLock::Create(
+            isolation_context, UrlInfo::CreateForTesting(nonapp_url), coi_info);
+
+        io_app_url_siteinfo = SiteInfo::CreateOnIOThread(
+            isolation_context, UrlInfo::CreateForTesting(app_url), coi_info);
+        io_app_url_lock = ProcessLock::Create(
+            isolation_context, UrlInfo::CreateForTesting(app_url), coi_info);
+
+        // Tell the UI thread have computed the locks.
+        io_locks_set_event.Signal();
+      }));
+
+  io_locks_set_event.Wait();
+
+  // Expect URLs with effective URLs that match the original URL to have
+  // matching SiteInfos and matching ProcessLocks.
+  EXPECT_EQ(ui_nonapp_url_siteinfo, io_nonapp_url_siteinfo);
+  EXPECT_EQ(ui_nonapp_url_lock, io_nonapp_url_lock);
+
+  // Expect hosted app URLs where the effective URL does not match the original
+  // URL to have different SiteInfos but matching process locks. The SiteInfos,
+  // are expected to be different because the effective URL cannot be computed
+  // from the IO thread. This means the site_url fields will differ.
+  EXPECT_NE(ui_app_url_siteinfo, io_app_url_siteinfo);
+  EXPECT_NE(ui_app_url_siteinfo.site_url(), io_app_url_siteinfo.site_url());
+  EXPECT_EQ(ui_app_url_siteinfo.process_lock_url(),
+            io_app_url_siteinfo.process_lock_url());
+  EXPECT_EQ(ui_app_url_lock, io_app_url_lock);
+
+  SetBrowserClientForTesting(original_client);
+}
 }  // namespace content

@@ -1777,11 +1777,11 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest,
   // Calculate the expected SiteInfo for each URL.  Both |foo_url| and
   // |bar_url| should have a site URL of |app_url|, but the process locks
   // should be foo.com and bar.com.
-  SiteInfo foo_site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
+  SiteInfo foo_site_info = SiteInfo::CreateForTesting(
       web_contents()->GetSiteInstance()->GetIsolationContext(), foo_url);
   EXPECT_EQ(app_url, foo_site_info.site_url());
   EXPECT_EQ(foo_url.GetOrigin(), foo_site_info.process_lock_url());
-  SiteInfo bar_site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
+  SiteInfo bar_site_info = SiteInfo::CreateForTesting(
       web_contents()->GetSiteInstance()->GetIsolationContext(), bar_url);
   EXPECT_EQ(app_url, bar_site_info.site_url());
   EXPECT_EQ(bar_url.GetOrigin(), bar_site_info.process_lock_url());
@@ -2345,7 +2345,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, ProcessLimit) {
                                                const GURL& url) {
     return RenderProcessHostImpl::IsSuitableHost(
         process, isolation_context,
-        SiteInstanceImpl::ComputeSiteInfoForTesting(isolation_context, url));
+        SiteInfo::CreateForTesting(isolation_context, url));
   };
   EXPECT_TRUE(is_suitable_host(foo_process, foo_url));
   EXPECT_FALSE(is_suitable_host(foo_process, isolated_foo_url));

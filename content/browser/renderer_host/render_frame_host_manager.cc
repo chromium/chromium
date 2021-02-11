@@ -108,9 +108,9 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
   // process if we left it in the current BrowsingInstance.  If so, there's no
   // need to swap BrowsingInstances.
   auto& current_isolation_context = current_instance->GetIsolationContext();
-  auto current_site_info = SiteInstanceImpl::ComputeSiteInfo(
-      current_isolation_context, destination_effective_url_info,
-      cross_origin_isolated_info);
+  auto current_site_info = SiteInfo::Create(current_isolation_context,
+                                            destination_effective_url_info,
+                                            cross_origin_isolated_info);
   if (current_site_info.RequiresDedicatedProcess(current_isolation_context))
     return false;
 
@@ -120,9 +120,9 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
   // current_instance->GetIsolationContext().
   IsolationContext future_isolation_context(
       current_instance->GetBrowserContext());
-  auto future_site_info = SiteInstanceImpl::ComputeSiteInfo(
-      future_isolation_context, destination_effective_url_info,
-      cross_origin_isolated_info);
+  auto future_site_info =
+      SiteInfo::Create(future_isolation_context, destination_effective_url_info,
+                       cross_origin_isolated_info);
   return future_site_info.RequiresDedicatedProcess(future_isolation_context);
 }
 
@@ -2135,8 +2135,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
       auto& parent_isolation_context =
           parent->GetSiteInstance()->GetIsolationContext();
 
-      auto site_info = SiteInstanceImpl::ComputeSiteInfo(
-          parent_isolation_context, dest_url_info, cross_origin_isolated_info);
+      auto site_info = SiteInfo::Create(parent_isolation_context, dest_url_info,
+                                        cross_origin_isolated_info);
       if (!parent->GetSiteInstance()->RequiresDedicatedProcess() &&
           !site_info.RequiresDedicatedProcess(parent_isolation_context)) {
         AppendReason(reason,

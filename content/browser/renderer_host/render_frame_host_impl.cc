@@ -8435,7 +8435,7 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
   SiteInfo site_info =
       url.is_empty()
           ? SiteInfo()
-          : SiteInstanceImpl::ComputeSiteInfo(
+          : SiteInfo::Create(
                 GetSiteInstance()->GetIsolationContext(),
                 UrlInfo(url, false /* origin_requests_isolation */),
                 GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo());

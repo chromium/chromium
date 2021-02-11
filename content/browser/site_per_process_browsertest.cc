@@ -15749,15 +15749,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   int process_id = root->current_frame_host()->GetProcess()->GetID();
   IsolationContext isolation_context(
       shell()->web_contents()->GetBrowserContext());
-  auto start_url_lock = SiteInstanceImpl::DetermineProcessLock(
-      isolation_context, UrlInfo::CreateForTesting(start_url),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-  auto another_url_lock = SiteInstanceImpl::DetermineProcessLock(
-      isolation_context, UrlInfo::CreateForTesting(another_url),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-  auto bad_url_lock = SiteInstanceImpl::DetermineProcessLock(
-      isolation_context, UrlInfo::CreateForTesting(bad_url),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+  ProcessLock start_url_lock(
+      SiteInfo::CreateForTesting(isolation_context, start_url));
+  ProcessLock another_url_lock(
+      SiteInfo::CreateForTesting(isolation_context, another_url));
+  ProcessLock bad_url_lock(
+      SiteInfo::CreateForTesting(isolation_context, bad_url));
   EXPECT_EQ(start_url_lock, policy->GetProcessLock(process_id));
   EXPECT_EQ(another_url_lock, policy->GetProcessLock(process_id));
   EXPECT_NE(bad_url_lock, policy->GetProcessLock(process_id));

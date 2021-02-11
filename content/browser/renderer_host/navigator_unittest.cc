@@ -1252,7 +1252,7 @@ TEST_F(NavigatorTest, SiteInstanceDescriptionConversion) {
     if (AreDefaultSiteInstancesEnabled()) {
       ASSERT_TRUE(related_instance_impl->IsDefaultSiteInstance());
     } else {
-      EXPECT_EQ(SiteInstanceImpl::ComputeSiteInfoForTesting(
+      EXPECT_EQ(SiteInfo::CreateForTesting(
                     current_instance->GetIsolationContext(), kUrlSameSiteAs2),
                 related_instance_impl->GetSiteInfo());
     }

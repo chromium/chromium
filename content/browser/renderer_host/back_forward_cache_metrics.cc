@@ -233,10 +233,10 @@ void BackForwardCacheMetrics::MainFrameDidNavigateAwayFromDocument(
     //
     // [1]
     // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/origin-vs-url.md#avoid-converting-urls-to-origins
-    GURL previous_site = SiteInstanceImpl::GetSiteForOrigin(
+    GURL previous_site = SiteInfo::GetSiteForOrigin(
         url::Origin::Create(details->previous_main_frame_url));
-    GURL new_site = SiteInstanceImpl::GetSiteForOrigin(
-        url::Origin::Create(navigation->GetURL()));
+    GURL new_site =
+        SiteInfo::GetSiteForOrigin(url::Origin::Create(navigation->GetURL()));
     if (previous_site == new_site) {
       page_store_result_->No(
           NotRestoredReason::kRenderFrameHostReused_SameSite);

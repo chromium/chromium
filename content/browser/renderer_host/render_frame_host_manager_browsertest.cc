@@ -8580,8 +8580,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   TestNavigationManager foo_manager(web_contents, foo_url);
   auto& current_isolation_context =
       root->current_frame_host()->GetSiteInstance()->GetIsolationContext();
-  auto site_info = SiteInstanceImpl::ComputeSiteInfoForTesting(
-      current_isolation_context, GURL("http://foo.com"));
+  auto site_info = SiteInfo::CreateForTesting(current_isolation_context,
+                                              GURL("http://foo.com"));
   EXPECT_TRUE(site_info.RequiresDedicatedProcess(current_isolation_context));
 
   // Set up the work to be done after the renderer is asked to commit

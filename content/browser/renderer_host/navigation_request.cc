@@ -2576,9 +2576,9 @@ void NavigationRequest::OnResponseStarted(
     // https://crbug.com/738634.
     SiteInstanceImpl* instance = render_frame_host_->GetSiteInstance();
     const IsolationContext& isolation_context = instance->GetIsolationContext();
-    auto site_info = SiteInstanceImpl::ComputeSiteInfo(
-        isolation_context, GetUrlInfo(),
-        instance->GetCoopCoepCrossOriginIsolatedInfo());
+    auto site_info =
+        SiteInfo::Create(isolation_context, GetUrlInfo(),
+                         instance->GetCoopCoepCrossOriginIsolatedInfo());
     if (!instance->HasSite() &&
         site_info.RequiresDedicatedProcess(isolation_context)) {
       instance->ConvertToDefaultOrSetSite(GetUrlInfo());
@@ -4568,9 +4568,8 @@ SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL(
     const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
   // TODO(alexmos): Using |starting_site_instance_|'s IsolationContext may not
   // be correct for cross-BrowsingInstance redirects.
-  return SiteInstanceImpl::ComputeSiteInfo(
-      starting_site_instance_->GetIsolationContext(), GetUrlInfo(),
-      cross_origin_isolated_info);
+  return SiteInfo::Create(starting_site_instance_->GetIsolationContext(),
+                          GetUrlInfo(), cross_origin_isolated_info);
 }
 
 // TODO(zetamoo): Try to merge this function inside its callers.

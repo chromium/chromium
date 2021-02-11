@@ -80,6 +80,17 @@ class CONTENT_EXPORT ProcessLock {
   static ProcessLock CreateAllowAnySite(
       const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
 
+  // Create a lock for a specific UrlInfo and COOP/COEP information. This
+  // method can be called from both the UI and IO threads. Locks created with
+  // the same parameters must always be considered equal independent of what
+  // thread they are called on. Special care must be taken since SiteInfos
+  // created on different threads don't always have the same contents for
+  // all their fields (e.g. site_url field is thread dependent).
+  static ProcessLock Create(
+      const IsolationContext& isolation_context,
+      const UrlInfo& url_info,
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
+
   ProcessLock();
   explicit ProcessLock(const SiteInfo& site_info);
   ProcessLock(const ProcessLock& rhs);
