@@ -1,13 +1,24 @@
 <style include="scanning-shared scanning-fonts">
+  #helpDiv {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+  }
+
+  #readyToScanImg {
+    margin: var(--ready-to-scan-image-margin-top) auto 32px;
+    width: 50%;
+  }
+
   #helperText {
     color: var(--scanning-helper-text-color);
     font-family: var(--scanning-helper-text-font-family);
     font-size: var(--scanning-helper-text-font-size);
     font-weight: var(--scanning-regular-font-weight);
     line-height: var(--scanning-helper-text-line-height);
-    margin: auto;
+    margin: 0 auto var(--helper-text-margin-bottom);
     text-align: center;
-    width: 60%;
+    width: 65%;
   }
 
   #helpOrProgress {
@@ -89,8 +100,13 @@
     tabindex="0">
   <div id="helpOrProgress" class="preview-item" hidden$="[[showScannedImages_]]"
       aria-hidden="true">
-    <div id="helperText" hidden$="[[!showHelperText_]]">
-      [[i18n('scanPreviewHelperText')]]
+    <div id="helpDiv" hidden$="[[!showHelperText_]]">
+      <img id="readyToScanImg" src="ready_to_scan.svg"
+          alt="[[i18n('scanPreviewHelperText')]]">
+      </img>
+      <span id="helperText">
+        [[i18n('scanPreviewHelperText')]]
+      </span>
     </div>
     <div id="scanProgress" hidden$="[[!showScanProgress_]]">
       <span id="progressText">[[progressTextString_]]</span>
