@@ -7,12 +7,14 @@
 #include <algorithm>
 
 #include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/ash_focus_rules.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -289,8 +291,13 @@ void MruWindowTracker::SetActiveWindow(aura::Window* active_window) {
 void MruWindowTracker::OnWindowActivated(ActivationReason reason,
                                          aura::Window* gained_active,
                                          aura::Window* lost_active) {
-  if (!ignore_window_activations_)
-    SetActiveWindow(gained_active);
+  if (ignore_window_activations_)
+    return;
+
+  SetActiveWindow(gained_active);
+
+  if (gained_active && features::IsFullRestoreEnabled())
+    FullRestoreController::Get()->SaveAllWindows();
 }
 
 void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {

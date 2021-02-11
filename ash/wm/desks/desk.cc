@@ -239,7 +239,8 @@ void Desk::AddWindowToDesk(aura::Window* window) {
     NotifyContentChanged();
 
   // Update the window's workspace to this parent desk.
-  if (features::IsBentoEnabled() && !is_desk_being_removed_) {
+  if ((features::IsBentoEnabled() || features::IsFullRestoreEnabled()) &&
+      !is_desk_being_removed_) {
     auto* desks_controller = DesksController::Get();
     window->SetProperty(aura::client::kWindowWorkspaceKey,
                         desks_controller->GetDeskIndex(this));

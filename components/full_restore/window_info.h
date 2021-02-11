@@ -23,7 +23,9 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
 
   aura::Window* window;
 
-  // Index in MruWindowTracker to restore window stack.
+  // Index in MruWindowTracker to restore window stack. A larger index
+  // indicates a more recently used window. The index is also opposite of the
+  // window index in the MruWindowTracker at save time.
   base::Optional<int32_t> activation_index;
 
   // Virtual desk id.
