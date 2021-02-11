@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 
 #include "gin/public/v8_platform.h"
+#include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/custom_spaces.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -65,8 +66,12 @@ std::vector<std::unique_ptr<cppgc::CustomSpaceBase>> CreateCustomSpaces() {
 }  // namespace
 
 ThreadState::ThreadState()
-    : cpp_heap_(
-          v8::CppHeap::Create(gin::V8Platform::Get(), {CreateCustomSpaces()})),
+    : cpp_heap_(v8::CppHeap::Create(
+          gin::V8Platform::Get(),
+          {CreateCustomSpaces(),
+           v8::WrapperDescriptor(kV8DOMWrapperTypeIndex,
+                                 kV8DOMWrapperObjectIndex,
+                                 gin::GinEmbedder::kEmbedderBlink)})),
       thread_id_(CurrentThread()) {
   allocation_handle_ = &cpp_heap_->GetAllocationHandle();
   *(thread_specific_.Get()) = this;
