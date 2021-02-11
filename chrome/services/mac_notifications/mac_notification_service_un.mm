@@ -9,6 +9,8 @@
 
 #include <utility>
 
+#include "base/strings/sys_string_conversions.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_utils_mac.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 API_AVAILABLE(macosx(10.14))
@@ -35,6 +37,14 @@ MacNotificationServiceUN::MacNotificationServiceUN(
 
 MacNotificationServiceUN::~MacNotificationServiceUN() {
   [notification_center_ setDelegate:nil];
+}
+
+void MacNotificationServiceUN::CloseNotification(
+    notifications::mojom::NotificationIdentifierPtr identifier) {
+  NSString* notification_id = base::SysUTF8ToNSString(DeriveMacNotificationId(
+      identifier->profile->incognito, identifier->profile->id, identifier->id));
+  [notification_center_
+      removeDeliveredNotificationsWithIdentifiers:@[ notification_id ]];
 }
 
 void MacNotificationServiceUN::CloseAllNotifications() {

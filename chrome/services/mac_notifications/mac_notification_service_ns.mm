@@ -9,6 +9,8 @@
 
 #include <utility>
 
+#include "base/strings/sys_string_conversions.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 @interface AlertNSNotificationCenterDelegate
@@ -32,6 +34,30 @@ MacNotificationServiceNS::MacNotificationServiceNS(
 
 MacNotificationServiceNS::~MacNotificationServiceNS() {
   [notification_center_ setDelegate:nil];
+}
+
+void MacNotificationServiceNS::CloseNotification(
+    notifications::mojom::NotificationIdentifierPtr identifier) {
+  NSString* notification_id = base::SysUTF8ToNSString(identifier->id);
+  NSString* profile_id = base::SysUTF8ToNSString(identifier->profile->id);
+  bool incognito = identifier->profile->incognito;
+
+  for (NSUserNotification* toast in
+       [notification_center_ deliveredNotifications]) {
+    NSString* toast_id =
+        [toast.userInfo objectForKey:notification_constants::kNotificationId];
+    NSString* toast_profile_id = [toast.userInfo
+        objectForKey:notification_constants::kNotificationProfileId];
+    BOOL toast_incognito = [[toast.userInfo
+        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+
+    if ([notification_id isEqualToString:toast_id] &&
+        [profile_id isEqualToString:toast_profile_id] &&
+        incognito == toast_incognito) {
+      [notification_center_ removeDeliveredNotification:toast];
+      break;
+    }
+  }
 }
 
 void MacNotificationServiceNS::CloseAllNotifications() {

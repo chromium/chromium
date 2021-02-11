@@ -96,7 +96,13 @@ class MacNotificationActionHandlerImpl
 - (void)closeNotificationWithId:(NSString*)notificationId
                       profileId:(NSString*)profileId
                       incognito:(BOOL)incognito {
-  // TODO(knollr): implement.
+  auto profileIdentifier = notifications::mojom::ProfileIdentifier::New(
+      base::SysNSStringToUTF8(profileId), incognito);
+  auto notificationIdentifier =
+      notifications::mojom::NotificationIdentifier::New(
+          base::SysNSStringToUTF8(notificationId),
+          std::move(profileIdentifier));
+  _service->CloseNotification(std::move(notificationIdentifier));
 }
 
 - (void)closeAllNotifications {

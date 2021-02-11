@@ -83,6 +83,28 @@ class MacNotificationServiceUNTest : public testing::Test {
   std::unique_ptr<MacNotificationServiceUN> service_;
 };
 
+TEST_F(MacNotificationServiceUNTest, CloseNotification) {
+  if (@available(macOS 10.14, *)) {
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+    NSString* identifier = @"i|profileId|notificationId";
+    [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
+      quit_closure.Run();
+    }] removeDeliveredNotificationsWithIdentifiers:@[ identifier ]];
+
+    auto profile_identifier = notifications::mojom::ProfileIdentifier::New(
+        "profileId", /*incognito=*/true);
+    auto notification_identifier =
+        notifications::mojom::NotificationIdentifier::New(
+            "notificationId", std::move(profile_identifier));
+    service_remote_->CloseNotification(std::move(notification_identifier));
+
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
+}
+
 TEST_F(MacNotificationServiceUNTest, CloseAllNotifications) {
   if (@available(macOS 10.14, *)) {
     base::RunLoop run_loop;

@@ -4,6 +4,28 @@
 
 module notifications.mojom;
 
+// Represents a profile being used to display notifications. A profile with a
+// given |id| might have another child profile with the same |id| but with
+// incognito set to true. This tuple uniquely identifies a profile.
+struct ProfileIdentifier {
+  // Identifies a profile. Usually the name of a profile but should be treated
+  // as an opaque string.
+  string id;
+  // Whether this profile is the incognito profile for |id|.
+  bool incognito;
+};
+
+// Represents a unique identifier for a notification. Notifications might have
+// the same |id| if they belong to different |profile|s but the tuple of both
+// uniquely identifies a notification.
+struct NotificationIdentifier {
+  // Notification id that might contain some developer controlled parts. Should
+  // always be treated as an opaque string.
+  string id;
+  // Profile for which this notification is being shown for.
+  ProfileIdentifier profile;
+};
+
 // Represents a notification and the action taken on it by the user.
 struct NotificationActionInfo {
   // TODO(knollr): Fill struct.
@@ -13,6 +35,9 @@ struct NotificationActionInfo {
 // the helper app and called from the browser process.
 interface MacNotificationService {
   // TODO(knollr): Add remaining methods to show / query notifications.
+
+  // Closes the notification identified by |identifier|.
+  CloseNotification(NotificationIdentifier identifier);
 
   // Closes all notifications shown by the helper app in the system notification
   // center for all profiles.

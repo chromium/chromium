@@ -5,8 +5,10 @@
 #import <Foundation/NSUserNotification.h>
 
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
+#include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,6 +37,9 @@ class MockNotificationActionHandler
   return nil;
 }
 - (void)setDelegate:(id<NSUserNotificationCenterDelegate>)delegate {
+}
+- (NSArray*)deliveredNotifications {
+  return nil;
 }
 @end
 
@@ -72,6 +77,23 @@ class MacNotificationServiceNSTest : public testing::Test {
         }]];
   }
 
+  base::scoped_nsobject<NSUserNotification> CreateNotification(
+      const std::string& notification_id,
+      const std::string& profile_id,
+      bool incognito) {
+    base::scoped_nsobject<NSUserNotification> toast(
+        [[NSUserNotification alloc] init]);
+    toast.get().userInfo = @{
+      notification_constants::
+      kNotificationId : base::SysUTF8ToNSString(notification_id),
+      notification_constants::
+      kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
+      notification_constants::
+      kNotificationIncognito : [NSNumber numberWithBool:incognito],
+    };
+    return toast;
+  }
+
   base::test::TaskEnvironment task_environment_;
   MockNotificationActionHandler mock_handler_;
   mojo::Receiver<notifications::mojom::MacNotificationActionHandler>
@@ -81,6 +103,39 @@ class MacNotificationServiceNSTest : public testing::Test {
   id<NSUserNotificationCenterDelegate> notification_center_delegate_ = nullptr;
   std::unique_ptr<MacNotificationServiceNS> service_;
 };
+
+TEST_F(MacNotificationServiceNSTest, CloseNotification) {
+  // Create 4 unique notifications and return them from deliveredNotifications.
+  base::scoped_nsobject<NSUserNotification> other1 =
+      CreateNotification("notificationId", "profileId", /*incognito=*/false);
+  base::scoped_nsobject<NSUserNotification> other2 =
+      CreateNotification("notificationId", "profileId2", /*incognito=*/true);
+  base::scoped_nsobject<NSUserNotification> other3 =
+      CreateNotification("notificationId2", "profileId", /*incognito=*/true);
+  base::scoped_nsobject<NSUserNotification> expected =
+      CreateNotification("notificationId", "profileId", /*incognito=*/true);
+  NSArray* notifications =
+      @[ other1.get(), other2.get(), other3.get(), expected.get() ];
+  [[[mock_notification_center_ expect] andReturn:notifications]
+      deliveredNotifications];
+
+  // Expect to close the expected notification.
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
+    quit_closure.Run();
+  }] removeDeliveredNotification:expected.get()];
+
+  auto profile_identifier = notifications::mojom::ProfileIdentifier::New(
+      "profileId", /*incognito=*/true);
+  auto notification_identifier =
+      notifications::mojom::NotificationIdentifier::New(
+          "notificationId", std::move(profile_identifier));
+  service_remote_->CloseNotification(std::move(notification_identifier));
+
+  run_loop.Run();
+  [mock_notification_center_ verify];
+}
 
 TEST_F(MacNotificationServiceNSTest, CloseAllNotifications) {
   base::RunLoop run_loop;

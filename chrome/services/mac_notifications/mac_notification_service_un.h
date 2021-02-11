@@ -30,6 +30,8 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   ~MacNotificationServiceUN() override;
 
   // notifications::mojom::MacNotificationService:
+  void CloseNotification(
+      notifications::mojom::NotificationIdentifierPtr identifier) override;
   void CloseAllNotifications() override;
 
  private:

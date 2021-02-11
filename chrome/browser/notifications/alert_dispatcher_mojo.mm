@@ -24,7 +24,9 @@
 - (void)closeNotificationWithId:(NSString*)notificationId
                       profileId:(NSString*)profileId
                       incognito:(BOOL)incognito {
-  // TODO(knollr): Implement.
+  [[self serviceProxy] closeNotificationWithId:notificationId
+                                     profileId:profileId
+                                     incognito:incognito];
 }
 
 - (void)closeAllNotifications {

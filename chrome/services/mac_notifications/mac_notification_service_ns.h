@@ -30,6 +30,8 @@ class MacNotificationServiceNS
   ~MacNotificationServiceNS() override;
 
   // notifications::mojom::MacNotificationService:
+  void CloseNotification(
+      notifications::mojom::NotificationIdentifierPtr identifier) override;
   void CloseAllNotifications() override;
 
  private:

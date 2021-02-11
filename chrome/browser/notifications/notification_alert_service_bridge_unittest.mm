@@ -20,6 +20,10 @@ namespace {
 class MockNotificationService
     : public notifications::mojom::MacNotificationService {
  public:
+  MOCK_METHOD(void,
+              CloseNotification,
+              (notifications::mojom::NotificationIdentifierPtr),
+              (override));
   MOCK_METHOD(void, CloseAllNotifications, (), (override));
 };
 
@@ -78,6 +82,24 @@ TEST_F(NotificationAlertServiceBridgeTest, DisconnectHandler) {
   base::RunLoop run_loop;
   EXPECT_CALL(on_disconnect_, Run).WillOnce([&]() { run_loop.Quit(); });
   provider_receiver_.reset();
+  run_loop.Run();
+}
+
+TEST_F(NotificationAlertServiceBridgeTest, CloseNotification) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_service_, CloseNotification)
+      .WillOnce(
+          [&](notifications::mojom::NotificationIdentifierPtr identifier) {
+            ASSERT_TRUE(identifier);
+            EXPECT_EQ("notificationId", identifier->id);
+            ASSERT_TRUE(identifier->profile);
+            EXPECT_EQ("profileId", identifier->profile->id);
+            EXPECT_TRUE(identifier->profile->incognito);
+            run_loop.Quit();
+          });
+  [bridge_ closeNotificationWithId:@"notificationId"
+                         profileId:@"profileId"
+                         incognito:YES];
   run_loop.Run();
 }
 
