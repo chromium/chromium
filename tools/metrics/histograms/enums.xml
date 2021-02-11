@@ -72526,8 +72526,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </summary>
   <int value="2" label="Pageload count"/>
   <int value="3" label="Renderer crash count"/>
-  <int value="5" label="Extensions renderer count"/>
+  <int value="4" label="Renderer hang count"/>
+  <int value="5" label="Extension renderer crash count"/>
+  <int value="6" label="Child process crash count"/>
+  <int value="15" label="Browser launch count"/>
   <int value="16" label="Browser crash count"/>
+  <int value="17" label="Incomplete shutdown count"/>
+  <int value="24" label="Renderer failed launch count"/>
+  <int value="25" label="Extension renderer failed launch count"/>
+  <int value="26" label="Renderer launch count"/>
+  <int value="27" label="Extension renderer launch count"/>
+  <int value="31" label="GPU process crash count"/>
 </enum>
 
 <enum name="StabilityPageLoadType">
