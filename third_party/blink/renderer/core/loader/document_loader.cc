@@ -960,7 +960,14 @@ void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
   }
 }
 
-void DocumentLoader::HandleRedirect(const KURL& current_request_url) {
+void DocumentLoader::HandleRedirect(
+    WebNavigationParams::RedirectInfo& redirect) {
+  ResourceResponse redirect_response =
+      redirect.redirect_response.ToResourceResponse();
+  const KURL& url_before_redirect = redirect_response.CurrentRequestUrl();
+  url_ = redirect.new_url;
+  const KURL& url_after_redirect = url_;
+
   // Browser process should have already checked that redirecting url is
   // allowed to display content from the target origin.
   // When the referrer page is in an unsigned Web Bundle file in local
@@ -969,12 +976,35 @@ void DocumentLoader::HandleRedirect(const KURL& current_request_url) {
   // to the file's URL (file:///tmp/a.wbn?https://example.com/page.html). In
   // this case, CanDisplay() returns false, and web_bundle_claimed_url must not
   // be null.
-  CHECK(SecurityOrigin::Create(current_request_url)->CanDisplay(url_) ||
+  CHECK(SecurityOrigin::Create(url_before_redirect)
+            ->CanDisplay(url_after_redirect) ||
         !params_->web_bundle_claimed_url.IsNull());
 
+  // Update the HTTP method of this document to the method used by the redirect.
+  AtomicString new_http_method = redirect.new_http_method;
+  if (http_method_ != new_http_method) {
+    http_body_ = nullptr;
+    http_content_type_ = g_null_atom;
+    http_method_ = new_http_method;
+  }
+
+  if (redirect.new_referrer.IsEmpty()) {
+    referrer_ = Referrer(Referrer::NoReferrer(), redirect.new_referrer_policy);
+  } else {
+    referrer_ = Referrer(redirect.new_referrer, redirect.new_referrer_policy);
+  }
+
+  // TODO(dgozman): check whether clearing origin policy is intended behavior.
+  origin_policy_ = base::nullopt;
+  probe::WillSendNavigationRequest(
+      probe::ToCoreProbeSink(GetFrame()), main_resource_identifier_, this,
+      url_after_redirect, http_method_, http_body_.get());
+
+  navigation_timing_info_->AddRedirect(redirect_response, url_after_redirect);
+
   DCHECK(!GetTiming().FetchStart().is_null());
-  redirect_chain_.push_back(url_);
-  GetTiming().AddRedirect(current_request_url, url_);
+  redirect_chain_.push_back(url_after_redirect);
+  GetTiming().AddRedirect(url_before_redirect, url_after_redirect);
 }
 
 bool DocumentLoader::ShouldReportTimingInfoToParent() {
@@ -1397,31 +1427,8 @@ void DocumentLoader::StartLoadingInternal() {
                                    main_resource_identifier_, this, url_,
                                    http_method_, http_body_.get());
 
-  for (size_t i = 0; i < params_->redirects.size(); ++i) {
-    WebNavigationParams::RedirectInfo& redirect = params_->redirects[i];
-    url_ = redirect.new_url;
-    AtomicString new_http_method = redirect.new_http_method;
-    if (http_method_ != new_http_method) {
-      http_body_ = nullptr;
-      http_content_type_ = g_null_atom;
-      http_method_ = new_http_method;
-    }
-    if (redirect.new_referrer.IsEmpty()) {
-      referrer_ =
-          Referrer(Referrer::NoReferrer(), redirect.new_referrer_policy);
-    } else {
-      referrer_ = Referrer(redirect.new_referrer, redirect.new_referrer_policy);
-    }
-
-    // TODO(dgozman): check whether clearing origin policy is intended behavior.
-    origin_policy_ = base::nullopt;
-    probe::WillSendNavigationRequest(probe::ToCoreProbeSink(GetFrame()),
-                                     main_resource_identifier_, this, url_,
-                                     http_method_, http_body_.get());
-    ResourceResponse redirect_response =
-        redirect.redirect_response.ToResourceResponse();
-    navigation_timing_info_->AddRedirect(redirect_response, url_);
-    HandleRedirect(redirect_response.CurrentRequestUrl());
+  for (WebNavigationParams::RedirectInfo& redirect : params_->redirects) {
+    HandleRedirect(redirect);
   }
 
   if (!frame_->IsMainFrame()) {

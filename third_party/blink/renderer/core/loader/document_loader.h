@@ -402,7 +402,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void FinishedLoading(base::TimeTicks finish_time);
   void CancelLoadAfterCSPDenied(const ResourceResponse&);
 
-  void HandleRedirect(const KURL& current_request_url);
+  // Process a redirect to update the redirect chain, current URL, referrer,
+  // etc.
+  void HandleRedirect(WebNavigationParams::RedirectInfo& redirect);
   void HandleResponse();
 
   void InitializeEmptyResponse();
