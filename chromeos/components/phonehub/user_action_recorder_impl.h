@@ -14,16 +14,21 @@
 namespace chromeos {
 namespace phonehub {
 
+class FeatureStatusProvider;
+
 // UserActionRecorder implementation which generates engagement metrics for
 // Phone Hub.
 class UserActionRecorderImpl : public UserActionRecorder {
  public:
-  UserActionRecorderImpl();
+  explicit UserActionRecorderImpl(
+      FeatureStatusProvider* feature_status_provider);
   ~UserActionRecorderImpl() override;
 
  private:
   friend class UserActionRecorderImplTest;
-  FRIEND_TEST_ALL_PREFIXES(UserActionRecorderImplTest, Enabled_RecordActions);
+  FRIEND_TEST_ALL_PREFIXES(UserActionRecorderImplTest, RecordActions);
+  FRIEND_TEST_ALL_PREFIXES(UserActionRecorderImplTest,
+                           UiOpenedOnlyRecordedWhenConnected);
 
   // Types of user actions; numerical value should not be reused or reordered
   // since this enum is used in metrics.
@@ -48,6 +53,8 @@ class UserActionRecorderImpl : public UserActionRecorder {
   void RecordNotificationReplyAttempt() override;
 
   void HandleUserAction(UserAction action);
+
+  FeatureStatusProvider* feature_status_provider_;
 };
 
 }  // namespace phonehub
