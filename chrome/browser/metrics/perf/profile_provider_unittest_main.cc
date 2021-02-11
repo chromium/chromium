@@ -277,7 +277,8 @@ TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
   AssertProfileData(SampledProfile::JANKY_TASK);
 }
 
-TEST_F(ProfileProviderRealCollectionTest, OnJankStopped) {
+// TODO(crbug.com/1177150) Re-enable test
+TEST_F(ProfileProviderRealCollectionTest, DISABLED_OnJankStopped) {
   profile_provider_->OnJankStarted();
 
   // Call ProfileProvider::OnJankStopped() halfway through the collection
