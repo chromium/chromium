@@ -164,6 +164,59 @@ _INCLUDE_INSERTION_POINT_REGEX_TEMPLATE = r'''
 '''
 
 
+_NEWLINE_CHARACTERS = [ord('\n'), ord('\r')]
+
+
+def _FindStartOfPreviousLine(contents, index):
+  """ Requires that `index` points to the start of a line.
+      Returns an index to the start of the previous line.
+  """
+  assert (index > 0)
+  assert (contents[index - 1] in _NEWLINE_CHARACTERS)
+
+  # Go back over the newline characters associated with the *single* end of a
+  # line just before `index`, despite of whether end of a line is designated by
+  # "\r", "\n" or "\r\n".  Examples:
+  # 1. "... \r\n <new index> \r\n <old index> ...
+  # 2. "... \n <new index> \n <old index> ...
+  index = index - 1
+  if index > 0 and contents[index - 1] in _NEWLINE_CHARACTERS and \
+      contents[index - 1] != contents[index]:
+    index = index - 1
+
+  # Go back until `index` points right after an end of a line (or at the
+  # beginning of the `contents`).
+  while index > 0 and contents[index - 1] not in _NEWLINE_CHARACTERS:
+    index = index - 1
+
+  return index
+
+
+def _SkipOverPreviousComment(contents, index):
+  """ Returns `index`, possibly moving it earlier so that it skips over comment
+      lines appearing in `contents` just before the old `index.
+
+      Example:
+          <returned `index` points here>// Comment
+                                        // Comment
+          <original `index` points here>bar
+  """
+  # If `index` points at the start of the file, or `index` doesn't point at the
+  # beginning of a line, then don't skip anything and just return `index`.
+  if index == 0 or contents[index - 1] not in _NEWLINE_CHARACTERS:
+    return index
+
+  # Is the previous line a non-comment?  If so, just return `index`.
+  new_index = _FindStartOfPreviousLine(contents, index)
+  prev_text = contents[new_index:index]
+  _COMMENT_START_REGEX = "^  \s*  (  //  |  \*  )"
+  if not re.search(_COMMENT_START_REGEX, prev_text, re.VERBOSE):
+    return index
+
+  # Otherwise skip over the previous line + continue skipping via recursion.
+  return _SkipOverPreviousComment(contents, new_index)
+
+
 def _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents):
   """ Mutates |contents| (contents of |filepath|) to #include
       the |header_to_add
@@ -185,7 +238,7 @@ def _InsertNonSystemIncludeHeader(filepath, header_line_to_add, contents):
   regex_text = _INCLUDE_INSERTION_POINT_REGEX_TEMPLATE % primary_header_basename
   match = re.search(regex_text, contents, re.MULTILINE | re.VERBOSE)
   assert (match is not None)
-  insertion_point = match.start()
+  insertion_point = _SkipOverPreviousComment(contents, match.start())
 
   # Extra empty line is required if the addition is not adjacent to other
   # includes.

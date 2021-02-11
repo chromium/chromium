@@ -56,6 +56,15 @@ def _InsertHeader(old_contents,
 
 
 class InsertIncludeHeaderTest(unittest.TestCase):
+  def _assertEqualContents(self, expected, actual):
+    if expected != actual:
+      print("####################### EXPECTED:")
+      print(expected)
+      print("####################### ACTUAL:")
+      print(actual)
+      print("####################### END.")
+    self.assertEqual(expected, actual)
+
   def testSkippingCppComments(self):
     old_contents = '''
 // Copyright info here.
@@ -69,7 +78,144 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 #include "old/header.h"
     '''
     new_header_line = '#include "new/header.h'
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
+
+  def testSkippingCppComments_DocCommentForStruct(self):
+    """ This is a regression test for https://crbug.com/1175684 """
+    old_contents = '''
+// Copyright blah blah...
+
+#ifndef SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_FILTER_H_
+#define SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_FILTER_H_
+
+#include <stdint.h>
+
+// Doc comment for a struct.
+// Multiline.
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    expected_new_contents = '''
+// Copyright blah blah...
+
+#ifndef SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_FILTER_H_
+#define SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_FILTER_H_
+
+#include <stdint.h>
+
+#include "new/header.h"
+
+// Doc comment for a struct.
+// Multiline.
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    new_header_line = '#include "new/header.h'
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
+
+  def testSkippingCppComments_DocCommentForStruct2(self):
+    """ This is a regression test for https://crbug.com/1175684 """
+    old_contents = '''
+// Copyright blah blah...
+
+// Doc comment for a struct.
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    expected_new_contents = '''
+// Copyright blah blah...
+
+#include "new/header.h"
+
+// Doc comment for a struct.
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    new_header_line = '#include "new/header.h'
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
+
+  def testSkippingCppComments_DocCommentForStruct3(self):
+    """ This is a regression test for https://crbug.com/1175684 """
+    old_contents = '''
+// Doc comment for a struct.
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    expected_new_contents = '''
+#include "new/header.h"
+
+// Doc comment for a struct.
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    new_header_line = '#include "new/header.h'
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
+
+  def testSkippingCppComments_DocCommentForInclude(self):
+    """ This is a regression test for https://crbug.com/1175684 """
+    old_contents = '''
+// Copyright blah blah...
+
+// System includes.
+#include <stdint.h>
+
+// Doc comment for a struct.
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    expected_new_contents = '''
+// Copyright blah blah...
+
+// System includes.
+#include <stdint.h>
+
+#include "new/header.h"
+
+// Doc comment for a struct.
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    new_header_line = '#include "new/header.h'
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
+
+  def testSkippingCppComments_DocCommentForWholeFile(self):
+    """ This is a regression test for https://crbug.com/1175684 """
+    old_contents = '''
+// Copyright blah blah...
+
+// Doc comment for the whole file.
+
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    expected_new_contents = '''
+// Copyright blah blah...
+
+// Doc comment for the whole file.
+
+#include "new/header.h"
+
+struct sock_filter {
+  uint16_t code;
+};
+    '''
+    new_header_line = '#include "new/header.h'
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingOldStyleComments(self):
     old_contents = '''
@@ -87,7 +233,8 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 #include "new/header.h"
 #include "old/header.h"
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingOldStyleComments_NoWhitespaceAtLineStart(self):
     old_contents = '''
@@ -105,7 +252,8 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 #include "new/header.h"
 #include "old/header.h"
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingSystemHeaders(self):
     old_contents = '''
@@ -121,7 +269,8 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 #include "new/header.h"
 #include "old/header.h"
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingPrimaryHeader(self):
     old_contents = '''
@@ -139,7 +288,8 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 #include "new/header.h"
 #include "old/header.h"
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSimilarNonPrimaryHeader_WithPrimaryHeader(self):
     old_contents = '''
@@ -159,7 +309,8 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 #include "new/header.h"
 #include "zzz/foo.h"
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSimilarNonPrimaryHeader_NoPrimaryHeader(self):
     old_contents = '''
@@ -175,7 +326,8 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 #include "new/header.h"
 #include "zzz/foo.h"
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingIncludeGuards(self):
     old_contents = '''
@@ -195,8 +347,9 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 
 #endif FOO_IMPL_H_
     '''
-    self.assertEqual(expected_new_contents,
-                     _InsertHeader(old_contents, 'foo/impl.h', 'new/header.h'))
+    self._assertEqualContents(
+        expected_new_contents,
+        _InsertHeader(old_contents, 'foo/impl.h', 'new/header.h'))
 
   def testSkippingIncludeGuards2(self):
     # This test is based on base/third_party/valgrind/memcheck.h
@@ -217,7 +370,8 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 
 #endif
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingIncludeGuards3(self):
     # This test is based on base/third_party/xdg_mime/xdgmime.h
@@ -256,7 +410,8 @@ typedef void (*XdgMimeCallback) (void *user_data);
 #endif /* __cplusplus */
 #endif /* __XDG_MIME_H__ */
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingIncludeGuards4(self):
     # This test is based on ash/first_run/desktop_cleaner.h and/or
@@ -285,7 +440,8 @@ namespace ash {
 
 #endif  // ASH_FIRST_RUN_DESKTOP_CLEANER_
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingIncludeGuards5(self):
     # This test is based on third_party/weston/include/GLES2/gl2.h (the |extern
@@ -322,7 +478,8 @@ namespace ash {
 
 #endif
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testSkippingIncludeGuards6(self):
     # This test is based on ios/third_party/blink/src/html_token.h
@@ -353,7 +510,8 @@ namespace ash {
 
 #endif
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testNoOpIfAlreadyPresent(self):
     # This tests that the new header won't be inserted (and duplicated)
@@ -372,7 +530,8 @@ namespace ash {
 #include "new/header.h"
 #include "new/header2.h"
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testNoOpIfAlreadyPresent_WithTrailingComment(self):
     # This tests that the new header won't be inserted (and duplicated)
@@ -391,7 +550,8 @@ namespace ash {
 #include "new/header.h" // blah
 #include "new/header2.h"
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testNoOldHeaders(self):
     # This tests that an extra new line is inserted after the new header
@@ -408,7 +568,8 @@ struct S {};
 
 struct S {};
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testPlatformIfDefs(self):
     # This test is based on
@@ -454,7 +615,8 @@ inline void abort_noreturn() { abort(); }
 
 namespace double_conversion {
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testNoOldIncludesAndIfDefs(self):
     # Artificial test: no old #includes + some #ifdefs.  The main focus of the
@@ -476,7 +638,8 @@ void foo();
 
 void foo();
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testNoOldIncludesAndIfDefs2(self):
     # Artificial test: no old #includes + some #ifdefs.  The main focus of the
@@ -498,7 +661,8 @@ void foo();
 
 void foo();
     '''
-    self.assertEqual(expected_new_contents, _InsertHeader(old_contents))
+    self._assertEqualContents(expected_new_contents,
+                              _InsertHeader(old_contents))
 
   def testUtf8BomMarker(self):
     # Test based on
@@ -523,12 +687,12 @@ void foo();
     expected.extend(expected_new_contents.encode('utf-8'))
     # Test sanity check (i.e. not an assertion about code under test).
     utf8_bom = [0xef, 0xbb, 0xbf]
-    self.assertEqual(list(actual[0:3]), utf8_bom)
-    self.assertEqual(list(expected[0:3]), utf8_bom)
+    self._assertEqualContents(list(actual[0:3]), utf8_bom)
+    self._assertEqualContents(list(expected[0:3]), utf8_bom)
     # Actual test.
     edit = apply_edits.Edit('include-user-header', -1, -1, "new/header.h")
     apply_edits._ApplySingleEdit("foo/impl.cc", actual, edit, None)
-    self.assertEqual(expected, actual)
+    self._assertEqualContents(expected, actual)
 
 
 def _CreateReplacement(content_string, old_substring, new_substring):
