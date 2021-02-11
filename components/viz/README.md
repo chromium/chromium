@@ -160,6 +160,27 @@ be composited.
 | viz/service/surfaces/         |
 | viz/service/transitions/      |
 
+#### service/frame_sinks/video_capture
+**FrameSinkVideoCaptureImpl**: This component implements the [Mojo
+interfaces](../../services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom)
+to capture frames that are sent to the compositing service, producing a stream
+of video frames. It provides a capture pipeline where asynchronous GPU readback
+is executed (via [CopyOutputRequests](common/frame_sinks/README.md), and then
+CopyOutputResults are applied to a pool of shared memory buffers backing video
+frames that are sent to privileged consumers.
+
+A capturer instance is created via [FrameSinkManager's
+CreateVideoCapturer()](../../services/viz/privileged/mojom/compositing/frame_sink_manager.mojom)
+method.
+
+| Can depend on:                |
+|:------------------------------|
+| media/base/*                  |
+| media/capture/*               |
+| media/mojo/*                  |
+| viz/common/*                  |
+| viz/service/frame_sinks/*     |
+
 #### service/gl
 **GL**: This component implements the Mojo interfaces for allocating (and
 deallocating) gpu memory buffers, setting up a channel for the command buffer,
