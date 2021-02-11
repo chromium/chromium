@@ -3244,11 +3244,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "launcher-settings-search",
-    "owners": [ "jiameng", "tby" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "legacy-tls-enforced",
     "owners": [ "cthomp" ],
     "expiry_milestone": 92
