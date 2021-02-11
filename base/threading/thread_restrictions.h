@@ -98,6 +98,7 @@
 // that's okay.
 
 class BrowserProcessImpl;
+class ChromeJsErrorReportProcessor;
 class ChromeNSSCryptoModuleDelegate;
 class HistogramSynchronizer;
 class KeyStorageLinux;
@@ -471,6 +472,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class blink::scheduler::WorkerThread;
   friend class chrome_cleaner::ResetShortcutsComponent;
   friend class chrome_cleaner::SystemReportComponent;
+  friend class ::ChromeJsErrorReportProcessor;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessSubThread;
   friend class content::ServiceWorkerContextClient;

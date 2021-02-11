@@ -4,8 +4,13 @@
 
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 
+#include "base/base_paths.h"
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 
@@ -44,6 +49,24 @@ void MockChromeJsErrorReportProcessor::SetCrashEndpointStaging(
   crash_endpoint_staging_ = crash_endpoint;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+std::vector<std::string>
+MockChromeJsErrorReportProcessor::GetCrashReporterArgvStart() {
+  // Redirect uploads to our a simple upload shim which will then send them to
+  // the MockCrashEndpoint. This simulates the Chrome OS crash_reporter and
+  // crash_sender in a way that allows most tests to run without changes.
+  base::FilePath mock_crash_reporter_path;
+  CHECK(base::PathService::Get(base::DIR_EXE, &mock_crash_reporter_path));
+  mock_crash_reporter_path =
+      mock_crash_reporter_path.Append("mock_chromeos_crash_reporter");
+  return {mock_crash_reporter_path.value(),
+          base::StrCat({"--upload_to=", crash_endpoint_})};
+}
+#else
+std::string MockChromeJsErrorReportProcessor::GetOsVersion() {
+  return "7.20.1";
+}
+
 std::string MockChromeJsErrorReportProcessor::GetCrashEndpoint() {
   return crash_endpoint_;
 }
@@ -52,16 +75,6 @@ std::string MockChromeJsErrorReportProcessor::GetCrashEndpointStaging() {
   return crash_endpoint_staging_;
 }
 
-void MockChromeJsErrorReportProcessor::GetOsVersion(
-    int32_t& os_major_version,
-    int32_t& os_minor_version,
-    int32_t& os_bugfix_version) {
-  os_major_version = 7;
-  os_minor_version = 20;
-  os_bugfix_version = 1;
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 void MockChromeJsErrorReportProcessor::UpdateReportDatabase(
     std::string remote_report_id,
     base::Time report_time) {
