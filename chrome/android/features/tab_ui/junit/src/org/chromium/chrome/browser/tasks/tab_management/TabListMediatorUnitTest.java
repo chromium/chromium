@@ -120,7 +120,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
@@ -251,6 +253,10 @@ public class TabListMediatorUnitTest {
     TabListMediator.TabGridAccessibilityHelper mTabGridAccessibilityHelper;
     @Mock
     TemplateUrlService mTemplateUrlService;
+    @Mock
+    TabSwitcherMediator.PriceWelcomeMessageController mPriceWelcomeMessageController;
+    @Mock
+    ShoppingPersistedTabData mShoppingPersistedTabData;
 
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -279,6 +285,8 @@ public class TabListMediatorUnitTest {
     private View mItemView2 = mock(View.class);
     private TabModelObserver mMediatorTabModelObserver;
     private TabGroupModelFilter.Observer mMediatorTabGroupModelFilterObserver;
+    private PriceDrop mPriceDrop;
+    private PriceTabData mPriceTabData;
 
     @Before
     public void setUp() {
@@ -364,7 +372,7 @@ public class TabListMediatorUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, false, null, mGridCardOnClickListenerProvider, null,
+                mTabListFaviconProvider, false, null, mGridCardOnClickListenerProvider, null, null,
                 getClass().getSimpleName(), UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         TrackerFactory.setTrackerForTests(mTracker);
@@ -1575,23 +1583,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testGetFirstTabShowingPriceCard() {
-        initAndAssertAllProperties();
-        mModel.get(0).model.set(TabProperties.PRICE_DROP, null);
-        mModel.get(1).model.set(TabProperties.PRICE_DROP, null);
-        assertNull(mModel.getFirstTabShowingPriceCard());
-
-        PriceDrop priceDrop1 = new PriceDrop("$1", "$2");
-        PriceDrop priceDrop2 = new PriceDrop("$3", "$4");
-        mModel.get(1).model.set(TabProperties.PRICE_DROP, priceDrop2);
-        assertEquals(TAB2_ID, mModel.getFirstTabShowingPriceCard().bindingTabId);
-        assertEquals(priceDrop2, mModel.getFirstTabShowingPriceCard().priceDrop);
-        mModel.get(0).model.set(TabProperties.PRICE_DROP, priceDrop1);
-        assertEquals(TAB1_ID, mModel.getFirstTabShowingPriceCard().bindingTabId);
-        assertEquals(priceDrop1, mModel.getFirstTabShowingPriceCard().priceDrop);
-    }
-
-    @Test
     @Features.DisableFeatures({TAB_GROUPS_ANDROID})
     public void testUrlUpdated_forSingleTab_GTS_GroupNotEnabled() {
         initAndAssertAllProperties();
@@ -1914,6 +1905,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(0).model.get(TabProperties.SEARCH_QUERY), equalTo(searchTerm1));
     }
 
+    // TODO(crbug.com/1177036): the assertThat in fetch callback is never reached.
     @Test
     public void testPriceTrackingProperty() {
         TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
@@ -2169,7 +2161,7 @@ public class TabListMediatorUnitTest {
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
         mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
+                mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -2194,7 +2186,7 @@ public class TabListMediatorUnitTest {
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
         mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
+                mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -2333,33 +2325,11 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testGetIndexForSelectedTab() {
-        initAndAssertAllProperties();
-        assertThat(mModel.getIndexForSelectedTab(), equalTo(0));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testGetIndexForSelectedTab_multipleSelectedTabs() {
-        initAndAssertAllProperties();
-        mModel.get(0).model.set(TabProperties.IS_SELECTED, true);
-        mModel.get(1).model.set(TabProperties.IS_SELECTED, true);
-        mModel.getIndexForSelectedTab();
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testGetIndexForSelectedTab_noSelectedTabs() {
-        initAndAssertAllProperties();
-        mModel.get(0).model.set(TabProperties.IS_SELECTED, false);
-        mModel.get(1).model.set(TabProperties.IS_SELECTED, false);
-        mModel.getIndexForSelectedTab();
-    }
-
-    @Test
     public void testListObserver_OnItemRangeInserted() {
         TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
         mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
+                mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -2377,7 +2347,7 @@ public class TabListMediatorUnitTest {
         TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
         mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, null, null, getClass().getSimpleName(),
+                mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
                 TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -2390,6 +2360,68 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
         mModel.removeAt(0);
         assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME), equalTo(2));
+    }
+
+    @Test
+    public void testMaybeShowPriceWelcomeMessage() {
+        prepareTestMaybeShowPriceWelcomeMessage();
+        ShoppingPersistedTabDataFetcher fetcher =
+                new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
+        fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        verify(mPriceWelcomeMessageController, times(1)).showPriceWelcomeMessage(mPriceTabData);
+    }
+
+    @Test
+    public void testMaybeShowPriceWelcomeMessage_MessageDisabled() {
+        prepareTestMaybeShowPriceWelcomeMessage();
+        ShoppingPersistedTabDataFetcher fetcher =
+                new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
+
+        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
+        assertThat(PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled(), equalTo(true));
+        fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+    }
+
+    @Test
+    public void testMaybeShowPriceWelcomeMessage_NullParameter() {
+        prepareTestMaybeShowPriceWelcomeMessage();
+
+        new ShoppingPersistedTabDataFetcher(mTab1, null, mPriceWelcomeMessageController)
+                .maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+
+        new ShoppingPersistedTabDataFetcher(mTab1, mModel, null)
+                .maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+    }
+
+    @Test
+    public void testMaybeShowPriceWelcomeMessage_NoPriceDrop() {
+        prepareTestMaybeShowPriceWelcomeMessage();
+        ShoppingPersistedTabDataFetcher fetcher =
+                new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
+
+        fetcher.maybeShowPriceWelcomeMessage(null);
+        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+
+        doReturn(null).when(mShoppingPersistedTabData).getPriceDrop();
+        fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
+    }
+
+    @Test
+    public void testMaybeShowPriceWelcomeMessage_AlreadyHasMessage() {
+        prepareTestMaybeShowPriceWelcomeMessage();
+        ShoppingPersistedTabDataFetcher fetcher =
+                new ShoppingPersistedTabDataFetcher(mTab1, mModel, mPriceWelcomeMessageController);
+
+        // Simulate that we already has the message.
+        addSpecialItem(1, TabProperties.UiType.PRICE_WELCOME, PRICE_WELCOME);
+
+        fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
     }
 
     @Test
@@ -2731,7 +2763,7 @@ public class TabListMediatorUnitTest {
 
         mMediator = new TabListMediator(mContext, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, actionOnRelatedTabs, null, null, handler,
+                mTabListFaviconProvider, actionOnRelatedTabs, null, null, handler, null,
                 getClass().getSimpleName(), uiType);
         mMediator.registerOrientationListener(mGridLayoutManager);
 
@@ -2810,5 +2842,16 @@ public class TabListMediatorUnitTest {
         // Avoid auto-updating the layout when inserting the special card.
         doReturn(1).when(mSpanSizeLookup).getSpanSize(anyInt());
         mMediator.addSpecialItemToModel(index, uiType, model);
+    }
+
+    private void prepareTestMaybeShowPriceWelcomeMessage() {
+        initAndAssertAllProperties();
+        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
+        mPriceDrop = new PriceDrop("1", "2");
+        mPriceTabData = new PriceTabData(TAB1_ID, mPriceDrop);
+        doReturn(mPriceDrop).when(mShoppingPersistedTabData).getPriceDrop();
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_WELCOME),
+                equalTo(TabModel.INVALID_TAB_INDEX));
     }
 }

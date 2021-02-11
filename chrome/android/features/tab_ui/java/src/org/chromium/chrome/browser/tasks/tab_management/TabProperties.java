@@ -13,7 +13,6 @@ import android.view.View.AccessibilityDelegate;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -119,10 +118,6 @@ public class TabProperties {
 
     public static final WritableObjectPropertyKey<String> CLOSE_BUTTON_DESCRIPTION_STRING =
             new WritableObjectPropertyKey<>();
-
-    public static final WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop> PRICE_DROP =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableBooleanPropertyKey SHOULD_SHOW_PRICE_DROP_TOOLTIP =
             new WritableBooleanPropertyKey();
 
@@ -135,7 +130,7 @@ public class TabProperties {
             SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND, URL_DOMAIN, ACCESSIBILITY_DELEGATE,
             SEARCH_QUERY, PAGE_INFO_LISTENER, PAGE_INFO_ICON_DRAWABLE_ID, CARD_TYPE,
             CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
-            SHOPPING_PERSISTED_TAB_DATA_FETCHER, PRICE_DROP, SHOULD_SHOW_PRICE_DROP_TOOLTIP};
+            SHOPPING_PERSISTED_TAB_DATA_FETCHER, SHOULD_SHOW_PRICE_DROP_TOOLTIP};
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
             new PropertyKey[] {TAB_ID, TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON,

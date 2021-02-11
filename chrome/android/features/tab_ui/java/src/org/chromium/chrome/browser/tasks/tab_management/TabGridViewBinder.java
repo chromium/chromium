@@ -226,20 +226,15 @@ class TabGridViewBinder {
                             if (shoppingPersistedTabData == null
                                     || shoppingPersistedTabData.getPriceDrop() == null) {
                                 priceCardView.setVisibility(View.GONE);
-                                model.set(TabProperties.PRICE_DROP, null);
                             } else {
                                 priceCardView.setPriceStrings(
                                         shoppingPersistedTabData.getPriceDrop().price,
                                         shoppingPersistedTabData.getPriceDrop().previousPrice);
                                 priceCardView.setVisibility(View.VISIBLE);
-                                model.set(TabProperties.PRICE_DROP,
-                                        shoppingPersistedTabData.getPriceDrop());
                             }
                         });
             } else {
                 priceCardView.setVisibility(View.GONE);
-                // TODO(crbug.com/1157578): Update the model in mediator.
-                model.set(TabProperties.PRICE_DROP, null);
             }
         } else if (TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP == propertyKey) {
             if (model.get(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP)) {

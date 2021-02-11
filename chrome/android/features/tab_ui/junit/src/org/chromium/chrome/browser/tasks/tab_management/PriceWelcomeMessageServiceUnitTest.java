@@ -67,7 +67,6 @@ public class PriceWelcomeMessageServiceUnitTest {
         mPriceTabData = new PriceTabData(
                 BINDING_TAB_ID, new ShoppingPersistedTabData.PriceDrop(PRICE, PREVIOUS_PRICE));
 
-        doReturn(mPriceTabData).when(mMessageProvider).getFirstTabShowingPriceCard();
         doNothing().when(mMessageObserver).messageReady(anyInt(), any());
         doNothing().when(mMessageObserver).messageInvalidate(anyInt());
 
@@ -81,33 +80,16 @@ public class PriceWelcomeMessageServiceUnitTest {
         mMessageService.addObserver(mMessageObserver);
     }
 
-    @Test
-    public void testPrepareMessage_messageCardDisabled() {
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
-                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, false);
-        mMessageService.preparePriceMessage();
-        verify(mMessageProvider, times(0)).getFirstTabShowingPriceCard();
-        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
-                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
-        mMessageService.preparePriceMessage();
-        verify(mMessageProvider, times(1)).getFirstTabShowingPriceCard();
-    }
-
-    @Test
-    public void testPrepareMessage_noTabShowingPriceCard() {
-        doReturn(null).when(mMessageProvider).getFirstTabShowingPriceCard();
-        mMessageService.preparePriceMessage();
-        assertNull(mMessageService.getPriceTabDataForTesting());
-        verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_WELCOME));
-        assertEquals(
-                INITIAL_SHOW_COUNT, PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
+    @Test(expected = AssertionError.class)
+    public void testPrepareMessage_nullPriceTabData() {
+        mMessageService.preparePriceMessage(null);
     }
 
     @Test
     public void testPrepareMessage_exceedMaxShowCount() {
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT);
-        mMessageService.preparePriceMessage();
+        mMessageService.preparePriceMessage(mPriceTabData);
         assertEquals(
                 MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
         assertNull(mMessageService.getPriceTabDataForTesting());
@@ -117,9 +99,8 @@ public class PriceWelcomeMessageServiceUnitTest {
 
     @Test
     public void testPrepareMessage_hasTabShowingPriceCard() {
-        doReturn(mPriceTabData).when(mMessageProvider).getFirstTabShowingPriceCard();
         InOrder inOrder = Mockito.inOrder(mMessageObserver);
-        mMessageService.preparePriceMessage();
+        mMessageService.preparePriceMessage(mPriceTabData);
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
         inOrder.verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_WELCOME));
         inOrder.verify(mMessageObserver, times(1))
@@ -128,7 +109,7 @@ public class PriceWelcomeMessageServiceUnitTest {
 
         // We sendAvailabilityNotification only if the newly obtained priceTabData is different from
         // currently existing priceTabData.
-        mMessageService.preparePriceMessage();
+        mMessageService.preparePriceMessage(mPriceTabData);
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
         verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_WELCOME));
         verify(mMessageObserver, times(1))
@@ -137,8 +118,7 @@ public class PriceWelcomeMessageServiceUnitTest {
 
         PriceTabData priceTabData = new PriceTabData(
                 BINDING_TAB_ID + 1, new ShoppingPersistedTabData.PriceDrop(PRICE, PREVIOUS_PRICE));
-        doReturn(priceTabData).when(mMessageProvider).getFirstTabShowingPriceCard();
-        mMessageService.preparePriceMessage();
+        mMessageService.preparePriceMessage(priceTabData);
         assertEquals(priceTabData, mMessageService.getPriceTabDataForTesting());
         verify(mMessageObserver, times(2)).messageInvalidate(eq(MessageType.PRICE_WELCOME));
         verify(mMessageObserver, times(2))
@@ -148,32 +128,41 @@ public class PriceWelcomeMessageServiceUnitTest {
 
     @Test
     public void testReview() {
+        mMessageService.preparePriceMessage(mPriceTabData);
+        assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
+        verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_WELCOME));
+
         int index = 1;
         doReturn(index).when(mMessageProvider).getTabIndexFromTabId(BINDING_TAB_ID);
-        doNothing().when(mReviewActionProvider).scrollToBindingTab(anyInt());
-        mMessageService.preparePriceMessage();
+        doNothing().when(mReviewActionProvider).scrollToTab(anyInt());
         mMessageService.review();
-        verify(mReviewActionProvider).scrollToBindingTab(index);
+        verify(mReviewActionProvider).scrollToTab(index);
         verify(mMessageProvider).showPriceDropTooltip(index);
         assertTrue(PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled());
+        assertNull(mMessageService.getPriceTabDataForTesting());
     }
 
     @Test
     public void testDismiss() {
+        mMessageService.preparePriceMessage(mPriceTabData);
+        assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
+        verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_WELCOME));
+
         mMessageService.dismiss();
         assertTrue(PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled());
+        assertNull(mMessageService.getPriceTabDataForTesting());
     }
 
     @Test
     public void testGetBindingTabId() {
         assertEquals(Tab.INVALID_TAB_ID, mMessageService.getBindingTabId());
-        mMessageService.preparePriceMessage();
+        mMessageService.preparePriceMessage(mPriceTabData);
         assertEquals(BINDING_TAB_ID, mMessageService.getBindingTabId());
     }
 
     @Test
     public void testInvalidateMessage() {
-        mMessageService.preparePriceMessage();
+        mMessageService.preparePriceMessage(mPriceTabData);
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
         verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_WELCOME));
         mMessageService.invalidateMessage();

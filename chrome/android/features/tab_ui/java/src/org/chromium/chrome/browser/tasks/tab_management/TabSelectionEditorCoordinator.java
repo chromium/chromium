@@ -131,7 +131,7 @@ class TabSelectionEditorCoordinator {
 
         mTabListCoordinator = new TabListCoordinator(mode, context, mTabModelSelector,
                 tabContentManager::getTabThumbnailWithCallback, null, false, null, null,
-                TabProperties.UiType.SELECTABLE, this::getSelectionDelegate,
+                TabProperties.UiType.SELECTABLE, this::getSelectionDelegate, null,
                 mTabSelectionEditorLayout, false, COMPONENT_NAME);
 
         // Note: The TabSelectionEditorCoordinator is always created after native is initialized.
