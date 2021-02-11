@@ -190,7 +190,9 @@ bool ThemePainterDefault::PaintRadio(const Element& element,
   extra_params.button.zoom = zoom_level;
   GraphicsContextStateSaver state_saver(paint_info.context, false);
   IntRect unzoomed_rect =
-      ApplyZoomToRect(rect, paint_info, state_saver, zoom_level);
+      features::IsFormControlsRefreshEnabled()
+          ? ApplyZoomToRect(rect, paint_info, state_saver, zoom_level)
+          : rect;
 
   Platform::Current()->ThemeEngine()->Paint(
       canvas, WebThemeEngine::kPartRadio, GetWebThemeState(element),

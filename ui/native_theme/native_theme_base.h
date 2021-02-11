@@ -29,8 +29,7 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
                         const ExtraParams& extra) const override;
   float GetBorderRadiusForPart(Part part,
                                float width,
-                               float height,
-                               float zoom) const override;
+                               float height) const override;
   void Paint(cc::PaintCanvas* canvas,
              Part part,
              State state,

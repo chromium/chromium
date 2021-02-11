@@ -134,17 +134,17 @@ class FormControlsBrowserTest : public ContentBrowserTest {
   }
 
   // Check if the test can run on the current system.
-  bool CheckShouldRunTest() const {
+  bool SkipTestForOldAndroidVersions() const {
 #if defined(OS_ANDROID)
     // Lower versions of android running on older devices, ex Nexus 5, render
     // form controls with a too large of a difference -- >20% error -- to
     // pixel compare.
     if (base::android::BuildInfo::GetInstance()->sdk_int() <
         base::android::SDK_VERSION_OREO) {
-      return false;
+      return true;
     }
 #endif  // defined(OS_ANDROID)
-    return true;
+    return false;
   }
 
  private:
@@ -152,7 +152,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Checkbox) {
-  if (!CheckShouldRunTest())
+  if (SkipTestForOldAndroidVersions())
     return;
 
   RunTest("form_controls_browsertest_checkbox",
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Checkbox) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
-  if (!CheckShouldRunTest())
+  if (SkipTestForOldAndroidVersions())
     return;
 
   RunTest("form_controls_browsertest_radio",

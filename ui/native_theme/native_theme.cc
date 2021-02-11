@@ -212,8 +212,7 @@ SkColor NativeTheme::FocusRingColorForBaseColor(SkColor base_color) const {
 
 float NativeTheme::GetBorderRadiusForPart(Part part,
                                           float width,
-                                          float height,
-                                          float zoom) const {
+                                          float height) const {
   return 0;
 }
 

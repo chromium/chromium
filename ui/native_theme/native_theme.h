@@ -337,8 +337,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   virtual float GetBorderRadiusForPart(Part part,
                                        float width,
-                                       float height,
-                                       float zoom) const;
+                                       float height) const;
 
   // Paint the part to the canvas.
   virtual void Paint(
