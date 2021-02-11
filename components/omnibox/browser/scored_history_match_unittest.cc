@@ -69,7 +69,7 @@ class ScoredHistoryMatchTest : public testing::Test {
   // and word break information automatically that are needed to call
   // GetTopicalityScore().
   float GetTopicalityScoreOfTermAgainstURLAndTitle(
-      const std::vector<const std::string>&,
+      const std::vector<std::string>&,
       const WordStarts term_word_starts,
       const GURL& url,
       const base::string16& title);
@@ -111,7 +111,7 @@ String16Vector ScoredHistoryMatchTest::Make2Terms(const char* term_1,
 }
 
 float ScoredHistoryMatchTest::GetTopicalityScoreOfTermAgainstURLAndTitle(
-    const std::vector<const std::string>& terms,
+    const std::vector<std::string>& terms,
     const WordStarts term_word_starts,
     const GURL& url,
     const base::string16& title) {
@@ -660,7 +660,7 @@ TEST_F(ScoredHistoryMatchTest, GetDocumentSpecificityScore) {
 TEST_F(ScoredHistoryMatchTest, GetTopicalityScore) {
   GURL url("http://abc.def.com/path1/path2?arg1=val1&arg2=val2#hash_fragment");
   base::string16 title = ASCIIToUTF16("here is a - title");
-  auto Score = [&](const std::vector<const std::string>& term_vector,
+  auto Score = [&](const std::vector<std::string>& term_vector,
                    const WordStarts term_word_starts) {
     return GetTopicalityScoreOfTermAgainstURLAndTitle(
         term_vector, term_word_starts, url, title);
@@ -732,7 +732,7 @@ TEST_F(ScoredHistoryMatchTest, GetTopicalityScore) {
 TEST_F(ScoredHistoryMatchTest, GetTopicalityScore_MidwordMatching) {
   GURL url("http://abc.def.com/path1/path2?arg1=val1&arg2=val2#hash_fragment");
   base::string16 title = ASCIIToUTF16("here is a - title");
-  auto Score = [&](const std::vector<const std::string>& term_vector,
+  auto Score = [&](const std::vector<std::string>& term_vector,
                    const WordStarts term_word_starts) {
     return GetTopicalityScoreOfTermAgainstURLAndTitle(
         term_vector, term_word_starts, url, title);
