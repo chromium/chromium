@@ -4362,7 +4362,7 @@
       "bdea",
       "chrome-safebrowsing-core@google.com"
     ],
-    "expiry_milestone": 88
+    "expiry_milestone": 91
   },
   {
     "name": "safe-browsing-enhanced-protection-android",
