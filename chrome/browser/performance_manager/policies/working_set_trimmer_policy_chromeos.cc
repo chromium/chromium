@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_chromeos.h"
 
 #include "base/bind.h"
+#include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
@@ -19,10 +20,48 @@
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
 namespace policies {
+
+namespace {
+enum ArcProcessType { kApp, kSystem };
+void GetArcProcessListOnUIThread(
+    ArcProcessType type,
+    base::WeakPtr<
+        performance_manager::policies::WorkingSetTrimmerPolicyChromeOS> ptr,
+    int processes_per_trim) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  arc::ArcProcessService* arc_process_service = arc::ArcProcessService::Get();
+  if (!arc_process_service) {
+    return;
+  }
+
+  // Now we need to bounce back to the PM sequence so we can do stuff with the
+  // process list.
+  auto callback = base::BindOnce(
+      [](decltype(ptr) ptr, decltype(processes_per_trim) processes_per_trim,
+         arc::ArcProcessService::OptionalArcProcessList opt_proc_list) {
+        PerformanceManager::CallOnGraph(
+            FROM_HERE,
+            base::BindOnce(
+                &WorkingSetTrimmerPolicyChromeOS::TrimReceivedArcProcesses, ptr,
+                processes_per_trim, std::move(opt_proc_list)));
+      },
+      ptr, processes_per_trim);
+
+  if (type == kApp) {
+    arc_process_service->RequestAppProcessList(std::move(callback));
+  } else if (type == kSystem) {
+    arc_process_service->RequestSystemProcessList(std::move(callback));
+  }
+}
+
+}  // namespace
 
 WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
   trim_on_memory_pressure_ =
@@ -201,26 +240,27 @@ void WorkingSetTrimmerPolicyChromeOS::TrimReceivedArcProcesses(
   }
 }
 
+// TrimArcProcesses will be called on the PM Sequence, we'll need to bounce to
+// the UI thread to get the Arc process list and we'll bounce back to the PM
+// sequence to do the actual trimming and book keeping.
 void WorkingSetTrimmerPolicyChromeOS::TrimArcProcesses() {
   last_arc_process_fetch_ = base::TimeTicks::Now();
 
-  arc::ArcProcessService* arc_process_service = arc::ArcProcessService::Get();
-  if (!arc_process_service) {
-    return;
+  // The fetching of the ARC process list must happen on the UI thread.
+  if (params_.trim_arc_system_processes) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GetArcProcessListOnUIThread, ArcProcessType::kSystem,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       params_.arc_max_number_processes_per_trim));
   }
 
   if (params_.trim_arc_app_processes) {
-    arc_process_service->RequestAppProcessList(base::BindOnce(
-        &WorkingSetTrimmerPolicyChromeOS::TrimReceivedArcProcesses,
-        weak_ptr_factory_.GetWeakPtr(),
-        params_.arc_max_number_processes_per_trim));
-  }
-
-  if (params_.trim_arc_system_processes) {
-    arc_process_service->RequestSystemProcessList(base::BindOnce(
-        &WorkingSetTrimmerPolicyChromeOS::TrimReceivedArcProcesses,
-        weak_ptr_factory_.GetWeakPtr(),
-        params_.arc_max_number_processes_per_trim));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GetArcProcessListOnUIThread, ArcProcessType::kApp,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       params_.arc_max_number_processes_per_trim));
   }
 }
 
