@@ -23,6 +23,7 @@
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -522,23 +523,24 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_hyperlink(
     // DumpWithoutCrashing() was removed to reduced crash report noise.
     // Interestingly, the top url reported was always called "empty".
     // Sample report for iframe issue: go/crash/93d7fce137a15ef0
-    LONG num_hyperlinks = -1;
-    get_nHyperlinks(&num_hyperlinks);
-    std::ostringstream error;
-    error << "index=" << index
-          << " nHyperLinks#1=" << hypertext_.hyperlinks.size()
-          << " nHyperLinks#2=" << hypertext_.hyperlink_offset_to_index.size()
-          << " needs_update=" << hypertext_.needs_update
-          << " hyperlink_id=" << id << "\nparent=" << GetData().ToString();
-    static auto* hyperlink_err = base::debug::AllocateCrashKeyString(
-        "ax_hyperlink_err2", base::debug::CrashKeySize::Size256);
-    base::debug::SetCrashKeyString(hyperlink_err, error.str().substr(230));
-    if (GetData().role != ax::mojom::Role::kIframe) {
-      // Only report for non-iframe situation. The iframe occurrence is known
-      // and was too noisy to keep reporting.
-      base::debug::DumpWithoutCrashing();
+#if defined(AX_FAIL_FAST_BUILD)  // Fail in debug/sanitizers/clusterfuzz.
+    bool do_report = true;
+#else
+    std::srand(std::time(nullptr));             // Use current time as seed.
+    bool do_report = (std::rand() % 100 == 0);  // Roughly 1% of the time.
+#endif
+    if (do_report) {
+      LONG num_hyperlinks = -1;
+      get_nHyperlinks(&num_hyperlinks);
+      std::ostringstream error;
+      CHECK(false) << "Hyperlink error:\n index=" << index
+                   << " nHyperLinks#1=" << hypertext_.hyperlinks.size()
+                   << " nHyperLinks#2="
+                   << hypertext_.hyperlink_offset_to_index.size()
+                   << " needs_update=" << hypertext_.needs_update
+                   << " hyperlink_id=" << id
+                   << "\nparent=" << GetData().ToString();
     }
-    NOTREACHED() << "Hyperlink error: " << error.str();
     return E_FAIL;
   }
   auto* link = static_cast<BrowserAccessibilityComWin*>(node);
