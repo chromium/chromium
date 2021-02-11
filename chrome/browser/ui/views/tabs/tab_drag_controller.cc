@@ -1678,6 +1678,13 @@ void TabDragController::RestoreInitialSelection() {
   if (selection_model.empty())
     return;
 
+  // Tabs in |source_context_| may have closed since the drag began. In that
+  // case, |initial_selection_model_| may include indices that are no longer
+  // valid in |source_context_|. Abort restoring the selection if so.
+  if (!source_context_->GetTabStripModel()->ContainsIndex(
+          *(selection_model.selected_indices().rbegin())))
+    return;
+
   // The anchor/active may have been among the tabs that were dragged out. Force
   // the anchor/active to be valid.
   if (selection_model.anchor() == ui::ListSelectionModel::kUnselectedIndex)
