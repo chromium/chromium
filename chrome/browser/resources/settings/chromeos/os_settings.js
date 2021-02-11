@@ -85,6 +85,7 @@ import './os_apps_page/app_management_page/shared_style.m.js';
 import './os_apps_page/app_management_page/shared_vars.m.js';
 import './os_apps_page/app_management_page/toggle_row.m.js';
 import './os_apps_page/app_management_page/uninstall_button.m.js';
+import './os_settings_menu/os_settings_menu.m.js';
 
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.m.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';

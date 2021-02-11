@@ -112,6 +112,7 @@ js_modulizer("modulize") {
     "os_privacy_page_test.js",
     "os_search_page_test.js",
     "os_settings_search_box_test.js",
+    "os_settings_menu_test.js",
     "parental_controls_page_test.js",
     "people_page_account_manager_test.js",
     "people_page_change_picture_test.js",
