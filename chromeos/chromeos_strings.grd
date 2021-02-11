@@ -357,9 +357,6 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PRINT_MANAGEMENT_TITLE" desc="The title of the print management app.">
         Print jobs
       </message>
-      <message name="IDS_PRINT_MANAGEMENT_APP_NAME" desc="The app name of the print management app.">
-        Print Jobs
-      </message>
       <message name="IDS_PRINT_MANAGEMENT_CLEAR_ALL_HISTORY_BUTTON_TEXT" desc="The label for the button that clears the print job history.">
         Clear all history
       </message>

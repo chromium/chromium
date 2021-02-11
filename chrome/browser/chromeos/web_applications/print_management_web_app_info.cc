@@ -19,7 +19,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPrintManagementApp() {
       std::make_unique<WebApplicationInfo>();
   info->start_url = GURL(chromeos::kChromeUIPrintManagementAppUrl);
   info->scope = GURL(chromeos::kChromeUIPrintManagementAppUrl);
-  info->title = l10n_util::GetStringUTF16(IDS_PRINT_MANAGEMENT_APP_NAME);
+  info->title = l10n_util::GetStringUTF16(IDS_PRINT_MANAGEMENT_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {{"print_management_192.png", 192, IDR_PRINT_MANAGEMENT_ICON}}, *info);
