@@ -92,6 +92,22 @@
       popup1.hide();
     },'Clicking inside a parent popup should close child popup');
 
+    // TODO(crbug.com/893480) This test is disabled, until keyDown
+    // and keyUp are supported in Chromium.
+    // popup1.show();
+    // popup2.show();
+    // const escape_key = "\uE00C";
+    // await pressKey(escape_key);
+    // test(t => {
+    //   assert_true(popup1.open);
+    //   assert_false(popup2.open);
+    // },'Escape key should close top level popup');
+    // await pressKey(escape_key);
+    // test(t => {
+    //   assert_false(popup1.open);
+    //   assert_false(popup2.open);
+    // },'Escape key should close top level popup (part 2)');
+
     done();
   })();
 </script>
