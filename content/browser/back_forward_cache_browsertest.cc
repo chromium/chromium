@@ -271,6 +271,12 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     ExpectOutcome(
         BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
         location);
+    ExpectNotRestoredReasons(reasons, location);
+  }
+
+  void ExpectNotRestoredReasons(
+      std::vector<BackForwardCacheMetrics::NotRestoredReason> reasons,
+      base::Location location) {
     uint64_t not_restored_reasons_bits = 0;
     for (BackForwardCacheMetrics::NotRestoredReason reason : reasons) {
       base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
@@ -538,9 +544,9 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     // If we restored the page, there should be no blocking reasons logged.
     if (outcome ==
         BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored) {
+      ExpectNotRestoredReasons({}, location);
       ExpectBlocklistedFeatures({}, FROM_HERE);
       ExpectDisabledWithReasons({}, FROM_HERE);
-      ExpectBrowsingInstanceNotSwappedReasons({}, FROM_HERE);
       ExpectBrowsingInstanceNotSwappedReasons({}, FROM_HERE);
     }
     if (!check_all_sites_)
