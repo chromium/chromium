@@ -637,7 +637,7 @@ void HttpNetworkTransaction::OnNeedsProxyAuth(
   response_.auth_challenge = proxy_response.auth_challenge;
   response_.did_use_http_auth = proxy_response.did_use_http_auth;
 
-  if (response_.headers.get() && !ContentEncodingsValid()) {
+  if (!ContentEncodingsValid()) {
     DoCallback(ERR_CONTENT_DECODING_FAILED);
     return;
   }
@@ -1111,15 +1111,13 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
 
   DCHECK(response_.headers.get());
 
-  if (response_.headers.get() && !ContentEncodingsValid())
+  if (!ContentEncodingsValid())
     return ERR_CONTENT_DECODING_FAILED;
 
   // On a 408 response from the server ("Request Timeout") on a stale socket,
   // retry the request for HTTP/1.1 but not HTTP/2 or QUIC because those
   // multiplex requests and have no need for 408.
-  // Headers can be NULL because of http://crbug.com/384554.
-  if (response_.headers.get() &&
-      response_.headers->response_code() == HTTP_REQUEST_TIMEOUT &&
+  if (response_.headers->response_code() == HTTP_REQUEST_TIMEOUT &&
       HttpResponseInfo::ConnectionInfoToCoarse(response_.connection_info) ==
           HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP1 &&
       stream_->IsConnectionReused()) {
@@ -1149,7 +1147,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
       return ERR_METHOD_NOT_SUPPORTED;
   }
 
-  if (can_send_early_data_ && response_.headers.get() &&
+  if (can_send_early_data_ &&
       response_.headers->response_code() == HTTP_TOO_EARLY) {
     return HandleIOError(ERR_EARLY_DATA_REJECTED);
   }
