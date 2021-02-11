@@ -1412,13 +1412,23 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, PrefetchIsNotImpacted) {
   EXPECT_EQ("<p>contents of the response</p>", response_body);
 }
 
+// Flaky on Mac.  https://crbug.com/1177286
+#if defined(OS_MAC)
+#define MAYBE_WithCORBProtectionSniffing DISABLED_WithCORBProtectionSniffing
+#define MAYBE_WithoutCORBProtectionSniffing \
+  DISABLED_WithoutCORBProtectionSniffing
+#else
+#define MAYBE_WithCORBProtectionSniffing WithCORBProtectionSniffing
+#define MAYBE_WithoutCORBProtectionSniffing WithoutCORBProtectionSniffing
+#endif
+
 INSTANTIATE_TEST_SUITE_P(
-    WithCORBProtectionSniffing,
+    MAYBE_WithCORBProtectionSniffing,
     CrossSiteDocumentBlockingTest,
     ::testing::Values(TestMode::kWithCORBProtectionSniffing));
 
 INSTANTIATE_TEST_SUITE_P(
-    WithoutCORBProtectionSniffing,
+    MAYBE_WithoutCORBProtectionSniffing,
     CrossSiteDocumentBlockingTest,
     ::testing::Values(TestMode::kWithoutCORBProtectionSniffing));
 
