@@ -1402,7 +1402,7 @@ crbug.com/889952 fast/selectors/selection-window-inactive.html [ Pass Failure ]
 crbug.com/731731 inspector-protocol/layers/paint-profiler-load-empty.js [ Failure Pass ]
 
 # Script let/const redeclaration errors
-crbug.com/1042162 inspector-protocol/console/console-let-const-with-api.js [ Pass Failure ]
+crbug.com/1042162 http/tests/inspector-protocol/console/console-let-const-with-api.js [ Pass Failure ]
 
 # Will be re-enabled and rebaselined once we remove the '--enable-file-cookies' flag.
 crbug.com/470482 fast/cookies/local-file-can-set-cookies.html [ Skip ]

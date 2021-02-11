@@ -2,7 +2,6 @@ Tests how let/const declarations interact with command line api.
 first 'let a = 1;' result: wasThrown = false
 second 'let a = 1;' result: wasThrown = true
 exception message: Uncaught SyntaxError: Identifier 'a' has already been declared
-    at <anonymous>:1:1
 {"result":{"type":"number","value":42,"description":"42"}}
 function $(selector, [startNode]) { [Command Line API] }
 function $$(selector, [startNode]) { [Command Line API] }
