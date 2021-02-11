@@ -170,6 +170,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>URL fetcher status for auto-enrollment requests.</summary>
 </histogram>
 
+<histogram base="true" name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
+    enum="BooleanHit" expires_after="2021-06-30">
+  <owner>gujen@google.com</owner>
+  <owner>goanuj@google.com</owner>
+  <summary>
+    Recorded when a signed-in user is automatically signed out of the browser
+    due to the BrowserSignin policy being set to 0 (sign-in disabled) by their
+    organization. The sample is always recorded as true.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy"
+    enum="BooleanHit" expires_after="2021-06-30">
+  <owner>gujen@google.com</owner>
+  <owner>goanuj@google.com</owner>
+  <summary>
+    Recorded when a user is in the process of signing in to the browser, but is
+    interrupted due to the BrowserSignin policy being set to 0 (sign-in
+    disabled) by their organization. The sample is always recorded as true.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Enterprise.CachedDevicePolicyDeviceIdValidity"
     enum="EnterprisePolicyDeviceIdValidity" expires_after="M95">
   <owner>emaxx@chromium.org</owner>

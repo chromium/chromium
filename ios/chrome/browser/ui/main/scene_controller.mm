@@ -1286,6 +1286,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     if (!service->IsAuthenticated()) {
       return;
     }
+    UMA_HISTOGRAM_BOOLEAN("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
+                          true);
     // Sign the user out, but keep synced data (bookmarks, passwords, etc)
     // locally to be consistent with the policy's behavior on other platforms.
     service->SignOut(
@@ -1306,6 +1308,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   if (self.signinCoordinator) {
     [self interruptSigninCoordinatorAnimated:YES completion:signOut];
+    UMA_HISTOGRAM_BOOLEAN(
+        "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
   } else {
     signOut();
   }
