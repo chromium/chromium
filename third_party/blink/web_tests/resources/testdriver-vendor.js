@@ -132,6 +132,9 @@
           } else if (charCode == 0xE008) {
             eventSenderKeys = "ShiftLeft";
             modifierValue = "shiftKey";
+          } else if (charCode == 0xE006) {
+            eventSenderKeys = "Enter";
+            modifierValue = "enter";
           } else if (charCode >= 0xE000 && charCode <= 0xF8FF) {
             reject(new Error("No support for this code: U+" + charCode.toString(16)));
             return;
