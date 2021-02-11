@@ -12,25 +12,39 @@
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/common/url_constants.h"
 
+#include "ui/aura/window.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 
 namespace chromeos {
+
+constexpr gfx::Size kDefaultWindowSize(340, 390);
 
 ui::TextInputClient* EmojiPickerDialog::input_client = nullptr;
 gfx::Range EmojiPickerDialog::selection_range = gfx::Range();
 
 EmojiPickerDialog::EmojiPickerDialog() {
-  ui::InputMethod* input_method =
-      ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  input_client = input_method->GetTextInputClient();
-  input_client->GetEditableSelectionRange(&selection_range);
-
   set_can_resize(false);
 }
 
 void EmojiPickerDialog::Show() {
-  chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
-                        new EmojiPickerDialog());
+  ui::InputMethod* input_method =
+      ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  if (input_method) {
+    input_client = input_method->GetTextInputClient();
+  }
+  if (input_client) {
+    input_client->GetEditableSelectionRange(&selection_range);
+  }
+  const auto caret_bounds =
+      input_client ? input_client->GetCaretBounds() : gfx::Rect();
+  gfx::NativeWindow window = chrome::ShowWebDialog(
+      nullptr, ProfileManager::GetActiveUserProfile(), new EmojiPickerDialog());
+  // For now, this can overflow the screen.
+  if (input_client) {
+    window->SetBounds(gfx::Rect(caret_bounds.x(), caret_bounds.bottom(),
+                                kDefaultWindowSize.width(),
+                                kDefaultWindowSize.height()));
+  }
 }
 
 ui::ModalType EmojiPickerDialog::GetDialogModalType() const {
@@ -49,9 +63,7 @@ void EmojiPickerDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void EmojiPickerDialog::GetDialogSize(gfx::Size* size) const {
-  const int kDefaultWidth = 340;
-  const int kDefaultHeight = 390;
-  size->SetSize(kDefaultWidth, kDefaultHeight);
+  *size = kDefaultWindowSize;
 }
 
 std::string EmojiPickerDialog::GetDialogArgs() const {
