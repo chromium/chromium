@@ -8,3 +8,9 @@ include_rules = [
   # For VirtualU2fDevice::IsTransportSupported used in protocol/webauthn_handler.cc.
   "+device/fido/virtual_u2f_device.h",
 ]
+
+specific_include_rules = {
+  "tracing_handler\.cc": [
+    "+third_party/perfetto"
+  ]
+}

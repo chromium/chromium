@@ -2744,6 +2744,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   base::Base64Encode(perfetto_config.SerializeAsString(),
                      &perfetto_config_encoded);
   params->SetKey("perfettoConfig", base::Value(perfetto_config_encoded));
+  params->SetString("transferMode", "ReturnAsStream");
 
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
