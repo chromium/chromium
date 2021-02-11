@@ -52,8 +52,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class PasswordChangeFixtureSingleRunTest
-        implements PasswordStoreBridge.PasswordStoreObserver {
+public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordStoreObserver {
     @Rule
     public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
