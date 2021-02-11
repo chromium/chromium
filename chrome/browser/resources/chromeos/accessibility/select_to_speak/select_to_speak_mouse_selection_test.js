@@ -240,8 +240,9 @@ TEST_F(
           });
     });
 
+// TODO(crbug.com/1177140) Re-enable test
 TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'DoesNotSpeakOnlyTheTrayButton',
+    'SelectToSpeakMouseSelectionTest', 'DISABLED_DoesNotSpeakOnlyTheTrayButton',
     function() {
       // The tray button itself should not be spoken when clicked in selection
       // mode per UI review (but if more elements are being verbalized than just

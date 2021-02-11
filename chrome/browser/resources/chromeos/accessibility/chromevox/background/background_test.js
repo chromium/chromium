@@ -1854,7 +1854,8 @@ TEST_F('ChromeVoxBackgroundTest', 'LinesFilterWhitespace', function() {
       });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'TabSwitchAndRefreshRecovery', function() {
+// TODO(crbug.com/1177115) Re-enable test
+TEST_F('ChromeVoxBackgroundTest', 'DISABLED_TabSwitchAndRefreshRecovery', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `

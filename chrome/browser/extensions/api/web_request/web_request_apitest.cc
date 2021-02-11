@@ -455,12 +455,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestComplex) {
 
 // This test times out regularly on ASAN/MSAN trybots. See
 // https://crbug.com/733395.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_WebRequestTypes DISABLED_WebRequestTypes
-#else
-#define MAYBE_WebRequestTypes WebRequestTypes
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_WebRequestTypes) {
+// TODO(crbug.com/1177120) Re-enable test
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebRequestTypes) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionSubtest("webrequest", "test_types.html")) << message_;
 }
@@ -1496,8 +1492,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebSocketRequest) {
 
 // Test that the webRequest events are dispatched for the WebSocket handshake
 // requests when authenrication is requested by server.
+// TODO(crbug.com/1177120) Re-enable test
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       WebSocketRequestAuthRequired) {
+                       DISABLED_WebSocketRequestAuthRequired) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory(), true));
   ASSERT_TRUE(RunExtensionSubtest("webrequest", "test_websocket_auth.html"))

@@ -889,7 +889,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
       "OptimizationGuide.HintCache.HintType.Loaded", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherNetworkOffline) {
+// TODO(crbug.com/1177122) Re-enable test
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       DISABLED_HintsFetcherNetworkOffline) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
   GURL url = https_url();
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(

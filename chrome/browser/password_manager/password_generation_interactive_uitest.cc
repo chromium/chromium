@@ -241,8 +241,9 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       1);
 }
 
+// TODO(crbug.com/1177135) Re-enable test
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       PopupShownAutomaticallyAndPasswordErased) {
+                       DISABLED_PopupShownAutomaticallyAndPasswordErased) {
   FocusPasswordField();
   EXPECT_TRUE(GenerationPopupShowing());
   SendKeyToPopup(ui::VKEY_DOWN);

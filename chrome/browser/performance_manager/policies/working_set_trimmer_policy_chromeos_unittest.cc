@@ -330,7 +330,8 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcDontTrimOnlyIfDisabled) {
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
 }
 
-TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcTrimOnlyIfEnabled) {
+// TODO(crbug.com/1177146) Re-enable test
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, DISABLED_ArcTrimOnlyIfEnabled) {
   policy()->trim_arc_on_memory_pressure(true);
   FastForwardBy(base::TimeDelta::FromSeconds(1));
   EXPECT_CALL(*policy(), TrimArcProcesses).Times(1);

@@ -467,7 +467,8 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, ReviewPlayOptions) {
 }
 
 // Test whether google privacy policy can be loaded.
-IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, PrivacyPolicy) {
+// TODO(crbug.com/1177111) Re-enable test
+IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, DISABLED_PrivacyPolicy) {
   // Privacy policy link is parsed from the footer of the TOS content response.
   set_serve_tos_with_privacy_policy_footer(true);
   TriggerArcTosScreen();

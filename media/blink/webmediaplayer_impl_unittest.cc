@@ -2298,7 +2298,8 @@ TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, VideoOnly) {
   EXPECT_EQ(should_pause, ShouldPausePlaybackWhenHidden());
 }
 
-TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, AudioVideo) {
+// TODO(crbug.com/1177112) Re-enable test
+TEST_P(WebMediaPlayerImplBackgroundBehaviorTest, DISABLED_AudioVideo) {
   SetMetadata(true, true);
 
   // Optimization requirements are the same for all platforms.

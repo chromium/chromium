@@ -280,8 +280,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
 
 // Check that the playback state in the Picture-in-Picture window follows the
 // state of the media player.
+// TODO(crbug.com/1177130) Re-enable test
 IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
-                       EnterPictureInPictureForPausedPlayer) {
+                       DISABLED_EnterPictureInPictureForPausedPlayer) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 
@@ -334,8 +335,9 @@ class MediaSessionPictureInPictureContentBrowserTest
 
 // Check that the playback state in the Picture-in-Picture window follows the
 // state of the media player.
+// TODO(crbug.com/1177130) Re-enable test
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
-                       EnterPictureInPictureForPausedPlayer) {
+                       DISABLED_EnterPictureInPictureForPausedPlayer) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 

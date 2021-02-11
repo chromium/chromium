@@ -416,8 +416,9 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
   ExpectScores(1, 0);
 }
 
+// TODO(crbug.com/1177113) Re-enable test
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
-                       DoNotRecordEngagement_PlaybackStopped) {
+                       DISABLED_DoNotRecordEngagement_PlaybackStopped) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
   Advance(base::TimeDelta::FromSeconds(1));
   ExecuteScript("document.getElementById(\"media\").pause();");

@@ -727,7 +727,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxFindInPage) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxNavigateAndSelect) {
+// TODO(crbug.com/1177140) Re-enable test
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       DISABLED_ChromeVoxNavigateAndSelect) {
   EnableChromeVox();
 
   sm_.Call([this]() {

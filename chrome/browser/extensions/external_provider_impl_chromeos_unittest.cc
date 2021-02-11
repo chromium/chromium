@@ -246,7 +246,8 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
 
 // User signed in, sync service started, install app when priority sync is
 // completed.
-TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
+// TODO(crbug.com/1177118) Re-enable test
+TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
   InitServiceWithExternalProviders(true);
 
   // User is logged in.

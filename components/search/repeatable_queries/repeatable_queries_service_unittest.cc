@@ -342,12 +342,8 @@ void RepeatableQueriesServiceTest::OnRepeatableQueriesServiceShuttingDown() {
 }
 
 // TODO(crbug.com/1151909) Test fails on iOS
-#if defined(OS_IOS)
-#define MAYBE_SignedIn DISABLED_SignedIn
-#else
-#define MAYBE_SignedIn SignedIn
-#endif
-TEST_F(RepeatableQueriesServiceTest, MAYBE_SignedIn) {
+// TODO(crbug.com/1177139) Re-enable test
+TEST_F(RepeatableQueriesServiceTest, DISABLED_SignedIn) {
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
                                          GoodServerResponse());

@@ -631,7 +631,8 @@ TEST_F(ShelfContextMenuTest, CrostiniTerminalApp) {
 
 // Checks the context menu for a "normal" crostini app (i.e. a registered one).
 // Particularly, we ensure that the density changing option exists.
-TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
+// TODO(crbug.com/1177126) Re-enable test
+TEST_F(ShelfContextMenuTest, DISABLED_CrostiniNormalApp) {
   const std::string app_name = "foo";
   crostini_helper()->AddApp(crostini::CrostiniTestHelper::BasicApp(app_name));
   app_service_test().FlushMojoCalls();
