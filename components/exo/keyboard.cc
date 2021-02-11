@@ -253,6 +253,9 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
       ProcessAshAcceleratorIfPossible(focus_, event)) {
     // Discard a key press event if the corresponding accelerator is handled.
     event->SetHandled();
+    // The current focus might have been reset while processing accelerators.
+    if (!focus_)
+      return;
   }
 
   // When IME ate a key event, we use the event only for tracking key states and
