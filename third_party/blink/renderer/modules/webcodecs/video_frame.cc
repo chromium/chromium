@@ -133,6 +133,12 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  if (source->WouldTaintOrigin()) {
+    exception_state.ThrowSecurityError(
+        "VideoFrames can't be created from tainted ImageBitmaps.");
+    return nullptr;
+  }
+
   const gfx::Size coded_size(source->width(), source->height());
   const gfx::Rect visible_rect(coded_size);
   const gfx::Size natural_size = coded_size;

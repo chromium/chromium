@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>VideoFrames can't be constructed from cross-origin ImageBitmaps.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(function(t) {
+  var image = document.createElement('img');
+  image.addEventListener('load', t.step_func(_ => {
+    createImageBitmap(image).then(t.step_func(bmp => {
+      var canvas = document.createElement("canvas");
+      canvas.width = 10;
+      canvas.height = 10;
+      var context = canvas.getContext("2d");
+      context.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+
+      assert_throws_dom('SecurityError', () => {
+        context.getImageData(0, 0, canvas.width, canvas.height);
+      }, "Expected ImageBitmap to be tainted!");
+
+      assert_throws_dom('SecurityError', () => {
+        new VideoFrame(bmp, {timestamp: 0});
+      }, "Expected failure to create a VideoFrame from tainted ImageBitmap!");
+
+      t.done();
+    })).catch(t.unreached_func());
+  }), false);
+  image.src = 'http://localhost:8080/security/resources/abe.png';
+});
+</script>
