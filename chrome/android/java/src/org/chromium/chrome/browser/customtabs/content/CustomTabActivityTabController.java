@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
+import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
@@ -205,7 +206,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     }
 
     public void saveState() {
-        mTabFactory.getTabModelSelector().saveState();
+        mTabFactory.getTabModelOrchestrator().saveState();
     }
 
     public TabModelSelector getTabModelSelector() {
@@ -239,12 +240,13 @@ public class CustomTabActivityTabController implements InflationObserver {
             mConnection.cancelSpeculation(mSession);
         }
 
-        TabModelSelectorImpl tabModelSelector = mTabFactory.getTabModelSelector();
+        TabModelOrchestrator tabModelOrchestrator = mTabFactory.getTabModelOrchestrator();
+        TabModelSelectorImpl tabModelSelector = tabModelOrchestrator.getTabModelSelector();
 
         TabModel tabModel = tabModelSelector.getModel(mIntentDataProvider.isIncognito());
         tabModel.addObserver(mTabObserverRegistrar);
 
-        finalizeCreatingTab(tabModelSelector, tabModel);
+        finalizeCreatingTab(tabModelOrchestrator, tabModel);
         Tab tab = mTabProvider.getTab();
         assert tab != null;
         assert mTabProvider.getInitialTabCreationMode() != TabCreationMode.NONE;
@@ -307,13 +309,13 @@ public class CustomTabActivityTabController implements InflationObserver {
 
     // Creates the tab on native init, if it hasn't been created yet, and does all the additional
     // initialization steps necessary at this stage.
-    private void finalizeCreatingTab(TabModelSelectorImpl tabModelSelector, TabModel tabModel) {
+    private void finalizeCreatingTab(TabModelOrchestrator tabModelOrchestrator, TabModel tabModel) {
         Tab earlyCreatedTab = mTabProvider.getTab();
 
         Tab tab = earlyCreatedTab;
         @TabCreationMode int mode = mTabProvider.getInitialTabCreationMode();
 
-        Tab restoredTab = tryRestoringTab(tabModelSelector);
+        Tab restoredTab = tryRestoringTab(tabModelOrchestrator);
         if (restoredTab != null) {
             assert earlyCreatedTab == null :
                     "Shouldn't create a new tab when there's one to restore";
@@ -362,11 +364,11 @@ public class CustomTabActivityTabController implements InflationObserver {
     }
 
     @Nullable
-    private Tab tryRestoringTab(TabModelSelectorImpl tabModelSelector) {
+    private Tab tryRestoringTab(TabModelOrchestrator tabModelOrchestrator) {
         if (mActivity.getSavedInstanceState() == null) return null;
-        tabModelSelector.loadState(true);
-        tabModelSelector.restoreTabs(true);
-        Tab tab = tabModelSelector.getCurrentTab();
+        tabModelOrchestrator.loadState(true);
+        tabModelOrchestrator.restoreTabs(true);
+        Tab tab = tabModelOrchestrator.getTabModelSelector().getCurrentTab();
         if (tab != null) {
             initializeTab(tab);
         }

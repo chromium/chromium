@@ -407,8 +407,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public ChromeTabbedActivity() {
         mMainIntentMetrics = new MainIntentBehaviorMetrics();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mMultiInstanceManager = new MultiInstanceManager(this, getTabModelSelectorSupplier(),
-                    getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(), this);
+            mMultiInstanceManager =
+                    new MultiInstanceManager(this, getTabModelOrchestratorSupplier(),
+                            getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(), this);
         } else {
             mMultiInstanceManager = null;
         }
@@ -886,7 +887,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public void onStopWithNative() {
         super.onStopWithNative();
 
-        mTabModelSelectorImpl.saveState();
+        mTabModelOrchestrator.saveState();
         mHasDeterminedOverviewStateForCurrentSession = false;
     }
 
@@ -1106,7 +1107,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE);
             if (noRestoreState) {
                 // Clear the state files because they are inconsistent and useless from now on.
-                mTabModelSelectorImpl.clearState();
+                mTabModelOrchestrator.clearState();
             } else {
                 // State should be clear when we start first run and hence we do not need to load
                 // a previous state. This may change the current Model, watch out for initialization
@@ -1114,7 +1115,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // Never attempt to restore incognito tabs when this activity was previously swiped
                 // away in Recents. http://crbug.com/626629
                 boolean ignoreIncognitoFiles = !hadCipherData;
-                mTabModelSelectorImpl.loadState(ignoreIncognitoFiles);
+                mTabModelOrchestrator.loadState(ignoreIncognitoFiles);
             }
 
             mInactivityTracker.register(this.getLifecycleDispatcher());
@@ -1142,7 +1143,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     AsyncTabParamsManagerSingleton.getInstance().hasParamsWithTabToReparent()
                     && getSavedInstanceState() == null;
             mCreatedTabOnStartup = getCurrentTabModel().getCount() > 0
-                    || mTabModelSelectorImpl.getRestoredTabCount() > 0 || isIntentWithEffect
+                    || mTabModelOrchestrator.getRestoredTabCount() > 0 || isIntentWithEffect
                     || hasTabWaitingForReparenting;
 
             // We always need to try to restore tabs. The set of tabs might be empty, but at least
@@ -1152,7 +1153,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     || (shouldShowTabSwitcherOnStart()
                             && !mTabModelSelectorImpl.isIncognitoSelected());
 
-            mTabModelSelectorImpl.restoreTabs(activeTabBeingRestored);
+            mTabModelOrchestrator.restoreTabs(activeTabBeingRestored);
 
             // Only create an initial tab if no tabs were restored and no intent was handled.
             // Also, check whether the active tab was supposed to be restored and that the total
@@ -1267,7 +1268,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             TabModel tabModel = getCurrentTabModel();
             switch (tabOpenType) {
                 case TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB:
-                    mTabModelSelectorImpl.tryToRestoreTabStateForUrl(url);
+                    mTabModelOrchestrator.tryToRestoreTabStateForUrl(url);
                     int tabToBeClobberedIndex = TabModelUtils.getTabIndexByUrl(tabModel, url);
                     Tab tabToBeClobbered = tabModel.getTabAt(tabToBeClobberedIndex);
                     if (tabToBeClobbered != null) {
@@ -1283,7 +1284,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     LaunchMetrics.recordHomeScreenLaunchIntoTab(url, shortcutSource);
                     break;
                 case TabOpenType.BRING_TAB_TO_FRONT:
-                    mTabModelSelectorImpl.tryToRestoreTabStateForId(tabIdToBringToFront);
+                    mTabModelOrchestrator.tryToRestoreTabStateForId(tabIdToBringToFront);
 
                     int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabIdToBringToFront);
                     if (tabIndex == TabModel.INVALID_TAB_INDEX) {
@@ -1328,7 +1329,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     int tabId = IntentUtils.safeGetIntExtra(
                             intent, TabOpenType.REUSE_TAB_MATCHING_ID_STRING, Tab.INVALID_TAB_ID);
                     if (tabId != Tab.INVALID_TAB_ID) {
-                        mTabModelSelectorImpl.tryToRestoreTabStateForId(tabId);
+                        mTabModelOrchestrator.tryToRestoreTabStateForId(tabId);
                         int matchingTabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
                         boolean loaded = false;
                         if (matchingTabIndex != TabModel.INVALID_TAB_INDEX) {
@@ -2375,7 +2376,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     @VisibleForTesting
     public void saveState() {
-        mTabModelSelectorImpl.saveState();
+        mTabModelOrchestrator.saveState();
     }
 
     @Override

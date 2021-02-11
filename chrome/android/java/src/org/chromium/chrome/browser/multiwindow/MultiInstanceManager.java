@@ -27,6 +27,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -74,7 +75,7 @@ public class MultiInstanceManager
     private ApplicationStatus.ActivityStateListener mOtherCTAStateObserver;
 
     private final Activity mActivity;
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -90,7 +91,7 @@ public class MultiInstanceManager
     /**
      * Create a new {@link MultiInstanceManager}.
      * @param activity The activity.
-     * @param tabModelSelectorSupplier A supplier for the {@link TabModelSelector} for the
+     * @param tabModelOrchestratorSupplier A supplier for the {@link TabModelOrchestrator} for the
      *         associated activity.
      * @param multiWindowModeStateDispatcher The {@link MultiWindowModeStateDispatcher} for the
      *         associated activity.
@@ -100,12 +101,12 @@ public class MultiInstanceManager
      *         associated activity.
      */
     public MultiInstanceManager(Activity activity,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
         mActivity = activity;
-        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mTabModelOrchestratorSupplier = tabModelOrchestratorSupplier;
 
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mMultiWindowModeStateDispatcher.addObserver(this);
@@ -312,9 +313,12 @@ public class MultiInstanceManager
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
         if (id == org.chromium.chrome.R.id.move_to_other_window_menu_id) {
-            Tab currentTab = mTabModelSelectorSupplier.get() == null
-                    ? null
-                    : mTabModelSelectorSupplier.get().getCurrentTab();
+            TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
+            if (tabModelOrchestrator == null) return true;
+            TabModelSelector tabModelSelector = tabModelOrchestrator.getTabModelSelector();
+            if (tabModelSelector == null) return true;
+
+            Tab currentTab = tabModelSelector.getCurrentTab();
             if (currentTab != null) moveTabToOtherWindow(currentTab);
             return true;
         }
@@ -388,7 +392,7 @@ public class MultiInstanceManager
 
         killOtherTask();
         RecordUserAction.record("Android.MergeState.Live");
-        mTabModelSelectorSupplier.get().mergeState();
+        mTabModelOrchestratorSupplier.get().mergeState();
     }
 
     private static void setMergedInstanceTaskId(int mergedInstanceTaskId) {

@@ -33,6 +33,13 @@ public abstract class TabModelOrchestrator {
     }
 
     /**
+     * @return The {@link TabPersistentStore} managed by this orchestrator.
+     */
+    public TabPersistentStore getTabPersistentStore() {
+        return mTabPersistentStore;
+    }
+
+    /**
      * Destroy the {@link TabPersistentStore} and {@link TabModelSelectorImpl} members.
      */
     public void destroy() {
@@ -51,6 +58,72 @@ public abstract class TabModelOrchestrator {
         if (mTabModelSelector != null) {
             mTabModelSelector.destroy();
         }
+    }
+
+    /**
+     * Save the current state of the tab model. Usage of this method is discouraged due to it
+     * writing to disk.
+     */
+    public void saveState() {
+        mTabModelSelector.commitAllTabClosures();
+        mTabPersistentStore.saveState();
+    }
+
+    /**
+     * Load the saved tab state. This should be called before any new tabs are created. The saved
+     * tabs shall not be restored until {@link #restoreTabs} is called.
+     * @param ignoreIncognitoFiles Whether to skip loading incognito tabs.
+     */
+    public void loadState(boolean ignoreIncognitoFiles) {
+        mTabPersistentStore.loadState(ignoreIncognitoFiles);
+    }
+
+    /**
+     * Restore the saved tabs which were loaded by {@link #loadState}.
+     *
+     * @param setActiveTab If true, synchronously load saved active tab and set it as the current
+     *                     active tab.
+     */
+    public void restoreTabs(boolean setActiveTab) {
+        mTabPersistentStore.restoreTabs(setActiveTab);
+    }
+
+    public void mergeState() {
+        mTabPersistentStore.mergeState();
+    }
+
+    public void clearState() {
+        mTabPersistentStore.clearState();
+    }
+
+    /**
+     * If there is an asynchronous session restore in-progress, try to synchronously restore
+     * the state of a tab with the given url as a frozen tab. This method has no effect if
+     * there isn't a tab being restored with this url, or the tab has already been restored.
+     */
+    public void tryToRestoreTabStateForUrl(String url) {
+        if (mTabModelSelector.isSessionRestoreInProgress()) {
+            mTabPersistentStore.restoreTabStateForUrl(url);
+        }
+    }
+
+    /**
+     * If there is an asynchronous session restore in-progress, try to synchronously restore
+     * the state of a tab with the given id as a frozen tab. This method has no effect if
+     * there isn't a tab being restored with this id, or the tab has already been restored.
+     */
+    public void tryToRestoreTabStateForId(int id) {
+        if (mTabModelSelector.isSessionRestoreInProgress()) {
+            mTabPersistentStore.restoreTabStateForId(id);
+        }
+    }
+
+    /**
+     * @return Number of restored tabs on cold startup.
+     */
+    public int getRestoredTabCount() {
+        if (mTabPersistentStore == null) return 0;
+        return mTabPersistentStore.getRestoredTabCount();
     }
 
     protected void wireSelectorAndStore() {

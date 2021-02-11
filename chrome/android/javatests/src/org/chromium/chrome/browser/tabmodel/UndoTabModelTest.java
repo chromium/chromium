@@ -29,6 +29,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
+import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,6 +43,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -283,10 +285,10 @@ public class UndoTabModelTest {
         }
     }
 
-    private void saveStateOnUiThread(final TabModelSelector selector) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ((TabModelSelectorImpl) selector).saveState(); });
+    private void saveStateOnUiThread(final TabModelOrchestrator orchestrator) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { orchestrator.saveState(); });
 
+        TabModelSelector selector = orchestrator.getTabModelSelector();
         for (int i = 0; i < selector.getModels().size(); i++) {
             TabList tabs = selector.getModels().get(i).getComprehensiveModel();
             for (int j = 0; j < tabs.getCount(); j++) {
@@ -1381,7 +1383,7 @@ public class UndoTabModelTest {
     }
 
     /**
-     * Test calling {@link TabModelSelectorImpl#saveState()} commits all pending closures:
+     * Test calling {@link TabModelOrchestrator#saveState()} commits all pending closures:
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1s ]           -                 [ 0 1s ]
      * 2.  CloseTab(0, allow undo)    [ 1s ]             [ 0 ]             [ 0 1s ]
@@ -1390,8 +1392,10 @@ public class UndoTabModelTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/633607
-    public void testSaveStateCommitsUndos() throws TimeoutException {
-        TabModelSelector selector = sActivityTestRule.getActivity().getTabModelSelector();
+    public void testSaveStateCommitsUndos() throws TimeoutException, ExecutionException {
+        TabModelOrchestrator orchestrator = TestThreadUtils.runOnUiThreadBlocking(
+                () -> sActivityTestRule.getActivity().getTabModelOrchestratorSupplier().get());
+        TabModelSelector selector = orchestrator.getTabModelSelector();
         TabModel model = selector.getModel(false);
         ChromeTabCreator tabCreator = sActivityTestRule.getActivity().getTabCreator(false);
         createTabOnUiThread(tabCreator);
@@ -1409,7 +1413,7 @@ public class UndoTabModelTest {
         checkState(model, new Tab[] { tab1 }, tab1, EMPTY, fullList, tab1);
 
         // 3.
-        saveStateOnUiThread(selector);
+        saveStateOnUiThread(orchestrator);
         fullList = new Tab[] { tab1 };
         checkState(model, new Tab[] { tab1 }, tab1, EMPTY, fullList, tab1);
         Assert.assertTrue(tab0.isClosing());

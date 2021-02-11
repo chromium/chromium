@@ -98,15 +98,21 @@ public class CustomTabActivityTabFactory {
 
     /** Returns the previously created {@link TabModelSelector}. */
     public TabModelSelectorImpl getTabModelSelector() {
-        if (mTabModelOrchestrator == null) {
-            assert false;
-            createTabModelOrchestrator();
-        }
+        getTabModelOrchestrator();
         if (mTabModelOrchestrator.getTabModelSelector() == null) {
             assert false;
             createTabModels();
         }
         return mTabModelOrchestrator.getTabModelSelector();
+    }
+
+    /** Returns the previously created {@link CustomTabsTabModelOrchestrator}. */
+    public CustomTabsTabModelOrchestrator getTabModelOrchestrator() {
+        if (mTabModelOrchestrator == null) {
+            assert false;
+            createTabModelOrchestrator();
+        }
+        return mTabModelOrchestrator;
     }
 
     /** Creates a {@link ChromeTabCreator}s for the custom tab. */

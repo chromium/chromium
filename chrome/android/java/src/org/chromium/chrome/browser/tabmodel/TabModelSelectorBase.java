@@ -265,9 +265,6 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
     }
 
     @Override
-    public void mergeState() {}
-
-    @Override
     public void destroy() {
         removeObserver(mTabModelFilterProvider);
         mTabModelFilterProvider.destroy();
