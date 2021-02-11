@@ -82,8 +82,9 @@ void WebFramesManagerImpl::OnWebViewUpdated(
                         webView:new_web_view];
     [message_router
         setScriptMessageHandler:^(WKScriptMessage* message) {
-          DCHECK(!delegate_.GetWebState()->IsBeingDestroyed());
           if (weak_ptr) {
+            DCHECK(weak_ptr->delegate_.GetWebState() &&
+                   !weak_ptr->delegate_.GetWebState()->IsBeingDestroyed());
             weak_ptr->OnFrameBecameUnavailable(message);
           }
         }
