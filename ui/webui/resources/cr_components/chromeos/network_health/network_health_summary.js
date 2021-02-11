@@ -157,4 +157,14 @@ Polymer({
   getNetworkUrl_(network) {
     return 'chrome://os-settings/networkDetail?guid=' + network.guid;
   },
+
+  /**
+   * Returns a concatenated list of strings.
+   * @private
+   * @param {!Array<string>} addresses
+   * @return {string}
+   */
+  joinAddresses_(addresses) {
+    return addresses.join(', ');
+  },
 });
