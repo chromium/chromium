@@ -6008,29 +6008,65 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="EventLatencyBreakdowns" separator=".">
-  <suffix name="Activation" label="The duration of the activation stage."/>
+  <suffix name="Activation" label="The duration of the activation stage.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="BeginImplFrameToSendBeginMainFrame"
       label="The time from when the compositor impl frame is started to when
-             BeginMainFrame is sent."/>
+             BeginMainFrame is sent.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="BrowserToRendererCompositor"
       label="The time from when the event is generated until the first
-             compositor stage after the event arrives in the renderer."/>
-  <suffix name="Commit" label="The duration of the commit stage."/>
+             compositor stage after the event arrives in the renderer.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
+  <suffix name="Commit" label="The duration of the commit stage.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="EndActivateToSubmitCompositorFrame"
       label="The time from when an activation is complete to the next
-             SubmitCompositorFrame."/>
+             SubmitCompositorFrame.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="EndCommitToActivation"
       label="The time from when a commit is complete to the beginning of the
-             next activation."/>
+             next activation.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit"
-      label="The time from when the BeginMainFrame is sent to the beginning
-             of the commit."/>
+      label="The time from when the BeginMainFrame is sent to the beginning of
+             the commit.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.Animate"
       label="The time portion of SendBeginMainFrameToCommit spent on
-             animations."/>
+             animations.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.BeginMainSentToStarted"
       label="The time portion of SendBeginMainFrameToCommit spent before
-             starting main thread work."/>
+             starting main thread work.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.Composite"
       label="The time portion of SendBeginMainFrameToCommit spent on
              compositing.">
@@ -6039,25 +6075,52 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="SendBeginMainFrameToCommit.CompositeCommit"
-      label="The time portion of SendBeginMainFrameToCommit spent on
-             composite commit."/>
+      label="The time portion of SendBeginMainFrameToCommit spent on composite
+             commit.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.CompositingAssignments"
       label="The time portion of SendBeginMainFrameToCommit spent on updating
-             compositing assignments."/>
+             compositing assignments.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.CompositingInputs"
       label="The time portion of SendBeginMainFrameToCommit spent on updating
-             compositing inputs."/>
+             compositing inputs.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.HandleInputEvents"
       label="The time portion of SendBeginMainFrameToCommit spent on handling
-             imput events."/>
+             imput events.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.LayoutUpdate"
       label="The time portion of SendBeginMainFrameToCommit spent on layout
-             update."/>
+             update.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.Paint"
-      label="The time portion of SendBeginMainFrameToCommit spent on paint."/>
+      label="The time portion of SendBeginMainFrameToCommit spent on paint.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.Prepaint"
-      label="The time portion of SendBeginMainFrameToCommit spent on
-             prepaint."/>
+      label="The time portion of SendBeginMainFrameToCommit spent on prepaint.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.ScrollingCoordinator"
       label="The time portion of SendBeginMainFrameToCommit spent on scrolling
              coordinator.">
@@ -6068,33 +6131,65 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </suffix>
   <suffix name="SendBeginMainFrameToCommit.StyleUpdate"
       label="The time portion of SendBeginMainFrameToCommit spent on style
-             update."/>
+             update.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.UpdateLayers"
       label="The time portion of SendBeginMainFrameToCommit spent on updating
-             layers."/>
+             layers.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="SubmitCompositorFrameToPresentationCompositorFrame"
       label="The time from when the compositor frame is submitted to the
-             display compositor to when it is presented."/>
+             display compositor to when it is presented.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw"
       label="The time from when the compositor frame is received to when it
-             starts to draw."/>
+             starts to draw.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart"
       label="The time from when the compositor frame is started to draw to
-             when it starts swap."/>
+             when it starts swap.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.SubmitToReceiveCompositorFrame"
       label="The time from when the compositor frame is submitted to when it
-             is received."/>
+             is received.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame"
       label="The time from when the compositor frame ends swap to when it is
-             presented."/>
+             presented.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix
       name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd"
-      label="The time from when the compositor frame starts to swap to when
-             it ends swap."/>
+      label="The time from when the compositor frame starts to swap to when it
+             ends swap.">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </suffix>
   <suffix name="TotalLatency"
       label="Total latency from when the event is generated until the frame
              is presented on screen."/>

@@ -333,16 +333,6 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta time_delta) const;
 
   void ReportEventLatencyHistograms() const;
-  void ReportEventLatencyBlinkBreakdowns(
-      int histogram_base_index,
-      const std::string& histogram_base_name) const;
-  void ReportEventLatencyVizBreakdowns(
-      int histogram_base_index,
-      const std::string& histogram_base_name) const;
-  void ReportEventLatencyHistogram(int histogram_base_index,
-                                   const std::string& histogram_base_name,
-                                   int stage_type_index,
-                                   base::TimeDelta latency) const;
 
   void ReportCompositorLatencyTraceEvents() const;
   void ReportEventLatencyTraceEvents() const;

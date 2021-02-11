@@ -297,10 +297,8 @@ constexpr int kEventLatencyEventTypeCount =
     static_cast<int>(EventMetrics::EventType::kMaxValue) + 1;
 constexpr int kEventLatencyScrollTypeCount =
     static_cast<int>(EventMetrics::ScrollType::kMaxValue) + 1;
-constexpr int kMaxEventLatencyHistogramBaseIndex =
-    kEventLatencyEventTypeCount * kEventLatencyScrollTypeCount;
 constexpr int kMaxEventLatencyHistogramIndex =
-    kMaxEventLatencyHistogramBaseIndex * (kStageTypeCount + kAllBreakdownCount);
+    kEventLatencyEventTypeCount * kEventLatencyScrollTypeCount;
 constexpr base::TimeDelta kEventLatencyHistogramMin =
     base::TimeDelta::FromMicroseconds(1);
 constexpr base::TimeDelta kEventLatencyHistogramMax =
@@ -953,6 +951,14 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
 }
 
 void CompositorFrameReporter::ReportEventLatencyHistograms() const {
+  const StageData& total_latency_stage = stage_history_.back();
+  DCHECK_EQ(StageType::kTotalLatency, total_latency_stage.stage_type);
+
+  const std::string total_latency_stage_name =
+      GetStageName(static_cast<int>(StageType::kTotalLatency));
+  const std::string total_latency_histogram_name =
+      "EventLatency." + total_latency_stage_name;
+
   for (const auto& event_metrics : events_metrics_) {
     DCHECK(event_metrics);
     const std::string histogram_base_name =
@@ -962,12 +968,13 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
         event_metrics->scroll_type()
             ? static_cast<int>(*event_metrics->scroll_type())
             : 0;
-    const int histogram_base_index =
+    const int event_histogram_index =
         event_type_index * kEventLatencyScrollTypeCount + scroll_type_index;
 
     const base::TimeTicks generated_timestamp =
         event_metrics->GetDispatchStageTimestamp(
             EventMetrics::DispatchStage::kGenerated);
+    DCHECK_LT(generated_timestamp, total_latency_stage.end_time);
 
     // For scroll events, report total latency up to gpu-swap-begin. This is
     // useful in comparing new EventLatency metrics with LatencyInfo-based
@@ -976,86 +983,43 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
         !viz_breakdown_.swap_timings.is_null()) {
       const base::TimeDelta swap_begin_latency =
           viz_breakdown_.swap_timings.swap_start - generated_timestamp;
-      const std::string swap_begin_histogram_name =
+      const std::string event_swap_begin_histogram_name =
           histogram_base_name + ".TotalLatencyToSwapBegin";
-      // Note: There's a 1:1 mapping between `histogram_base_index` and
-      // `swap_begin_histogram_name` which allows the use of
+      // Note: There's a 1:1 mapping between `event_histogram_index` and
+      // `event_swap_begin_histogram_name` which allows the use of
       // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
       STATIC_HISTOGRAM_POINTER_GROUP(
-          swap_begin_histogram_name, histogram_base_index,
-          kMaxEventLatencyHistogramBaseIndex,
+          event_swap_begin_histogram_name, event_histogram_index,
+          kMaxEventLatencyHistogramIndex,
           AddTimeMicrosecondsGranularity(swap_begin_latency),
           base::Histogram::FactoryMicrosecondsTimeGet(
-              swap_begin_histogram_name, kEventLatencyHistogramMin,
+              event_swap_begin_histogram_name, kEventLatencyHistogramMin,
               kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount,
               base::HistogramBase::kUmaTargetedHistogramFlag));
     }
 
-    // It is possible for an event to arrive in the compositor in the middle of
-    // a frame (e.g. the browser received the event *after* renderer received a
-    // begin-impl, and the event reached the compositor before that frame
-    // ended). To handle such cases, find the first stage that happens after the
-    // event's arrival in the browser.
-    auto stage_it =
-        std::find_if(stage_history_.begin(), stage_history_.end(),
-                     [generated_timestamp](const StageData& stage) {
-                       return stage.start_time > generated_timestamp;
-                     });
-    // TODO(crbug.com/1079116): Ideally, at least the start time of
-    // SubmitCompositorFrameToPresentationCompositorFrame stage should be
-    // greater than the event time stamp, but apparently, this is not always the
-    // case (see crbug.com/1093698). For now, skip to the next event in such
-    // cases. Hopefully, the work to reduce discrepancies between the new
-    // EventLatency and the old Event.Latency metrics would fix this issue. If
-    // not, we need to reconsider investigating this issue.
-    if (stage_it == stage_history_.end())
-      continue;
-
-    const base::TimeDelta b2r_latency =
-        stage_it->start_time - generated_timestamp;
-    const std::string b2r_histogram_name =
-        histogram_base_name + ".BrowserToRendererCompositor";
-    // Note: There's a 1:1 mapping between `histogram_base_index` and
-    // `b2r_histogram_name` which allows the use of
+    // Report total latency up to presentation for the event.
+    const base::TimeDelta total_latency =
+        total_latency_stage.end_time - generated_timestamp;
+    const std::string event_total_latency_histogram_name =
+        base::StrCat({histogram_base_name, ".", total_latency_stage_name});
+    // Note: There's a 1:1 mapping between `event_histogram_index` and
+    // `event_total_latency_histogram_name` which allows the use of
     // `STATIC_HISTOGRAM_POINTER_GROUP()` to cache histogram objects.
     STATIC_HISTOGRAM_POINTER_GROUP(
-        b2r_histogram_name, histogram_base_index,
-        kMaxEventLatencyHistogramBaseIndex,
-        AddTimeMicrosecondsGranularity(b2r_latency),
+        event_total_latency_histogram_name, event_histogram_index,
+        kMaxEventLatencyHistogramIndex,
+        AddTimeMicrosecondsGranularity(total_latency),
         base::Histogram::FactoryMicrosecondsTimeGet(
-            b2r_histogram_name, kEventLatencyHistogramMin,
+            event_total_latency_histogram_name, kEventLatencyHistogramMin,
             kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount,
             base::HistogramBase::kUmaTargetedHistogramFlag));
 
-    for (; stage_it != stage_history_.end(); ++stage_it) {
-      // Total latency is calculated since the event timestamp.
-      const base::TimeTicks start_time =
-          stage_it->stage_type == StageType::kTotalLatency
-              ? generated_timestamp
-              : stage_it->start_time;
-      const base::TimeDelta latency = stage_it->end_time - start_time;
-      const int stage_type_index = static_cast<int>(stage_it->stage_type);
-      ReportEventLatencyHistogram(histogram_base_index, histogram_base_name,
-                                  stage_type_index, latency);
-
-      switch (stage_it->stage_type) {
-        case StageType::kSendBeginMainFrameToCommit:
-          ReportEventLatencyBlinkBreakdowns(histogram_base_index,
-                                            histogram_base_name);
-          break;
-        case StageType::kSubmitCompositorFrameToPresentationCompositorFrame:
-          ReportEventLatencyVizBreakdowns(histogram_base_index,
-                                          histogram_base_name);
-          break;
-        case StageType::kTotalLatency:
-          UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-              "EventLatency.TotalLatency", latency, kEventLatencyHistogramMin,
-              kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount);
-          break;
-        default:
-          break;
-      }
-    }
+    // Also, report total latency up to presentation for all event types in an
+    // aggregate histogram.
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        total_latency_histogram_name, total_latency, kEventLatencyHistogramMin,
+        kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount);
   }
 
   if (latency_ukm_reporter_) {
@@ -1063,54 +1027,6 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
         events_metrics_, stage_history_, *processed_blink_breakdown_,
         *processed_viz_breakdown_);
   }
-}
-
-void CompositorFrameReporter::ReportEventLatencyBlinkBreakdowns(
-    int histogram_base_index,
-    const std::string& histogram_base_name) const {
-  DCHECK(processed_blink_breakdown_);
-  for (auto it = processed_blink_breakdown_->CreateIterator(); it.IsValid();
-       it.Advance()) {
-    ReportEventLatencyHistogram(
-        histogram_base_index, histogram_base_name,
-        kBlinkBreakdownInitialIndex + static_cast<size_t>(it.GetBreakdown()),
-        it.GetLatency());
-  }
-}
-
-void CompositorFrameReporter::ReportEventLatencyVizBreakdowns(
-    int histogram_base_index,
-    const std::string& histogram_base_name) const {
-  DCHECK(processed_viz_breakdown_);
-  for (auto it = processed_viz_breakdown_->CreateIterator(false); it.IsValid();
-       it.Advance()) {
-    ReportEventLatencyHistogram(
-        histogram_base_index, histogram_base_name,
-        kVizBreakdownInitialIndex + static_cast<size_t>(it.GetBreakdown()),
-        it.GetDuration());
-  }
-}
-
-void CompositorFrameReporter::ReportEventLatencyHistogram(
-    int histogram_base_index,
-    const std::string& histogram_base_name,
-    int stage_type_index,
-    base::TimeDelta latency) const {
-  const std::string histogram_name =
-      base::StrCat({histogram_base_name, ".", GetStageName(stage_type_index)});
-  const int histogram_index =
-      histogram_base_index * (kStageTypeCount + kAllBreakdownCount) +
-      stage_type_index;
-  // Note: There's a 1:1 mapping between `histogram_index` and `histogram_name`
-  // which allows the use of `STATIC_HISTOGRAM_POINTER_GROUP()` to cache
-  // histogram objects.
-  STATIC_HISTOGRAM_POINTER_GROUP(
-      histogram_name, histogram_index, kMaxEventLatencyHistogramIndex,
-      AddTimeMicrosecondsGranularity(latency),
-      base::Histogram::FactoryMicrosecondsTimeGet(
-          histogram_name, kEventLatencyHistogramMin, kEventLatencyHistogramMax,
-          kEventLatencyHistogramBucketCount,
-          base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
