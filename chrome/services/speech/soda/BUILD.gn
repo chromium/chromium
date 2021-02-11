@@ -3,6 +3,11 @@
 # found in the LICENSE file.
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/services/speech/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("soda_api_proto") {
+  sources = [ "proto/soda_api.proto" ]
+}
 
 source_set("soda") {
   sources = [
@@ -11,7 +16,10 @@ source_set("soda") {
     "soda_client.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":soda_api_proto",
+    "//base",
+  ]
 
   if (is_chromeos_ash) {
     sources += [

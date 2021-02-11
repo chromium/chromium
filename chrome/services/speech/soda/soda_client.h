@@ -27,7 +27,9 @@ class SodaClient {
   bool DidAudioPropertyChange(int sample_rate, int channel_count);
 
   // Resets the SODA instance, initializing it with the provided config.
-  void Reset(const SodaConfig config);
+  void Reset(const SerializedSodaConfig config,
+             int sample_rate,
+             int channel_count);
 
   // Returns a flag indicating whether the client has been initialized.
   bool IsInitialized() { return is_initialized_; }
@@ -35,7 +37,7 @@ class SodaClient {
  private:
   base::ScopedNativeLibrary lib_;
 
-  typedef void* (*CreateSodaFunction)(SodaConfig);
+  typedef void* (*CreateSodaFunction)(SerializedSodaConfig);
   CreateSodaFunction create_soda_func_;
 
   typedef void (*DeleteSodaFunction)(void*);
@@ -43,6 +45,9 @@ class SodaClient {
 
   typedef void (*AddAudioFunction)(void*, const char*, int);
   AddAudioFunction add_audio_func_;
+
+  typedef void (*SodaStartFunction)(void*);
+  SodaStartFunction soda_start_func_;
 
   // An opaque handle to the SODA async instance.
   void* soda_async_handle_;
