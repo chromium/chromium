@@ -392,6 +392,7 @@ static_library("ui") {
     "//components/account_id",
     "//components/autofill/content/browser:risk_proto",
     "//components/autofill/core/browser",
+    "//components/autofill_assistant/browser/public:public",
     "//components/blocked_content",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",
