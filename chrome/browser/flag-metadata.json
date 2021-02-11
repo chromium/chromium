@@ -862,7 +862,7 @@
   {
     "name": "default-browser-setting",
     "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "delay-competing-low-priority-requests",
@@ -2671,7 +2671,7 @@
   {
     "name": "expanded-tab-strip",
     "owners": [ "mouraroberto@google.com", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 92
   },
   {
     "name": "expensive-background-timer-throttling",
@@ -3449,7 +3449,7 @@
   {
     "name": "mobile-google-srp",
     "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 92
   },
   {
     "name": "mobile-identity-consistency",
@@ -4550,7 +4550,7 @@
   {
     "name": "settings-refresh",
     "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "share-button-in-top-toolbar",
@@ -5040,7 +5040,7 @@
   {
     "name": "use-js-error-page",
     "owners": [ "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "use-lookalikes-for-navigation-suggestions",
@@ -5181,7 +5181,7 @@
   {
     "name": "web-view-native-context-menu",
     "owners": ["gambard","bling-flags@google.com"],
-    "expiry_milestone": 90
+    "expiry_milestone": 92
   },
   {
     "name": "webpage-alternative-text-zoom",
