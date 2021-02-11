@@ -47,7 +47,10 @@ class WebAppFrameToolbarInteractiveUITest
 // Verifies that for minimal-ui web apps, the toolbar keyboard focus cycles
 // among the toolbar buttons: the reload button, the extensions menu button, and
 // the app menu button, in that order.
-IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest, CycleFocus) {
+//
+// TODO(https://crbug.com/1176121): Re-enable after fixing flakiness.
+IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarInteractiveUITest,
+                       DISABLED_CycleFocus) {
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("simple_with_icon/")));
 
   const GURL app_url("https://test.org");
