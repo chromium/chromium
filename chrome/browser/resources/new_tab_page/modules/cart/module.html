@@ -208,7 +208,8 @@
     <div id="leftProbe" class="probe"></div>
     <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
       <a class="cart-item" title="[[item.merchant]]"
-          href="[[item.cartUrl.url]]">
+          href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
+          on-auxclick="onCartItemClick_">
         <cr-icon-button class="icon-more-vert"
             title="$i18n{moreActions}" on-click="onCartMenuButtonClick_">
         </cr-icon-button>

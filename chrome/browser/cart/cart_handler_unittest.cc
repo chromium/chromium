@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
@@ -123,6 +124,7 @@ class CartHandlerTest : public testing::Test {
   TestingProfile profile_;
   std::unique_ptr<CartHandler> handler_;
   CartService* service_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Verifies the hide status is flipped by hiding and restoring.
@@ -329,4 +331,30 @@ TEST_F(CartHandlerTest, TestShowWelcomeSurface) {
                                             run_loop[10].QuitClosure(),
                                             std::move(carts_with_product)));
   run_loop[10].Run();
+}
+
+// Test cart click index histogram is properly recorded.
+TEST_F(CartHandlerTest, TestOnCartItemClicked) {
+  handler_->OnCartItemClicked(3);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 3));
+  handler_->OnCartItemClicked(2);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 2));
+  handler_->OnCartItemClicked(3);
+  ASSERT_EQ(2,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 3));
+}
+
+// Test cart item count histogram is properly recorded.
+TEST_F(CartHandlerTest, TestOnModuleCreated) {
+  handler_->OnModuleCreated(0);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 0));
+  handler_->OnModuleCreated(1);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 1));
+  handler_->OnModuleCreated(0);
+  ASSERT_EQ(2,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 0));
 }

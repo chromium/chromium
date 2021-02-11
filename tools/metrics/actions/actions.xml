@@ -16349,6 +16349,64 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="NewTabPage.Carts.HideModule">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    The 'Hide these carts' option is clicked in the cart module menu to
+    temporarily hide the module.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.LeftScrollClick">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    The scroll button on the left side of the module is clicked in order to see
+    carts on the left.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.RemoveModule">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    The 'Never show carts' option is clicked in the cart module menu to
+    permanently remove the module.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.RightScrollClick">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    The scroll button on the right side of the module is clicked in order to see
+    carts on the right.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.UndoHideModule">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    An attempt to temporarily hide the cart module is undone.
+  </description>
+</action>
+
+<action name="NewTabPage.Carts.UndoRemoveModule">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    An attempt to permanently remove the cart module is undone.
+  </description>
+</action>
+
 <action name="NewTabPage.LinkOpenedFromContextMenu.WebUI">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
