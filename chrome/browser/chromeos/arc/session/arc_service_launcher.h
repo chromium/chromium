@@ -24,6 +24,7 @@ class SchedulerConfigurationManagerBase;
 
 namespace arc {
 
+class ArcDemoModePreferenceHandler;
 class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
 class ArcSessionManager;
@@ -67,6 +68,8 @@ class ArcServiceLauncher {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler>
       arc_play_store_enabled_preference_handler_;
+  std::unique_ptr<ArcDemoModePreferenceHandler>
+      arc_demo_mode_preference_handler_;
   // |scheduler_configuration_manager_| outlives |this|.
   chromeos::SchedulerConfigurationManagerBase* const
       scheduler_configuration_manager_;

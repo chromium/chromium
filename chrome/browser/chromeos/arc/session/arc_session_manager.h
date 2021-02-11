@@ -298,6 +298,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Getter for |serialno|.
   std::string GetSerialNumber() const;
 
+  // Stops mini-ARC instance. This should only be called before login.
+  void StopMiniArcIfNecessary();
+
  private:
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;

@@ -41,6 +41,7 @@
 #include "chrome/browser/chromeos/arc/print_spooler/arc_print_spooler_bridge.h"
 #include "chrome/browser/chromeos/arc/process/arc_process_service.h"
 #include "chrome/browser/chromeos/arc/screen_capture/arc_screen_capture_bridge.h"
+#include "chrome/browser/chromeos/arc/session/arc_demo_mode_preference_handler.h"
 #include "chrome/browser/chromeos/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/sharesheet/arc_sharesheet_bridge.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/chromeos/arc/user_session/arc_user_session_service.h"
 #include "chrome/browser/chromeos/arc/video/gpu_arc_video_service_host.h"
 #include "chrome/browser/chromeos/arc/wallpaper/arc_wallpaper_service.h"
+#include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -123,6 +125,11 @@ ArcServiceLauncher::ArcServiceLauncher(
       scheduler_configuration_manager_(scheduler_configuration_manager) {
   DCHECK(g_arc_service_launcher == nullptr);
   g_arc_service_launcher = this;
+
+  if (!chromeos::StartupUtils::IsOobeCompleted()) {
+    arc_demo_mode_preference_handler_ =
+        ArcDemoModePreferenceHandler::Create(arc_session_manager_.get());
+  }
 }
 
 ArcServiceLauncher::~ArcServiceLauncher() {

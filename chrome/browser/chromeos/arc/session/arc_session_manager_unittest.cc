@@ -220,6 +220,19 @@ TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisible_NoOp) {
             arc_session_manager()->state());
 }
 
+// We expect that StopMiniArcIfNecessary stops mini-ARC when it is running.
+TEST_F(ArcSessionManagerInLoginScreenTest, StopMiniArcIfNecessary) {
+  EXPECT_FALSE(arc_session());
+
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+
+  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  EXPECT_TRUE(arc_session());
+
+  arc_session_manager()->StopMiniArcIfNecessary();
+  EXPECT_FALSE(arc_session());
+}
+
 class ArcSessionManagerTestBase : public testing::Test {
  public:
   ArcSessionManagerTestBase()

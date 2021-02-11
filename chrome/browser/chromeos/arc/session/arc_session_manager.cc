@@ -1675,6 +1675,13 @@ void ArcSessionManager::OnExpandPropertyFilesAndReadSalt(
     observer.OnPropertyFilesExpanded(*property_files_expansion_result_);
 }
 
+void ArcSessionManager::StopMiniArcIfNecessary() {
+  DCHECK(!profile_);
+  pre_start_time_ = base::TimeTicks();
+  VLOG(1) << "Stopping mini-ARC instance (if any)";
+  arc_session_runner_->RequestStop();
+}
+
 std::ostream& operator<<(std::ostream& os,
                          const ArcSessionManager::State& state) {
 #define MAP_STATE(name)                \
