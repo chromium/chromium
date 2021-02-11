@@ -4821,7 +4821,7 @@ crbug.com/1025321 [ Win ] http/tests/devtools/tracing/console-timeline.js [ Pass
 crbug.com/977033 http/tests/priorities/resource-load-priorities-media-preload.html [ Timeout ]
 
 # Sheriff 2019-11-26
-crbug.com/1028684 inspector-protocol/animation/animation-release.js [ Pass Failure ]
+crbug.com/1028684 http/tests/inspector-protocol/animation/animation-release.js [ Pass Failure ]
 
 # Sheriff 2019-11-29
 crbug.com/1019079 fast/canvas/OffscreenCanvas-placeholder-createImageBitmap.html [ Pass Failure ]
