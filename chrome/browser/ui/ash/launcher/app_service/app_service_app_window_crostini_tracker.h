@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_APP_SERVICE_APP_WINDOW_CROSTINI_TRACKER_H_
 
 #include "ash/public/cpp/shelf_types.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "chrome/browser/ui/ash/launcher/crostini_app_display.h"
 
 class AppServiceAppWindowLauncherController;
@@ -53,10 +53,9 @@ class AppServiceAppWindowCrostiniTracker {
 
   CrostiniAppDisplay crostini_app_display_;
 
-  // Permission objects that allow this controller to manage which application
-  // windows can activate themselves.
-  base::flat_map<aura::Window*, std::unique_ptr<exo::Permission>>
-      activation_permissions_;
+  // Windows that have been granted the permission to activate via the
+  // exo::Permission window property.
+  base::flat_set<aura::Window*> activation_permissions_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_APP_SERVICE_APP_SERVICE_APP_WINDOW_CROSTINI_TRACKER_H_

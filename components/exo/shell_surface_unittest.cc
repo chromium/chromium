@@ -391,24 +391,61 @@ TEST_F(ShellSurfaceTest, ActivationPermission) {
   EXPECT_FALSE(HasPermissionToActivate(window));
 
   // Can grant permission.
-  std::unique_ptr<exo::Permission> permission =
-      GrantPermissionToActivate(window, base::TimeDelta::FromDays(1));
+  GrantPermissionToActivate(window, base::TimeDelta::FromDays(1));
+  exo::Permission* permission = window->GetProperty(kPermissionKey);
   EXPECT_TRUE(permission->Check(Permission::Capability::kActivate));
   EXPECT_TRUE(HasPermissionToActivate(window));
 
-  // Overriding the permission revokes the previous one.
-  std::unique_ptr<exo::Permission> permission2 =
-      GrantPermissionToActivate(window, base::TimeDelta::FromDays(2));
-  EXPECT_FALSE(permission->Check(Permission::Capability::kActivate));
-  EXPECT_TRUE(permission2->Check(Permission::Capability::kActivate));
-
-  // The old permission no longer affects the window
-  permission.reset();
-  EXPECT_TRUE(HasPermissionToActivate(window));
-
-  // Deleting the permission revokes.
-  permission2.reset();
+  // Can revoke permission.
+  RevokePermissionToActivate(window);
   EXPECT_FALSE(HasPermissionToActivate(window));
+
+  // Can grant permission again.
+  GrantPermissionToActivate(window, base::TimeDelta::FromDays(2));
+  exo::Permission* permission2 = window->GetProperty(kPermissionKey);
+  EXPECT_TRUE(permission2->Check(Permission::Capability::kActivate));
+  EXPECT_TRUE(HasPermissionToActivate(window));
+}
+
+TEST_F(ShellSurfaceTest, WidgetActivation) {
+  gfx::Size buffer_size(64, 64);
+  auto buffer1 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto surface1 = std::make_unique<Surface>();
+  auto shell_surface1 = std::make_unique<ShellSurface>(surface1.get());
+  surface1->Attach(buffer1.get());
+  surface1->Commit();
+
+  // The window is active.
+  views::Widget* widget1 = shell_surface1->GetWidget();
+  EXPECT_TRUE(widget1->IsActive());
+
+  // Create a second window.
+  auto buffer2 = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto surface2 = std::make_unique<Surface>();
+  auto shell_surface2 = std::make_unique<ShellSurface>(surface2.get());
+  surface2->Attach(buffer2.get());
+  surface2->Commit();
+
+  // Now the second window is active.
+  views::Widget* widget2 = shell_surface2->GetWidget();
+  EXPECT_FALSE(widget1->IsActive());
+  EXPECT_TRUE(widget2->IsActive());
+
+  // Grant permission to activate the first window.
+  GrantPermissionToActivate(widget1->GetNativeWindow(),
+                            base::TimeDelta::FromDays(1));
+
+  // The first window can activate itself.
+  surface1->RequestActivation();
+  EXPECT_TRUE(widget1->IsActive());
+  EXPECT_FALSE(widget2->IsActive());
+
+  // The second window cannot activate itself.
+  surface2->RequestActivation();
+  EXPECT_TRUE(widget1->IsActive());
+  EXPECT_FALSE(widget2->IsActive());
 }
 
 TEST_F(ShellSurfaceTest, EmulateOverrideRedirect) {

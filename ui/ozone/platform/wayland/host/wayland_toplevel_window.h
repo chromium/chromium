@@ -49,6 +49,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Minimize() override;
   void Restore() override;
   PlatformWindowState GetPlatformWindowState() const override;
+  void Activate() override;
   void SizeConstraintsChanged() override;
   std::string GetWindowUniqueId() const override;
   // SetUseNativeFrame and ShouldUseNativeFrame decide on

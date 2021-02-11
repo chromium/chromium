@@ -26,8 +26,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(exo::Permission*)
-
 namespace exo {
 
 namespace {
@@ -44,9 +42,6 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kStartupIdKey, nullptr)
 
 // Accessibility Id set by the client.
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kClientAccessibilityIdKey, -1)
-
-// Permission object allowing this window to activate itself.
-DEFINE_UI_CLASS_PROPERTY_KEY(exo::Permission*, kPermissionKey, nullptr)
 
 // Returns true if the component for a located event should be taken care of
 // by the window system.
@@ -221,36 +216,17 @@ Surface* GetTargetSurfaceForLocatedEvent(
   }
 }
 
-namespace {
+void GrantPermissionToActivate(aura::Window* window, base::TimeDelta timeout) {
+  // Activation is the only permission, so just set the property. The window
+  // owns the Permission object.
+  window->SetProperty(
+      kPermissionKey,
+      new Permission(Permission::Capability::kActivate, timeout));
+}
 
-// An activation-permission object whose lifetime is tied to a window property.
-class ScopedWindowActivationPermission : public Permission {
- public:
-  ScopedWindowActivationPermission(aura::Window* window,
-                                   base::TimeDelta timeout)
-      : Permission(Permission::Capability::kActivate, timeout),
-        window_(window) {
-    Permission* other = window_->GetProperty(kPermissionKey);
-    if (other) {
-      other->Revoke();
-    }
-    window_->SetProperty(kPermissionKey, reinterpret_cast<Permission*>(this));
-  }
-
-  ~ScopedWindowActivationPermission() override {
-    if (window_->GetProperty(kPermissionKey) == this)
-      window_->ClearProperty(kPermissionKey);
-  }
-
- private:
-  aura::Window* window_;
-};
-
-}  // namespace
-
-std::unique_ptr<Permission> GrantPermissionToActivate(aura::Window* window,
-                                                      base::TimeDelta timeout) {
-  return std::make_unique<ScopedWindowActivationPermission>(window, timeout);
+void RevokePermissionToActivate(aura::Window* window) {
+  // Activation is the only permission, so just clear the property.
+  window->ClearProperty(kPermissionKey);
 }
 
 bool HasPermissionToActivate(aura::Window* window) {

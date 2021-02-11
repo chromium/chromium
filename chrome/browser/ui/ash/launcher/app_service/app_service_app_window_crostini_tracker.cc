@@ -166,9 +166,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
 
 void AppServiceAppWindowCrostiniTracker::OnWindowDestroying(
     aura::Window* window) {
-  base::EraseIf(activation_permissions_, [&window](const auto& element) {
-    return element.first == window;
-  });
+  activation_permissions_.erase(window);
 }
 
 void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
@@ -177,6 +175,8 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
   crostini_app_display_.Register(app_id, display_id);
   // Remove the old permissions and add a permission for every window the app
   // currently has open.
+  for (aura::Window* window : activation_permissions_)
+    exo::RevokePermissionToActivate(window);
   activation_permissions_.clear();
   ash::ShelfModel* model = app_service_controller_->owner()->shelf_model();
   int index = model->ItemIndexByAppID(app_id);
@@ -192,10 +192,9 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
   if (!launcher_item_controller)
     return;
   for (AppWindowBase* app_window : launcher_item_controller->windows()) {
-    activation_permissions_.emplace(
-        app_window->GetNativeWindow(),
-        exo::GrantPermissionToActivate(app_window->GetNativeWindow(),
-                                       kSelfActivationTimeout));
+    exo::GrantPermissionToActivate(app_window->GetNativeWindow(),
+                                   kSelfActivationTimeout);
+    activation_permissions_.insert(app_window->GetNativeWindow());
   }
 }
 

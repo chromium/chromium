@@ -243,9 +243,7 @@ PlatformWindowState WaylandWindow::GetPlatformWindowState() const {
   return PlatformWindowState::kNormal;
 }
 
-void WaylandWindow::Activate() {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
+void WaylandWindow::Activate() {}
 
 void WaylandWindow::Deactivate() {
   NOTIMPLEMENTED_LOG_ONCE();

@@ -190,6 +190,14 @@ PlatformWindowState WaylandToplevelWindow::GetPlatformWindowState() const {
   return state_;
 }
 
+void WaylandToplevelWindow::Activate() {
+  // Only supported by compositors that support zaura_shell (e.g. exo).
+  // TODO(https://crbug.com/1175327): Use standard Wayland extensions, such as
+  // xdg-activation, when those are available.
+  if (aura_surface_)
+    zaura_surface_activate(aura_surface_.get());
+}
+
 void WaylandToplevelWindow::SizeConstraintsChanged() {
   // Size constraints only make sense for normal windows.
   if (!shell_toplevel_)
