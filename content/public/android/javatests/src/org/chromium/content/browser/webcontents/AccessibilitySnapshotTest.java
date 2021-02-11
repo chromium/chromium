@@ -102,9 +102,11 @@ public class AccessibilitySnapshotTest {
         AccessibilitySnapshotNode child = root.children.get(0);
         Assert.assertEquals(1, child.children.size());
         Assert.assertEquals("", child.text);
-        AccessibilitySnapshotNode grandChild = child.children.get(0);
-        Assert.assertEquals(1, grandChild.children.size());
-        Assert.assertEquals("Click", grandChild.text);
+        AccessibilitySnapshotNode button = child.children.get(0);
+        Assert.assertEquals(1, button.children.size());
+        Assert.assertEquals("android.widget.Button", button.className);
+        AccessibilitySnapshotNode buttonText = button.children.get(0);
+        Assert.assertEquals("Click", buttonText.text);
     }
 
     @Test
@@ -114,11 +116,12 @@ public class AccessibilitySnapshotTest {
         AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
         Assert.assertEquals(1, root.children.size());
         Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode child = root.children.get(0);
-        Assert.assertEquals("color", child.text);
-        Assert.assertTrue(child.hasStyle);
-        Assert.assertEquals("ff123456", Integer.toHexString(child.color));
-        Assert.assertEquals("ffabcdef", Integer.toHexString(child.bgcolor));
+        AccessibilitySnapshotNode para = root.children.get(0);
+        Assert.assertTrue(para.hasStyle);
+        Assert.assertEquals("ff123456", Integer.toHexString(para.color));
+        Assert.assertEquals("ffabcdef", Integer.toHexString(para.bgcolor));
+        AccessibilitySnapshotNode paraText = para.children.get(0);
+        Assert.assertEquals("color", paraText.text);
     }
 
     @Test
@@ -130,13 +133,14 @@ public class AccessibilitySnapshotTest {
         AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
         Assert.assertEquals(1, root.children.size());
         Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode child = root.children.get(0);
-        Assert.assertTrue(child.hasStyle);
-        Assert.assertEquals("foo", child.text);
+        AccessibilitySnapshotNode para = root.children.get(0);
+        Assert.assertTrue(para.hasStyle);
+        AccessibilitySnapshotNode paraText = para.children.get(0);
+        Assert.assertEquals("foo", paraText.text);
 
         // The font size should take the scale into account.
         double expected = UseZoomForDSFPolicy.isUseZoomForDSFEnabled() ? cssToPixel(32.0) : 32.0;
-        Assert.assertEquals(expected, child.textSize, 1.0);
+        Assert.assertEquals(expected, para.textSize, 1.0);
     }
 
     @Test
@@ -148,13 +152,15 @@ public class AccessibilitySnapshotTest {
         AccessibilitySnapshotNode root = receiveAccessibilitySnapshot(data, null);
         Assert.assertEquals(1, root.children.size());
         Assert.assertEquals("", root.text);
-        AccessibilitySnapshotNode child = root.children.get(0);
-        Assert.assertEquals("foo", child.text);
-        Assert.assertTrue(child.hasStyle);
-        Assert.assertTrue(child.bold);
-        Assert.assertTrue(child.italic);
-        Assert.assertFalse(child.lineThrough);
-        Assert.assertFalse(child.underline);
+        AccessibilitySnapshotNode para = root.children.get(0);
+        Assert.assertTrue(para.hasStyle);
+        Assert.assertTrue(para.bold);
+        Assert.assertTrue(para.italic);
+        Assert.assertFalse(para.lineThrough);
+        Assert.assertFalse(para.underline);
+
+        AccessibilitySnapshotNode paraText = para.children.get(0);
+        Assert.assertEquals("foo", paraText.text);
     }
 
     @Test
@@ -165,7 +171,7 @@ public class AccessibilitySnapshotTest {
         Assert.assertEquals(2, root.children.size());
         Assert.assertEquals("", root.text);
         AccessibilitySnapshotNode child1 = root.children.get(0);
-        Assert.assertEquals("foo", child1.text);
+        Assert.assertEquals("foo", child1.children.get(0).text);
         Assert.assertTrue(child1.hasStyle);
         Assert.assertFalse(child1.bold);
         AccessibilitySnapshotNode child2 = root.children.get(1);

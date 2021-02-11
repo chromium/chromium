@@ -34,15 +34,6 @@ bool HasFocusableChild(const AXNode* node) {
   return false;
 }
 
-bool HasOnlyTextChildren(const AXNode* node) {
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
-    if (!child->IsText())
-      return false;
-  }
-  return true;
-}
-
 // TODO(muyuanli): share with BrowserAccessibility.
 bool IsSimpleTextControl(const AXNode* node, uint32_t state) {
   return (node->data().role == ax::mojom::Role::kTextField ||
@@ -131,27 +122,6 @@ base::string16 GetValue(const AXNode* node, bool show_password) {
   return value;
 }
 
-bool HasOnlyTextAndImageChildren(const AXNode* node) {
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
-    if (!child->IsText() && !ui::IsImage(child->data().role)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool IsFocusable(const AXNode* node) {
-  if (node->data().role == ax::mojom::Role::kIframe ||
-      node->data().role == ax::mojom::Role::kIframePresentational ||
-      ((node->data().role == ax::mojom::Role::kRootWebArea ||
-        node->data().role == ax::mojom::Role::kPdfRoot) &&
-       node->GetUnignoredParent())) {
-    return node->data().HasStringAttribute(ax::mojom::StringAttribute::kName);
-  }
-  return node->data().HasState(ax::mojom::State::kFocusable);
-}
-
 base::string16 GetText(const AXNode* node, bool show_password) {
   if (node->data().role == ax::mojom::Role::kPdfRoot ||
       node->data().role == ax::mojom::Role::kIframe ||
@@ -159,12 +129,10 @@ base::string16 GetText(const AXNode* node, bool show_password) {
     return base::string16();
   }
 
-  ax::mojom::NameFrom name_from = static_cast<ax::mojom::NameFrom>(
-      node->data().GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
-  if (ui::IsListItem(node->data().role) &&
-      name_from == ax::mojom::NameFrom::kContents) {
-    if (!node->children().empty() && !HasOnlyTextChildren(node))
-      return base::string16();
+  ax::mojom::NameFrom name_from = node->data().GetNameFrom();
+
+  if (!ui::IsLeaf(node) && name_from == ax::mojom::NameFrom::kContents) {
+    return base::string16();
   }
 
   base::string16 value = GetValue(node, show_password);
@@ -212,9 +180,7 @@ base::string16 GetText(const AXNode* node, bool show_password) {
     return text;
   }
 
-  if (text.empty() &&
-      (HasOnlyTextChildren(node) ||
-       (IsFocusable(node) && HasOnlyTextAndImageChildren(node)))) {
+  if (text.empty() && IsLeaf(node)) {
     for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
       AXNode* child = node->GetUnignoredChildAtIndex(i);
       text += GetText(child, show_password);
@@ -227,6 +193,7 @@ base::string16 GetText(const AXNode* node, bool show_password) {
         node->data().GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = AXUrlBaseText(url);
   }
+
   return text;
 }
 

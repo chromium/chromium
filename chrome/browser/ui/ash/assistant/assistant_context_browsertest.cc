@@ -88,14 +88,18 @@ IN_PROC_BROWSER_TEST_F(AssistantContextBrowserTest,
   ui::AssistantNode* root = assistant_tree->nodes[0].get();
 
   ASSERT_EQ(root->children_indices.size(), 1ul);
-  ui::AssistantNode* child =
+  ui::AssistantNode* div =
       assistant_tree->nodes[root->children_indices[0]].get();
 
-  ui::AssistantNode* grad_child =
-      assistant_tree->nodes[child->children_indices[0]].get();
-  ASSERT_EQ(base::UTF16ToUTF8(grad_child->text), "Hello");
-  ASSERT_EQ(grad_child->rect.x(), 20);
-  ASSERT_EQ(grad_child->rect.y(), 20);
+  ui::AssistantNode* para =
+      assistant_tree->nodes[div->children_indices[0]].get();
+  EXPECT_TRUE(para->text.empty());
+  EXPECT_EQ(para->rect.x(), 20);
+  EXPECT_EQ(para->rect.y(), 20);
+
+  ui::AssistantNode* static_text =
+      assistant_tree->nodes[para->children_indices[0]].get();
+  ASSERT_EQ(base::UTF16ToUTF8(static_text->text), "Hello");
 }
 
 }  // namespace assistant

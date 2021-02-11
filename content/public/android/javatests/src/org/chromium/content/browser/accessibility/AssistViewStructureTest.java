@@ -67,7 +67,7 @@ public class AssistViewStructureTest {
         Assert.assertEquals(testViewStructure.toString(),
                 "\n"
                         + "  android.webkit.WebView\n"
-                        + "    android.view.View text='Hello World'\n"
+                        + "    android.view.View\n"
                         + "      android.widget.TextView text='Hello World'\n");
     }
 
@@ -90,15 +90,15 @@ public class AssistViewStructureTest {
                         + "  android.webkit.WebView\n"
                         + "    android.widget.ListView\n"
                         + "      android.view.View\n"
-                        + "        android.view.View text='1. '\n"
+                        + "        android.view.View\n"
                         + "          android.widget.TextView text='1. '\n"
                         + "        android.widget.TextView text='Kirk'\n"
                         + "      android.view.View\n"
-                        + "        android.view.View text='2. '\n"
+                        + "        android.view.View\n"
                         + "          android.widget.TextView text='2. '\n"
                         + "        android.widget.TextView text='Picard'\n"
                         + "      android.view.View\n"
-                        + "        android.view.View text='3. '\n"
+                        + "        android.view.View\n"
                         + "          android.widget.TextView text='3. '\n"
                         + "        android.widget.TextView text='Janeway'\n");
     }
@@ -124,5 +124,40 @@ public class AssistViewStructureTest {
         Assert.assertTrue(url.contains("text/html"));
         Assert.assertTrue(url.contains("Hello"));
         Assert.assertTrue(url.contains("World"));
+    }
+
+    /**
+     * Test that accessible descriptions (like title, aria-label) augments visible
+     * text that's in the document, but that visible text isn't redundantly repeated
+     * otherwise.
+     *
+     * For example, a simple link like <a href="#">Hello</a> should not have the text
+     * "Hello" on both the link and the inner content node, but if the link has an
+     * aria-label like <a href="#" aria-label="Friday">Tomorrow</a> then the
+     * link's text should be the aria-label and the inner text should still be present.
+     */
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @TargetApi(Build.VERSION_CODES.M)
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
+    public void testAccessibleLabelsAugmentInnerText() throws Throwable {
+        TestViewStructureInterface testViewStructure =
+                getViewStructureFromHtml("<a href='#'>Link</a>"
+                        + "<a href='#' aria-label='AriaLabel'>Link</a>"
+                        + "<button>Button</button>"
+                        + "<button aria-label='AriaLabel'>Button</button>");
+        Assert.assertEquals(testViewStructure.toString(),
+                "\n"
+                        + "  android.webkit.WebView\n"
+                        + "    android.view.View\n"
+                        + "      android.view.View\n"
+                        + "        android.widget.TextView text='Link'\n"
+                        + "      android.view.View text='AriaLabel'\n"
+                        + "        android.widget.TextView text='Link'\n"
+                        + "      android.widget.Button\n"
+                        + "        android.widget.TextView text='Button'\n"
+                        + "      android.widget.Button text='AriaLabel'\n"
+                        + "        android.widget.TextView text='Button'\n");
     }
 }
