@@ -14,7 +14,7 @@
 
   #infoIcon {
     bottom: 1px;
-    fill:  var(--google-grey-700);
+    fill: var(--google-grey-700);
     height: 20px;
     left: 4px;
     width: 20px;
@@ -31,11 +31,15 @@
 </style>
 <div class="data-point">
   <div class="header">
-    <span>[[header]]</span>
+    <span id="headerText" aria-hidden="true"> [[header]]</span>
     <iron-icon slot="icon" icon="cr:info-outline" id="infoIcon"
-      hidden$="[[!tooltipText]]">
+        hidden$="[[!tooltipText]]">
     </iron-icon>
-    <paper-tooltip for="infoIcon">[[tooltipText]]</paper-tooltip>
+    <paper-tooltip for="infoIcon" aria-hidden="true">
+      <span id="tooltipText">[[tooltipText]]</span>
+    </paper-tooltip>
   </div>
-  <div class$="[[getValueClass_(warningState)]]">[[value]]</div>
+  <div class$="[[getValueClass_(warningState)]]" aria-labelledby="headerText"
+      aria-describedby="tooltipText"> [[value]]
+  </div>
 </div>
