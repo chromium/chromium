@@ -48,8 +48,7 @@ public class WebViewApkApplication extends Application {
 
         // MonochromeApplication has its own locale configuration already, so call this here
         // rather than in maybeInitProcessGlobals.
-        ResourceBundle.setAvailablePakLocales(
-                new String[] {}, AwLocaleConfig.getWebViewSupportedPakLocales());
+        ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
     }
 
     @Override

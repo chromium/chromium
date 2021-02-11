@@ -25,7 +25,6 @@ public class AwShellApplication extends Application {
         ContextUtils.initApplicationContext(this);
         PathUtils.setPrivateDataDirectorySuffix("webview", "WebView");
         CommandLine.initFromFile("/data/local/tmp/android-webview-command-line");
-        ResourceBundle.setAvailablePakLocales(
-                new String[] {}, AwLocaleConfig.getWebViewSupportedPakLocales());
+        ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
     }
 }

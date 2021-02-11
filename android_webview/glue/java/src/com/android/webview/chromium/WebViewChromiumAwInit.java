@@ -147,8 +147,7 @@ public class WebViewChromiumAwInit {
 
             JNIUtils.setClassLoader(WebViewChromiumAwInit.class.getClassLoader());
 
-            ResourceBundle.setAvailablePakLocales(
-                    new String[] {}, AwLocaleConfig.getWebViewSupportedPakLocales());
+            ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
 
             BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
 
