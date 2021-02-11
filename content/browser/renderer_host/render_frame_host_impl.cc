@@ -1057,7 +1057,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // Only main frames have `waiting_for_init_` set.
   DCHECK(!waiting_for_init_ || !parent_);
 
-  agent_scheduling_group().AddRoute(routing_id_, this);
+  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   g_routing_id_frame_map.Get().emplace(
       GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_), this);
   g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
@@ -1274,7 +1274,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   if (was_created && render_view_host_->GetMainFrame() != this)
     CHECK(IsPendingDeletion() || IsInBackForwardCache());
 
-  agent_scheduling_group().RemoveRoute(routing_id_);
+  GetAgentSchedulingGroup().RemoveRoute(routing_id_);
   g_routing_id_frame_map.Get().erase(
       GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_));
 
@@ -1516,7 +1516,7 @@ RenderProcessHost* RenderFrameHostImpl::GetProcess() {
   return agent_scheduling_group_.GetProcess();
 }
 
-AgentSchedulingGroupHost& RenderFrameHostImpl::agent_scheduling_group() {
+AgentSchedulingGroupHost& RenderFrameHostImpl::GetAgentSchedulingGroup() {
   return agent_scheduling_group_;
 }
 
@@ -1860,8 +1860,8 @@ RenderFrameHostImpl::GetRemoteAssociatedInterfaces() {
   if (!remote_associated_interfaces_) {
     mojo::AssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         remote_interfaces;
-    if (agent_scheduling_group().GetChannel()) {
-      agent_scheduling_group().GetRemoteRouteProvider()->GetRoute(
+    if (GetAgentSchedulingGroup().GetChannel()) {
+      GetAgentSchedulingGroup().GetRemoteRouteProvider()->GetRoute(
           GetRoutingID(), remote_interfaces.BindNewEndpointAndPassReceiver());
     } else {
       // The channel may not be initialized in some tests environments. In this
@@ -1903,7 +1903,7 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
 }
 
 bool RenderFrameHostImpl::Send(IPC::Message* message) {
-  return agent_scheduling_group().Send(message);
+  return GetAgentSchedulingGroup().Send(message);
 }
 
 bool RenderFrameHostImpl::OnMessageReceived(const IPC::Message& msg) {
@@ -2277,7 +2277,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // initialized it) or may not (we have our own process or the old process
   // crashed) have been initialized. Calling Init() multiple times will be
   // ignored, so this is safe.
-  if (!agent_scheduling_group().Init())
+  if (!GetAgentSchedulingGroup().Init())
     return false;
 
   DCHECK(GetProcess()->IsInitializedAndNotDead());
@@ -2376,7 +2376,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // be able to insert the new frame in the frame tree.
   DCHECK(params->previous_routing_id != MSG_ROUTING_NONE ||
          params->parent_routing_id != MSG_ROUTING_NONE);
-  agent_scheduling_group().CreateFrame(std::move(params));
+  GetAgentSchedulingGroup().CreateFrame(std::move(params));
 
   if (previous_routing_id != MSG_ROUTING_NONE) {
     RenderFrameProxyHost* proxy = RenderFrameProxyHost::FromID(

@@ -178,7 +178,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
   }
 
   IPC::TestSink& test_sink() {
-    return main_test_rfh()->agent_scheduling_group().sink();
+    return main_test_rfh()->GetAgentSchedulingGroup().sink();
   }
 
   void Suspend() {

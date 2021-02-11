@@ -561,7 +561,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                    NavigationRequest* navigation_request,
                    bool did_create_new_document);
 
-  virtual AgentSchedulingGroupHost& agent_scheduling_group();
   RenderViewHostImpl* render_view_host() { return render_view_host_.get(); }
   RenderFrameHostDelegate* delegate() { return delegate_; }
   FrameTree* frame_tree() const { return frame_tree_; }
@@ -1012,6 +1011,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns associated remote for the blink::mojom::LocalFrame Mojo interface.
   const mojo::AssociatedRemote<blink::mojom::LocalFrame>&
   GetAssociatedLocalFrame();
+
+  // Returns the AgentSchedulingGroupHost associated with this
+  // RenderFrameHostImpl.
+  virtual AgentSchedulingGroupHost& GetAgentSchedulingGroup();
 
   // Returns associated remote for the blink::mojom::LocalMainFrame Mojo
   // interface. May be overridden by subclasses, e.g. tests which wish to
