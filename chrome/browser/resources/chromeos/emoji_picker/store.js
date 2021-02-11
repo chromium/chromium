@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 const LOCALSTORAGE_KEY = 'emoji-recently-used';
-const MAX_RECENTS = 14;
+const MAX_RECENTS = 18;
 
 /**
  * Recently used emoji, most recent first. Each emoji is stored as a string.
