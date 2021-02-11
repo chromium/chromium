@@ -4886,6 +4886,11 @@ crbug.com/878878 [ Mac ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar
 crbug.com/878878 [ Win ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Pass Timeout Failure ]
 crbug.com/878878 [ Win ] virtual/threaded/fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Pass Timeout Failure ]
 
+crbug.com/1038354 [ Win ] fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Pass Timeout Failure ]
+crbug.com/1038354 [ Linux ] fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Pass Timeout Failure ]
+crbug.com/1038354 [ Win ] fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Pass Timeout Failure ]
+crbug.com/1038354 [ Linux ] fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Pass Timeout Failure ]
+
 crbug.com/878878 virtual/threaded/fast/scroll-snap/animate-fling-to-snap-points.html [ Failure Pass Timeout ]
 crbug.com/878878 virtual/threaded/fast/scroll-snap/snap-scrolls-visual-viewport.html [ Failure Pass ]
 
