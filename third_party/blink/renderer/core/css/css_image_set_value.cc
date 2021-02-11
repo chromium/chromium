@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -54,23 +55,19 @@ void CSSImageSetValue::FillImageSet() {
   wtf_size_t length = this->length();
   wtf_size_t i = 0;
   while (i < length) {
-    const auto& image_value = To<CSSImageValue>(Item(i));
-    String image_url = image_value.Url();
+    wtf_size_t image_index = i;
 
     ++i;
     SECURITY_DCHECK(i < length);
-    const CSSValue& scale_factor_value = Item(i);
-    float scale_factor =
-        To<CSSPrimitiveValue>(scale_factor_value).GetFloatValue();
+    const auto& scale_factor_value = To<CSSPrimitiveValue>(Item(i));
 
     ImageWithScale image;
-    image.image_url = image_url;
-    image.referrer.referrer = image_value.GetReferrer().referrer;
-    image.referrer.referrer_policy = image_value.GetReferrer().referrer_policy;
-    image.scale_factor = scale_factor;
+    image.index = image_index;
+    image.scale_factor = scale_factor_value.GetFloatValue();
 
     // Only set for the first image as all images in a set should have identical
     // is_ad_related bits.
+    const auto& image_value = To<CSSImageValue>(Item(image_index));
     if (!images_in_set_.size())
       is_ad_related_ = image_value.GetIsAdRelated();
     DCHECK_EQ(is_ad_related_, image_value.GetIsAdRelated());
@@ -119,11 +116,12 @@ StyleImage* CSSImageSetValue::CacheImage(
     // Page::PageScaleFactor(), LocalFrame::PageZoomFactor(), and any CSS
     // transforms. https://bugs.webkit.org/show_bug.cgi?id=81698
     ImageWithScale image = BestImageForScaleFactor(device_scale_factor);
-    ResourceRequest resource_request(document.CompleteURL(image.image_url));
+    const auto& image_value = To<CSSImageValue>(Item(image.index));
+    ResourceRequest resource_request(image_value.Url());
     resource_request.SetReferrerPolicy(
         ReferrerUtils::MojoReferrerPolicyResolveDefault(
-            image.referrer.referrer_policy));
-    resource_request.SetReferrerString(image.referrer.referrer);
+            image_value.GetReferrer().referrer_policy));
+    resource_request.SetReferrerString(image_value.GetReferrer().referrer);
     if (is_ad_related_)
       resource_request.SetIsAdResource();
     ResourceLoaderOptions options(
@@ -131,7 +129,7 @@ StyleImage* CSSImageSetValue::CacheImage(
     options.initiator_info.name = parser_mode_ == kUASheetMode
                                       ? fetch_initiator_type_names::kUacss
                                       : fetch_initiator_type_names::kCSS;
-    options.initiator_info.referrer = image.referrer.referrer;
+    options.initiator_info.referrer = image_value.GetReferrer().referrer;
     FetchParameters params(std::move(resource_request), options);
 
     if (cross_origin != kCrossOriginAttributeNotSet) {

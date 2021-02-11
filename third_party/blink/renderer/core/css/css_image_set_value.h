@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -54,13 +53,6 @@ class CSSImageSetValue : public CSSValueList {
 
   String CustomCSSText() const;
 
-  struct ImageWithScale {
-    DISALLOW_NEW();
-    String image_url;
-    Referrer referrer;
-    float scale_factor;
-  };
-
   CSSImageSetValue* ValueWithURLsMadeAbsolute();
 
   bool HasFailedOrCanceledSubresources() const;
@@ -68,6 +60,12 @@ class CSSImageSetValue : public CSSValueList {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  protected:
+  struct ImageWithScale {
+    DISALLOW_NEW();
+    wtf_size_t index;
+    float scale_factor;
+  };
+
   ImageWithScale BestImageForScaleFactor(float scale_factor);
 
  private:
