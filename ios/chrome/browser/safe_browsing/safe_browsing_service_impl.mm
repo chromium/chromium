@@ -132,6 +132,11 @@ SafeBrowsingServiceImpl::GetURLLoaderFactory() {
   return shared_url_loader_factory_;
 }
 
+scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+SafeBrowsingServiceImpl::GetDatabaseManager() {
+  return safe_browsing_db_manager_;
+}
+
 void SafeBrowsingServiceImpl::ClearCookies(
     const net::CookieDeletionInfo::TimeRange& creation_range,
     base::OnceClosure callback) {

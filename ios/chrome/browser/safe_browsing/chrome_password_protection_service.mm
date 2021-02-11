@@ -10,16 +10,29 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/ios/password_protection/password_protection_request_ios.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
+#include "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "ios/chrome/browser/signin/identity_manager_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
+#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -51,7 +64,7 @@ using SafeBrowsingStatus =
 
 namespace {
 
-// Given a |web_state|, returns a timestemp of its last committed
+// Given a |web_state|, returns a timestamp of its last committed
 // navigation.
 int64_t GetLastCommittedNavigationTimestamp(web::WebState* web_state) {
   if (!web_state)
@@ -93,8 +106,14 @@ std::unique_ptr<UserEventSpecifics> GetUserEventSpecifics(
 }  // namespace
 
 ChromePasswordProtectionService::ChromePasswordProtectionService(
+    SafeBrowsingService* sb_service,
     ChromeBrowserState* browser_state)
-    : safe_browsing::PasswordProtectionService(nullptr, nullptr, nullptr),
+    : safe_browsing::PasswordProtectionService(
+          sb_service->GetDatabaseManager(),
+          sb_service->GetURLLoaderFactory(),
+          ios::HistoryServiceFactory::GetForBrowserState(
+              browser_state,
+              ServiceAccessType::EXPLICIT_ACCESS)),
       browser_state_(browser_state) {}
 
 ChromePasswordProtectionService::~ChromePasswordProtectionService() = default;
@@ -112,11 +131,11 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     const std::string& username,
     PasswordType password_type,
     bool is_phishing_url) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Enterprise reporting extension not yet supported in iOS.
 }
 
 void ChromePasswordProtectionService::ReportPasswordChanged() {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Enterprise reporting extension not yet supported in iOS.
 }
 
 void ChromePasswordProtectionService::FillReferrerChain(
@@ -124,12 +143,12 @@ void ChromePasswordProtectionService::FillReferrerChain(
     SessionID event_tab_id,  // SessionID::InvalidValue()
                              // if tab not available.
     LoginReputationClientRequest::Frame* frame) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Not yet supported in iOS.
 }
 
 void ChromePasswordProtectionService::SanitizeReferrerChain(
     ReferrerChain* referrer_chain) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Sample pings not yet supported in iOS.
 }
 
 void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
@@ -213,12 +232,12 @@ void ChromePasswordProtectionService::
     RemoveUnhandledSyncPasswordReuseOnURLsDeleted(
         bool all_history,
         const history::URLRows& deleted_rows) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Sync password not yet supported in iOS.
 }
 
 bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
     safe_browsing::PasswordProtectionRequest* request) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Not yet supported in iOS.
   return false;
 }
 
@@ -241,38 +260,82 @@ ChromePasswordProtectionService::GetPasswordProtectionWarningTriggerPref(
 
 LoginReputationClientRequest::UrlDisplayExperiment
 ChromePasswordProtectionService::GetUrlDisplayExperiment() const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
   safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment experiment;
+  experiment.set_simplified_url_display_enabled(
+      base::FeatureList::IsEnabled(safe_browsing::kSimplifiedUrlDisplay));
+  // Delayed warnings parameters:
+  experiment.set_delayed_warnings_enabled(
+      base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings));
+  experiment.set_delayed_warnings_mouse_clicks_enabled(
+      safe_browsing::kDelayedWarningsEnableMouseClicks.Get());
+  // Actual URL display experiments:
+  experiment.set_reveal_on_hover(base::FeatureList::IsEnabled(
+      omnibox::kRevealSteadyStateUrlPathQueryAndRefOnHover));
+  experiment.set_hide_on_interaction(base::FeatureList::IsEnabled(
+      omnibox::kHideSteadyStateUrlPathQueryAndRefOnInteraction));
+  experiment.set_elide_to_registrable_domain(
+      base::FeatureList::IsEnabled(omnibox::kMaybeElideToRegistrableDomain));
   return experiment;
 }
 
 const policy::BrowserPolicyConnector*
 ChromePasswordProtectionService::GetBrowserPolicyConnector() const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return nullptr;
+  return GetApplicationContext()->GetBrowserPolicyConnector();
 }
 
 AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return AccountInfo();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(browser_state_);
+  if (!identity_manager)
+    return AccountInfo();
+  base::Optional<AccountInfo> primary_account_info =
+      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
+          identity_manager->GetPrimaryAccountInfo());
+  return primary_account_info.value_or(AccountInfo());
 }
 
 AccountInfo ChromePasswordProtectionService::GetSignedInNonSyncAccount(
     const std::string& username) const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return AccountInfo();
+  auto* identity_manager =
+      IdentityManagerFactory::GetForBrowserState(browser_state_);
+  if (!identity_manager)
+    return AccountInfo();
+  std::vector<CoreAccountInfo> signed_in_accounts =
+      identity_manager->GetAccountsWithRefreshTokens();
+  auto account_iterator =
+      std::find_if(signed_in_accounts.begin(), signed_in_accounts.end(),
+                   [username](const auto& account) {
+                     return password_manager::AreUsernamesSame(
+                         account.email,
+                         /*is_username1_gaia_account=*/true, username,
+                         /*is_username2_gaia_account=*/true);
+                   });
+  if (account_iterator == signed_in_accounts.end())
+    return AccountInfo();
+
+  return identity_manager
+      ->FindExtendedAccountInfoForAccountWithRefreshToken(*account_iterator)
+      .value_or(AccountInfo());
 }
 
 LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType
 ChromePasswordProtectionService::GetSyncAccountType() const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return PasswordReuseEvent::NOT_SIGNED_IN;
+  const AccountInfo account_info = GetAccountInfo();
+  if (!IsPrimaryAccountSignedIn()) {
+    return PasswordReuseEvent::NOT_SIGNED_IN;
+  }
+
+  // For gmail or googlemail account, the hosted_domain will always be
+  // kNoHostedDomainFound.
+  return account_info.hosted_domain == kNoHostedDomainFound
+             ? PasswordReuseEvent::GMAIL
+             : PasswordReuseEvent::GSUITE;
 }
 
 bool ChromePasswordProtectionService::CanShowInterstitial(
     ReusedPasswordAccountType password_type,
     const GURL& main_frame_url) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Not yet supported in iOS.
   return false;
 }
 
@@ -281,7 +344,7 @@ bool ChromePasswordProtectionService::IsURLAllowlistedForPasswordEntry(
   if (!browser_state_)
     return false;
 
-  PrefService* prefs = browser_state_->GetPrefs();
+  PrefService* prefs = GetPrefs();
   return safe_browsing::IsURLAllowlistedByPolicy(url, *prefs) ||
          safe_browsing::MatchesPasswordProtectionChangePasswordURL(url,
                                                                    *prefs) ||
@@ -295,7 +358,7 @@ bool ChromePasswordProtectionService::IsInPasswordAlertMode(
 }
 
 bool ChromePasswordProtectionService::CanSendSamplePing() {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Sample pings not yet enabled in iOS.
   return false;
 }
 
@@ -315,54 +378,95 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
 }
 
 bool ChromePasswordProtectionService::IsIncognito() {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return false;
+  return browser_state_->IsOffTheRecord();
 }
 
 bool ChromePasswordProtectionService::IsExtendedReporting() {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Not yet supported in iOS.
   return false;
 }
 
 bool ChromePasswordProtectionService::IsEnhancedProtection() {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Not yet supported in iOS.
   return false;
 }
 
 bool ChromePasswordProtectionService::IsUserMBBOptedIn() {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // Not yet supported in iOS.
   return false;
 }
 
 bool ChromePasswordProtectionService::IsHistorySyncEnabled() {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return false;
+  syncer::SyncService* sync =
+      ProfileSyncServiceFactory::GetForBrowserState(browser_state_);
+  return sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled() &&
+         sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES);
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSyncing() const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return false;
+  syncer::SyncService* sync =
+      ProfileSyncServiceFactory::GetForBrowserState(browser_state_);
+  return sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled();
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return true;
+  return !GetAccountInfo().account_id.empty() &&
+         !GetAccountInfo().hosted_domain.empty();
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountGmail() const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return false;
+  return GetAccountInfo().hosted_domain == kNoHostedDomainFound;
 }
 
 bool ChromePasswordProtectionService::IsOtherGaiaAccountGmail(
     const std::string& username) const {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return false;
+  return GetSignedInNonSyncAccount(username).hosted_domain ==
+         kNoHostedDomainFound;
 }
 
 bool ChromePasswordProtectionService::IsInExcludedCountry() {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
-  return false;
+  variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
+  if (!variations_service)
+    return false;
+  return base::Contains(safe_browsing::GetExcludedCountries(),
+                        variations_service->GetStoredPermanentCountry());
+}
+
+void ChromePasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
+    web::WebState* web_state,
+    const GURL& main_frame_url,
+    const std::string& username,
+    PasswordType password_type,
+    const std::vector<password_manager::MatchingReusedCredential>&
+        matching_reused_credentials,
+    bool password_field_exists) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+
+  LoginReputationClientRequest::TriggerType trigger_type =
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT;
+  ReusedPasswordAccountType reused_password_account_type =
+      GetPasswordProtectionReusedPasswordAccountType(password_type, username);
+
+  if (IsSupportedPasswordTypeForPinging(password_type)) {
+    if (CanSendPing(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                    main_frame_url, reused_password_account_type)) {
+      saved_passwords_matching_reused_credentials_ =
+          matching_reused_credentials;
+      StartRequest(web_state, main_frame_url, username, password_type,
+                   matching_reused_credentials,
+                   LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                   password_field_exists);
+    } else {
+      RequestOutcome reason = GetPingNotSentReason(
+          trigger_type, main_frame_url, reused_password_account_type);
+      LogNoPingingReason(trigger_type, reason, reused_password_account_type);
+
+      if (reused_password_account_type.is_account_syncing())
+        MaybeLogPasswordReuseLookupEvent(web_state, reason, password_type,
+                                         nullptr);
+    }
+  }
 }
 
 void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
@@ -521,6 +625,25 @@ ChromePasswordProtectionService::GetPlaceholdersForSavedPasswordWarningText()
     domains_idx++;
   }
   return placeholders;
+}
+
+void ChromePasswordProtectionService::StartRequest(
+    web::WebState* web_state,
+    const GURL& main_frame_url,
+    const std::string& username,
+    PasswordType password_type,
+    const std::vector<password_manager::MatchingReusedCredential>&
+        matching_reused_credentials,
+    LoginReputationClientRequest::TriggerType trigger_type,
+    bool password_field_exists) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  scoped_refptr<safe_browsing::PasswordProtectionRequest> request(
+      new safe_browsing::PasswordProtectionRequestIOS(
+          web_state, main_frame_url, web_state->GetContentsMimeType(), username,
+          password_type, matching_reused_credentials, trigger_type,
+          password_field_exists, this, GetRequestTimeoutInMS()));
+  request->Start();
+  pending_requests_.insert(std::move(request));
 }
 
 password_manager::PasswordStore*

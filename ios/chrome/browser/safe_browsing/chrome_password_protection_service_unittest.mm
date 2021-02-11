@@ -26,6 +26,7 @@
 #include "components/sync_user_events/fake_user_event_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#include "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -85,8 +86,9 @@ class FakeChromePasswordProtectionService
     : public ChromePasswordProtectionService {
  public:
   explicit FakeChromePasswordProtectionService(
-      TestChromeBrowserState* browser_state)
-      : ChromePasswordProtectionService(browser_state),
+      SafeBrowsingService* sb_service,
+      ChromeBrowserState* browser_state)
+      : ChromePasswordProtectionService(sb_service, browser_state),
         is_incognito_(false),
         is_account_signed_in_(false),
         is_no_hosted_domain_found_(false) {}
@@ -118,8 +120,10 @@ class FakeChromePasswordProtectionService
 class ChromePasswordProtectionServiceTest : public ChromeWebTest {
  public:
   ChromePasswordProtectionServiceTest() : ChromeWebTest() {
+    safe_browsing_service_ = base::MakeRefCounted<FakeSafeBrowsingService>();
+
     service_ = std::make_unique<FakeChromePasswordProtectionService>(
-        chrome_browser_state_.get());
+        safe_browsing_service_.get(), chrome_browser_state_.get());
 
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     fake_navigation_manager_ = navigation_manager.get();
@@ -176,6 +180,7 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
   }
 
  protected:
+  scoped_refptr<SafeBrowsingService> safe_browsing_service_;
   std::unique_ptr<FakeChromePasswordProtectionService> service_;
   web::FakeWebState fake_web_state_;
   web::FakeNavigationManager* fake_navigation_manager_;

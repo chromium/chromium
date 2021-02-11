@@ -18,6 +18,7 @@
 class ChromeBrowserState;
 class GURL;
 class PrefService;
+class SafeBrowsingService;
 
 namespace password_manager {
 class PasswordStore;
@@ -35,7 +36,8 @@ class ChromePasswordProtectionService
     : public safe_browsing::PasswordProtectionService,
       public KeyedService {
  public:
-  explicit ChromePasswordProtectionService(ChromeBrowserState* browser_state);
+  ChromePasswordProtectionService(SafeBrowsingService* sb_service,
+                                  ChromeBrowserState* browser_state);
   ~ChromePasswordProtectionService() override;
 
   void ShowModalWarning(
@@ -136,6 +138,16 @@ class ChromePasswordProtectionService
   bool IsInExcludedCountry() override;
 
   // PasswordProtectionService override.
+  void MaybeStartProtectedPasswordEntryRequest(
+      web::WebState* web_state,
+      const GURL& main_frame_url,
+      const std::string& username,
+      safe_browsing::PasswordType password_type,
+      const std::vector<password_manager::MatchingReusedCredential>&
+          matching_reused_credentials,
+      bool password_field_exists) override;
+
+  // PasswordProtectionService override.
   void MaybeLogPasswordReuseLookupEvent(
       web::WebState* web_state,
       safe_browsing::RequestOutcome outcome,
@@ -177,6 +189,17 @@ class ChromePasswordProtectionService
   // warnings.
   std::vector<base::string16> GetPlaceholdersForSavedPasswordWarningText()
       const;
+
+  // Creates, starts, and tracks a new request.
+  void StartRequest(
+      web::WebState* web_state,
+      const GURL& main_frame_url,
+      const std::string& username,
+      safe_browsing::PasswordType password_type,
+      const std::vector<password_manager::MatchingReusedCredential>&
+          matching_reused_credentials,
+      safe_browsing::LoginReputationClientRequest::TriggerType trigger_type,
+      bool password_field_exists);
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,

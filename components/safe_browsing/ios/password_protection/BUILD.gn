@@ -8,7 +8,6 @@ source_set("password_protection") {
     "password_protection_request_ios.h",
     "password_protection_request_ios.mm",
     "password_protection_service.h",
-    "password_protection_service.mm",
     "request_canceler_ios.h",
     "request_canceler_ios.mm",
   ]
@@ -17,6 +16,7 @@ source_set("password_protection") {
     "//components/password_manager/core/browser",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core/password_protection",
+    "//components/safe_browsing/core/password_protection:password_protection_metrics_util",
     "//ios/web/public",
     "//url",
   ]

@@ -87,6 +87,11 @@ FakeSafeBrowsingService::GetURLLoaderFactory() {
       &url_loader_factory_);
 }
 
+scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+FakeSafeBrowsingService::GetDatabaseManager() {
+  return nil;
+}
+
 void FakeSafeBrowsingService::ClearCookies(
     const net::CookieDeletionInfo::TimeRange& creation_range,
     base::OnceClosure callback) {

@@ -22,6 +22,7 @@ class SharedURLLoaderFactory;
 }
 
 namespace safe_browsing {
+class SafeBrowsingDatabaseManager;
 class SafeBrowsingUrlCheckerImpl;
 }  // namespace safe_browsing
 
@@ -59,6 +60,10 @@ class SafeBrowsingService
   // Returns the SharedURLLoaderFactory used for Safe Browsing network requests.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
+
+  // Returns the SafeBrowsingDatabaseManager owned by this service.
+  virtual scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+  GetDatabaseManager() = 0;
 
   // Clears cookies if the given deletion time range is for "all time". Calls
   // the given |callback| once deletion is complete.
