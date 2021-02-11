@@ -44,11 +44,18 @@ inline bool IsKnownEnumValue({{enum_name}} value) {
 {%- macro enum_stream(enum) %}
 {%-   set enum_name = enum|get_name_for_kind(flatten_nested_kind=True) %}
 std::ostream& operator<<(std::ostream& os, {{enum_name}} value) {
+  return os << {{enum_name}}ToString(value);
+}
+{%- endmacro %}
+
+{%- macro enum_to_string(enum) %}
+{%-   set enum_name = enum|get_name_for_kind(flatten_nested_kind=True) %}
+std::string {{enum_name}}ToString({{enum_name}} value) {
 {%- if enum.fields %}
   switch(value) {
 {%-   for _, values in enum.fields|groupby('numeric_value') %}
     case {{enum_name}}::{{values[0].name}}:
-      return os << "{{enum_name}}::
+      return "{{enum_name}}::
 {%-     if values|length > 1 -%}
       {{'{'}}
 {%-     endif -%}
@@ -59,10 +66,10 @@ std::ostream& operator<<(std::ostream& os, {{enum_name}} value) {
       ";
 {%-   endfor %}
     default:
-      return os << "Unknown {{enum_name}} value: " << static_cast<int32_t>(value);
+      return base::StringPrintf("Unknown {{enum_name}} value: %i", static_cast<int32_t>(value));
   }
 {%- else %}
-  return os << "Unknown {{enum_name}} value: " << static_cast<int32_t>(value);
+  return base::StringPrintf("Unknown {{enum_name}} value: %i", static_cast<int32_t>(value));
 {%- endif %}
 }
 {%- endmacro %}
@@ -146,3 +153,30 @@ struct HashTraits<{{enum_name}}>
 };
 }  // namespace WTF
 {%- endmacro %}
+
+{%- macro enum_trace_format_traits_decl(enum, export_attributes) -%}
+{%-   set enum_name = enum|get_qualified_name_for_kind(
+          flatten_nested_kind=True) %}
+namespace perfetto {
+
+template <>
+struct {{export_attribute}} TraceFormatTraits<{{enum_name}}> {
+ static void WriteIntoTracedValue(perfetto::TracedValue context, {{enum_name}} value);
+};
+
+} // namespace perfetto
+{%- endmacro %}
+
+{%- macro enum_trace_format_traits(enum) -%}
+{%-   set enum_name = enum|get_qualified_name_for_kind(
+          flatten_nested_kind=True) %}
+namespace perfetto {
+
+// static
+void TraceFormatTraits<{{enum_name}}>::WriteIntoTracedValue(
+   perfetto::TracedValue context, {{enum_name}} value) {
+  return std::move(context).WriteString({{enum_name}}ToString(value));
+}
+
+} // namespace perfetto
+{%- endmacro %}endmacro 

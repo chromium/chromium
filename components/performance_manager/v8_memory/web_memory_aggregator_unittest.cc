@@ -73,11 +73,8 @@ mojom::WebMemoryMeasurementPtr CreateExpectedMemoryMeasurement(
   return expected_measurement;
 }
 
-// Abuse Mojo's trace integration to serialize a measurement to sorted JSON for
-// string comparison. This gives failure messages that include the full
-// measurement in JSON format and is easier than comparing every field of
-// nested Mojo messages individually.
-std::string MeasurementToJSON(
+// Clone and sort the measurement for easier comparison.
+mojom::WebMemoryMeasurementPtr NormalizeMeasurement(
     const mojom::WebMemoryMeasurementPtr& measurement) {
   // Sort all arrays.
   auto canonical_measurement = measurement->Clone();
@@ -88,10 +85,7 @@ std::string MeasurementToJSON(
   std::sort(canonical_measurement->breakdown.begin(),
             canonical_measurement->breakdown.end());
 
-  // Convert to JSON string.
-  base::trace_event::TracedValueJSON json_value;
-  canonical_measurement->AsValueInto(&json_value);
-  return json_value.ToJSON();
+  return canonical_measurement;
 }
 
 }  // namespace
@@ -169,8 +163,8 @@ TEST_F(WebMemoryAggregatorTest, CreateBreakdownEntry) {
                                 AttributionScope::kWindow,
                                 /*expected_url=*/"", attribute, attribute),
     });
-    EXPECT_EQ(MeasurementToJSON(measurement),
-              MeasurementToJSON(expected_result));
+    EXPECT_EQ(NormalizeMeasurement(measurement),
+              NormalizeMeasurement(expected_result));
   }
 }
 
@@ -184,7 +178,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateSingleFrame) {
   });
   WebMemoryAggregator aggregator(main_frame);
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
 }
 
 TEST_F(WebMemoryAggregatorTest, AggregateSingleSiteMultiFrame) {
@@ -203,7 +198,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateSingleSiteMultiFrame) {
                               "redirect.html?target=iframe.html"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
 }
 
 TEST_F(WebMemoryAggregatorTest, AggregateCrossOrigin) {
@@ -241,7 +237,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOrigin) {
                               "https://foo.com/iframe1"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
   worker->RemoveClientFrame(child_frame);
 }
 
@@ -324,7 +321,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateNestedCrossOrigin) {
                               "https://example.com/empty_frame"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
 }
 
 TEST_F(WebMemoryAggregatorTest, AggregateSameOriginAboutBlank) {
@@ -338,7 +336,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateSameOriginAboutBlank) {
   });
   WebMemoryAggregator aggregator(main_frame);
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
 }
 
 TEST_F(WebMemoryAggregatorTest, SkipCrossOriginAboutBlank) {
@@ -355,7 +354,8 @@ TEST_F(WebMemoryAggregatorTest, SkipCrossOriginAboutBlank) {
   });
   WebMemoryAggregator aggregator(main_frame);
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
 }
 
 TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
@@ -391,7 +391,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
                               base::nullopt, "example-id3"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
 
   {
     WebMemoryAggregator aggregator(cross_site_child);
@@ -404,8 +405,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
             base::nullopt),
     });
     auto cross_site_result = aggregator.AggregateMeasureMemoryResult();
-    EXPECT_EQ(MeasurementToJSON(cross_site_result),
-              MeasurementToJSON(expected_cross_site_result));
+    EXPECT_EQ(NormalizeMeasurement(cross_site_result),
+              NormalizeMeasurement(expected_cross_site_result));
   }
 
   {
@@ -417,8 +418,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
                                 base::nullopt, base::nullopt),
     });
     auto cross_site_result = aggregator.AggregateMeasureMemoryResult();
-    EXPECT_EQ(MeasurementToJSON(cross_site_result),
-              MeasurementToJSON(expected_cross_site_result));
+    EXPECT_EQ(NormalizeMeasurement(cross_site_result),
+              NormalizeMeasurement(expected_cross_site_result));
   }
 }
 
@@ -437,7 +438,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateProvisionalWindowOpener) {
                               "https://example.com/"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
 }
 
 TEST_F(WebMemoryAggregatorTest, AggregateSameOriginWorker) {
@@ -464,7 +466,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateSameOriginWorker) {
                               "https://example.com/worker2", "example-id"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
   worker2->RemoveClientWorker(worker1);
   worker1->RemoveClientFrame(child_frame);
 }
@@ -489,7 +492,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginWorker) {
                               base::nullopt, "example-id"),
   });
   auto result = aggregator.AggregateMeasureMemoryResult();
-  EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+  EXPECT_EQ(NormalizeMeasurement(result),
+            NormalizeMeasurement(expected_result));
   worker2->RemoveClientWorker(worker1);
   worker1->RemoveClientFrame(child_frame);
 }
@@ -531,7 +535,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginCallers) {
                                 "https://a.com/popup2"),
     });
     auto result = aggregator.AggregateMeasureMemoryResult();
-    EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
   }
 
   {
@@ -551,7 +556,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginCallers) {
                                 base::nullopt, "c_com_iframe2"),
     });
     auto result = aggregator.AggregateMeasureMemoryResult();
-    EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
   }
 
   {
@@ -565,7 +571,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossOriginCallers) {
                                 "https://c.com/iframe2"),
     });
     auto result = aggregator.AggregateMeasureMemoryResult();
-    EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
   }
 }
 
@@ -582,7 +589,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossProcessCallers) {
                                 base::nullopt, "b_com_iframe"),
     });
     auto result = aggregator.AggregateMeasureMemoryResult();
-    EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
   }
 
   {
@@ -594,7 +602,8 @@ TEST_F(WebMemoryAggregatorTest, AggregateCrossProcessCallers) {
                                 "https://b.com/iframe"),
     });
     auto result = aggregator.AggregateMeasureMemoryResult();
-    EXPECT_EQ(MeasurementToJSON(result), MeasurementToJSON(expected_result));
+    EXPECT_EQ(NormalizeMeasurement(result),
+              NormalizeMeasurement(expected_result));
   }
 }
 

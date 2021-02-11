@@ -3538,7 +3538,7 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
     SessionStorageNamespace* session_storage_namespace) {
   TRACE_EVENT2("browser,content,navigation", "WebContentsImpl::CreateNewWindow",
                "opener", base::trace_event::ToTracedValue(opener), "params",
-               base::trace_event::ToTracedValue(params));
+               params);
   DCHECK(opener);
 
   int render_process_id = opener->GetProcess()->GetID();

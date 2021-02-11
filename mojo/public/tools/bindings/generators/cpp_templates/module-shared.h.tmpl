@@ -51,6 +51,7 @@ namespace {{namespace}} {
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/map_data_view.h"
 #include "mojo/public/cpp/bindings/string_data_view.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "{{module.path}}-shared-internal.h"
 {%- for import in imports %}
 #include "{{import.path}}-shared.h"
@@ -205,5 +206,14 @@ namespace mojo {
 {%- endfor %}
 
 {{namespace_end()}}
+
+// Declare TraceFormatTraits for enums, which should be defined in ::perfetto
+// namespace.
+{%- from "enum_macros.tmpl" import enum_trace_format_traits_decl with context %}
+{%- for enum in all_enums %}
+{%-   if not enum|is_native_only_kind %}
+{{enum_trace_format_traits_decl(enum, export_attribute)}}
+{%-   endif %}
+{%- endfor %}
 
 #endif  // {{header_guard}}

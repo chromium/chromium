@@ -32,9 +32,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
   // Ignore prerendering requests for the same URL.
   const GURL prerendering_url = attributes->url;
   TRACE_EVENT2("navigation", "PrerenderHostRegistry::CreateAndStartHost",
-               "Prerender Attributes",
-               base::trace_event::ToTracedValue(*attributes),
-               "initiator_origin", initiator_origin.GetURL().spec());
+               "attributes", attributes, "initiator_origin",
+               initiator_origin.GetURL().spec());
 
   auto found = frame_tree_node_id_by_url_.find(prerendering_url);
   if (found != frame_tree_node_id_by_url_.end())

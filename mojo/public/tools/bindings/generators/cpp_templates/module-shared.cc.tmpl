@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/stl_util.h"  // for base::size()
+#include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 #include "{{module.path}}-params-data.h"
 
@@ -23,9 +25,10 @@ namespace {{namespace}} {
 {%- endfor %}
 
 {#--- Enums #}
-{%- from "enum_macros.tmpl" import enum_stream %}
+{%- from "enum_macros.tmpl" import enum_stream, enum_to_string %}
 {%- for enum in all_enums %}
 {%-   if not enum|is_native_only_kind %}
+{{enum_to_string(enum)}}
 {{enum_stream(enum)}}
 {%-   endif %}
 {%- endfor %}
@@ -61,3 +64,12 @@ namespace internal {
 {%- for namespace in namespaces_as_array|reverse %}
 }  // namespace {{namespace}}
 {%- endfor %}
+
+{#--- TraceFormatTraits specialisation for enums #}
+{%- from "enum_macros.tmpl" import enum_trace_format_traits %}
+{%- for enum in all_enums %}
+{%-   if not enum|is_native_only_kind %}
+{{enum_trace_format_traits(enum)}}
+{%-   endif %}
+{%- endfor %}
+
