@@ -792,6 +792,12 @@ interface NavigationPreloadManager
     method enable
     method getState
     method setHeaderValue
+interface NavigatorUAData
+    attribute @@toStringTag
+    getter brands
+    getter mobile
+    method constructor
+    method getHighEntropyValues
 interface NetworkInformation : EventTarget
     attribute @@toStringTag
     getter downlink
@@ -2750,6 +2756,7 @@ interface WorkerNavigator
     getter product
     getter storage
     getter userAgent
+    getter userAgentData
     method clearAppBadge
     method constructor
     method setAppBadge

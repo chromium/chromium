@@ -2072,7 +2072,7 @@
     },
     {
       name: "UserAgentClientHint",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "V8IdleTasks",

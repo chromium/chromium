@@ -52,6 +52,9 @@ PASS window.cached_navigator_usb.onconnect is null
 PASS window.cached_navigator_usb.ondisconnect is null
 PASS window.cached_navigator_userActivation.hasBeenActive is false
 PASS window.cached_navigator_userActivation.isActive is false
+PASS window.cached_navigator_userAgentData.brands[0].brand is ''
+PASS window.cached_navigator_userAgentData.brands[0].version is ''
+PASS window.cached_navigator_userAgentData.mobile is false
 PASS window.cached_navigator_xr.ondevicechange is null
 PASS window.cached_performance.onresourcetimingbufferfull is null
 PASS window.cached_performance_navigation.redirectCount is 0

@@ -731,6 +731,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method enable
 [Worker]     method getState
 [Worker]     method setHeaderValue
+[Worker] interface NavigatorUAData
+[Worker]     attribute @@toStringTag
+[Worker]     getter brands
+[Worker]     getter mobile
+[Worker]     method constructor
+[Worker]     method getHighEntropyValues
 [Worker] interface NetworkInformation : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter downlink
@@ -2770,6 +2776,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter storage
 [Worker]     getter usb
 [Worker]     getter userAgent
+[Worker]     getter userAgentData
 [Worker]     method constructor
 [Worker] interface WritableStream
 [Worker]     attribute @@toStringTag
