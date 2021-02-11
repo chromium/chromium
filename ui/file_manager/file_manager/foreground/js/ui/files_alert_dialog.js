@@ -26,7 +26,30 @@
    */
   initDom() {
     super.initDom();
+    super.hasModalContainer = true;
+
     this.frame.classList.add('files-alert-dialog');
+  }
+
+  /**
+   * @override
+   * @suppress {accessControls}
+   */
+  show_(...args) {
+    this.parentNode_ = util.getFilesAppModalDialogInstance();
+
+    super.show_(...args);
+
+    this.parentNode_.showModal();
+  }
+
+  /**
+   * @override
+   */
+  hide(...args) {
+    this.parentNode_.close();
+
+    super.hide(...args);
   }
 
   /**

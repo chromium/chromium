@@ -522,6 +522,20 @@ html[dir='rtl'] .cr-dialog-container:not(.files-ng) .cr-dialog-close {
   font-size: 14px;
 }
 
+/* Modal <dialog> container for Pop-up dialogs. */
+#files-app-modal-dialog {
+  background-color: transparent;
+  border: none;
+  height: 100%;
+  margin: 0;
+  max-height: initial;
+  max-width: initial;
+  outline: none;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
 /* Minor tweak of vertical position for texts which need to be vertically
  * aligned with corresponding file-type icons. */
 .tree-row > .label,

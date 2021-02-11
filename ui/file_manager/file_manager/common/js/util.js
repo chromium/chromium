@@ -1806,6 +1806,24 @@ util.hasOverflow = (element) => {
       element.clientHeight < element.scrollHeight;
 };
 
+/**
+ * Returns the Files app modal dialog used to embed any files app dialog
+ * that derives from cr.ui.dialogs.
+ *
+ * @return {!HTMLDialogElement}
+ */
+util.getFilesAppModalDialogInstance = () => {
+  let dialogElement = document.querySelector('#files-app-modal-dialog');
+
+  if (!dialogElement) {  // Lazily create the files app dialog instance.
+    dialogElement = document.createElement('dialog');
+    dialogElement.id = 'files-app-modal-dialog';
+    document.body.appendChild(dialogElement);
+  }
+
+  return /** @type {!HTMLDialogElement} */ (dialogElement);
+};
+
 /** @return {boolean} */
 util.isSharesheetEnabled = () => {
   return loadTimeData.valueExists('SHARESHEET_ENABLED') &&
