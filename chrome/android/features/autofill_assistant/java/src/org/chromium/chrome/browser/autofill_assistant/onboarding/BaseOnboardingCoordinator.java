@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant;
+package org.chromium.chrome.browser.autofill_assistant.onboarding;
 
 import android.content.Context;
 import android.text.SpannableString;
@@ -20,6 +20,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantMetrics;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -67,7 +69,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     @Nullable
     ScrollView mView;
 
-    BaseOnboardingCoordinator(
+    public BaseOnboardingCoordinator(
             String experimentIds, Map<String, String> parameters, Context context) {
         mExperimentIds = experimentIds;
         mParameters = parameters;
@@ -82,6 +84,10 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
      * <p>The {@code callback} will be called when the user accepts, cancels or dismisses the
      * onboarding.
      *
+     * <p>Note that the onboarding screen will be hidden after the callback returns. Call, from the
+     * callback, {@link #hide} to hide it earlier or {@link #transferControls} to take ownership of
+     * it and possibly keep it past the end of the callback.
+     *
      * <p>The {@code targetUrl} is the initial URL Autofill Assistant is being started on. The
      * navigation to that URL is allowed, other navigations will hide Autofill Assistant.
      */
@@ -92,16 +98,10 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
     }
 
     /**
-     * Shows onboarding and provides the result to the given callback.
-     *
-     * <p>The {@code callback} will be called when the user accepts, cancels or dismisses the
-     * onboarding.
-     *
-     * <p>Note that the onboarding screen will be hidden after the callback returns. Call, from the
-     * callback, {@link #hide} to hide it earlier or {@link #transferControls} to take ownership of
-     * it and possibly keep it past the end of the callback.
+     * Same as {@link #show(Callback, WebContents, String)}, but does not break on navigation
+     * events.
      */
-    void show(Callback<Integer> callback) {
+    public void show(Callback<Integer> callback) {
         AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_SHOWN);
         mOnboardingShown = true;
 
@@ -130,9 +130,14 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
         return mOnboardingShown;
     }
 
-    // TODO(b/175598484): Move transferControls to bottom sheet subclass
+    /**
+     * Transfers the overlay coordinator used by the onboarding to the caller. This is intended to
+     * be used to facilitate a smooth transition between onboarding and regular script, i.e., to
+     * avoid flickering of the overlay. Not all onboarding implementations show an overlay, so this
+     * may return null.
+     */
     @Nullable
-    AssistantOverlayCoordinator transferControls() {
+    public AssistantOverlayCoordinator transferControls() {
         return null;
     }
 
@@ -312,13 +317,20 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
 
     /** Don't animate the user interface. */
     @VisibleForTesting
-    void disableAnimationForTesting() {
+    public void disableAnimationForTesting() {
         mAnimate = false;
     }
 
     abstract ScrollView createViewImpl();
     abstract void initViewImpl(Callback<Integer> callback);
     abstract void showViewImpl();
+
+    /**
+     * Returns {@code true} between the time {@link #show} is called and the time
+     * the callback has returned.
+     */
+    @VisibleForTesting
+    public abstract boolean isInProgress();
 
     @NativeMethods
     interface Natives {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant;
+package org.chromium.chrome.browser.autofill_assistant.onboarding;
 
 import android.content.Context;
 import android.view.Gravity;
@@ -13,10 +13,13 @@ import android.widget.ScrollView;
 import android.widget.Space;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantBottomBarDelegate;
+import org.chromium.chrome.browser.autofill_assistant.AssistantBottomSheetContent;
+import org.chromium.chrome.browser.autofill_assistant.BottomSheetUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayState;
@@ -152,7 +155,7 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
      */
     @Nullable
     @Override
-    AssistantOverlayCoordinator transferControls() {
+    public AssistantOverlayCoordinator transferControls() {
         assert isInProgress();
         mContent = null;
         AssistantOverlayCoordinator coordinator = mOverlayCoordinator;
@@ -175,12 +178,8 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
         destroy();
     }
 
-    /**
-     * Returns {@code true} between the time {@link #show} is called and the time
-     * the callback has returned.
-     */
-    @VisibleForTesting
-    boolean isInProgress() {
+    @Override
+    public boolean isInProgress() {
         return mContent != null;
     }
 }

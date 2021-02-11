@@ -64,7 +64,7 @@ public class AutofillAssistantPreferencesUtil {
     }
 
     /** Returns the number of times a user has explicitly canceled a lite script. */
-    static int getAutofillAssistantNumberOfLiteScriptsCanceled() {
+    private static int getAutofillAssistantNumberOfLiteScriptsCanceled() {
         return SharedPreferencesManager.getInstance().readInt(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED, 0);
     }
@@ -73,13 +73,13 @@ public class AutofillAssistantPreferencesUtil {
      * Returns whether the user has explicitly canceled the lite script at least {@code
      * LITE_SCRIPT_MAX_NUM_CANCELED_TO_OPT_OUT} times.
      */
-    static boolean isAutofillAssistantLiteScriptCancelThresholdReached() {
+    public static boolean isAutofillAssistantLiteScriptCancelThresholdReached() {
         return getAutofillAssistantNumberOfLiteScriptsCanceled()
                 >= LITE_SCRIPT_MAX_NUM_CANCELED_TO_OPT_OUT;
     }
 
     /** Increments the number of times a user has explicitly canceled a lite script. */
-    static void incrementAutofillAssistantNumberOfLiteScriptsCanceled() {
+    public static void incrementAutofillAssistantNumberOfLiteScriptsCanceled() {
         int numCanceled = getAutofillAssistantNumberOfLiteScriptsCanceled() + 1;
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
         sharedPreferencesManager.writeInt(
@@ -97,7 +97,7 @@ public class AutofillAssistantPreferencesUtil {
     }
 
     /** Checks whether the Autofill Assistant onboarding has been accepted. */
-    static boolean isAutofillOnboardingAccepted() {
+    public static boolean isAutofillOnboardingAccepted() {
         return SharedPreferencesManager.getInstance().readBoolean(
                        ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED, false)
                 ||
@@ -121,7 +121,7 @@ public class AutofillAssistantPreferencesUtil {
      *
      * @param accept Flag indicating whether the ToS have been accepted.
      */
-    static void setInitialPreferences(boolean accept) {
+    public static void setInitialPreferences(boolean accept) {
         if (accept) {
             SharedPreferencesManager.getInstance().writeBoolean(
                     ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, accept);

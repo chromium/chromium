@@ -26,6 +26,9 @@ import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinished
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptOnboarding;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboardingResult;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -178,11 +181,10 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             return;
         }
 
-        BottomSheetOnboardingCoordinator onboardingCoordinator =
-                new BottomSheetOnboardingCoordinator(experimentIds, parameters, context,
-                        bottomSheetController, browserControls, compositorViewHolder,
-                        bottomSheetController.getScrimCoordinator());
-
+        BaseOnboardingCoordinator onboardingCoordinator =
+                OnboardingCoordinatorFactory.createOnboardingCoordinator(
+                        /* isDialogOnboardingEnabled = */ false, experimentIds, parameters, context,
+                        bottomSheetController, browserControls, compositorViewHolder);
         onboardingCoordinator.show(result -> {
             switch (result) {
                 case AssistantOnboardingResult.DISMISSED:

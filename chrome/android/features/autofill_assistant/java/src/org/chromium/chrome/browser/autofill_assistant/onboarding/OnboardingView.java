@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant;
+package org.chromium.chrome.browser.autofill_assistant.onboarding;
 
 import org.chromium.base.Callback;
 import org.chromium.content_public.browser.WebContents;
