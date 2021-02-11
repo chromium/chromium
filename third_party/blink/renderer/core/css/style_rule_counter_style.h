@@ -34,11 +34,12 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
   const CSSValue* GetAdditiveSymbols() const { return additive_symbols_; }
   const CSSValue* GetSpeakAs() const { return speak_as_; }
 
-  // Returns false if the setter fails due to invalid new value.
-  bool SetName(const AtomicString& name) {
-    // TODO(crbug.com/687225): Implement.
-    return false;
+  void SetName(const AtomicString& name) {
+    name_ = name;
+    ++version_;
   }
+
+  // Returns false if the setter fails due to invalid new value.
   bool SetSystem(const CSSValue* system);
   bool SetNegative(const CSSValue* negative) {
     negative_ = negative;

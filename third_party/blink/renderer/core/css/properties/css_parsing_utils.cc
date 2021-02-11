@@ -4910,5 +4910,27 @@ CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenRange& range,
   return MakeGarbageCollected<CSSCustomIdentValue>(name);
 }
 
+AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange& prelude,
+                                              const CSSParserContext& context) {
+  const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
+  if (!prelude.AtEnd())
+    return g_null_atom;
+
+  if (name_token.GetType() != kIdentToken ||
+      !IsCustomIdent<CSSValueID::kNone>(name_token.Id()))
+    return g_null_atom;
+
+  if (context.Mode() != kUASheetMode) {
+    if (name_token.Id() == CSSValueID::kDecimal ||
+        name_token.Id() == CSSValueID::kDisc)
+      return g_null_atom;
+  }
+
+  AtomicString name(name_token.Value().ToString());
+  if (ShouldLowerCaseCounterStyleNameOnParse(name, context))
+    name = name.LowerASCII();
+  return name;
+}
+
 }  // namespace css_parsing_utils
 }  // namespace blink

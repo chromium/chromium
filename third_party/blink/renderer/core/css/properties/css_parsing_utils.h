@@ -452,6 +452,8 @@ UnitlessQuirk UnitlessUnlessShorthand(const CSSParserLocalContext&);
 // https://drafts.csswg.org/css-counter-styles-3/#typedef-counter-style-name
 CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenRange&,
                                              const CSSParserContext&);
+AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange&,
+                                              const CSSParserContext&);
 
 // When parsing a counter style name, it should be ASCII lowercased if it's an
 // ASCII case-insensitive match of any predefined counter style name.

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -236,8 +237,26 @@ void CSSCounterStyleRule::SetterInternal(
     document->GetStyleEngine().MarkCounterStylesNeedUpdate();
 }
 
-void CSSCounterStyleRule::setName(const String&) {
-  // TODO(crbug.com/687225): Implement
+void CSSCounterStyleRule::setName(const ExecutionContext* execution_context,
+                                  const String& text) {
+  CSSStyleSheet* style_sheet = parentStyleSheet();
+  auto& context = *MakeGarbageCollected<CSSParserContext>(
+      ParserContext(execution_context->GetSecureContextMode()), style_sheet);
+  CSSTokenizer tokenizer(text);
+  auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange token_range(tokens);
+  AtomicString name =
+      css_parsing_utils::ConsumeCounterStyleNameInPrelude(token_range, context);
+  if (!name || name == counter_style_rule_->GetName())
+    return;
+
+  // Changing name may affect cascade result, which requires re-collecting all
+  // the rules and re-constructing the CounterStyleMap to handle.
+  CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
+
+  counter_style_rule_->SetName(name);
+  if (Document* document = style_sheet->OwnerDocument())
+    document->GetStyleEngine().MarkCounterStylesNeedUpdate();
 }
 
 void CSSCounterStyleRule::setSystem(const ExecutionContext* execution_context,

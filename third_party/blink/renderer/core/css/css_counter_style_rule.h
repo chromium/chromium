@@ -36,7 +36,7 @@ class CSSCounterStyleRule final : public CSSRule {
   String speakAs() const;
   String fallback() const;
 
-  void setName(const String&);
+  void setName(const ExecutionContext*, const String&);
   void setSystem(const ExecutionContext*, const String&);
   void setSymbols(const ExecutionContext*, const String&);
   void setAdditiveSymbols(const ExecutionContext*, const String&);

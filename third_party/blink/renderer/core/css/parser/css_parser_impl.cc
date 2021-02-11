@@ -942,25 +942,10 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
     return nullptr;
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
-  if (!prelude.AtEnd())
+  AtomicString name = css_parsing_utils::ConsumeCounterStyleNameInPrelude(
+      prelude, *GetContext());
+  if (!name)
     return nullptr;
-
-  if (name_token.GetType() != kIdentToken ||
-      !css_parsing_utils::IsCustomIdent<CSSValueID::kNone>(name_token.Id()))
-    return nullptr;
-
-  if (GetContext()->Mode() != kUASheetMode) {
-    if (name_token.Id() == CSSValueID::kDecimal ||
-        name_token.Id() == CSSValueID::kDisc)
-      return nullptr;
-  }
-
-  AtomicString name(name_token.Value().ToString());
-  if (css_parsing_utils::ShouldLowerCaseCounterStyleNameOnParse(
-          name, *GetContext())) {
-    name = name.LowerASCII();
-  }
 
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kCounterStyle, prelude_offset_start);
