@@ -82,6 +82,9 @@ class AXRelationCache {
   // specific time in the lifecycle.
   void UpdateAriaOwnsWithCleanLayout(AXObject* owner);
 
+  static bool IsValidOwner(AXObject* owner);
+  static bool IsValidOwnedChild(AXObject* child);
+
  private:
   // Given an object that has explicitly set elements for aria-owns, update the
   // internal state to reflect the new set of children owned by this object.

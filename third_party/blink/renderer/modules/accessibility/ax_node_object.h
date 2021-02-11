@@ -301,6 +301,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddChildrenImpl();
   void AddNodeChildren();
   void AddLayoutChildren();
+  bool CanAddLayoutChild(LayoutObject& child);
   void AddInlineTextBoxChildren(bool force = false);
   void AddImageMapChildren();
   void AddPopupChildren();
@@ -309,6 +310,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void AddValidationMessageChild();
   void AddAccessibleNodeChildren();
   void AddOwnedChildren();
+#if DCHECK_IS_ON()
+  void CheckValidChild(AXObject* child);
+#endif
 
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;
 

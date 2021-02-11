@@ -105,6 +105,7 @@ AXLayoutObject::AXLayoutObject(LayoutObject* layout_object,
       layout_object_(layout_object) {
 // TODO(aleventhal) Get correct current state of autofill.
 #if DCHECK_IS_ON()
+  DCHECK(layout_object_);
   layout_object_->SetHasAXObject(true);
 #endif
 }

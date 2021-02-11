@@ -107,6 +107,7 @@ void AXMenuListPopup::AddChildren() {
   if (!html_select_element)
     return;
 
+  DCHECK(children_.IsEmpty());
   DCHECK(children_dirty_);
   children_dirty_ = false;
 
@@ -114,6 +115,15 @@ void AXMenuListPopup::AddChildren() {
     active_index_ = GetSelectedIndex();
 
   for (auto* const option_element : html_select_element->GetOptionList()) {
+#if DCHECK_IS_ON()
+    AXObject* ax_preexisting = AXObjectCache().Get(option_element);
+    DCHECK(!ax_preexisting || !ax_preexisting->CachedParentObject())
+        << "\nChild = " << ax_preexisting->ToString(true, true)
+        << "\n  IsAXMenuListOption? " << IsA<AXMenuListOption>(ax_preexisting)
+        << "\nNew parent = " << ToString(true, true)
+        << "\nPreexisting parent = "
+        << ax_preexisting->CachedParentObject()->ToString(true, true);
+#endif
     AXMenuListOption* option = MenuListOptionAXObject(option_element);
     if (option) {
       DCHECK(!option->IsDetached());

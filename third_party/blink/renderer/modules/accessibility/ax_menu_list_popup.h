@@ -35,6 +35,7 @@ class AXObjectCacheImpl;
 class AXMenuListOption;
 class HTMLElement;
 
+// AXMenuListPopup is the only kind of AXMockObject used in Blink accessibility.
 class AXMenuListPopup final : public AXMockObject {
  public:
   explicit AXMenuListPopup(AXObjectCacheImpl&);

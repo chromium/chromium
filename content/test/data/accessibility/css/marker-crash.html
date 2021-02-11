@@ -1,0 +1,7 @@
+<!-- Avoid a crash caused by adding pseudo element content in two places.
+     See AXNodeObject::CanAddLayoutChild(). https://crbug.com/1172038 -->
+<style>
+span:before { display: inherit; content: ""; -webkit-column-count: 1; }
+</style>
+<span role="group" style="display: list-item"></span>
+<span class="empty"></span>

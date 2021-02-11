@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
@@ -129,19 +130,6 @@ Node* GetClosestNodeForLayoutObject(const LayoutObject* layout_object) {
 
 bool IsActive(Document& document) {
   return document.IsActive() && !document.IsDetached();
-}
-
-bool IsPseudoElementDescendant(const LayoutObject& layout_object) {
-  const LayoutObject* ancestor = &layout_object;
-  while (true) {
-    ancestor = ancestor->Parent();
-    if (!ancestor)
-      return false;
-    if (ancestor->IsPseudoElement())
-      return true;
-    if (!ancestor->IsAnonymous())
-      return false;
-  }
 }
 
 bool HasAriaCellRole(Element* elem) {
@@ -239,6 +227,26 @@ bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
   return true;
 }
 
+bool IsShadowRootRelevantForAccessibility(const Node* node) {
+  if (IsA<HTMLSlotElement>(node) && AXObjectCacheImpl::UseAXMenuList()) {
+    // For the AXMenuList case:
+    // Don't use any shadow root descendants, because AXMenuList already
+    // handles adding descendants and these would be redundant.
+    // DOM traversal is still necessary for the <canvas> case.
+    Node* host = node->OwnerShadowHost();
+    auto* select_element = DynamicTo<HTMLSelectElement>(host);
+    if (!select_element) {
+      if (auto* opt_group_element = DynamicTo<HTMLOptGroupElement>(host))
+        select_element = opt_group_element->OwnerSelectElement();
+    }
+
+    return !select_element || !select_element->UsesMenuList() ||
+           select_element->IsInCanvasSubtree();
+  }
+
+  return true;
+}
+
 bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   if (layout_object.IsAnonymous()) {
     // Anonymous means there is no DOM node, and it's been inserted by the
@@ -256,7 +264,7 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
     // Allowing anonymous pseudo elements ensures that all visible descendant
     // pseudo content will be reached, despite only being able to walk layout
     // inside of pseudo content.
-    return IsPseudoElementDescendant(layout_object);
+    return AXObjectCacheImpl::IsPseudoElementDescendant(layout_object);
   }
 
   if (layout_object.IsText())
@@ -265,16 +273,36 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   Node* node = layout_object.GetNode();
   DCHECK(node) << "Non-anonymous layout objects always have a node";
 
+  if (node->IsInUserAgentShadowRoot() &&
+      !IsShadowRootRelevantForAccessibility(node)) {
+    return false;
+  }
   // Menu list option and HTML area elements are indexed by DOM node, never by
   // layout object.
   if (AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(node))
     return false;
+
   if (IsA<HTMLAreaElement>(node))
     return false;
 
   return true;
 }
 
+// -----------------------------------------------------------------------------
+// IsNodeRelevantForAccessibility() and IsLayoutObjectRelevantForAccessibility()
+// * if the LayoutObject is relevant and not display-locked,
+//   GetOrCreate() will return an object that will be an AXLayoutObject or
+//   derivative. Note that the node may or may not be relevant.
+// * Else if the Node is relevant, GetOrCreate() will return an object that will
+//   be an AXNodeObject or derivative.
+// * Else neither are relevant, and the tree will be truncated (no descendants)
+//   at this point.
+// -----------------------------------------------------------------------------
+// TODO(accessibility) Merge IsNodeRelevantForAccessibility() and
+// IsLayoutObjectRelevantForAccessibility() producing a function like
+// GetAXType(node, layout_object) returning kTruncateSubtree,
+// kAXNodeObject, or kAXLayoutObject. This will allow some of the checks that
+// currently happen twice, to only happen once.
 bool IsNodeRelevantForAccessibility(const Node* node,
                                     bool parent_ax_known,
                                     bool is_layout_object_relevant) {
@@ -312,6 +340,12 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     // Allowing rendered non-whitespace to be considered relevant will allow
     // use for accessible relations such as labelledby and describedby.
     return !To<Text>(node)->ContainsOnlyWhitespaceOrEmpty();
+  }
+
+  // Node also not relevant -- truncate subtree here.
+  if (node->IsInUserAgentShadowRoot() &&
+      !IsShadowRootRelevantForAccessibility(node)) {
+    return false;
   }
 
   if (!node->IsElementNode())
@@ -417,7 +451,6 @@ void AXObjectCacheImpl::Dispose() {
   }
 
   permission_observer_receiver_.reset();
-
 }
 
 AXObject* AXObjectCacheImpl::Root() {
@@ -701,6 +734,21 @@ bool AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(const Node* node) {
   return select->GetLayoutObject() && AXObjectCacheImpl::UseAXMenuList();
 }
 
+// static
+bool AXObjectCacheImpl::IsPseudoElementDescendant(
+    const LayoutObject& layout_object) {
+  const LayoutObject* ancestor = &layout_object;
+  while (true) {
+    ancestor = ancestor->Parent();
+    if (!ancestor)
+      return false;
+    if (ancestor->IsPseudoElement())
+      return true;
+    if (!ancestor->IsAnonymous())
+      return false;
+  }
+}
+
 AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {
   if (ShouldCreateAXMenuListOptionFor(node)) {
     return MakeGarbageCollected<AXMenuListOption>(To<HTMLOptionElement>(node),
@@ -909,14 +957,15 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
 
   if (AXObject* obj = Get(inline_text_box)) {
 #if DCHECK_IS_ON()
-    if (obj->CachedParentObject()) {
-      // AXInlineTextbox objects can't get a new parent, unlike other types of
-      // accessible objects that can get a new parent because they moved or
-      // because of aria-owns.
-      DCHECK_EQ(obj->CachedParentObject()->GetNode(), parent->GetNode());
-      DCHECK_EQ(obj->CachedParentObject()->GetLayoutObject(),
-                parent->GetLayoutObject());
-    }
+    // AXInlineTextbox objects can't get a new parent, unlike other types of
+    // accessible objects that can get a new parent because they moved or
+    // because of aria-owns.
+    // AXInlineTextbox objects are only added via AddChildren() on static text
+    // or line break parents. The children are cleared, and detached from their
+    // parent before AddChildren() executes. There should be no previous parent.
+    DCHECK(parent->RoleValue() == ax::mojom::blink::Role::kStaticText ||
+           parent->RoleValue() == ax::mojom::blink::Role::kLineBreak);
+    DCHECK(!obj->CachedParentObject() || obj->CachedParentObject() == parent);
 #endif
     obj->SetParent(parent);
     return obj;
@@ -1665,7 +1714,6 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
   // Returns the new object.
   auto refresh = [this](AXObject* current) {
     Node* node = current->GetNode();
-    AXObject* cached_parent = current->CachedParentObject();
     DCHECK(node) << "Refresh() is currently only supported for objects "
                     "with a backing node";
     AXID retained_axid = current->AXObjectID();
@@ -1682,7 +1730,12 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     // TODO(accessibility) We don't use the return value, can we use .erase()
     // and it will still make sure that the object is cleaned up?
     objects_.Take(retained_axid);
-    AXObject* new_object = CreateAndInit(node, cached_parent, retained_axid);
+    // Do not pass in the previous parent. It may not end up being the same,
+    // e.g. in the case of a <select> option where the select changed size.
+    // TODO(accessibility) That may be the only example of this, in which case
+    // it could be handled in RoleChangedWithCleanLayout(), and the cached
+    // parent could be used.
+    AXObject* new_object = CreateAndInit(node, nullptr, retained_axid);
     if (!new_object)
       RemoveAXID(current);  // Failed to create, so remove object completely.
     return new_object;

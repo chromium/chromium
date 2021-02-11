@@ -1338,7 +1338,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 
- private:
   void UpdateDistributionForFlatTreeTraversal() const;
   bool IsARIAControlledByTextboxWithActiveDescendant() const;
   bool AncestorExposesActiveDescendant() const;
@@ -1371,6 +1370,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
       ax::mojom::blink::StringAttribute attribute,
       const std::string& value,
       uint32_t max_len = kMaxStringAttributeLength) const;
+
+  // If this is an element that uses a child shadow root <slot>, detach the
+  // slot's parent.
+  void DetachSelectSlotChildFromParent();
 
   static unsigned number_of_live_ax_objects_;
 

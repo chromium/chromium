@@ -57,6 +57,29 @@ bool AXMenuList::OnNativeClickAction() {
   return true;
 }
 
+void AXMenuList::Detach() {
+  // Detach() calls ClearChildren(), but AXMenuList::ClearChildren()
+  // detaches the grandchild options, not the child option.
+  AXLayoutObject::Detach();
+  DCHECK_LE(children_.size(), 1U);
+
+  // Clear the popup.
+  if (children_.size()) {
+    children_[0]->DetachFromParent();
+    // Unfortunately, the popup will be left hanging around until
+    // AXObjectCacheImpl() is reset. We cannot remove it here because
+    // this can be called while AXObjectCacheImpl() is detaching all objects,
+    // and the hash map of objects does not allow similtaneous iteration and
+    // removal of objects.
+    // TODO(accessibility) Consider something like this, or something that
+    // marks the object for imminent diposal.
+    // if (!AXObjectCache().IsDisposing()
+    //   children_[0]->AXObjectCache().Remove(children_[0]);
+    children_[0]->Detach();
+    children_.clear();
+  }
+}
+
 void AXMenuList::ClearChildren() {
   if (children_.IsEmpty())
     return;
@@ -67,11 +90,10 @@ void AXMenuList::ClearChildren() {
   // AXMenuListPopup child would cause additional thrashing and events that the
   // AT would need to process, potentially causing the AT to believe that the
   // popup had closed and a new popup and reopened.
+  // The mock AXMenuListPopup child will be cleared when this object is
+  // detached, as it has no use without this object as an owner.
   DCHECK_EQ(children_.size(), 1U);
   children_[0]->ClearChildren();
-
-  if (IsDetached())
-    AXObject::ClearChildren();
 }
 
 void AXMenuList::AddChildren() {

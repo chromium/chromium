@@ -43,4 +43,10 @@ Document* AXMockObject::GetDocument() const {
   return ParentObject() ? ParentObject()->GetDocument() : nullptr;
 }
 
+AXObject* AXMockObject::ComputeParentImpl() const {
+  NOTREACHED()
+      << "Mock objects are explicitly parented until their parent is detached";
+  return nullptr;
+}
+
 }  // namespace blink

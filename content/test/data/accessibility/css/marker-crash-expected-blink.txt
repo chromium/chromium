@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group
+++++++++listMarker name='• '
+++++++++listItem
+++++++++++genericContainer
+++++++++++++listMarker name='• '
+++++++++++genericContainer ignored
+++++++genericContainer ignored

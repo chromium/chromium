@@ -44,14 +44,22 @@ Element* AXMenuListOption::ActionElement() const {
 
 AXObject* AXMenuListOption::ComputeParentImpl() const {
   Node* node = GetNode();
-  if (!node)
+  if (!node) {
+    NOTREACHED();
     return nullptr;
+  }
+
   auto* select = To<HTMLOptionElement>(node)->OwnerSelectElement();
-  if (!select)
+  if (!select) {
+    NOTREACHED();
     return nullptr;
+  }
+
   AXObject* select_ax_object = AXObjectCache().GetOrCreate(select);
-  if (!select_ax_object)
+  if (!select_ax_object) {
+    NOTREACHED();
     return nullptr;
+  }
 
   // This happens if the <select> is not rendered. Return it and move on.
   auto* menu_list = DynamicTo<AXMenuList>(select_ax_object);

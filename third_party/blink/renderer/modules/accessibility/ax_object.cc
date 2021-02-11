@@ -683,7 +683,13 @@ void AXObject::Init(AXObject* parent_if_known) {
 
 void AXObject::Detach() {
 #if DCHECK_IS_ON()
-  DCHECK(!IsDetached());
+  // Only mock objects can end up being detached twice, because their owner
+  // may have needed to detach them when they were detached, but couldn't
+  // remove them from the object cache yet.
+  if (IsDetached()) {
+    DCHECK(IsMockObject()) << "Object detached twice: " << RoleValue();
+    return;
+  }
   DCHECK(!is_adding_children_) << ToString(true, true);
   DCHECK(ax_object_cache_);
   DCHECK(!ax_object_cache_->IsFrozen())
@@ -742,14 +748,20 @@ AXObject* AXObject::ComputeParent() const {
          "attempt to recompute it, occurred on "
       << GetNode();
 
-  DCHECK(GetNode() || GetLayoutObject())
-      << "Can't compute parent on AXObjects that don't have a backing Node or "
-         "LayoutObject. Objects without those must set the parent in Init().";
+  if (!GetNode() && !GetLayoutObject()) {
+    NOTREACHED() << "Can't compute parent on AXObjects without a backing Node "
+                    "or LayoutObject. Objects without those must set the "
+                    "parent in Init(), |this| = "
+                 << RoleValue();
+    return nullptr;
+  }
 
   return ComputeParentImpl();
 }
 
 AXObject* AXObject::ComputeParentImpl() const {
+  DCHECK(!IsDetached());
+
   if (AXObjectCache().IsAriaOwned(this))
     return AXObjectCache().GetAriaOwnedParent(this);
 
@@ -771,7 +783,14 @@ AXObject* AXObject::ComputeParentImpl() const {
   // If no node, or a pseudo element, use the layout parent.
   if (!current_node) {
     LayoutObject* current_layout_obj = GetLayoutObject();
-    DCHECK(current_layout_obj);
+    if (!current_layout_obj) {
+      NOTREACHED()
+          << "Can't compute parent on AXObjects without a backing Node "
+             "or LayoutObject. Objects without those must set the "
+             "parent in Init(), |this| = "
+          << RoleValue();
+      return nullptr;
+    }
     // If no DOM node and no parent, this must be an anonymous layout object.
     DCHECK(current_layout_obj->IsAnonymous());
     LayoutObject* parent_layout_obj = current_layout_obj->Parent();
@@ -3781,7 +3800,7 @@ AXObject* AXObject::ParentObjectUnignored() const {
 AXObject* AXObject::ParentObjectIncludedInTree() const {
   AXObject* parent;
   for (parent = ParentObject();
-       parent && !parent->LastKnownIsIncludedInTreeValue();
+       parent && !parent->AccessibilityIsIncludedInTree();
        parent = parent->ParentObject()) {
   }
 
@@ -3802,17 +3821,16 @@ AXObject* AXObject::ContainerWidget() const {
   return ancestor;
 }
 
+// Only use layout object traversal for pseudo elements and their descendants.
 bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
   if (!GetLayoutObject())
     return false;
 
-  // If no node, this may be an anonymous layout object, e.g. an anonymous block
-  // that is inserted to enforce the rule that all children are blocks or all
-  // children are inlines. Anonymous blocks have a layout object but no node.
-  // Note: anonymous containers are only added within pseudo elements.
-  // See AXObjectCacheImpl::IsLayoutObjectRelevantForAccessibility().
+  // If no node, this is an anonymous layout object. The only way this can be
+  // reached is inside a pseudo element subtree.
   if (!GetNode()) {
     DCHECK(GetLayoutObject()->IsAnonymous());
+    DCHECK(AXObjectCacheImpl::IsPseudoElementDescendant(*GetLayoutObject()));
     return true;
   }
 
@@ -3914,7 +3932,9 @@ void AXObject::ClearChildren() {
       child->DetachFromParent();
   }
 
+  // Detach anything else that may still point to this parent.
   if (GetNode()) {
+    DetachSelectSlotChildFromParent();
     // Only direct AXObjects for direct DOM children can be unincluded.
     // If they were unincluded, then they couldn't detach from parent in the
     // first loop above, because they aren't in children_.
@@ -3934,6 +3954,40 @@ void AXObject::ClearChildren() {
   }
 
   children_.clear();
+}
+
+// TODO(accessibility) Refactor AXMenuListObject to be an AXNodeObject
+// that exposes its contents via the shadow DOM, and remove this.
+void AXObject::DetachSelectSlotChildFromParent() {
+  // An <select>is  assigned a shadow root by the user agent, in order to
+  // help with layout. The last child is a <slot> container that holds the
+  // options. It will have an AXObject that points to |this| as a parent.
+  // Detaching it is important in order to guarantee that |this| detached object
+  // will not be reached while traversing parents, e.g. of <option> children,
+  // which still exist even if the <select> is invalidated for a size change.
+
+  DCHECK(GetNode());
+
+  HTMLSelectElement* select_element = DynamicTo<HTMLSelectElement>(GetNode());
+  if (!select_element)
+    return;
+
+  ShadowRoot* shadow_root = select_element->GetShadowRoot();
+  if (!shadow_root)
+    return;
+
+  DCHECK(shadow_root->IsUserAgent());
+
+  Node* shadow_contents = shadow_root->lastChild();
+  if (!shadow_contents) {
+    NOTREACHED();
+    return;
+  }
+
+  DCHECK(IsA<HTMLSlotElement>(shadow_contents));
+
+  if (AXObject* ax_shadow_contents = AXObjectCache().Get(shadow_contents))
+    ax_shadow_contents->DetachFromParent();
 }
 
 Element* AXObject::GetElement() const {

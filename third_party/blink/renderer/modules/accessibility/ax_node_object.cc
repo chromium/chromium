@@ -62,6 +62,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
@@ -104,9 +106,12 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -1199,6 +1204,12 @@ void AXNodeObject::Init(AXObject* parent_if_known) {
   initialized_ = true;
 #endif
   AXObject::Init(parent_if_known);
+
+  DCHECK(node_ ||
+         (GetLayoutObject() &&
+          AXObjectCacheImpl::IsPseudoElementDescendant(*GetLayoutObject())))
+      << "Nodeless AXNodeObject can only exist inside a pseudo element: "
+      << GetLayoutObject();
 }
 
 void AXNodeObject::Detach() {
@@ -3325,8 +3336,10 @@ void AXNodeObject::LoadInlineTextBoxes() {
 
 void AXNodeObject::AddInlineTextBoxChildren(bool force) {
   Document* document = GetDocument();
-  if (!document)
+  if (!document) {
+    NOTREACHED();
     return;
+  }
 
   Settings* settings = document->GetSettings();
   if (!force &&
@@ -3481,13 +3494,51 @@ void AXNodeObject::AddPopupChildren() {
   AddChildAndCheckIncluded(html_input_element->PopupRootAXObject());
 }
 
+bool AXNodeObject::CanAddLayoutChild(LayoutObject& child) {
+  if (child.IsAnonymous())
+    return true;
+
+  // An non-anonymous layout object (has a DOM node) is only reached when a
+  // pseudo element is inside another pseudo element.
+  // This is because layout object traversal only occurs for pseudo element
+  // subtrees -- see AXObject::ShouldUseLayoutObjectTraversalForChildren().
+  // The only way a node will occur inside of that subtree is if it's another
+  // pseudo element.
+  DCHECK(child.GetNode()->IsPseudoElement());
+
+  // Only add this inner pseudo element if it hasn't been added elsewhere.
+  // An example is ::before with ::first-letter.
+  AXObject* ax_preexisting = AXObjectCache().Get(&child);
+  return !ax_preexisting || !ax_preexisting->CachedParentObject() ||
+         ax_preexisting->CachedParentObject() == this;
+}
+
+#if DCHECK_IS_ON()
+#define CHECK_NO_OTHER_PARENT_FOR(child)                                \
+  AXObject* ax_preexisting = AXObjectCache().Get(child);                \
+  DCHECK(!ax_preexisting || !ax_preexisting->CachedParentObject() ||    \
+         ax_preexisting->CachedParentObject() == this)                  \
+      << "Newly added child can't have a different preexisting parent:" \
+      << "\nChild = " << ax_preexisting->ToString(true, true)           \
+      << "\nNew parent = " << ToString(true, true)                      \
+      << "\nPreexisting parent = "                                      \
+      << ax_preexisting->CachedParentObject()->ToString(true, true);
+#else
+#define CHECK_NO_OTHER_PARENT_FOR(child) (void(0))
+#endif
+
 void AXNodeObject::AddLayoutChildren() {
-  // Children are added this way in very rare cases.
-  // See ShouldUseLayoutObjectTraversalForChildren().
+  // Children are added this way only for pseudo-element subtrees.
+  // See AXObject::ShouldUseLayoutObjectTraversalForChildren().
   DCHECK(GetLayoutObject());
   LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   while (child) {
-    AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
+    DCHECK(AXObjectCacheImpl::IsPseudoElementDescendant(*child));
+    if (CanAddLayoutChild(*child)) {
+      CHECK_NO_OTHER_PARENT_FOR(child);
+      // All added pseudo element desecendants are included in the tree.
+      AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
+    }
     child = child->NextSibling();
   }
 }
@@ -3511,17 +3562,27 @@ void AXNodeObject::AddAccessibleNodeChildren() {
   if (!accessible_node)
     return;
 
-  for (const auto& child : accessible_node->GetChildren())
+  for (const auto& child : accessible_node->GetChildren()) {
+    CHECK_NO_OTHER_PARENT_FOR(child);
     AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
+  }
 }
 
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
   AXObjectCache().GetAriaOwnedChildren(this, owned_children);
 
+  DCHECK(owned_children.size() == 0 || AXRelationCache::IsValidOwner(this))
+      << "This object is not allowed to use aria-owns, but is: "
+      << ToString(true, true);
+
   // Always include owned children.
-  for (const auto& owned_child : owned_children)
+  for (const auto& owned_child : owned_children) {
+    DCHECK(AXRelationCache::IsValidOwnedChild(owned_child))
+        << "This object is not allowed to be owned, but is: "
+        << owned_child->ToString(true, true);
     AddChildAndCheckIncluded(owned_child, true);
+  }
 }
 
 void AXNodeObject::AddChildrenImpl() {
@@ -3605,35 +3666,90 @@ void AXNodeObject::AddChildren() {
 #endif
 }
 
+// Add non-owned children that are backed with a DOM node.
 void AXNodeObject::AddNodeChild(Node* node) {
   if (!node)
     return;
 
-  AXObject* child_obj = AXObjectCache().GetOrCreate(node, this);
-  if (!child_obj)
-    return;
+  AXObject* ax_child = AXObjectCache().Get(node);
+  // Should not have another parent unless owned.
+  if (AXObjectCache().IsAriaOwned(ax_child))
+    return;  // Do not add owned children to their natural parent.
+
+#if DCHECK_IS_ON()
+  AXObject* ax_cached_parent =
+      ax_child ? ax_child->CachedParentObject() : nullptr;
+  size_t num_children_before_add = children_.size();
+#endif
+
+  if (!ax_child) {
+    ax_child = AXObjectCache().GetOrCreate(node, this);
+    if (!ax_child)
+      return;
+  }
+
+  AddChild(ax_child);
+
+#if DCHECK_IS_ON()
+  bool did_add_child = children_.size() == num_children_before_add + 1 &&
+                       children_[0] == ax_child;
+  if (did_add_child) {
+    DCHECK(!ax_cached_parent || ax_cached_parent == this)
+        << "Newly added child shouldn't have a different preexisting parent:"
+        << "\nChild = " << ax_child->ToString(true, true)
+        << "\nNew parent = " << ToString(true, true)
+        << "\nPreexisting parent = " << ax_cached_parent->ToString(true, true);
+  }
+#endif
+}
+
+#if DCHECK_IS_ON()
+void AXNodeObject::CheckValidChild(AXObject* child) {
+  DCHECK(!child->IsDetached())
+      << "Cannot add a detached child: " << child->ToString(true, true);
+
+  Node* child_node = child->GetNode();
+
+  // An HTML image can only have area children.
+  DCHECK(!IsA<HTMLImageElement>(GetNode()) || IsA<HTMLAreaElement>(child_node))
+      << "Image elements can only have area children, had "
+      << child->ToString(true, true);
 
   // <area> children should only be added via AddImageMapChildren(), as the
   // children of an <image usemap>, and never alone or as children of a <map>.
-  DCHECK(!IsA<HTMLAreaElement>(node));
+  DCHECK(IsA<HTMLImageElement>(GetNode()) || !IsA<HTMLAreaElement>(child_node))
+      << "Area elements can only be added by image parents: "
+      << child->ToString(true, true) << " had a parent of "
+      << ToString(true, true);
 
-  AddChild(child_obj);
+  // An option or popup for a <select size=1> must only be added via an
+  // overridden AddChildren() on AXMenuList/AXMenuListPopup.
+  // These AXObjects must be added in an overridden AddChildren() method, and
+  // that will only occur if AXObjectCacheImpl::UseAXMenuList() returns true.
+  DCHECK(!IsA<AXMenuListOption>(child))
+      << "Adding menulist option child in wrong place: "
+      << "\nChild: " << child->ToString(true, true)
+      << "\nParent: " << child->ParentObject()->ToString(true, true)
+      << "\nUseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList();
+
+  // An popup for a <select size=1> must only be added via an overridden
+  // AddChildren() on AXMenuList.
+  DCHECK(!IsA<AXMenuListPopup>(child))
+      << "Adding menulist popup in wrong place: "
+      << "\nChild: " << child->ToString(true, true)
+      << "\nParent: " << child->ParentObject()->ToString(true, true)
+      << "\nUseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList()
+      << "\nShouldCreateAXMenuListOptionFor()="
+      << AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(child_node);
 }
+#endif
 
 void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
   if (!child)
     return;
 
-  // These must only be added via an overridden AddChildren() on the parent.
-  if (child->IsMenuListOption() || child->IsMenuListPopup())
-    return;
-
 #if DCHECK_IS_ON()
-  if (IsA<HTMLImageElement>(GetNode())) {
-    DCHECK(IsA<HTMLAreaElement>(child->GetNode()))
-        << "Image elements can only have area children, had "
-        << child->ToString(true, true);
-  }
+  CheckValidChild(child);
 #endif
 
   unsigned int index = children_.size();
@@ -3657,17 +3773,13 @@ void AXNodeObject::InsertChild(AXObject* child,
     return;
 
   DCHECK(CanHaveChildren());
-
   DCHECK(!child->IsDetached())
       << "Cannot add a detached child: " << child->ToString(true, true);
-  if (is_from_aria_owns) {
-    DCHECK(AXObjectCache().IsAriaOwned(child));
-  } else {
-    // Don't add an aria-owned child to its natural parent, because it will
-    // already be the child of the element with aria-owns.
-    if (AXObjectCache().IsAriaOwned(child))
-      return;
-  }
+  // Enforce expected aria-owns status:
+  // - Don't add a non-aria-owned child when called from AddOwnedChildren().
+  // - Don't add an aria-owned child to its natural parent, because it will
+  //   already be the child of the element with aria-owns.
+  DCHECK_EQ(AXObjectCache().IsAriaOwned(child), is_from_aria_owns);
 
   // Set the parent:
   // - For a new object it will have already been set.
@@ -3708,20 +3820,6 @@ void AXNodeObject::InsertChild(AXObject* child,
       }
     }
   } else {
-    DCHECK(!child->IsDetached())
-        << "Cannot add a detached child: " << child->ToString(true, true);
-    // These AXObjects must be added in an overridden AddChildren() method:
-    DCHECK(!child->IsMenuListOption())
-        << "Adding menulist option child in wrong place: "
-        << child->ToString(true, true)
-        << " of parent: " << child->ParentObject()->ToString(true, true)
-        << "\n UseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList()
-        << " ShouldCreateAXMenuListOptionFor()="
-        << AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(child->GetNode());
-    DCHECK(!child->IsMenuListPopup())
-        << "Adding menulist popup in wrong place: "
-        << child->ToString(true, true)
-        << " of parent: " << child->ParentObject()->ToString(true, true);
     children_.insert(index, child);
   }
 }
