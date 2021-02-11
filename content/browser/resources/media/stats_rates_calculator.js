@@ -496,7 +496,10 @@ class StatsRatesCalculator {
               'framesDecoded', 'interFrameDelay'),
           totalSamplesReceived:
               new RateCalculator('totalSamplesReceived', 'timestamp'),
-          concealedSamples: new RateCalculator('concealedSamples', 'timestamp'),
+          concealedSamples: [
+            new RateCalculator('concealedSamples', 'timestamp'),
+            new RateCalculator('concealedSamples', 'totalSamplesReceived'),
+          ],
           silentConcealedSamples:
               new RateCalculator('silentConcealedSamples', 'timestamp'),
           insertedSamplesForDeceleration:
