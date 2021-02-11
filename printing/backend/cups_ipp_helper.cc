@@ -336,8 +336,7 @@ void CapsAndDefaultsFromPrinter(const CupsOptionProvider& printer,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   printer_info->pin_supported = PinSupported(printer);
-  if (base::FeatureList::IsEnabled(printing::features::kAdvancedPpdAttributes))
-    ExtractAdvancedCapabilities(printer, printer_info);
+  ExtractAdvancedCapabilities(printer, printer_info);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ExtractCopies(printer, printer_info);

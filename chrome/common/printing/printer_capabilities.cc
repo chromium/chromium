@@ -33,10 +33,8 @@
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/feature_list.h"
 #include "chrome/common/printing/ipp_l10n.h"
 #include "components/strings/grit/components_strings.h"
-#include "printing/printing_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -122,8 +120,7 @@ base::Value AssemblePrinterCapabilities(
   if (!has_secure_protocol)
     caps->pin_supported = false;
 
-  if (base::FeatureList::IsEnabled(printing::features::kAdvancedPpdAttributes))
-    PopulateAdvancedCapsLocalization(&caps->advanced_capabilities);
+  PopulateAdvancedCapsLocalization(&caps->advanced_capabilities);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return cloud_print::PrinterSemanticCapsAndDefaultsToCdd(*caps);

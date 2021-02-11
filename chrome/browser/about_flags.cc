@@ -5704,13 +5704,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillPruneSuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillPruneSuggestions)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-advanced-ppd-attributes",
-     flag_descriptions::kEnableAdvancedPpdAttributesName,
-     flag_descriptions::kEnableAdvancedPpdAttributesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(printing::features::kAdvancedPpdAttributes)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"allow-sync-xhr-in-page-dismissal",
      flag_descriptions::kAllowSyncXHRInPageDismissalName,
      flag_descriptions::kAllowSyncXHRInPageDismissalDescription,

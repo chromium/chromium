@@ -4065,11 +4065,6 @@ const char kMovablePartialScreenshotName[] =
 const char kMovablePartialScreenshotDescription[] =
     "Allow partial screenshot region to be moved/resized via mouse/touch.";
 
-const char kEnableAdvancedPpdAttributesName[] =
-    "Enable advanced PPD attributes";
-const char kEnableAdvancedPpdAttributesDescription[] =
-    "Enable advanced settings on CUPS printers";
-
 const char kEnableAppDataSearchName[] = "Enable app data search in launcher";
 const char kEnableAppDataSearchDescription[] =
     "Allow launcher search to access data available through Firebase App "

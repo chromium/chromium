@@ -200,37 +200,35 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
     options.push_back(ConstructOption(kIppResolution, dpi + "dpi"));
   }
 
-  if (base::FeatureList::IsEnabled(
-          printing::features::kAdvancedPpdAttributes)) {
-    size_t regular_attr_count = options.size();
-    std::map<std::string, std::vector<std::string>> multival;
-    for (const auto& setting : settings.advanced_settings()) {
-      const std::string& key = setting.first;
-      const std::string& value = setting.second.GetString();
-      if (value.empty())
-        continue;
+  size_t regular_attr_count = options.size();
+  std::map<std::string, std::vector<std::string>> multival;
+  for (const auto& setting : settings.advanced_settings()) {
+    const std::string& key = setting.first;
+    const std::string& value = setting.second.GetString();
+    if (value.empty())
+      continue;
 
-      // Check for multivalue enum ("attribute/value").
-      size_t pos = key.find('/');
-      if (pos == std::string::npos) {
-        // Regular value.
-        ReportEnumUsage(key);
-        options.push_back(ConstructOption(key, value));
-        continue;
-      }
-      // Store selected enum values.
-      if (value == kOptionTrue)
-        multival[key.substr(0, pos)].push_back(key.substr(pos + 1));
+    // Check for multivalue enum ("attribute/value").
+    size_t pos = key.find('/');
+    if (pos == std::string::npos) {
+      // Regular value.
+      ReportEnumUsage(key);
+      options.push_back(ConstructOption(key, value));
+      continue;
     }
-    // Pass multivalue enums as comma-separated lists.
-    for (const auto& it : multival) {
-      ReportEnumUsage(it.first);
-      options.push_back(
-          ConstructOption(it.first, base::JoinString(it.second, ",")));
-    }
-    base::UmaHistogramCounts1000("Printing.CUPS.IppAttributesUsed",
-                                 options.size() - regular_attr_count);
+    // Store selected enum values.
+    if (value == kOptionTrue)
+      multival[key.substr(0, pos)].push_back(key.substr(pos + 1));
   }
+
+  // Pass multivalue enums as comma-separated lists.
+  for (const auto& it : multival) {
+    ReportEnumUsage(it.first);
+    options.push_back(
+        ConstructOption(it.first, base::JoinString(it.second, ",")));
+  }
+  base::UmaHistogramCounts1000("Printing.CUPS.IppAttributesUsed",
+                               options.size() - regular_attr_count);
 
   return options;
 }
