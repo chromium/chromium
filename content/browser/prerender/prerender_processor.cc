@@ -8,6 +8,7 @@
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/common/features.h"
@@ -63,8 +64,14 @@ void PrerenderProcessor::Start(
   // TODO(https://crbug.com/1138711, https://crbug.com/1138723): Abort if the
   // initiator frame is not the main frame (i.e., iframe or pop-up window).
 
+  auto* web_contents = static_cast<WebContentsImpl*>(
+      WebContents::FromRenderFrameHost(&initiator_render_frame_host_));
+
+  if (!web_contents)
+    return;
+
   prerender_frame_tree_node_id_ = GetPrerenderHostRegistry().CreateAndStartHost(
-      std::move(attributes), initiator_origin_);
+      std::move(attributes), *web_contents, initiator_origin_);
 }
 
 void PrerenderProcessor::Cancel() {

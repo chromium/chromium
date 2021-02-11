@@ -17,7 +17,8 @@
 
 namespace content {
 
-class BrowserContext;
+class FrameTree;
+class NavigationController;
 class RenderFrameHostImpl;
 class WebContents;
 class FrameTree;
@@ -30,9 +31,12 @@ class FrameTree;
 // created for browser-initiated prerendering (this code path is not implemented
 // yet). This is owned by PrerenderHostRegistry.
 //
-// TODO(https://crbug.com/1132746): Stop creating a new WebContents and instead
-// use the MPArch.
-class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
+// TODO(https://crbug.com/1132746): This class has two different ways of
+// prerendering the page: a dedicated WebContents instance or using a separate
+// FrameTree instance (MPArch). You can choose one or the other via the feature
+// parameter "implementation". The MPArch code is still in its very early stages
+// but will eventually completely replace the WebContents approach.
+class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -44,7 +48,7 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
                 const url::Origin& initiator_origin,
-                BrowserContext& browser_context);
+                WebContentsImpl& web_contents);
   ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;
@@ -69,6 +73,9 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   // ActivatePrerenderedContents().
   RenderFrameHostImpl* GetPrerenderedMainFrameHostForTesting();
 
+  // Waits until the page load finishes.
+  void WaitForLoadStopForTesting();
+
   const GURL& GetInitialUrl() const;
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
@@ -76,21 +83,28 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
  private:
+  // There are two implementations of this interface. One holds the page in a
+  // WebContents, and one holds it in a FrameTree (for MPArch).
+  // TODO(https://crbug.com/1170277): Remove once MPArch is the only
+  // implementation.
+  class PageHolderInterface;
+  class MPArchPageHolder;
+  class WebContentsPageHolder;
+
   void RecordFinalStatus(FinalStatus status);
 
   // Returns the frame tree associated with |prerendered_contents_|;
   FrameTree* GetPrerenderedFrameTree();
 
+  void CreatePageHolder(WebContentsImpl& web_contents);
+
+  NavigationController& GetNavigationController();
+
   const blink::mojom::PrerenderAttributesPtr attributes_;
   const GlobalFrameRoutingId initiator_render_frame_host_id_;
   const url::Origin initiator_origin_;
 
-  // WebContents for prerendering.
-  // TODO(https://crbug.com/1132746): Stop owning a new WebContents and instead
-  // use the new MPArch mechanism.
-  std::unique_ptr<WebContents> prerendered_contents_;
-
-  // Indicates if `prerendered_contents_` is ready for activation.
+  // Indicates if `page_holder_` is ready for activation.
   bool is_ready_for_activation_ = false;
 
   // The ID of the root node of the frame tree for the prerendered page `this`
@@ -99,6 +113,8 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
   base::Optional<FinalStatus> final_status_;
+
+  std::unique_ptr<PageHolderInterface> page_holder_;
 };
 
 }  // namespace content

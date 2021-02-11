@@ -1339,8 +1339,7 @@ void StoragePartitionImpl::Initialize(
   font_access_manager_ = std::make_unique<FontAccessManagerImpl>();
 
   if (blink::features::IsPrerender2Enabled()) {
-    prerender_host_registry_ =
-        std::make_unique<PrerenderHostRegistry>(*browser_context_);
+    prerender_host_registry_ = std::make_unique<PrerenderHostRegistry>();
   }
 }
 

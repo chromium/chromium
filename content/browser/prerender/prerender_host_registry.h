@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/callback_forward.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
@@ -14,9 +15,9 @@
 
 namespace content {
 
-class BrowserContext;
 class FrameTreeNode;
 class PrerenderHost;
+class WebContentsImpl;
 
 // Prerender2:
 // PrerenderHostRegistry manages running prerender hosts and provides the host
@@ -24,7 +25,7 @@ class PrerenderHost;
 // owned by StoragePartitionImpl.
 class CONTENT_EXPORT PrerenderHostRegistry {
  public:
-  explicit PrerenderHostRegistry(BrowserContext& browser_context);
+  PrerenderHostRegistry();
   ~PrerenderHostRegistry();
 
   PrerenderHostRegistry(const PrerenderHostRegistry&) = delete;
@@ -35,6 +36,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Creates and starts a host. Returns the root frame tree node id of the
   // prerendered page, which can be used as the id of the host.
   int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
+                         WebContentsImpl& web_contents,
                          const url::Origin& initiator_origin);
 
   // Destroys the host registered for `frame_tree_node_id`.
@@ -58,16 +60,17 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // doesn't match any prerender host.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
- private:
-  // This outlives `this` because PrerenderHostRegistry is owned by
-  // StoragePartitionImpl, which in turn is owned by BrowserContext.
-  BrowserContext& browser_context_;
+  // Waits until a prerender host for `prerendering_url` is created and returns
+  // a pointer to it.
+  PrerenderHost* WaitForHostByUrlForTesting(const GURL& prerendering_url);
 
+ private:
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are
   // not used for a while.
   std::map<int, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
   std::map<GURL, int> frame_tree_node_id_by_url_;
+  base::OnceClosure on_host_created_;
 };
 
 }  // namespace content

@@ -7554,11 +7554,17 @@ void WebContentsImpl::NotifySwappedFromRenderManager(RenderFrameHost* old_frame,
       "content", "WebContentsImpl::NotifySwappedFromRenderManager",
       "old_render_frame_host", base::trace_event::ToTracedValue(old_frame),
       "new_render_frame_host", base::trace_event::ToTracedValue(new_frame));
-  if (is_main_frame) {
+
+  FrameTree* frame_tree =
+      static_cast<RenderFrameHostImpl*>(new_frame)->frame_tree();
+
+  // Only fire RenderViewHostChanged if it is related to our FrameTree, as
+  // observers can not deal with events coming from non-primary FrameTree.
+  // TODO(https://crbug.com/1168562): Update observers to deal with the events,
+  // and fire events for all frame trees.
+  if (is_main_frame && IsPrimaryFrameTree(*frame_tree)) {
     // The |new_frame| and its various compadres are already swapped into place
     // for the WebContentsImpl when this method is called.
-    FrameTree* frame_tree =
-        static_cast<RenderFrameHostImpl*>(new_frame)->frame_tree();
     DCHECK_EQ(frame_tree->root()->current_frame_host(), new_frame);
     DCHECK_EQ(frame_tree->root()->render_manager()->GetRenderWidgetHostView(),
               new_frame->GetView());
@@ -7596,6 +7602,15 @@ void WebContentsImpl::NotifySwappedFromRenderManager(RenderFrameHost* old_frame,
 void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
     RenderFrameHost* old_frame,
     RenderFrameHost* new_frame) {
+  // Only fire RenderViewHostChanged if it is
+  // related to our FrameTree, as observers cannot deal with events coming
+  // from non-primary FrameTree.
+  // TODO(https://crbug.com/1168562): Update observers to deal with the events,
+  // and fire events for all frame trees.
+  if (!IsPrimaryFrameTree(
+          *static_cast<RenderFrameHostImpl*>(new_frame)->frame_tree())) {
+    return;
+  }
   NotifyViewSwapped(old_frame ? old_frame->GetRenderViewHost() : nullptr,
                     new_frame->GetRenderViewHost());
 }
@@ -8654,6 +8669,10 @@ void WebContentsImpl::RenderFrameHostStateChanged(
     // kActive.
     color_chooser_.reset();
   }
+}
+
+bool WebContentsImpl::IsPrimaryFrameTree(const FrameTree& frame_tree) const {
+  return !frame_tree.is_prerendering();
 }
 
 }  // namespace content

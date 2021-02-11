@@ -117,6 +117,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/net/ip_address_space_util.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -1605,9 +1606,21 @@ void NavigationRequest::BeginNavigation() {
         prerender_host_registry->FindHostToActivate(common_params_->url,
                                                     *frame_tree_node_);
 
-    // If `prerender_host_` exists, this navigation will activate the
-    // prerendered page on navigation commit.
-    prerender_host_ = std::move(prerender_host);
+    switch (blink::features::kPrerender2ImplementationParam.Get()) {
+      case blink::features::Prerender2Implementation::kWebContents:
+        // If `prerender_host_` exists, this navigation will activate the
+        // prerendered page on navigation commit.
+        prerender_host_ = std::move(prerender_host);
+        break;
+      // TODO(https://crbug.com/1170277): Remove once activation support is
+      // added to MPArch
+      case blink::features::Prerender2Implementation::kMPArch:
+        // The feature param disallows activation of the prerendered page for
+        // testing. Destroy `prerender_host` to dispose of the prerendered
+        // page.
+        prerender_host.reset();
+        break;
+    }
   }
 
   WillStartRequest();

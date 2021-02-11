@@ -1695,6 +1695,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetSlowWebPreferences(const base::CommandLine& command_line,
                              blink::web_pref::WebPreferences* prefs);
 
+  // Checks whether the given FrameTree is the primary one (the one whose URL is
+  // shown in the address bar), as opposed to one in for example a Prerender.
+  bool IsPrimaryFrameTree(const FrameTree& frame_tree) const;
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.

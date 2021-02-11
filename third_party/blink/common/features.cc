@@ -157,6 +157,15 @@ const base::Feature kPortalsCrossOrigin{"PortalsCrossOrigin",
 // Enable the prerender2. https://crbug.com/1126305.
 const base::Feature kPrerender2{"Prerender2",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<Prerender2Implementation>::Option
+    prerender2_implementation_options[] = {
+        {Prerender2Implementation::kWebContents, "webcontents"},
+        {Prerender2Implementation::kMPArch, "mparch"}};
+const base::FeatureParam<Prerender2Implementation>
+    kPrerender2ImplementationParam{&kPrerender2, "implementation",
+                                   Prerender2Implementation::kWebContents,
+                                   &prerender2_implementation_options};
+
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
 }

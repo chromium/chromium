@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
@@ -16,8 +17,7 @@
 
 namespace content {
 
-PrerenderHostRegistry::PrerenderHostRegistry(BrowserContext& browser_context)
-    : browser_context_(browser_context) {
+PrerenderHostRegistry::PrerenderHostRegistry() {
   DCHECK(blink::features::IsPrerender2Enabled());
 }
 
@@ -25,6 +25,7 @@ PrerenderHostRegistry::~PrerenderHostRegistry() = default;
 
 int PrerenderHostRegistry::CreateAndStartHost(
     blink::mojom::PrerenderAttributesPtr attributes,
+    WebContentsImpl& web_contents,
     const url::Origin& initiator_origin) {
   DCHECK(attributes);
 
@@ -40,7 +41,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
     return found->second;
 
   auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_origin, browser_context_);
+      std::move(attributes), initiator_origin, web_contents);
   const int frame_tree_node_id = prerender_host->frame_tree_node_id();
 
   // Start prerendering before adding the host to `frame_tree_node_id_by_url_`
@@ -65,6 +66,10 @@ int PrerenderHostRegistry::CreateAndStartHost(
                         frame_tree_node_id));
 
   frame_tree_node_id_by_url_[prerendering_url] = frame_tree_node_id;
+
+  if (on_host_created_)
+    std::move(on_host_created_).Run();
+
   return frame_tree_node_id;
 }
 
@@ -138,6 +143,18 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
       prerender_host_by_frame_tree_node_id_.find(prerender_frame_tree_node_id);
   DCHECK(host_iter != prerender_host_by_frame_tree_node_id_.end());
   return host_iter->second.get();
+}
+
+PrerenderHost* PrerenderHostRegistry::WaitForHostByUrlForTesting(
+    const GURL& prerendering_url) {
+  PrerenderHost* host = FindHostByUrlForTesting(prerendering_url);  // IN-TEST
+  while (!host) {
+    base::RunLoop loop;
+    on_host_created_ = loop.QuitClosure();
+    loop.Run();
+    host = FindHostByUrlForTesting(prerendering_url);  // IN-TEST
+  }
+  return host;
 }
 
 }  // namespace content

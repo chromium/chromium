@@ -53,8 +53,6 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     return web_contents;
   }
 
-  BrowserContext& browser_context() { return *browser_context_; }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -74,7 +72,7 @@ TEST_F(PrerenderHostTest, Activate) {
   attributes->url = kPrerenderingUrl;
   auto prerender_host = std::make_unique<PrerenderHost>(
       std::move(attributes), initiator_rfh->GetLastCommittedOrigin(),
-      browser_context());
+      *web_contents);
 
   // Start the prerendering navigation.
   prerender_host->StartPrerendering();
@@ -110,7 +108,7 @@ TEST_F(PrerenderHostTest, DontActivate) {
   attributes->url = kPrerenderingUrl;
   auto prerender_host = std::make_unique<PrerenderHost>(
       std::move(attributes), initiator_rfh->GetLastCommittedOrigin(),
-      browser_context());
+      *web_contents);
 
   // Start the prerendering navigation, but don't activate it.
   prerender_host->StartPrerendering();
