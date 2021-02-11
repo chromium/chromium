@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -239,11 +238,8 @@ ScriptPromise ShowFilePickerImpl(
   auto* raw_manager = manager.get();
   raw_manager->ChooseEntries(
       chooser_type, std::move(accepts), std::move(starting_directory_id),
-      RuntimeEnabledFeatures::FileSystemAccessAPIExperimentalEnabled()
-          ? well_known_starting_directory
-          : mojom::blink::WellKnownDirectory::kDefault,
-      std::move(starting_directory_token), std::move(suggested_name),
-      accept_all,
+      well_known_starting_directory, std::move(starting_directory_token),
+      std::move(suggested_name), accept_all,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
              mojo::Remote<mojom::blink::FileSystemAccessManager>,
@@ -399,10 +395,7 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
       script_state, window, mojom::blink::ChooseFileSystemEntryType::kSaveFile,
       std::move(accepts), std::move(starting_directory_id),
       std::move(well_known_starting_directory), std::move(token),
-      (options->hasSuggestedName() &&
-       RuntimeEnabledFeatures::FileSystemAccessAPIExperimentalEnabled())
-          ? options->suggestedName()
-          : "",
+      options->hasSuggestedName() ? options->suggestedName() : "",
       !options->excludeAcceptAllOption(),
       /*return_as_sequence=*/false);
 }
