@@ -779,11 +779,11 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::diagnostics::mojom::SystemDataProvider,
-      chromeos::DiagnosticsUI>(map);
+      chromeos::DiagnosticsDialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::diagnostics::mojom::SystemRoutineController,
-      chromeos::DiagnosticsUI>(map);
+      chromeos::DiagnosticsDialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<chromeos::scanning::mojom::ScanService,
                                          chromeos::ScanningUI>(map);

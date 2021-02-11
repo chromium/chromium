@@ -20,7 +20,7 @@ static_library("diagnostics_ui") {
     "//content/public/browser",
     "//ui/base",
     "//ui/resources",
-    "//ui/webui",
+    "//ui/web_dialogs",
   ]
 }
 

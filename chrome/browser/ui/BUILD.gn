@@ -2228,6 +2228,8 @@ static_library("ui") {
       "webui/chromeos/cryptohome_ui.h",
       "webui/chromeos/cryptohome_web_ui_handler.cc",
       "webui/chromeos/cryptohome_web_ui_handler.h",
+      "webui/chromeos/diagnostics_dialog.cc",
+      "webui/chromeos/diagnostics_dialog.h",
       "webui/chromeos/drive_internals_ui.cc",
       "webui/chromeos/drive_internals_ui.h",
       "webui/chromeos/edu_account_login_handler_chromeos.cc",

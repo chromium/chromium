@@ -127,11 +127,16 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 }  // namespace
 
-DiagnosticsUI::DiagnosticsUI(
+DiagnosticsDialogUI::DiagnosticsDialogUI(
     content::WebUI* web_ui,
     const chromeos::diagnostics::SessionLogHandler::SelectFilePolicyCreator&
         select_file_policy_creator)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+    : ui::MojoWebDialogUI(web_ui),
+      session_log_handler_(std::make_unique<diagnostics::SessionLogHandler>(
+          select_file_policy_creator)) {
+  diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
+      session_log_handler_.get());
+
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIDiagnosticsAppHost));
   html_source->OverrideContentSecurityPolicy(
@@ -157,12 +162,12 @@ DiagnosticsUI::DiagnosticsUI(
   open_timestamp_ = base::Time::Now();
 }
 
-DiagnosticsUI::~DiagnosticsUI() {
+DiagnosticsDialogUI::~DiagnosticsDialogUI() {
   const base::TimeDelta time_open = base::Time::Now() - open_timestamp_;
   diagnostics::metrics::EmitAppOpenDuration(time_open);
 }
 
-void DiagnosticsUI::BindInterface(
+void DiagnosticsDialogUI::BindInterface(
     mojo::PendingReceiver<diagnostics::mojom::SystemDataProvider> receiver) {
   diagnostics::SystemDataProvider* system_data_provider =
       diagnostics_manager_->GetSystemDataProvider();
@@ -171,7 +176,7 @@ void DiagnosticsUI::BindInterface(
   }
 }
 
-void DiagnosticsUI::BindInterface(
+void DiagnosticsDialogUI::BindInterface(
     mojo::PendingReceiver<diagnostics::mojom::SystemRoutineController>
         receiver) {
   diagnostics::SystemRoutineController* system_routine_controller =
@@ -181,6 +186,6 @@ void DiagnosticsUI::BindInterface(
   }
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(DiagnosticsUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(DiagnosticsDialogUI)
 
 }  // namespace chromeos

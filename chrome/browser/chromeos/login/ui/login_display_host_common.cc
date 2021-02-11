@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
@@ -340,6 +342,18 @@ bool LoginDisplayHostCommon::HandleAccelerator(
                        weak_factory_.GetWeakPtr()));
     return true;
   }
+
+  if (action == ash::LoginAcceleratorAction::kLaunchDiagnostics &&
+      base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp)) {
+    // Don't handle this action if device is disabled.
+    if (system::DeviceDisablingManager::
+            IsDeviceDisabledDuringNormalOperation()) {
+      return false;
+    }
+    chromeos::DiagnosticsDialog::ShowDialog();
+    return true;
+  }
+
   if (WizardController::default_controller() &&
       WizardController::default_controller()->is_initialized()) {
     if (WizardController::default_controller()->HandleAccelerator(action))

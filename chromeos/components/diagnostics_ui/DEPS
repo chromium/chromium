@@ -10,5 +10,5 @@ include_rules = [
   "+ui/gfx",
   "+ui/resources",
   "+ui/shell_dialogs",
-  "+ui/webui",
+  "+ui/web_dialogs",
 ]

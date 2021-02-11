@@ -26,6 +26,7 @@ const char kAccelNameAppLaunchBailout[] = "app_launch_bailout";
 const char kAccelNameAppLaunchNetworkConfig[] = "app_launch_network_config";
 const char kAccelNameDemoMode[] = "demo_mode";
 const char kAccelSendFeedback[] = "send_feedback";
+const char kAccelNameLaunchDiagnostics[] = "launch_diagnostics";
 
 }  // namespace
 
@@ -55,6 +56,8 @@ std::string MapToWebUIAccelerator(ash::LoginAcceleratorAction action) {
       return kAccelNameDeviceRequisitionRemora;
     case ash::LoginAcceleratorAction::kStartDemoMode:
       return kAccelNameDemoMode;
+    case ash::LoginAcceleratorAction::kLaunchDiagnostics:
+      return kAccelNameLaunchDiagnostics;
   }
 }
 

@@ -11,11 +11,7 @@
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom-forward.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_routine_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/webui/mojo_web_ui_controller.h"
-
-namespace content {
-class WebUI;
-}  // namespace content
+#include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace chromeos {
 namespace diagnostics {
@@ -24,17 +20,17 @@ class DiagnosticsManager;
 
 }  // namespace diagnostics
 
-// The WebUI for chrome://diagnostics.
-class DiagnosticsUI : public ui::MojoWebUIController {
+// The WebDialogUI for chrome://diagnostics.
+class DiagnosticsDialogUI : public ui::MojoWebDialogUI {
  public:
-  DiagnosticsUI(
+  explicit DiagnosticsDialogUI(
       content::WebUI* web_ui,
       const chromeos::diagnostics::SessionLogHandler::SelectFilePolicyCreator&
           select_file_policy_creator);
-  ~DiagnosticsUI() override;
+  ~DiagnosticsDialogUI() override;
 
-  DiagnosticsUI(const DiagnosticsUI&) = delete;
-  DiagnosticsUI& operator=(const DiagnosticsUI&) = delete;
+  DiagnosticsDialogUI(const DiagnosticsDialogUI&) = delete;
+  DiagnosticsDialogUI& operator=(const DiagnosticsDialogUI&) = delete;
 
   void BindInterface(
       mojo::PendingReceiver<diagnostics::mojom::SystemDataProvider> receiver);
