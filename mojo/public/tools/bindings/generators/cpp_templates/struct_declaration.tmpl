@@ -2,30 +2,6 @@
 
 class {{export_attribute}} {{class_name}} {
  public:
-  class BufferWriter {
-   public:
-    BufferWriter() = default;
-
-    void Allocate(mojo::internal::Buffer* serialization_buffer) {
-      serialization_buffer_ = serialization_buffer;
-      index_ = serialization_buffer_->Allocate(sizeof({{class_name}}));
-      new (data()) {{class_name}}();
-    }
-
-    bool is_null() const { return !serialization_buffer_; }
-    {{class_name}}* data() {
-      DCHECK(!is_null());
-      return serialization_buffer_->Get<{{class_name}}>(index_);
-    }
-    {{class_name}}* operator->() { return data(); }
-
-   private:
-    mojo::internal::Buffer* serialization_buffer_ = nullptr;
-    size_t index_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(BufferWriter);
-  };
-
   static bool Validate(const void* data,
                        mojo::internal::ValidationContext* validation_context);
 
@@ -58,6 +34,8 @@ class {{export_attribute}} {{class_name}} {
 {%- endif %}
 
  private:
+  friend class mojo::internal::MessageFragment<{{class_name}}>;
+
   {{class_name}}();
   ~{{class_name}}() = delete;
 };

@@ -64,6 +64,7 @@ component("bindings_base") {
     "lib/map_serialization.h",
     "lib/may_auto_lock.h",
     "lib/message.cc",
+    "lib/message_fragment.h",
     "lib/message_header_validator.cc",
     "lib/message_internal.cc",
     "lib/message_internal.h",

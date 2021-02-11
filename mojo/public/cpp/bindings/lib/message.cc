@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 
 namespace mojo {
@@ -459,15 +460,16 @@ void Message::SerializeHandles(AssociatedGroupController* group_controller) {
   DCHECK(payload_buffer_.is_valid());
   DCHECK(handle_.is_valid());
 
-  internal::Array_Data<uint32_t>::BufferWriter handle_writer;
-  handle_writer.Allocate(num_endpoint_handles, &payload_buffer_);
-  header_v2()->payload_interface_ids.Set(handle_writer.data());
+  internal::MessageFragment<internal::Array_Data<uint32_t>> handles_fragment(
+      *this);
+  handles_fragment.AllocateArrayData(num_endpoint_handles);
+  header_v2()->payload_interface_ids.Set(handles_fragment.data());
 
   for (size_t i = 0; i < num_endpoint_handles; ++i) {
     ScopedInterfaceEndpointHandle& handle =
         (*mutable_associated_endpoint_handles())[i];
     DCHECK(handle.pending_association());
-    handle_writer->storage()[i] =
+    handles_fragment->storage()[i] =
         group_controller->AssociateInterface(std::move(handle));
   }
   mutable_associated_endpoint_handles()->clear();

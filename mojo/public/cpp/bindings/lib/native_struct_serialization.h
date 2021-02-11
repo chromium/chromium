@@ -17,6 +17,7 @@
 #include "ipc/ipc_param_traits.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
 #include "mojo/public/interfaces/bindings/native_struct.mojom.h"
@@ -32,8 +33,7 @@ namespace internal {
 struct COMPONENT_EXPORT(MOJO_CPP_BINDINGS) UnmappedNativeStructSerializerImpl {
   static void Serialize(
       const native::NativeStructPtr& input,
-      native::internal::NativeStruct_Data::BufferWriter* writer,
-      Message* message);
+      MessageFragment<native::internal::NativeStruct_Data>& fragment);
 
   static bool Deserialize(native::internal::NativeStruct_Data* input,
                           native::NativeStructPtr* output,
@@ -41,8 +41,7 @@ struct COMPONENT_EXPORT(MOJO_CPP_BINDINGS) UnmappedNativeStructSerializerImpl {
 
   static void SerializeMessageContents(
       IPC::Message* ipc_message,
-      native::internal::NativeStruct_Data::BufferWriter* writer,
-      Message* message);
+      MessageFragment<native::internal::NativeStruct_Data>& fragment);
 
   static bool DeserializeMessageAttachments(
       native::internal::NativeStruct_Data* data,
@@ -57,12 +56,11 @@ struct NativeStructSerializerImpl {
 
   static void Serialize(
       MaybeConstUserType& value,
-      native::internal::NativeStruct_Data::BufferWriter* writer,
-      Message* message) {
+      MessageFragment<native::internal::NativeStruct_Data>& fragment) {
     IPC::Message ipc_message;
     Traits::Write(&ipc_message, value);
-    UnmappedNativeStructSerializerImpl::SerializeMessageContents(
-        &ipc_message, writer, message);
+    UnmappedNativeStructSerializerImpl::SerializeMessageContents(&ipc_message,
+                                                                 fragment);
   }
 
   static bool Deserialize(native::internal::NativeStruct_Data* data,

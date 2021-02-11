@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/handle_serialization.h"
 #include "mojo/public/cpp/bindings/lib/map_serialization.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/string_serialization.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/bindings/map_traits_flat_map.h"
@@ -36,11 +37,9 @@ struct MojomSerializationImplTraits<
     MojomType,
     typename std::enable_if<
         BelongsTo<MojomType, MojomTypeCategory::kStruct>::value>::type> {
-  template <typename MaybeConstUserType, typename WriterType>
-  static void Serialize(MaybeConstUserType& input,
-                        WriterType* writer,
-                        Message* message) {
-    mojo::internal::Serialize<MojomType>(input, writer, message);
+  template <typename MaybeConstUserType, typename FragmentType>
+  static void Serialize(MaybeConstUserType& input, FragmentType& fragment) {
+    mojo::internal::Serialize<MojomType>(input, fragment);
   }
 };
 
@@ -49,12 +48,9 @@ struct MojomSerializationImplTraits<
     MojomType,
     typename std::enable_if<
         BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>::type> {
-  template <typename MaybeConstUserType, typename WriterType>
-  static void Serialize(MaybeConstUserType& input,
-                        WriterType* writer,
-                        Message* message) {
-    mojo::internal::Serialize<MojomType>(input, writer, false /* inline */,
-                                         message);
+  template <typename MaybeConstUserType, typename FragmentType>
+  static void Serialize(MaybeConstUserType& input, FragmentType& fragment) {
+    mojo::internal::Serialize<MojomType>(input, fragment, false /* inline */);
   }
 };
 
@@ -65,8 +61,8 @@ mojo::Message SerializeAsMessageImpl(UserType* input) {
   // limits to be applied.
   mojo::Message message(0, 0, 0, 0, MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE,
                         nullptr);
-  typename MojomTypeTraits<MojomType>::Data::BufferWriter writer;
-  MojomSerializationImplTraits<MojomType>::Serialize(*input, &writer, &message);
+  MessageFragment<typename MojomTypeTraits<MojomType>::Data> fragment(message);
+  MojomSerializationImplTraits<MojomType>::Serialize(*input, fragment);
   message.SerializeHandles(/*group_controller=*/nullptr);
   return message;
 }

@@ -96,32 +96,30 @@ struct Serializer<MapDataView<Key, Value>, MaybeConstUserType> {
                       MapValueReader<MaybeConstUserType>>;
 
   static void Serialize(MaybeConstUserType& input,
-                        typename Data::BufferWriter* writer,
-                        const ContainerValidateParams* validate_params,
-                        Message* message) {
+                        MessageFragment<Data>& fragment,
+                        const ContainerValidateParams* validate_params) {
     DCHECK(validate_params->key_validate_params);
     DCHECK(validate_params->element_validate_params);
     if (CallIsNullIfExists<Traits>(input))
       return;
 
-    writer->Allocate(message->payload_buffer());
-    typename MojomTypeTraits<ArrayDataView<Key>>::Data::BufferWriter
-        keys_writer;
-    keys_writer.Allocate(Traits::GetSize(input), message->payload_buffer());
+    fragment.Allocate();
+    MessageFragment<typename MojomTypeTraits<ArrayDataView<Key>>::Data>
+        keys_fragment(fragment.message());
+    keys_fragment.AllocateArrayData(Traits::GetSize(input));
     MapKeyReader<MaybeConstUserType> key_reader(input);
-    KeyArraySerializer::SerializeElements(&key_reader, &keys_writer,
-                                          validate_params->key_validate_params,
-                                          message);
-    (*writer)->keys.Set(keys_writer.data());
+    KeyArraySerializer::SerializeElements(&key_reader, keys_fragment,
+                                          validate_params->key_validate_params);
+    fragment->keys.Set(keys_fragment.data());
 
-    typename MojomTypeTraits<ArrayDataView<Value>>::Data::BufferWriter
-        values_writer;
-    values_writer.Allocate(Traits::GetSize(input), message->payload_buffer());
+    MessageFragment<typename MojomTypeTraits<ArrayDataView<Value>>::Data>
+        values_fragment(fragment.message());
+    values_fragment.AllocateArrayData(Traits::GetSize(input));
     MapValueReader<MaybeConstUserType> value_reader(input);
     ValueArraySerializer::SerializeElements(
-        &value_reader, &values_writer, validate_params->element_validate_params,
-        message);
-    (*writer)->values.Set(values_writer.data());
+        &value_reader, values_fragment,
+        validate_params->element_validate_params);
+    fragment->values.Set(values_fragment.data());
   }
 
   static bool Deserialize(Data* input, UserType* output, Message* message) {

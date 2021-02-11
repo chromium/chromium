@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
 #include "mojo/public/cpp/bindings/string_data_view.h"
@@ -23,14 +24,13 @@ struct Serializer<StringDataView, MaybeConstUserType> {
   using Traits = StringTraits<UserType>;
 
   static void Serialize(MaybeConstUserType& input,
-                        String_Data::BufferWriter* writer,
-                        Message* message) {
+                        MessageFragment<String_Data>& fragment) {
     if (CallIsNullIfExists<Traits>(input))
       return;
 
     auto r = Traits::GetUTF8(input);
-    writer->Allocate(r.size(), message->payload_buffer());
-    memcpy((*writer)->storage(), r.data(), r.size());
+    fragment.AllocateArrayData(r.size());
+    memcpy(fragment->storage(), r.data(), r.size());
   }
 
   static bool Deserialize(String_Data* input,

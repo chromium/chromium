@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -50,9 +51,10 @@ class SerializationWarningTest : public testing::Test {
     warning_observer_.set_last_warning(mojo::internal::VALIDATION_ERROR_NONE);
 
     mojo::Message message(0, 0, 0, 0, nullptr);
-    typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
-        writer;
-    mojo::internal::Serialize<MojomType>(obj, &writer, &message);
+    mojo::internal::MessageFragment<
+        typename mojo::internal::MojomTypeTraits<MojomType>::Data>
+        fragment(message);
+    mojo::internal::Serialize<MojomType>(obj, fragment);
     EXPECT_EQ(expected_warning, warning_observer_.last_warning());
   }
 
@@ -63,10 +65,10 @@ class SerializationWarningTest : public testing::Test {
     warning_observer_.set_last_warning(mojo::internal::VALIDATION_ERROR_NONE);
 
     mojo::Message message(0, 0, 0, 0, nullptr);
-    typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
-        writer;
-    mojo::internal::Serialize<MojomType>(obj, &writer, validate_params,
-                                         &message);
+    mojo::internal::MessageFragment<
+        typename mojo::internal::MojomTypeTraits<MojomType>::Data>
+        fragment(message);
+    mojo::internal::Serialize<MojomType>(obj, fragment, validate_params);
     EXPECT_EQ(expected_warning, warning_observer_.last_warning());
   }
 
@@ -78,9 +80,10 @@ class SerializationWarningTest : public testing::Test {
     warning_observer_.set_last_warning(mojo::internal::VALIDATION_ERROR_NONE);
 
     mojo::Message message(0, 0, 0, 0, nullptr);
-    typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
-        writer;
-    mojo::internal::Serialize<MojomType>(obj, &writer, false, &message);
+    mojo::internal::MessageFragment<
+        typename mojo::internal::MojomTypeTraits<MojomType>::Data>
+        fragment(message);
+    mojo::internal::Serialize<MojomType>(obj, fragment, false);
 
     EXPECT_EQ(expected_warning, warning_observer_.last_warning());
   }

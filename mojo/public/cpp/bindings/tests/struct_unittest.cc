@@ -7,6 +7,7 @@
 #include <string.h>
 #include <utility>
 
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/interfaces/bindings/tests/test_export2.mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_structs.mojom.h"
@@ -47,9 +48,9 @@ size_t SerializeStruct(InputType& input,
       typename SerializeStructHelperTraits<StructType>::DataView;
   *message = mojo::Message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message->payload_buffer()->cursor();
-  typename DataType::BufferWriter writer;
-  mojo::internal::Serialize<DataViewType>(input, &writer, message);
-  *out_data = writer.is_null() ? nullptr : writer.data();
+  mojo::internal::MessageFragment<DataType> fragment(*message);
+  mojo::internal::Serialize<DataViewType>(input, fragment);
+  *out_data = fragment.is_null() ? nullptr : fragment.data();
   return message->payload_buffer()->cursor() - payload_start;
 }
 

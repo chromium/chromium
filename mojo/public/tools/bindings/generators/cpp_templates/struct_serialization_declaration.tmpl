@@ -11,15 +11,14 @@ struct Serializer<{{data_view}}, MaybeConstUserType> {
   using UserType = typename std::remove_const<MaybeConstUserType>::type;
   using Traits = StructTraits<{{data_view}}, UserType>;
 
-  static void Serialize(MaybeConstUserType& input,
-                        {{data_type}}::BufferWriter* output,
-                        Message* message) {
+  static void Serialize(
+      MaybeConstUserType& input,
+      mojo::internal::MessageFragment<{{data_type}}>& fragment) {
     if (CallIsNullIfExists<Traits>(input))
       return;
     {{struct_macros.serialize(
-          struct, struct.name ~ " struct",
-          "Traits::%s(input)", "(*output)",
-          "message", True)|indent(2)}}
+          struct, struct.name ~ " struct", "Traits::%s(input)", "fragment",
+          True)|indent(2)}}
   }
 
   static bool Deserialize({{data_type}}* input,

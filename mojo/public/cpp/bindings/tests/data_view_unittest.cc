@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,11 +34,11 @@ struct DataViewHolder {
 std::unique_ptr<DataViewHolder> SerializeTestStruct(TestStructPtr input) {
   auto result = std::make_unique<DataViewHolder>();
   result->message = Message(0, 0, 0, 0, nullptr);
-  internal::TestStruct_Data::BufferWriter writer;
-  mojo::internal::Serialize<TestStructDataView>(input, &writer,
-                                                &result->message);
+  mojo::internal::MessageFragment<internal::TestStruct_Data> fragment(
+      result->message);
+  mojo::internal::Serialize<TestStructDataView>(input, fragment);
   result->data_view =
-      std::make_unique<TestStructDataView>(writer.data(), &result->message);
+      std::make_unique<TestStructDataView>(fragment.data(), &result->message);
   return result;
 }
 

@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
+#include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
@@ -34,9 +35,9 @@ size_t SerializeStruct(InputType& input,
   using DataViewType = typename StructType::DataView;
   *message = mojo::Message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message->payload_buffer()->cursor();
-  typename DataType::BufferWriter writer;
-  mojo::internal::Serialize<DataViewType>(input, &writer, message);
-  *out_data = writer.is_null() ? nullptr : writer.data();
+  mojo::internal::MessageFragment<DataType> fragment(*message);
+  mojo::internal::Serialize<DataViewType>(input, fragment);
+  *out_data = fragment.is_null() ? nullptr : fragment.data();
   return message->payload_buffer()->cursor() - payload_start;
 }
 
@@ -48,9 +49,9 @@ size_t SerializeUnion(InputType& input,
   using DataViewType = typename StructType::DataView;
   *message = mojo::Message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message->payload_buffer()->cursor();
-  typename DataType::BufferWriter writer;
-  mojo::internal::Serialize<DataViewType>(input, &writer, false, message);
-  *out_data = writer.is_null() ? nullptr : writer.data();
+  mojo::internal::MessageFragment<DataType> fragment(*message);
+  mojo::internal::Serialize<DataViewType>(input, fragment, false);
+  *out_data = fragment.is_null() ? nullptr : fragment.data();
   return message->payload_buffer()->cursor() - payload_start;
 }
 
@@ -61,12 +62,13 @@ size_t SerializeArray(InputType& input,
                       typename DataViewType::Data_** out_data) {
   *message = mojo::Message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message->payload_buffer()->cursor();
-  typename DataViewType::Data_::BufferWriter writer;
+
+  mojo::internal::MessageFragment<typename DataViewType::Data_> fragment(
+      *message);
   mojo::internal::ContainerValidateParams validate_params(0, nullable_elements,
                                                           nullptr);
-  mojo::internal::Serialize<DataViewType>(input, &writer, &validate_params,
-                                          message);
-  *out_data = writer.is_null() ? nullptr : writer.data();
+  mojo::internal::Serialize<DataViewType>(input, fragment, &validate_params);
+  *out_data = fragment.is_null() ? nullptr : fragment.data();
   return message->payload_buffer()->cursor() - payload_start;
 }
 
@@ -290,14 +292,15 @@ TEST(UnionTest, SerializeIsNullInlined) {
   mojo::internal::Buffer& buffer = *message.payload_buffer();
   EXPECT_EQ(sizeof(mojo::internal::MessageHeader), buffer.cursor());
 
-  internal::PodUnion_Data::BufferWriter writer;
-  writer.Allocate(&buffer);
-  mojo::internal::Serialize<PodUnionDataView>(pod, &writer, true, &message);
-  EXPECT_TRUE(writer.data()->is_null());
+  mojo::internal::MessageFragment<internal::PodUnion_Data> fragment(message);
+  fragment.Allocate();
+  mojo::internal::Serialize<PodUnionDataView>(pod, fragment, true);
+  EXPECT_TRUE(fragment->is_null());
   EXPECT_EQ(16U + sizeof(mojo::internal::MessageHeader), buffer.cursor());
 
   PodUnionPtr pod2;
-  mojo::internal::Deserialize<PodUnionDataView>(writer.data(), &pod2, nullptr);
+  mojo::internal::Deserialize<PodUnionDataView>(fragment.data(), &pod2,
+                                                nullptr);
   EXPECT_TRUE(pod2.is_null());
 }
 
@@ -319,23 +322,23 @@ TEST(UnionTest, NullValidation) {
 TEST(UnionTest, OOBValidation) {
   constexpr size_t size = sizeof(internal::PodUnion_Data) - 1;
   mojo::Message message(0, 0, size, 0, nullptr);
-  internal::PodUnion_Data::BufferWriter writer;
-  writer.Allocate(message.payload_buffer());
+  mojo::internal::MessageFragment<internal::PodUnion_Data> fragment(message);
+  fragment.Allocate();
   mojo::internal::ValidationContext validation_context(
-      writer.data(), static_cast<uint32_t>(size), 0, 0);
-  EXPECT_FALSE(internal::PodUnion_Data::Validate(writer.data(),
+      fragment.data(), static_cast<uint32_t>(size), 0, 0);
+  EXPECT_FALSE(internal::PodUnion_Data::Validate(fragment.data(),
                                                  &validation_context, false));
 }
 
 TEST(UnionTest, UnknownTagValidation) {
   constexpr size_t size = sizeof(internal::PodUnion_Data);
   mojo::Message message(0, 0, size, 0, nullptr);
-  internal::PodUnion_Data::BufferWriter writer;
-  writer.Allocate(message.payload_buffer());
-  writer->tag = static_cast<internal::PodUnion_Data::PodUnion_Tag>(0xFFFFFF);
+  mojo::internal::MessageFragment<internal::PodUnion_Data> fragment(message);
+  fragment.Allocate();
+  fragment->tag = static_cast<internal::PodUnion_Data::PodUnion_Tag>(0xFFFFFF);
   mojo::internal::ValidationContext validation_context(
-      writer.data(), static_cast<uint32_t>(size), 0, 0);
-  EXPECT_FALSE(internal::PodUnion_Data::Validate(writer.data(),
+      fragment.data(), static_cast<uint32_t>(size), 0, 0);
+  EXPECT_FALSE(internal::PodUnion_Data::Validate(fragment.data(),
                                                  &validation_context, false));
 }
 
@@ -426,12 +429,12 @@ TEST(UnionTest, NullStringValidation) {
   constexpr size_t size = sizeof(internal::ObjectUnion_Data);
   Message message(0, 0, 0, 0, nullptr);
   mojo::internal::Buffer& buffer = *message.payload_buffer();
-  internal::ObjectUnion_Data::BufferWriter writer;
-  writer.Allocate(&buffer);
-  writer->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
-  writer->data.unknown = 0x0;
+  mojo::internal::MessageFragment<internal::ObjectUnion_Data> fragment(message);
+  fragment.Allocate();
+  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
+  fragment->data.unknown = 0x0;
   mojo::internal::ValidationContext validation_context(
-      writer.data(), static_cast<uint32_t>(size), 0, 0);
+      fragment.data(), static_cast<uint32_t>(size), 0, 0);
   EXPECT_FALSE(internal::ObjectUnion_Data::Validate(
       buffer.data(), &validation_context, false));
 }
@@ -440,12 +443,12 @@ TEST(UnionTest, StringPointerOverflowValidation) {
   constexpr size_t size = sizeof(internal::ObjectUnion_Data);
   Message message(0, 0, 0, 0, nullptr);
   mojo::internal::Buffer& buffer = *message.payload_buffer();
-  internal::ObjectUnion_Data::BufferWriter writer;
-  writer.Allocate(&buffer);
-  writer->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
-  writer->data.unknown = 0xFFFFFFFFFFFFFFFF;
+  mojo::internal::MessageFragment<internal::ObjectUnion_Data> fragment(message);
+  fragment.Allocate();
+  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
+  fragment->data.unknown = 0xFFFFFFFFFFFFFFFF;
   mojo::internal::ValidationContext validation_context(
-      writer.data(), static_cast<uint32_t>(size), 0, 0);
+      fragment.data(), static_cast<uint32_t>(size), 0, 0);
   EXPECT_FALSE(internal::ObjectUnion_Data::Validate(
       buffer.data(), &validation_context, false));
 }
@@ -453,17 +456,18 @@ TEST(UnionTest, StringPointerOverflowValidation) {
 TEST(UnionTest, StringValidateOOB) {
   Message message(0, 0, 0, 0, nullptr);
   mojo::internal::Buffer& buffer = *message.payload_buffer();
-  internal::ObjectUnion_Data::BufferWriter writer;
-  writer.Allocate(&buffer);
-  writer->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
+  mojo::internal::MessageFragment<internal::ObjectUnion_Data> fragment(message);
+  fragment.Allocate();
+  fragment->tag = internal::ObjectUnion_Data::ObjectUnion_Tag::F_STRING;
 
-  writer->data.f_f_string.offset = 8;
-  char* ptr = reinterpret_cast<char*>(&writer->data.f_f_string);
+  fragment->data.f_f_string.offset = 8;
+  char* ptr = reinterpret_cast<char*>(&fragment->data.f_f_string);
   mojo::internal::ArrayHeader* array_header =
       reinterpret_cast<mojo::internal::ArrayHeader*>(ptr + *ptr);
   array_header->num_bytes = 20;  // This should go out of bounds.
   array_header->num_elements = 20;
-  mojo::internal::ValidationContext validation_context(writer.data(), 32, 0, 0);
+  mojo::internal::ValidationContext validation_context(fragment.data(), 32, 0,
+                                                       0);
   EXPECT_FALSE(internal::ObjectUnion_Data::Validate(
       buffer.data(), &validation_context, false));
 }
@@ -647,13 +651,13 @@ TEST(UnionTest, Validation_NullUnion_Failure) {
 
   constexpr size_t size = sizeof(internal::SmallStructNonNullableUnion_Data);
   Message message(0, 0, 0, 0, nullptr);
-  mojo::internal::Buffer& buffer = *message.payload_buffer();
-  internal::SmallStructNonNullableUnion_Data::BufferWriter writer;
-  writer.Allocate(&buffer);
+  mojo::internal::MessageFragment<internal::SmallStructNonNullableUnion_Data>
+      fragment(message);
+  fragment.Allocate();
   mojo::internal::ValidationContext validation_context(
-      writer.data(), static_cast<uint32_t>(size), 0, 0);
+      fragment.data(), static_cast<uint32_t>(size), 0, 0);
   EXPECT_FALSE(internal::SmallStructNonNullableUnion_Data::Validate(
-      writer.data(), &validation_context));
+      fragment.data(), &validation_context));
 }
 
 // Validation passes with nullable null union.
@@ -697,17 +701,16 @@ TEST(UnionTest, PodUnionInMapSerialization) {
   mojo::Message message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message.payload_buffer()->cursor();
 
-  typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
-      writer;
+  using DataType = typename mojo::internal::MojomTypeTraits<MojomType>::Data;
+  mojo::internal::MessageFragment<DataType> fragment(message);
   mojo::internal::ContainerValidateParams validate_params(
       new mojo::internal::ContainerValidateParams(0, false, nullptr),
       new mojo::internal::ContainerValidateParams(0, false, nullptr));
-  mojo::internal::Serialize<MojomType>(map, &writer, &validate_params,
-                                       &message);
+  mojo::internal::Serialize<MojomType>(map, fragment, &validate_params);
   EXPECT_EQ(120U, message.payload_buffer()->cursor() - payload_start);
 
   base::flat_map<std::string, PodUnionPtr> map2;
-  mojo::internal::Deserialize<MojomType>(writer.data(), &map2, &message);
+  mojo::internal::Deserialize<MojomType>(fragment.data(), &map2, &message);
 
   EXPECT_EQ(8, map2["one"]->get_f_int8());
   EXPECT_EQ(16, map2["two"]->get_f_int16());
@@ -725,17 +728,16 @@ TEST(UnionTest, PodUnionInMapSerializationWithNull) {
   mojo::Message message(0, 0, 0, 0, nullptr);
   const size_t payload_start = message.payload_buffer()->cursor();
 
-  typename mojo::internal::MojomTypeTraits<MojomType>::Data::BufferWriter
-      writer;
+  using DataType = mojo::internal::MojomTypeTraits<MojomType>::Data;
+  mojo::internal::MessageFragment<DataType> fragment(message);
   mojo::internal::ContainerValidateParams validate_params(
       new mojo::internal::ContainerValidateParams(0, false, nullptr),
       new mojo::internal::ContainerValidateParams(0, true, nullptr));
-  mojo::internal::Serialize<MojomType>(map, &writer, &validate_params,
-                                       &message);
+  mojo::internal::Serialize<MojomType>(map, fragment, &validate_params);
   EXPECT_EQ(120U, message.payload_buffer()->cursor() - payload_start);
 
   base::flat_map<std::string, PodUnionPtr> map2;
-  mojo::internal::Deserialize<MojomType>(writer.data(), &map2, &message);
+  mojo::internal::Deserialize<MojomType>(fragment.data(), &map2, &message);
 
   EXPECT_EQ(8, map2["one"]->get_f_int8());
   EXPECT_TRUE(map2["two"].is_null());
