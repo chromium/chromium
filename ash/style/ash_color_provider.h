@@ -68,6 +68,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
       SkColor bg_color = gfx::kPlaceholderColor) const override;
   void AddObserver(ColorModeObserver* observer) override;
   void RemoveObserver(ColorModeObserver* observer) override;
+  bool IsDarkModeEnabled() const override;
 
   // Gets the background color that can be applied on any layer. The returned
   // color will be different based on color mode and color theme (see
@@ -88,10 +89,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
                           int icon_size);
   void DecorateFloatingIconButton(views::ImageButton* button,
                                   const gfx::VectorIcon& icon);
-
-  // True if pref |kDarkModeEnabled| is true, which means the current color mode
-  // is dark.
-  bool IsDarkModeEnabled() const;
 
   // Whether the system color mode is themed, by default is true. If true, the
   // background color will be calculated based on extracted wallpaper color.

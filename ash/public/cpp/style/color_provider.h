@@ -154,6 +154,10 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   virtual void AddObserver(ColorModeObserver* observer) = 0;
   virtual void RemoveObserver(ColorModeObserver* observer) = 0;
 
+  // True if pref |kDarkModeEnabled| is true, which means the current color mode
+  // is dark.
+  virtual bool IsDarkModeEnabled() const = 0;
+
  protected:
   ColorProvider();
   virtual ~ColorProvider();
