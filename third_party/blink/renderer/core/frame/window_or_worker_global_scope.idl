@@ -25,16 +25,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://html.spec.whatwg.org/C/#imagebitmapsource
-typedef (HTMLImageElement or
-         SVGImageElement or
-         HTMLVideoElement or
-         HTMLCanvasElement or
-         Blob or
-         ImageData or
-         ImageBitmap or
-         OffscreenCanvas) ImageBitmapSource;
-
 // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
 // https://html.spec.whatwg.org/C/#timers
 [
@@ -52,12 +42,6 @@ typedef (HTMLImageElement or
     [CallWith=ScriptState] long setInterval(Function handler, optional long timeout = 0, any... arguments);
     [CallWith=ScriptState] long setInterval(ScriptString handler, optional long timeout = 0, any... arguments);
     void clearInterval(optional long handle = 0);
-
-    // ImageBitmap
-    [CallWith=ScriptState, RaisesException] Promise<ImageBitmap> createImageBitmap(
-        ImageBitmapSource imageBitmap, optional ImageBitmapOptions options = {});
-    [CallWith=ScriptState, RaisesException] Promise<ImageBitmap> createImageBitmap(
-        ImageBitmapSource imageBitmap, long sx, long sy, long sw, long sh, optional ImageBitmapOptions options = {});
 
     [RuntimeEnabled=CrossOriginIsolation]
         readonly attribute boolean crossOriginIsolated;

@@ -73,6 +73,8 @@ bindings_modules_generated_union_type_files = [
   "$bindings_modules_v8_output_dir/idb_object_store_or_idb_index.h",
   "$bindings_modules_v8_output_dir/idb_object_store_or_idb_index_or_idb_cursor.cc",
   "$bindings_modules_v8_output_dir/idb_object_store_or_idb_index_or_idb_cursor.h",
+  "$bindings_modules_v8_output_dir/image_bitmap_source.cc",
+  "$bindings_modules_v8_output_dir/image_bitmap_source.h",
   "$bindings_modules_v8_output_dir/int32_array_or_long_sequence.cc",
   "$bindings_modules_v8_output_dir/int32_array_or_long_sequence.h",
   "$bindings_modules_v8_output_dir/long_or_constrain_long_range.cc",

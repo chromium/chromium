@@ -88,6 +88,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_module.idl",
           "//third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.idl",
           "//third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context.idl",
+          "//third_party/blink/renderer/modules/canvas/imagebitmap/window_create_image_bitmap.idl",
+          "//third_party/blink/renderer/modules/canvas/imagebitmap/worker_create_image_bitmap.idl",
           "//third_party/blink/renderer/modules/canvas/offscreencanvas/offscreen_canvas_module.idl",
           "//third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.idl",
           "//third_party/blink/renderer/modules/clipboard/clipboard.idl",

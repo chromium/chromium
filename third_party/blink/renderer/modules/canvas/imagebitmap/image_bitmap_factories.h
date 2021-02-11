@@ -28,20 +28,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
 
 #include <memory>
 
 #include "base/single_thread_task_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/image_bitmap_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
-#include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_source_union.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -57,7 +60,7 @@ class Blob;
 class ExecutionContext;
 class ImageBitmapSource;
 
-class CORE_EXPORT ImageBitmapFactories final
+class MODULES_EXPORT ImageBitmapFactories final
     : public GarbageCollected<ImageBitmapFactories>,
       public Supplement<ExecutionContext>,
       public NameClient {
@@ -81,6 +84,54 @@ class CORE_EXPORT ImageBitmapFactories final
                                          base::Optional<IntRect> crop_rect,
                                          const ImageBitmapOptions*,
                                          ExceptionState&);
+
+  // window.createImageBitmap()
+  static ScriptPromise createImageBitmap(
+      ScriptState* script_state,
+      LocalDOMWindow&,
+      const ImageBitmapSourceUnion& bitmap_source,
+      const ImageBitmapOptions* options,
+      ExceptionState& exception_state) {
+    return CreateImageBitmap(script_state, bitmap_source, options,
+                             exception_state);
+  }
+  static ScriptPromise createImageBitmap(
+      ScriptState* script_state,
+      LocalDOMWindow&,
+      const ImageBitmapSourceUnion& bitmap_source,
+      int sx,
+      int sy,
+      int sw,
+      int sh,
+      const ImageBitmapOptions* options,
+      ExceptionState& exception_state) {
+    return CreateImageBitmap(script_state, bitmap_source, sx, sy, sw, sh,
+                             options, exception_state);
+  }
+
+  // worker.createImageBitmap()
+  static ScriptPromise createImageBitmap(
+      ScriptState* script_state,
+      WorkerGlobalScope&,
+      const ImageBitmapSourceUnion& bitmap_source,
+      const ImageBitmapOptions* options,
+      ExceptionState& exception_state) {
+    return CreateImageBitmap(script_state, bitmap_source, options,
+                             exception_state);
+  }
+  static ScriptPromise createImageBitmap(
+      ScriptState* script_state,
+      WorkerGlobalScope&,
+      const ImageBitmapSourceUnion& bitmap_source,
+      int sx,
+      int sy,
+      int sw,
+      int sh,
+      const ImageBitmapOptions* options,
+      ExceptionState& exception_state) {
+    return CreateImageBitmap(script_state, bitmap_source, sx, sy, sw, sh,
+                             options, exception_state);
+  }
 
   virtual ~ImageBitmapFactories() = default;
 
@@ -159,4 +210,4 @@ class CORE_EXPORT ImageBitmapFactories final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_FACTORIES_H_

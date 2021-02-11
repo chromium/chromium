@@ -5,8 +5,6 @@
 blink_core_sources_imagebitmap = [
   "image_bitmap.cc",
   "image_bitmap.h",
-  "image_bitmap_factories.cc",
-  "image_bitmap_factories.h",
   "image_bitmap_source.cc",
   "image_bitmap_source.h",
 ]
