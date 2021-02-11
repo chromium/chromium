@@ -10,7 +10,8 @@
 namespace download {
 
 DownloadItemRenameHandler::DownloadItemRenameHandler(
-    DownloadItem* download_item) {}
+    DownloadItem* download_item)
+    : download_item_(download_item) {}
 
 DownloadItemRenameHandler::~DownloadItemRenameHandler() = default;
 

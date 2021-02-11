@@ -69,7 +69,8 @@ base::HistogramBase::Sample ToHistogramSample(T t) {
 
 class MockDownloadItemRenameHandler : public DownloadItemRenameHandler {
  public:
-  MockDownloadItemRenameHandler() : DownloadItemRenameHandler(nullptr) {}
+  explicit MockDownloadItemRenameHandler(DownloadItem* item)
+      : DownloadItemRenameHandler(item) {}
   ~MockDownloadItemRenameHandler() override = default;
 
   MOCK_METHOD1(Start, void(Callback));
@@ -2808,8 +2809,10 @@ TEST_F(DownloadItemTest, ExternalRenameHandler) {
 
   // Create a rename handler and make sure the delegate returns it.
   DownloadItemRenameHandler::Callback callback;
-  auto rename_handler = std::make_unique<MockDownloadItemRenameHandler>();
+  auto rename_handler = std::make_unique<MockDownloadItemRenameHandler>(item);
   MockDownloadItemRenameHandler* rename_handler_ptr = rename_handler.get();
+
+  ASSERT_EQ(item, rename_handler->download_item());
 
   EXPECT_CALL(*rename_handler, Start(_)).WillOnce(MoveArg<0>(&callback));
   EXPECT_CALL(*mock_delegate(), ShouldCompleteDownload_(item, _))
