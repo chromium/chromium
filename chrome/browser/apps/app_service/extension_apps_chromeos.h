@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
+#include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/extension_apps_base.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
@@ -53,7 +54,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                               public extensions::AppWindowRegistry::Observer,
                               public ArcAppListPrefs::Observer,
                               public NotificationDisplayService::Observer,
-                              public MediaCaptureDevicesDispatcher::Observer {
+                              public MediaCaptureDevicesDispatcher::Observer,
+                              public AppWebContentsData::Client {
  public:
   ExtensionAppsChromeOs(
       const mojo::Remote<apps::mojom::AppService>& app_service,
@@ -113,6 +115,9 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                        int render_frame_id,
                        blink::mojom::MediaStreamType stream_type,
                        const content::MediaRequestState state) override;
+
+  // AppWebContentsData::Observer:
+  void OnWebContentsDestroyed(content::WebContents* contents) override;
 
   // NotificationDisplayService::Observer overrides.
   void OnNotificationDisplayed(

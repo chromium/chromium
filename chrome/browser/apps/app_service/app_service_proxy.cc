@@ -220,6 +220,10 @@ apps::AppRegistryCache& AppServiceProxy::AppRegistryCache() {
   return app_registry_cache_;
 }
 
+apps::AppCapabilityAccessCache& AppServiceProxy::AppCapabilityAccessCache() {
+  return app_capability_access_cache_;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 apps::InstanceRegistry& AppServiceProxy::InstanceRegistry() {
   return instance_registry_;
