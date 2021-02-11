@@ -345,13 +345,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewItem*)signOutItem {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeSignOut];
+  item.text =
+      l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
   if (base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS)) {
-    item.text = l10n_util::GetNSString(
-        IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE_MICE);
     item.textColor = [UIColor colorNamed:kRedColor];
   } else {
-    item.text = l10n_util::GetNSString(
-        IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
     item.textColor = [UIColor colorNamed:kBlueColor];
   }
   item.accessibilityTraits |= UIAccessibilityTraitButton;

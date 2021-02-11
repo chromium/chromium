@@ -59,7 +59,6 @@ ActionSheetCoordinator* SignoutActionSheetCoordinator(
       AuthenticationServiceFactory::GetForBrowserState(
           browser->GetBrowserState());
   NSString* title = nil;
-  NSString* message = nil;
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser->GetBrowserState());
   BOOL sync_enabled = sync_setup_service->IsFirstSetupComplete();
@@ -74,23 +73,21 @@ ActionSheetCoordinator* SignoutActionSheetCoordinator(
                      : SignedInUserStateWithNoneManagedAccountAndNotSyncing;
   }
   switch (signed_in_user_state) {
-    case SignedInUserStateWithManagedAccountAndSyncing:
-    case SignedInUserStateWithManagedAccountAndNotSyncing: {
-      title = l10n_util::GetNSString(
-          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_MANAGED_ACCOUNT);
+    case SignedInUserStateWithManagedAccountAndSyncing: {
       base::string16 hosted_domain = HostedDomainForPrimaryAccount(browser);
-      message = l10n_util::GetNSStringF(
-          IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT, hosted_domain);
+      title = l10n_util::GetNSStringF(
+          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT,
+          hosted_domain);
       break;
     }
     case SignedInUserStateWithNonManagedAccountAndSyncing: {
-      title = l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNC);
-      message =
-          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC);
+      title = l10n_util::GetNSString(
+          IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_ACCOUNT);
       break;
     }
+    case SignedInUserStateWithManagedAccountAndNotSyncing:
     case SignedInUserStateWithNoneManagedAccountAndNotSyncing: {
-      title = l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_TITLE_WITHOUT_SYNC);
+      // No title.
       break;
     }
   }
@@ -98,12 +95,11 @@ ActionSheetCoordinator* SignoutActionSheetCoordinator(
       [[ActionSheetCoordinator alloc] initWithBaseViewController:view_controller
                                                          browser:browser
                                                            title:title
-                                                         message:message
+                                                         message:nil
                                                             rect:view.frame
                                                             view:view];
   switch (signed_in_user_state) {
-    case SignedInUserStateWithManagedAccountAndSyncing:
-    case SignedInUserStateWithManagedAccountAndNotSyncing: {
+    case SignedInUserStateWithManagedAccountAndSyncing: {
       NSString* const clear_from_this_device =
           l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON);
       [alertCoordinator
@@ -111,6 +107,18 @@ ActionSheetCoordinator* SignoutActionSheetCoordinator(
                     action:^{
                       signout_completion(
                           SignoutActionSheetCoordinatorResultClearFromDevice);
+                    }
+                     style:UIAlertActionStyleDestructive];
+      break;
+    }
+    case SignedInUserStateWithManagedAccountAndNotSyncing: {
+      NSString* const clear_from_this_device =
+          l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON);
+      [alertCoordinator
+          addItemWithTitle:clear_from_this_device
+                    action:^{
+                      signout_completion(
+                          SignoutActionSheetCoordinatorResultKeepOnDevice);
                     }
                      style:UIAlertActionStyleDestructive];
       break;

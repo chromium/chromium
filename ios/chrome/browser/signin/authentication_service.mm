@@ -13,6 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#import "components/signin/ios/browser/features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -374,7 +375,17 @@ void AuthenticationService::SignOut(
       signout_source, signin_metrics::SignoutDelete::IGNORE_METRIC);
   crash_keys::SetCurrentlySignedIn(false);
   cached_mdm_infos_.clear();
-  if (force_clear_browsing_data || is_managed) {
+  bool clear_browsing_data;
+  if (base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS)) {
+    // With kSimplifySignOutIOS feature, browsing data for managed account needs
+    // to be cleared only if sync has started at least once.
+    clear_browsing_data =
+        force_clear_browsing_data ||
+        (is_managed && sync_setup_service_->IsFirstSetupComplete());
+  } else {
+    clear_browsing_data = force_clear_browsing_data || is_managed;
+  }
+  if (clear_browsing_data) {
     delegate_->ClearBrowsingData(completion);
   } else if (completion) {
     completion();
