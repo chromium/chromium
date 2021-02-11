@@ -189,6 +189,11 @@ class ContentAutofillDriver : public AutofillDriver,
   // been used.
   bool DocumentUsedWebOTP() const;
 
+  // Show a bubble or infobar indicating that the current page has an eligible
+  // offer or reward, if the bubble/infobar is not currently being visible.
+  void ShowOfferNotificationIfApplicable(
+      content::NavigationHandle* navigation_handle);
+
   // Weak ref to the RenderFrameHost the driver is associated with. Should
   // always be non-NULL and valid for lifetime of |this|.
   content::RenderFrameHost* const render_frame_host_;

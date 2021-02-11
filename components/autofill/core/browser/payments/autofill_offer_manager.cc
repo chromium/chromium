@@ -81,6 +81,37 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
   }
 }
 
+bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
+  GURL last_committed_url_origin = last_committed_url.GetOrigin();
+  return base::ranges::count(eligible_merchant_domains_,
+                             last_committed_url_origin);
+}
+
+std::vector<GURL> AutofillOfferManager::GetEligibleDomainsForOfferForUrl(
+    const GURL& last_committed_url) {
+  std::vector<GURL> linked_domains;
+  std::vector<AutofillOfferData*> offers =
+      personal_data_->GetCreditCardOffers();
+
+  // Check which offer is eligible on current domain, then return the full set
+  // of domains for that offer.
+  for (auto* offer : offers) {
+    if (IsOfferEligible(*offer, last_committed_url.GetOrigin())) {
+      for (auto& domain : offer->merchant_domain) {
+        linked_domains.emplace_back(domain);
+      }
+      break;
+    }
+  }
+
+  // Remove duplicates.
+  base::ranges::sort(linked_domains);
+  linked_domains.erase(base::ranges::unique(linked_domains),
+                       linked_domains.end());
+
+  return linked_domains;
+}
+
 void AutofillOfferManager::UpdateEligibleMerchantDomains() {
   eligible_merchant_domains_.clear();
   std::vector<AutofillOfferData*> offers =

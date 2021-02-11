@@ -71,7 +71,9 @@ class AutofillOfferManagerTest : public testing::Test {
 
   void CreateCreditCardOfferForCard(const CreditCard& card,
                                     std::string offer_reward_amount,
-                                    bool expired = false) {
+                                    bool expired = false,
+                                    std::vector<GURL> domains = {
+                                        GURL(kTestUrl)}) {
     AutofillOfferData offer_data;
     offer_data.offer_id = 4444;
     offer_data.offer_reward_amount = offer_reward_amount;
@@ -80,7 +82,7 @@ class AutofillOfferManagerTest : public testing::Test {
     } else {
       offer_data.expiry = AutofillClock::Now() + base::TimeDelta::FromDays(2);
     }
-    offer_data.merchant_domain = {GURL(kTestUrl)};
+    offer_data.merchant_domain = std::move(domains);
     offer_data.eligible_instrument_id = {card.instrument_id()};
     personal_data_manager_.AddCreditCardOfferData(offer_data);
   }
@@ -192,6 +194,62 @@ TEST_F(AutofillOfferManagerTest,
 
   EXPECT_EQ(suggestions[0].backend_id, kTestGuid);
   EXPECT_EQ(suggestions[1].backend_id, kTestGuid2);
+}
+
+TEST_F(AutofillOfferManagerTest, IsUrlEligible) {
+  CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
+  CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
+  CreateCreditCardOfferForCard(
+      card1, "5%", /*expired=*/false,
+      {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
+  CreateCreditCardOfferForCard(card2, "10%", /*expired=*/false,
+                               {GURL("http://maps.google.com")});
+  autofill_offer_manager_->UpdateEligibleMerchantDomains();
+
+  EXPECT_TRUE(
+      autofill_offer_manager_->IsUrlEligible(GURL("http://www.google.com")));
+  EXPECT_FALSE(
+      autofill_offer_manager_->IsUrlEligible(GURL("http://www.example.com")));
+  EXPECT_TRUE(
+      autofill_offer_manager_->IsUrlEligible(GURL("http://maps.google.com")));
+}
+
+TEST_F(AutofillOfferManagerTest,
+       GetEligibleDomainsForOfferForUrl_ReturnNothingWhenFindNoMatch) {
+  CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
+  CreateCreditCardOfferForCard(
+      card1, "5%", /*expired=*/false,
+      {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
+
+  EXPECT_EQ(
+      0U, autofill_offer_manager_
+              ->GetEligibleDomainsForOfferForUrl(GURL("http://www.example.com"))
+              .size());
+}
+
+TEST_F(AutofillOfferManagerTest,
+       GetEligibleDomainsForOfferForUrl_ReturnCorrectSetWhenFindMatch) {
+  CreditCard card1 = CreateCreditCard(kTestGuid, kTestNumber, 100);
+  CreditCard card2 = CreateCreditCard(kTestGuid2, "4111111111111111", 101);
+  CreateCreditCardOfferForCard(
+      card1, "5%", /*expired=*/false,
+      /*domains=*/
+      {GURL("http://www.google.com"), GURL("http://www.youtube.com")});
+  CreateCreditCardOfferForCard(
+      card2, "5%", /*expired=*/false,
+      /*domains=*/
+      {GURL("http://www.example.com"), GURL("http://www.example2.com")});
+
+  std::vector<GURL> eligible_domain =
+      autofill_offer_manager_->GetEligibleDomainsForOfferForUrl(
+          GURL("http://www.example.com"));
+  EXPECT_EQ(2U, eligible_domain.size());
+  EXPECT_NE(eligible_domain.end(),
+            std::find(eligible_domain.begin(), eligible_domain.end(),
+                      GURL("http://www.example.com")));
+  EXPECT_NE(eligible_domain.end(),
+            std::find(eligible_domain.begin(), eligible_domain.end(),
+                      GURL("http://www.example2.com")));
 }
 
 }  // namespace autofill

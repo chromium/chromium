@@ -637,6 +637,11 @@ void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
     popup_controller_->Hide(reason);
 }
 
+void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
+    const std::vector<GURL>& domains_to_display_bubble) {
+  // TODO(crbug.com/1093057): Finish bubble controller/view and wire it up.
+}
+
 bool ChromeAutofillClient::IsAutocompleteEnabled() {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }

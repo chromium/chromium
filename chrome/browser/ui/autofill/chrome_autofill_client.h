@@ -144,6 +144,8 @@ class ChromeAutofillClient
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    PopupType popup_type) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
+  void ShowOfferNotificationIfApplicable(
+      const std::vector<GURL>& domains_to_display_bubble) override;
   bool IsAutocompleteEnabled() override;
   void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,

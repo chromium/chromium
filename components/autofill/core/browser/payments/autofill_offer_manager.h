@@ -42,7 +42,17 @@ class AutofillOfferManager : public KeyedService,
   void UpdateSuggestionsWithOffers(const GURL& last_committed_url,
                                    std::vector<Suggestion>& suggestions);
 
+  // Returns true only if the domain of |last_committed_url| has an offer.
+  bool IsUrlEligible(const GURL& last_committed_url);
+
+  // Returns the set of domains linked to a specific offer that contains the
+  // domain of |last_committed_url|.
+  std::vector<GURL> GetEligibleDomainsForOfferForUrl(
+      const GURL& last_committed_url);
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(AutofillOfferManagerTest, IsUrlEligible);
+
   // Queries |personal_data_| to reset the elements of
   // |eligible_merchant_domains_|
   void UpdateEligibleMerchantDomains();

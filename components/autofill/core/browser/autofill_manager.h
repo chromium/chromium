@@ -170,6 +170,8 @@ class AutofillManager : public AutofillHandler,
   // Returns true only if the previewed form should be cleared.
   bool ShouldClearPreviewedForm();
 
+  AutofillOfferManager* offer_manager() { return offer_manager_; }
+
   CreditCardAccessManager* credit_card_access_manager() {
     return credit_card_access_manager_.get();
   }
@@ -675,7 +677,8 @@ class AutofillManager : public AutofillHandler,
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
 
   // The autofill offer manager, used to to retrieve offers for card
-  // suggestions.
+  // suggestions. Initialized when AutofillManager is created. |offer_manager_|
+  // is never null.
   AutofillOfferManager* offer_manager_;
 
   // Collected information about the autofill form where a credit card will be

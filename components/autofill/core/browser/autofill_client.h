@@ -502,6 +502,16 @@ class AutofillClient : public RiskDataLoader {
   // Hide the Autofill popup if one is currently showing.
   virtual void HideAutofillPopup(PopupHidingReason reason) = 0;
 
+  // TODO(crbug.com/1093057): Rename all the "domain" in this flow to origin.
+  //                          The server is passing down full origin of the
+  //                          urls. "Domain" is no longer accurate.
+  // Will show a bubble or infobar indicating that the current web domain has an
+  // eligible offer or reward if no other notification bubble is currently
+  // visible. See bubble controller for details. The bubble is sticky over a set
+  // of domains given in |domains_to_display_bubble|.
+  virtual void ShowOfferNotificationIfApplicable(
+      const std::vector<GURL>& domains_to_display_bubble);
+
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() = 0;
 
