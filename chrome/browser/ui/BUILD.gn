@@ -3930,6 +3930,7 @@ static_library("ui") {
       "views/payments/error_message_view_controller.h",
       "views/payments/order_summary_view_controller.cc",
       "views/payments/order_summary_view_controller.h",
+      "views/payments/payment_credential_enrollment_view.cc",
       "views/payments/payment_handler_modal_dialog_manager_delegate.cc",
       "views/payments/payment_handler_modal_dialog_manager_delegate.h",
       "views/payments/payment_handler_web_flow_view_controller.cc",
