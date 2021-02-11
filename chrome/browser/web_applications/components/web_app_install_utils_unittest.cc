@@ -221,6 +221,24 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_MaskableIcon) {
   EXPECT_EQ(2, purpose_to_count[IconPurpose::MASKABLE]);
 }
 
+TEST(WebAppInstallUtils,
+     UpdateWebAppInfoFromManifest_MaskableIconOnly_UsesManifestIcons) {
+  blink::Manifest manifest;
+  blink::Manifest::ImageResource icon;
+  icon.src = AppIcon1();
+  icon.purpose = {Purpose::MASKABLE};
+  manifest.icons.push_back(icon);
+  // WebApplicationInfo has existing icons (simulating found in page metadata).
+  WebApplicationInfo web_app_info;
+  WebApplicationIconInfo icon_info;
+  web_app_info.icon_infos.push_back(icon_info);
+  web_app_info.icon_infos.push_back(icon_info);
+
+  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  // Metadata icons are replaced by manifest icon.
+  EXPECT_EQ(1U, web_app_info.icon_infos.size());
+}
+
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
   blink::Manifest manifest;
   WebApplicationInfo web_app_info;

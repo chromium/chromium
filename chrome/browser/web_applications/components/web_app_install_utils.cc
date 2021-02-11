@@ -221,10 +221,8 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     web_app_info->display_override = manifest.display_override;
 
   // Create the WebApplicationInfo icons list *outside* of |web_app_info|, so
-  // that we can decide later whether or not to replace the existing icons array
-  // (conditionally on whether there were any that didn't have purpose ANY).
+  // that we can decide later whether or not to replace the existing icons.
   std::vector<WebApplicationIconInfo> web_app_icons;
-  bool has_purpose_any = false;
   for (const auto& icon : manifest.icons) {
     // An icon's purpose vector should never be empty (the manifest parser
     // should have added ANY if there was no purpose specified in the manifest).
@@ -254,9 +252,6 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
       info.purpose = purpose;
       web_app_icons.push_back(std::move(info));
 
-      if (purpose == IconPurpose::ANY)
-        has_purpose_any = true;
-
       // Limit the number of icons we store on the user's machine.
       if (web_app_icons.size() == kMaxIcons)
         break;
@@ -265,9 +260,9 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
     if (web_app_icons.size() == kMaxIcons)
       break;
   }
-  // If any icons are specified in the manifest, they take precedence over any
-  // we picked up from the web_app stuff.
-  if (has_purpose_any)
+  // If any icons are correctly specified in the manifest, they take precedence
+  // over any we picked up from web page metadata.
+  if (!web_app_icons.empty())
     web_app_info->icon_infos = std::move(web_app_icons);
 
   web_app_info->file_handlers = manifest.file_handlers;
