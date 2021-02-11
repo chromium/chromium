@@ -12,6 +12,7 @@
 #include "ash/metrics/desktop_task_switch_metric_recorder.h"
 #include "ash/metrics/pointer_metrics_recorder.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -23,6 +24,7 @@
 #include "ash/wm/window_state.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -479,6 +481,11 @@ void UserMetricsRecorder::RecordPeriodicMetrics() {
     RecordShelfItemCounts();
     UMA_HISTOGRAM_COUNTS_100("Ash.NumberOfVisibleWindowsInPrimaryDisplay",
                              GetNumVisibleWindowsInPrimaryDisplay());
+
+    base::UmaHistogramBoolean(
+        "Ash.AppNotificationBadgingPref",
+        Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+            prefs::kAppNotificationBadgingEnabled));
   }
 
   // TODO(bruthig): Find out if this should only be logged when the user is
