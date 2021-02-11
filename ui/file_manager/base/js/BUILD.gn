@@ -22,7 +22,6 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
     ":app_util.m",
     ":error_counter.m",
@@ -54,7 +53,6 @@ js_type_check("test_support_type_check") {
 }
 
 js_type_check("test_support_type_check_jsmodules") {
-  uses_js_modules = true
   testonly = true
   deps = [
     ":mock_chrome.m",

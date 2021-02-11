@@ -34,7 +34,6 @@ grit("webrtc_logs_resources") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   deps = [
     ":media_data_table",
     ":media_engagement",

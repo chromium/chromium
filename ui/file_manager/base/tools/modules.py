@@ -335,7 +335,6 @@ js_modulizer("modulize") {
             return
         new_lines = '''\
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
   ]
 }

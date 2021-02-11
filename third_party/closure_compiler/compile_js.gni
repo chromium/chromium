@@ -173,7 +173,6 @@ template("js_binary") {
                              "sources",
                              "testonly",
                              "uses_legacy_modules",
-                             "uses_js_modules",
                            ])
     args = [
       "--compiler",
@@ -224,23 +223,17 @@ template("js_binary") {
       closure_flags = default_closure_args
     }
 
-    # Only one of |is_polymer3|, |uses_js_modules| and |uses_legacy_modules|
-    # should be true at any given time.
-    is_polymer3 = defined(is_polymer3) && is_polymer3
     uses_legacy_modules = defined(uses_legacy_modules) && uses_legacy_modules
-    uses_js_modules = defined(uses_js_modules) && uses_js_modules
-
-    if (is_polymer3) {
-      assert(!uses_js_modules && !uses_legacy_modules)
-      closure_flags += polymer3_args
-    }
-    if (uses_js_modules) {
-      assert(!uses_legacy_modules && !is_polymer3)
+    if (!uses_legacy_modules) {
       closure_flags += js_modules_args
-    }
-    if (uses_legacy_modules) {
-      assert(!uses_js_modules && !is_polymer3)
+    } else {
       closure_flags += legacy_modules_args
+    }
+
+    is_polymer3 = defined(is_polymer3) && is_polymer3
+    assert(!is_polymer3 || !uses_legacy_modules)
+    if (is_polymer3) {
+      closure_flags += polymer3_args
     }
 
     args += [ "--flags" ] + closure_flags
@@ -287,7 +280,6 @@ template("js_type_check") {
                                "deps",
                                "is_polymer3",
                                "testonly",
-                               "uses_js_modules",
                                "uses_legacy_modules",
                              ])
     }

@@ -827,7 +827,6 @@ js_library("web_ui_mojo_test_js") {
 # NOTE: Building this target serves as a compile test for type-checking of
 # WebUI JS that consumes generated Mojom JS bindings.
 js_type_check("web_ui_mojo_test_js_type_check") {
-  uses_js_modules = true
   deps = [ ":web_ui_mojo_test_js" ]
   closure_flags = default_closure_args + mojom_js_args
 }

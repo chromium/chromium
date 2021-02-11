@@ -43,7 +43,6 @@ js_type_check("closure_compile_module") {
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
     ":async_util.m",
     ":file_operation_common.m",
@@ -77,7 +76,6 @@ js_type_check("test_support_type_check") {
 }
 
 js_type_check("test_support_modules_type_check") {
-  uses_js_modules = true
   testonly = true
   deps = [
     ":test_importer_common.m",

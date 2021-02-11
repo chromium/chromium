@@ -72,7 +72,6 @@ js_type_check("closure_compile_module") {
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
     ":app_window_wrapper.m",
     ":app_windows.m",
@@ -119,7 +118,6 @@ js_type_check("closure_compile_jsmodules") {
 
 js_type_check("test_support_modules_type_check") {
   testonly = true
-  uses_js_modules = true
   deps = [
     ":mock_crostini.m",
     ":mock_media_scanner.m",

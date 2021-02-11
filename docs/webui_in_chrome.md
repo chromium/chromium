@@ -72,7 +72,6 @@ js_library("hello_world") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   deps = [ ":hello_world" ]
 }
 ```

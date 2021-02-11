@@ -9,7 +9,6 @@ import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
     ":background.m",
     ":cache.m",

@@ -5,7 +5,6 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   closure_flags = default_closure_args + mojom_js_args + [
                     "js_module_root=" + rebase_path(".", root_build_dir),
                     "js_module_root=" + rebase_path(

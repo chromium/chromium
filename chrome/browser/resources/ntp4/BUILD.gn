@@ -8,7 +8,6 @@ import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   deps = [ ":apps_page" ]
 }
 

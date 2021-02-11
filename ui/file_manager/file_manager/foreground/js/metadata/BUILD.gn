@@ -21,7 +21,6 @@ group("closure_compile") {
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
     ":byte_reader.m",
     ":content_metadata_provider.m",

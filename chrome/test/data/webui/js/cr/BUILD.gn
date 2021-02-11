@@ -34,7 +34,5 @@ js_library("event_target_test.m") {
 }
 
 js_type_check("closure_compile_local") {
-  uses_js_modules = true
-
   deps = [ ":event_target_test.m" ]
 }

@@ -68,7 +68,6 @@ grit("resources") {
 }
 
 js_type_check("closure_compile") {
-  uses_js_modules = true
   deps = [ ":webui_js_error" ]
 }
 

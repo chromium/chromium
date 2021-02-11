@@ -27,7 +27,6 @@ js_type_check("closure_compile_legacy") {
 }
 
 js_type_check("closure_compile_jsmodules") {
-  uses_js_modules = true
   deps = [
     ":background.m",
     ":error_util.m",
