@@ -1583,7 +1583,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
                           WindowOpenDisposition::NEW_WINDOW,
                           false /* preferred_containner */),
       apps::mojom::LaunchSource::kFromChromeInternal,
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      apps::MakeWindowInfo(
+          display::Screen::GetScreen()->GetPrimaryDisplay().id()));
   proxy->FlushMojoCallsForTesting();
   run_loop_->Run();
   EXPECT_EQ(1U, app_window_registry->app_windows().size());

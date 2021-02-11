@@ -37,7 +37,7 @@ interface AppService {
       string app_id,
       int32 event_flags,
       LaunchSource launch_source,
-      WindowInfo window_info);
+      WindowInfo? window_info);
 
   // Launches an app with |app_id| and |file_path|
   LaunchAppWithFiles(
@@ -56,7 +56,7 @@ interface AppService {
       int32 event_flags,
       Intent intent,
       LaunchSource launch_source,
-      WindowInfo window_info);
+      WindowInfo? window_info);
 
   SetPermission(
       AppType app_type,
@@ -148,7 +148,7 @@ interface Publisher {
       string app_id,
       int32 event_flags,
       LaunchSource launch_source,
-      WindowInfo window_info);
+      WindowInfo? window_info);
 
   // Launches an app with |app_id| and |file_path|
   LaunchAppWithFiles(
@@ -165,7 +165,7 @@ interface Publisher {
     int32 event_flags,
     Intent intent,
     LaunchSource launch_source,
-    WindowInfo window_info);
+    WindowInfo? window_info);
 
   SetPermission(
       string app_id,

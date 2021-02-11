@@ -21,6 +21,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -328,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest,
   proxy->Launch(GetManager().GetAppIdForSystemApp(GetMockAppType()).value(),
                 ui::EventFlags::EF_NONE,
                 apps::mojom::LaunchSource::kFromAppListGrid,
-                display::kDefaultDisplayId);
+                apps::MakeWindowInfo(display::kDefaultDisplayId));
   navigation_observer.Wait();
 
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);
@@ -352,7 +353,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest,
   proxy->LaunchAppWithIntent(
       GetManager().GetAppIdForSystemApp(GetMockAppType()).value(),
       ui::EventFlags::EF_NONE, std::move(intent),
-      apps::mojom::LaunchSource::kFromAppListGrid, display::kDefaultDisplayId);
+      apps::mojom::LaunchSource::kFromAppListGrid,
+      apps::MakeWindowInfo(display::kDefaultDisplayId));
   navigation_observer.Wait();
 
   histograms.ExpectTotalCount("Apps.DefaultAppLaunch.FromAppListGrid", 1);

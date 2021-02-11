@@ -76,6 +76,10 @@ int GetEventFlags(apps::mojom::LaunchContainer container,
 int GetSessionIdForRestoreFromWebContents(
     const content::WebContents* web_contents);
 
+// Helper to create apps::mojom::WindowInfoPtr using |display_id|, which is the
+// id of the display from which the app is launched.
+apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id);
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_UTILS_H_

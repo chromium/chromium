@@ -46,7 +46,6 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/display/display.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -143,7 +142,7 @@ class AppNotificationsExtensionApiTest : public extensions::ExtensionApiTest {
     ExtensionTestMessageListener launched_listener("launched", true);
     apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
         extension->id(), ui::EF_SHIFT_DOWN,
-        apps::mojom::LaunchSource::kFromTest, display::kInvalidDisplayId);
+        apps::mojom::LaunchSource::kFromTest);
     EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
     launched_listener.Reply(create_window_options);
 

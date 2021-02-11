@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/child_accounts/child_user_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -71,7 +72,7 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
     // Launch FLH app since it is available.
     proxy->Launch(app_id, ui::EventFlags::EF_NONE,
                   apps::mojom::LaunchSource::kFromParentalControls,
-                  display::kDefaultDisplayId);
+                  apps::MakeWindowInfo(display::kDefaultDisplayId));
     return;
   }
   // No FLH app installed, so try to launch Play Store to FLH app install page.

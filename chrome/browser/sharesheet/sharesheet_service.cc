@@ -194,7 +194,8 @@ void SharesheetService::LaunchApp(const base::string16& target_name,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                           WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true),
-      std::move(intent), launch_source, display::kDefaultDisplayId);
+      std::move(intent), launch_source,
+      apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
 void SharesheetService::OnIconLoaded(

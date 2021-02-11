@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
@@ -56,7 +57,7 @@ void HelpAppResult::Open(int event_flags) {
   proxy->LaunchAppWithUrl(web_app::kHelpAppId, event_flags,
                           GURL("chrome://help-app/updates"),
                           apps::mojom::LaunchSource::kFromAppListRecommendation,
-                          display::kDefaultDisplayId);
+                          apps::MakeWindowInfo(display::kDefaultDisplayId));
   chromeos::ReleaseNotesStorage(profile_).StopShowingSuggestionChip();
 }
 

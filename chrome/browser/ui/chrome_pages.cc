@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_shelf.h"
@@ -115,7 +116,7 @@ void LaunchReleaseNotesImpl(Profile* profile,
       apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
   proxy->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
                           GURL("chrome://help-app/updates"), source,
-                          display::kDefaultDisplayId);
+                          apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
 #endif
@@ -145,7 +146,7 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
   proxy->Launch(web_app::kHelpAppId, ui::EventFlags::EF_NONE, app_launch_source,
-                display::kDefaultDisplayId);
+                apps::MakeWindowInfo(display::kDefaultDisplayId));
 #else
   GURL url;
   switch (source) {

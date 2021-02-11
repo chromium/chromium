@@ -73,7 +73,6 @@
 #include "ui/aura/window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/display/types/display_constants.h"
 #include "url/url_constants.h"
 
 using arc::mojom::ChromePage;
@@ -374,7 +373,7 @@ void ChromeNewWindowClient::OpenFileManager() {
         apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerNone,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             /*preferred_containner=*/true),
-        apps::mojom::LaunchSource::kFromKeyboard, display::kInvalidDisplayId);
+        apps::mojom::LaunchSource::kFromKeyboard);
   };
 
   bool result = proxy->AppRegistryCache().ForOneApp(
@@ -538,8 +537,7 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->LaunchAppWithUrl(*app_id, event_flags, url,
-                          apps::mojom::LaunchSource::kFromArc,
-                          display::kInvalidDisplayId);
+                          apps::mojom::LaunchSource::kFromArc);
 
   chromeos::ApkWebAppService* apk_web_app_service =
       chromeos::ApkWebAppService::Get(profile);

@@ -289,7 +289,8 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
     proxy->FlushMojoCallsForTesting();
     proxy->Launch(extension->id(), event_flags,
                   apps::mojom::LaunchSource::kFromTest,
-                  display::Screen::GetScreen()->GetPrimaryDisplay().id());
+                  apps::MakeWindowInfo(
+                      display::Screen::GetScreen()->GetPrimaryDisplay().id()));
     proxy->FlushMojoCallsForTesting();
     return extension;
   }
@@ -1618,7 +1619,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,
                           true /* prefer_containner */),
       apps::mojom::LaunchSource::kFromTest,
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      apps::MakeWindowInfo(
+          display::Screen::GetScreen()->GetPrimaryDisplay().id()));
   proxy->FlushMojoCallsForTesting();
 
   // A new browser should get detected and one more should be running.
@@ -2211,7 +2213,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,
                           true /* prefer_containner */),
       apps::mojom::LaunchSource::kFromTest,
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      apps::MakeWindowInfo(
+          display::Screen::GetScreen()->GetPrimaryDisplay().id()));
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(id)->status);
 
   // Find the browser which holds our app.

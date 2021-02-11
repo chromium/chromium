@@ -320,7 +320,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {
                           /*prefer_container=*/true);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       app_id, event_flags, std::move(intent),
-      apps::mojom::LaunchSource::kFromSharesheet, display::kDefaultDisplayId);
+      apps::mojom::LaunchSource::kFromSharesheet,
+      apps::MakeWindowInfo(display::kDefaultDisplayId));
   run_loop.Run();
 }
 
@@ -356,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, IntentWithoutFiles) {
                           /*prefer_container=*/true);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       app_id, event_flags, std::move(intent),
-      apps::mojom::LaunchSource::kFromSharesheet, display::kDefaultDisplayId);
+      apps::mojom::LaunchSource::kFromSharesheet,
+      apps::MakeWindowInfo(display::kDefaultDisplayId));
   run_loop.Run();
 }
 
@@ -401,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchAppIconKeyUnchanged) {
                           WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true);
   proxy->Launch(app_id, event_flags, apps::mojom::LaunchSource::kUnknown,
-                display::kDefaultDisplayId);
+                apps::MakeWindowInfo(display::kDefaultDisplayId));
   proxy->FlushMojoCallsForTesting();
 
   proxy->AppRegistryCache().ForOneApp(

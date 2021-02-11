@@ -116,14 +116,12 @@ class AppServiceProxy : public KeyedService,
   // Launches the app for the given |app_id|. |event_flags| provides additional
   // context about the action which launches the app (e.g. a middle click
   // indicating opening a background tab). |launch_source| is the possible app
-  // launch sources, e.g. from Shelf, from the search box, etc. |display_id| is
-  // the id of the display from which the app is launched.
-  // display::kInvalidDisplayId means that the display does not exist or is not
-  // set.
+  // launch sources, e.g. from Shelf, from the search box, etc. |window_info| is
+  // the window information to launch an app, e.g. display_id, window bounds.
   void Launch(const std::string& app_id,
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
-              int64_t display_id);
+              apps::mojom::WindowInfoPtr window_info = nullptr);
 
   // Launches the app for the given |app_id| with files from |file_paths|.
   // |event_flags| provides additional context about the action which launches
@@ -151,24 +149,24 @@ class AppServiceProxy : public KeyedService,
   // Launches an app for the given |app_id|, passing |intent| to the app.
   // |event_flags| provides additional context about the action which launch the
   // app (e.g. a middle click indicating opening a background tab).
-  // |launch_source| is the possible app launch sources. |display_id| is the id
-  // of the display from which the app is launched.
+  // |launch_source| is the possible app launch sources. |window_info| is the
+  // window information to launch an app, e.g. display_id, window bounds.
   void LaunchAppWithIntent(const std::string& app_id,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           int64_t display_id);
+                           apps::mojom::WindowInfoPtr window_info = nullptr);
 
   // Launches an app for the given |app_id|, passing |url| to the app.
   // |event_flags| provides additional context about the action which launch the
   // app (e.g. a middle click indicating opening a background tab).
-  // |launch_source| is the possible app launch sources. |display_id| is the id
-  // of the display from which the app is launched.
+  // |launch_source| is the possible app launch sources. |window_info| is the
+  // window information to launch an app, e.g. display_id, window bounds.
   void LaunchAppWithUrl(const std::string& app_id,
                         int32_t event_flags,
                         GURL url,
                         apps::mojom::LaunchSource launch_source,
-                        int64_t display_id);
+                        apps::mojom::WindowInfoPtr window_info = nullptr);
 
   // Sets |permission| for the app identified by |app_id|.
   void SetPermission(const std::string& app_id,

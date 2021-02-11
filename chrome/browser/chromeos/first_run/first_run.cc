@@ -40,7 +40,6 @@
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
-#include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -54,8 +53,7 @@ void LaunchApp(Profile* profile, std::string app_id) {
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   proxy->Launch(app_id, ui::EventFlags::EF_NONE,
-                apps::mojom::LaunchSource::kFromChromeInternal,
-                display::kInvalidDisplayId);
+                apps::mojom::LaunchSource::kFromChromeInternal);
   profile->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);
 }
 

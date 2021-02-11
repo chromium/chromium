@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -189,7 +190,7 @@ void AppServiceAppResult::Launch(int event_flags,
         controller()->GetAppListDisplayId());
   } else {
     proxy->Launch(app_id(), event_flags, launch_source,
-                  controller()->GetAppListDisplayId());
+                  apps::MakeWindowInfo(controller()->GetAppListDisplayId()));
   }
 }
 

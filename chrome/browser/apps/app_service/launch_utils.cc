@@ -240,4 +240,10 @@ int GetSessionIdForRestoreFromWebContents(
   return browser->session_id().id();
 }
 
+apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id) {
+  apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+  window_info->display_id = display_id;
+  return window_info;
+}
+
 }  // namespace apps

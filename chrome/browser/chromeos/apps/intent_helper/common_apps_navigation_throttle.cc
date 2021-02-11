@@ -86,7 +86,8 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
             GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                           WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true),
-            url, launch_source, display::kDefaultDisplayId);
+            url, launch_source,
+            apps::MakeWindowInfo(display::kDefaultDisplayId));
         CloseOrGoBack(web_contents);
         IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
             /*selected_app_package=*/preferred_app_id.value(),

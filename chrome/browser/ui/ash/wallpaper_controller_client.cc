@@ -33,7 +33,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "ui/display/types/display_constants.h"
 
 namespace {
 
@@ -501,8 +500,7 @@ void WallpaperControllerClient::OpenWallpaperPicker() {
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                           WindowOpenDisposition::NEW_WINDOW,
                           false /* preferred_containner */),
-      apps::mojom::LaunchSource::kFromChromeInternal,
-      display::kInvalidDisplayId);
+      apps::mojom::LaunchSource::kFromChromeInternal);
 }
 
 void WallpaperControllerClient::MaybeClosePreviewWallpaper() {

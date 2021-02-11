@@ -20,7 +20,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/display/types/display_constants.h"
 
 namespace chromeos {
 
@@ -54,8 +53,7 @@ void AndroidSmsAppManagerImpl::PwaDelegate::OpenApp(Profile* profile,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                           WindowOpenDisposition::NEW_WINDOW,
                           false /* preferred_containner */),
-      apps::mojom::LaunchSource::kFromChromeInternal,
-      display::kInvalidDisplayId);
+      apps::mojom::LaunchSource::kFromChromeInternal);
 }
 
 bool AndroidSmsAppManagerImpl::PwaDelegate::TransferItemAttributes(

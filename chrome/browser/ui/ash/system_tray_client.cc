@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
@@ -323,7 +324,7 @@ void SystemTrayClient::ShowGestureEducationHelp() {
   proxy->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
                           GURL(chrome::kChromeOSGestureEducationHelpURL),
                           apps::mojom::LaunchSource::kFromOtherApp,
-                          display::kDefaultDisplayId);
+                          apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
 void SystemTrayClient::ShowPaletteHelp() {

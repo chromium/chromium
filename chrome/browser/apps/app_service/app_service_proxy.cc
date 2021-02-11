@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -254,10 +255,10 @@ AppServiceProxy::LoadIconFromIconKey(
 void AppServiceProxy::Launch(const std::string& app_id,
                              int32_t event_flags,
                              apps::mojom::LaunchSource launch_source,
-                             int64_t display_id) {
+                             apps::mojom::WindowInfoPtr window_info) {
   if (app_service_.is_connected()) {
     app_registry_cache_.ForOneApp(app_id, [this, event_flags, launch_source,
-                                           display_id](
+                                           &window_info](
                                               const apps::AppUpdate& update) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (MaybeShowLaunchPreventionDialog(update)) {
@@ -267,8 +268,6 @@ void AppServiceProxy::Launch(const std::string& app_id,
 
       RecordAppLaunch(update.AppId(), launch_source);
 
-      apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
-      window_info->display_id = display_id;
       app_service_->Launch(update.AppType(), update.AppId(), event_flags,
                            launch_source, std::move(window_info));
     });
@@ -311,7 +310,7 @@ void AppServiceProxy::LaunchAppWithFileUrls(
   LaunchAppWithIntent(
       app_id, event_flags,
       apps_util::CreateShareIntentFromFiles(file_urls, mime_types),
-      launch_source, display::kDefaultDisplayId);
+      launch_source, MakeWindowInfo(display::kDefaultDisplayId));
 }
 
 void AppServiceProxy::LaunchAppWithIntent(
@@ -319,10 +318,10 @@ void AppServiceProxy::LaunchAppWithIntent(
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    int64_t display_id) {
+    apps::mojom::WindowInfoPtr window_info) {
   if (app_service_.is_connected()) {
     app_registry_cache_.ForOneApp(app_id, [this, event_flags, &intent,
-                                           launch_source, display_id](
+                                           launch_source, &window_info](
                                               const apps::AppUpdate& update) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (MaybeShowLaunchPreventionDialog(update)) {
@@ -331,8 +330,6 @@ void AppServiceProxy::LaunchAppWithIntent(
 #endif
       RecordAppLaunch(update.AppId(), launch_source);
 
-      apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
-      window_info->display_id = display_id;
       app_service_->LaunchAppWithIntent(update.AppType(), update.AppId(),
                                         event_flags, std::move(intent),
                                         launch_source, std::move(window_info));
@@ -344,9 +341,9 @@ void AppServiceProxy::LaunchAppWithUrl(const std::string& app_id,
                                        int32_t event_flags,
                                        GURL url,
                                        apps::mojom::LaunchSource launch_source,
-                                       int64_t display_id) {
+                                       apps::mojom::WindowInfoPtr window_info) {
   LaunchAppWithIntent(app_id, event_flags, apps_util::CreateIntentFromUrl(url),
-                      launch_source, display_id);
+                      launch_source, std::move(window_info));
 }
 
 void AppServiceProxy::SetPermission(const std::string& app_id,

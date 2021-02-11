@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_notification.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
@@ -127,7 +128,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2AppServiceMetrics) {
   proxy->Launch(
       *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP),
       ui::EventFlags::EF_NONE, apps::mojom::LaunchSource::kFromKeyboard,
-      display::kDefaultDisplayId);
+      apps::MakeWindowInfo(display::kDefaultDisplayId));
 
   navigation_observer.Wait();
   // The HELP app is 18, see DefaultAppName in

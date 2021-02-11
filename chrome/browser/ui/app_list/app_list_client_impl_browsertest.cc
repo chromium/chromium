@@ -90,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
                       WindowOpenDisposition::NEW_WINDOW,
                       false /* preferred_containner */),
                   apps::mojom::LaunchSource::kFromTest,
-                  display::Screen::GetScreen()->GetPrimaryDisplay().id());
+                  apps::MakeWindowInfo(
+                      display::Screen::GetScreen()->GetPrimaryDisplay().id()));
     app_loaded_observer.Wait();
   }
   EXPECT_TRUE(delegate->IsAppOpen(extension_app->id()));

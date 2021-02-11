@@ -186,7 +186,7 @@ void OnIntentPickerClosed(
           GetEventFlags(mojom::LaunchContainer::kLaunchContainerWindow,
                         WindowOpenDisposition::NEW_WINDOW,
                         /*prefer_container=*/true),
-          url, launch_source, display::kDefaultDisplayId);
+          url, launch_source, apps::MakeWindowInfo(display::kDefaultDisplayId));
       CloseOrGoBack(web_contents);
     }
   }

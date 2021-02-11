@@ -25,7 +25,6 @@
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_test.h"
-#include "ui/display/types/display_constants.h"
 
 class AppDialogViewBrowserTest : public DialogBrowserTest {
  public:
@@ -109,9 +108,9 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
       app_instance_->SendRefreshAppList(
           std::vector<arc::mojom::AppInfo>(1, app));
       app_service_proxy_->FlushMojoCallsForTesting();
-      app_service_proxy_->Launch(app_id_, ui::EventFlags::EF_NONE,
-                                 apps::mojom::LaunchSource::kFromChromeInternal,
-                                 display::kInvalidDisplayId);
+      app_service_proxy_->Launch(
+          app_id_, ui::EventFlags::EF_NONE,
+          apps::mojom::LaunchSource::kFromChromeInternal);
     } else {
       std::map<std::string, apps::PauseData> pause_data;
       pause_data[app_id_].hours = 3;

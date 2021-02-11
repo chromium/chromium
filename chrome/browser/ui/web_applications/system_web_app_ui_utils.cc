@@ -37,7 +37,6 @@
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -205,15 +204,13 @@ void LaunchSystemWebAppAsync(Profile* profile,
   auto event_flags = apps::GetEventFlags(
       apps::mojom::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW, /* prefer_container */ false);
-  auto display_id = display::kInvalidDisplayId;
 
   if (params.url.is_empty()) {
-    app_service->Launch(app_id.value(), event_flags, params.launch_source,
-                        display_id);
+    app_service->Launch(app_id.value(), event_flags, params.launch_source);
   } else {
     DCHECK(params.url.is_valid());
     app_service->LaunchAppWithUrl(app_id.value(), event_flags, params.url,
-                                  params.launch_source, display_id);
+                                  params.launch_source);
   }
 }
 

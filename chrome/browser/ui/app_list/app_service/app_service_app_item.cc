@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
 #include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
@@ -155,7 +156,7 @@ void AppServiceAppItem::Launch(int event_flags,
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->Launch(id(), event_flags, launch_source,
-                GetController()->GetAppListDisplayId());
+                apps::MakeWindowInfo(GetController()->GetAppListDisplayId()));
 }
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
