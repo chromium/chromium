@@ -139,6 +139,8 @@ void TtsControllerImpl::SpeakOrEnqueue(
   if (TtsPlatformLoading() ||
       (engine_delegate_ && !engine_delegate_->IsBuiltInTtsEngineInitialized(
                                utterance->GetBrowserContext()))) {
+    GetTtsPlatform()->LoadBuiltInTtsEngine(utterance->GetBrowserContext());
+
     if (utterance->GetShouldClearQueue())
       ClearUtteranceQueue(true);
 
