@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -228,8 +229,14 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(browser(), {start_url_});
 }
 
+// Flaky on lacros: https://crbug.com/1167176
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CaptureLinksNewClient DISABLED_CaptureLinksNewClient
+#else
+#define MAYBE_CaptureLinksNewClient CaptureLinksNewClient
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
-                       CaptureLinksNewClient) {
+                       MAYBE_CaptureLinksNewClient) {
   InstallTestApp("/web_apps/capture_links_new_client.html");
 
   Navigate(browser(), out_of_scope_);
