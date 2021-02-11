@@ -30,6 +30,9 @@
 #include "components/viz/service/display/damage_frame_annotator.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_client.h"
+#include "components/viz/service/display/display_resource_provider_gl.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/display_scheduler.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/null_renderer.h"
@@ -512,36 +515,43 @@ void Display::SetOutputIsSecure(bool secure) {
 }
 
 void Display::InitializeRenderer(bool enable_shared_images) {
-  bool uses_gpu_resources = output_surface_->context_provider() ||
-                            skia_output_surface_ ||
-                            output_surface_->capabilities().skips_draw;
-
-  resource_provider_ = std::make_unique<DisplayResourceProvider>(
-      uses_gpu_resources ? DisplayResourceProvider::kGpu
-                         : DisplayResourceProvider::kSoftware,
-      output_surface_->context_provider(), bitmap_manager_,
-      enable_shared_images);
   if (skia_output_surface_) {
+    auto resource_provider =
+        std::make_unique<DisplayResourceProviderSkia>(bitmap_manager_);
     renderer_ = std::make_unique<SkiaRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
-        resource_provider_.get(), overlay_processor_.get(),
+        resource_provider.get(), overlay_processor_.get(),
         skia_output_surface_);
+    resource_provider_ = std::move(resource_provider);
   } else if (output_surface_->context_provider()) {
+    auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
+        output_surface_->context_provider(), bitmap_manager_,
+        enable_shared_images);
     renderer_ = std::make_unique<GLRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
-        resource_provider_.get(), overlay_processor_.get(),
+        resource_provider.get(), overlay_processor_.get(),
         current_task_runner_);
+    resource_provider_ = std::move(resource_provider);
   } else if (output_surface_->capabilities().skips_draw) {
+    // We use DisplayResourceProviderGL because the actual resources are gpu
+    // backed.
+    auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
+        output_surface_->context_provider(), bitmap_manager_,
+        enable_shared_images);
     renderer_ = std::make_unique<NullRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
-        resource_provider_.get(), overlay_processor_.get());
+        resource_provider.get(), overlay_processor_.get());
+    resource_provider_ = std::move(resource_provider);
   } else {
+    auto resource_provider =
+        std::make_unique<DisplayResourceProviderSoftware>(bitmap_manager_);
     DCHECK(!overlay_processor_->IsOverlaySupported());
     auto renderer = std::make_unique<SoftwareRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
-        resource_provider_.get(), overlay_processor_.get());
+        resource_provider.get(), overlay_processor_.get());
     software_renderer_ = renderer.get();
     renderer_ = std::move(renderer);
+    resource_provider_ = std::move(resource_provider);
   }
 
   renderer_->Initialize();

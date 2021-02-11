@@ -34,7 +34,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -5582,8 +5582,8 @@ class SurfaceAggregatorWithResourcesTest : public testing::Test,
   SurfaceAggregatorWithResourcesTest() : manager_(&shared_bitmap_manager_) {}
 
   void SetUp() override {
-    resource_provider_ = std::make_unique<DisplayResourceProvider>(
-        DisplayResourceProvider::kSoftware, nullptr, &shared_bitmap_manager_);
+    resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
+        &shared_bitmap_manager_);
 
     aggregator_ = std::make_unique<SurfaceAggregator>(
         manager_.surface_manager(), resource_provider_.get(), false, false);

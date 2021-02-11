@@ -67,12 +67,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     kGpu,
     kSoftware,
   };
-  // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary
-  // solution that unblocks us until SharedImages are threadsafe in WebView.
-  DisplayResourceProvider(Mode mode,
-                          ContextProvider* compositor_context_provider,
-                          SharedBitmapManager* shared_bitmap_manager,
-                          bool enable_shared_images = true);
   ~DisplayResourceProvider() override;
 
   DisplayResourceProvider(const DisplayResourceProvider&) = delete;
@@ -359,6 +353,14 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // Sets if the GPU thread is available (it always is for Chrome, but for
   // WebView it happens only when Android calls us on RenderThread.
   void SetAllowAccessToGPUThread(bool allow);
+
+ protected:
+  // TODO(cblume, crbug.com/900973): |enable_shared_images| is a temporary
+  // solution that unblocks us until SharedImages are threadsafe in WebView.
+  DisplayResourceProvider(Mode mode,
+                          ContextProvider* compositor_context_provider,
+                          SharedBitmapManager* shared_bitmap_manager,
+                          bool enable_shared_images = true);
 
  private:
   friend class ScopedAllowGpuAccessForDisplayResourceProvider;

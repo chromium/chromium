@@ -25,7 +25,7 @@
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_client.h"
@@ -232,9 +232,8 @@ class DCLayerOverlayTest : public testing::Test {
     output_surface_->BindToClient(&client_);
 
     shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
-    resource_provider_ = std::make_unique<DisplayResourceProvider>(
-        DisplayResourceProvider::kGpu, provider_.get(),
-        shared_bitmap_manager_.get());
+    resource_provider_ = std::make_unique<DisplayResourceProviderGL>(
+        provider_.get(), shared_bitmap_manager_.get());
 
     child_provider_ = TestContextProvider::Create();
     child_provider_->BindToCurrentThread();
@@ -262,7 +261,7 @@ class DCLayerOverlayTest : public testing::Test {
   std::unique_ptr<OverlayOutputSurface> output_surface_;
   cc::FakeOutputSurfaceClient client_;
   std::unique_ptr<SharedBitmapManager> shared_bitmap_manager_;
-  std::unique_ptr<DisplayResourceProvider> resource_provider_;
+  std::unique_ptr<DisplayResourceProviderGL> resource_provider_;
   scoped_refptr<TestContextProvider> child_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<OverlayProcessorWin> overlay_processor_;

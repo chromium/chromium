@@ -11,7 +11,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/surface_aggregator.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -31,10 +31,7 @@ class DisplayDamageTrackerTest : public testing::Test {
  public:
   DisplayDamageTrackerTest()
       : manager_(&shared_bitmap_manager_),
-        resource_provider_(DisplayResourceProvider::kSoftware,
-                           nullptr,
-                           &shared_bitmap_manager_,
-                           false),
+        resource_provider_(&shared_bitmap_manager_),
         aggregator_(manager_.surface_manager(),
                     &resource_provider_,
                     false,
@@ -117,7 +114,7 @@ class DisplayDamageTrackerTest : public testing::Test {
 
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
-  DisplayResourceProvider resource_provider_;
+  DisplayResourceProviderSoftware resource_provider_;
   SurfaceAggregator aggregator_;
   Client root_client_;
   scoped_refptr<base::NullTaskRunner> task_runner_;

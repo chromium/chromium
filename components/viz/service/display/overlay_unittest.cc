@@ -27,7 +27,7 @@
 #include "components/viz/common/quads/video_hole_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/display/ca_layer_overlay.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_client.h"
@@ -598,9 +598,8 @@ class OverlayTest : public testing::Test {
     output_surface_->BindToClient(&client_);
 
     shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
-    resource_provider_ = std::make_unique<DisplayResourceProvider>(
-        DisplayResourceProvider::kGpu, provider_.get(),
-        shared_bitmap_manager_.get());
+    resource_provider_ = std::make_unique<DisplayResourceProviderGL>(
+        provider_.get(), shared_bitmap_manager_.get());
 
     child_provider_ = TestContextProvider::Create();
     child_provider_->BindToCurrentThread();
@@ -659,10 +658,8 @@ TEST(OverlayTest, OverlaysProcessorHasStrategy) {
   output_surface.BindToClient(&client);
 
   auto shared_bitmap_manager = std::make_unique<TestSharedBitmapManager>();
-  std::unique_ptr<DisplayResourceProvider> resource_provider =
-      std::make_unique<DisplayResourceProvider>(DisplayResourceProvider::kGpu,
-                                                provider.get(),
-                                                shared_bitmap_manager.get());
+  auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
+      provider.get(), shared_bitmap_manager.get());
 
   auto overlay_processor = std::make_unique<TestOverlayProcessor>();
   EXPECT_GE(2U, overlay_processor->GetStrategyCount());
@@ -3061,7 +3058,7 @@ class OverlayInfoRendererGL : public GLRenderer {
   OverlayInfoRendererGL(const RendererSettings* settings,
                         const DebugRendererSettings* debug_settings,
                         OutputSurface* output_surface,
-                        DisplayResourceProvider* resource_provider,
+                        DisplayResourceProviderGL* resource_provider,
                         SingleOverlayProcessor* overlay_processor)
       : GLRenderer(settings,
                    debug_settings,
@@ -3126,8 +3123,8 @@ class GLRendererWithOverlaysTest : public testing::Test {
     provider_->BindToCurrentThread();
     output_surface_ = std::make_unique<OverlayOutputSurface>(provider_);
     output_surface_->BindToClient(&output_surface_client_);
-    resource_provider_ = std::make_unique<DisplayResourceProvider>(
-        DisplayResourceProvider::kGpu, provider_.get(), nullptr);
+    resource_provider_ =
+        std::make_unique<DisplayResourceProviderGL>(provider_.get(), nullptr);
 
     provider_->support()->SetScheduleOverlayPlaneCallback(base::BindRepeating(
         &MockOverlayScheduler::Schedule, base::Unretained(&scheduler_)));
@@ -3174,8 +3171,8 @@ class GLRendererWithOverlaysTest : public testing::Test {
   void SwapBuffersWithoutComplete() { renderer_->SwapBuffers({}); }
   void SwapBuffersComplete() { renderer_->SwapBuffersComplete(); }
   void ReturnResourceInUseQuery(ResourceId id) {
-    DisplayResourceProvider::ScopedReadLockGL lock(resource_provider_.get(),
-                                                   id);
+    DisplayResourceProviderGL::ScopedReadLockGL lock(resource_provider_.get(),
+                                                     id);
     gpu::TextureInUseResponse response;
     response.texture = lock.texture_id();
     response.in_use = false;
@@ -3212,7 +3209,7 @@ class GLRendererWithOverlaysTest : public testing::Test {
   DebugRendererSettings debug_settings_;
   cc::FakeOutputSurfaceClient output_surface_client_;
   std::unique_ptr<OverlayOutputSurface> output_surface_;
-  std::unique_ptr<DisplayResourceProvider> resource_provider_;
+  std::unique_ptr<DisplayResourceProviderGL> resource_provider_;
   std::unique_ptr<SingleOverlayProcessor> owned_overlay_processor_;
   std::unique_ptr<OverlayInfoRendererGL> renderer_;
   scoped_refptr<TestContextProvider> provider_;
