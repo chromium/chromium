@@ -29,9 +29,7 @@ enum Options {
   // Allows 'unsafe-eval' to be specified as a source in a directive.
   OPTIONS_ALLOW_UNSAFE_EVAL = 1 << 0,
   // Allow an object-src to be specified with any sources (i.e. it may contain
-  // wildcards or http sources). Specifying this requires the CSP to contain
-  // a plugin-types directive which restricts the plugins that can be loaded
-  // to those which are fully sandboxed.
+  // wildcards or http sources).
   OPTIONS_ALLOW_INSECURE_OBJECT_SRC = 1 << 1,
 };
 

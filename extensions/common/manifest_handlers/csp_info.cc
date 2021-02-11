@@ -72,10 +72,7 @@ int GetValidatorOptions(Extension* extension) {
 
   // Component extensions can specify an insecure object-src directive. This
   // should be safe because non-NPAPI plugins should load in a sandboxed process
-  // and only allow communication via postMessage. Flash is an exception since
-  // it allows scripting into the embedder page, but even then it should
-  // disallow cross-origin scripting. At some point we may want to consider
-  // allowing this publicly.
+  // and only allow communication via postMessage.
   if (extensions::Manifest::IsComponentLocation(extension->location()))
     options |= csp_validator::OPTIONS_ALLOW_INSECURE_OBJECT_SRC;
 
