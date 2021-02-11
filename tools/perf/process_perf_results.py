@@ -259,12 +259,11 @@ def _handle_perf_logs(benchmark_directory_map, extra_links):
 def _handle_benchmarks_shard_map(benchmarks_shard_map_file, extra_links):
   begin_time = time.time()
   with open(benchmarks_shard_map_file) as f:
-    benchmarks_shard_data = json.load(f)
+    benchmarks_shard_data = f.read()
     logdog_file_name = _generate_unique_logdog_filename('Benchmarks_Shard_Map')
-    logdog_stream = logdog_helper.text(
-        logdog_file_name, json.dumps(benchmarks_shard_data, sort_keys=True,
-                                     indent=4, separators=(',', ': ')),
-        content_type=JSON_CONTENT_TYPE)
+    logdog_stream = logdog_helper.text(logdog_file_name,
+                                       benchmarks_shard_data,
+                                       content_type=JSON_CONTENT_TYPE)
     extra_links['Benchmarks shard map'] = logdog_stream
   end_time = time.time()
   print_duration('Generating benchmark shard map stream', begin_time, end_time)
