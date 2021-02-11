@@ -113,6 +113,7 @@ class ModuleMapTestModulator final : public DummyModulator {
                             base::PassKey<ModuleScriptLoader> pass_key)
         : ModuleScriptFetcher(pass_key), modulator_(modulator) {}
     void Fetch(FetchParameters& request,
+               ModuleType module_type,
                ResourceFetcher*,
                ModuleGraphLevel,
                ModuleScriptFetcher::Client* client) override {
@@ -224,10 +225,10 @@ TEST_P(ModuleMapTest, sequentialRequests) {
   // First request
   TestSingleModuleClient* client =
       MakeGarbageCollected<TestSingleModuleClient>();
-  Map()->FetchSingleModuleScript(ModuleScriptFetchRequest::CreateForTest(url),
-                                 GetDocument().Fetcher(),
-                                 ModuleGraphLevel::kTopLevelModuleFetch,
-                                 ModuleScriptCustomFetchType::kNone, client);
+  Map()->FetchSingleModuleScript(
+      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
+      GetDocument().Fetcher(), ModuleGraphLevel::kTopLevelModuleFetch,
+      ModuleScriptCustomFetchType::kNone, client);
   Modulator()->ResolveFetches();
   EXPECT_FALSE(client->WasNotifyFinished())
       << "fetchSingleModuleScript shouldn't complete synchronously";
@@ -243,10 +244,10 @@ TEST_P(ModuleMapTest, sequentialRequests) {
   // Secondary request
   TestSingleModuleClient* client2 =
       MakeGarbageCollected<TestSingleModuleClient>();
-  Map()->FetchSingleModuleScript(ModuleScriptFetchRequest::CreateForTest(url),
-                                 GetDocument().Fetcher(),
-                                 ModuleGraphLevel::kTopLevelModuleFetch,
-                                 ModuleScriptCustomFetchType::kNone, client2);
+  Map()->FetchSingleModuleScript(
+      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
+      GetDocument().Fetcher(), ModuleGraphLevel::kTopLevelModuleFetch,
+      ModuleScriptCustomFetchType::kNone, client2);
   Modulator()->ResolveFetches();
   EXPECT_FALSE(client2->WasNotifyFinished())
       << "fetchSingleModuleScript shouldn't complete synchronously";
@@ -271,18 +272,18 @@ TEST_P(ModuleMapTest, concurrentRequestsShouldJoin) {
   // First request
   TestSingleModuleClient* client =
       MakeGarbageCollected<TestSingleModuleClient>();
-  Map()->FetchSingleModuleScript(ModuleScriptFetchRequest::CreateForTest(url),
-                                 GetDocument().Fetcher(),
-                                 ModuleGraphLevel::kTopLevelModuleFetch,
-                                 ModuleScriptCustomFetchType::kNone, client);
+  Map()->FetchSingleModuleScript(
+      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
+      GetDocument().Fetcher(), ModuleGraphLevel::kTopLevelModuleFetch,
+      ModuleScriptCustomFetchType::kNone, client);
 
   // Secondary request (which should join the first request)
   TestSingleModuleClient* client2 =
       MakeGarbageCollected<TestSingleModuleClient>();
-  Map()->FetchSingleModuleScript(ModuleScriptFetchRequest::CreateForTest(url),
-                                 GetDocument().Fetcher(),
-                                 ModuleGraphLevel::kTopLevelModuleFetch,
-                                 ModuleScriptCustomFetchType::kNone, client2);
+  Map()->FetchSingleModuleScript(
+      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
+      GetDocument().Fetcher(), ModuleGraphLevel::kTopLevelModuleFetch,
+      ModuleScriptCustomFetchType::kNone, client2);
 
   Modulator()->ResolveFetches();
   EXPECT_FALSE(client->WasNotifyFinished())

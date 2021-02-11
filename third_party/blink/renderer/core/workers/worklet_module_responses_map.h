@@ -42,12 +42,14 @@ class CORE_EXPORT WorkletModuleResponsesMap final
   // class-level comment.
   // Called on worklet threads.
   bool GetEntry(const KURL&,
+                ModuleType,
                 ModuleScriptFetcher::Client*,
                 scoped_refptr<base::SingleThreadTaskRunner> client_task_runner)
       LOCKS_EXCLUDED(mutex_);
 
   // Called on worklet threads.
   void SetEntryParams(const KURL&,
+                      ModuleType,
                       const base::Optional<ModuleScriptCreationParams>&)
       LOCKS_EXCLUDED(mutex_);
 
@@ -92,7 +94,8 @@ class CORE_EXPORT WorkletModuleResponsesMap final
   // addModule() calls for a newly created global scope.
   // See https://drafts.css-houdini.org/worklets/#creating-a-workletglobalscope
   // Can be read/written by any thread.
-  HashMap<KURL, std::unique_ptr<Entry>> entries_ GUARDED_BY(mutex_);
+  using Key = std::pair<KURL, ModuleType>;
+  HashMap<Key, std::unique_ptr<Entry>> entries_ GUARDED_BY(mutex_);
 
   Mutex mutex_;
 };

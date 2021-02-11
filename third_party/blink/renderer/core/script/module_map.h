@@ -54,7 +54,8 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   Modulator* GetModulator() { return modulator_; }
 
  private:
-  using MapImpl = HeapHashMap<KURL, Member<Entry>>;
+  using Key = std::pair<KURL, ModuleType>;
+  using MapImpl = HeapHashMap<Key, Member<Entry>>;
 
   // A module map is a map of absolute URLs to map entry.
   MapImpl map_;

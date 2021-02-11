@@ -80,6 +80,7 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
     kInstantiating,
     kFinished,
   };
+
 #if DCHECK_IS_ON()
   static const char* StateToString(State);
 #endif
@@ -108,7 +109,7 @@ class CORE_EXPORT ModuleTreeLinker final : public SingleModuleClient {
   const network::mojom::RequestDestination destination_;
   const Member<Modulator> modulator_;
   const ModuleScriptCustomFetchType custom_fetch_type_;
-  HashSet<KURL> visited_set_;
+  HashSet<std::pair<KURL, ModuleType>> visited_set_;
   const Member<ModuleTreeLinkerRegistry> registry_;
   const Member<ModuleTreeClient> client_;
   State state_ = State::kInitial;

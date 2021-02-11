@@ -5662,3 +5662,11 @@ crbug.com/1171283 [ Fuchsia ] virtual/threaded/synthetic_gestures/synthetic-pinc
 crbug.com/1176286 [ Linux ] http/tests/devtools/service-workers/service-workers-redundant.js [ Failure Pass ]
 crbug.com/1175901 [ Linux ] http/tests/devtools/console/console-search-reveals-messages.js [ Failure Pass ]
 crbug.com/1175901 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Failure Pass ]
+
+# The non-virtual versions of these tests time out due to syntax errors in script without import assertions enabled
+crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/css-module/css-module-worker-test.html [ Pass Timeout ]
+crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/css-module/utf8.tentative.html [ Pass Timeout ]
+crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/module.tentative.html [ Pass Timeout ]
+crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/non-object.tentative.any.sharedworker.html [ Pass Timeout ]
+crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/utf8.tentative.html [ Pass Timeout ]
+crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.tentative.html [ Pass Timeout ]

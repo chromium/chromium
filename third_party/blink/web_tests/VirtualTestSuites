@@ -15,7 +15,7 @@
       "fast/loader/invalid-module-specifier.html",
       "http/tests/devtools/isolated-code-cache/"
     ],
-    "args": ["--enable-features=TopLevelAwait,JSONModules"]
+    "args": ["--enable-features=TopLevelAwait,JSONModules", "--js-flags=--harmony-import-assertions"]
   },
   {
     "prefix": "disable-accept-language-header",
@@ -632,12 +632,12 @@
   {
     "prefix": "json-modules",
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/json-module"],
-    "args": ["--enable-features=JSONModules"]
+    "args": ["--enable-features=JSONModules", "--js-flags=--harmony-import-assertions"]
   },
   {
     "prefix": "css-modules",
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/css-module"],
-    "args": ["--enable-blink-features=CSSModules"]
+    "args": ["--enable-blink-features=CSSModules", "--js-flags=--harmony-import-assertions"]
   },
   {
     "prefix": "import-assertions",

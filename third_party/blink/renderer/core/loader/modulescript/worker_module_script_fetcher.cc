@@ -35,6 +35,7 @@ WorkerModuleScriptFetcher::WorkerModuleScriptFetcher(
 // <specdef href="https://html.spec.whatwg.org/C/#run-a-worker">
 void WorkerModuleScriptFetcher::Fetch(
     FetchParameters& fetch_params,
+    ModuleType expected_module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
@@ -44,6 +45,7 @@ void WorkerModuleScriptFetcher::Fetch(
   fetch_client_settings_object_fetcher_ = fetch_client_settings_object_fetcher;
   client_ = client;
   level_ = level;
+  expected_module_type_ = expected_module_type;
 
   // Use WorkerMainScriptLoader to load the main script when
   // dedicated workers (PlzDedicatedWorker) and shared workers.
@@ -91,17 +93,16 @@ void WorkerModuleScriptFetcher::NotifyFinished(Resource* resource) {
   ClearResource();
 
   auto* script_resource = To<ScriptResource>(resource);
-  ModuleType module_type;
   {
     HeapVector<Member<ConsoleMessage>> error_messages;
-    if (!WasModuleLoadSuccessful(script_resource, &error_messages,
-                                 &module_type)) {
+    if (!WasModuleLoadSuccessful(script_resource, expected_module_type_,
+                                 &error_messages)) {
       client_->NotifyFetchFinishedError(error_messages);
       return;
     }
   }
 
-  NotifyClient(resource->Url(), module_type,
+  NotifyClient(resource->Url(), expected_module_type_,
                script_resource->SourceText(), resource->GetResponse(),
                script_resource->CacheHandler());
 }

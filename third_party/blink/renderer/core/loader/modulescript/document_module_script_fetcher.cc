@@ -21,6 +21,7 @@ DocumentModuleScriptFetcher::DocumentModuleScriptFetcher(
 
 void DocumentModuleScriptFetcher::Fetch(
     FetchParameters& fetch_params,
+    ModuleType expected_module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
@@ -28,6 +29,7 @@ void DocumentModuleScriptFetcher::Fetch(
   DCHECK(fetch_client_settings_object_fetcher);
   DCHECK(!client_);
   client_ = client;
+  expected_module_type_ = expected_module_type;
   // Streaming can currently only be triggered from the main thread. This
   // currently happens only for dynamic imports in worker modules.
   ScriptResource::StreamingAllowed streaming_allowed =
@@ -42,11 +44,10 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
   auto* script_resource = To<ScriptResource>(resource);
 
-  ModuleType module_type;
   {
     HeapVector<Member<ConsoleMessage>> error_messages;
-    if (!WasModuleLoadSuccessful(script_resource, &error_messages,
-                                 &module_type)) {
+    if (!WasModuleLoadSuccessful(script_resource, expected_module_type_,
+                                 &error_messages)) {
       client_->NotifyFetchFinishedError(error_messages);
       return;
     }
@@ -70,7 +71,7 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client_->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/url, /*base_url=*/url,
-      ScriptSourceLocationType::kExternalFile, module_type,
+      ScriptSourceLocationType::kExternalFile, expected_module_type_,
       script_resource->SourceText(), script_resource->CacheHandler(), streamer,
       not_streamed_reason));
 }

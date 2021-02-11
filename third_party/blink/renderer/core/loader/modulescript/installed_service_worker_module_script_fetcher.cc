@@ -28,6 +28,7 @@ InstalledServiceWorkerModuleScriptFetcher::
 
 void InstalledServiceWorkerModuleScriptFetcher::Fetch(
     FetchParameters& fetch_params,
+    ModuleType expected_module_type,
     ResourceFetcher*,
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
@@ -36,6 +37,7 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
   auto* installed_scripts_manager = global_scope_->GetInstalledScriptsManager();
   DCHECK(installed_scripts_manager);
   DCHECK(installed_scripts_manager->IsScriptInstalled(fetch_params.Url()));
+  expected_module_type_ = expected_module_type;
 
   std::unique_ptr<InstalledScriptsManager::ScriptData> script_data =
       installed_scripts_manager->GetScriptData(fetch_params.Url());
@@ -73,18 +75,18 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
         mojom::blink::kAppCacheNoCacheId);
   }
 
-  ModuleType module_type;
-
   // TODO(sasebree) De-duplicate similar logic that lives in
   // ModuleScriptFetcher::WasModuleLoadSuccessful
-  if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
-          script_data->GetHttpContentType())) {
-    module_type = ModuleType::kJavaScript;
-  } else if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
-             MIMETypeRegistry::IsJSONMimeType(
-                 script_data->GetHttpContentType())) {
-    module_type = ModuleType::kJSON;
-  } else {
+  const bool fetched_javascript_module =
+      expected_module_type_ == ModuleType::kJavaScript &&
+      MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
+          script_data->GetHttpContentType());
+  const bool fetched_json_module =
+      base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
+      expected_module_type_ == ModuleType::kJSON &&
+      MIMETypeRegistry::IsJSONMimeType(script_data->GetHttpContentType());
+
+  if (!fetched_javascript_module && !fetched_json_module) {
     // This should never happen.
     // If we reach here, we know we received an incompatible mime type from the
     // network
@@ -102,7 +104,7 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
   // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
   client->NotifyFetchFinishedSuccess(ModuleScriptCreationParams(
       /*source_url=*/fetch_params.Url(), /*base_url=*/fetch_params.Url(),
-      ScriptSourceLocationType::kExternalFile, module_type,
+      ScriptSourceLocationType::kExternalFile, expected_module_type_,
       ParkableString(script_data->TakeSourceText().Impl()),
       /*cache_handler=*/nullptr));
 }

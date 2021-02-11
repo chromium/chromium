@@ -31,6 +31,7 @@ class CORE_EXPORT WorkletModuleScriptFetcher final
 
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,
+             ModuleType,
              ResourceFetcher*,
              ModuleGraphLevel,
              ModuleScriptFetcher::Client*) override;
@@ -48,6 +49,7 @@ class CORE_EXPORT WorkletModuleScriptFetcher final
   CrossThreadPersistent<WorkletModuleResponsesMap> module_responses_map_;
 
   KURL url_;
+  ModuleType expected_module_type_;
 };
 
 }  // namespace blink

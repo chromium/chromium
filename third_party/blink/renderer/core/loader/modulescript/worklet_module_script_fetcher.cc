@@ -17,12 +17,13 @@ WorkletModuleScriptFetcher::WorkletModuleScriptFetcher(
 
 void WorkletModuleScriptFetcher::Fetch(
     FetchParameters& fetch_params,
+    ModuleType expected_module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
     ModuleScriptFetcher::Client* client) {
   DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
   if (module_responses_map_->GetEntry(
-          fetch_params.Url(), client,
+          fetch_params.Url(), expected_module_type, client,
           fetch_client_settings_object_fetcher->GetTaskRunner())) {
     return;
   }
@@ -38,6 +39,7 @@ void WorkletModuleScriptFetcher::Fetch(
   // need to handle that case, maybe by having a way to restart fetches in a
   // different global scope?
   url_ = fetch_params.Url();
+  expected_module_type_ = expected_module_type;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
                         this, ScriptResource::kNoStreaming);
 }
@@ -48,20 +50,20 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
   base::Optional<ModuleScriptCreationParams> params;
   auto* script_resource = To<ScriptResource>(resource);
   HeapVector<Member<ConsoleMessage>> error_messages;
-  ModuleType module_type;
-  if (WasModuleLoadSuccessful(script_resource, &error_messages, &module_type)) {
+  if (WasModuleLoadSuccessful(script_resource, expected_module_type_,
+                              &error_messages)) {
     const KURL& url = script_resource->GetResponse().CurrentRequestUrl();
     // Create an external module script where base_url == source_url.
     // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
     params.emplace(/*source_url=*/url, /*base_url=*/url,
-                   ScriptSourceLocationType::kExternalFile, module_type,
-                   script_resource->SourceText(),
+                   ScriptSourceLocationType::kExternalFile,
+                   expected_module_type_, script_resource->SourceText(),
                    script_resource->CacheHandler());
   }
 
   // This will eventually notify |client| passed to
   // WorkletModuleScriptFetcher::Fetch().
-  module_responses_map_->SetEntryParams(url_, params);
+  module_responses_map_->SetEntryParams(url_, expected_module_type_, params);
 }
 
 }  // namespace blink

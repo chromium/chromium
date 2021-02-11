@@ -80,7 +80,7 @@ class WorkletModuleResponsesMapTest : public testing::Test {
     WorkletModuleScriptFetcher* module_fetcher =
         MakeGarbageCollected<WorkletModuleScriptFetcher>(
             map_.Get(), ModuleScriptLoader::CreatePassKeyForTests());
-    module_fetcher->Fetch(fetch_params, fetcher_.Get(),
+    module_fetcher->Fetch(fetch_params, ModuleType::kJavaScript, fetcher_.Get(),
                           ModuleGraphLevel::kTopLevelModuleFetch, client);
   }
 

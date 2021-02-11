@@ -3,12 +3,16 @@
     <script>
         window.onerror = function (errorMsg, url, lineNumber, column, errorObj)
         {
-            document.load_error = errorObj.name;
+            document.window_onerror = errorObj.name;
             return true;
         };
+
+        function scriptErrorHandler(e) {
+            document.script_onerror = e;
+        }
     </script>
-    <script type="module">
-        import v from "./basic-large.css" assert { type: "css" };
+    <script type="module" onerror="scriptErrorHandler(event)">
+        import v from "./basic.css";
         document.adoptedStyleSheets = [v];
     </script>
 

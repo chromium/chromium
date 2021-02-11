@@ -106,6 +106,8 @@ class ModuleScriptCreationParams {
     return not_streaming_reason_;
   }
 
+  static String ModuleTypeToString(const ModuleType module_type);
+
  private:
   // Creates an isolated copy.
   ModuleScriptCreationParams(const KURL& source_url,

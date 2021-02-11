@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS A CSS Module should load
+PASS A large CSS Module should load
+PASS An @import CSS Module should not load, but should not throw an exception
+PASS Malformed CSS should not load
+PASS CSS module without type assertion should result in a fetch error
+Harness: the test ran to completion.
+
