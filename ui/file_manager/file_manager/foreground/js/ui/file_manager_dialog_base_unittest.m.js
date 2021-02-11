@@ -12,26 +12,27 @@ export function setUp() {
   /** @suppress {duplicate,checkTypes,const} */
   chrome.app = {window: {current: () => null}};
 
+  // Mock loadTimeData.
   window.loadTimeData.data = {
     FILES_NG_ENABLED: true,
   };
 }
 
 export async function testShowDialogAfterHide(done) {
-  const container =
-      assertInstanceof(document.createElement('div'), HTMLElement);
+  const dialog = new FileManagerDialogBase(document.body);
 
+  /** @return {boolean} True if cr.ui.dialog container has .shown class */
   function isShown() {
-    return !!container.querySelector('.cr-dialog-container.shown');
+    const element = document.querySelector('.cr-dialog-container');
+    return element.classList.contains('shown');
   }
 
-  const dialog = new FileManagerDialogBase(container);
   // Show the dialog and wait until .shown is set on .cr-dialog-container.
-  // This happens async.
+  // The setting of .shown happens async.
   dialog.showBlankDialog();
   await waitUntil(isShown);
 
-  // Call hide, and validate .shown is removed (sync).
+  // Hide the dialog and verify .shown is removed (sync).
   dialog.hide();
   assertFalse(isShown());
 
@@ -40,5 +41,6 @@ export async function testShowDialogAfterHide(done) {
   // the dialog showing again at all if it was called too soon.
   dialog.showBlankDialog();
   await waitUntil(isShown);
+
   done();
 }

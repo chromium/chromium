@@ -21,6 +21,15 @@
   }
 
   /**
+   * @protected
+   * @override
+   */
+  initDom() {
+    super.initDom();
+    super.hasModalContainer = true;
+  }
+
+  /**
    * @param {string} title Title.
    * @param {string} message Message.
    * @param {?function()} onOk Called when the OK button is pressed.
@@ -104,15 +113,25 @@
   }
 
   /**
-   * @param {Function=} opt_onHide Called when the dialog is hidden.
+   * @override
+   * @suppress {accessControls}
    */
-  hide(opt_onHide) {
+  show_(...args) {
+    this.parentNode_ = util.getFilesAppModalDialogInstance();
+
+    super.show_(...args);
+
+    this.parentNode_.showModal();
+  }
+
+  /**
+   * @override
+   */
+  hide(...args) {
+    this.parentNode_.close();
+
     FileManagerDialogBase.shown = false;
-    super.hide(() => {
-      if (opt_onHide) {
-        opt_onHide();
-      }
-    });
+    super.hide(...args);
   }
 }
 

@@ -5,7 +5,6 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-
 import {InstallLinuxPackageDialog} from './install_linux_package_dialog.m.js';
 
 export function testInstallButtonHiddenUntilInfoReady() {
@@ -13,6 +12,8 @@ export function testInstallButtonHiddenUntilInfoReady() {
   /** @suppress {checkTypes,const} */
   chrome.app = {window: {current: () => null}};
 
+  // Mock loadTimeData.
+  loadTimeData.getString = id => id;
   loadTimeData.data = {};
 
   let getInfoCallback;
@@ -22,17 +23,16 @@ export function testInstallButtonHiddenUntilInfoReady() {
       getInfoCallback = callback;
     }
   };
-  const container =
-      assertInstanceof(document.createElement('div'), HTMLElement);
 
   const info = {name: 'n', version: 'v', info: 'i', summary: 's'};
-  const dialog = new InstallLinuxPackageDialog(container);
+  const dialog = new InstallLinuxPackageDialog(document.body);
 
-  // Show dialog and very that install button is disabled.
+  // Show dialog and verify that the install button is disabled.
   dialog.showInstallLinuxPackageDialog(/** @type {!Entry} */ ({}));
-  assertTrue(container.querySelector('.cr-dialog-ok').disabled);
+  const installButton = document.querySelector('.cr-dialog-ok');
+  assertTrue(installButton.disabled);
 
-  // Button becomes enabled once info is ready.
+  // The install button should become enabled once info is ready.
   getInfoCallback(info);
-  assertFalse(container.querySelector('.cr-dialog-ok').disabled);
+  assertFalse(installButton.disabled);
 }
