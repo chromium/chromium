@@ -33,6 +33,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -324,8 +325,7 @@ class WebURLLoaderImplTest : public testing::Test {
   void DoStartAsyncRequest() {
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = GURL(kTestURL);
-    request->resource_type =
-        static_cast<int>(blink::mojom::ResourceType::kSubResource);
+    request->destination = network::mojom::RequestDestination::kEmpty;
     request->priority = net::IDLE;
     client()->loader()->LoadAsynchronously(
         std::move(request), /*url_request_extra_data=*/nullptr,
@@ -668,8 +668,7 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
-  request->resource_type =
-      static_cast<int>(blink::mojom::ResourceType::kSubResource);
+  request->destination = network::mojom::RequestDestination::kEmpty;
   request->priority = net::HIGHEST;
 
   // Prepare a mock response

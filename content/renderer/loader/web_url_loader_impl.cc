@@ -55,6 +55,7 @@
 #include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -439,7 +440,7 @@ class WebURLLoaderImpl::Context : public blink::WebRequestPeer {
   void OnBodyHasBeenRead(uint32_t read_bytes);
 
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(
-      blink::mojom::ResourceType resource_type);
+      network::ResourceRequest* request);
 
   // Appends variations throttles to |throttles| if needed.
   void AppendVariationsThrottles(
@@ -567,11 +568,12 @@ void WebURLLoaderImpl::Context::Start(
   // TODO(horo): Check credentials flag is unset when credentials mode is omit.
   //             Check credentials flag is set when credentials mode is include.
 
-  const blink::mojom::ResourceType resource_type =
-      static_cast<blink::mojom::ResourceType>(request->resource_type);
+  const network::mojom::RequestDestination request_destination =
+      request->destination;
 
   // TODO(yhirano): Move the logic below to blink/platform/loader.
-  if (resource_type == blink::mojom::ResourceType::kImage &&
+  if (!request->is_favicon &&
+      request_destination == network::mojom::RequestDestination::kImage &&
       IsBannedCrossSiteAuth(request.get(),
                             passed_url_request_extra_data.get())) {
     // Prevent third-party image content from prompting for login, as this
@@ -598,15 +600,14 @@ void WebURLLoaderImpl::Context::Start(
   }
   url_request_extra_data->CopyToResourceRequest(request.get());
 
-  if (resource_type == blink::mojom::ResourceType::kPrefetch) {
+  if (request->load_flags & net::LOAD_PREFETCH)
     request->corb_detachable = true;
-  }
 
   auto throttles =
       url_request_extra_data->TakeURLLoaderThrottles().ReleaseVector();
   // The frame request blocker is only for a frame's subresources.
   if (url_request_extra_data->frame_request_blocker() &&
-      !blink::IsResourceTypeFrame(resource_type)) {
+      !blink::IsRequestDestinationFrame(request_destination)) {
     auto throttle = url_request_extra_data->frame_request_blocker()
                         ->GetThrottleIfRequestsBlocked();
     if (throttle)
@@ -633,9 +634,10 @@ void WebURLLoaderImpl::Context::Start(
       blink::Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
           download_to_blob_registry.InitWithNewPipeAndPassReceiver());
     }
+    net::NetworkTrafficAnnotationTag tag =
+        GetTrafficAnnotationTag(request.get());
     resource_request_sender_->SendSync(
-        std::move(request), requestor_id,
-        GetTrafficAnnotationTag(resource_type), loader_options,
+        std::move(request), requestor_id, tag, loader_options,
         sync_load_response, url_loader_factory_, std::move(throttles),
         timeout_interval, cors_exempt_header_list_, terminate_sync_load_event_,
         std::move(download_to_blob_registry), base::WrapRefCounted(this),
@@ -645,11 +647,12 @@ void WebURLLoaderImpl::Context::Start(
 
   TRACE_EVENT_WITH_FLOW0("loading", "WebURLLoaderImpl::Context::Start", this,
                          TRACE_EVENT_FLAG_FLOW_OUT);
+  net::NetworkTrafficAnnotationTag tag = GetTrafficAnnotationTag(request.get());
   request_id_ = resource_request_sender_->SendAsync(
-      std::move(request), requestor_id, unfreezable_task_runner_,
-      GetTrafficAnnotationTag(resource_type), loader_options,
-      cors_exempt_header_list_, base::WrapRefCounted(this), url_loader_factory_,
-      std::move(throttles), std::move(resource_load_info_notifier_wrapper));
+      std::move(request), requestor_id, unfreezable_task_runner_, tag,
+      loader_options, cors_exempt_header_list_, base::WrapRefCounted(this),
+      url_loader_factory_, std::move(throttles),
+      std::move(resource_load_info_notifier_wrapper));
 
   if (defers_loading_ != blink::WebURLLoader::DeferType::kNotDeferred) {
     resource_request_sender_->SetDefersLoading(
@@ -1092,28 +1095,50 @@ void WebURLLoaderImpl::SetResourceRequestSenderForTesting(
 // and if it's for favicon or not.
 net::NetworkTrafficAnnotationTag
 WebURLLoaderImpl::Context::GetTrafficAnnotationTag(
-    blink::mojom::ResourceType resource_type) {
-  switch (resource_type) {
-    case blink::mojom::ResourceType::kMainFrame:
-    case blink::mojom::ResourceType::kSubFrame:
-    case blink::mojom::ResourceType::kNavigationPreloadMainFrame:
-    case blink::mojom::ResourceType::kNavigationPreloadSubFrame:
+    network::ResourceRequest* request) {
+  if (request->is_favicon) {
+    return net::DefineNetworkTrafficAnnotation("favicon_loader", R"(
+      semantics {
+        sender: "Blink Resource Loader"
+        description:
+          "Chrome sends a request to download favicon for a URL."
+        trigger:
+          "Navigating to a URL."
+        data: "None."
+        destination: WEBSITE
+      }
+      policy {
+        cookies_allowed: YES
+        cookies_store: "user"
+        setting: "These requests cannot be disabled in settings."
+        policy_exception_justification:
+          "Not implemented."
+      })");
+  }
+  switch (request->destination) {
+    case network::mojom::RequestDestination::kDocument:
+    case network::mojom::RequestDestination::kIframe:
+    case network::mojom::RequestDestination::kFrame:
       NOTREACHED();
       FALLTHROUGH;
 
-    case blink::mojom::ResourceType::kStylesheet:
-    case blink::mojom::ResourceType::kScript:
-    case blink::mojom::ResourceType::kImage:
-    case blink::mojom::ResourceType::kFontResource:
-    case blink::mojom::ResourceType::kSubResource:
-    case blink::mojom::ResourceType::kMedia:
-    case blink::mojom::ResourceType::kWorker:
-    case blink::mojom::ResourceType::kSharedWorker:
-    case blink::mojom::ResourceType::kPrefetch:
-    case blink::mojom::ResourceType::kXhr:
-    case blink::mojom::ResourceType::kPing:
-    case blink::mojom::ResourceType::kServiceWorker:
-    case blink::mojom::ResourceType::kCspReport:
+    case network::mojom::RequestDestination::kEmpty:
+    case network::mojom::RequestDestination::kAudio:
+    case network::mojom::RequestDestination::kAudioWorklet:
+    case network::mojom::RequestDestination::kFont:
+    case network::mojom::RequestDestination::kImage:
+    case network::mojom::RequestDestination::kManifest:
+    case network::mojom::RequestDestination::kPaintWorklet:
+    case network::mojom::RequestDestination::kReport:
+    case network::mojom::RequestDestination::kScript:
+    case network::mojom::RequestDestination::kServiceWorker:
+    case network::mojom::RequestDestination::kSharedWorker:
+    case network::mojom::RequestDestination::kStyle:
+    case network::mojom::RequestDestination::kTrack:
+    case network::mojom::RequestDestination::kVideo:
+    case network::mojom::RequestDestination::kWebBundle:
+    case network::mojom::RequestDestination::kWorker:
+    case network::mojom::RequestDestination::kXslt:
       return net::DefineNetworkTrafficAnnotation("blink_resource_loader", R"(
       semantics {
         sender: "Blink Resource Loader"
@@ -1135,8 +1160,8 @@ WebURLLoaderImpl::Context::GetTrafficAnnotationTag(
           "to load any webpage."
       })");
 
-    case blink::mojom::ResourceType::kObject:
-    case blink::mojom::ResourceType::kPluginResource:
+    case network::mojom::RequestDestination::kEmbed:
+    case network::mojom::RequestDestination::kObject:
       return net::DefineNetworkTrafficAnnotation(
           "blink_extension_resource_loader", R"(
         semantics {
@@ -1163,25 +1188,6 @@ WebURLLoaderImpl::Context::GetTrafficAnnotationTag(
               }
             }
           }
-        })");
-
-    case blink::mojom::ResourceType::kFavicon:
-      return net::DefineNetworkTrafficAnnotation("favicon_loader", R"(
-        semantics {
-          sender: "Blink Resource Loader"
-          description:
-            "Chrome sends a request to download favicon for a URL."
-          trigger:
-            "Navigating to a URL."
-          data: "None."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting: "These requests cannot be disabled in settings."
-          policy_exception_justification:
-            "Not implemented."
         })");
   }
 
