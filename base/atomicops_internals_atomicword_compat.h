@@ -86,11 +86,6 @@ inline AtomicWord Acquire_Load(volatile const AtomicWord* ptr) {
       reinterpret_cast<volatile const Atomic32*>(ptr));
 }
 
-inline AtomicWord Release_Load(volatile const AtomicWord* ptr) {
-  return base::subtle::Release_Load(
-      reinterpret_cast<volatile const Atomic32*>(ptr));
-}
-
 }  // namespace subtle
 }  // namespace base
 

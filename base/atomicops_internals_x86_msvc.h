@@ -79,11 +79,6 @@ inline Atomic32 Acquire_Load(volatile const Atomic32* ptr) {
   return value;
 }
 
-inline Atomic32 Release_Load(volatile const Atomic32* ptr) {
-  std::atomic_thread_fence(std::memory_order_seq_cst);
-  return *ptr;
-}
-
 #if defined(_WIN64)
 
 // 64-bit low-level operations on 64-bit platform.
@@ -141,11 +136,6 @@ inline Atomic64 NoBarrier_Load(volatile const Atomic64* ptr) {
 inline Atomic64 Acquire_Load(volatile const Atomic64* ptr) {
   Atomic64 value = *ptr;
   return value;
-}
-
-inline Atomic64 Release_Load(volatile const Atomic64* ptr) {
-  std::atomic_thread_fence(std::memory_order_seq_cst);
-  return *ptr;
 }
 
 inline Atomic64 Acquire_CompareAndSwap(volatile Atomic64* ptr,

@@ -19,11 +19,6 @@
 //  * Compare exchange's failure ordering is always the same as the success one
 //    (except for release, which fails as relaxed): using a weaker ordering is
 //    only valid under certain uses of compare exchange.
-//  * Acquire store doesn't exist in the C11 memory model, it is instead
-//    implemented as a relaxed store followed by a sequentially consistent
-//    fence.
-//  * Release load doesn't exist in the C11 memory model, it is instead
-//    implemented as sequentially consistent fence followed by a relaxed load.
 //  * Atomic increment is expected to return the post-incremented value, whereas
 //    C11 fetch add returns the previous value. The implementation therefore
 //    needs to increment twice (which the compiler should be able to detect and
@@ -119,11 +114,6 @@ inline Atomic32 Acquire_Load(volatile const Atomic32* ptr) {
   return ((AtomicLocation32)ptr)->load(std::memory_order_acquire);
 }
 
-inline Atomic32 Release_Load(volatile const Atomic32* ptr) {
-  std::atomic_thread_fence(std::memory_order_seq_cst);
-  return ((AtomicLocation32)ptr)->load(std::memory_order_relaxed);
-}
-
 #if defined(ARCH_CPU_64_BITS)
 
 typedef volatile std::atomic<Atomic64>* AtomicLocation64;
@@ -195,11 +185,6 @@ inline Atomic64 NoBarrier_Load(volatile const Atomic64* ptr) {
 
 inline Atomic64 Acquire_Load(volatile const Atomic64* ptr) {
   return ((AtomicLocation64)ptr)->load(std::memory_order_acquire);
-}
-
-inline Atomic64 Release_Load(volatile const Atomic64* ptr) {
-  std::atomic_thread_fence(std::memory_order_seq_cst);
-  return ((AtomicLocation64)ptr)->load(std::memory_order_relaxed);
 }
 
 #endif  // defined(ARCH_CPU_64_BITS)

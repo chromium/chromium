@@ -205,11 +205,6 @@ static void TestLoad() {
   EXPECT_EQ(kVal1, base::subtle::Acquire_Load(&value));
   value = kVal2;
   EXPECT_EQ(kVal2, base::subtle::Acquire_Load(&value));
-
-  value = kVal1;
-  EXPECT_EQ(kVal1, base::subtle::Release_Load(&value));
-  value = kVal2;
-  EXPECT_EQ(kVal2, base::subtle::Release_Load(&value));
 }
 
 TEST(AtomicOpsTest, Inc) {
