@@ -5871,8 +5871,7 @@ TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonZeroRTT) {
 
 // Check that we're correctly logging 0-rtt success when the handshake
 // concludes during a Read.
-// Disabled due to flake, see crbug.com/1057921 .
-TEST_F(SSLClientSocketZeroRTTTest, DISABLED_EarlyDataReasonReadServerHello) {
+TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonReadServerHello) {
   const char kReasonHistogram[] = "Net.SSLHandshakeEarlyDataReason";
   ASSERT_TRUE(StartServer());
   ASSERT_TRUE(RunInitialConnection());
@@ -5888,6 +5887,10 @@ TEST_F(SSLClientSocketZeroRTTTest, DISABLED_EarlyDataReasonReadServerHello) {
   int size = ReadAndWait(buf.get(), 4096);
   EXPECT_GT(size, 0);
   EXPECT_EQ('1', buf->data()[size - 1]);
+
+  // 0-RTT metrics are logged on a PostTask, so if Read returns synchronously,
+  // it is possible the metrics haven't been picked up yet.
+  base::RunLoop().RunUntilIdle();
 
   SSLInfo ssl_info;
   ASSERT_TRUE(GetSSLInfo(&ssl_info));
