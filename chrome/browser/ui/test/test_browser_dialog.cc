@@ -100,7 +100,7 @@ bool TestBrowserDialog::VerifyUi() {
   widgets_ = added;
 
   if (added.size() != 1) {
-    DLOG(INFO) << "VerifyUi(): Expected 1 added widget; got " << added.size();
+    LOG(INFO) << "VerifyUi(): Expected 1 added widget; got " << added.size();
     if (added.size() > 1) {
       base::string16 widget_title_log =
           base::ASCIIToUTF16("Added Widgets are: ");
@@ -108,7 +108,7 @@ bool TestBrowserDialog::VerifyUi() {
         widget_title_log += widget->widget_delegate()->GetWindowTitle() +
                             base::ASCIIToUTF16(" ");
       }
-      DLOG(INFO) << widget_title_log;
+      LOG(INFO) << widget_title_log;
     }
     return false;
   }
@@ -132,7 +132,7 @@ bool TestBrowserDialog::VerifyUi() {
   const std::string screenshot_name = base::StrCat(
       {test_info->test_case_name(), "_", test_info->name(), "_", baseline_});
   if (!VerifyPixelUi(dialog_widget, "BrowserUiDialog", screenshot_name)) {
-    DLOG(INFO) << "VerifyUi(): Pixel compare failed.";
+    LOG(INFO) << "VerifyUi(): Pixel compare failed.";
     return false;
   }
   if (is_active)
@@ -153,7 +153,7 @@ bool TestBrowserDialog::VerifyUi() {
       screen->GetDisplayNearestWindow(native_window).work_area();
 
   const bool dialog_in_bounds = display_work_area.Contains(dialog_bounds);
-  DLOG_IF(INFO, !dialog_in_bounds)
+  LOG_IF(INFO, !dialog_in_bounds)
       << "VerifyUi(): Dialog bounds " << dialog_bounds.ToString()
       << " outside of display work area " << display_work_area.ToString();
   return dialog_in_bounds;
