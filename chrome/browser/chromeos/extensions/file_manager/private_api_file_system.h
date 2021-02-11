@@ -19,7 +19,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/extensions/file_manager/file_stream_string_converter.h"
-#include "chrome/browser/chromeos/extensions/file_manager/files_extension_function.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "components/drive/file_errors.h"
@@ -73,7 +72,7 @@ class FileManagerPrivateEnableExternalFileSchemeFunction
 
 // Grants R/W permissions to profile-specific directories (Drive, Downloads)
 // from other profiles.
-class FileManagerPrivateGrantAccessFunction : public FilesExtensionFunction {
+class FileManagerPrivateGrantAccessFunction : public ExtensionFunction {
  public:
   FileManagerPrivateGrantAccessFunction();
 

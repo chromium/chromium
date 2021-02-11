@@ -397,8 +397,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
     if (profile->IsOffTheRecord())
       continue;
     storage::FileSystemContext* const context =
-        util::GetStoragePartitionForExtensionId(extension_id_or_file_app_id(),
-                                                profile)
+        util::GetStoragePartitionForExtensionId(extension_id(), profile)
             ->GetFileSystemContext();
     for (const auto& url : params->entry_urls) {
       const storage::FileSystemURL file_system_url =
@@ -409,7 +408,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
           file_system_url.mount_type() != storage::kFileSystemTypeExternal) {
         continue;
       }
-      backend->GrantFileAccessToExtension(extension_id_or_file_app_id(),
+      backend->GrantFileAccessToExtension(extension_id(),
                                           file_system_url.virtual_path());
       content::ChildProcessSecurityPolicy::GetInstance()
           ->GrantCreateReadWriteFile(render_frame_host()->GetProcess()->GetID(),
@@ -526,7 +525,7 @@ void FileManagerPrivateInternalAddFileWatchFunction::
           &PostNotificationCallbackTaskToUIThread,
           base::BindRepeating(
               &file_manager::EventRouter::OnWatcherManagerNotification,
-              event_router, file_system_url, extension_id_or_file_app_id())));
+              event_router, file_system_url, extension_id())));
 }
 
 void FileManagerPrivateInternalAddFileWatchFunction::
@@ -538,8 +537,7 @@ void FileManagerPrivateInternalAddFileWatchFunction::
 
   // Obsolete. Fallback code if storage::WatcherManager is not implemented.
   event_router->AddFileWatch(
-      file_system_url.path(), file_system_url.virtual_path(),
-      extension_id_or_file_app_id(),
+      file_system_url.path(), file_system_url.virtual_path(), extension_id(),
       base::BindOnce(&FileWatchFunctionBase::RespondWith, this));
 }
 
@@ -568,8 +566,7 @@ void FileManagerPrivateInternalRemoveFileWatchFunction::
   DCHECK(event_router);
 
   // Obsolete. Fallback code if storage::WatcherManager is not implemented.
-  event_router->RemoveFileWatch(file_system_url.path(),
-                                extension_id_or_file_app_id());
+  event_router->RemoveFileWatch(file_system_url.path(), extension_id());
   RespondWith(true);
 }
 
@@ -1065,8 +1062,8 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
     FileDefinition file_definition;
     const bool result =
         file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
-            chrome_details.GetProfile(), extension_id_or_file_app_id(),
-            file_system_url.path(), &file_definition.virtual_path);
+            chrome_details.GetProfile(), extension_id(), file_system_url.path(),
+            &file_definition.virtual_path);
     if (!result)
       continue;
     // The API only supports isolated files. It still works for directories,
@@ -1076,7 +1073,7 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   }
 
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
-      chrome_details.GetProfile(), extension_id_or_file_app_id(),
+      chrome_details.GetProfile(), extension_id(),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(
           &FileManagerPrivateInternalResolveIsolatedEntriesFunction::
@@ -1305,8 +1302,7 @@ void FileManagerPrivateSearchFilesFunction::OnSearchByPattern(
   GURL url;
   base::FilePath my_files_virtual_path;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          chrome_details_.GetProfile(), my_files_path,
-          extension_id_or_file_app_id(), &url) ||
+          chrome_details_.GetProfile(), my_files_path, extension_id(), &url) ||
       !storage::ExternalMountPoints::GetSystemInstance()->GetVirtualPath(
           my_files_path, &my_files_virtual_path)) {
     Respond(Error("My files is not mounted"));
