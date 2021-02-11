@@ -1174,11 +1174,20 @@
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link to the Terms of Service.">
     Terms of Service
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Troubleshooting'">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Troubleshooting', 'Battery Health', 'CPU Usage', 'Memory Usage'">
     Diagnostics
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics'">
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT1" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Battery Health', 'CPU Usage', 'Memory Usage'">
     Troubleshooting
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT2" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Troubleshooting', 'CPU Usage', 'Memory Usage'">
+    Battery Health
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT3" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Troubleshooting', 'Battery Health', 'Memory Usage'">
+    CPU Usage
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT4" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Troubleshooting', 'Battery Health', 'CPU Usage'">
+    Memory Usage
   </message>
 
   <!-- On Startup section. -->

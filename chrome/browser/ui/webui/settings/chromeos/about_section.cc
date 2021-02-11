@@ -105,7 +105,10 @@ const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDiagnostics},
-       {IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT1, SearchConcept::kAltTagEnd}},
+       {IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT1,
+        IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT2,
+        IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT3,
+        IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT4, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
