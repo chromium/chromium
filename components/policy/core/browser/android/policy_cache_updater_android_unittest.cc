@@ -179,5 +179,16 @@ TEST_F(PolicyCacheUpdaterAndroidTest, TestPolicyMapWarningMessagePolicy) {
   VerifyPolicyName(kPolicyName, /*has_value=*/true, kPolicyValue);
 }
 
+TEST_F(PolicyCacheUpdaterAndroidTest, TestPolicUpdatedBeforeUpdaterCreated) {
+  policy_handler_list()->AddHandler(
+      std::make_unique<StubPolicyHandler>(kPolicyName, /*has_error=*/false));
+
+  SetPolicy(kPolicyName, kPolicyValue);
+  UpdatePolicy();
+  VerifyPolicyName(kPolicyName, /*has_value=*/false, kPolicyValue);
+  PolicyCacheUpdater updater(policy_service(), policy_handler_list());
+  VerifyPolicyName(kPolicyName, /*has_value=*/true, kPolicyValue);
+}
+
 }  // namespace android
 }  // namespace policy

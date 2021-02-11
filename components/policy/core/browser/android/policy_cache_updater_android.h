@@ -28,6 +28,8 @@ class POLICY_EXPORT PolicyCacheUpdater : public PolicyService::Observer {
                        const PolicyMap& current) override;
 
  private:
+  void UpdateCache(const PolicyMap& current_policy_map);
+
   PolicyService* policy_service_;
   const ConfigurationPolicyHandlerList* handler_list_;
 };

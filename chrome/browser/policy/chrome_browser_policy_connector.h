@@ -16,6 +16,10 @@
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 
+#if defined(OS_ANDROID)
+#include "components/policy/core/browser/android/policy_cache_updater_android.h"
+#endif
+
 class PrefService;
 
 namespace policy {
@@ -94,6 +98,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 #endif
 
   ConfigurationPolicyProvider* command_line_provider_ = nullptr;
+
+#if defined(OS_ANDROID)
+  std::unique_ptr<android::PolicyCacheUpdater> pollicy_cache_updater_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserPolicyConnector);
 };

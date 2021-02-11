@@ -32,6 +32,8 @@ PolicyCacheUpdater::PolicyCacheUpdater(
     const ConfigurationPolicyHandlerList* handler_list)
     : policy_service_(policy_service), handler_list_(handler_list) {
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
+  UpdateCache(
+      policy_service->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, "")));
 }
 
 PolicyCacheUpdater::~PolicyCacheUpdater() {
@@ -41,11 +43,16 @@ PolicyCacheUpdater::~PolicyCacheUpdater() {
 void PolicyCacheUpdater::OnPolicyUpdated(const PolicyNamespace& ns,
                                          const PolicyMap& previous,
                                          const PolicyMap& current) {
+  UpdateCache(current);
+}
+
+void PolicyCacheUpdater::UpdateCache(const PolicyMap& current_policy_map) {
   PolicyMap policy_map;
-  policy_map.CopyFrom(current);
+  policy_map.CopyFrom(current_policy_map);
   PolicyErrorMap errors;
   std::set<std::string> future_policies;
-  handler_list_->ApplyPolicySettings(policy_map, /*prefs=*/nullptr, &errors,
+  handler_list_->ApplyPolicySettings(policy_map,
+                                     /*prefs=*/nullptr, &errors,
                                      /*deprecated_policies*/ nullptr,
                                      &future_policies);
   policy_map.EraseNonmatching(
