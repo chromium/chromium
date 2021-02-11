@@ -610,6 +610,9 @@
     'blink_xml': {
       'filepath': 'third_party/blink/renderer/core/xml/'
     },
+    'borealis': {
+      'filepath': 'borealis/',
+    },
     'bottombar': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/',
     },
@@ -2331,6 +2334,7 @@
     'blink_wtf': ['blink-reviews-wtf@chromium.org'],
     'blink_xml': ['dominicc+watchlist@chromium.org',
                   'joelhockey+watch@chromium.org'],
+    'borealis': ['borealis-reviews+watch@google.com'],
     'bottombar': ['donnd+watch@chromium.org',
                   'mdjones+watch@chromium.org'],
     'breve': ['breve-team-reviews@chromium.org'],
