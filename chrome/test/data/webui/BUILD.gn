@@ -289,6 +289,9 @@ if (include_js_tests) {
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_cellular_setup_remote.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_cellular_setup_delegate.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js",
+        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/multidevice_setup/integration_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/multidevice_setup/setup_succeeded_page_test.m.js",
+        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/multidevice_setup/start_setup_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/cr_policy_network_behavior_mojo_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/cr_policy_network_indicator_mojo_tests.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/network/network_apnlist_test.m.js",
@@ -446,7 +449,6 @@ if (include_js_tests) {
         "chromeos/machine_learning_internals_browsertest.js",
         "chromeos/print_management/print_management_browsertest.js",
         "chromeos/scanning/scanning_app_browsertest.js",
-        "multidevice_setup/multidevice_setup_browsertest.js",
         "nearby_share/nearby_browsertest.js",
         "nearby_share/shared/nearby_shared_v3_browsertest.js",
       ]

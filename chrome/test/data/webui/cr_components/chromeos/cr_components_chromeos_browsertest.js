@@ -63,6 +63,26 @@ GEN('#include "content/public/test/browser_test.h"');
 ].forEach(test => registerTest('NetworkComponents', 'oobe/login', ...test));
 
 [
+  ['Integration', 'multidevice_setup/integration_test.js', [
+    '../../test_browser_proxy.js',
+    '../../fake_chrome_event.js',  // Necessary for
+                                // fake_quick_unlock_private.js
+    '../../settings/chromeos/fake_quick_unlock_private.js',
+    '../../test_util.js',
+    'multidevice_setup/setup_succeeded_page_test.js',
+  ]],
+  ['SetupSucceededPage', 'multidevice_setup/setup_succeeded_page_test.js', [
+    '../../test_browser_proxy.js',
+  ]],
+  ['StartSetupPage', 'multidevice_setup/start_setup_page_test.js', [
+    '../../test_browser_proxy.js',
+    '../../test_util.js',
+  ]],
+]
+    .forEach(
+        test => registerTest('MultiDeviceSetup', 'oobe/login', ...test));
+
+[
   // TODO(https://crbug.com/1173345): Reenable flaky test suite.
   // ['ActivationCodePage', 'cellular_setup/activation_code_page_test.js',[
   //   './cellular_setup/fake_media_devices.js',
@@ -114,7 +134,7 @@ function registerTest(componentName, webuiHost, testName, module, deps) {
 
     /** @override */
     get extraLibraries() {
-      return super.extraLibraries.concat(module).concat(deps);
+      return super.extraLibraries.concat(deps).concat(module);
     }
 
     /** @override */

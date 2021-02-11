@@ -34,28 +34,35 @@ suite('MultiDeviceSetup', () => {
   // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, all
   // devices should have an Instance ID.
   const DEVICES = [
+    // TODO(crbug.com/1022196) Replace the hard-coded values with the deviceSync
+    // enum. This is currently causing an import error where chromeos is not
+    // defined.
     {
       remoteDevice: {deviceName: 'Pixel XL', deviceId: 'legacy-id-1'},
-      connectivityStatus: chromeos.deviceSync.mojom.ConnectivityStatus.kOnline
+      connectivityStatus: 0  // kOnline
     },
     {
       remoteDevice: {deviceName: 'Nexus 6P', instanceId: 'iid-2'},
-      connectivityStatus: chromeos.deviceSync.mojom.ConnectivityStatus.kOffline
+      connectivityStatus: 1  // kOffline
     },
     {
       remoteDevice:
           {deviceName: 'Nexus 5', deviceId: 'legacy-id-3', instanceId: 'iid-3'},
-      connectivityStatus:
-          chromeos.deviceSync.mojom.ConnectivityStatus.kUnknownConnectivity
+      connectivityStatus: 2  // kUnknownConnectivity
     },
     {
       remoteDevice:
           {deviceName: 'Pixel 4', deviceId: 'legacy-id-4', instanceId: ''},
-      connectivityStatus: chromeos.deviceSync.mojom.ConnectivityStatus.kOnline
+      connectivityStatus: 3  // kOnline
     },
   ];
 
-  setup(() => {
+  setup(async () => {
+    // The OOBE host uses polyfill which requires the test to wait until HTML
+    // imports have finished loading before initiating any tests. The Polymer 3
+    // version of the test does not use the OOBE host so this line should not
+    // execute.
+    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
     startSetupPageElement = document.createElement('start-setup-page');
     document.body.appendChild(startSetupPageElement);
     startSetupPageElement.devices = DEVICES;
@@ -76,16 +83,15 @@ suite('MultiDeviceSetup', () => {
 
   // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, all
   // selected IDs will be Instance IDs.
-  test(
-      'Finding devices populates dropdown and defines selected device', () => {
-        assertEquals(
-            startSetupPageElement.$.deviceDropdown.querySelectorAll('option')
-                .length,
-            DEVICES.length);
-        assertEquals(
-            startSetupPageElement.selectedInstanceIdOrLegacyDeviceId,
-            'legacy-id-1');
-      });
+  test('Finding devices populates dropdown and defines selected device', () => {
+    assertEquals(
+        startSetupPageElement.$.deviceDropdown.querySelectorAll('option')
+            .length,
+        DEVICES.length);
+    assertEquals(
+        startSetupPageElement.selectedInstanceIdOrLegacyDeviceId,
+        'legacy-id-1');
+  });
 
   // TODO(https://crbug.com/1019206): When v1 DeviceSync is turned off, all
   // selected IDs will be Instance IDs.

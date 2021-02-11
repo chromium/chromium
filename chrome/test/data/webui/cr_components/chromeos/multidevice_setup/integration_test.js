@@ -106,7 +106,12 @@ suite('MultiDeviceSetup', () => {
   const CORRECT_PASSWORD = 'correctPassword';
   const WRONG_PASSWORD = 'wrongPassword';
 
-  setup(() => {
+  setup(async () => {
+    // The OOBE host uses polyfill which requires the test to wait until HTML
+    // imports have finished loading before initiating any tests. The Polymer 3
+    // version of the test does not use the OOBE host so this line should not
+    // execute.
+    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
     browserProxy = new TestMultideviceSetupBrowserProxy();
     multidevice_setup.BrowserProxyImpl.instance_ = browserProxy;
 

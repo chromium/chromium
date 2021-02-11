@@ -36,7 +36,8 @@ suite('MultiDeviceSetup', () => {
   /** @type {?TestMultideviceSetupBrowserProxy} */
   let browserProxy = null;
 
-  setup(() => {
+  setup(async () => {
+    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
     browserProxy = new TestMultideviceSetupBrowserProxy();
     multidevice_setup.BrowserProxyImpl.instance_ = browserProxy;
 
