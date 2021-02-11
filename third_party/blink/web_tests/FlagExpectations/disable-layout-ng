@@ -932,6 +932,8 @@ crbug.com/591099 external/wpt/html/links/manifest/wrong-mime-type-text-plain-man
 crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
 
 ### webcodecs/
+crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.any.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.any.worker.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.any.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.any.worker.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/reconfiguring_encoder.any.html [ Failure ]
