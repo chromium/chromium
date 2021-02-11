@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace weblayer {
@@ -18,7 +19,8 @@ namespace weblayer {
 // exercised within the WebLayer autofill flow.
 class AutofillClientImpl
     : public autofill::AutofillClient,
-      public content::WebContentsUserData<AutofillClientImpl> {
+      public content::WebContentsUserData<AutofillClientImpl>,
+      public content::WebContentsObserver {
  public:
   ~AutofillClientImpl() override;
 

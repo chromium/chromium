@@ -8,6 +8,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "weblayer/browser/translate_client_impl.h"
 
 namespace weblayer {
 
@@ -85,6 +86,11 @@ const translate::LanguageState* AutofillClientImpl::GetLanguageState() {
 }
 
 translate::TranslateDriver* AutofillClientImpl::GetTranslateDriver() {
+  // The TranslateDriver is used by AutofillHandler to observe the page language
+  // and run the type-prediction heuristics with language-dependent regexps.
+  auto* translate_client = TranslateClientImpl::FromWebContents(web_contents());
+  if (translate_client)
+    return translate_client->translate_driver();
   return nullptr;
 }
 
@@ -304,7 +310,8 @@ void AutofillClientImpl::LoadRiskData(
   NOTREACHED();
 }
 
-AutofillClientImpl::AutofillClientImpl(content::WebContents* web_contents) {}
+AutofillClientImpl::AutofillClientImpl(content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillClientImpl)
 

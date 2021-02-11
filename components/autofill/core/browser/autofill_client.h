@@ -304,7 +304,8 @@ class AutofillClient : public RiskDataLoader {
   // Returns the language state, if available.
   virtual const translate::LanguageState* GetLanguageState() = 0;
 
-  // Returns the translate driver, if available.
+  // Returns the translate driver, if available, which is used to observe the
+  // page language for language-dependent heuristics.
   virtual translate::TranslateDriver* GetTranslateDriver() = 0;
 
   // Retrieves the country code of the user from Chrome variation service.
