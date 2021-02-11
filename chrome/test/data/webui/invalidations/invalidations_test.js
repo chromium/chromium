@@ -116,7 +116,7 @@ suite('invalidations_test', function() {
 
   // Test that an object showing internal state is correctly displayed.
   test(invalidations_test.TestNames.UpdateInternalDisplay, function() {
-    newDetailedStatus = {MessagesSent: 1};
+    const newDetailedStatus = {MessagesSent: 1};
     webUIListenerCallback('detailed-status-updated', newDetailedStatus);
     assertEquals($('internal-display').value, '{\n  \"MessagesSent\": 1\n}');
   });
