@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
 
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/restore_data.h"
@@ -84,6 +86,10 @@ void AppLaunchHandler::SetShouldRestore() {
   MaybePostRestore();
 }
 
+void AppLaunchHandler::SetForceLaunchBrowserForTesting() {
+  force_launch_browser_ = true;
+}
+
 void AppLaunchHandler::OnGetRestoreData(
     std::unique_ptr<::full_restore::RestoreData> restore_data) {
   restore_data_ = std::move(restore_data);
@@ -149,6 +155,15 @@ void AppLaunchHandler::MaybeRestore() {
 }
 
 void AppLaunchHandler::LaunchBrowser() {
+  // If the browser is not launched before reboot, don't launch browser during
+  // the startup phase.
+  const auto& launch_list = restore_data_->app_id_to_launch_list();
+  if (launch_list.find(extension_misc::kChromeAppId) == launch_list.end() &&
+      !force_launch_browser_) {
+    return;
+  }
+
+  restore_data_->RemoveApp(extension_misc::kChromeAppId);
   UserSessionManager::GetInstance()->LaunchBrowser(profile_);
   UserSessionManager::GetInstance()->MaybeLaunchSettings(profile_);
 }
@@ -160,7 +175,6 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
   // For the Chrome browser, the browser session restore is used to restore the
   // web pages, so we don't need to launch the app.
   if (app_id == extension_misc::kChromeAppId) {
-    restore_data_->RemoveApp(app_id);
     return;
   }
 

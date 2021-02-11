@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, AddAppAndRestore) {
 
   CreateWebApp();
 
-  // Set should restore
+  // Set should restore.
   app_launch_handler->SetShouldRestore();
 
   content::RunAllTasksUntilIdle();
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndLaunchBrowser) {
   // Create AppLaunchHandler.
   auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
 
-  // Set should restore
+  // Set should restore.
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
@@ -232,6 +232,38 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreAndLaunchBrowser) {
 
   // Verify there is new browser launched.
   EXPECT_EQ(count + 1, BrowserList::GetInstance()->size());
+}
+
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
+                       RestoreAndNoBrowserLaunchInfo) {
+  size_t count = BrowserList::GetInstance()->size();
+
+  // Add app launch info, but no browser launch info.
+  ::full_restore::SaveAppLaunchInfo(
+      profile()->GetPath(),
+      std::make_unique<::full_restore::AppLaunchInfo>(
+          kAppId, kId, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
+          std::vector<base::FilePath>{}, nullptr));
+
+  // Remove the browser app to mock no browser launch info.
+  ::full_restore::FullRestoreSaveHandler::GetInstance()->RemoveApp(
+      profile()->GetPath(), extension_misc::kChromeAppId);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Create AppLaunchHandler.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+
+  // Set should restore.
+  app_launch_handler->SetShouldRestore();
+  content::RunAllTasksUntilIdle();
+
+  app_launch_handler->LaunchBrowserWhenReady();
+  content::RunAllTasksUntilIdle();
+
+  // Verify there is new browser launched.
+  EXPECT_EQ(count, BrowserList::GetInstance()->size());
 }
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, LaunchBrowserAndRestore) {
@@ -253,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, LaunchBrowserAndRestore) {
   // Verify there is no new browser launched.
   EXPECT_EQ(count, BrowserList::GetInstance()->size());
 
-  // Set should restore
+  // Set should restore.
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 
@@ -320,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   CreateWebApp();
   content::RunAllTasksUntilIdle();
 
-  // Set should restore
+  // Set should restore.
   app_launch_handler->SetShouldRestore();
   content::RunAllTasksUntilIdle();
 

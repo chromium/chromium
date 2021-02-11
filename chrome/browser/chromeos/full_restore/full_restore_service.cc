@@ -62,6 +62,10 @@ void FullRestoreService::LaunchBrowserWhenReady() {
 }
 
 void FullRestoreService::RestoreForTesting() {
+  // If there is no browser launch info, the browser won't be launched. So call
+  // SetForceLaunchBrowserForTesting to launch the browser for testing.
+  app_launch_handler_->SetForceLaunchBrowserForTesting();
+
   Restore();
 }
 

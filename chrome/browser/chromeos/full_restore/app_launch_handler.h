@@ -51,6 +51,9 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   // true to allow the restoration.
   void SetShouldRestore();
 
+  // Set force_launch_browser_ to launch browser for testing.
+  void SetForceLaunchBrowserForTesting();
+
  private:
   void OnGetRestoreData(
       std::unique_ptr<::full_restore::RestoreData> restore_data);
@@ -74,6 +77,8 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   bool should_restore_ = false;
 
   bool should_launch_browser_ = false;
+
+  bool force_launch_browser_ = false;
 
   std::unique_ptr<::full_restore::RestoreData> restore_data_;
 
