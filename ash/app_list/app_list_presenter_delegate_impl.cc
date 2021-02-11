@@ -120,7 +120,7 @@ void AppListPresenterDelegateImpl::ShowForDisplay(
   Shelf* shelf =
       Shelf::ForWindow(view_->GetWidget()->GetNativeView()->GetRootWindow());
   if (!shelf_observation_.IsObservingSource(shelf))
-    shelf_observation_.Observe(shelf);
+    shelf_observation_.AddObservation(shelf);
 
   view_->SetShelfHasRoundedCorners(
       IsShelfBackgroundTypeWithRoundedCorners(shelf->GetBackgroundType()));
@@ -142,7 +142,7 @@ void AppListPresenterDelegateImpl::OnClosing() {
 
 void AppListPresenterDelegateImpl::OnClosed() {
   if (!is_visible_)
-    shelf_observation_.Reset();
+    shelf_observation_.RemoveAllObservations();
   controller_->ViewClosed();
 }
 

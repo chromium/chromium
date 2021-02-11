@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "base/macros.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -92,7 +93,8 @@ class ASH_EXPORT AppListPresenterDelegateImpl : public AppListPresenterDelegate,
       display_observation_{this};
 
   // An observer that notifies AppListView when the shelf state has changed.
-  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
+  base::ScopedMultiSourceObservation<Shelf, ShelfObserver> shelf_observation_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(AppListPresenterDelegateImpl);
 };
