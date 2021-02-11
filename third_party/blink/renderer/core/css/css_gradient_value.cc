@@ -390,8 +390,8 @@ bool NormalizeAndAddStops(const Vector<GradientStop>& stops,
 
   const float first_offset = stops.front().offset;
   const float last_offset = stops.back().offset;
-  const float span =
-      std::min(last_offset - first_offset, std::numeric_limits<float>::max());
+  const float span = std::min(std::max(last_offset - first_offset, 0.f),
+                              std::numeric_limits<float>::max());
 
   if (fabs(span) < std::numeric_limits<float>::epsilon()) {
     // All stops are coincident -> use a single clamped offset value.
@@ -418,8 +418,7 @@ bool NormalizeAndAddStops(const Vector<GradientStop>& stops,
     // stop offsets should be monotonically increasing in [0 , 1]
     DCHECK_GE(normalized_offset, 0);
     DCHECK_LE(normalized_offset, 1);
-    DCHECK(i == 0 ||
-           normalized_offset >= (stops[i - 1].offset - first_offset) / span);
+    DCHECK(i == 0 || normalized_offset >= desc.stops.back().stop);
 
     desc.stops.emplace_back(normalized_offset, stops[i].color);
   }
