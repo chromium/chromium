@@ -177,6 +177,24 @@ TEST_F(CompositeEditCommandTest,
             GetDocument().body()->innerHTML());
 }
 
+TEST_F(CompositeEditCommandTest,
+       MoveParagraphContentsToNewBlockWithButtonAndBr) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement("br { content: 'x'; }");
+  SetBodyContent("<button><br></button>");
+
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* button = GetDocument().QuerySelector("button");
+  Position pos = Position(button, 0);
+  EditingState editing_state;
+
+  // Should not crash
+  sample.MoveParagraphContentsToNewBlockIfNecessary(pos, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<button><div><br></div><br></button>",
+            GetDocument().body()->innerHTML());
+}
+
 TEST_F(CompositeEditCommandTest, InsertNodeOnDisconnectedParent) {
   SetBodyContent("<p><b></b></p>");
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());

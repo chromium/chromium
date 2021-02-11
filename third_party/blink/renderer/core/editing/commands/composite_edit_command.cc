@@ -1137,6 +1137,9 @@ HTMLElement* CompositeEditCommand::MoveParagraphContentsToNewBlockIfNecessary(
   visible_pos = CreateVisiblePosition(pos);
   visible_paragraph_start = StartOfParagraph(visible_pos);
   visible_paragraph_end = EndOfParagraph(visible_pos);
+  if (visible_paragraph_end.DeepEquivalent() <
+      visible_paragraph_start.DeepEquivalent())
+    visible_paragraph_end = visible_paragraph_start;
   MoveParagraphs(visible_paragraph_start, visible_paragraph_end, destination,
                  editing_state);
   if (editing_state->IsAborted())
