@@ -32,6 +32,13 @@ _FETCH_ALL_PATH = os.path.normpath(
 # URL to BUILD_INFO in latest androidx snapshot.
 _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL = 'https://androidx.dev/snapshots/latest/artifacts/BUILD_INFO'
 
+# Snapshot repository URL with {{version}} placeholder.
+_SNAPSHOT_REPOSITORY_URL = 'https://androidx.dev/snapshots/builds/{{version}}/artifacts/repository'
+
+
+def _build_snapshot_repository_url(version):
+    return _SNAPSHOT_REPOSITORY_URL.replace('{{version}}', version)
+
 
 def _delete_readonly_files(paths):
     for path in paths:
@@ -105,17 +112,19 @@ def _download_and_parse_build_info():
         with open(androidx_build_info_path, 'w') as f:
             f.write(androidx_build_info_response.read().decode('utf-8'))
 
-        # Compute repository URL from resolved BUILD_INFO url in case 'latest' redirect changes.
-        androidx_snapshot_repository_url = (
-            androidx_build_info_response.geturl().rsplit('/', 1)[0] +
-            '/repository')
+        # Strip '/repository' from pattern.
+        resolved_snapshot_repository_url_pattern = (
+            _build_snapshot_repository_url('([0-9]*)').rsplit('/', 1)[0])
+
+        version = re.match(resolved_snapshot_repository_url_pattern,
+                           androidx_build_info_response.geturl()).group(1)
 
         with open(androidx_build_info_path, 'r') as f:
             build_info_dict = json.loads(f.read())
         dir_list = build_info_dict['target']['dir_list']
 
         dependency_version_map = _parse_dir_list(dir_list)
-        return (dependency_version_map, androidx_snapshot_repository_url)
+        return (dependency_version_map, version)
 
 
 def _process_build_gradle(dependency_version_map, androidx_repository_url):
@@ -139,7 +148,7 @@ def _process_build_gradle(dependency_version_map, androidx_repository_url):
             out.write(replacement)
 
 
-def _write_cipd_yaml(libs_dir, cipd_yaml_path):
+def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
     """Writes cipd.yaml file at the passed-in path."""
 
     lib_dirs = os.listdir(libs_dir)
@@ -161,12 +170,15 @@ def _write_cipd_yaml(libs_dir, cipd_yaml_path):
                 continue
             data_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
 
+    # Prepend '0' to version to avoid conflicts with previous version format.
     contents = [
         '# Copyright 2020 The Chromium Authors. All rights reserved.',
         '# Use of this source code is governed by a BSD-style license that can be',
         '# found in the LICENSE file.',
-        'package: chromium/third_party/androidx', 'description: androidx',
-        'data:'
+        '# version: cr-0' + version,
+        'package: chromium/third_party/androidx',
+        'description: androidx',
+        'data:',
     ]
     contents.extend('- file: ' + f for f in data_files)
 
@@ -189,8 +201,8 @@ def main():
         os.path.join(_ANDROIDX_PATH, 'additional_readme_paths.json'),
     ])
 
-    dependency_version_map, androidx_snapshot_repository_url = (
-        _download_and_parse_build_info())
+    dependency_version_map, version = _download_and_parse_build_info()
+    androidx_snapshot_repository_url = _build_snapshot_repository_url(version)
     _process_build_gradle(dependency_version_map,
                           androidx_snapshot_repository_url)
 
@@ -200,7 +212,8 @@ def main():
     ]
     subprocess.run(fetch_all_cmd, check=True)
 
-    _write_cipd_yaml(libs_dir, os.path.join(_ANDROIDX_PATH, 'cipd.yaml'))
+    yaml_path = os.path.join(_ANDROIDX_PATH, 'cipd.yaml')
+    _write_cipd_yaml(libs_dir, version, yaml_path)
 
 
 if __name__ == '__main__':
