@@ -54,6 +54,9 @@ setup() {
   PKGPROJ_HOST_SERVICE="ChromotingHostService.pkgproj"
   PKGPROJ_HOST_UNINSTALLER="ChromotingHostUninstaller.pkgproj"
 
+  # The app entitlements file.
+  APP_ENTITLEMENTS="app-entitlements.plist"
+
   # Final (user-visible) pkg name.
   PKG_FINAL="${HOST_PKG}.pkg"
 
@@ -146,6 +149,7 @@ sign() {
   if linker_signed_arm64_needs_force "${name}"; then
       args+=(--force)
   fi
+  args+=(--entitlements "${input_dir}/${APP_ENTITLEMENTS}")
   args+=(--timestamp --options runtime "${name}")
   codesign "${args[@]}"
   codesign -v "${name}"

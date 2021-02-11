@@ -10,6 +10,7 @@ import("//remoting/build/config/remoting_build.gni")
 # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
 python2_action("remoting_me2me_host_archive") {
   _installer_mac_files = [
+    "app-entitlements.plist",
     "do_signing.sh",
     "do_signing.props",
     "ChromotingHost.pkgproj",
