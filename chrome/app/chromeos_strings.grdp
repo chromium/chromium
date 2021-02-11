@@ -636,7 +636,7 @@
     Select your keyboard:
   </message>
   <message name="IDS_HID_DETECTION_INVITATION_TEXT" desc="Text shown on top of HID detection screen inviting user to connect an input device.">
-    Searching for Bluetooth and USB devices...
+    Connect to devices
   </message>
   <message name="IDS_HID_DETECTION_PRECONDITION_TEXT" desc="Text shown on HID detection screen beneath invitation.">
     Please connect a mouse or a keyboard. If you are using a Bluetooth device, make sure it is ready to pair.
@@ -655,6 +655,9 @@
   </message>
   <message name="IDS_HID_DETECTION_CONNECTED_USB_KEYBOARD" desc="Text shown on HID detection screen next to keyboard icon after USB keyboard is connected.">
     USB keyboard connected
+  </message>
+  <message name="IDS_HID_DETECTION_DETECTED_TOUCHSCREEN" desc="Text shown on HID detection screen next to touchscreen icon if a touch screen was detected.">
+    Touch screen detected
   </message>
   <message name="IDS_HID_DETECTION_PAIRED_BLUETOOTH_MOUSE" desc="Text shown on HID detection screen next to mouse icon after Bluetooth mouse is connected.">
     Bluetooth mouse paired
