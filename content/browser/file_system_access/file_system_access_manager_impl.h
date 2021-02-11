@@ -104,6 +104,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType type,
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+      const std::string& starting_directory_id,
       blink::mojom::WellKnownDirectory well_known_starting_directory,
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
           starting_directory_token,
@@ -270,6 +271,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const BindingContext& context,
       blink::mojom::ChooseFileSystemEntryType type,
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+      const std::string& starting_directory_id,
       blink::mojom::WellKnownDirectory well_known_starting_directory,
       const std::string& suggested_name,
       bool include_accepts_all,
@@ -281,6 +283,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
       const std::string& suggested_name,
       bool include_accepts_all,
+      const std::string& starting_directory_id,
       base::FilePath default_directory,
       ChooseEntriesCallback callback,
       base::File::Error result);
@@ -292,12 +295,14 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   void DidChooseEntries(const BindingContext& binding_context,
                         const FileSystemChooser::Options& options,
+                        const std::string& starting_directory_id,
                         ChooseEntriesCallback callback,
                         blink::mojom::FileSystemAccessErrorPtr result,
                         std::vector<FileSystemChooser::ResultEntry> entries);
   void DidVerifySensitiveDirectoryAccess(
       const BindingContext& binding_context,
       const FileSystemChooser::Options& options,
+      const std::string& starting_directory_id,
       ChooseEntriesCallback callback,
       std::vector<FileSystemChooser::ResultEntry> entries,
       FileSystemAccessPermissionContext::SensitiveDirectoryResult result);

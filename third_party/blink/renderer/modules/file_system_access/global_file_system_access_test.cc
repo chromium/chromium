@@ -60,6 +60,7 @@ class MockFileSystemAccessManager
   void ChooseEntries(
       mojom::ChooseFileSystemEntryType type,
       WTF::Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+      const WTF::String& starting_directory_id,
       mojom::WellKnownDirectory well_known_starting_directory,
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token,
       const WTF::String& suggested_name,

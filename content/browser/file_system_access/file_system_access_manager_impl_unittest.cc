@@ -1127,11 +1127,12 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
       permission_context_,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
+  EXPECT_CALL(permission_context_,
+              GetLastPickedDirectory(kTestOrigin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestOrigin, test_file.DirName(),
-                                     PathType::kLocal));
+              SetLastPickedDirectory(kTestOrigin, std::string(),
+                                     test_file.DirName(), PathType::kLocal));
 
   EXPECT_CALL(
       permission_context_,
@@ -1158,8 +1159,10 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   base::RunLoop loop;
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kOpenFile, /*accepts=*/{},
+      /*starting_directory_id=*/std::string(),
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(), /*suggested_name=*/"",
+      /*starting_directory_token=*/mojo::NullRemote(),
+      /*suggested_name=*/std::string(),
       /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
@@ -1197,11 +1200,12 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
       permission_context_,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
+  EXPECT_CALL(permission_context_,
+              GetLastPickedDirectory(kTestOrigin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestOrigin, test_file.DirName(),
-                                     PathType::kLocal));
+              SetLastPickedDirectory(kTestOrigin, std::string(),
+                                     test_file.DirName(), PathType::kLocal));
 
   EXPECT_CALL(
       permission_context_,
@@ -1228,8 +1232,10 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
   base::RunLoop loop;
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kSaveFile, /*accepts=*/{},
+      /*starting_directory_id=*/std::string(),
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(), /*suggested_name=*/"",
+      /*starting_directory_token=*/mojo::NullRemote(),
+      /*suggested_name=*/std::string(),
       /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
@@ -1264,10 +1270,12 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
       permission_context_,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
+  EXPECT_CALL(permission_context_,
+              GetLastPickedDirectory(kTestOrigin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context_,
-              SetLastPickedDirectory(kTestOrigin, test_dir, PathType::kLocal));
+              SetLastPickedDirectory(kTestOrigin, std::string(), test_dir,
+                                     PathType::kLocal));
 
   EXPECT_CALL(
       permission_context_,
@@ -1293,9 +1301,11 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
 
   base::RunLoop loop;
   manager_remote->ChooseEntries(
-      blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, {},
+      blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, /*accepts=*/{},
+      /*starting_directory_id=*/std::string(),
       blink::mojom::WellKnownDirectory::kDefault,
-      /*starting_directory_token=*/mojo::NullRemote(), /*suggested_name=*/"",
+      /*starting_directory_token=*/mojo::NullRemote(),
+      /*suggested_name=*/std::string(),
       /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
@@ -1303,6 +1313,38 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
             loop.Quit();
           }));
   loop.Run();
+}
+
+TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_InvalidStartInID) {
+  base::FilePath test_dir = dir_.GetPath();
+
+  FileSystemChooser::ResultEntry entry;
+  entry.type = PathType::kLocal;
+  entry.path = test_dir;
+  manager_->SetFilePickerResultForTesting(std::move(entry));
+
+  static_cast<TestRenderFrameHost*>(web_contents_->GetMainFrame())
+      ->SimulateUserActivation();
+
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestOrigin, kTestURL,
+      web_contents_->GetMainFrame()->GetGlobalFrameRoutingId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  // Specifying a `starting_directory_id` with invalid characters should trigger
+  // a bad message callback.
+  mojo::test::BadMessageObserver bad_message_observer;
+  manager_remote->ChooseEntries(
+      blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, /*accepts=*/{},
+      /*starting_directory_id=*/"inv*l!d <hars",
+      blink::mojom::WellKnownDirectory::kDefault,
+      /*starting_directory_token=*/mojo::NullRemote(),
+      /*suggested_name=*/std::string(),
+      /*include_accepts_all=*/true, base::DoNothing());
+  EXPECT_EQ("Invalid starting directory ID in browser",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace content

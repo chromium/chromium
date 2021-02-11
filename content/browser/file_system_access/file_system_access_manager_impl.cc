@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+
+#include <algorithm>
 #include <string>
 
 #include "base/bind.h"
@@ -13,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -224,6 +227,17 @@ void HandleTransferTokenAsDefaultDirectory(
                                                  : token->url().path();
 }
 
+bool IsValidIdChar(const char c) {
+  return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '_' || c == '-';
+}
+
+bool IsValidId(const std::string& id) {
+  return id.size() <= 32 &&
+         std::find_if(id.begin(), id.end(), [](const char c) {
+           return !IsValidIdChar(c);
+         }) == id.end();
+}
+
 }  // namespace
 
 FileSystemAccessManagerImpl::SharedHandleState::SharedHandleState(
@@ -310,6 +324,7 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
 void FileSystemAccessManagerImpl::ChooseEntries(
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+    const std::string& starting_directory_id,
     blink::mojom::WellKnownDirectory well_known_starting_directory,
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
         starting_directory_token,
@@ -330,6 +345,11 @@ void FileSystemAccessManagerImpl::ChooseEntries(
       type != blink::mojom::ChooseFileSystemEntryType::kSaveFile) {
     receivers_.ReportBadMessage(
         "Suggested file name only allowed for save dialogs");
+  }
+
+  // Non-compromised renderers shouldn't be able to send an invalid id.
+  if (!IsValidId(starting_directory_id)) {
+    receivers_.ReportBadMessage("Invalid starting directory ID in browser");
     return;
   }
 
@@ -371,6 +391,7 @@ void FileSystemAccessManagerImpl::ChooseEntries(
   auto resolve_default_directory_callback = base::BindOnce(
       &FileSystemAccessManagerImpl::ResolveDefaultDirectory,
       weak_factory_.GetWeakPtr(), context, type, std::move(accepts),
+      std::move(starting_directory_id),
       std::move(well_known_starting_directory), std::move(suggested_name),
       include_accepts_all, std::move(callback));
 
@@ -387,26 +408,37 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
     const BindingContext& context,
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
+    const std::string& starting_directory_id,
     blink::mojom::WellKnownDirectory well_known_starting_directory,
     const std::string& suggested_name,
     bool include_accepts_all,
     ChooseEntriesCallback callback,
     FileSystemAccessTransferTokenImpl* resolved_starting_directory_token) {
   PathInfo path_info;
+
   if (resolved_starting_directory_token)
     HandleTransferTokenAsDefaultDirectory(resolved_starting_directory_token,
                                           path_info);
 
   if (path_info.path.empty() && permission_context_) {
-    if (well_known_starting_directory !=
-        blink::mojom::WellKnownDirectory::kDefault) {
-      // Prioritize an explicitly stated starting directory over an implicitly
-      // remembered last-picked directory.
-      path_info.path = permission_context_->GetWellKnownDirectoryPath(
-          well_known_starting_directory);
-    } else { /*well_known_starting_directory ==
-                blink::mojom::WellKnownDirectory::kDefault*/
-      path_info = permission_context_->GetLastPickedDirectory(context.origin);
+    if (!starting_directory_id.empty()) {
+      // Prioritize an `id` over a well-known directory.
+      path_info = permission_context_->GetLastPickedDirectory(
+          context.origin, starting_directory_id);
+    }
+    if (path_info.path.empty()) {
+      if (well_known_starting_directory !=
+          blink::mojom::WellKnownDirectory::kDefault) {
+        // Prioritize an explicitly stated well-known directory over an
+        // implicitly remembered LastPicked directory.
+        path_info.path = permission_context_->GetWellKnownDirectoryPath(
+            well_known_starting_directory);
+      } else { /*well_known_starting_directory ==
+                  blink::mojom::WellKnownDirectory::kDefault*/
+        // If `id` empty or unset, fall back to the default LastPickedDirectory.
+        path_info = permission_context_->GetLastPickedDirectory(context.origin,
+                                                                std::string());
+      }
     }
   }
 
@@ -421,7 +453,8 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
               &FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker,
               weak_factory_.GetWeakPtr(), context, type, std::move(accepts),
               std::move(suggested_name), include_accepts_all,
-              std::move(url).url.path(), std::move(callback)),
+              std::move(starting_directory_id), std::move(url).url.path(),
+              std::move(callback)),
           base::SequencedTaskRunnerHandle::Get()));
 }
 
@@ -431,6 +464,7 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
     const std::string& suggested_name,
     bool include_accepts_all,
+    const std::string& starting_directory_id,
     base::FilePath default_directory,
     ChooseEntriesCallback callback,
     base::File::Error result) {
@@ -454,8 +488,8 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
       std::move(default_directory), std::move(suggested_name_path));
 
   if (auto_file_picker_result_for_test_) {
-    DidChooseEntries(context, options, std::move(callback),
-                     file_system_access_error::Ok(),
+    DidChooseEntries(context, options, starting_directory_id,
+                     std::move(callback), file_system_access_error::Ok(),
                      {*auto_file_picker_result_for_test_});
     return;
   }
@@ -464,7 +498,7 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
       context.origin, context.frame_id, options,
       base::BindOnce(&FileSystemAccessManagerImpl::DidChooseEntries,
                      weak_factory_.GetWeakPtr(), context, options,
-                     std::move(callback)));
+                     starting_directory_id, std::move(callback)));
 }
 
 void FileSystemAccessManagerImpl::CreateFileSystemAccessDragDropToken(
@@ -1000,6 +1034,7 @@ void FileSystemAccessManagerImpl::DidOpenSandboxedFileSystem(
 void FileSystemAccessManagerImpl::DidChooseEntries(
     const BindingContext& binding_context,
     const FileSystemChooser::Options& options,
+    const std::string& starting_directory_id,
     ChooseEntriesCallback callback,
     blink::mojom::FileSystemAccessErrorPtr result,
     std::vector<FileSystemChooser::ResultEntry> entries) {
@@ -1013,9 +1048,9 @@ void FileSystemAccessManagerImpl::DidChooseEntries(
   }
 
   if (!permission_context_) {
-    DidVerifySensitiveDirectoryAccess(binding_context, options,
-                                      std::move(callback), std::move(entries),
-                                      SensitiveDirectoryResult::kAllowed);
+    DidVerifySensitiveDirectoryAccess(
+        binding_context, options, starting_directory_id, std::move(callback),
+        std::move(entries), SensitiveDirectoryResult::kAllowed);
     return;
   }
 
@@ -1032,12 +1067,13 @@ void FileSystemAccessManagerImpl::DidChooseEntries(
       base::BindOnce(
           &FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess,
           weak_factory_.GetWeakPtr(), binding_context, options,
-          std::move(callback), std::move(entries)));
+          starting_directory_id, std::move(callback), std::move(entries)));
 }
 
 void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
     const BindingContext& binding_context,
     const FileSystemChooser::Options& options,
+    const std::string& starting_directory_id,
     ChooseEntriesCallback callback,
     std::vector<FileSystemChooser::ResultEntry> entries,
     SensitiveDirectoryResult result) {
@@ -1057,7 +1093,7 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
         binding_context.origin, binding_context.frame_id, options,
         base::BindOnce(&FileSystemAccessManagerImpl::DidChooseEntries,
                        weak_factory_.GetWeakPtr(), binding_context, options,
-                       std::move(callback)));
+                       starting_directory_id, std::move(callback)));
     return;
   }
 
@@ -1068,7 +1104,8 @@ void FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess(
             ? entries.front().path
             : entries.front().path.DirName();
     permission_context_->SetLastPickedDirectory(
-        binding_context.origin, picked_directory, entries.front().type);
+        binding_context.origin, starting_directory_id, picked_directory,
+        entries.front().type);
   }
 
   if (options.type() ==

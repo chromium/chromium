@@ -51,6 +51,13 @@ interface FileSystemAccessManager {
   // Prompts the user to select a file from the local filesystem. Returns an
   // error code if something failed, or a list of the selected entries on
   // success.
+  // See the documentation for how the `starting_directory` fields interact:
+  // https://github.com/WICG/file-system-access/blob/main/SuggestedNameAndDir.md
+  // |starting_directory_id| allows for specification of the "purpose" of a file
+  // picker invocation. When an ID is specified, the picker will remember the
+  // picked directory. The next time the matching ID is specified, the picker
+  // will default to this directory. The ID cannot exceed 32 characters in
+  // length and may only contain alphanumeric characters, '-', and '_'.
   // |well_known_starting_directory| opens the file picker at a well-known
   // directory.
   // |starting_directory_token| is resolved into a file or directory by the
@@ -63,6 +70,7 @@ interface FileSystemAccessManager {
   // |include_accepts_all| is treated as if it was true.
   ChooseEntries(ChooseFileSystemEntryType type,
                 array<ChooseFileSystemEntryAcceptsOption> accepts,
+                string starting_directory_id,
                 WellKnownDirectory well_known_starting_directory,
                 pending_remote<FileSystemAccessTransferToken>? starting_directory_token,
                 string suggested_name,  // Only allowed when type == kSaveFile.

@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
+#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +26,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -138,6 +138,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kTestOrigin2 =
       url::Origin::Create(GURL("https://test.com"));
+  const std::string kTestStartingDirectoryId = "test_id";
   const base::FilePath kTestPath =
       base::FilePath(FILE_PATH_LITERAL("/foo/bar"));
   const url::Origin kChromeOrigin = url::Origin::Create(GURL("chrome://test"));
@@ -415,52 +416,139 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, PolicyWriteBlockedForUrls) {
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, GetLastPickedDirectory) {
-  auto file_info = permission_context()->GetLastPickedDirectory(kTestOrigin);
+  auto file_info = permission_context()->GetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId);
   EXPECT_EQ(file_info.path, base::FilePath());
   EXPECT_EQ(file_info.type, PathType::kLocal);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, SetLastPickedDirectory) {
-  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
+  EXPECT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
+                .path,
             base::FilePath());
 
   auto type = PathType::kLocal;
-  permission_context()->SetLastPickedDirectory(kTestOrigin, kTestPath, type);
-  auto path_info = permission_context()->GetLastPickedDirectory(kTestOrigin);
+  permission_context()->SetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId, kTestPath, type);
+  auto path_info = permission_context()->GetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId);
   EXPECT_EQ(path_info.path, kTestPath);
   EXPECT_EQ(path_info.type, type);
 
   auto new_path = path_info.path.AppendASCII("baz");
   auto new_type = PathType::kExternal;
-  permission_context()->SetLastPickedDirectory(kTestOrigin, new_path, new_type);
-  auto new_path_info =
-      permission_context()->GetLastPickedDirectory(kTestOrigin);
+  permission_context()->SetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId, new_path, new_type);
+  auto new_path_info = permission_context()->GetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId);
   EXPECT_EQ(new_path_info.path, new_path);
   EXPECT_EQ(new_path_info.type, new_type);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       SetLastPickedDirectory_DefaultId) {
+  EXPECT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
+                .path,
+            base::FilePath());
+
+  // SetLastPickedDirectory with `kTestStartingDirectoryId`.
+  auto type = PathType::kLocal;
+  permission_context()->SetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId, kTestPath, type);
+  auto path_info = permission_context()->GetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId);
+  EXPECT_EQ(path_info.path, kTestPath);
+  EXPECT_EQ(path_info.type, type);
+
+  // SetLastPickedDirectory with an empty (default) ID.
+  auto new_id = std::string();
+  auto new_path = path_info.path.AppendASCII("baz");
+  auto new_type = PathType::kExternal;
+  permission_context()->SetLastPickedDirectory(kTestOrigin, new_id, new_path,
+                                               new_type);
+  auto new_path_info =
+      permission_context()->GetLastPickedDirectory(kTestOrigin, new_id);
+  EXPECT_EQ(new_path_info.path, new_path);
+  EXPECT_EQ(new_path_info.type, new_type);
+
+  // Confirm that the original ID can still be retrieved as before.
+  auto old_path_info = permission_context()->GetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId);
+  EXPECT_EQ(old_path_info.path, kTestPath);
+  EXPECT_EQ(old_path_info.type, type);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        SetLastPickedDirectory_NewPermissionContext) {
-  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
+  EXPECT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
+                .path,
             base::FilePath());
 
   const base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/baz/bar"));
 
-  permission_context()->SetLastPickedDirectory(kTestOrigin, path,
-                                               PathType::kLocal);
-  ASSERT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
+  permission_context()->SetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId, path, PathType::kLocal);
+  ASSERT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
+                .path,
             path);
 
   TestFileSystemAccessPermissionContext new_permission_context(
       browser_context());
-  EXPECT_EQ(new_permission_context.GetLastPickedDirectory(kTestOrigin).path,
+  EXPECT_EQ(new_permission_context
+                .GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
+                .path,
             path);
 
   auto new_path = path.AppendASCII("foo");
-  new_permission_context.SetLastPickedDirectory(kTestOrigin, new_path,
-                                                PathType::kLocal);
-  EXPECT_EQ(permission_context()->GetLastPickedDirectory(kTestOrigin).path,
+  new_permission_context.SetLastPickedDirectory(
+      kTestOrigin, kTestStartingDirectoryId, new_path, PathType::kLocal);
+  EXPECT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
+                .path,
             new_path);
+}
+
+// TODO(https://crbug.com/1177334): Remove test when removing migration logic.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       Migrate_LastPickedDirectory) {
+  EXPECT_EQ(permission_context()
+                ->GetLastPickedDirectory(kTestOrigin, kTestStartingDirectoryId)
+                .path,
+            base::FilePath());
+
+  // Set keys using the old method.
+  const char kDeprecatedLastPickedDirectoryKey[] = "default-path";
+  const char kDeprecatedLastPickedDirectoryTypeKey[] = "default-path-type";
+  const base::FilePath path = base::FilePath(FILE_PATH_LITERAL("/baz/bar"));
+  const auto type = PathType::kExternal;
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(kDeprecatedLastPickedDirectoryKey, util::FilePathToValue(path));
+  dict.SetIntKey(kDeprecatedLastPickedDirectoryTypeKey, static_cast<int>(type));
+  HostContentSettingsMapFactory::GetForProfile(&profile_)
+      ->SetWebsiteSettingDefaultScope(
+          kTestOrigin.GetURL(), kTestOrigin.GetURL(),
+          ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+          base::Value::ToUniquePtrValue(std::move(dict)));
+
+  // Retrieve key using the new method. Information should have been migrated.
+  auto result = permission_context()->GetLastPickedDirectory(
+      kTestOrigin, /*id=*/std::string());
+  EXPECT_EQ(result.path, path);
+  EXPECT_EQ(result.type, type);
+
+  // Confirm that the old keys have been removed.
+  std::unique_ptr<base::Value> value =
+      HostContentSettingsMapFactory::GetForProfile(&profile_)
+          ->GetWebsiteSetting(
+              kTestOrigin.GetURL(), kTestOrigin.GetURL(),
+              ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+              /*info=*/nullptr);
+  EXPECT_FALSE(value->FindKey(kDeprecatedLastPickedDirectoryKey));
+  EXPECT_FALSE(value->FindIntKey(kDeprecatedLastPickedDirectoryKey));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,

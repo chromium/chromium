@@ -61,9 +61,11 @@ class ChromeFileSystemAccessPermissionContext
   bool CanObtainWritePermission(const url::Origin& origin) override;
 
   void SetLastPickedDirectory(const url::Origin& origin,
+                              const std::string& id,
                               const base::FilePath& path,
                               const PathType type) override;
-  PathInfo GetLastPickedDirectory(const url::Origin& origin) override;
+  PathInfo GetLastPickedDirectory(const url::Origin& origin,
+                                  const std::string& id) override;
   base::FilePath GetWellKnownDirectoryPath(
       blink::mojom::WellKnownDirectory directory) override;
 
@@ -109,6 +111,8 @@ class ChromeFileSystemAccessPermissionContext
       content::GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback,
       bool should_block);
+
+  void MaybeMigrateOriginToNewSchema(const url::Origin& origin);
 
   virtual base::WeakPtr<ChromeFileSystemAccessPermissionContext>
   GetWeakPtr() = 0;

@@ -56,6 +56,8 @@ static_library("test_support") {
     "../browser/browsing_data/browsing_data_test_utils.h",
     "../browser/conversions/conversion_test_utils.cc",
     "../browser/conversions/conversion_test_utils.h",
+    "../browser/file_system_access/fake_file_system_access_permission_context.cc",
+    "../browser/file_system_access/fake_file_system_access_permission_context.h",
     "../browser/file_system_access/file_system_chooser_test_helpers.cc",
     "../browser/file_system_access/file_system_chooser_test_helpers.h",
     "../browser/file_system_access/mock_file_system_access_permission_context.cc",

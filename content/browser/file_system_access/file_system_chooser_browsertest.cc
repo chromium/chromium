@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/fake_file_system_access_permission_context.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
@@ -495,10 +496,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
       permission_context,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
   EXPECT_CALL(permission_context,
-              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+              SetLastPickedDirectory(origin, std::string(), test_dir,
+                                     PathType::kLocal));
 
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
@@ -570,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       permission_context,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
 
   EXPECT_CALL(permission_context,
@@ -632,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       permission_context,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
-  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(PathInfo()));
 
   EXPECT_CALL(permission_context,
@@ -749,10 +751,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   PathInfo good_dir_info;
   good_dir_info.path = temp_dir_.GetPath();
 
-  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(good_dir_info));
   EXPECT_CALL(permission_context,
-              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+              SetLastPickedDirectory(origin, std::string(), test_dir,
+                                     PathType::kLocal));
 
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
@@ -837,10 +840,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       permission_context,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(default_dir));
-  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(bad_dir_info));
   EXPECT_CALL(permission_context,
-              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+              SetLastPickedDirectory(origin, std::string(), test_dir,
+                                     PathType::kLocal));
 
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
@@ -919,10 +923,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   good_dir_info.path = base::FilePath::FromUTF8Unsafe(kTestMountPoint);
   good_dir_info.type = PathType::kExternal;
 
-  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(good_dir_info));
   EXPECT_CALL(permission_context,
-              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+              SetLastPickedDirectory(origin, std::string(), test_dir,
+                                     PathType::kLocal));
 
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
@@ -1009,10 +1014,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       permission_context,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(default_dir));
-  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
+  EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
       .WillOnce(testing::Return(bad_dir_info));
   EXPECT_CALL(permission_context,
-              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+              SetLastPickedDirectory(origin, std::string(), test_dir,
+                                     PathType::kLocal));
 
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
@@ -1058,7 +1064,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       StartInWellKnownDirectory) {
+                       StartIn_WellKnownDirectory) {
   base::FilePath test_dir = CreateTestDir();
 
   SelectFileDialogParams dialog_params;
@@ -1101,7 +1107,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDesktop))
       .WillOnce(testing::Return(desktop_dir));
   EXPECT_CALL(permission_context,
-              SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
+              SetLastPickedDirectory(origin, std::string(), test_dir,
+                                     PathType::kLocal));
 
   EXPECT_CALL(permission_context,
               ConfirmSensitiveDirectoryAccess_(
@@ -1147,8 +1154,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_EQ(desktop_dir, dialog_params.default_path);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       OpenFile_StartIn_FileHandle) {
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_FileHandle) {
   // Ensure test file exists in a directory which could not be a default.
   base::FilePath test_file_dir;
   {
@@ -1186,8 +1192,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_EQ(test_file_dir, dialog_params.default_path);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       OpenFile_StartIn_DirectoryHandle) {
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_DirectoryHandle) {
   // Ensure test directory exists and could not be a default.
   base::FilePath test_dir;
   {
@@ -1224,7 +1229,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       OpenFile_StartIn_FileHandle_External) {
+                       StartIn_FileHandle_External) {
   const base::FilePath test_file = CreateTestFile("");
   const base::FilePath virtual_path =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint)
@@ -1408,6 +1413,184 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               dialog_params.file_types->include_all_files);
     EXPECT_EQ(name_info.expected_index, dialog_params.file_type_index);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_ID) {
+  base::FilePath test_dir;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Ensure directory we're selecting exists.
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("test123"), &test_dir));
+  }
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+
+  FakeFileSystemAccessPermissionContext permission_context;
+  static_cast<FileSystemAccessManagerImpl*>(
+      BrowserContext::GetStoragePartition(
+          shell()->web_contents()->GetBrowserContext(),
+          shell()->web_contents()->GetSiteInstance())
+          ->GetFileSystemAccessEntryFactory())
+      ->SetPermissionContextForTesting(&permission_context);
+
+  // Specify an `id` for the directory that is picked.
+  std::string id = "testing";
+  PathInfo test_dir_info;
+  test_dir_info.path = test_dir;
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  // #1: `id` is unset. Fall back to the default starting directory.
+  EXPECT_EQ(
+      test_dir.BaseName().AsUTF8Unsafe(),
+      EvalJs(shell(),
+             JsReplace("(async () => {"
+                       "  let e = await self.showDirectoryPicker({ id: $1 });"
+                       "  self.selected_entry = e;"
+                       "  return e.name; })()",
+                       id)));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(base::FilePath(), dialog_params.default_path);
+
+  // #2: `id` is set. Use the LastPickedDirectory given this `id`.
+  EXPECT_EQ(
+      test_dir.BaseName().AsUTF8Unsafe(),
+      EvalJs(shell(),
+             JsReplace("(async () => {"
+                       "  let e = await self.showDirectoryPicker({ id: $1 });"
+                       "  self.selected_entry = e;"
+                       "  return e.name; })()",
+                       id)));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(test_dir, dialog_params.default_path);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
+  // Priority:
+  //   1) `startIn` via a file/directory handle
+  //   2) non-empty `id, if stored
+  //   3) `startIn` via a well-known directory
+  //   4) default `id`, if stored
+  //   5) default path
+  //
+  // Test A checks #5
+  //      B checks #4
+  //      C checks #3
+  //      D checks #2
+  //      E checks #1
+
+  base::FilePath test_dir;
+  base::FilePath desktop_dir;
+  base::FilePath music_dir;
+  base::FilePath dir_handle;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Ensure directories we're selecting exist.
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("test123"), &test_dir));
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("Desktop"), &desktop_dir));
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("Music"), &music_dir));
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("handle"), &dir_handle));
+  }
+
+  FakeFileSystemAccessPermissionContext permission_context;
+  static_cast<FileSystemAccessManagerImpl*>(
+      BrowserContext::GetStoragePartition(
+          shell()->web_contents()->GetBrowserContext(),
+          shell()->web_contents()->GetSiteInstance())
+          ->GetFileSystemAccessEntryFactory())
+      ->SetPermissionContextForTesting(&permission_context);
+
+  permission_context.SetWellKnownDirectoryPath(
+      blink::mojom::WellKnownDirectory::kDirDesktop, desktop_dir);
+  permission_context.SetWellKnownDirectoryPath(
+      blink::mojom::WellKnownDirectory::kDirMusic, music_dir);
+
+  // Specify an `id` for the directory that is picked.
+  std::string id = "testing";
+  PathInfo test_dir_info;
+  test_dir_info.path = test_dir;
+  PathInfo desktop_dir_info;
+  desktop_dir_info.path = desktop_dir;
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  SelectFileDialogParams dialog_params;
+  // (A) Acquire a handle to the "handle" directory to be used later. Use the
+  // default `id`.
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({dir_handle}, &dialog_params));
+  EXPECT_EQ(
+      dir_handle.BaseName().AsUTF8Unsafe(),
+      EvalJs(shell(), JsReplace("(async () => {"
+                                "  let e = await self.showDirectoryPicker();"
+                                "  self.handle = e;"
+                                "  return e.name; })()",
+                                id)));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(base::FilePath(), dialog_params.default_path);
+
+  // (B) Use the default `id`, which should have been set.
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({dir_handle}, &dialog_params));
+  EXPECT_EQ(
+      dir_handle.BaseName().AsUTF8Unsafe(),
+      EvalJs(shell(), JsReplace("(async () => {"
+                                "  let e = await self.showDirectoryPicker();"
+                                "  self.handle = e;"
+                                "  return e.name; })()",
+                                id)));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(dir_handle, dialog_params.default_path);
+
+  // (C) Since this new `id` has not yet been set, fall back on using the
+  // WellKnownDirectory specified via `startIn`.
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({desktop_dir}, &dialog_params));
+  EXPECT_EQ(
+      desktop_dir.BaseName().AsUTF8Unsafe(),
+      EvalJs(shell(), JsReplace("(async () => {"
+                                "  let e = await self.showDirectoryPicker({ "
+                                "id: $1, startIn: 'desktop' });"
+                                "  self.selected_entry = e;"
+                                "  return e.name; })()",
+                                id)));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(desktop_dir, dialog_params.default_path);
+
+  // (D) The `id` is set. Use the LastPickedDirectory given this `id`.
+  EXPECT_EQ(
+      desktop_dir.BaseName().AsUTF8Unsafe(),
+      EvalJs(shell(), JsReplace("(async () => {"
+                                "  let e = await self.showDirectoryPicker({ "
+                                "id: $1, startIn: 'music' });"
+                                "  self.selected_entry = e;"
+                                "  return e.name; })()",
+                                id)));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(desktop_dir, dialog_params.default_path);
+
+  // (E) A directory handle is specified via `startIn`, so prioritize this over
+  // the stored ID.
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({dir_handle}, &dialog_params));
+  EXPECT_EQ(
+      dir_handle.BaseName().AsUTF8Unsafe(),
+      EvalJs(shell(), JsReplace("(async () => {"
+                                "  let e = await self.showDirectoryPicker({ "
+                                "id: $1, startIn: self.handle });"
+                                "  self.selected_entry = e;"
+                                "  return e.name; })()",
+                                id)));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(dir_handle, dialog_params.default_path);
 }
 
 }  // namespace content

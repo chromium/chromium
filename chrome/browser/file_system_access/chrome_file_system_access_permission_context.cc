@@ -4,6 +4,7 @@
 
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -12,8 +13,10 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/util/values/values_util.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -37,8 +40,32 @@ namespace {
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
 // Dictionary keys for the FILE_SYSTEM_LAST_PICKED_DIRECTORY website setting.
-const char kLastPickedDirectoryKey[] = "default-path";
-const char kLastPickedDirectoryTypeKey[] = "default-path-type";
+// Schema (per origin):
+// {
+//  ...
+//   {
+//     "default-id" : { "path" : <path> , "path-type" : <type>}
+//     "custom-id-fruit" : { "path" : <path> , "path-type" : <type> }
+//     "custom-id-flower" : { "path" : <path> , "path-type" : <type> }
+//     ...
+//   }
+//  ...
+// }
+const char kDefaultLastPickedDirectoryKey[] = "default-id";
+const char kCustomLastPickedDirectoryKey[] = "custom-id";
+const char kPathKey[] = "path";
+const char kPathTypeKey[] = "path-type";
+
+// TODO(https://crbug.com/1177334): Remove migration logic.
+// Deprecated 2/2021. Former schema (per origin):
+// {
+//  ...
+//   "default-path" : <path>,
+//   "default-path-type" : <type>,
+//  ...
+// }
+const char kDeprecatedLastPickedDirectoryKey[] = "default-path";
+const char kDeprecatedLastPickedDirectoryTypeKey[] = "default-path-type";
 
 void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     content::GlobalFrameRoutingId frame_id,
@@ -305,6 +332,11 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
   return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::kBlock;
 }
 
+std::string GenerateLastPickedDirectoryKey(const std::string& id) {
+  return id.empty() ? kDefaultLastPickedDirectoryKey
+                    : base::StrCat({kCustomLastPickedDirectoryKey, "-", id});
+}
+
 }  // namespace
 
 ChromeFileSystemAccessPermissionContext::Grants::Grants() = default;
@@ -438,23 +470,79 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
   return false;
 }
 
-void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
-    const url::Origin& origin,
-    const base::FilePath& path,
-    const PathType type) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey(kLastPickedDirectoryKey, util::FilePathToValue(path));
-  dict.SetIntKey(kLastPickedDirectoryTypeKey, static_cast<int>(type));
+// TODO(https://crbug.com/1177334): Remove migration logic.
+void ChromeFileSystemAccessPermissionContext::MaybeMigrateOriginToNewSchema(
+    const url::Origin& origin) {
+  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
+
+  if (!value)
+    return;
+
+  auto* default_path_value = value->FindKey(kDeprecatedLastPickedDirectoryKey);
+  if (!default_path_value)
+    return;
+
+  auto default_path =
+      util::ValueToFilePath(default_path_value).value_or(base::FilePath());
+  auto default_type =
+      value->FindIntKey(kDeprecatedLastPickedDirectoryTypeKey) ==
+              static_cast<int>(PathType::kExternal)
+          ? PathType::kExternal
+          : PathType::kLocal;
+
+  // Remove old keys.
+  value->RemoveKey(kDeprecatedLastPickedDirectoryKey);
+  value->RemoveKey(kDeprecatedLastPickedDirectoryTypeKey);
+
+  // Set this information as the default.
+  base::Value entry(base::Value::Type::DICTIONARY);
+  entry.SetKey(kPathKey, util::FilePathToValue(default_path));
+  entry.SetIntKey(kPathTypeKey, static_cast<int>(default_type));
+
+  value->SetKey(GenerateLastPickedDirectoryKey(std::string()),
+                std::move(entry));
 
   content_settings_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
-      base::Value::ToUniquePtrValue(std::move(dict)));
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, std::move(value));
+}
+
+void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
+    const url::Origin& origin,
+    const std::string& id,
+    const base::FilePath& path,
+    const PathType type) {
+  MaybeMigrateOriginToNewSchema(origin);
+
+  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
+  if (!value) {
+    value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  }
+
+  // Create an entry into the nested dictionary.
+  base::Value entry(base::Value::Type::DICTIONARY);
+  entry.SetKey(kPathKey, util::FilePathToValue(path));
+  entry.SetIntKey(kPathTypeKey, static_cast<int>(type));
+
+  // TODO(https://crbug.com/1171354): Limit the number of `id`s that can be set
+  // per origin.
+  value->SetKey(GenerateLastPickedDirectoryKey(id), std::move(entry));
+
+  content_settings_->SetWebsiteSettingDefaultScope(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, std::move(value));
 }
 
 ChromeFileSystemAccessPermissionContext::PathInfo
 ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    const std::string& id) {
+  MaybeMigrateOriginToNewSchema(origin);
+
   std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
@@ -463,15 +551,17 @@ ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
   if (!value)
     return path_info;
 
-  auto type_int = value->FindIntKey(kLastPickedDirectoryTypeKey)
+  auto* entry = value->FindDictKey(GenerateLastPickedDirectoryKey(id));
+  if (!entry)
+    return path_info;
+
+  auto type_int = entry->FindIntKey(kPathTypeKey)
                       .value_or(static_cast<int>(PathType::kLocal));
   path_info.type = type_int == static_cast<int>(PathType::kExternal)
                        ? PathType::kExternal
                        : PathType::kLocal;
-  path_info.path =
-      util::ValueToFilePath(value->FindKey(kLastPickedDirectoryKey))
-          .value_or(base::FilePath());
-
+  path_info.path = util::ValueToFilePath(entry->FindKey(kPathKey))
+                       .value_or(base::FilePath());
   return path_info;
 }
 

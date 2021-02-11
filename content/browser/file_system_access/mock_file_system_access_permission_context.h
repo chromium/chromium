@@ -71,12 +71,13 @@ class MockFileSystemAccessPermissionContext
   MOCK_METHOD(void,
               SetLastPickedDirectory,
               (const url::Origin& origin,
+               const std::string& id,
                const base::FilePath& path,
                const PathType type),
               (override));
   MOCK_METHOD(PathInfo,
               GetLastPickedDirectory,
-              (const url::Origin& origin),
+              (const url::Origin& origin, const std::string& id),
               (override));
 
   MOCK_METHOD(base::FilePath,
