@@ -6796,6 +6796,10 @@ if (!is_android) {
       ]
     }
 
+    if (is_chromeos_lacros) {
+      sources += [ "../browser/lacros/browser_interactive_uitest.cc" ]
+    }
+
     if (is_win) {
       sources += [
         "../browser/downgrade/user_data_downgrade_browsertest.cc",
