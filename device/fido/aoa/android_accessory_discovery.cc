@@ -350,42 +350,55 @@ void AndroidAccessoryDiscovery::OnConfigurationStepComplete(
     return;
   }
 
-  static const size_t kNumStrings = 3;
-  static const char kStrings[kNumStrings][24] = {
-      "Chromium",              // manufacturer
-      "Chromium",              // model
-      "Security key request",  // description. TODO(agl): translate.
-  };
-
+  // The semantics of each step number are defined at
+  // https://source.android.com/devices/accessories/aoa#attempt-to-start-in-accessory-mode
   auto* device_ptr = device.get();
-  if (step < kNumStrings) {
-    device_ptr->ControlTransferOut(
-        ControlTransferParams(kSendString, step),
-        VectorFromString(kStrings[step]), kTimeoutMilliseconds,
-        base::BindOnce(&AndroidAccessoryDiscovery::OnConfigurationStepComplete,
-                       weak_factory_.GetWeakPtr(), std::move(device),
-                       step + 1));
-    return;
-  } else if (step == kNumStrings) {
-    device_ptr->ControlTransferOut(
-        ControlTransferParams(kSendString, step),
-        VectorFromString(
-            device::mojom::UsbControlTransferParams::kSecurityKeyAOAVersion),
-        kTimeoutMilliseconds,
-        base::BindOnce(&AndroidAccessoryDiscovery::OnConfigurationStepComplete,
-                       weak_factory_.GetWeakPtr(), std::move(device),
-                       step + 1));
-    return;
-  } else if (step == kNumStrings + 1) {
-    device_ptr->ControlTransferOut(
-        ControlTransferParams(kStart), {}, kTimeoutMilliseconds,
-        base::BindOnce(&AndroidAccessoryDiscovery::OnConfigurationStepComplete,
-                       weak_factory_.GetWeakPtr(), std::move(device),
-                       step + 1));
-    return;
+  std::vector<uint8_t> encoded_string;
+  switch (step) {
+    case 0:
+      // Manufacturer.
+      encoded_string = VectorFromString("Chromium");
+      break;
+
+    case 1:
+      // Model.
+      encoded_string = VectorFromString(
+          device::mojom::UsbControlTransferParams::kSecurityKeyAOAModel);
+      break;
+
+    case 2:
+      // Description. TODO(agl): translate
+      encoded_string = VectorFromString("Security key request");
+      break;
+
+    case 3:
+      // Version. Always some value as a version in order to avoid a potential
+      // Android crash. See https://crbug.com/1174217.
+      encoded_string = VectorFromString("1");
+      break;
+
+    case 4:
+      // Finished sending strings; request switch to AOA mode.
+      device_ptr->ControlTransferOut(
+          ControlTransferParams(kStart), {}, kTimeoutMilliseconds,
+          base::BindOnce(
+              &AndroidAccessoryDiscovery::OnConfigurationStepComplete,
+              weak_factory_.GetWeakPtr(), std::move(device), step + 1));
+      return;
+
+    case 5:
+      FIDO_LOG(DEBUG) << "Device requested to switch to accessory mode";
+      return;
+
+    default:
+      CHECK(false);
   }
 
-  FIDO_LOG(DEBUG) << "Device requested to switch to accessory mode";
+  device_ptr->ControlTransferOut(
+      ControlTransferParams(kSendString, step), encoded_string,
+      kTimeoutMilliseconds,
+      base::BindOnce(&AndroidAccessoryDiscovery::OnConfigurationStepComplete,
+                     weak_factory_.GetWeakPtr(), std::move(device), step + 1));
 }
 
 void AndroidAccessoryDiscovery::OnDeviceRemoved(

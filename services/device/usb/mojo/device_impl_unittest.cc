@@ -1060,8 +1060,7 @@ TEST_P(USBDeviceImplSecurityKeyTest, SecurityKeyControlTransferBlocked) {
     loop.Run();
   }
 
-  const char* data_str =
-      mojom::UsbControlTransferParams::kSecurityKeyAOAVersion;
+  const char* data_str = mojom::UsbControlTransferParams::kSecurityKeyAOAModel;
   const std::vector<uint8_t> data(
       reinterpret_cast<const uint8_t*>(data_str),
       reinterpret_cast<const uint8_t*>(data_str) + strlen(data_str));
@@ -1072,7 +1071,7 @@ TEST_P(USBDeviceImplSecurityKeyTest, SecurityKeyControlTransferBlocked) {
                 ControlTransferInternal(UsbTransferDirection::OUTBOUND,
                                         UsbControlTransferType::VENDOR,
                                         UsbControlTransferRecipient::DEVICE, 52,
-                                        0, 3, _, 0, _));
+                                        0, 1, _, 0, _));
   }
 
   {
@@ -1085,7 +1084,7 @@ TEST_P(USBDeviceImplSecurityKeyTest, SecurityKeyControlTransferBlocked) {
     params->recipient = UsbControlTransferRecipient::DEVICE;
     params->request = 52;
     params->value = 0;
-    params->index = 3;
+    params->index = 1;
     base::RunLoop loop;
     device->ControlTransferOut(
         std::move(params), data, 0,

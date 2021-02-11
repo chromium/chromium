@@ -134,13 +134,13 @@ struct UsbControlTransferParams {
   uint16 index;
 
   // Unless the USB device was opened with |GetSecurityKeyDevice| then control
-  // transfers to attempt to configure an AOA[1] version with the following
+  // transfers to attempt to configure an AOA[1] model with the following
   // prefix will be rejected. These requests are blocked because they instruct
   // an Android phone to act as a security key and this should not be exposed
   // to, e.g., WebUSB.
   //
   // [1] https://source.android.com/devices/accessories/aoa
-  const string kSecurityKeyAOAVersion = "12eba9f901039b36";
+  const string kSecurityKeyAOAModel = "12eba9f901039b36";
 };
 
 // This enum is exposed through the chrome.usb extension API so existing values

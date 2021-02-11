@@ -89,16 +89,16 @@ void OnIsochronousTransferOut(
 bool IsAndroidSecurityKeyRequest(
     const mojom::UsbControlTransferParamsPtr& params,
     const std::vector<uint8_t>& data) {
-  // This matches a request to send an AOA version string:
+  // This matches a request to send an AOA model string:
   // https://source.android.com/devices/accessories/aoa#attempt-to-start-in-accessory-mode
   //
-  // The magic version is matched as a prefix because sending trailing NULs etc
+  // The magic model is matched as a prefix because sending trailing NULs etc
   // would be considered equivalent by Android but would not be caught by an
   // exact match here. Android is case-sensitive thus a byte-wise match is
   // suitable.
-  const char* magic = mojom::UsbControlTransferParams::kSecurityKeyAOAVersion;
+  const char* magic = mojom::UsbControlTransferParams::kSecurityKeyAOAModel;
   return params->type == mojom::UsbControlTransferType::VENDOR &&
-         params->request == 52 && params->index == 3 &&
+         params->request == 52 && params->index == 1 &&
          data.size() >= strlen(magic) &&
          memcmp(data.data(), magic, strlen(magic)) == 0;
 }
