@@ -55,6 +55,8 @@ GURL AlternateWebAppUrl() {
 // Do not add tests to this class. Instead, add tests to
 // |InstallFinalizerUnitTest| so that both |InstallFinalizer| implementations
 // are tested.
+// TODO(crbug.com/1068081): Migrate remaining tests to
+// install_finalizer_unittest.
 class BookmarkAppInstallFinalizerTest : public ChromeRenderViewHostTestHarness {
  public:
   // Subclass that runs a closure when an extension is unpacked successfully.
@@ -215,57 +217,6 @@ TEST_F(BookmarkAppInstallFinalizerTest, BasicInstallFails) {
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);
-}
-
-TEST_F(BookmarkAppInstallFinalizerTest, ConcurrentInstallSucceeds) {
-  base::RunLoop run_loop;
-
-  const GURL url1("https://foo1.example");
-  const GURL url2("https://foo2.example");
-
-  bool callback1_called = false;
-  bool callback2_called = false;
-  web_app::InstallFinalizer::FinalizeOptions options;
-  options.install_source = webapps::WebappInstallSource::INTERNAL_DEFAULT;
-
-  // Start install finalization for the 1st app
-  {
-    WebApplicationInfo web_application_info;
-    web_application_info.start_url = url1;
-
-    finalizer().FinalizeInstall(
-        web_application_info, options,
-        base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                       web_app::InstallResultCode code) {
-          EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id, web_app::GenerateAppIdFromURL(url1));
-          callback1_called = true;
-          if (callback2_called)
-            run_loop.Quit();
-        }));
-  }
-
-  // Start install finalization for the 2nd app
-  {
-    WebApplicationInfo web_application_info;
-    web_application_info.start_url = url2;
-
-    finalizer().FinalizeInstall(
-        web_application_info, options,
-        base::BindLambdaForTesting([&](const web_app::AppId& installed_app_id,
-                                       web_app::InstallResultCode code) {
-          EXPECT_EQ(web_app::InstallResultCode::kSuccessNewInstall, code);
-          EXPECT_EQ(installed_app_id, web_app::GenerateAppIdFromURL(url2));
-          callback2_called = true;
-          if (callback1_called)
-            run_loop.Quit();
-        }));
-  }
-
-  run_loop.Run();
-
-  EXPECT_TRUE(callback1_called);
-  EXPECT_TRUE(callback2_called);
 }
 
 TEST_F(BookmarkAppInstallFinalizerTest, DefaultInstalledSucceeds) {
