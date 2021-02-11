@@ -196,8 +196,6 @@ extern const base::Feature kImeOptionsInSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeSystemEmojiPicker;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kImprovedKeyboardShortcuts;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardFloatingDefault;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kInstantTethering;

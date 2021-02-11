@@ -102,6 +102,14 @@ extern const base::Feature kNewShortcutMapping;
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsNewShortcutMappingEnabled();
+
+// This flag is intended to supercede kNewShortcutMapping above.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::Feature kImprovedKeyboardShortcuts;
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsImprovedKeyboardShortcutsEnabled();
+
 #endif
 
 // Indicates whether DrmOverlayManager should used the synchronous API to

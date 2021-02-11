@@ -47,8 +47,19 @@ const base::Feature kNewShortcutMapping = {"NewShortcutMapping",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsNewShortcutMappingEnabled() {
-  return base::FeatureList::IsEnabled(kNewShortcutMapping);
+  // kImprovedKeyboardShortcuts supercedes kNewShortcutMapping.
+  return !IsImprovedKeyboardShortcutsEnabled() &&
+         base::FeatureList::IsEnabled(kNewShortcutMapping);
 }
+
+// This feature supercedes kNewShortcutMapping.
+const base::Feature kImprovedKeyboardShortcuts = {
+    "ImprovedKeyboardShortcuts", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsImprovedKeyboardShortcutsEnabled() {
+  return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Update of the virtual keyboard settings UI as described in

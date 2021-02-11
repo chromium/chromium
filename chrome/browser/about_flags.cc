@@ -2927,6 +2927,10 @@ const FeatureEntry kFeatureEntries[] = {
         kOsCrOS,
         FEATURE_VALUE_TYPE(features::kNewShortcutMapping),
     },
+    {"improved-keyboard-shortcuts",
+     flag_descriptions::kImprovedKeyboardShortcutsName,
+     flag_descriptions::kImprovedKeyboardShortcutsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kImprovedKeyboardShortcuts)},
     {"shelf-hide-buttons-in-tablet",
      flag_descriptions::kHideShelfControlsInTabletModeName,
      flag_descriptions::kHideShelfControlsInTabletModeDescription, kOsCrOS,
@@ -5604,11 +5608,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kDisablePeripheralDataAccessProtection)},
-
-    {"improved-keyboard-shortcuts",
-     flag_descriptions::kImprovedKeyboardShortcutsName,
-     flag_descriptions::kImprovedKeyboardShortcutsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kImprovedKeyboardShortcuts)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-portals", flag_descriptions::kEnablePortalsName,

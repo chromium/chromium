@@ -421,10 +421,6 @@ const base::Feature kHelpAppSearchServiceIntegration{
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable or disable the new improved keyboard shortcuts.
-const base::Feature kImprovedKeyboardShortcuts{
-    "ImprovedKeyboardShortcuts", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable or disable system emoji picker.
 const base::Feature kImeSystemEmojiPicker{"SystemEmojiPicker",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -833,10 +829,6 @@ bool IsClipboardHistoryNudgeSessionResetEnabled() {
 
 bool IsClipboardHistoryContextMenuNudgeEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryContextMenuNudge);
-}
-
-bool IsImprovedKeyboardShortcutsEnabled() {
-  return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
 }
 
 bool IsPciguardUiEnabled() {
