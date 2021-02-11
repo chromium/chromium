@@ -41,8 +41,6 @@ class AutofillBubbleControllerBase : public content::WebContentsObserver {
     bubble_view_ = bubble_view;
   }
 
-  void SetShownTimestampToNow();
-
  private:
   // Remove the |bubble_view_| and hide the bubble.
   void HideBubble();
