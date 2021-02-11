@@ -4928,13 +4928,13 @@
   },
   {
     "name": "turn-off-streaming-media-caching-always",
-    "owners": [ "shawnpi@microsoft.com", "cassew@google.com" ],
-    "expiry_milestone": 89
+    "owners": [ "wicarr@microsoft.com", "cassew@google.com" ],
+    "expiry_milestone": 91
   },
   {
     "name": "turn-off-streaming-media-caching-on-battery",
-    "owners": [ "shawnpi@microsoft.com", "cassew@google.com" ],
-    "expiry_milestone": 89
+    "owners": [ "wicarr@microsoft.com", "cassew@google.com" ],
+    "expiry_milestone": 91
   },
   {
     "name": "ui-debug-tools",
