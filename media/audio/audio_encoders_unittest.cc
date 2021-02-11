@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -208,6 +209,34 @@ TEST_P(AudioEncodersTest, OpusTimestamps) {
       current_timestamp += kOpusBufferDuration;
     }
   }
+}
+
+TEST_P(AudioEncodersTest, OpusExtraData) {
+  auto output_cb =
+      base::BindLambdaForTesting([&](EncodedAudioBuffer output) {});
+
+  SetEncoder(std::make_unique<AudioOpusEncoder>(
+      input_params(), std::move(output_cb),
+      base::BindRepeating(&AudioEncodersTest::OnErrorCallback,
+                          base::Unretained(this)),
+      /*opus_bitrate=*/0));
+  std::vector<uint8_t> extra = encoder_->GetExtraData();
+  EXPECT_EQ(extra[0], 'O');
+  EXPECT_EQ(extra[1], 'p');
+  EXPECT_EQ(extra[2], 'u');
+  EXPECT_EQ(extra[3], 's');
+
+  uint16_t* sample_rate_ptr = reinterpret_cast<uint16_t*>(extra.data() + 12);
+  if (input_params().sample_rate() < std::numeric_limits<uint16_t>::max())
+    EXPECT_EQ(*sample_rate_ptr, input_params().sample_rate());
+  else
+    EXPECT_EQ(*sample_rate_ptr, 48000);
+
+  uint8_t* channels_ptr = reinterpret_cast<uint8_t*>(extra.data() + 9);
+  EXPECT_EQ(*channels_ptr, input_params().channels());
+
+  uint16_t* skip_ptr = reinterpret_cast<uint16_t*>(extra.data() + 10);
+  EXPECT_GT(*skip_ptr, 0);
 }
 
 // Check how Opus encoder reacts to breaks in continuity of incoming sound.

@@ -6,6 +6,7 @@
 #define MEDIA_BASE_AUDIO_ENCODER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
@@ -75,6 +76,9 @@ class MEDIA_EXPORT AudioEncoder {
   const AudioParameters& audio_input_params() const {
     return audio_input_params_;
   }
+
+  // Returns codec's extra data if the codec needs it. (e.g Opus header)
+  virtual const std::vector<uint8_t>& GetExtraData();
 
   // Performs various checks before calling EncodeAudioImpl() which does the
   // actual encoding.

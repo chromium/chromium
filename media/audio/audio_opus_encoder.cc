@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -206,6 +207,8 @@ AudioOpusEncoder::AudioOpusEncoder(const AudioParameters& input_params,
   converter_.PrimeWithSilence();
   fifo_.Reset(converter_.GetMaxInputFramesRequested(
       converted_params_.frames_per_buffer()));
+
+  PrepareExtraData();
 }
 
 AudioOpusEncoder::~AudioOpusEncoder() = default;
@@ -239,6 +242,54 @@ void AudioOpusEncoder::EncodeAudioImpl(const AudioBus& audio_bus,
   // The |fifo_| won't trigger OnFifoOutput() until we have enough frames
   // suitable for the converter.
   fifo_.Push(audio_bus);
+}
+
+const std::vector<uint8_t>& AudioOpusEncoder::GetExtraData() {
+  return extra_data_;
+}
+
+void AudioOpusEncoder::PrepareExtraData() {
+  // RFC #7845  Ogg Encapsulation for the Opus Audio Codec
+  // https://tools.ietf.org/html/rfc7845
+  static const uint8_t kExtraDataTemplate[19] = {
+      'O', 'p', 'u', 's', 'H', 'e', 'a', 'd',
+      1,                 // offset 8, version, always 1
+      0,                 // offset 9, channel count
+      0,   0,            // offset 10, pre-skip
+      0,   0,   0,   0,  // offset 12, original input sample rate in Hz
+      0,   0,   0};
+
+  extra_data_.assign(kExtraDataTemplate,
+                     kExtraDataTemplate + sizeof(kExtraDataTemplate));
+
+  // Save number of channels
+  base::CheckedNumeric<uint8_t> channels(converted_params_.channels());
+  if (channels.IsValid())
+    extra_data_.data()[9] = channels.ValueOrDie();
+
+  // Number of samples to skip from the start of the decoder's output.
+  // Real data begins this many samples late. These samples need to be skipped
+  // only at the very beginning of the audio stream, NOT at beginning of each
+  // decoded output.
+  if (opus_encoder_) {
+    int32_t samples_to_skip = 0;
+
+    opus_encoder_ctl(opus_encoder_.get(), OPUS_GET_LOOKAHEAD(&samples_to_skip));
+    base::CheckedNumeric<uint16_t> samples_to_skip_safe = samples_to_skip;
+    if (samples_to_skip_safe.IsValid())
+      *reinterpret_cast<uint16_t*>(extra_data_.data() + 10) =
+          samples_to_skip_safe.ValueOrDie();
+  }
+
+  // Save original sample rate
+  base::CheckedNumeric<uint16_t> sample_rate =
+      audio_input_params().sample_rate();
+  uint16_t* sample_rate_ptr =
+      reinterpret_cast<uint16_t*>(extra_data_.data() + 12);
+  if (sample_rate.IsValid())
+    *sample_rate_ptr = sample_rate.ValueOrDie();
+  else
+    *sample_rate_ptr = uint16_t{kOpusPreferredSamplingRate};
 }
 
 void AudioOpusEncoder::FlushImpl() {

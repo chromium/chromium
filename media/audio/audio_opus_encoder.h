@@ -33,6 +33,8 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   AudioOpusEncoder& operator=(const AudioOpusEncoder&) = delete;
   ~AudioOpusEncoder() override;
 
+  const std::vector<uint8_t>& GetExtraData() override;
+
  protected:
   // AudioEncoder:
   void EncodeAudioImpl(const AudioBus& audio_bus,
@@ -43,6 +45,8 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // Called synchronously by |fifo_| once enough audio frames have been
   // buffered.
   void OnFifoOutput(const AudioBus& output_bus, int frame_delay);
+
+  void PrepareExtraData();
 
   // Target bitrate for Opus. If 0, Opus-provided automatic bitrate is used.
   // Note: As of 2013-10-31, the encoder in "auto bitrate" mode would use a
@@ -80,6 +84,8 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
 
   // Timestamp that should be reported by the next call of encode_callback()
   base::TimeTicks next_timestamp_;
+
+  std::vector<uint8_t> extra_data_;
 };
 
 }  // namespace media

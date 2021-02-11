@@ -5,6 +5,7 @@
 #include "media/base/audio_encoder.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -61,6 +62,12 @@ void AudioEncoder::EncodeAudio(const AudioBus& audio_bus,
   last_capture_time_ = capture_time;
 
   EncodeAudioImpl(audio_bus, capture_time);
+}
+
+// Returns codec's extra data if the codec needs it. (e.g Opus header)
+const std::vector<uint8_t>& AudioEncoder::GetExtraData() {
+  static base::NoDestructor<std::vector<uint8_t>> g_empty_extra_data;
+  return *g_empty_extra_data;
 }
 
 void AudioEncoder::Flush() {
