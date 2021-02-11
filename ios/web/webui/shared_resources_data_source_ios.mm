@@ -33,11 +33,11 @@ const char kWebUIResourcesHost[] = "resources";
 // nullptr if not found.
 const GritResourceMap* PathToResource(const std::string& path) {
   for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
-    if (path == kWebuiResources[i].name)
+    if (path == kWebuiResources[i].path)
       return &kWebuiResources[i];
   }
   for (size_t i = 0; i < kWebuiGeneratedResourcesSize; ++i) {
-    if (path == kWebuiGeneratedResources[i].name)
+    if (path == kWebuiGeneratedResources[i].path)
       return &kWebuiGeneratedResources[i];
   }
   return nullptr;
@@ -62,7 +62,7 @@ void SharedResourcesDataSourceIOS::StartDataRequest(
 
   WebClient* web_client = GetWebClient();
 
-  int idr = resource ? resource->value : -1;
+  int idr = resource ? resource->id : -1;
   if (idr == IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS) {
     std::string css = webui::GetWebUiCssTextDefaults();
     bytes = base::RefCountedString::TakeString(&css);

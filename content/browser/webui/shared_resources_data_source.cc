@@ -161,7 +161,7 @@ void AddResource(const std::string& path,
 void AddResourcesToMap(ResourcesMap* resources_map) {
   for (size_t i = 0; i < kWebuiResourcesSize; ++i) {
     const auto& resource = kWebuiResources[i];
-    AddResource(resource.name, resource.value, resources_map);
+    AddResource(resource.path, resource.id, resources_map);
   }
 }
 
@@ -176,11 +176,11 @@ void AddAliasedResourcesToMap(
   for (size_t i = 0; i < resources_size; ++i) {
     const auto& resource = resources[i];
 
-    const auto it = resource_aliases.find(resource.value);
+    const auto it = resource_aliases.find(resource.id);
     if (it == resource_aliases.end())
       continue;
 
-    AddResource(it->second, resource.value, resources_map);
+    AddResource(it->second, resource.id, resources_map);
   }
 }
 
@@ -189,7 +189,7 @@ void AddAliasedResourcesToMap(
 void AddGritResourcesToMap(base::span<const GritResourceMap> resources,
                            ResourcesMap* resources_map) {
   for (const GritResourceMap& entry : resources)
-    AddResource(entry.name, entry.value, resources_map);
+    AddResource(entry.path, entry.id, resources_map);
 }
 
 const ResourcesMap* CreateResourcesMap() {

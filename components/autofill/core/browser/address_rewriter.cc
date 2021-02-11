@@ -35,8 +35,8 @@ static bool ExtractRegionRulesData(const std::string& region,
   int resource_id = 0;
   std::string resource_key = GetMapKey(region);
   for (size_t i = 0; i < kAutofillAddressRewriterResourcesSize; ++i) {
-    if (kAutofillAddressRewriterResources[i].name == resource_key) {
-      resource_id = kAutofillAddressRewriterResources[i].value;
+    if (kAutofillAddressRewriterResources[i].path == resource_key) {
+      resource_id = kAutofillAddressRewriterResources[i].id;
       break;
     }
   }

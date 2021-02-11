@@ -115,7 +115,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const GritResourceMap> resources,
                           int default_resource) {
   for (const auto& resource : resources) {
-    source->AddResourcePath(resource.name, resource.value);
+    source->AddResourcePath(resource.path, resource.id);
   }
 
   source->SetDefaultResource(default_resource);

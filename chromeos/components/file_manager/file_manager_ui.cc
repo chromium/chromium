@@ -25,13 +25,13 @@ void AddFilesAppResources(content::WebUIDataSource* source,
                           const GritResourceMap* entries,
                           size_t size) {
   for (size_t i = 0; i < size; ++i) {
-    std::string path(entries[i].name);
+    std::string path(entries[i].path);
     // Only load resources for Files app.
     if (base::StartsWith(path, "file_manager/")) {
       // Files app UI has all paths relative to //ui/file_manager/file_manager/
       // so we remove the leading file_manager/ to match the existing paths.
       base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");
-      source->AddResourcePath(path, entries[i].value);
+      source->AddResourcePath(path, entries[i].id);
     }
   }
 }
@@ -54,8 +54,8 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
 
   // Add chrome://file-manager content.
   for (size_t i = 0; i < kChromeosFileManagerResourcesSize; i++) {
-    source->AddResourcePath(kChromeosFileManagerResources[i].name,
-                            kChromeosFileManagerResources[i].value);
+    source->AddResourcePath(kChromeosFileManagerResources[i].path,
+                            kChromeosFileManagerResources[i].id);
   }
 
   AddFilesAppResources(source, kFileManagerResources,

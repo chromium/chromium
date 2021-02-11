@@ -130,8 +130,8 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
   // fields are defined in the generated file
   // chrome/grit/multidevice_setup_resources_map.h.
   for (size_t i = 0; i < kMultideviceSetupResourcesSize; ++i) {
-    source->AddResourcePath(kMultideviceSetupResources[i].name,
-                            kMultideviceSetupResources[i].value);
+    source->AddResourcePath(kMultideviceSetupResources[i].path,
+                            kMultideviceSetupResources[i].id);
   }
 
   web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>());

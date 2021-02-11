@@ -93,7 +93,7 @@ class TestWebUIController : public WebUIController {
           "script-src chrome://resources 'self' 'unsafe-eval';");
       data_source->DisableTrustedTypesCSP();
       for (const GritResourceMap& resource : kMojoWebUiResources)
-        data_source->AddResourcePath(resource.name, resource.value);
+        data_source->AddResourcePath(resource.path, resource.id);
       data_source->AddResourcePath("", IDR_WEB_UI_MOJO_HTML);
       WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                            data_source);

@@ -43,8 +43,8 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
 
   // Add all resources from chromeos_media_app_bundle_resources.pak.
   for (size_t i = 0; i < kChromeosMediaAppBundleResourcesSize; i++) {
-    source->AddResourcePath(kChromeosMediaAppBundleResources[i].name,
-                            kChromeosMediaAppBundleResources[i].value);
+    source->AddResourcePath(kChromeosMediaAppBundleResources[i].path,
+                            kChromeosMediaAppBundleResources[i].id);
   }
 
   // Note: go/bbsrc/flags.ts processes this.

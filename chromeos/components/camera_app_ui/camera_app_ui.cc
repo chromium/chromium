@@ -44,8 +44,8 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
 
   // Add all settings resources.
   for (size_t i = 0; i < kChromeosCameraAppResourcesSize; i++) {
-    source->AddResourcePath(kChromeosCameraAppResources[i].name,
-                            kChromeosCameraAppResources[i].value);
+    source->AddResourcePath(kChromeosCameraAppResources[i].path,
+                            kChromeosCameraAppResources[i].id);
   }
 
   source->AddResourcePath("js/mojo/mojo_bindings_lite.js",
@@ -79,8 +79,8 @@ content::WebUIDataSource* CreateUntrustedCameraAppUIHTMLSource() {
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::Create(kChromeUIUntrustedCameraAppURL);
   for (size_t i = 0; i < kChromeosCameraAppResourcesSize; i++) {
-    untrusted_source->AddResourcePath(kChromeosCameraAppResources[i].name,
-                                      kChromeosCameraAppResources[i].value);
+    untrusted_source->AddResourcePath(kChromeosCameraAppResources[i].path,
+                                      kChromeosCameraAppResources[i].id);
   }
   untrusted_source->AddFrameAncestor(GURL(kChromeUICameraAppURL));
 

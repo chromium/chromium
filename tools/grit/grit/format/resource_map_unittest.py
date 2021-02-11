@@ -51,13 +51,14 @@ class FormatResourceMapUnittest(unittest.TestCase):
        </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include <stddef.h>
 #ifndef GRIT_RESOURCE_MAP_STRUCT_
 #define GRIT_RESOURCE_MAP_STRUCT_
 struct GritResourceMap {
-  const char* const name;
-  int value;
+  const char* const path;
+  int id;
 };
 #endif // GRIT_RESOURCE_MAP_STRUCT_
 extern const GritResourceMap kTheRcHeader[];
@@ -161,13 +162,14 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
         </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include <stddef.h>
 #ifndef GRIT_RESOURCE_MAP_STRUCT_
 #define GRIT_RESOURCE_MAP_STRUCT_
 struct GritResourceMap {
-  const char* const name;
-  int value;
+  const char* const path;
+  int id;
 };
 #endif // GRIT_RESOURCE_MAP_STRUCT_
 extern const GritResourceMap kTheRcHeader[];
@@ -240,13 +242,14 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
         </release>''', run_gatherers=True)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include <stddef.h>
 #ifndef GRIT_RESOURCE_MAP_STRUCT_
 #define GRIT_RESOURCE_MAP_STRUCT_
 struct GritResourceMap {
-  const char* const name;
-  int value;
+  const char* const path;
+  int id;
 };
 #endif // GRIT_RESOURCE_MAP_STRUCT_
 extern const GritResourceMap kTheRcHeader[];
@@ -313,13 +316,14 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
     grd.InitializeIds()
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_header')(grd, 'en', '.')))
-    self.assertEqual('''\
+    self.assertEqual(
+        '''\
 #include <stddef.h>
 #ifndef GRIT_RESOURCE_MAP_STRUCT_
 #define GRIT_RESOURCE_MAP_STRUCT_
 struct GritResourceMap {
-  const char* const name;
-  int value;
+  const char* const path;
+  int id;
 };
 #endif // GRIT_RESOURCE_MAP_STRUCT_
 extern const GritResourceMap kTheRcHeader[];

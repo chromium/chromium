@@ -42,7 +42,7 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           int default_resource) {
   SetJSModuleDefaults(source);
   for (const GritResourceMap& resource : resources) {
-    source->AddResourcePath(resource.name, resource.value);
+    source->AddResourcePath(resource.path, resource.id);
   }
   source->AddResourcePath("", default_resource);
 }
@@ -56,7 +56,7 @@ void AddResourcePathsBulk(content::WebUIDataSource* source,
 void AddResourcePathsBulk(content::WebUIDataSource* source,
                           base::span<const GritResourceMap> resources) {
   for (const auto& resource : resources)
-    source->AddResourcePath(resource.name, resource.value);
+    source->AddResourcePath(resource.path, resource.id);
 }
 
 bool IsEnterpriseManaged() {

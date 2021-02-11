@@ -57,14 +57,16 @@ def _FormatHeader(root, lang='en', output_dir='.'):
 #ifndef GRIT_RESOURCE_MAP_STRUCT_
 #define GRIT_RESOURCE_MAP_STRUCT_
 struct GritResourceMap {
-  const char* const name;
-  int value;
+  const char* const path;
+  int id;
 };
 #endif // GRIT_RESOURCE_MAP_STRUCT_
 
 extern const GritResourceMap %(map_name)s[];
 extern const size_t %(map_name)sSize;
-''' % { 'map_name': GetMapName(root) }
+''' % {
+      'map_name': GetMapName(root)
+  }
 
 
 def _FormatSourceHeader(root, output_dir):
