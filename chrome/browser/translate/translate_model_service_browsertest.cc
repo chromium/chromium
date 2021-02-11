@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -246,8 +247,17 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", false, 1);
 }
 
+// Disabled due to flake: https://crbug.com/1177331
+#if defined(OS_MAC)
+#define MAYBE_LanguageDetectionModelAvailableForDetection \
+  DISABLED_LanguageDetectionModelAvailableForDetection
+#else
+#define MAYBE_LanguageDetectionModelAvailableForDetection \
+  LanguageDetectionModelAvailableForDetection
+#endif
+
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
-                       LanguageDetectionModelAvailableForDetection) {
+                       MAYBE_LanguageDetectionModelAvailableForDetection) {
   base::HistogramTester histogram_tester;
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->OverrideTargetModelFileForTesting(
