@@ -780,7 +780,7 @@ Try tapping the mic to ask me anything.
         See Report
       </message>
       <message name="IDS_DIANOSTICS_ROUTINE_ENTRY_TEXT" desc="The text that shows the name of a test.">
-        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> Test
+        <ph name="TEST_NAME">$1<ex>Stress</ex></ph> test
       </message>
       <message name="IDS_DIAGNOSTICS_CHARGE_RUN_TESTS_BUTTON_TEXT" desc="The text for the button used to run the battery charge test.">
         Run Charge test
