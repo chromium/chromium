@@ -48,7 +48,6 @@ source_set("quiche") {
       "src/common/platform/api/quiche_string_piece.h",
       "src/common/platform/api/quiche_text_utils.h",
       "src/common/platform/api/quiche_time_utils.h",
-      "src/common/platform/api/quiche_unordered_containers.h",
       "src/common/quiche_data_reader.cc",
       "src/common/quiche_data_reader.h",
       "src/common/quiche_data_writer.cc",
@@ -633,7 +632,6 @@ source_set("quiche") {
       "src/spdy/platform/api/spdy_estimate_memory_usage.h",
       "src/spdy/platform/api/spdy_flags.h",
       "src/spdy/platform/api/spdy_logging.h",
-      "src/spdy/platform/api/spdy_macros.h",
       "src/spdy/platform/api/spdy_mem_slice.h",
       "src/spdy/platform/api/spdy_string_utils.h",
     ]
