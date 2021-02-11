@@ -40,9 +40,6 @@ VideoPlayerUI::VideoPlayerUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::MediaSrc, "media-src https:;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc, "style-src 'self';");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome-untrusted://resources/ 'self';");
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source);

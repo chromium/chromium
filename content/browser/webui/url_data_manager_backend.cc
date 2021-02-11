@@ -162,9 +162,11 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
     std::string csp_header;
 
     const network::mojom::CSPDirectiveName kAllDirectives[] = {
+        network::mojom::CSPDirectiveName::BaseURI,
         network::mojom::CSPDirectiveName::ChildSrc,
         network::mojom::CSPDirectiveName::ConnectSrc,
         network::mojom::CSPDirectiveName::DefaultSrc,
+        network::mojom::CSPDirectiveName::FormAction,
         network::mojom::CSPDirectiveName::FrameSrc,
         network::mojom::CSPDirectiveName::ImgSrc,
         network::mojom::CSPDirectiveName::MediaSrc,
