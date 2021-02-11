@@ -106,6 +106,14 @@ SkColor ResolveColor(AshColorProvider::ContentLayerType type,
   return cros_colors::ResolveColor(TypeToColorName(type), is_dark_mode);
 }
 
+// Notify all the other components to update on the color mode changes. Only
+// Chrome browser is notified currently, will include WebUI, Arc etc later.
+void NotifyColorModeChanges(bool is_dark_mode_enabled) {
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_use_dark_colors(is_dark_mode_enabled);
+  native_theme->NotifyObservers();
+}
+
 }  // namespace
 
 AshColorProvider::AshColorProvider() {
@@ -159,6 +167,13 @@ void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
   // Immediately tell all the observers to load this user's saved preferences.
   NotifyDarkModeEnabledPrefChange();
   NotifyColorModeThemedPrefChange();
+}
+
+void AshColorProvider::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (!features::IsDarkLightModeEnabled())
+    return;
+  NotifyColorModeChanges(IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
@@ -375,6 +390,7 @@ void AshColorProvider::ToggleColorMode() {
   active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
                                         !IsDarkModeEnabled());
   active_user_pref_service_->CommitPendingWrite();
+  NotifyColorModeChanges(IsDarkModeEnabled());
 }
 
 void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
