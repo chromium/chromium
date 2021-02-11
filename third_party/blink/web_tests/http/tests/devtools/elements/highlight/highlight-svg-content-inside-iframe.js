@@ -31,5 +31,5 @@
       </div>
     `);
 
-  ElementsTestRunner.dumpInspectorHighlightJSON('svg-rect', TestRunner.completeTest.bind(TestRunner), 'svg-iframe');
+  ElementsTestRunner.dumpInspectorHighlightJSON('svg-rect', TestRunner.completeTest.bind(TestRunner));
 })();
