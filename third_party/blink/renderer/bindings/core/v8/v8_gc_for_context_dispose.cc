@@ -49,7 +49,7 @@ static size_t GetMemoryUsage() {
   v8::HeapStatistics v8_heap_statistics;
   blink::V8PerIsolateData::MainThreadIsolate()->GetHeapStatistics(
       &v8_heap_statistics);
-  usage = v8_heap_statistics.total_heap_size();
+  usage += v8_heap_statistics.total_heap_size();
   return usage;
 }
 #endif  // defined(OS_ANDROID)
