@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -40,10 +41,17 @@ class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
   base::RunLoop run_loop_;
 };
 
+// Flaky on Mac.  https://crbug.com/1177254
+#if defined(OS_MAC)
+#define MAYBE_Registration DISABLED_Registration
+#else
+#define MAYBE_Registration Registration
+#endif
+
 // This test verifies correct registration of protocol handlers using HTML5's
 // registerProtocolHandler in extension context and its validation with relaxed
 // security checks.
-IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, Registration) {
+IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, MAYBE_Registration) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Initialize listener and result catcher before the test page is loaded to
