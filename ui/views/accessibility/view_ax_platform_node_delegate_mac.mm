@@ -15,15 +15,13 @@ namespace views {
 
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
-  return std::make_unique<ViewAXPlatformNodeDelegateMac>(view);
+  auto result = std::make_unique<ViewAXPlatformNodeDelegateMac>(view);
+  result->Init();
+  return result;
 }
 
 ViewAXPlatformNodeDelegateMac::ViewAXPlatformNodeDelegateMac(View* view)
-    : ViewAXPlatformNodeDelegate(view) {
-  // TODO(nektar): Move this to parent class.
-  ax_platform_node_ = ui::AXPlatformNode::Create(this);
-  DCHECK(ax_platform_node_);
-}
+    : ViewAXPlatformNodeDelegate(view) {}
 
 ViewAXPlatformNodeDelegateMac::~ViewAXPlatformNodeDelegateMac() = default;
 

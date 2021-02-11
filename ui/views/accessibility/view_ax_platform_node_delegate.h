@@ -104,13 +104,13 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
  protected:
   explicit ViewAXPlatformNodeDelegate(View* view);
 
-  ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
+  friend class ViewAccessibility;
+  // Called by ViewAccessibility::Create immediately after
+  // construction. Used to avoid issues with calling virtual functions
+  // during the constructor.
+  virtual void Init();
 
-  // We own this, but it is reference-counted on some platforms so we can't use
-  // a unique_ptr. It is destroyed in the destructor.
-  // TODO(nektar): Move this to the private section and turn it into a const
-  // pointer.
-  ui::AXPlatformNode* ax_platform_node_;
+  ui::AXPlatformNode* ax_platform_node() { return ax_platform_node_; }
 
  private:
   struct ChildWidgetsResult final {
@@ -143,6 +143,10 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
 
   // Gets the real (non-virtual) TableView, otherwise nullptr.
   TableView* GetAncestorTableView() const;
+
+  // We own this, but it is reference-counted on some platforms so we can't use
+  // a unique_ptr. It is destroyed in the destructor.
+  ui::AXPlatformNode* ax_platform_node_ = nullptr;
 
   mutable ui::AXNodeData data_;
 };

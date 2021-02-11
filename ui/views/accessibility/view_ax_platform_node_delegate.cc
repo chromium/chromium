@@ -130,7 +130,12 @@ ViewAXPlatformNodeDelegate::ChildWidgetsResult::operator=(
     const ViewAXPlatformNodeDelegate::ChildWidgetsResult& other) = default;
 
 ViewAXPlatformNodeDelegate::ViewAXPlatformNodeDelegate(View* view)
-    : ViewAccessibility(view) {
+    : ViewAccessibility(view) {}
+
+void ViewAXPlatformNodeDelegate::Init() {
+  ax_platform_node_ = ui::AXPlatformNode::Create(this);
+  DCHECK(ax_platform_node_);
+
   static bool first_time = true;
   if (first_time) {
     ui::AXPlatformNode::RegisterNativeWindowHandler(

@@ -200,17 +200,20 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegateBase,
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
   AuraLinuxApplication::GetInstance().RegisterWidget(view->GetWidget());
-  return std::make_unique<ViewAXPlatformNodeDelegateAuraLinux>(view);
+
+  auto result = std::make_unique<ViewAXPlatformNodeDelegateAuraLinux>(view);
+  result->Init();
+  return result;
 }
 
 ViewAXPlatformNodeDelegateAuraLinux::ViewAXPlatformNodeDelegateAuraLinux(
     View* view)
-    : ViewAXPlatformNodeDelegate(view) {
-  // TODO(nektar): Move this to parent class.
-  ax_platform_node_ = ui::AXPlatformNode::Create(this);
-  DCHECK(ax_platform_node_);
+    : ViewAXPlatformNodeDelegate(view) {}
 
-  view_observation_.Observe(view);
+void ViewAXPlatformNodeDelegateAuraLinux::Init() {
+  ViewAXPlatformNodeDelegate::Init();
+
+  view_observation_.Observe(view());
 }
 
 ViewAXPlatformNodeDelegateAuraLinux::~ViewAXPlatformNodeDelegateAuraLinux() {
