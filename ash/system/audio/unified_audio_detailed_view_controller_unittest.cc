@@ -116,9 +116,6 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSystemTrayMicGainSetting);
-
     fake_manager_ = std::make_unique<FakeMediaControllerManager>();
     tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =

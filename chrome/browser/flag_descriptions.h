@@ -1324,9 +1324,6 @@ extern const char kSyncAutofillWalletOfferDataDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
-extern const char kSystemTrayMicGainName[];
-extern const char kSystemTrayMicGainDescription[];
-
 extern const char kTabEngagementReportingName[];
 extern const char kTabEngagementReportingDescription[];
 

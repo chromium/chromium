@@ -169,10 +169,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kFullscreenAlertBubble;
 // Enables battery indicator for styluses in the palette tray
 ASH_PUBLIC_EXPORT extern const base::Feature kStylusBatteryStatus;
 
-// Enables sliders for setting mic gain levels in the more audio settings
-// section in the system tray.
-ASH_PUBLIC_EXPORT extern const base::Feature kSystemTrayMicGainSetting;
-
 // Enables special handling of Chrome tab drags from a WebUI tab strip.
 // These will be treated similarly to a window drag, showing split view
 // indicators in tablet mode, etc. The functionality is behind a flag
@@ -256,8 +252,6 @@ ASH_PUBLIC_EXPORT bool IsReverseScrollGesturesEnabled();
 ASH_PUBLIC_EXPORT bool IsFullscreenAlertBubbleEnabled();
 
 ASH_PUBLIC_EXPORT bool AreContextualNudgesEnabled();
-
-ASH_PUBLIC_EXPORT bool IsSystemTrayMicGainSettingEnabled();
 
 ASH_PUBLIC_EXPORT bool IsStylusBatteryStatusEnabled();
 

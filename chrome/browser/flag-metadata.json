@@ -4786,11 +4786,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "system-tray-mic-gain",
-    "owners": [ "amehfooz", "tengs" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "tab-groups",
     "owners": [ "chrome-desktop-ui-sea@google.com", "connily" ],
     "expiry_milestone": 88

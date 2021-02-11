@@ -163,10 +163,8 @@ void AudioDetailedView::UpdateScrollableList() {
         AddScrollListCheckableItem(GetAudioDeviceName(device), device.active);
     device_map_[container] = device;
 
-    if (features::IsSystemTrayMicGainSettingEnabled()) {
-      AddScrollListChild(mic_gain_controller_->CreateMicGainSlider(
-          device.id, device.IsInternalMic()));
-    }
+    AddScrollListChild(mic_gain_controller_->CreateMicGainSlider(
+        device.id, device.IsInternalMic()));
   }
 
   scroll_content()->SizeToPreferredSize();

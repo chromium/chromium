@@ -185,14 +185,10 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets((kTrayItemSize -
-                     GetDefaultSizeOfVectorIcon(vector_icons::kHeadsetIcon)) /
+                     GetDefaultSizeOfVectorIcon(kUnifiedMenuExpandIcon)) /
                     2),
         2));
 
-    if (!features::IsSystemTrayMicGainSettingEnabled()) {
-      headset_image_ = AddChildView(std::make_unique<views::ImageView>());
-      headset_image_->SetCanProcessEventsWithinSubtree(false);
-    }
     more_image_ = AddChildView(std::make_unique<views::ImageView>());
     more_image_->SetCanProcessEventsWithinSubtree(false);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO));
@@ -205,10 +201,7 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
   void OnThemeChanged() override {
     UnifiedVolumeViewButton::OnThemeChanged();
     const SkColor icon_color = GetIconColor();
-    if (headset_image_) {
-      headset_image_->SetImage(
-          CreateVectorIcon(vector_icons::kHeadsetIcon, icon_color));
-    }
+
     DCHECK(more_image_);
     auto icon_rotation = base::i18n::IsRTL()
                              ? SkBitmapOperations::ROTATION_270_CW
@@ -218,7 +211,6 @@ class MoreButton : public UnifiedVolumeViewButton<views::Button> {
   }
 
  private:
-  views::ImageView* headset_image_ = nullptr;
   views::ImageView* more_image_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MoreButton);
@@ -284,10 +276,6 @@ void UnifiedVolumeView::Update(bool by_user) {
   live_caption_button_->SetToggled(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kLiveCaptionEnabled));
-
-  more_button_->SetVisible(CrasAudioHandler::Get()->has_alternative_input() ||
-                           CrasAudioHandler::Get()->has_alternative_output() ||
-                           features::IsSystemTrayMicGainSettingEnabled());
 
   // Slider's value is in finer granularity than audio volume level(0.01),
   // there will be a small discrepancy between slider's value and volume level

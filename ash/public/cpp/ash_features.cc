@@ -125,9 +125,6 @@ const base::Feature kFullscreenAlertBubble{"EnableFullscreenBubble",
 const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSystemTrayMicGainSetting{"SystemTrayMicGainSetting",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kWebUITabStripTabDragIntegration{
     "WebUITabStripTabDragIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -284,10 +281,6 @@ bool AreContextualNudgesEnabled() {
 
 bool IsStylusBatteryStatusEnabled() {
   return base::FeatureList::IsEnabled(kStylusBatteryStatus);
-}
-
-bool IsSystemTrayMicGainSettingEnabled() {
-  return base::FeatureList::IsEnabled(kSystemTrayMicGainSetting);
 }
 
 bool IsDisplayIdentificationEnabled() {
