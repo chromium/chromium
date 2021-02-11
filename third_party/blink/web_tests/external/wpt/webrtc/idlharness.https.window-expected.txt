@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 496 tests; 480 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 496 tests; 482 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Test driver for asyncInitCertificate
@@ -33,7 +33,7 @@ PASS RTCPeerConnection interface: operation setRemoteDescription(RTCSessionDescr
 PASS RTCPeerConnection interface: attribute remoteDescription
 PASS RTCPeerConnection interface: attribute currentRemoteDescription
 PASS RTCPeerConnection interface: attribute pendingRemoteDescription
-FAIL RTCPeerConnection interface: operation addIceCandidate(optional RTCIceCandidateInit) assert_equals: property has wrong .length expected 0 but got 1
+PASS RTCPeerConnection interface: operation addIceCandidate(optional RTCIceCandidateInit)
 PASS RTCPeerConnection interface: attribute signalingState
 PASS RTCPeerConnection interface: attribute iceGatheringState
 PASS RTCPeerConnection interface: attribute iceConnectionState
@@ -54,7 +54,7 @@ PASS RTCPeerConnection interface: operation createOffer(RTCSessionDescriptionCal
 PASS RTCPeerConnection interface: operation setLocalDescription(RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)
 PASS RTCPeerConnection interface: operation createAnswer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback)
 PASS RTCPeerConnection interface: operation setRemoteDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)
-FAIL RTCPeerConnection interface: operation addIceCandidate(RTCIceCandidateInit, VoidFunction, RTCPeerConnectionErrorCallback) assert_equals: property has wrong .length expected 0 but got 1
+PASS RTCPeerConnection interface: operation addIceCandidate(RTCIceCandidateInit, VoidFunction, RTCPeerConnectionErrorCallback)
 PASS RTCPeerConnection interface: operation generateCertificate(AlgorithmIdentifier)
 PASS RTCPeerConnection interface: operation getSenders()
 PASS RTCPeerConnection interface: operation getReceivers()

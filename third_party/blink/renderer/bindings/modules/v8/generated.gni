@@ -97,8 +97,6 @@ bindings_modules_generated_union_type_files = [
   "$bindings_modules_v8_output_dir/rendering_context.h",
   "$bindings_modules_v8_output_dir/request_or_usv_string_or_request_or_usv_string_sequence.cc",
   "$bindings_modules_v8_output_dir/request_or_usv_string_or_request_or_usv_string_sequence.h",
-  "$bindings_modules_v8_output_dir/rtc_ice_candidate_init_or_rtc_ice_candidate.cc",
-  "$bindings_modules_v8_output_dir/rtc_ice_candidate_init_or_rtc_ice_candidate.h",
   "$bindings_modules_v8_output_dir/string_or_array_buffer_or_array_buffer_view_or_ndef_message_init.cc",
   "$bindings_modules_v8_output_dir/string_or_array_buffer_or_array_buffer_view_or_ndef_message_init.h",
   "$bindings_modules_v8_output_dir/string_or_canvas_gradient_or_canvas_pattern.cc",
