@@ -33,32 +33,33 @@ CGVector GetNormalizedEdgeVector(GREYContentEdge edge) {
   }
 }
 
-// Creates a query for the given identifier in given window, where the
-// identifier can be the window itself.
+// Creates a query for the given |identifier| of given |type| in given
+// |window_number|.  If |identitifer| is nil, this will return a query for the
+// window with |window_number| itself.
 XCUIElementQuery* GetQueryMatchingIdentifierInWindow(XCUIApplication* app,
                                                      NSString* identifier,
-                                                     int window_number) {
-  // Check for matching descendants.
-  XCUIElementQuery* query = [[[app.windows
-      matchingIdentifier:[NSString stringWithFormat:@"%d", window_number]]
-      descendantsMatchingType:XCUIElementTypeAny]
-      matchingIdentifier:identifier];
-  if (query.count)
-    return query;
-  // Or else try for a window itself.
-  return [app.windows matchingIdentifier:identifier];
+                                                     int window_number,
+                                                     XCUIElementType type) {
+  NSString* window_id = [NSString stringWithFormat:@"%d", window_number];
+  if (identifier) {
+    // Check for matching descendants.
+    return [[[app.windows matchingIdentifier:window_id]
+        descendantsMatchingType:type] matchingIdentifier:identifier];
+  }
+  // Check for window itself.
+  return [app.windows matchingIdentifier:window_id];
 }
 
 }  // namespace
 
 namespace chrome_test_util {
 
-BOOL LongPressAndDragToEdge(NSString* accessibility_identifier,
-                            GREYContentEdge edge,
-                            int window_number) {
+BOOL LongPressCellAndDragToEdge(NSString* accessibility_identifier,
+                                GREYContentEdge edge,
+                                int window_number) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
-      app, accessibility_identifier, window_number);
+      app, accessibility_identifier, window_number, XCUIElementTypeCell);
 
   if (query.count == 0)
     return NO;
@@ -77,17 +78,19 @@ BOOL LongPressAndDragToEdge(NSString* accessibility_identifier,
   return YES;
 }
 
-BOOL LongPressAndDragToOffsetOf(NSString* src_accessibility_identifier,
-                                int src_window_number,
-                                NSString* dst_accessibility_identifier,
-                                int dst_window_number,
-                                CGVector dst_normalized_offset) {
+BOOL LongPressCellAndDragToOffsetOf(NSString* src_accessibility_identifier,
+                                    int src_window_number,
+                                    NSString* dst_accessibility_identifier,
+                                    int dst_window_number,
+                                    CGVector dst_normalized_offset) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElementQuery* src_query = GetQueryMatchingIdentifierInWindow(
-      app, src_accessibility_identifier, src_window_number);
+      app, src_accessibility_identifier, src_window_number,
+      XCUIElementTypeCell);
 
   XCUIElementQuery* dst_query = GetQueryMatchingIdentifierInWindow(
-      app, dst_accessibility_identifier, dst_window_number);
+      app, dst_accessibility_identifier, dst_window_number,
+      XCUIElementTypeCell);
 
   if (src_query.count == 0 || dst_query.count == 0)
     return NO;
@@ -112,7 +115,7 @@ BOOL TapAtOffsetOf(NSString* accessibility_identifier,
                    CGVector normalized_offset) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
-      app, accessibility_identifier, window_number);
+      app, accessibility_identifier, window_number, XCUIElementTypeAny);
 
   if (query.count == 0)
     return NO;

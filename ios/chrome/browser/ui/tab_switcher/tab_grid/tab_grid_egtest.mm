@@ -24,8 +24,8 @@
 #endif
 
 using chrome_test_util::TabGridOtherDevicesPanelButton;
-using chrome_test_util::LongPressAndDragToEdge;
-using chrome_test_util::LongPressAndDragToOffsetOf;
+using chrome_test_util::LongPressCellAndDragToEdge;
+using chrome_test_util::LongPressCellAndDragToOffsetOf;
 using chrome_test_util::TapAtOffsetOf;
 using chrome_test_util::WindowWithNumber;
 
@@ -55,10 +55,6 @@ id<GREYMatcher> CloseAllTabsConfirmationWithNumberOfTabs(
 // Identifer for cell at given |index| in the tab grid.
 NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
-}
-
-NSString* IdentifierForWindowWithNumber(int window_number) {
-  return [NSString stringWithFormat:@"%d", window_number];
 }
 
 }  // namespace
@@ -353,7 +349,9 @@ NSString* IdentifierForWindowWithNumber(int window_number) {
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
-  LongPressAndDragToEdge(IdentifierForCellAtIndex(0), kGREYContentEdgeRight, 0);
+  GREYAssert(LongPressCellAndDragToEdge(IdentifierForCellAtIndex(0),
+                                        kGREYContentEdgeRight, 0),
+             @"Failed to DND cell");
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
@@ -403,7 +401,9 @@ NSString* IdentifierForWindowWithNumber(int window_number) {
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
-  LongPressAndDragToEdge(IdentifierForCellAtIndex(0), kGREYContentEdgeRight, 0);
+  GREYAssert(LongPressCellAndDragToEdge(IdentifierForCellAtIndex(0),
+                                        kGREYContentEdgeRight, 0),
+             @"Failed to DND cell");
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
@@ -473,9 +473,10 @@ NSString* IdentifierForWindowWithNumber(int window_number) {
   // DnD first tab of left window to left edge of first tab in second window.
   // Note: move to left half of the destination tile, to avoid unwanted
   // scrolling that would happen closer to the left edge.
-  LongPressAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0,
-                             IdentifierForCellAtIndex(0), 1,
-                             CGVectorMake(0.4, 0.5));
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0,
+                                            IdentifierForCellAtIndex(0), 1,
+                                            CGVectorMake(0.4, 0.5)),
+             @"Failed to DND cell on cell");
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
@@ -483,9 +484,10 @@ NSString* IdentifierForWindowWithNumber(int window_number) {
   [ChromeEarlGrey waitForMainTabCount:3 inWindowWithNumber:1];
 
   // Move third cell of second window as second cell in first window.
-  LongPressAndDragToOffsetOf(IdentifierForCellAtIndex(2), 1,
-                             IdentifierForCellAtIndex(0), 0,
-                             CGVectorMake(1.0, 0.5));
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(2), 1,
+                                            IdentifierForCellAtIndex(0), 0,
+                                            CGVectorMake(1.0, 0.5)),
+             @"Failed to DND cell on cell");
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
@@ -541,9 +543,10 @@ NSString* IdentifierForWindowWithNumber(int window_number) {
 
   // Try DnDing first incognito tab of left window to main tab panel on right
   // window.
-  LongPressAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0,
-                             IdentifierForCellAtIndex(0), 1,
-                             CGVectorMake(1.0, 0.5));
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0,
+                                            IdentifierForCellAtIndex(0), 1,
+                                            CGVectorMake(1.0, 0.5)),
+             @"Failed to DND cell on cell");
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
@@ -554,13 +557,14 @@ NSString* IdentifierForWindowWithNumber(int window_number) {
   // Move second window to incognito tab panel.
   // Note: until reported bug is fixed in EarlGrey, grey_tap() doesn't always
   // work in second window, because it fails the visibility check.
-  TapAtOffsetOf(kTabGridIncognitoTabsPageButtonIdentifier, 1,
-                CGVectorMake(0.5, 0.5));
+  GREYAssert(TapAtOffsetOf(kTabGridIncognitoTabsPageButtonIdentifier, 1,
+                           CGVectorMake(0.5, 0.5)),
+             @"Failed to tap incognito panel button");
 
   // Try again to move tabs.
-  LongPressAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0,
-                             IdentifierForWindowWithNumber(1), 1,
-                             CGVectorMake(0.5, 0.5));
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0, nil,
+                                            1, CGVectorMake(0.5, 0.5)),
+             @"Failed to DND cell on window");
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
@@ -572,6 +576,189 @@ NSString* IdentifierForWindowWithNumber(int window_number) {
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests dragging tab grid item as URL between windows.
+- (void)testDragAndDropURLBetweenWindows {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Setup first window with tabs 1 and 2.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:0];
+
+  // Open second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Setup second window with tab 3.
+  [ChromeEarlGrey loadURL:_URL3 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
+
+  // Open tab grid in first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // DnD first tab of left window to second window.
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0, nil,
+                                            1, CGVectorMake(0.5, 0.5)),
+             @"Failed to DND cell on window");
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Tabs should not have changed.
+  [ChromeEarlGrey waitForMainTabCount:2 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
+
+  // Second window should show URL1
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1
+                             inWindowWithNumber:1];
+
+  // Navigate back to check the navigation stack is intact.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests dragging tab grid incognito item as URL to a main windows.
+- (void)testDragAndDropIncognitoURLInMainWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Setup first window with one incognito tab 1.
+  [ChromeEarlGrey closeAllNormalTabs];
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForIncognitoTabCount:1 inWindowWithNumber:0];
+
+  // Open second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Setup second window with tab 3.
+  [ChromeEarlGrey loadURL:_URL3 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
+
+  // Open incognito tab grid in first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // DnD first tab of left window to second window.
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 0, nil,
+                                            1, CGVectorMake(0.5, 0.5)),
+             @"Failed to DND cell on window");
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Tabs should not have changed.
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForIncognitoTabCount:1 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
+
+  // Second window should show URL1
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1
+                             inWindowWithNumber:1];
+
+  // Navigate back to check the navigation stack is intact.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests dragging tab grid main item as URL to an incognito windows.
+- (void)testDragAndDropMainURLInIncognitoWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Setup first window with one incognito tab 1.
+  [ChromeEarlGrey closeAllNormalTabs];
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForIncognitoTabCount:1 inWindowWithNumber:0];
+
+  // Open second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Setup second window with tab 3.
+  [ChromeEarlGrey loadURL:_URL3 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:1];
+
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
+
+  // Open incognito tab grid in first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // DnD first tab of second window to first window.
+  GREYAssert(LongPressCellAndDragToOffsetOf(IdentifierForCellAtIndex(0), 1, nil,
+                                            0, CGVectorMake(0.5, 0.5)),
+             @"Failed to DND cell on window");
+
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Tabs should not have changed.
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForIncognitoTabCount:1 inWindowWithNumber:0];
+  [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
+
+  // First window should show URL3
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3
+                             inWindowWithNumber:0];
+
+  // Navigate back to check the navigation stack is intact.
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(0)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1
+                             inWindowWithNumber:0];
 
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
