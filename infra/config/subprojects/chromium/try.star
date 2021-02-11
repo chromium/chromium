@@ -1312,6 +1312,7 @@ try_.chromium_mac_builder(
     main_list_view = "try",
     os = os.MAC_DEFAULT,
     tryjob = try_.job(),
+    grace_period = 2 * time.minute,
 )
 
 try_.chromium_mac_builder(
