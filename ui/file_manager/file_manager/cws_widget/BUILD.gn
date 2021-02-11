@@ -71,12 +71,19 @@ js_library("cws_widget_container.m") {
 }
 
 js_library("cws_widget_container_error_dialog") {
-  deps = [ "//ui/webui/resources/js/cr/ui:dialogs" ]
+  deps = [
+    "../common/js:util",
+    "//ui/webui/resources/js/cr/ui:dialogs",
+  ]
 }
 
 js_library("cws_widget_container_error_dialog.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/cws_widget/cws_widget_container_error_dialog.m.js" ]
-  deps = [ "//ui/webui/resources/js/cr/ui:dialogs.m" ]
+
+  deps = [
+    "../common/js:util.m",
+    "//ui/webui/resources/js/cr/ui:dialogs.m",
+  ]
 
   extra_deps = [ ":modulize" ]
 }
