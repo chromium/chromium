@@ -454,9 +454,7 @@ class StatsRatesCalculator {
               'totalPacketSendDelay', 'packetsSent',
               CalculatorModifier.kMillisecondsFromSeconds),
           framesEncoded: new RateCalculator('framesEncoded', 'timestamp'),
-          keyFramesEncoded: new RateCalculator('keyFramesEncoded', 'timestamp'),
           framesSent: new RateCalculator('framesSent', 'timestamp'),
-          hugeFramesSent: new RateCalculator('hugeFramesSent', 'timestamp'),
           totalEncodedBytesTarget: new RateCalculator(
               'totalEncodedBytesTarget', 'timestamp',
               CalculatorModifier.kBytesToBits),
