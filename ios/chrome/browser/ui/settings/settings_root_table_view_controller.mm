@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
@@ -197,7 +198,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
     heightForHeaderInSection:(NSInteger)section {
   if ([self.tableViewModel headerForSection:section])
     return UITableViewAutomaticDimension;
-  return kDefaultHeaderFooterHeight;
+  return ChromeTableViewHeightForHeaderInSection(section);
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
