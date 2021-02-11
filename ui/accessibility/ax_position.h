@@ -375,10 +375,7 @@ class AXPosition {
     DCHECK(GetAnchor());
     // If this position is anchored to an ignored node, then consider this
     // position to be ignored.
-    //
-    // TODO(nektar): Ensure that all methods skip over empty text nodes and
-    // remove the IsIgnoredForTextNavigation call.
-    if (GetAnchor()->IsIgnored() || GetAnchor()->IsIgnoredForTextNavigation())
+    if (GetAnchor()->IsIgnored())
       return true;
 
     switch (kind_) {
@@ -3733,7 +3730,6 @@ class AXPosition {
     // unignored child, making this a leaf tree or text position, or a leaf's
     // descendant.
     return !GetAnchor()->IsIgnored() &&
-           !GetAnchor()->IsIgnoredForTextNavigation() &&
            !IsPlatformDocument(GetAnchorRole()) && !IsInTextObject() &&
            !IsIframe(GetAnchorRole());
   }

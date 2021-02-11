@@ -1602,6 +1602,73 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestITextRangeProviderIgnoredForTextNavigation) {
+  // ++1 kRootWebArea
+  // ++++2 kStaticText
+  // ++++++3 kInlineTextBox foo
+  // ++++4 kSplitter
+  // ++++5 kStaticText
+  // ++++++6 kInlineTextBox bar
+  ui::AXNodeData root_1;
+  ui::AXNodeData static_text_2;
+  ui::AXNodeData inline_box_3;
+  ui::AXNodeData splitter_4;
+  ui::AXNodeData static_text_5;
+  ui::AXNodeData inline_box_6;
+
+  root_1.id = 1;
+  static_text_2.id = 2;
+  inline_box_3.id = 3;
+  splitter_4.id = 4;
+  static_text_5.id = 5;
+  inline_box_6.id = 6;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {static_text_2.id, splitter_4.id, static_text_5.id};
+
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.child_ids = {inline_box_3.id};
+  static_text_2.SetName("foo");
+
+  inline_box_3.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_3.SetName("foo");
+
+  splitter_4.role = ax::mojom::Role::kSplitter;
+  splitter_4.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+
+  static_text_5.role = ax::mojom::Role::kStaticText;
+  static_text_5.child_ids = {inline_box_6.id};
+  static_text_5.SetName("bar");
+
+  inline_box_6.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_6.SetName("bar");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.tree_data = tree_data;
+  update.has_tree_data = true;
+  update.root_id = root_1.id;
+  update.nodes = {root_1,     static_text_2, inline_box_3,
+                  splitter_4, static_text_5, inline_box_6};
+
+  Init(update);
+
+  AXNode* root_node = GetRootAsAXNode();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"foo\n\xFFFC\nbar");
+
+  int count;
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Paragraph, /*count*/ 1, &count));
+  ASSERT_EQ(1, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"bar");
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderInvalidCalls) {
   // Test for when a text range provider is invalid. Because no ax tree is
   // available, the anchor is invalid, so the text range provider fails the

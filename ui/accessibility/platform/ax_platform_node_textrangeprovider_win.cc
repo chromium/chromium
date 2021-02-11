@@ -1197,21 +1197,30 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitHelper(
   AXPositionInstance current_endpoint = endpoint->AsLeafTextPosition();
 
   for (int iteration = 0; iteration < std::abs(count); ++iteration) {
-    AXPositionInstance next_endpoint = GetNextTextBoundaryPosition(
-        current_endpoint, boundary_type,
-        AXBoundaryBehavior::StopAtLastAnchorBoundary, boundary_direction);
-    DCHECK(next_endpoint->IsLeafTextPosition());
+    do {
+      AXPositionInstance next_endpoint = GetNextTextBoundaryPosition(
+          current_endpoint, boundary_type,
+          AXBoundaryBehavior::StopAtLastAnchorBoundary, boundary_direction);
+      DCHECK(next_endpoint->IsLeafTextPosition());
 
-    // Since AXBoundaryBehavior::StopAtLastAnchorBoundary forces the next text
-    // boundary position to be different than the input position, the only case
-    // where these are equal is when they're already located at the last anchor
-    // boundary. In such case, there is no next position to move to.
-    if (next_endpoint->GetAnchor() == current_endpoint->GetAnchor() &&
-        *next_endpoint == *current_endpoint) {
-      *units_moved = (count > 0) ? iteration : -iteration;
-      return current_endpoint;
-    }
-    current_endpoint = std::move(next_endpoint);
+      // Since AXBoundaryBehavior::StopAtLastAnchorBoundary forces the next text
+      // boundary position to be different than the input position, the only
+      // case where these are equal is when they're already located at the last
+      // anchor boundary. In such case, there is no next position to move to.
+      if (next_endpoint->GetAnchor() == current_endpoint->GetAnchor() &&
+          *next_endpoint == *current_endpoint) {
+        *units_moved = (count > 0) ? iteration : -iteration;
+        return current_endpoint;
+      }
+      current_endpoint = std::move(next_endpoint);
+      // Loop until we're not on a position that is ignored for text navigation.
+      // There is one exception for character navigation - since the ignored
+      // anchor is represented by an embedded object character, we allow
+      // navigation by character for consistency (i.e. you should be able to
+      // move by character the same number of characters that are represented by
+      // the ranges flat string buffer).
+    } while (boundary_type != ax::mojom::TextBoundary::kCharacter &&
+             current_endpoint->GetAnchor()->IsIgnoredForTextNavigation());
   }
 
   *units_moved = count;

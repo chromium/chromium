@@ -500,8 +500,6 @@ void AXNode::ClearLanguageInfo() {
 
 base::string16 AXNode::GetHypertext() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  if (IsIgnoredForTextNavigation())
-    return base::string16();
 
   // Hypertext is not exposed for descendants of leaf nodes. For such nodes,
   // their inner text is equivalent to their hypertext. Otherwise, we would
@@ -546,10 +544,6 @@ base::string16 AXNode::GetHypertext() const {
 
 std::string AXNode::GetInnerText() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  // The inner text computed should exclude the elements not exposed to text
-  // navigation.
-  if (IsIgnoredForTextNavigation())
-    return std::string();
 
   // If a text field has no descendants, then we compute its inner text from its
   // value or its placeholder. Otherwise we prefer to look at its descendant
