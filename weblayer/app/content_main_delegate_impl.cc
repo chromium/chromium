@@ -23,6 +23,7 @@
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
@@ -166,6 +167,8 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kPeriodicBackgroundSync,
     // TODO(crbug.com/1131017): Support SurfaceViews on WebLayer.
     media::kOverlayFullscreenVideo,
+    // TODO(crbug.com/1174856): Support Portals.
+    blink::features::kPortals,
 #if defined(OS_ANDROID)
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
     media::kPictureInPictureAPI,
