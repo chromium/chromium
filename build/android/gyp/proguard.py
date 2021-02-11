@@ -114,6 +114,15 @@ def _ParseOptions():
       action='append',
       help='List of name pairs separated by : mapping a feature module to a '
       'dependent feature module.')
+  parser.add_argument(
+      '--keep-rules-targets-regex',
+      metavar='KEEP_RULES_REGEX',
+      help='If passed outputs keep rules for references from all other inputs '
+      'to the subset of inputs that satisfy the KEEP_RULES_REGEX.')
+  parser.add_argument(
+      '--keep-rules-output-path',
+      help='Output path to the keep rules for references to the '
+      '--keep-rules-targets-regex inputs from the rest of the inputs.')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -140,6 +149,11 @@ def _ParseOptions():
       parser.error('Feature splits require a stamp file as output.')
   elif not options.output_path:
     parser.error('Output path required when feature splits aren\'t used')
+
+  if bool(options.keep_rules_targets_regex) != bool(
+      options.keep_rules_output_path):
+    raise Exception('You must path both --keep-rules-targets-regex and '
+                    '--keep-rules-output-path')
 
   options.classpath = build_utils.ParseGnList(options.classpath)
   options.proguard_configs = build_utils.ParseGnList(options.proguard_configs)
@@ -411,6 +425,25 @@ def _OptimizeWithR8(options,
   return base_context
 
 
+def _OutputKeepRules(r8_path, input_paths, classpath, targets_re_string,
+                     keep_rules_output):
+  cmd = build_utils.JavaCmd(False) + [
+      '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
+      '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
+      '--keep-rules', '--output', keep_rules_output
+  ]
+  targets_re = re.compile(targets_re_string)
+  for path in input_paths:
+    if targets_re.search(path):
+      cmd += ['--target', path]
+    else:
+      cmd += ['--source', path]
+  for path in classpath:
+    cmd += ['--lib', path]
+
+  build_utils.CheckOutput(cmd, print_stderr=False, fail_on_output=False)
+
+
 def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
   cmd = build_utils.JavaCmd(warnings_as_errors) + [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
@@ -636,6 +669,11 @@ def main():
     if p not in libraries and p not in options.input_paths:
       libraries.append(p)
   _VerifyNoEmbeddedConfigs(options.input_paths + libraries)
+  if options.keep_rules_output_path:
+    _OutputKeepRules(options.r8_path, options.input_paths, options.classpath,
+                     options.keep_rules_targets_regex,
+                     options.keep_rules_output_path)
+    return
 
   base_context = _OptimizeWithR8(options, proguard_configs, libraries,
                                  dynamic_config_data, print_stdout)
