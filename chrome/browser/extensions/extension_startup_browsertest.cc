@@ -36,8 +36,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/extension_user_script_manager.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
@@ -151,11 +151,11 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
             ->extension_service();
     ASSERT_EQ(expect_extensions_enabled, service->extensions_enabled());
 
-    extensions::ExtensionUserScriptManager* manager =
+    extensions::UserScriptManager* manager =
         extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_user_script_manager();
+            ->user_script_manager();
 
-    extensions::UserScriptLoader* loader = manager->script_loader();
+    extensions::UserScriptLoader* loader = manager->manifest_script_loader();
     if (!loader->initial_load_complete())
       extensions::ContentScriptLoadWaiter(loader).Wait();
     ASSERT_TRUE(loader->initial_load_complete());
@@ -237,11 +237,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsStartupTest, DISABLED_NoFileAccess) {
       extension_list.push_back(it->get());
   }
 
-  extensions::ExtensionUserScriptManager* manager =
+  extensions::UserScriptManager* manager =
       extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_user_script_manager();
+          ->user_script_manager();
 
-  extensions::UserScriptLoader* loader = manager->script_loader();
+  extensions::UserScriptLoader* loader = manager->manifest_script_loader();
 
   for (size_t i = 0; i < extension_list.size(); ++i) {
     extensions::ContentScriptLoadWaiter waiter(loader);

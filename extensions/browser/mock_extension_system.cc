@@ -37,8 +37,7 @@ ServiceWorkerManager* MockExtensionSystem::service_worker_manager() {
   return nullptr;
 }
 
-ExtensionUserScriptManager*
-MockExtensionSystem::extension_user_script_manager() {
+UserScriptManager* MockExtensionSystem::user_script_manager() {
   return nullptr;
 }
 

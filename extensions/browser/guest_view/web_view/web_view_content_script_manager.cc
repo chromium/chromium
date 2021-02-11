@@ -13,11 +13,11 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/browser/declarative_user_script_manager.h"
 #include "extensions/browser/declarative_user_script_set.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#include "extensions/browser/user_script_manager.h"
 
 using content::BrowserThread;
 
@@ -54,7 +54,8 @@ void WebViewContentScriptManager::AddContentScripts(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DeclarativeUserScriptSet* script_set =
-      DeclarativeUserScriptManager::Get(browser_context_)
+      ExtensionSystem::Get(browser_context_)
+          ->user_script_manager()
           ->GetDeclarativeUserScriptSetByID(host_id);
   DCHECK(script_set);
 
@@ -147,7 +148,8 @@ void WebViewContentScriptManager::RemoveContentScripts(
     return;
 
   DeclarativeUserScriptSet* script_set =
-      DeclarativeUserScriptManager::Get(browser_context_)
+      ExtensionSystem::Get(browser_context_)
+          ->user_script_manager()
           ->GetDeclarativeUserScriptSetByID(host_id);
   CHECK(script_set);
 

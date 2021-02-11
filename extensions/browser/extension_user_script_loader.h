@@ -32,7 +32,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
   using HostsInfo = std::map<HostID, PathAndLocaleInfo>;
 
   // The listen_for_extension_system_loaded is only set true when initializing
-  // the Extension System, e.g, when constructs ExtensionUserScriptManager in
+  // the Extension System, e.g, when constructs UserScriptManager in
   // ExtensionSystemImpl.
   ExtensionUserScriptLoader(content::BrowserContext* browser_context,
                             const HostID& host_id,

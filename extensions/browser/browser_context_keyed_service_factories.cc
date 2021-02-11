@@ -35,7 +35,6 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/declarative_user_script_manager_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -76,7 +75,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   api::TCPSocketEventDispatcher::GetFactoryInstance();
   api::UDPSocketEventDispatcher::GetFactoryInstance();
   declarative_net_request::RulesMonitorService::GetFactoryInstance();
-  DeclarativeUserScriptManagerFactory::GetInstance();
   EnsureExtensionURLLoaderFactoryShutdownNotifierFactoryBuilt();
   EventRouterFactory::GetInstance();
   ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();

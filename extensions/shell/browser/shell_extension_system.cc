@@ -95,8 +95,7 @@ ServiceWorkerManager* ShellExtensionSystem::service_worker_manager() {
   return service_worker_manager_.get();
 }
 
-ExtensionUserScriptManager*
-ShellExtensionSystem::extension_user_script_manager() {
+UserScriptManager* ShellExtensionSystem::user_script_manager() {
   return nullptr;
 }
 

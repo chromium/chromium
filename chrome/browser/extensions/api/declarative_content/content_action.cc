@@ -20,10 +20,10 @@
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/declarative_user_script_manager.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
@@ -321,7 +321,8 @@ RequestContentScript::RequestContentScript(
   HostID host_id(HostID::EXTENSIONS, extension->id());
   InitScript(host_id, extension, script_data);
 
-  script_set_ = DeclarativeUserScriptManager::Get(browser_context)
+  script_set_ = ExtensionSystem::Get(browser_context)
+                    ->user_script_manager()
                     ->GetDeclarativeUserScriptSetByID(host_id);
   AddScript();
 }

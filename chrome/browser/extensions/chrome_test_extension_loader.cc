@@ -21,11 +21,11 @@
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/extension_user_script_manager.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -125,12 +125,13 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 
 bool ChromeTestExtensionLoader::WaitForExtensionReady(
     const Extension& extension) {
-  ExtensionUserScriptManager* user_script_manager =
-      ExtensionSystem::Get(browser_context_)->extension_user_script_manager();
+  UserScriptManager* user_script_manager =
+      ExtensionSystem::Get(browser_context_)->user_script_manager();
   // Note: |user_script_manager| can be null in tests.
   if (user_script_manager &&
       !ContentScriptsInfo::GetContentScripts(&extension).empty()) {
-    UserScriptLoader* user_script_loader = user_script_manager->script_loader();
+    UserScriptLoader* user_script_loader =
+        user_script_manager->manifest_script_loader();
     HostID host_id(HostID::EXTENSIONS, extension_id_);
     if (!user_script_loader->HasLoadedScripts(host_id)) {
       ContentScriptLoadWaiter waiter(user_script_loader);

@@ -30,6 +30,7 @@
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/runtime_data.h"
 #include "extensions/browser/state_store.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/browser/value_store/test_value_store_factory.h"
 #include "extensions/browser/value_store/testing_value_store.h"
 #include "services/data_decoder/data_decoder_service.h"
@@ -89,6 +90,10 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
   return extension_service_.get();
 }
 
+void TestExtensionSystem::CreateUserScriptManager() {
+  user_script_manager_ = std::make_unique<UserScriptManager>(profile_);
+}
+
 ExtensionService* TestExtensionSystem::extension_service() {
   return extension_service_.get();
 }
@@ -109,9 +114,8 @@ ServiceWorkerManager* TestExtensionSystem::service_worker_manager() {
   return nullptr;
 }
 
-ExtensionUserScriptManager*
-TestExtensionSystem::extension_user_script_manager() {
-  return nullptr;
+UserScriptManager* TestExtensionSystem::user_script_manager() {
+  return user_script_manager_.get();
 }
 
 StateStore* TestExtensionSystem::state_store() {

@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -57,8 +58,10 @@ class RequestContentScriptTest : public ExtensionServiceTestBase {
   // issue is fixed.
   virtual void Init() {
     InitializeEmptyExtensionService();
-    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))->
-        SetReady();
+    auto* extension_system =
+        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
+    extension_system->CreateUserScriptManager();
+    extension_system->SetReady();
     base::RunLoop().RunUntilIdle();
   }
 
