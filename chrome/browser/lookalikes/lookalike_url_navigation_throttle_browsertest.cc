@@ -41,6 +41,7 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
@@ -193,7 +194,7 @@ void TestInterstitialNotShown(Browser* browser, const GURL& navigated_url) {
 
 class LookalikeUrlNavigationThrottleBrowserTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  protected:
   void SetUp() override {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
@@ -218,6 +219,15 @@ class LookalikeUrlNavigationThrottleBrowserTest
       disabled_features.push_back(
           lookalikes::features::kLookalikeInterstitialForPunycode);
     }
+
+    if (digital_asset_links_enabled()) {
+      enabled_features.emplace_back(
+          lookalikes::features::kLookalikeDigitalAssetLinks,
+          base::FieldTrialParams());
+    } else {
+      disabled_features.push_back(
+          lookalikes::features::kLookalikeDigitalAssetLinks);
+    }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
     reputation::InitializeSafetyTipConfig();
@@ -226,6 +236,7 @@ class LookalikeUrlNavigationThrottleBrowserTest
 
   bool target_embedding_enabled() const { return std::get<0>(GetParam()); }
   bool punycode_interstitial_enabled() const { return std::get<1>(GetParam()); }
+  bool digital_asset_links_enabled() const { return std::get<2>(GetParam()); }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -419,9 +430,12 @@ class LookalikeUrlNavigationThrottleBrowserTest
   base::SimpleTestClock test_clock_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         LookalikeUrlNavigationThrottleBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LookalikeUrlNavigationThrottleBrowserTest,
+    testing::Combine(testing::Bool() /* target_embedding_enabled */,
+                     testing::Bool() /* punycode_interstitial_enabled */,
+                     testing::Bool() /* digital_asset_links_enabled */));
 
 // Navigating to a non-IDN shouldn't show an interstitial or record metrics.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
@@ -1465,7 +1479,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
     testing::Combine(testing::Bool() /* target_embedding_enabled */,
-                     testing::Bool() /* punycode_interstitial_enabled */));
+                     testing::Bool() /* punycode_interstitial_enabled */,
+                     testing::Bool() /* digital_asset_links_enabled */));
 
 // Navigates to a 127.0.0.1 URL that serves a signed exchange for
 // google-com.example.org. This navigation should be blocked by the target
@@ -1588,3 +1603,191 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
 // TODO(meacer): Add a test for a failed SGX response. It should be treated
 // as a normal redirect. In fact, InnerAndOuterUrlsLookalikes_ShouldBlock
 // is actually testing this right now, fix it.
+
+// Tests for Digital Asset Links.
+class LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest
+    : public LookalikeUrlNavigationThrottleBrowserTest {
+ public:
+  struct TestSite {
+    std::string hostname;
+    std::string manifest;
+  };
+
+  // Sets up the site |lookalike_hostname| to serve a manifest with contents
+  // |lookalike_manifest|, and the site |target_hostname| to serve a manifest
+  // with contents |target_manifest| and navigates to |lookalike_hostname|.
+  // Expects an interstitial with the suggested hostname
+  // |expected_suggested_hostname|.
+  void TestExpectInterstitial(const char* lookalike_hostname,
+                              const std::string& lookalike_manifest,
+                              const char* target_hostname,
+                              const std::string& target_manifest,
+                              const char* expected_suggested_hostname) {
+    const GURL kNavigatedUrl = MakeURL(lookalike_hostname);
+    const std::vector<TestSite> sites{
+        {lookalike_hostname, lookalike_manifest},
+        {target_hostname, target_manifest},
+    };
+    SetUpManifests(sites);
+
+    TestMetricsRecordedAndInterstitialShown(
+        browser(), kNavigatedUrl, MakeURL(expected_suggested_hostname),
+        NavigationSuggestionEvent::kMatchSkeletonTop500);
+    CheckUkm({kNavigatedUrl}, "MatchType",
+             LookalikeUrlMatchType::kSkeletonMatchTop500);
+  }
+
+  // Sets up the site |lookalike_hostname| to serve a manifest with contents
+  // |lookalike_manifest|, and the site |target_hostname| to serve a manifest
+  // with contents |target_manifest| and navigates to |lookalike_hostname|.
+  // Expects no interstitial.
+  void TestNoInterstitial(const char* lookalike_hostname,
+                          const std::string& lookalike_manifest,
+                          const char* target_hostname,
+                          const std::string& target_manifest) {
+    const std::vector<TestSite> sites{
+        {lookalike_hostname, lookalike_manifest},
+        {target_hostname, target_manifest},
+    };
+    SetUpManifests(sites);
+
+    TestInterstitialNotShown(browser(), MakeURL(lookalike_hostname));
+    CheckNoUkm();
+  }
+
+  void SetUpManifests(const std::vector<TestSite>& sites) {
+    url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            &LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest::
+                OnIntercept,
+            base::Unretained(this), sites));
+  }
+
+  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+
+  bool OnIntercept(const std::vector<TestSite>& sites,
+                   content::URLLoaderInterceptor::RequestParams* params) {
+    for (const TestSite& site : sites) {
+      if (params->url_request.url == MakeManifestURL(site.hostname)) {
+        if (!site.manifest.empty()) {
+          // Serve manifest contents:
+          std::string headers =
+              "HTTP/1.1 200 OK\nContent-Type: application/json; "
+              "charset=utf-8\n";
+          content::URLLoaderInterceptor::WriteResponse(headers, site.manifest,
+                                                       params->client.get());
+        } else {
+          // Serve error:
+          params->client->OnComplete(
+              network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
+        }
+        return true;
+      }
+      if (params->url_request.url == MakeURL(site.hostname)) {
+        content::URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n",
+            "<html>Test page</html>", params->client.get());
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static GURL MakeManifestURL(const std::string& hostname) {
+    return GURL("https://" + hostname + "/.well-known/assetlinks.json");
+  }
+
+  static GURL MakeURL(const std::string& hostname) {
+    return GURL("https://" + hostname);
+  }
+
+  static std::string MakeManifestWithTarget(const char* target_domain,
+                                            bool invalid = false) {
+    const char* const format = R"([{
+        "relation": ["%s"],
+        "target": {
+          "namespace": "web",
+          "site": "https://%s"
+        }
+      }]
+      )";
+    // Go through MakeURL to convert target_domain to punycode.
+    return base::StringPrintf(format,
+                              (invalid ? "junkvalue" : "lookalikes/allowlist"),
+                              MakeURL(target_domain).host().c_str());
+  }
+
+ private:
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    testing::Combine(testing::Bool() /* target_embedding_enabled */,
+                     testing::Bool() /* punycode_interstitial_enabled */,
+                     testing::Values(true) /* digital_asset_links_enabled */));
+
+// Neither site serves a manifest.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    NoAssetLinks_ShowInterstitial) {
+  TestExpectInterstitial("googlé.com", std::string(), "google.com",
+                         std::string(),
+                         /*expected_suggested_hostname=*/"google.com");
+}
+
+// Both lookalike and target sites serve valid asset link manifests pointing to
+// each other.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    ValidAssetLinks_IgnoreInterstitial) {
+  TestNoInterstitial("googlé.com", MakeManifestWithTarget("google.com"),
+                     "google.com", MakeManifestWithTarget("googlé.com"));
+}
+
+// Both lookalike and target sites serve asset links. Lookalike site's manifest
+// has an entry for the target, but the target site's manifest doesn't have one
+// for the lookalike.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    ValidAssetLinks_TargetManifestNotMatching_IgnoreInterstitial) {
+  TestExpectInterstitial("góógle.com", MakeManifestWithTarget("google.com"),
+                         "google.com", MakeManifestWithTarget("site.test"),
+                         /*expected_suggested_hostname=*/"google.com");
+}
+
+// Both lookalike and target sites serve asset links. Lookalike site's manifest
+// has an entry for the target, but the target site's manifest doesn't have
+// valid content.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    ValidAssetLinks_TargetManifestInvalid_IgnoreInterstitial) {
+  TestExpectInterstitial("góógle.com", MakeManifestWithTarget("google.com"),
+                         "google.com",
+                         MakeManifestWithTarget("góógle.com", /*invalid=*/true),
+                         /*expected_suggested_hostname=*/"google.com");
+}
+
+// Both lookalike and target sites are subdomains and serve valid asset links.
+// However, lookalike heuristics match to eTLD+1s, so the lookalike's manifest
+// will fail to validate because it points to the full URL instead.
+// TODO(meacer): Support this use case.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    ValidSubdomainAssetLinks_NoMatch_ShowInterstitial) {
+  TestExpectInterstitial(
+      "docs.góógle.com", MakeManifestWithTarget("docs.google.com"),
+      "docs.google.com", MakeManifestWithTarget("docs.góógle.com"),
+      /*expected_suggested_hostname=*/"google.com");
+}
+
+// Both lookalike and target sites are subdomains and serve valid asset links.
+// This time, the lookalike's manifest points to the eTLD+1 of the matching
+// domain so the validation is successful.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    ValidSubdomainAssetLinks_IgnoreInterstitial) {
+  TestNoInterstitial("docs.góógle.com", MakeManifestWithTarget("google.com"),
+                     "google.com", MakeManifestWithTarget("docs.góógle.com"));
+}

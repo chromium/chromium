@@ -19,6 +19,10 @@ extern const base::Feature kDetectTargetEmbeddingLookalikes;
 COMPONENT_EXPORT(LOOKALIKES_FEATURES)
 extern const base::Feature kLookalikeInterstitialForPunycode;
 
+// This feature enables Digital Asset Link validations for lookalikes.
+COMPONENT_EXPORT(LOOKALIKES_FEATURES)
+extern const base::Feature kLookalikeDigitalAssetLinks;
+
 }  // namespace features
 }  // namespace lookalikes
 

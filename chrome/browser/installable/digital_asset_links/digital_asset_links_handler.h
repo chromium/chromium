@@ -75,7 +75,6 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
       const std::string& manifest_url,
       RelationshipCheckResultCallback callback);
 
- private:
   // Generic DAL verifier.
   bool CheckDigitalAssetLinkRelationship(
       const std::string& web_domain,
@@ -84,6 +83,7 @@ class DigitalAssetLinksHandler : public content::WebContentsObserver {
       const std::map<std::string, std::string>& target_values,
       RelationshipCheckResultCallback callback);
 
+ private:
   void OnURLLoadComplete(std::string relationship,
                          base::Optional<std::string> fingerprint,
                          std::map<std::string, std::string> target_values,

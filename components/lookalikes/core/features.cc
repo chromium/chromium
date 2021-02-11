@@ -13,5 +13,8 @@ const base::Feature kDetectTargetEmbeddingLookalikes{
 const base::Feature kLookalikeInterstitialForPunycode{
     "LookalikeInterstitialForPunycode", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kLookalikeDigitalAssetLinks{
+    "LookalikeDigitalAssetLinks", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace lookalikes
