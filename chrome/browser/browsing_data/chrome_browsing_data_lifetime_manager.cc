@@ -54,13 +54,7 @@ using ScheduledRemovalSettings =
 class BrowsingDataRemoverObserver
     : public content::BrowsingDataRemover::Observer {
  public:
-  ~BrowsingDataRemoverObserver() override {
-    // The BrowsingDataRemoverImpl notifying us is indirectly owned by Profile,
-    // so triggering ~Profile() from here causes UAF bugs. Post the profile
-    // deletion to another task to avoid this.
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
-        FROM_HERE, std::move(profile_keep_alive_));
-  }
+  ~BrowsingDataRemoverObserver() override = default;
 
   // Creates an instance of BrowsingDataRemoverObserver that
   // manages its own lifetime. The instance will be deleted after
