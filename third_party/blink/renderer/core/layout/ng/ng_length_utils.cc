@@ -1518,7 +1518,7 @@ LayoutUnit ClampIntrinsicBlockSize(
 
   // If we have size containment, we ignore child contributions to intrinsic
   // sizing.
-  if (node.ShouldApplySizeContainment())
+  if (node.ShouldApplyBlockSizeContainment())
     return border_scrollbar_padding.BlockSum();
   return current_intrinsic_block_size;
 }
@@ -1550,7 +1550,7 @@ base::Optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
 
   // Size contained elements don't consider children for intrinsic sizing.
   // Also, if we don't have children, we can determine the size immediately.
-  if (node.ShouldApplySizeContainment() || !node.FirstChild()) {
+  if (node.ShouldApplyInlineSizeContainment() || !node.FirstChild()) {
     return MinMaxSizesResult{sizes,
                              /* depends_on_percentage_block_size */ false};
   }

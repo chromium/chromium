@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<!-- Merge these tests into upstream wpt test if/when added to the css-contain spec -->
+<link rel="help" href="https://drafts.csswg.org/css-contain/#contain-property">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/1031">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/5796">
+<link rel="match" href="../reference/ref-filled-green-100px-square.xht">
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<div style="display:flex; contain:block-size; width:fit-content; border:solid green; border-width:50px 0; background:red;">
+  <div style="width:100px; height:100px;"></div>
+</div>

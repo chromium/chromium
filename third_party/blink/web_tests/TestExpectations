@@ -1282,6 +1282,10 @@ crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failur
 crbug.com/1145970 wpt_internal/css/css-conditional/container-queries/* [ Skip ]
 crbug.com/1146092 wpt_internal/css/css-contain/* [ Skip ]
 crbug.com/1145970 virtual/container-queries/* [ Pass ]
+crbug.com/1045599 virtual/container-queries/wpt_internal/css/css-contain/grid-block-size.html [ Failure ]
+crbug.com/1045599 virtual/container-queries/wpt_internal/css/css-contain/grid-inline-size.html [ Failure ]
+crbug.com/829028 virtual/container-queries/wpt_internal/css/css-contain/multicol-block-size.html [ Failure ]
+crbug.com/829028 virtual/container-queries/wpt_internal/css/css-contain/multicol-inline-size.html [ Failure ]
 
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/textarea-scrollbar-width-none.html [ Failure ]

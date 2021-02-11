@@ -612,6 +612,18 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
            (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
            (!IsTablePart() || IsTableCaption()) && !IsTable();
   }
+  inline bool ShouldApplyInlineSizeContainment() const {
+    NOT_DESTROYED();
+    return (StyleRef().ContainsInlineSize() || StyleRef().ContainsSize()) &&
+           (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
+           (!IsTablePart() || IsTableCaption()) && !IsTable();
+  }
+  inline bool ShouldApplyBlockSizeContainment() const {
+    NOT_DESTROYED();
+    return (StyleRef().ContainsBlockSize() || StyleRef().ContainsSize()) &&
+           (!IsInline() || IsAtomicInlineLevel()) && !IsRubyText() &&
+           (!IsTablePart() || IsTableCaption()) && !IsTable();
+  }
   inline bool ShouldApplyStyleContainment() const {
     NOT_DESTROYED();
     return StyleRef().ContainsStyle();

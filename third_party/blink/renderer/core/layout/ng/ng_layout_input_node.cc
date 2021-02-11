@@ -176,6 +176,7 @@ void NGLayoutInputNode::GetOverrideIntrinsicSize(
       *computed_block_size = default_block_size;
   }
 
+  // TODO(mstensho): Update for contain:inline-size / contain:block-size.
   if (ShouldApplySizeContainment()) {
     if (!*computed_inline_size)
       *computed_inline_size = LayoutUnit();

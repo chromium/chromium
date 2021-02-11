@@ -241,6 +241,16 @@ class CORE_EXPORT NGLayoutInputNode {
   bool ShouldApplySizeContainment() const {
     return box_->ShouldApplySizeContainment();
   }
+  // Return true if we should apply at least inline-size containment
+  // (i.e. "contain" is "size" or "inline-size").
+  bool ShouldApplyInlineSizeContainment() const {
+    return box_->ShouldApplyInlineSizeContainment();
+  }
+  // Return true if we should apply at least block-size containment
+  // (i.e. "contain" is "size" or "block-size").
+  bool ShouldApplyBlockSizeContainment() const {
+    return box_->ShouldApplyBlockSizeContainment();
+  }
 
   bool IsContainerForContainerQueries() const {
     return box_->IsContainerForContainerQueries();

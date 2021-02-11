@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<p>The fieldset below has block-size containment. It should be wide enough to
+  contain the blue legend line, but not make any block-size room for the hotpink
+  square.</p>
+<fieldset style="height:0; border:20px solid; width:fit-content;">
+  <legend>
+    <div style="width:200px; height:2px; background:blue;"></div>
+  </legend>
+  <div style="width:100px; height:100px; background:hotpink;"></div>
+</fieldset>
