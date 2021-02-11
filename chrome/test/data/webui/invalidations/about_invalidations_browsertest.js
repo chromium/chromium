@@ -25,6 +25,9 @@ InvalidationsWebUITest.prototype = {
     '//chrome/test/data/webui/mocha_adapter.js',
   ],
 
+  /** @override */
+  isAsync: true,
+
   suiteName: 'invalidations_test',
 
   /** @param {string} testName The name of the test to run. */

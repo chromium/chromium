@@ -62,13 +62,15 @@ suite('invalidations_test', function() {
       {name: 'EXTENSIONS', source: 1004, totalCount: 0},
       {name: 'FAVICON_IMAGE', source: 1004, totalCount: 0}
     ];
-    var pattern1 = ['Fake', '1004', 'EXTENSIONS', '0', '0', '', '', ''];
-    var pattern2 = ['Fake', '1004', 'FAVICON_IMAGE', '0', '0', '', '', ''];
+    const registrarName = 'Fake';
+    var pattern1 = [registrarName, '1004', 'EXTENSIONS', '0', '0', '', '', ''];
+    var pattern2 =
+        [registrarName, '1004', 'FAVICON_IMAGE', '0', '0', '', '', ''];
     // Register two objects ID with 'Fake' registrar
-    webUIListenerCallback('ids-updated', newDataType);
+    webUIListenerCallback('ids-updated', registrarName, newDataType);
     // Disable the Extensions ObjectId by only sending FAVICON_IMAGE
     newDataType = [{name: 'FAVICON_IMAGE', source: 1004}];
-    webUIListenerCallback('ids-updated', newDataType);
+    webUIListenerCallback('ids-updated', registrarName, newDataType);
 
     // Test that the two patterns are contained in the table.
     var oidTable = $('objectsid-table-container');
