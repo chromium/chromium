@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 
+#include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 
@@ -31,6 +32,84 @@ StyleRuleCounterStyle::StyleRuleCounterStyle(const StyleRuleCounterStyle&) =
     default;
 
 StyleRuleCounterStyle::~StyleRuleCounterStyle() = default;
+
+bool StyleRuleCounterStyle::HasValidSymbols() const {
+  CounterStyleSystem system =
+      CounterStyle::ToCounterStyleSystemEnum(GetSystem());
+  const auto* symbols = To<CSSValueList>(GetSymbols());
+  const auto* additive_symbols = To<CSSValueList>(GetAdditiveSymbols());
+  switch (system) {
+    case CounterStyleSystem::kCyclic:
+    case CounterStyleSystem::kFixed:
+    case CounterStyleSystem::kSymbolic:
+      return symbols && symbols->length();
+    case CounterStyleSystem::kAlphabetic:
+    case CounterStyleSystem::kNumeric:
+      return symbols && symbols->length() > 1u;
+    case CounterStyleSystem::kAdditive:
+      return additive_symbols && additive_symbols->length();
+    case CounterStyleSystem::kUnresolvedExtends:
+      return !symbols && !additive_symbols;
+    case CounterStyleSystem::kHebrew:
+    case CounterStyleSystem::kSimpChineseInformal:
+    case CounterStyleSystem::kSimpChineseFormal:
+    case CounterStyleSystem::kTradChineseInformal:
+    case CounterStyleSystem::kTradChineseFormal:
+    case CounterStyleSystem::kKoreanHangulFormal:
+    case CounterStyleSystem::kKoreanHanjaInformal:
+    case CounterStyleSystem::kKoreanHanjaFormal:
+    case CounterStyleSystem::kLowerArmenian:
+    case CounterStyleSystem::kUpperArmenian:
+    case CounterStyleSystem::kEthiopicNumeric:
+      return true;
+  }
+}
+
+bool StyleRuleCounterStyle::SetSystem(const CSSValue* system) {
+  CounterStyleSystem old_system =
+      CounterStyle::ToCounterStyleSystemEnum(system_);
+  CounterStyleSystem new_system =
+      CounterStyle::ToCounterStyleSystemEnum(system);
+
+  // If the attribute being set is system, and the new value would change the
+  // algorithm used, do nothing and abort these steps.
+  if (old_system != new_system)
+    return false;
+
+  // Except 'fixed' and 'extends', other systems have nothing to modify.
+  if (new_system != CounterStyleSystem::kFixed &&
+      new_system != CounterStyleSystem::kUnresolvedExtends)
+    return false;
+
+  system_ = system;
+  DCHECK(HasValidSymbols());
+
+  ++version_;
+  return true;
+}
+
+bool StyleRuleCounterStyle::SetSymbols(const CSSValue* symbols) {
+  const CSSValue* original_symbols = symbols_;
+  symbols_ = symbols;
+  if (!HasValidSymbols()) {
+    symbols_ = original_symbols;
+    return false;
+  }
+  ++version_;
+  return true;
+}
+
+bool StyleRuleCounterStyle::SetAdditiveSymbols(
+    const CSSValue* additive_symbols) {
+  const CSSValue* original_additive_symbols = additive_symbols_;
+  additive_symbols_ = additive_symbols;
+  if (!HasValidSymbols()) {
+    additive_symbols_ = original_additive_symbols;
+    return false;
+  }
+  ++version_;
+  return true;
+}
 
 void StyleRuleCounterStyle::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(system_);

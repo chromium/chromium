@@ -17,6 +17,11 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
 
   int GetVersion() const { return version_; }
 
+  // Different 'system' values have different requirements on 'symbols' and
+  // 'additive-symbols'. Returns true if the requirement is met.
+  // https://drafts.csswg.org/css-counter-styles-3/#counter-style-symbols
+  bool HasValidSymbols() const;
+
   AtomicString GetName() const { return name_; }
   const CSSValue* GetSystem() const { return system_; }
   const CSSValue* GetNegative() const { return negative_; }
@@ -34,10 +39,7 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
     // TODO(crbug.com/687225): Implement.
     return false;
   }
-  bool SetSystem(const CSSValue* system) {
-    // TODO(crbug.com/687225): Implement.
-    return false;
-  }
+  bool SetSystem(const CSSValue* system);
   bool SetNegative(const CSSValue* negative) {
     negative_ = negative;
     ++version_;
@@ -68,14 +70,8 @@ class CORE_EXPORT StyleRuleCounterStyle : public StyleRuleBase {
     ++version_;
     return true;
   }
-  bool SetSymbols(const CSSValue* symbols) {
-    // TODO(crbug.com/687225): Implement.
-    return false;
-  }
-  bool SetAdditiveSymbols(const CSSValue* additive_symbols) {
-    // TODO(crbug.com/687225): Implement.
-    return false;
-  }
+  bool SetSymbols(const CSSValue* symbols);
+  bool SetAdditiveSymbols(const CSSValue* additive_symbols);
   bool SetSpeakAs(const CSSValue* speak_as) {
     speak_as_ = speak_as;
     ++version_;

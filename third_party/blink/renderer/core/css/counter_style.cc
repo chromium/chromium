@@ -26,64 +26,6 @@ namespace {
 // limit string length at 120.
 const wtf_size_t kCounterLengthLimit = 120;
 
-CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value) {
-  if (!value)
-    return CounterStyleSystem::kSymbolic;
-
-  CSSValueID system_keyword;
-  if (const auto* id = DynamicTo<CSSIdentifierValue>(value)) {
-    system_keyword = id->GetValueID();
-  } else {
-    // Either fixed or extends.
-    DCHECK(value->IsValuePair());
-    const CSSValuePair* pair = To<CSSValuePair>(value);
-    DCHECK(pair->First().IsIdentifierValue());
-    system_keyword = To<CSSIdentifierValue>(pair->First()).GetValueID();
-  }
-
-  switch (system_keyword) {
-    case CSSValueID::kCyclic:
-      return CounterStyleSystem::kCyclic;
-    case CSSValueID::kFixed:
-      return CounterStyleSystem::kFixed;
-    case CSSValueID::kSymbolic:
-      return CounterStyleSystem::kSymbolic;
-    case CSSValueID::kAlphabetic:
-      return CounterStyleSystem::kAlphabetic;
-    case CSSValueID::kNumeric:
-      return CounterStyleSystem::kNumeric;
-    case CSSValueID::kAdditive:
-      return CounterStyleSystem::kAdditive;
-    case CSSValueID::kInternalHebrew:
-      return CounterStyleSystem::kHebrew;
-    case CSSValueID::kInternalSimpChineseInformal:
-      return CounterStyleSystem::kSimpChineseInformal;
-    case CSSValueID::kInternalSimpChineseFormal:
-      return CounterStyleSystem::kSimpChineseFormal;
-    case CSSValueID::kInternalTradChineseInformal:
-      return CounterStyleSystem::kTradChineseInformal;
-    case CSSValueID::kInternalTradChineseFormal:
-      return CounterStyleSystem::kTradChineseFormal;
-    case CSSValueID::kInternalKoreanHangulFormal:
-      return CounterStyleSystem::kKoreanHangulFormal;
-    case CSSValueID::kInternalKoreanHanjaInformal:
-      return CounterStyleSystem::kKoreanHanjaInformal;
-    case CSSValueID::kInternalKoreanHanjaFormal:
-      return CounterStyleSystem::kKoreanHanjaFormal;
-    case CSSValueID::kInternalLowerArmenian:
-      return CounterStyleSystem::kLowerArmenian;
-    case CSSValueID::kInternalUpperArmenian:
-      return CounterStyleSystem::kUpperArmenian;
-    case CSSValueID::kInternalEthiopicNumeric:
-      return CounterStyleSystem::kEthiopicNumeric;
-    case CSSValueID::kExtends:
-      return CounterStyleSystem::kUnresolvedExtends;
-    default:
-      NOTREACHED();
-      return CounterStyleSystem::kSymbolic;
-  }
-}
-
 bool HasSymbols(CounterStyleSystem system) {
   switch (system) {
     case CounterStyleSystem::kCyclic:
@@ -106,38 +48,6 @@ bool HasSymbols(CounterStyleSystem system) {
     case CounterStyleSystem::kUpperArmenian:
     case CounterStyleSystem::kEthiopicNumeric:
       return false;
-  }
-}
-
-bool SymbolsAreValid(const StyleRuleCounterStyle& rule,
-                     CounterStyleSystem system) {
-  const CSSValueList* symbols = To<CSSValueList>(rule.GetSymbols());
-  const CSSValueList* additive_symbols =
-      To<CSSValueList>(rule.GetAdditiveSymbols());
-  switch (system) {
-    case CounterStyleSystem::kCyclic:
-    case CounterStyleSystem::kFixed:
-    case CounterStyleSystem::kSymbolic:
-      return symbols && symbols->length();
-    case CounterStyleSystem::kAlphabetic:
-    case CounterStyleSystem::kNumeric:
-      return symbols && symbols->length() > 1u;
-    case CounterStyleSystem::kAdditive:
-      return additive_symbols && additive_symbols->length();
-    case CounterStyleSystem::kUnresolvedExtends:
-      return !symbols && !additive_symbols;
-    case CounterStyleSystem::kHebrew:
-    case CounterStyleSystem::kSimpChineseInformal:
-    case CounterStyleSystem::kSimpChineseFormal:
-    case CounterStyleSystem::kTradChineseInformal:
-    case CounterStyleSystem::kTradChineseFormal:
-    case CounterStyleSystem::kKoreanHangulFormal:
-    case CounterStyleSystem::kKoreanHanjaInformal:
-    case CounterStyleSystem::kKoreanHanjaFormal:
-    case CounterStyleSystem::kLowerArmenian:
-    case CounterStyleSystem::kUpperArmenian:
-    case CounterStyleSystem::kEthiopicNumeric:
-      return true;
   }
 }
 
@@ -384,6 +294,66 @@ CounterStyle& CounterStyle::GetDecimal() {
   return *decimal;
 }
 
+// static
+CounterStyleSystem CounterStyle::ToCounterStyleSystemEnum(
+    const CSSValue* value) {
+  if (!value)
+    return CounterStyleSystem::kSymbolic;
+
+  CSSValueID system_keyword;
+  if (const auto* id = DynamicTo<CSSIdentifierValue>(value)) {
+    system_keyword = id->GetValueID();
+  } else {
+    // Either fixed or extends.
+    DCHECK(value->IsValuePair());
+    const CSSValuePair* pair = To<CSSValuePair>(value);
+    DCHECK(pair->First().IsIdentifierValue());
+    system_keyword = To<CSSIdentifierValue>(pair->First()).GetValueID();
+  }
+
+  switch (system_keyword) {
+    case CSSValueID::kCyclic:
+      return CounterStyleSystem::kCyclic;
+    case CSSValueID::kFixed:
+      return CounterStyleSystem::kFixed;
+    case CSSValueID::kSymbolic:
+      return CounterStyleSystem::kSymbolic;
+    case CSSValueID::kAlphabetic:
+      return CounterStyleSystem::kAlphabetic;
+    case CSSValueID::kNumeric:
+      return CounterStyleSystem::kNumeric;
+    case CSSValueID::kAdditive:
+      return CounterStyleSystem::kAdditive;
+    case CSSValueID::kInternalHebrew:
+      return CounterStyleSystem::kHebrew;
+    case CSSValueID::kInternalSimpChineseInformal:
+      return CounterStyleSystem::kSimpChineseInformal;
+    case CSSValueID::kInternalSimpChineseFormal:
+      return CounterStyleSystem::kSimpChineseFormal;
+    case CSSValueID::kInternalTradChineseInformal:
+      return CounterStyleSystem::kTradChineseInformal;
+    case CSSValueID::kInternalTradChineseFormal:
+      return CounterStyleSystem::kTradChineseFormal;
+    case CSSValueID::kInternalKoreanHangulFormal:
+      return CounterStyleSystem::kKoreanHangulFormal;
+    case CSSValueID::kInternalKoreanHanjaInformal:
+      return CounterStyleSystem::kKoreanHanjaInformal;
+    case CSSValueID::kInternalKoreanHanjaFormal:
+      return CounterStyleSystem::kKoreanHanjaFormal;
+    case CSSValueID::kInternalLowerArmenian:
+      return CounterStyleSystem::kLowerArmenian;
+    case CSSValueID::kInternalUpperArmenian:
+      return CounterStyleSystem::kUpperArmenian;
+    case CSSValueID::kInternalEthiopicNumeric:
+      return CounterStyleSystem::kEthiopicNumeric;
+    case CSSValueID::kExtends:
+      return CounterStyleSystem::kUnresolvedExtends;
+    default:
+      NOTREACHED();
+      return CounterStyleSystem::kSymbolic;
+  }
+}
+
 CounterStyle::~CounterStyle() = default;
 
 AtomicString CounterStyle::GetName() const {
@@ -392,8 +362,7 @@ AtomicString CounterStyle::GetName() const {
 
 // static
 CounterStyle* CounterStyle::Create(const StyleRuleCounterStyle& rule) {
-  CounterStyleSystem system = ToCounterStyleSystemEnum(rule.GetSystem());
-  if (!SymbolsAreValid(rule, system))
+  if (!rule.HasValidSymbols())
     return nullptr;
 
   return MakeGarbageCollected<CounterStyle>(rule);

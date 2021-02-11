@@ -12,6 +12,7 @@
 namespace blink {
 
 class StyleRuleCounterStyle;
+class CSSValue;
 
 enum class CounterStyleSystem {
   kCyclic,
@@ -38,6 +39,8 @@ enum class CounterStyleSystem {
 class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
  public:
   static CounterStyle& GetDecimal();
+
+  static CounterStyleSystem ToCounterStyleSystemEnum(const CSSValue* value);
 
   // Returns nullptr if the @counter-style rule is invalid.
   static CounterStyle* Create(const StyleRuleCounterStyle&);
