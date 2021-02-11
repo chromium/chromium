@@ -85,6 +85,10 @@ size_t QuicChromiumPacketReader::EstimateMemoryUsage() const {
 
 bool QuicChromiumPacketReader::ProcessReadResult(int result) {
   read_pending_ = false;
+  if (result <= 0 && net_log_.IsCapturing()) {
+    net_log_.AddEventWithIntParams(NetLogEventType::QUIC_READ_ERROR,
+                                   "net_error", result);
+  }
   if (result == 0) {
     // 0-length UDP packets are legal but useless, ignore them.
     return true;

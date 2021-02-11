@@ -2437,6 +2437,13 @@ EVENT_TYPE(QUIC_PORT_MIGRATION_FAILURE)
 //  }
 EVENT_TYPE(QUIC_PORT_MIGRATION_SUCCESS)
 
+// A UDP socket error occurred while trying to read a QUIC packet.
+// The following parameters are attached to the event:
+//   {
+//     "net_error": <Integer code for the specific error type>,
+//   }
+EVENT_TYPE(QUIC_READ_ERROR)
+
 // ------------------------------------------------------------------------
 // HttpStreamParser
 // ------------------------------------------------------------------------
