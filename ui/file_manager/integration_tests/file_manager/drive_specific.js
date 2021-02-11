@@ -847,6 +847,18 @@ testcase.driveOfflineInfoBanner = async () => {
 
   // Check: the Drive Offline info banner should appear.
   await remoteCall.waitForElement(appId, '#offline-info-banner:not([hidden])');
+
+  // Click on the 'Learn more' button.
+  await remoteCall.waitAndClickElement(appId, '#offline-learn-more');
+
+  // Check: the Drive offline info banner should disappear.
+  await remoteCall.waitForElement(appId, '#offline-info-banner[hidden]');
+
+  // Navigate to a different directory within Drive.
+  await navigateWithDirectoryTree(appId, '/My Drive/photos');
+
+  // Check: the Drive offline info banner should stay hidden.
+  await remoteCall.waitForElement(appId, '#offline-info-banner[hidden]');
 };
 
 /**

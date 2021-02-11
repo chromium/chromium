@@ -214,6 +214,7 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
       util.visitURL(str('GOOGLE_DRIVE_OFFLINE_HELP_URL'));
       this.setOfflineInfoBannerCounter_(OFFLINE_INFO_BANNER_COUNTER_LIMIT);
       this.offlineInfoBanner_.hidden = true;
+      this.hasShownOfflineInfoBanner_ = false;
       e.preventDefault();
     });
 
