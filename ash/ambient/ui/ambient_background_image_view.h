@@ -31,7 +31,8 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
 
   explicit AmbientBackgroundImageView(AmbientViewDelegate* delegate);
   AmbientBackgroundImageView(const AmbientBackgroundImageView&) = delete;
-  AmbientBackgroundImageView& operator=(AmbientBackgroundImageView&) = delete;
+  AmbientBackgroundImageView& operator=(const AmbientBackgroundImageView&) =
+      delete;
   ~AmbientBackgroundImageView() override;
 
   // views::View:

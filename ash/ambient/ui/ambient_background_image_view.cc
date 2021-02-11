@@ -8,6 +8,7 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ui/ambient_info_view.h"
+#include "ash/ambient/ui/ambient_shield_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
@@ -172,6 +173,8 @@ void AmbientBackgroundImageView::InitLayout() {
   // Set spacing between two images.
   related_image_view_->SetProperty(
       views::kMarginsKey, gfx::Insets(0, kMarginLeftOfRelatedImageDip, 0, 0));
+
+  AddChildView(std::make_unique<AmbientShieldView>());
 
   ambient_info_view_ =
       AddChildView(std::make_unique<AmbientInfoView>(delegate_));
