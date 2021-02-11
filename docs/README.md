@@ -305,6 +305,7 @@ used when committed.
     *   [Kiosk mode and public sessions](enterprise/kiosk_public_session.md)
 *   [Debugging UI in OOBE/login/lock](login/ui_debugging.md)
 *   [Chrome Logging on Chrome OS](chrome_os_logging.md)
+*   [Debugging tips](testing/chromeos_debugging_tips.md)
 
 ### Misc WebUI-Specific Docs
 *   [Creating WebUI Interfaces in components/](webui_in_components.md) How to
