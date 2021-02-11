@@ -446,6 +446,31 @@ TEST_F(CompositorFrameReportingControllerTest,
       "CompositorLatency.DroppedFrame.EndActivateToSubmitCompositorFrame", 0);
 }
 
+TEST_F(CompositorFrameReportingControllerTest, ImplFrameCausedNoDamage) {
+  base::HistogramTester histogram_tester;
+
+  SimulateBeginImplFrame();
+  reporting_controller_.OnFinishImplFrame(args_.frame_id);
+  reporting_controller_.DidNotProduceFrame(args_.frame_id,
+                                           FrameSkippedReason::kNoDamage);
+  SimulateBeginImplFrame();
+  histogram_tester.ExpectTotalCount(
+      "CompositorLatency.DroppedFrame.BeginImplFrameToSendBeginMainFrame", 0);
+  histogram_tester.ExpectBucketCount(
+      "CompositorLatency.Type",
+      CompositorFrameReporter::FrameReportType::kDroppedFrame, 0);
+
+  reporting_controller_.OnFinishImplFrame(args_.frame_id);
+  reporting_controller_.DidNotProduceFrame(args_.frame_id,
+                                           FrameSkippedReason::kWaitingOnMain);
+  SimulateBeginImplFrame();
+  histogram_tester.ExpectTotalCount(
+      "CompositorLatency.DroppedFrame.BeginImplFrameToSendBeginMainFrame", 1);
+  histogram_tester.ExpectBucketCount(
+      "CompositorLatency.Type",
+      CompositorFrameReporter::FrameReportType::kDroppedFrame, 1);
+}
+
 TEST_F(CompositorFrameReportingControllerTest, MainFrameCausedNoDamage) {
   base::HistogramTester histogram_tester;
   viz::BeginFrameId current_id_1(1, 1);
@@ -1493,59 +1518,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   EXPECT_EQ(3u + kSkipFramesActual, dropped_counter.total_frames());
   EXPECT_EQ(0u, dropped_counter.total_main_dropped());
   EXPECT_EQ(kSkipFramesActual, dropped_counter.total_compositor_dropped());
-}
-
-TEST_F(CompositorFrameReportingControllerTest,
-       CompositorFrameBlockedOnMainFrameWithNoDamage) {
-  viz::BeginFrameId current_id_1(1, 1);
-  viz::BeginFrameArgs args_1 = SimulateBeginFrameArgs(current_id_1);
-
-  viz::BeginFrameId current_id_2(1, 2);
-  viz::BeginFrameArgs args_2 = SimulateBeginFrameArgs(current_id_2);
-
-  viz::BeginFrameId current_id_3(1, 3);
-  viz::BeginFrameArgs args_3 = SimulateBeginFrameArgs(current_id_3);
-
-  viz::BeginFrameId current_id_4(1, 4);
-  viz::BeginFrameArgs args_4 = SimulateBeginFrameArgs(current_id_4);
-
-  reporting_controller_.WillBeginImplFrame(args_1);
-  reporting_controller_.WillBeginMainFrame(args_1);
-  reporting_controller_.OnFinishImplFrame(current_id_1);
-  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
-  reporting_controller_.DidNotProduceFrame(args_1.frame_id,
-                                           FrameSkippedReason::kWaitingOnMain);
-
-  reporting_controller_.WillBeginImplFrame(args_2);
-  reporting_controller_.OnFinishImplFrame(args_2.frame_id);
-  reporting_controller_.DidNotProduceFrame(args_2.frame_id,
-                                           FrameSkippedReason::kWaitingOnMain);
-
-  reporting_controller_.WillBeginImplFrame(args_3);
-  reporting_controller_.OnFinishImplFrame(args_3.frame_id);
-  reporting_controller_.DidNotProduceFrame(args_3.frame_id,
-                                           FrameSkippedReason::kWaitingOnMain);
-
-  EXPECT_EQ(1u, reporting_controller_.GetBlockingReportersCount());
-  EXPECT_EQ(3u, reporting_controller_.GetBlockedReportersCount());
-
-  // All frames are waiting for the main frame
-  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
-  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
-  EXPECT_EQ(0u, dropped_counter.total_frames());
-
-  reporting_controller_.BeginMainFrameAborted(args_1.frame_id);
-  reporting_controller_.DidNotProduceFrame(args_1.frame_id,
-                                           FrameSkippedReason::kNoDamage);
-  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
-
-  // New reporters replace older reporters
-  reporting_controller_.WillBeginImplFrame(args_4);
-  reporting_controller_.WillBeginMainFrame(args_4);
-
-  EXPECT_EQ(4u, dropped_counter.total_frames());
-  EXPECT_EQ(0u, dropped_counter.total_main_dropped());
-  EXPECT_EQ(0u, dropped_counter.total_compositor_dropped());
 }
 
 TEST_F(CompositorFrameReportingControllerTest,

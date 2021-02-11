@@ -307,40 +307,20 @@ void CompositorFrameReportingController::DidNotProduceFrame(
       // BeginMain stage, but the main-thread can make updates, which can be
       // submitted with the next frame.
       stage_reporter->OnDidNotProduceFrame(skip_reason);
-      if (skip_reason == FrameSkippedReason::kWaitingOnMain)
-        SetPartialUpdateDeciderWhenWaitingOnMain(stage_reporter);
-
       break;
     }
   }
-}
 
-void CompositorFrameReportingController::
-    SetPartialUpdateDeciderWhenWaitingOnMain(
-        std::unique_ptr<CompositorFrameReporter>& stage_reporter) {
-  // If the compositor has no updates, and the main-thread has not responded
-  // to the begin-main-frame yet, then depending on main thread having
-  // update or not this would be a NoFrameProduced or a DroppedFrame. To
-  // handle this case , keep the reporter for the main-thread, but recreate
-  // a reporter for the current frame and link it to the reporter it depends
-  // on.
-  auto reporter = RestoreReporterAtBeginImpl(stage_reporter->frame_id());
-  if (reporter) {
-    reporter->OnDidNotProduceFrame(FrameSkippedReason::kWaitingOnMain);
-    reporter->TerminateFrame(FrameTerminationStatus::kDidNotProduceFrame,
-                             Now());
-    stage_reporter->AdoptReporter(std::move(reporter));
-  } else {
-    // The stage_reporter in this case was waiting for main, so needs to
-    // be adopted by the reporter which is waiting on Main thread's work
-    auto partial_update_decider =
-        HasOutstandingUpdatesFromMain(stage_reporter->frame_id());
-    if (partial_update_decider) {
-      stage_reporter->SetPartialUpdateDecider(partial_update_decider);
-      stage_reporter->OnDidNotProduceFrame(FrameSkippedReason::kWaitingOnMain);
-      stage_reporter->TerminateFrame(
-          FrameTerminationStatus::kDidNotProduceFrame, Now());
-      partial_update_decider->AdoptReporter(std::move(stage_reporter));
+  // If the compositor has no updates, and the main-thread has not responded to
+  // the begin-main-frame yet, then it is essentially a dropped frame. To handle
+  // this case, keep the reporter for the main-thread, but recreate a reporter
+  // for the dropped-frame.
+  if (skip_reason == FrameSkippedReason::kWaitingOnMain) {
+    auto reporter = RestoreReporterAtBeginImpl(id);
+    if (reporter) {
+      reporter->OnDidNotProduceFrame(skip_reason);
+      reporter->TerminateFrame(FrameTerminationStatus::kDidNotProduceFrame,
+                               Now());
     }
   }
 }

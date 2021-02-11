@@ -138,11 +138,6 @@ class CC_EXPORT CompositorFrameReportingController {
       const viz::BeginFrameArgs& old_args,
       const viz::BeginFrameArgs& new_args) const;
 
-  // The arg is a reference to the unique_ptr, because depending on the state
-  // that reporter is in, its ownership might be pass or not.
-  void SetPartialUpdateDeciderWhenWaitingOnMain(
-      std::unique_ptr<CompositorFrameReporter>& reporter);
-
   const bool should_report_metrics_;
   const int layer_tree_host_id_;
 

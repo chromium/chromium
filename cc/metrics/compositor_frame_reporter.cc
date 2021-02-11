@@ -702,34 +702,23 @@ void CompositorFrameReporter::TerminateReporter() {
     case FrameTerminationStatus::kReplacedByNewReporter:
       EnableReportType(FrameReportType::kDroppedFrame);
       break;
-    case FrameTerminationStatus::kDidNotProduceFrame: {
-      const bool no_update_from_main =
-          frame_skip_reason_.has_value() &&
-          frame_skip_reason() == FrameSkippedReason::kNoDamage;
-      const bool no_update_from_compositor =
-          !has_partial_update_ && frame_skip_reason_.has_value() &&
-          frame_skip_reason() == FrameSkippedReason::kWaitingOnMain;
-
-      if (no_update_from_main) {
-        // If this reporter was cloned, and the cloned reporter was marked as
+    case FrameTerminationStatus::kDidNotProduceFrame:
+      if (frame_skip_reason_.has_value() &&
+          frame_skip_reason() == FrameSkippedReason::kNoDamage) {
+        // If this reporter was cloned, and the cloned repoter was marked as
         // containing 'partial update' (i.e. missing desired updates from the
         // main-thread), but this reporter terminated with 'no damage', then
-        // reset the 'partial update' flag from the cloned reporter (as well as
-        // other depending reporters).
-        while (!partial_update_dependents_.empty()) {
-          auto dependent = partial_update_dependents_.front();
+        // reset the 'partial update' flag from the cloned reporter.
+        for (auto dependent : partial_update_dependents_) {
           if (dependent)
             dependent->set_has_partial_update(false);
-          partial_update_dependents_.pop();
         }
-      } else if (!no_update_from_compositor) {
-        // If rather main thread has damage or compositor thread has partial
-        // damage, then it's a dropped frame.
+      } else {
+        // If no frames were produced, it was not due to no-damage, then it is a
+        // dropped frame.
         EnableReportType(FrameReportType::kDroppedFrame);
       }
-
       break;
-    }
     case FrameTerminationStatus::kUnknown:
       break;
   }
@@ -766,11 +755,6 @@ void CompositorFrameReporter::TerminateReporter() {
     dropped_frame_counter_->OnEndFrame(args_,
                                        IsDroppedFrameAffectingSmoothness());
   }
-
-  if (discarded_partial_update_dependents_count_ > 0)
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Graphics.Smoothness.Diagnostic.DiscardedDependentCount",
-        discarded_partial_update_dependents_count_, 1, 1000, 50);
 }
 
 void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {
@@ -1348,9 +1332,18 @@ void CompositorFrameReporter::AdoptReporter(
   // If |this| reporter is dependent on another reporter to decide about partial
   // update, then |this| should not have any such dependents.
   DCHECK(!partial_update_decider_);
+
   DCHECK(!partial_update_dependents_.empty());
-  owned_partial_update_dependents_.push(std::move(reporter));
-  DiscardOldPartialUpdateReporters();
+#if DCHECK_IS_ON()
+  auto f = std::find_if(partial_update_dependents_.begin(),
+                        partial_update_dependents_.end(),
+                        [target = reporter.get()](const auto& weak_ptr) {
+                          return target == weak_ptr.get();
+                        });
+  DCHECK(f != partial_update_dependents_.end());
+#endif
+  owned_partial_update_dependents_.push_back(std::move(reporter));
+  DCHECK_LT(owned_partial_update_dependents_.size(), 300u);
 }
 
 void CompositorFrameReporter::SetPartialUpdateDecider(
@@ -1358,20 +1351,8 @@ void CompositorFrameReporter::SetPartialUpdateDecider(
   DCHECK(decider);
   has_partial_update_ = true;
   partial_update_decider_ = decider;
-  decider->partial_update_dependents_.push(GetWeakPtr());
-  DCHECK(partial_update_dependents_.empty());
-}
-
-void CompositorFrameReporter::DiscardOldPartialUpdateReporters() {
-  DCHECK_LE(owned_partial_update_dependents_.size(),
-            partial_update_dependents_.size());
-  while (owned_partial_update_dependents_.size() > 300u) {
-    auto& dependent = owned_partial_update_dependents_.front();
-    dependent->set_has_partial_update(false);
-    partial_update_dependents_.pop();
-    owned_partial_update_dependents_.pop();
-    discarded_partial_update_dependents_count_++;
-  }
+  decider->partial_update_dependents_.push_back(GetWeakPtr());
+  DCHECK_LT(partial_update_dependents_.size(), 300u);
 }
 
 bool CompositorFrameReporter::MightHavePartialUpdate() const {
