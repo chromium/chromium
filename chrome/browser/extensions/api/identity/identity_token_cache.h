@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace extensions {
 
@@ -43,23 +44,39 @@ class IdentityTokenCacheValue {
   CacheValueStatus status() const;
   const base::Time& expiration_time() const;
 
+  // These getters should be used only if `status()` returns a value
+  // corresponding to the type. Otherwise, the application will crash.
+  // CACHE_STATUS_REMOTE_CONSENT:
   const RemoteConsentResolutionData& resolution_data() const;
+  // CACHE_STATUS_REMOTE_CONSENT_APPROVED:
   const std::string& consent_result() const;
+  // CACHE_STATUS_TOKEN:
   const std::string& token() const;
   const std::set<std::string>& granted_scopes() const;
 
  private:
+  struct TokenValue {
+    TokenValue(const std::string& token,
+               const std::set<std::string>& granted_scopes);
+    TokenValue(const TokenValue& other);
+    TokenValue& operator=(const TokenValue& other);
+    ~TokenValue();
+
+    std::string token;
+    std::set<std::string> granted_scopes;
+  };
+
+  CacheValueStatus GetStatusInternal() const;
+
   bool is_expired() const;
 
-  CacheValueStatus status_ = CACHE_STATUS_NOTFOUND;
   base::Time expiration_time_;
 
-  // TODO(alexilin): This class holds at any given time one of the several
-  // possible types. Consider rewriting using absl::variant
-  RemoteConsentResolutionData resolution_data_;
-  std::string consent_result_;
-  std::string token_;
-  std::set<std::string> granted_scopes_;
+  absl::variant<absl::monostate,
+                RemoteConsentResolutionData,
+                std::string,
+                TokenValue>
+      value_;
 };
 
 // In-memory cache of OAuth2 access tokens that are requested by extensions
