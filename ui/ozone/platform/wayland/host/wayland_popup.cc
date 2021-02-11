@@ -4,11 +4,14 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
 
+#include <aura-shell-client-protocol.h>
+
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
 
@@ -33,7 +36,20 @@ bool WaylandPopup::CreateShellPopup() {
   }
 
   parent_window()->set_child_window(this);
+  InitializeAuraShellSurface();
   return true;
+}
+
+void WaylandPopup::InitializeAuraShellSurface() {
+  DCHECK(shell_popup_);
+  if (!connection()->zaura_shell() || aura_surface_)
+    return;
+  aura_surface_.reset(zaura_shell_get_aura_surface(
+      connection()->zaura_shell()->wl_object(), root_surface()->surface()));
+  if (shadow_type_ == PlatformWindowShadowType::kDrop) {
+    zaura_surface_set_frame(aura_surface_.get(),
+                            ZAURA_SURFACE_FRAME_TYPE_SHADOW);
+  }
 }
 
 void WaylandPopup::Show(bool inactive) {
@@ -137,6 +153,7 @@ bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties) {
   DCHECK(parent_window());
   root_surface()->SetBufferScale(parent_window()->buffer_scale(), false);
   set_ui_scale(parent_window()->ui_scale());
+  shadow_type_ = properties.shadow_type;
   return true;
 }
 

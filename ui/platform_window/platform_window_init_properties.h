@@ -39,6 +39,12 @@ enum class PlatformWindowOpacity {
   kTranslucentWindow,
 };
 
+enum class PlatformWindowShadowType {
+  kDefault,
+  kNone,
+  kDrop,
+};
+
 class WorkspaceExtensionDelegate;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -82,6 +88,8 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   std::string workspace;
 
   WorkspaceExtensionDelegate* workspace_extension_delegate = nullptr;
+
+  PlatformWindowShadowType shadow_type = PlatformWindowShadowType::kDefault;
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool prefer_dark_theme = false;
