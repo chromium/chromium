@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/web_mojo_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 
 #include <vector>
 #include "base/run_loop.h"
@@ -151,7 +151,7 @@ class MockWebURLLoaderClientObserver
 
     net::LoadTimingInfo last_load_timing;
     network::URLLoaderCompletionStatus completion_status;
-    WebMojoURLLoaderClient* url_laoder_client;
+    MojoURLLoaderClient* url_laoder_client;
   };
 
  private:
@@ -198,7 +198,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
     auto loading_task_runner =
         blink::scheduler::GetSingleThreadTaskRunnerForTesting();
 
-    client_ = std::make_unique<WebMojoURLLoaderClient>(
+    client_ = std::make_unique<MojoURLLoaderClient>(
         url_loader_client_observer_.get(), loading_task_runner,
         url_loader_factory->BypassRedirectChecks(), request->url);
     context_ = url_loader_client_observer_->context();
@@ -256,7 +256,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
   ScopedTestingPlatformSupport<TestPlatform> platform_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ThrottlingURLLoader> url_loader_;
-  std::unique_ptr<WebMojoURLLoaderClient> client_;
+  std::unique_ptr<MojoURLLoaderClient> client_;
   std::unique_ptr<MockWebURLLoaderClientObserver> url_loader_client_observer_;
   MockWebURLLoaderClientObserver::Context* context_;
   int request_id_ = 0;

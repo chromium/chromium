@@ -117,11 +117,12 @@ blink_platform_sources("loader") {
     "fetch/trust_token_params_conversion.h",
     "fetch/unique_identifier.cc",
     "fetch/unique_identifier.h",
+    "fetch/url_loader/mojo_url_loader_client.cc",
+    "fetch/url_loader/mojo_url_loader_client.h",
     "fetch/url_loader/request_conversion.cc",
     "fetch/url_loader/request_conversion.h",
     "fetch/url_loader/sync_load_context.cc",
     "fetch/url_loader/sync_load_context.h",
-    "fetch/url_loader/web_mojo_url_loader_client.cc",
     "fetch/url_loader/web_resource_request_sender.cc",
     "fetch/url_loader/worker_main_script_loader.cc",
     "fetch/url_loader/worker_main_script_loader.h",
@@ -195,6 +196,7 @@ source_set("unit_tests") {
     "fetch/response_body_loader_test.cc",
     "fetch/shared_buffer_bytes_consumer_test.cc",
     "fetch/source_keyed_cached_metadata_handler_test.cc",
+    "fetch/url_loader/mojo_url_loader_client_unittest.cc",
     "fetch/url_loader/sync_load_context_unittest.cc",
     "fetch/url_loader/web_resource_request_sender_unittest.cc",
     "fetch/url_loader/worker_main_script_loader_unittest.cc",
@@ -202,7 +204,6 @@ source_set("unit_tests") {
     "link_header_test.cc",
     "static_data_navigation_body_loader_test.cc",
     "subresource_integrity_test.cc",
-    "web_mojo_url_loader_client_unittest.cc",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]

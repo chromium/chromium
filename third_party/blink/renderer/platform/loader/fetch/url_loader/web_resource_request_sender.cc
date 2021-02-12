@@ -40,10 +40,10 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
-#include "third_party/blink/public/platform/web_mojo_url_loader_client.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
 
 namespace blink {
@@ -225,7 +225,7 @@ int WebResourceRequestSender::SendAsync(
 
   request_info_->previews_state = request->previews_state;
 
-  auto client = std::make_unique<WebMojoURLLoaderClient>(
+  auto client = std::make_unique<MojoURLLoaderClient>(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),
       request->url);
 

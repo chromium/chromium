@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MOJO_URL_LOADER_CLIENT_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MOJO_URL_LOADER_CLIENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_MOJO_URL_LOADER_CLIENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_MOJO_URL_LOADER_CLIENT_H_
 
 #include <stdint.h>
 #include <vector>
@@ -19,6 +19,8 @@
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -35,19 +37,17 @@ struct URLLoaderCompletionStatus;
 namespace blink {
 class WebMojoURLLoaderClientObserver;
 
-// WebMojoURLLoaderClient is an implementation of
+// MojoURLLoaderClient is an implementation of
 // network::mojom::URLLoaderClient to receive messages from a single URLLoader.
-// TODO(https://crbug.com/860403): Move this class from blink/public/platform/
-// to blink/renderer/platform/loader/fetch/url_loader/ finally.
-class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
+class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
     : public network::mojom::URLLoaderClient {
  public:
-  WebMojoURLLoaderClient(
+  MojoURLLoaderClient(
       WebMojoURLLoaderClientObserver* url_loader_client_observer,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool bypass_redirect_checks,
       const GURL& request_url);
-  ~WebMojoURLLoaderClient() override;
+  ~MojoURLLoaderClient() override;
 
   // Set the defer status. If loading is deferred, received messages are not
   // dispatched to clients until it is set not deferred.
@@ -89,7 +89,7 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
   bool NeedsStoringMessage() const;
   void StoreAndDispatch(std::unique_ptr<DeferredMessage> message);
   void OnConnectionClosed();
-  const GURL& last_loaded_url() const { return last_loaded_url_; }
+  const KURL& last_loaded_url() const { return last_loaded_url_; }
 
   // Dispatches the messages received after SetDefersLoading is called.
   void FlushDeferredMessages();
@@ -97,7 +97,7 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
   void EvictFromBackForwardCacheDueToTimeout();
   void StopBackForwardCacheEvictionTimer();
 
-  std::vector<std::unique_ptr<DeferredMessage>> deferred_messages_;
+  WebVector<std::unique_ptr<DeferredMessage>> deferred_messages_;
   std::unique_ptr<BodyBuffer> body_buffer_;
   base::OneShotTimer back_forward_cache_eviction_timer_;
   base::TimeDelta back_forward_cache_timeout_;
@@ -110,14 +110,14 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
   WebMojoURLLoaderClientObserver* const url_loader_client_observer_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool bypass_redirect_checks_ = false;
-  GURL last_loaded_url_;
+  KURL last_loaded_url_;
 
   // For UMA.
   base::TimeTicks on_receive_response_time_;
 
-  base::WeakPtrFactory<WebMojoURLLoaderClient> weak_factory_{this};
+  base::WeakPtrFactory<MojoURLLoaderClient> weak_factory_{this};
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MOJO_URL_LOADER_CLIENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_MOJO_URL_LOADER_CLIENT_H_

@@ -56,7 +56,7 @@ class URLLoaderFactory;
 namespace blink {
 class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
-class WebMojoURLLoaderClient;
+class MojoURLLoaderClient;
 class WebRequestPeer;
 class WebResourceRequestSenderDelegate;
 struct SyncLoadResponse;
@@ -184,7 +184,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender
 
     // For mojo loading.
     std::unique_ptr<ThrottlingURLLoader> url_loader;
-    std::unique_ptr<WebMojoURLLoaderClient> url_loader_client;
+    std::unique_ptr<MojoURLLoaderClient> url_loader_client;
 
     // The Client Hints headers that need to be removed from a redirect.
     WebVector<WebString> removed_headers;

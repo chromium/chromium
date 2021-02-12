@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/web_mojo_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 
 #include <iterator>
 
@@ -20,6 +20,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_mojo_url_loader_client_observer.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
@@ -30,7 +31,7 @@ constexpr base::TimeDelta kGracePeriodToFinishLoadingWhileInBackForwardCache =
 
 }  // namespace
 
-class WebMojoURLLoaderClient::DeferredMessage {
+class MojoURLLoaderClient::DeferredMessage {
  public:
   DeferredMessage() = default;
   virtual void HandleMessage(
@@ -42,7 +43,7 @@ class WebMojoURLLoaderClient::DeferredMessage {
   DISALLOW_COPY_AND_ASSIGN(DeferredMessage);
 };
 
-class WebMojoURLLoaderClient::DeferredOnReceiveResponse final
+class MojoURLLoaderClient::DeferredOnReceiveResponse final
     : public DeferredMessage {
  public:
   explicit DeferredOnReceiveResponse(
@@ -59,7 +60,7 @@ class WebMojoURLLoaderClient::DeferredOnReceiveResponse final
   network::mojom::URLResponseHeadPtr response_head_;
 };
 
-class WebMojoURLLoaderClient::DeferredOnReceiveRedirect final
+class MojoURLLoaderClient::DeferredOnReceiveRedirect final
     : public DeferredMessage {
  public:
   DeferredOnReceiveRedirect(
@@ -83,7 +84,7 @@ class WebMojoURLLoaderClient::DeferredOnReceiveRedirect final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
-class WebMojoURLLoaderClient::DeferredOnUploadProgress final
+class MojoURLLoaderClient::DeferredOnUploadProgress final
     : public DeferredMessage {
  public:
   DeferredOnUploadProgress(int64_t current, int64_t total)
@@ -100,7 +101,7 @@ class WebMojoURLLoaderClient::DeferredOnUploadProgress final
   const int64_t total_;
 };
 
-class WebMojoURLLoaderClient::DeferredOnReceiveCachedMetadata final
+class MojoURLLoaderClient::DeferredOnReceiveCachedMetadata final
     : public DeferredMessage {
  public:
   explicit DeferredOnReceiveCachedMetadata(mojo_base::BigBuffer data)
@@ -116,7 +117,7 @@ class WebMojoURLLoaderClient::DeferredOnReceiveCachedMetadata final
   mojo_base::BigBuffer data_;
 };
 
-class WebMojoURLLoaderClient::DeferredOnStartLoadingResponseBody final
+class MojoURLLoaderClient::DeferredOnStartLoadingResponseBody final
     : public DeferredMessage {
  public:
   explicit DeferredOnStartLoadingResponseBody(
@@ -133,8 +134,7 @@ class WebMojoURLLoaderClient::DeferredOnStartLoadingResponseBody final
   mojo::ScopedDataPipeConsumerHandle body_;
 };
 
-class WebMojoURLLoaderClient::DeferredOnComplete final
-    : public DeferredMessage {
+class MojoURLLoaderClient::DeferredOnComplete final : public DeferredMessage {
  public:
   explicit DeferredOnComplete(const network::URLLoaderCompletionStatus& status)
       : status_(status) {}
@@ -149,10 +149,10 @@ class WebMojoURLLoaderClient::DeferredOnComplete final
   const network::URLLoaderCompletionStatus status_;
 };
 
-class WebMojoURLLoaderClient::BodyBuffer final
+class MojoURLLoaderClient::BodyBuffer final
     : public mojo::DataPipeDrainer::Client {
  public:
-  BodyBuffer(WebMojoURLLoaderClient* owner,
+  BodyBuffer(MojoURLLoaderClient* owner,
              mojo::ScopedDataPipeConsumerHandle readable,
              mojo::ScopedDataPipeProducerHandle writable,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -181,13 +181,11 @@ class WebMojoURLLoaderClient::BodyBuffer final
     SCOPED_CRASH_KEY_NUMBER("OnDataAvailable", "buffered_body_size",
                             buffered_body_.size());
     SCOPED_CRASH_KEY_NUMBER("OnDataAvailable", "data_bytes", num_bytes);
-    SCOPED_CRASH_KEY_STRING256(
-        "OnDataAvailable", "last_loaded_url",
-        owner_->last_loaded_url().possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256("OnDataAvailable", "last_loaded_url",
+                               owner_->last_loaded_url().GetString().Utf8());
 
     total_bytes_drained_ += num_bytes;
-    TRACE_EVENT2("loading",
-                 "WebMojoURLLoaderClient::BodyBuffer::OnDataAvailable",
+    TRACE_EVENT2("loading", "MojoURLLoaderClient::BodyBuffer::OnDataAvailable",
                  "total_bytes_drained", static_cast<int>(total_bytes_drained_),
                  "added_bytes", static_cast<int>(num_bytes));
 
@@ -262,11 +260,11 @@ class WebMojoURLLoaderClient::BodyBuffer final
     writable_.reset();
     // There might be a deferred OnComplete message waiting for us to finish
     // draining the response body, so flush the deferred messages in
-    // the owner WebMojoURLLoaderClient.
+    // the owner MojoURLLoaderClient.
     owner_->FlushDeferredMessages();
   }
 
-  WebMojoURLLoaderClient* const owner_;
+  MojoURLLoaderClient* const owner_;
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::SimpleWatcher writable_watcher_;
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
@@ -279,7 +277,7 @@ class WebMojoURLLoaderClient::BodyBuffer final
   bool draining_ = true;
 };
 
-WebMojoURLLoaderClient::WebMojoURLLoaderClient(
+MojoURLLoaderClient::MojoURLLoaderClient(
     WebMojoURLLoaderClientObserver* url_loader_client_observer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool bypass_redirect_checks,
@@ -295,16 +293,15 @@ WebMojoURLLoaderClient::WebMojoURLLoaderClient(
       bypass_redirect_checks_(bypass_redirect_checks),
       last_loaded_url_(request_url) {}
 
-WebMojoURLLoaderClient::~WebMojoURLLoaderClient() = default;
+MojoURLLoaderClient::~MojoURLLoaderClient() = default;
 
-void WebMojoURLLoaderClient::SetDefersLoading(WebURLLoader::DeferType value) {
+void MojoURLLoaderClient::SetDefersLoading(WebURLLoader::DeferType value) {
   deferred_state_ = value;
   if (value == WebURLLoader::DeferType::kNotDeferred) {
     StopBackForwardCacheEvictionTimer();
     task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WebMojoURLLoaderClient::FlushDeferredMessages,
-                       weak_factory_.GetWeakPtr()));
+        FROM_HERE, WTF::Bind(&MojoURLLoaderClient::FlushDeferredMessages,
+                             weak_factory_.GetWeakPtr()));
   } else if (IsDeferredWithBackForwardCache() && !has_received_complete_ &&
              !back_forward_cache_eviction_timer_.IsRunning()) {
     // We should evict the page associated with this load if the connection
@@ -312,16 +309,15 @@ void WebMojoURLLoaderClient::SetDefersLoading(WebURLLoader::DeferType value) {
     back_forward_cache_eviction_timer_.SetTaskRunner(task_runner_);
     back_forward_cache_eviction_timer_.Start(
         FROM_HERE, back_forward_cache_timeout_,
-        base::BindOnce(
-            &WebMojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout,
-            weak_factory_.GetWeakPtr()));
+        WTF::Bind(&MojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout,
+                  weak_factory_.GetWeakPtr()));
   }
 }
 
-void WebMojoURLLoaderClient::OnReceiveResponse(
+void MojoURLLoaderClient::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head) {
-  TRACE_EVENT1("loading", "WebMojoURLLoaderClient::OnReceiveResponse", "url",
-               last_loaded_url_.possibly_invalid_spec());
+  TRACE_EVENT1("loading", "MojoURLLoaderClient::OnReceiveResponse", "url",
+               last_loaded_url_.GetString().Utf8());
 
   has_received_response_head_ = true;
   on_receive_response_time_ = base::TimeTicks::Now();
@@ -334,32 +330,32 @@ void WebMojoURLLoaderClient::OnReceiveResponse(
   }
 }
 
-void WebMojoURLLoaderClient::EvictFromBackForwardCache(
+void MojoURLLoaderClient::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
   StopBackForwardCacheEvictionTimer();
   url_loader_client_observer_->EvictFromBackForwardCache(reason);
 }
 
-void WebMojoURLLoaderClient::DidBufferLoadWhileInBackForwardCache(
+void MojoURLLoaderClient::DidBufferLoadWhileInBackForwardCache(
     size_t num_bytes) {
   url_loader_client_observer_->DidBufferLoadWhileInBackForwardCache(num_bytes);
 }
 
-bool WebMojoURLLoaderClient::CanContinueBufferingWhileInBackForwardCache() {
+bool MojoURLLoaderClient::CanContinueBufferingWhileInBackForwardCache() {
   return url_loader_client_observer_
       ->CanContinueBufferingWhileInBackForwardCache();
 }
 
-void WebMojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout() {
+void MojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout() {
   EvictFromBackForwardCache(
       blink::mojom::RendererEvictionReason::kNetworkRequestTimeout);
 }
 
-void WebMojoURLLoaderClient::StopBackForwardCacheEvictionTimer() {
+void MojoURLLoaderClient::StopBackForwardCacheEvictionTimer() {
   back_forward_cache_eviction_timer_.Stop();
 }
 
-void WebMojoURLLoaderClient::OnReceiveRedirect(
+void MojoURLLoaderClient::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK(!has_received_response_head_);
@@ -378,7 +374,7 @@ void WebMojoURLLoaderClient::OnReceiveRedirect(
     return;
   }
 
-  last_loaded_url_ = redirect_info.new_url;
+  last_loaded_url_ = KURL(redirect_info.new_url);
   if (NeedsStoringMessage()) {
     StoreAndDispatch(std::make_unique<DeferredOnReceiveRedirect>(
         redirect_info, std::move(response_head), task_runner_));
@@ -388,7 +384,7 @@ void WebMojoURLLoaderClient::OnReceiveRedirect(
   }
 }
 
-void WebMojoURLLoaderClient::OnUploadProgress(
+void MojoURLLoaderClient::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
@@ -401,8 +397,7 @@ void WebMojoURLLoaderClient::OnUploadProgress(
   std::move(ack_callback).Run();
 }
 
-void WebMojoURLLoaderClient::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {
+void MojoURLLoaderClient::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
   if (NeedsStoringMessage()) {
     StoreAndDispatch(
         std::make_unique<DeferredOnReceiveCachedMetadata>(std::move(data)));
@@ -411,7 +406,7 @@ void WebMojoURLLoaderClient::OnReceiveCachedMetadata(
   }
 }
 
-void WebMojoURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+void MojoURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   if (NeedsStoringMessage()) {
     accumulated_transfer_size_diff_during_deferred_ += transfer_size_diff;
   } else {
@@ -419,10 +414,10 @@ void WebMojoURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   }
 }
 
-void WebMojoURLLoaderClient::OnStartLoadingResponseBody(
+void MojoURLLoaderClient::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
-  TRACE_EVENT1("loading", "WebMojoURLLoaderClient::OnStartLoadingResponseBody",
-               "url", last_loaded_url_.possibly_invalid_spec());
+  TRACE_EVENT1("loading", "MojoURLLoaderClient::OnStartLoadingResponseBody",
+               "url", last_loaded_url_.GetString().Utf8());
 
   DCHECK(has_received_response_head_);
   DCHECK(!has_received_response_body_);
@@ -469,7 +464,7 @@ void WebMojoURLLoaderClient::OnStartLoadingResponseBody(
       std::move(new_body_consumer)));
 }
 
-void WebMojoURLLoaderClient::OnComplete(
+void MojoURLLoaderClient::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   has_received_complete_ = true;
   StopBackForwardCacheEvictionTimer();
@@ -484,27 +479,27 @@ void WebMojoURLLoaderClient::OnComplete(
   }
 }
 
-bool WebMojoURLLoaderClient::NeedsStoringMessage() const {
+bool MojoURLLoaderClient::NeedsStoringMessage() const {
   return deferred_state_ != WebURLLoader::DeferType::kNotDeferred ||
          deferred_messages_.size() > 0 ||
          accumulated_transfer_size_diff_during_deferred_ > 0;
 }
 
-void WebMojoURLLoaderClient::StoreAndDispatch(
+void MojoURLLoaderClient::StoreAndDispatch(
     std::unique_ptr<DeferredMessage> message) {
   DCHECK(NeedsStoringMessage());
   if (deferred_state_ != WebURLLoader::DeferType::kNotDeferred) {
-    deferred_messages_.push_back(std::move(message));
+    deferred_messages_.emplace_back(std::move(message));
   } else if (deferred_messages_.size() > 0 ||
              accumulated_transfer_size_diff_during_deferred_ > 0) {
-    deferred_messages_.push_back(std::move(message));
+    deferred_messages_.emplace_back(std::move(message));
     FlushDeferredMessages();
   } else {
     NOTREACHED();
   }
 }
 
-void WebMojoURLLoaderClient::OnConnectionClosed() {
+void MojoURLLoaderClient::OnConnectionClosed() {
   // If the connection aborts before the load completes, mark it as aborted.
   if (!has_received_complete_) {
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
@@ -512,13 +507,13 @@ void WebMojoURLLoaderClient::OnConnectionClosed() {
   }
 }
 
-void WebMojoURLLoaderClient::FlushDeferredMessages() {
+void MojoURLLoaderClient::FlushDeferredMessages() {
   if (deferred_state_ != WebURLLoader::DeferType::kNotDeferred)
     return;
-  std::vector<std::unique_ptr<DeferredMessage>> messages;
-  messages.swap(deferred_messages_);
+  WebVector<std::unique_ptr<DeferredMessage>> messages;
+  messages.Swap(deferred_messages_);
   bool has_completion_message = false;
-  base::WeakPtr<WebMojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
+  base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
   // First, dispatch all messages excluding the followings:
   //  - transfer size change
   //  - completion
@@ -536,10 +531,9 @@ void WebMojoURLLoaderClient::FlushDeferredMessages() {
     if (!weak_this)
       return;
     if (deferred_state_ != WebURLLoader::DeferType::kNotDeferred) {
-      deferred_messages_.insert(
-          deferred_messages_.begin(),
-          std::make_move_iterator(messages.begin()) + index + 1,
-          std::make_move_iterator(messages.end()));
+      deferred_messages_.reserve(messages.size() - index - 1);
+      for (size_t i = index + 1; i < messages.size(); ++i)
+        deferred_messages_.emplace_back(std::move(messages[i]));
       return;
     }
   }
