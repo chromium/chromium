@@ -666,7 +666,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   BOOL wasPersistent = _webView.configuration.persistent;
   [self removeWebView];
   CWVWebViewConfiguration* newConfiguration =
-      wasPersistent ? [CWVWebViewConfiguration incognitoConfiguration]
+      wasPersistent ? [CWVWebViewConfiguration nonPersistentConfiguration]
                     : [CWVWebViewConfiguration defaultConfiguration];
   self.webView = [self createWebViewWithConfiguration:newConfiguration];
 }
