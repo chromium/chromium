@@ -29,18 +29,18 @@
         optional GPUSize64 byteSize);
 
     [RaisesException] void writeTexture(
-        GPUTextureCopyView destination,
+        GPUImageCopyTexture destination,
         [AllowShared] ArrayBufferView data,
-        GPUTextureDataLayout dataLayout,
+        GPUImageDataLayout dataLayout,
         GPUExtent3D size);
     [RaisesException] void writeTexture(
-        GPUTextureCopyView destination,
+        GPUImageCopyTexture destination,
         ArrayBuffer data,
-        GPUTextureDataLayout dataLayout,
+        GPUImageDataLayout dataLayout,
         GPUExtent3D size);
 
     [RaisesException] void copyImageBitmapToTexture(
-        GPUImageBitmapCopyView source,
-        GPUTextureCopyView destination,
+        GPUImageCopyImageBitmap source,
+        GPUImageCopyTexture destination,
         GPUExtent3D copySize);
 };

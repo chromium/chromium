@@ -4,6 +4,9 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUBufferCopyView : GPUTextureDataLayout {
-    required GPUBuffer buffer;
+dictionary GPUImageCopyTexture {
+    required GPUTexture texture;
+    GPUSize32 mipLevel = 0;
+    GPUOrigin3D origin = {};
+    GPUTextureAspect aspect = "all";
 };

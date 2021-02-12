@@ -4,7 +4,7 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUStencilStateFaceDescriptor {
+dictionary GPUStencilFaceState {
     GPUCompareFunction compare = "always";
     GPUStencilOperation failOp = "keep";
     GPUStencilOperation depthFailOp = "keep";

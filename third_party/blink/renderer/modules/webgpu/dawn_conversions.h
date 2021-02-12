@@ -21,9 +21,9 @@ namespace blink {
 
 class DoubleSequenceOrGPUColorDict;
 class GPUColorDict;
-class GPUProgrammableStageDescriptor;
-class GPUTextureCopyView;
-class GPUTextureDataLayout;
+class GPUProgrammableStage;
+class GPUImageCopyTexture;
+class GPUImageDataLayout;
 class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
 class UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict;
 class V8GPUIndexFormat;
@@ -50,14 +50,13 @@ WGPUExtent3D AsDawnType(
     GPUDevice* device);
 WGPUOrigin3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict*);
-WGPUTextureCopyView AsDawnType(const GPUTextureCopyView* webgpu_view,
+WGPUTextureCopyView AsDawnType(const GPUImageCopyTexture* webgpu_view,
                                GPUDevice* device);
-const char* ValidateTextureDataLayout(const GPUTextureDataLayout* webgpu_layout,
+const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
                                       WGPUTextureDataLayout* layout);
 using OwnedProgrammableStageDescriptor =
     std::tuple<WGPUProgrammableStageDescriptor, std::unique_ptr<char[]>>;
-OwnedProgrammableStageDescriptor AsDawnType(
-    const GPUProgrammableStageDescriptor*);
+OwnedProgrammableStageDescriptor AsDawnType(const GPUProgrammableStage*);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.

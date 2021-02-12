@@ -4,14 +4,14 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUDepthStencilStateDescriptor {
+dictionary GPUDepthStencilState {
     required GPUTextureFormat format;
 
     boolean depthWriteEnabled = false;
     GPUCompareFunction depthCompare = "always";
 
-    GPUStencilStateFaceDescriptor stencilFront = {};
-    GPUStencilStateFaceDescriptor stencilBack = {};
+    GPUStencilFaceState stencilFront = {};
+    GPUStencilFaceState stencilBack = {};
 
     GPUStencilValue stencilReadMask = 0xFFFFFFFF;
     GPUStencilValue stencilWriteMask = 0xFFFFFFFF;

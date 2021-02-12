@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://gpuweb.github.io/gpuweb/#dictdef-gputexturedatalayout
+// https://gpuweb.github.io/gpuweb/#dictdef-GPUImageDataLayout
 
-dictionary GPUTextureDataLayout {
+dictionary GPUImageDataLayout {
     GPUSize64 offset = 0;
     GPUSize32 bytesPerRow;
     GPUSize32 rowsPerImage;

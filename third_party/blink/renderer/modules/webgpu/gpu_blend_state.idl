@@ -4,7 +4,7 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUBlendDescriptor {
+dictionary GPUBlendState {
     GPUBlendFactor srcFactor = "one";
     GPUBlendFactor dstFactor = "zero";
     GPUBlendOperation operation = "add";

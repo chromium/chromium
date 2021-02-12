@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_state_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_target_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_depth_stencil_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_rasterization_state_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_stencil_state_face_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_stencil_face_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_attribute_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_buffer_layout_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_vertex_state_descriptor.h"
@@ -24,7 +24,7 @@ namespace blink {
 
 namespace {
 
-WGPUBlendDescriptor AsDawnType(const GPUBlendDescriptor* webgpu_desc) {
+WGPUBlendDescriptor AsDawnType(const GPUBlendState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUBlendDescriptor dawn_desc = {};
@@ -38,8 +38,7 @@ WGPUBlendDescriptor AsDawnType(const GPUBlendDescriptor* webgpu_desc) {
 
 }  // anonymous namespace
 
-WGPUColorStateDescriptor AsDawnType(
-    const GPUColorStateDescriptor* webgpu_desc) {
+WGPUColorStateDescriptor AsDawnType(const GPUColorTargetState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUColorStateDescriptor dawn_desc = {};
@@ -56,7 +55,7 @@ WGPUColorStateDescriptor AsDawnType(
 namespace {
 
 WGPUStencilStateFaceDescriptor AsDawnType(
-    const GPUStencilStateFaceDescriptor* webgpu_desc) {
+    const GPUStencilFaceState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUStencilStateFaceDescriptor dawn_desc = {};
@@ -70,7 +69,7 @@ WGPUStencilStateFaceDescriptor AsDawnType(
 }
 
 WGPUDepthStencilStateDescriptor AsDawnType(
-    const GPUDepthStencilStateDescriptor* webgpu_desc) {
+    const GPUDepthStencilState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUDepthStencilStateDescriptor dawn_desc = {};

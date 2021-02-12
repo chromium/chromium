@@ -4,7 +4,6 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUProgrammableStageDescriptor {
-    required GPUShaderModule module;
-    required USVString entryPoint;
+dictionary GPUImageCopyBuffer : GPUImageDataLayout {
+    required GPUBuffer buffer;
 };

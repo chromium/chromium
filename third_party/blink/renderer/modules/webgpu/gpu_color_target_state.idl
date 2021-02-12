@@ -4,10 +4,10 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-dictionary GPUColorStateDescriptor {
+dictionary GPUColorTargetState {
     required GPUTextureFormat format;
 
-    GPUBlendDescriptor alphaBlend = {};
-    GPUBlendDescriptor colorBlend = {};
+    GPUBlendState alphaBlend = {};
+    GPUBlendState colorBlend = {};
     GPUColorWriteFlags writeMask = 15;  // GPUColorWrite.ALL
 };

@@ -7,14 +7,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/double_sequence_or_gpu_color_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_extent_3d_dict.h"
 #include "third_party/blink/renderer/bindings/modules/v8/unsigned_long_enforce_range_sequence_or_gpu_origin_3d_dict.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_copy_view.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_encoder_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pass_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_buffer.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_image_copy_texture.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_color_attachment_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_depth_stencil_attachment_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pass_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_copy_view.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_command_buffer.h"
@@ -109,7 +109,7 @@ WGPURenderPassDepthStencilAttachmentDescriptor AsDawnType(
 }
 
 WGPUBufferCopyView ValidateAndConvertBufferCopyView(
-    const GPUBufferCopyView* webgpu_view,
+    const GPUImageCopyBuffer* webgpu_view,
     const char** error) {
   DCHECK(webgpu_view);
   DCHECK(webgpu_view->buffer());
@@ -243,8 +243,8 @@ void GPUCommandEncoder::copyBufferToBuffer(GPUBuffer* src,
 }
 
 void GPUCommandEncoder::copyBufferToTexture(
-    GPUBufferCopyView* source,
-    GPUTextureCopyView* destination,
+    GPUImageCopyBuffer* source,
+    GPUImageCopyTexture* destination,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
@@ -262,8 +262,8 @@ void GPUCommandEncoder::copyBufferToTexture(
 }
 
 void GPUCommandEncoder::copyTextureToBuffer(
-    GPUTextureCopyView* source,
-    GPUBufferCopyView* destination,
+    GPUImageCopyTexture* source,
+    GPUImageCopyBuffer* destination,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
   WGPUExtent3D dawn_copy_size = AsDawnType(&copy_size, device_);
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
@@ -281,8 +281,8 @@ void GPUCommandEncoder::copyTextureToBuffer(
 }
 
 void GPUCommandEncoder::copyTextureToTexture(
-    GPUTextureCopyView* source,
-    GPUTextureCopyView* destination,
+    GPUImageCopyTexture* source,
+    GPUImageCopyTexture* destination,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size) {
   WGPUTextureCopyView dawn_source = AsDawnType(source, device_);
   WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);

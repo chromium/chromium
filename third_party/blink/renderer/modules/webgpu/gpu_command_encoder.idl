@@ -18,18 +18,18 @@
         GPUSize64 size);
 
     void copyBufferToTexture(
-        GPUBufferCopyView source,
-        GPUTextureCopyView destination,
+        GPUImageCopyBuffer source,
+        GPUImageCopyTexture destination,
         GPUExtent3D copySize);
 
     void copyTextureToBuffer(
-        GPUTextureCopyView source,
-        GPUBufferCopyView destination,
+        GPUImageCopyTexture source,
+        GPUImageCopyBuffer destination,
         GPUExtent3D copySize);
 
     void copyTextureToTexture(
-        GPUTextureCopyView source,
-        GPUTextureCopyView destination,
+        GPUImageCopyTexture source,
+        GPUImageCopyTexture destination,
         GPUExtent3D copySize);
 
     void pushDebugGroup(USVString groupLabel);
