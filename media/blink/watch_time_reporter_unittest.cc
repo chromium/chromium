@@ -310,7 +310,8 @@ class WatchTimeReporterTest
 
     wtr_ = std::make_unique<blink::WatchTimeReporter>(
         mojom::PlaybackProperties::New(has_audio_, has_video_, false, false,
-                                       is_mse, is_encrypted, false),
+                                       is_mse, is_encrypted, false,
+                                       mojom::MediaStreamType::kNone),
         initial_video_size,
         base::BindRepeating(&WatchTimeReporterTest::GetCurrentMediaTime,
                             base::Unretained(this)),

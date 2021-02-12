@@ -466,3 +466,15 @@ struct Status {
   array<media.mojom.Status> causes;
   mojo_base.mojom.Value? data;
 };
+
+// Types of media stream, categorised by the media stream's source.
+// The enum values are emitted to metrics. Do not reorder.
+enum MediaStreamType {
+  kLocalElementCapture = 0, // The source is a local capture from element.
+  kLocalDeviceCapture = 1, // The source is a local device capture, e.g. webcam.
+  kLocalTabCapture = 2, // The source is a local tab capture.
+  kLocalDesktopCapture = 3, // The source is a local desktop capture.
+  kLocalDisplayCapture = 4, // The source is a local display capture.
+  kRemote = 5, // The source is a remote peer connection.
+  kNone = 6, // Not a media stream.
+};
