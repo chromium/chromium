@@ -14,6 +14,7 @@
 
 #include "util/ios/exception_processor.h"
 
+#include <Availability.h>
 #import <Foundation/Foundation.h>
 #include <TargetConditionals.h>
 #include <cxxabi.h>
@@ -174,8 +175,13 @@ id ObjcExceptionPreprocessor(id exception) {
     }
 
     // Check to see if the handler is really an exception handler.
-    __personality_routine p =
-        reinterpret_cast<__personality_routine>(frame_info.handler);
+#if defined(__IPHONE_14_5) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_5
+    using personality_routine = _Unwind_Personality_Fn;
+#else
+    using personality_routine = __personality_routine;
+#endif
+    personality_routine p =
+        reinterpret_cast<personality_routine>(frame_info.handler);
 
     // From 10.15.0 libunwind-35.4/src/UnwindLevel1.c.
     _Unwind_Reason_Code personalityResult = (*p)(
