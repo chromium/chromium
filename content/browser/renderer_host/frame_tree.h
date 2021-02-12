@@ -136,11 +136,13 @@ class CONTENT_EXPORT FrameTree {
   // constructor so we do not leave objects in a half initialized state.
   void Init(SiteInstance* main_frame_site_instance,
             bool renderer_initiated_creation,
-            const std::string& main_frame_name);
+            const std::string& main_frame_name,
+            bool is_prerendering);
 
   FrameTreeNode* root() const { return root_; }
 
-  void set_is_prerendering(bool is_prerendering);
+  // Sets |is_prerendering_| to false and activates the Prerendered page.
+  void ActivatePrerenderedFrameTree();
 
   bool is_prerendering() const { return is_prerendering_; }
 

@@ -173,6 +173,13 @@ class WebContents : public PageNavigator,
     // WebContents construction should take this into account.
     bool renderer_initiated_creation;
 
+    // True if WebContents is created for Prerendering.
+    // Please note that Prerender2 is an experimental feature to load and run
+    // pages in background.
+    // TODO(https://crbug.com/1177664): After migration of Prerender2 to MPArch,
+    // remove this plumbing.
+    bool is_prerendering = false;
+
     // Used to specify how far WebContents::Create can initialize a renderer
     // process.
     //

@@ -51,11 +51,10 @@ class PrerenderHost::MPArchPageHolder
                     &web_contents,
                     &web_contents,
                     &web_contents) {
-    frame_tree_.set_is_prerendering(true);
     frame_tree_.Init(
         SiteInstance::Create(web_contents.GetBrowserContext()).get(),
         /*renderer_initiated_creation=*/false,
-        /*main_frame_name=*/"");
+        /*main_frame_name=*/"", /*is_prerendering=*/true);
 
     // TODO(https://crbug.com/1164280): This should be moved to FrameTree::Init
     web_contents_.NotifySwappedFromRenderManager(
@@ -171,12 +170,13 @@ class PrerenderHost::WebContentsPageHolder
   explicit WebContentsPageHolder(BrowserContext* browser_context) {
     // Create a new WebContents for prerendering.
     WebContents::CreateParams web_contents_params(browser_context);
+    web_contents_params.is_prerendering = true;
     // TODO(https://crbug.com/1132746): Set up other fields of
     // `web_contents_params` as well, and add tests for them.
     web_contents_ = WebContents::Create(web_contents_params);
-    static_cast<WebContentsImpl*>(web_contents_.get())
-        ->GetFrameTree()
-        ->set_is_prerendering(true);
+    DCHECK(static_cast<WebContentsImpl*>(web_contents_.get())
+               ->GetFrameTree()
+               ->is_prerendering());
   }
 
   ~WebContentsPageHolder() override = default;
@@ -207,8 +207,8 @@ class PrerenderHost::WebContentsPageHolder
     DCHECK(delegate);
     DCHECK(web_contents_);
     DCHECK(GetMainFrame()->frame_tree()->is_prerendering());
-    GetMainFrame()->frame_tree()->set_is_prerendering(false);
-    GetMainFrame()->OnPrerenderedPageActivated();
+    GetMainFrame()->frame_tree()->ActivatePrerenderedFrameTree();
+
     // Tentatively use Portal's activation function.
     // TODO(https://crbug.com/1132746): Replace this with the MPArch.
     std::unique_ptr<WebContents> predecessor_web_contents =

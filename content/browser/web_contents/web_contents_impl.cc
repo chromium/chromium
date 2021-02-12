@@ -2732,7 +2732,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
   }
 
   frame_tree_.Init(site_instance.get(), params.renderer_initiated_creation,
-                   params.main_frame_name);
+                   params.main_frame_name, params.is_prerendering);
 
   WebContentsViewDelegate* delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
