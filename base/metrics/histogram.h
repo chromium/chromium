@@ -261,9 +261,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // Method to override to skip the display of the i'th bucket if it's empty.
   virtual bool PrintEmptyBucket(uint32_t index) const;
 
-  // Get normalized size, relative to the ranges(i).
-  virtual double GetBucketSize(Count current, uint32_t i) const;
-
   // Return a string description of what goes in a given bucket.
   // Most commonly this is the numeric value, but in derived classes it may
   // be a name (or string description) given to the bucket.
@@ -275,6 +272,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   FRIEND_TEST_ALL_PREFIXES(HistogramTest, BoundsTest);
   FRIEND_TEST_ALL_PREFIXES(HistogramTest, BucketPlacementTest);
   FRIEND_TEST_ALL_PREFIXES(HistogramTest, CorruptSampleCounts);
+  FRIEND_TEST_ALL_PREFIXES(HistogramTest, GetPeakBucketSize);
 
   friend class StatisticsRecorder;  // To allow it to delete duplicates.
   friend class StatisticsRecorderTest;
@@ -420,8 +418,6 @@ class BASE_EXPORT LinearHistogram : public Histogram {
                   const DelayedPersistentAllocation& logged_counts,
                   HistogramSamples::Metadata* meta,
                   HistogramSamples::Metadata* logged_meta);
-
-  double GetBucketSize(Count current, uint32_t i) const override;
 
   // If we have a description for a bucket, then return that.  Otherwise
   // let parent class provide a (numeric) description.
@@ -597,8 +593,6 @@ class BASE_EXPORT CustomHistogram : public Histogram {
 
   // HistogramBase implementation:
   void SerializeInfoImpl(base::Pickle* pickle) const override;
-
-  double GetBucketSize(Count current, uint32_t i) const override;
 
  private:
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(

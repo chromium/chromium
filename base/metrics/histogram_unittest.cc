@@ -967,7 +967,7 @@ TEST_P(HistogramTest, WriteAscii) {
   const char kOutputFormatRe[] =
       R"(Histogram: AsciiOut recorded 5 samples, mean = 4\.0.*\n)"
       R"(0  \.\.\. \n)"
-      R"(4  -+O \(5 = 100\.0%\) \{0\.0%\}\n)"
+      R"(4  -+O \s* \(5 = 100\.0%\) \{0\.0%\}\n)"
       R"(7  \.\.\. \n)";
 
   EXPECT_THAT(output, testing::MatchesRegex(kOutputFormatRe));
@@ -985,9 +985,41 @@ TEST_P(HistogramTest, ToGraphDict) {
 
   const char kOutputHeaderFormatRe[] =
       R"(Histogram: HTMLOut recorded 5 samples, mean = 4\.0.*)";
-  const char kOutputBodyFormatRe[] = R"(0  \.\.\. \n)"
-                                     R"(4  -+O \(5 = 100\.0%\) \{0\.0%\}\n)"
-                                     R"(7  \.\.\. \n)";
+  const char kOutputBodyFormatRe[] =
+      R"(0  \.\.\. \n)"
+      R"(4  -+O \s*  \(5 = 100\.0%\) \{0\.0%\}\n)"
+      R"(7  \.\.\. \n)";
+
+  EXPECT_THAT(*header, testing::MatchesRegex(kOutputHeaderFormatRe));
+  EXPECT_THAT(*body, testing::MatchesRegex(kOutputBodyFormatRe));
+}
+
+// Tests ToGraphDict() returns deterministic length size and normalizes to
+// scale.
+TEST_P(HistogramTest, ToGraphDictNormalize) {
+  int count_bucket_1 = 80;
+  int value_bucket_1 = 4;
+  int count_bucket_2 = 40;
+  int value_bucket_2 = 5;
+  HistogramBase* histogram =
+      LinearHistogram::FactoryGet("AsciiOut", /*minimum=*/1, /*maximum=*/100,
+                                  /*bucket_count=*/80, HistogramBase::kNoFlags);
+  histogram->AddCount(/*value=*/value_bucket_1, /*count=*/count_bucket_1);
+  histogram->AddCount(/*value=*/value_bucket_2, /*count=*/count_bucket_2);
+
+  base::DictionaryValue output = histogram->ToGraphDict();
+  std::string* header = output.FindStringKey("header");
+  std::string* body = output.FindStringKey("body");
+
+  const char kOutputHeaderFormatRe[] =
+      R"(Histogram: AsciiOut recorded 120 samples, mean = 4\.3.*)";
+  const char kOutputBodyFormatRe[] =
+      R"(0  \.\.\. \n)"
+      R"(4  ---------------------------------------------------)"
+      R"(---------------------O \(80 = 66\.7%\) \{0\.0%\}\n)"
+      R"(5  ----------------)"
+      R"(--------------------O \s* \(40 = 33\.3%\) \{66\.7%\}\n)"
+      R"(6  \.\.\. \n)";
 
   EXPECT_THAT(*header, testing::MatchesRegex(kOutputHeaderFormatRe));
   EXPECT_THAT(*body, testing::MatchesRegex(kOutputBodyFormatRe));

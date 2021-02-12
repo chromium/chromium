@@ -268,6 +268,12 @@ void SparseHistogram::WriteAsciiBody(const HistogramSamples& snapshot,
       largest_count = count;
     it->Next();
   }
+  // Scale histogram bucket counts to take at most 72 characters.
+  // Note: Keep in sync w/ kLineLength histogram.cc
+  const double kLineLength = 72;
+  double scaling_factor = 1;
+  if (largest_count > kLineLength)
+    scaling_factor = kLineLength / largest_count;
   size_t print_width = GetSimpleAsciiBucketRange(largest_sample).size() + 1;
 
   // iterate over each item and display them
@@ -283,9 +289,9 @@ void SparseHistogram::WriteAsciiBody(const HistogramSamples& snapshot,
     output->append(range);
     for (size_t j = 0; range.size() + j < print_width + 1; ++j)
       output->push_back(' ');
-
+    Count current_size = round(count * scaling_factor);
     if (graph_it)
-      WriteAsciiBucketGraph(count, largest_count, output);
+      WriteAsciiBucketGraph(current_size, kLineLength, output);
     WriteAsciiBucketValue(count, scaled_total_count, output);
     output->append(newline);
     it->Next();

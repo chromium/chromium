@@ -281,9 +281,9 @@ class BASE_EXPORT HistogramBase {
                              int64_t* sum,
                              ListValue* buckets) const;
 
-  //// Produce actual graph (set of blank vs non blank char's) for a bucket.
-  void WriteAsciiBucketGraph(double current_size,
-                             double max_size,
+  // Produces an actual graph (set of blank vs non blank char's) for a bucket.
+  void WriteAsciiBucketGraph(double x_count,
+                             int line_length,
                              std::string* output) const;
 
   // Return a string description of what goes in a given bucket.

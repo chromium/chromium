@@ -203,13 +203,10 @@ void HistogramBase::GetCountAndBucketData(Count* count,
   }
 }
 
-void HistogramBase::WriteAsciiBucketGraph(double current_size,
-                                          double max_size,
+void HistogramBase::WriteAsciiBucketGraph(double x_count,
+                                          int line_length,
                                           std::string* output) const {
-  const int k_line_length = 72;  // Maximal horizontal width of graph.
-  int x_count = static_cast<int>(k_line_length * (current_size / max_size)
-                                 + 0.5);
-  int x_remainder = k_line_length - x_count;
+  int x_remainder = line_length - x_count;
 
   while (0 < x_count--)
     output->append("-");

@@ -650,20 +650,6 @@ bool Histogram::PrintEmptyBucket(uint32_t index) const {
   return true;
 }
 
-// Use the actual bucket widths (like a linear histogram) until the widths get
-// over some transition value, and then use that transition width.  Exponentials
-// get so big so fast (and we don't expect to see a lot of entries in the large
-// buckets), so we need this to make it possible to see what is going on and
-// not have 0-graphical-height buckets.
-double Histogram::GetBucketSize(Count current, uint32_t i) const {
-  DCHECK_GT(ranges(i + 1), ranges(i));
-  static const double kTransitionWidth = 5;
-  double denominator = ranges(i + 1) - ranges(i);
-  if (denominator > kTransitionWidth)
-    denominator = kTransitionWidth;  // Stop trying to normalize.
-  return current/denominator;
-}
-
 const std::string Histogram::GetAsciiBucketRange(uint32_t i) const {
   return GetSimpleAsciiBucketRange(ranges(i));
 }
@@ -719,8 +705,14 @@ void Histogram::WriteAsciiBody(const SampleVector& snapshot,
 
   // Prepare to normalize graphical rendering of bucket contents.
   double max_size = 0;
+  double scaling_factor = 1;
   if (graph_it)
     max_size = GetPeakBucketSize(snapshot);
+  // Scale histogram bucket counts to take at most 72 characters.
+  // Note: Keep in sync w/ kLineLength sparse_histogram.cc
+  const double kLineLength = 72;
+  if (max_size > kLineLength)
+    scaling_factor = kLineLength / max_size;
 
   // Calculate space needed to print bucket range numbers.  Leave room to print
   // nearly the largest bucket range without sliding over the histogram.
@@ -762,9 +754,9 @@ void Histogram::WriteAsciiBody(const SampleVector& snapshot,
       output->append(newline);
       continue;  // No reason to plot emptiness.
     }
-    double current_size = GetBucketSize(current, i);
+    Count current_size = round(current * scaling_factor);
     if (graph_it)
-      WriteAsciiBucketGraph(current_size, max_size, output);
+      WriteAsciiBucketGraph(current_size, kLineLength, output);
     WriteAsciiBucketContext(past, current, remaining, i, output);
     output->append(newline);
     past += current;
@@ -773,11 +765,11 @@ void Histogram::WriteAsciiBody(const SampleVector& snapshot,
 }
 
 double Histogram::GetPeakBucketSize(const SampleVectorBase& samples) const {
-  double max = 0;
+  Count max = 0;
   for (uint32_t i = 0; i < bucket_count() ; ++i) {
-    double current_size = GetBucketSize(samples.GetCountAtIndex(i), i);
-    if (current_size > max)
-      max = current_size;
+    Count current = samples.GetCountAtIndex(i);
+    if (current > max)
+      max = current;
   }
   return max;
 }
@@ -979,14 +971,6 @@ LinearHistogram::LinearHistogram(
                 logged_counts,
                 meta,
                 logged_meta) {}
-
-double LinearHistogram::GetBucketSize(Count current, uint32_t i) const {
-  DCHECK_GT(ranges(i + 1), ranges(i));
-  // Adjacent buckets with different widths would have "surprisingly" many (few)
-  // samples in a histogram if we didn't normalize this way.
-  double denominator = ranges(i + 1) - ranges(i);
-  return current/denominator;
-}
 
 const std::string LinearHistogram::GetAsciiBucketRange(uint32_t i) const {
   int range = ranges(i);
@@ -1341,12 +1325,6 @@ void CustomHistogram::SerializeInfoImpl(Pickle* pickle) const {
   // write them.
   for (uint32_t i = 1; i < bucket_ranges()->bucket_count(); ++i)
     pickle->WriteInt(bucket_ranges()->range(i));
-}
-
-double CustomHistogram::GetBucketSize(Count current, uint32_t i) const {
-  // If this is a histogram of enum values, normalizing the bucket count
-  // by the bucket range is not helpful, so just return the bucket count.
-  return current;
 }
 
 // static
