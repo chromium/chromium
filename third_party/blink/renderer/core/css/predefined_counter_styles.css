@@ -394,11 +394,6 @@
   suffix: "/ ";
 }
 
-/*
- * TODO(crbug.com/687225): Add everything else in:
- * - https://w3c.github.io/predefined-counter-styles/
- */
-
 /* Non-standard counter styles that we've been supporting */
 
 @counter-style ethiopic-halehame {
