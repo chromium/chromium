@@ -185,6 +185,11 @@ void StreamingSearchPrefetchURLLoader::OnDataAvailable(const void* data,
 
 void StreamingSearchPrefetchURLLoader::OnDataComplete() {
   drain_complete_ = true;
+
+  // Disconnect if all content is served.
+  if (bytes_of_raw_data_to_transfer_ - write_position_ == 0) {
+    Finish();
+  }
 }
 
 void StreamingSearchPrefetchURLLoader::OnStartLoadingResponseBodyFromData() {
