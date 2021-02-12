@@ -999,11 +999,15 @@ void WebContentsAccessibilityAndroid::SetSelection(
     jint unique_id,
     jint start,
     jint end) {
+  using AXPlatformPositionInstance =
+      BrowserAccessibilityPosition::AXPositionInstance;
+  using AXPlatformRange = ui::AXRange<AXPlatformPositionInstance::element_type>;
+
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (node) {
     node->manager()->SetSelection(
-        BrowserAccessibility::AXRange(node->CreatePositionForSelectionAt(start),
-                                      node->CreatePositionForSelectionAt(end)));
+        AXPlatformRange(node->CreatePositionForSelectionAt(start),
+                        node->CreatePositionForSelectionAt(end)));
   }
 }
 

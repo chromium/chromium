@@ -1328,7 +1328,6 @@ AXHypertext::~AXHypertext() = default;
 AXHypertext::AXHypertext(const AXHypertext& other) = default;
 AXHypertext& AXHypertext::operator=(const AXHypertext& other) = default;
 
-// TODO(nektar): To be able to use AXNode in Views, move this logic to AXNode.
 void AXPlatformNodeBase::UpdateComputedHypertext() const {
   if (!delegate_)
     return;
@@ -1341,14 +1340,14 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
   }
 
   // Construct the hypertext for this node, which contains the concatenation
-  // of all of the static text and whitespace from this node's children, and an
+  // of all of the static text and widespace of this node's children and an
   // embedded object character for all the other children. Build up a map from
   // the character index of each embedded object character to the id of the
   // child object it points to.
   base::string16 hypertext;
   for (AXPlatformNodeChildIterator child_iter = AXPlatformNodeChildrenBegin();
        child_iter != AXPlatformNodeChildrenEnd(); ++child_iter) {
-    // Similar to Firefox, we don't expose text nodes in IAccessible2 and ATK
+    // Similar to Firefox, we don't expose text-only objects in IA2 and ATK
     // hypertext with the embedded object character. We copy all of their text
     // instead.
     if (child_iter->IsText()) {

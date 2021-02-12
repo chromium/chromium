@@ -260,9 +260,9 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
                             BrowserAccessibility* browser_accessibility_start,
                             BrowserAccessibility* browser_accessibility_end,
                             const bool align_to_top) {
-    BrowserAccessibility::AXPosition start =
+    ui::AXNodePosition::AXPositionInstance start =
         browser_accessibility_start->CreateTextPositionAt(0);
-    BrowserAccessibility::AXPosition end =
+    ui::AXNodePosition::AXPositionInstance end =
         browser_accessibility_end->CreateTextPositionAt(0)
             ->CreatePositionAtEndOfAnchor();
 

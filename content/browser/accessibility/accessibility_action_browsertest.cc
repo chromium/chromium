@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_position.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
@@ -464,11 +463,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
   // We should do it with accessibility flags instead. http://crbug.com/672205
 #if !defined(OS_ANDROID)
   // Check that it really does contain two lines.
-  BrowserAccessibility::AXPosition start_position =
+  auto start_pos =
       target->CreatePositionAt(0, ax::mojom::TextAffinity::kDownstream);
-  BrowserAccessibility::AXPosition end_of_line_1 =
-      start_position->CreateNextLineEndPosition(
-          ui::AXBoundaryBehavior::CrossBoundary);
+  auto end_of_line_1 = start_pos->CreateNextLineEndPosition(
+      ui::AXBoundaryBehavior::CrossBoundary);
   EXPECT_EQ(5, end_of_line_1->text_offset());
 #endif
 }
@@ -498,11 +496,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // We should do it with accessibility flags instead. http://crbug.com/672205
 #if !defined(OS_ANDROID)
   // Check that it really does contain two lines.
-  BrowserAccessibility::AXPosition start_position =
+  auto start_pos =
       target->CreatePositionAt(0, ax::mojom::TextAffinity::kDownstream);
-  BrowserAccessibility::AXPosition end_of_line_1 =
-      start_position->CreateNextLineEndPosition(
-          ui::AXBoundaryBehavior::CrossBoundary);
+  auto end_of_line_1 = start_pos->CreateNextLineEndPosition(
+      ui::AXBoundaryBehavior::CrossBoundary);
   EXPECT_EQ(5, end_of_line_1->text_offset());
 #endif
 }

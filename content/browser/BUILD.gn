@@ -328,6 +328,8 @@ source_set("browser") {
     "accessibility/browser_accessibility.h",
     "accessibility/browser_accessibility_manager.cc",
     "accessibility/browser_accessibility_manager.h",
+    "accessibility/browser_accessibility_position.cc",
+    "accessibility/browser_accessibility_position.h",
     "accessibility/browser_accessibility_state_impl.cc",
     "accessibility/browser_accessibility_state_impl.h",
     "accessibility/one_shot_accessibility_tree_search.cc",

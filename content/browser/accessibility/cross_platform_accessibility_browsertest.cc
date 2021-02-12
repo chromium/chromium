@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   // into a separate accessibility tree. (See "out-of-process cross-origin
   // iframes in Chromium documentation.)
   ASSERT_EQ(0u, iframe->children().size());
-  const ui::AXTreeID iframe_tree_id = ui::AXTreeID::FromString(
+  const ui::AXTreeID iframe_tree_id = AXTreeID::FromString(
       GetAttr(iframe, ax::mojom::StringAttribute::kChildTreeId));
   const BrowserAccessibilityManager* iframe_manager =
       BrowserAccessibilityManager::FromID(iframe_tree_id);
