@@ -108,7 +108,7 @@ public class ToolbarPhoneTest {
                 mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
 
         // When menu is hidden, optional button should have no padding.
-        doReturn(false).when(mMenuButtonCoordinator).isShown();
+        doReturn(false).when(mMenuButtonCoordinator).isVisible();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mToolbar.updateOptionalButton(
                     new ButtonData(false, drawable, null, R.string.share, false, null, false));
@@ -121,7 +121,7 @@ public class ToolbarPhoneTest {
 
         // However when menu is visible, optional button should have
         // toolbar_phone_optional_button_padding padding.
-        doReturn(true).when(mMenuButtonCoordinator).isShown();
+        doReturn(true).when(mMenuButtonCoordinator).isVisible();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateButtonVisibility(); });
         padding = mToolbar.findViewById(R.id.optional_toolbar_button).getPaddingStart();
         int expectedPadding = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(

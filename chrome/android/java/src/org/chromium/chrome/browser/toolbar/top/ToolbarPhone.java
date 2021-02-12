@@ -427,7 +427,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mToggleTabStackButton.setOnKeyListener(new KeyboardNavigationListener() {
             @Override
             public View getNextFocusForward() {
-                if (getMenuButtonCoordinator().isShown()) {
+                if (isMenuButtonPresent()) {
                     return getMenuButtonCoordinator().getMenuButton();
                 } else {
                     return getCurrentTabView();
@@ -2574,7 +2574,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      * buttons besides the optional button.
      */
     private boolean isMenuButtonPresent() {
-        return getMenuButtonCoordinator().isShown();
+        return getMenuButtonCoordinator().isVisible();
     }
 
     private void requestLayoutHostUpdateForOptionalButton() {

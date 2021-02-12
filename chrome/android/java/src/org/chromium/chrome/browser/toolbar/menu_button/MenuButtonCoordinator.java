@@ -136,8 +136,8 @@ public class MenuButtonCoordinator {
     /**
      * @return Whether the menu button is present and visible.
      */
-    public boolean isShown() {
-        return mMenuButton != null && mMenuButton.isShown();
+    public boolean isVisible() {
+        return mMenuButton != null && mMenuButton.getVisibility() == View.VISIBLE;
     }
 
     /**
