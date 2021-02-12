@@ -148,7 +148,8 @@ class PDFiumEngine : public PDFEngine,
       int page_index,
       uint32_t text_run_count) override;
   std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
-      int page_index) override;
+      int page_index,
+      const std::vector<AccessibilityTextRunInfo>& text_runs) override;
   std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
       int page_index) override;
   bool GetPrintScaling() override;

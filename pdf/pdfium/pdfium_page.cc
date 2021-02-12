@@ -670,19 +670,21 @@ std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
   return image_info;
 }
 
-std::vector<PDFEngine::AccessibilityHighlightInfo>
-PDFiumPage::GetHighlightInfo() {
-  std::vector<PDFEngine::AccessibilityHighlightInfo> highlight_info;
+std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo(
+    const std::vector<AccessibilityTextRunInfo>& text_runs) {
+  std::vector<AccessibilityHighlightInfo> highlight_info;
   if (!available_)
     return highlight_info;
 
   PopulateAnnotations();
 
   highlight_info.reserve(highlights_.size());
-  for (const Highlight& highlight : highlights_) {
-    PDFEngine::AccessibilityHighlightInfo cur_info;
-    cur_info.start_char_index = highlight.start_char_index;
-    cur_info.char_count = highlight.char_count;
+  for (size_t i = 0; i < highlights_.size(); ++i) {
+    const Highlight& highlight = highlights_[i];
+    AccessibilityHighlightInfo cur_info;
+    cur_info.index_in_page = i;
+    cur_info.text_range = GetEnclosingTextRunRangeForCharRange(
+        text_runs, highlight.start_char_index, highlight.char_count);
     cur_info.bounds = gfx::RectF(
         highlight.bounding_rect.x(), highlight.bounding_rect.y(),
         highlight.bounding_rect.width(), highlight.bounding_rect.height());
@@ -690,6 +692,9 @@ PDFiumPage::GetHighlightInfo() {
     cur_info.note_text = highlight.note_text;
     highlight_info.push_back(std::move(cur_info));
   }
+
+  std::sort(highlight_info.begin(), highlight_info.end(),
+            CompareTextRuns<AccessibilityHighlightInfo>);
   return highlight_info;
 }
 

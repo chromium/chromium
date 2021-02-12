@@ -515,13 +515,6 @@ void ShutdownSDK() {
 #endif  // defined(PDF_ENABLE_V8)
 }
 
-PDFEngine::AccessibilityHighlightInfo::AccessibilityHighlightInfo() = default;
-
-PDFEngine::AccessibilityHighlightInfo::AccessibilityHighlightInfo(
-    const AccessibilityHighlightInfo& that) = default;
-
-PDFEngine::AccessibilityHighlightInfo::~AccessibilityHighlightInfo() = default;
-
 PDFEngine::AccessibilityTextFieldInfo::AccessibilityTextFieldInfo() = default;
 
 PDFEngine::AccessibilityTextFieldInfo::AccessibilityTextFieldInfo(
@@ -2606,10 +2599,11 @@ std::vector<AccessibilityImageInfo> PDFiumEngine::GetImageInfo(
   return pages_[page_index]->GetImageInfo(text_run_count);
 }
 
-std::vector<PDFEngine::AccessibilityHighlightInfo>
-PDFiumEngine::GetHighlightInfo(int page_index) {
+std::vector<AccessibilityHighlightInfo> PDFiumEngine::GetHighlightInfo(
+    int page_index,
+    const std::vector<AccessibilityTextRunInfo>& text_runs) {
   DCHECK(PageIndexInBounds(page_index));
-  return pages_[page_index]->GetHighlightInfo();
+  return pages_[page_index]->GetHighlightInfo(text_runs);
 }
 
 std::vector<PDFEngine::AccessibilityTextFieldInfo>
