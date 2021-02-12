@@ -87,7 +87,6 @@ class LayoutNGTableSectionInterface;
 class LayoutNGTableCellInterface;
 class LayoutView;
 class LocalFrameView;
-class NGPhysicalBoxFragment;
 class PaintLayer;
 class PseudoElementStyleRequest;
 struct PaintInfo;
@@ -452,13 +451,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // |NGInlineNodeData| and the root |NGPaintFragment| if it's in
   // LayoutNG context.
   LayoutBlockFlow* ContainingNGBlockFlow() const;
-
-  // Returns |NGPhysicalBoxFragment| for |ContainingNGBlockFlow()| or nullptr
-  // otherwise.
-  //
-  // TODO(crbug.com/1061423): Remove this method. We shouldn't assume
-  // that there's only one fragment.
-  const NGPhysicalBoxFragment* ContainingBlockFlowFragment() const;
 
   // Function to return our enclosing flow thread if we are contained inside
   // one. This function follows the containing block chain.

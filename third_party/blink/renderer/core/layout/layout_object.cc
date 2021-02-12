@@ -966,17 +966,6 @@ LayoutBlockFlow* LayoutObject::ContainingNGBlockFlow() const {
   return nullptr;
 }
 
-const NGPhysicalBoxFragment* LayoutObject::ContainingBlockFlowFragment() const {
-  NOT_DESTROYED();
-  DCHECK(IsInline() || IsText());
-  LayoutBlockFlow* const block_flow = ContainingNGBlockFlow();
-  if (!block_flow || !block_flow->ChildrenInline())
-    return nullptr;
-  // TODO(kojii): CurrentFragment isn't always available after layout clean.
-  // Investigate why.
-  return block_flow->CurrentFragment();
-}
-
 bool LayoutObject::IsFirstInlineFragmentSafe() const {
   NOT_DESTROYED();
   DCHECK(IsInline());
