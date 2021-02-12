@@ -66,6 +66,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
       const scoped_refptr<base::SingleThreadTaskRunner>& decode_task_runner)
       override;
   bool SupportsSharedImagePictureBuffers() const override;
+  TextureAllocationMode GetSharedImageTextureAllocationMode() const override;
 
   // MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

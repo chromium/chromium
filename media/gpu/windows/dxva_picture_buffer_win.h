@@ -68,6 +68,31 @@ class DXVAPictureBuffer {
     color_space_ = color_space;
   }
 
+  const std::vector<scoped_refptr<Picture::ScopedSharedImage>>& shared_images()
+      const {
+    return shared_images_;
+  }
+
+  void set_shared_image(
+      size_t plane,
+      scoped_refptr<Picture::ScopedSharedImage> shared_image) {
+    DCHECK(plane < shared_images_.size());
+    shared_images_[plane] = std::move(shared_image);
+  }
+
+  // Picture buffer data used to create a shared image backing.
+  const PictureBuffer::TextureIds& service_texture_ids() const {
+    return picture_buffer_.service_texture_ids();
+  }
+
+  gfx::Size texture_size(size_t plane) {
+    return picture_buffer_.texture_size(plane);
+  }
+
+  VideoPixelFormat pixel_format() const {
+    return picture_buffer_.pixel_format();
+  }
+
   // Returns true if these could in theory be used as an overlay. May
   // still be drawn using GL depending on the scene and precise hardware
   // support.
@@ -95,6 +120,8 @@ class DXVAPictureBuffer {
   gfx::Rect visible_rect_;
   gfx::ColorSpace color_space_;
   scoped_refptr<gl::GLImage> gl_image_;
+
+  std::vector<scoped_refptr<Picture::ScopedSharedImage>> shared_images_;
 
   DISALLOW_COPY_AND_ASSIGN(DXVAPictureBuffer);
 };

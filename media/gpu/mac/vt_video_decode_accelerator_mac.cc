@@ -1708,6 +1708,12 @@ bool VTVideoDecodeAccelerator::SupportsSharedImagePictureBuffers() const {
   return true;
 }
 
+VideoDecodeAccelerator::TextureAllocationMode
+VTVideoDecodeAccelerator::GetSharedImageTextureAllocationMode() const {
+  return VideoDecodeAccelerator::TextureAllocationMode::
+      kDoNotAllocateGLTextures;
+}
+
 // static
 VideoDecodeAccelerator::SupportedProfiles
 VTVideoDecodeAccelerator::GetSupportedProfiles(

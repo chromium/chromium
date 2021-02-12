@@ -38,6 +38,8 @@ class SharedImageStub;
 
 namespace media {
 
+class CommandBufferHelper;
+
 // Video decoder interface.
 // This interface is extended by the various components that ultimately
 // implement the backend of PPB_VideoDecoder_Dev.
@@ -262,6 +264,10 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // Default implementation returns nullptr.
     virtual gpu::SharedImageStub* GetSharedImageStub() const;
 
+    // Return the CommandBufferHelper through which GL passthrough textures may
+    // be created. Default implementation returns nullptr.
+    virtual CommandBufferHelper* GetCommandBufferHelper() const;
+
    protected:
     virtual ~Client() {}
   };
@@ -417,6 +423,15 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   // Returns true if the decoder supports SharedImage backed picture buffers.
   // May be called on any thread at any time.
   virtual bool SupportsSharedImagePictureBuffers() const;
+
+  enum class TextureAllocationMode {
+    kDoNotAllocateGLTextures,
+    kAllocateGLTextures
+  };
+
+  // Returns an enum used to allocate GL textures for shared images.
+  // May be called on any thread at any time.
+  virtual TextureAllocationMode GetSharedImageTextureAllocationMode() const;
 
  protected:
   // Do not delete directly; use Destroy() or own it with a scoped_ptr, which

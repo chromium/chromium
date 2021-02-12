@@ -130,6 +130,7 @@ class VdaVideoDecoder : public VideoDecoder,
   void NotifyResetDone() override;
   void NotifyError(VideoDecodeAccelerator::Error error) override;
   gpu::SharedImageStub* GetSharedImageStub() const override;
+  CommandBufferHelper* GetCommandBufferHelper() const override;
 
   // Tasks and thread hopping.
   static void CleanupOnGpuThread(std::unique_ptr<VdaVideoDecoder>);

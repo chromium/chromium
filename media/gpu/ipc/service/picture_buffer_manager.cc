@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/video_util.h"
 
@@ -75,17 +76,23 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       uint32_t planes,
       gfx::Size texture_size,
       uint32_t texture_target,
-      bool use_shared_image) override {
+      bool use_shared_image,
+      VideoDecodeAccelerator::TextureAllocationMode mode) override {
     DVLOG(2) << __func__;
     DCHECK(gpu_task_runner_);
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
     DCHECK(count);
     DCHECK(planes);
     DCHECK_LE(planes, static_cast<uint32_t>(VideoFrame::kMaxPlanes));
+    DCHECK(
+        use_shared_image ||
+        mode ==
+            VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures);
 
-    if (!use_shared_image) {
-      // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
-      // called with the context current.
+    // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
+    // called with the context current.
+    if (mode ==
+        VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
       if (!command_buffer_helper_->MakeContextCurrent()) {
         DVLOG(1) << "Failed to make context current";
         return std::vector<PictureBuffer>();
@@ -96,13 +103,25 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     for (uint32_t i = 0; i < count; i++) {
       PictureBufferData picture_data = {pixel_format, texture_size,
                                         use_shared_image};
-
-      if (!use_shared_image) {
+      if (mode ==
+          VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
         for (uint32_t j = 0; j < planes; j++) {
+          // Use the plane size for texture-backed shared and non-shared images.
+          // Adjust the size by the subsampling factor.
+          const size_t width =
+              VideoFrame::Columns(j, pixel_format, texture_size.width());
+          const size_t height =
+              VideoFrame::Rows(j, pixel_format, texture_size.height());
+
+          picture_data.texture_sizes.emplace_back(width, height);
+
           // Create a texture for this plane.
+          // When using shared images, the VDA might not require GL textures to
+          // exist.
+          // TODO(crbug.com/1011555): Do not allocate GL textures when unused.
           GLuint service_id = command_buffer_helper_->CreateTexture(
-              texture_target, GL_RGBA, texture_size.width(),
-              texture_size.height(), GL_RGBA, GL_UNSIGNED_BYTE);
+              texture_target, GL_RGBA, width, height, GL_RGBA,
+              GL_UNSIGNED_BYTE);
           DCHECK(service_id);
           picture_data.service_ids.push_back(service_id);
 
@@ -132,8 +151,9 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       // TODO(sandersd): Refactor the bind image callback to use service IDs so
       // that we can get rid of the client IDs altogether.
       picture_buffers.emplace_back(
-          picture_buffer_id, texture_size, picture_data.service_ids,
-          picture_data.service_ids, texture_target, pixel_format);
+          picture_buffer_id, texture_size, picture_data.texture_sizes,
+          picture_data.service_ids, picture_data.service_ids, texture_target,
+          pixel_format);
     }
     return picture_buffers;
   }
@@ -216,12 +236,12 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
     // If this |picture| has a SharedImage, then keep a reference to the
     // SharedImage in |picture_buffer_data| and update the gpu::MailboxHolder.
-    DCHECK_EQ(picture_buffer_data.use_shared_image,
-              !!picture.scoped_shared_image());
-    if (auto scoped_shared_image = picture.scoped_shared_image()) {
-      picture_buffer_data.scoped_shared_image = scoped_shared_image;
-      picture_buffer_data.mailbox_holders[0] =
-          scoped_shared_image->GetMailboxHolder();
+    for (uint32_t i = 0; i < VideoFrame::kMaxPlanes; i++) {
+      if (auto scoped_shared_image = picture.scoped_shared_image(i)) {
+        picture_buffer_data.scoped_shared_images.push_back(scoped_shared_image);
+        picture_buffer_data.mailbox_holders[i] =
+            scoped_shared_image->GetMailboxHolder();
+      }
     }
 
     // Create and return a VideoFrame for the picture buffer.
@@ -313,7 +333,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
     std::vector<GLuint> service_ids;
-    scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
     {
       base::AutoLock lock(picture_buffers_lock_);
       const auto& it = picture_buffers_.find(picture_buffer_id);
@@ -321,14 +340,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       DCHECK(it->second.dismissed);
       DCHECK(!it->second.IsInUse());
       service_ids = std::move(it->second.service_ids);
-      scoped_shared_image = std::move(it->second.scoped_shared_image);
       picture_buffers_.erase(it);
-    }
-
-    // If this PictureBuffer is using a SharedImage, let it fall out of scope.
-    if (scoped_shared_image) {
-      DCHECK(service_ids.empty());
-      return;
     }
 
     if (!command_buffer_helper_->MakeContextCurrent())
@@ -351,7 +363,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     bool use_shared_image = false;
     std::vector<GLuint> service_ids;
     gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
-    scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
+    std::vector<gfx::Size> texture_sizes;
+    std::vector<scoped_refptr<Picture::ScopedSharedImage>> scoped_shared_images;
     bool dismissed = false;
 
     // The same picture buffer can be output from the VDA multiple times
