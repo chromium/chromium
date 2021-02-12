@@ -12,7 +12,7 @@
         style="@style/HorizontalDivider"
         android:layout_width="match_parent"
         android:background="@color/divider_line_bg_color"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="70dp"
         android:importantForAccessibility="no" />
 
     <TextView
@@ -21,16 +21,17 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="16dp"
         android:ellipsize="end"
+        android:lineHeight="20dp"
         android:maxLines="7"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/screenshots_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="22dp"
-        android:layout_marginBottom="22dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
         android:minHeight="320dp"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
