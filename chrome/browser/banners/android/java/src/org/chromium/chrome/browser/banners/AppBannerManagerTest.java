@@ -232,8 +232,8 @@ public class AppBannerManagerTest {
         AppBannerManager.setIsSupported(true);
         ShortcutHelper.setDelegateForTests(new ShortcutHelper.Delegate() {
             @Override
-            public void addShortcutToHomescreen(
-                    String title, Bitmap icon, boolean iconAdaptive, Intent shortcutIntent) {
+            public void addShortcutToHomescreen(String id, String title, Bitmap icon,
+                    boolean iconAdaptive, Intent shortcutIntent) {
                 // Ignore to prevent adding homescreen shortcuts.
             }
         });

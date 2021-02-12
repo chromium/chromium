@@ -6,17 +6,23 @@ package org.chromium.components.webapps;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
+import org.chromium.ui.widget.Toast;
 
 import java.util.List;
 
@@ -24,6 +30,8 @@ import java.util.List;
  * Contains utilities for Web Apps and homescreen shortcuts.
  */
 public class WebappsUtils {
+    private static final String TAG = "WebappsUtils";
+
     private static final String INSTALL_SHORTCUT = "com.android.launcher.action.INSTALL_SHORTCUT";
 
     // True when Android O's ShortcutManager.requestPinShortcut() is supported.
@@ -45,6 +53,70 @@ public class WebappsUtils {
         i.putExtra(Intent.EXTRA_SHORTCUT_NAME, title);
         i.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
         return i;
+    }
+
+    /**
+     * Request Android to add a shortcut to the home screen.
+     * @param id The generated GUID of the shortcut.
+     * @param title Title of the shortcut.
+     * @param icon Image that represents the shortcut.
+     * @param isIconAdaptive Whether to create an Android Adaptive icon.
+     * @param shortcutIntent Intent to fire when the shortcut is activated.
+     */
+    public static void addShortcutToHomescreen(
+            String id, String title, Bitmap icon, boolean isIconAdaptive, Intent shortcutIntent) {
+        if (isRequestPinShortcutSupported()) {
+            addShortcutWithShortcutManager(id, title, icon, isIconAdaptive, shortcutIntent);
+            return;
+        }
+
+        Intent intent = createAddToHomeIntent(title, icon, shortcutIntent);
+        ContextUtils.getApplicationContext().sendBroadcast(intent);
+        showAddedToHomescreenToast(title);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    public static void addShortcutWithShortcutManager(
+            String id, String title, Bitmap bitmap, boolean isMaskableIcon, Intent shortcutIntent) {
+        Context context = ContextUtils.getApplicationContext();
+
+        if (bitmap == null) {
+            Log.e(TAG, "Failed to find an icon for " + title + ", not adding.");
+            return;
+        }
+        Icon icon = isMaskableIcon ? Icon.createWithAdaptiveBitmap(bitmap)
+                                   : Icon.createWithBitmap(bitmap);
+
+        ShortcutInfo shortcutInfo = new ShortcutInfo.Builder(context, id)
+                                            .setShortLabel(title)
+                                            .setLongLabel(title)
+                                            .setIcon(icon)
+                                            .setIntent(shortcutIntent)
+                                            .build();
+        try {
+            ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
+            shortcutManager.requestPinShortcut(shortcutInfo, null);
+        } catch (IllegalStateException e) {
+            Log.d(TAG,
+                    "Could not create pinned shortcut: device is locked, or "
+                            + "activity is backgrounded.");
+        }
+    }
+
+    /**
+     * Show toast to alert user that the shortcut was added to the home screen.
+     */
+    private static void showAddedToHomescreenToast(final String title) {
+        Context applicationContext = ContextUtils.getApplicationContext();
+        String toastText = applicationContext.getString(R.string.added_to_homescreen, title);
+        showToast(toastText);
+    }
+
+    public static void showToast(String text) {
+        assert ThreadUtils.runningOnUiThread();
+        Toast toast =
+                Toast.makeText(ContextUtils.getApplicationContext(), text, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     /**

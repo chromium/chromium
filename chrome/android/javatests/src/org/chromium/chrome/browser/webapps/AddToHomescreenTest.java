@@ -103,8 +103,8 @@ public class AddToHomescreenTest {
         public boolean mRequestedShortcutAdaptable;
 
         @Override
-        public void addShortcutToHomescreen(
-                String title, Bitmap icon, boolean iconAdaptable, Intent shortcutIntent) {
+        public void addShortcutToHomescreen(String id, String title, Bitmap icon,
+                boolean iconAdaptable, Intent shortcutIntent) {
             mRequestedShortcutTitle = title;
             mRequestedShortcutIntent = shortcutIntent;
             mRequestedShortcutAdaptable = iconAdaptable;

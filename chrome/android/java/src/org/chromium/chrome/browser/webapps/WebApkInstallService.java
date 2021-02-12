@@ -15,13 +15,13 @@ import android.graphics.Bitmap;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.webapps.WebappsIconUtils;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.webapk.lib.client.WebApkNavigationClient;
 
 /** Java counterpart to webapk_install_service.h. */
@@ -62,7 +62,7 @@ public class WebApkInstallService {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
         showNotification(manifestUrl, shortName, url, icon, message, null);
-        ShortcutHelper.showToast(message);
+        WebappsUtils.showToast(message);
     }
 
     private static void showNotification(String notificationId, String shortName, String url,
