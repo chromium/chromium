@@ -69,18 +69,44 @@ TEST(BackoffEntrySerializerTest, CheckBackoffDurationOverflow) {
       },
       // Defaults to zero when one of the operands is +/- infinity.
       {
-          .release_time = base::TimeTicks::Max(),
+          .release_time = base::TimeTicks::Min(),
           .timeticks_now = kZeroTicks,
           .expected_backoff_duration = base::TimeDelta(),
       },
       {
-          .release_time = base::TimeTicks::Min(),
+          .release_time = base::TimeTicks::Max(),
           .timeticks_now = kZeroTicks,
           .expected_backoff_duration = base::TimeDelta(),
       },
       {
           .release_time = kZeroTicks,
           .timeticks_now = base::TimeTicks::Min(),
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      {
+          .release_time = kZeroTicks,
+          .timeticks_now = base::TimeTicks::Max(),
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      // Defaults to zero when both of the operands are +/- infinity.
+      {
+          .release_time = base::TimeTicks::Min(),
+          .timeticks_now = base::TimeTicks::Min(),
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      {
+          .release_time = base::TimeTicks::Min(),
+          .timeticks_now = base::TimeTicks::Max(),
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      {
+          .release_time = base::TimeTicks::Max(),
+          .timeticks_now = base::TimeTicks::Min(),
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      {
+          .release_time = base::TimeTicks::Max(),
+          .timeticks_now = base::TimeTicks::Max(),
           .expected_backoff_duration = base::TimeDelta(),
       },
       // Defaults to zero when the subtraction would overflow, even when neither

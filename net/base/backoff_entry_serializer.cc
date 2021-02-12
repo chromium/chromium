@@ -41,8 +41,12 @@ std::unique_ptr<base::Value> BackoffEntrySerializer::SerializeToValue(
   // subtracting |kZeroTicks. This way, the top-level subtraction uses
   // |base::TimeDelta::operator-|, which has clamping semantics.
   const base::TimeTicks kZeroTicks;
-  base::TimeDelta backoff_duration = (entry.GetReleaseTime() - kZeroTicks) -
-                                     (entry.GetTimeTicksNow() - kZeroTicks);
+  const base::TimeDelta kReleaseTime = entry.GetReleaseTime() - kZeroTicks;
+  const base::TimeDelta kTimeTicksNow = entry.GetTimeTicksNow() - kZeroTicks;
+  base::TimeDelta backoff_duration;
+  if (!kReleaseTime.is_inf() && !kTimeTicksNow.is_inf()) {
+    backoff_duration = kReleaseTime - kTimeTicksNow;
+  }
   // We cannot serialize infinity doubles as JSON values, so default to zero.
   if (backoff_duration.is_inf()) {
     backoff_duration = base::TimeDelta();
