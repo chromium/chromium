@@ -1092,13 +1092,18 @@ void ContentBrowserClient::FetchRemoteSms(
     const url::Origin& origin,
     base::OnceCallback<void(base::Optional<std::string>)> callback) {}
 
-void ContentBrowserClient::IsClipboardPasteAllowed(
+bool ContentBrowserClient::IsClipboardPasteAllowed(
+    content::RenderFrameHost* render_frame_host) {
+  return true;
+}
+
+void ContentBrowserClient::IsClipboardPasteContentAllowed(
     content::WebContents* web_contents,
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
     const std::string& data,
-    IsClipboardPasteAllowedCallback callback) {
-  std::move(callback).Run(ClipboardPasteAllowed(true));
+    IsClipboardPasteContentAllowedCallback callback) {
+  std::move(callback).Run(ClipboardPasteContentAllowed(true));
 }
 
 bool ContentBrowserClient::CanEnterFullscreenWithoutUserActivation() {

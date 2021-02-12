@@ -312,6 +312,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/overlay_window.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -994,23 +995,22 @@ AppLoadedInTabSource ClassifyAppLoadedInTabSource(
   return APP_LOADED_IN_TAB_SOURCE_APP;
 }
 
-// Returns true if there is is an extension matching |url| in
-// |opener_render_process_id| with APIPermission::kBackground.
+// Returns true if there is is an extension matching `url` in
+// `render_process_id` with `permission`.
 //
-// Note that GetExtensionOrAppByURL requires a full URL in order to match with a
-// hosted app, even though normal extensions just use the host.
-bool URLHasExtensionBackgroundPermission(
-    extensions::ProcessMap* process_map,
-    extensions::ExtensionRegistry* registry,
-    const GURL& url,
-    int opener_render_process_id) {
-  // Note: includes web URLs that are part of an extension's web extent.
+// GetExtensionOrAppByURL requires a full URL in order to match with a hosted
+// app, even though normal extensions just use the host.
+bool URLHasExtensionPermission(extensions::ProcessMap* process_map,
+                               extensions::ExtensionRegistry* registry,
+                               const GURL& url,
+                               int render_process_id,
+                               APIPermission::ID permission) {
+  // Includes web URLs that are part of an extension's web extent.
   const Extension* extension =
       registry->enabled_extensions().GetExtensionOrAppByURL(url);
   return extension &&
-         extension->permissions_data()->HasAPIPermission(
-             APIPermission::kBackground) &&
-         process_map->Contains(extension->id(), opener_render_process_id);
+         extension->permissions_data()->HasAPIPermission(permission) &&
+         process_map->Contains(extension->id(), render_process_id);
 }
 
 #endif
@@ -3124,8 +3124,9 @@ bool ChromeContentBrowserClient::CanCreateWindow(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     auto* process_map = extensions::ProcessMap::Get(profile);
     auto* registry = extensions::ExtensionRegistry::Get(profile);
-    if (!URLHasExtensionBackgroundPermission(process_map, registry, opener_url,
-                                             opener->GetProcess()->GetID())) {
+    if (!URLHasExtensionPermission(process_map, registry, opener_url,
+                                   opener->GetProcess()->GetID(),
+                                   APIPermission::ID::kBackground)) {
       return false;
     }
 
@@ -5819,18 +5820,64 @@ void ChromeContentBrowserClient::FetchRemoteSms(
 }
 #endif
 
-void ChromeContentBrowserClient::IsClipboardPasteAllowed(
+bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host);
+
+  const GURL& url = render_frame_host->GetLastCommittedOrigin().GetURL();
+  content::BrowserContext* browser_context =
+      WebContents::FromRenderFrameHost(render_frame_host)->GetBrowserContext();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  DCHECK(profile);
+
+  content::PermissionController* permission_controller =
+      content::BrowserContext::GetPermissionController(browser_context);
+  blink::mojom::PermissionStatus status =
+      permission_controller->GetPermissionStatusForFrame(
+          content::PermissionType::CLIPBOARD_READ_WRITE, render_frame_host,
+          url);
+
+  // True if this paste is executed from an extension URL with read permission.
+  bool is_extension_paste_allowed = false;
+  // True if any active extension can use content scripts to read on this page.
+  bool is_content_script_paste_allowed = false;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(https://crbug.com/982361): Provide proper browser-side content script
+  // tracking below, possibly based on hooks like those in
+  // URLLoaderFactoryManager's WillExecuteCode() and ReadyToCommitNavigation().
+  // Until this is implemented, platforms supporting extensions (all  platforms
+  // except Android) will essentially no-op here and return true.
+  is_content_script_paste_allowed = true;
+  if (url.SchemeIs(extensions::kExtensionScheme)) {
+    auto* process_map = extensions::ProcessMap::Get(profile);
+    auto* registry = extensions::ExtensionRegistry::Get(profile);
+    is_extension_paste_allowed = URLHasExtensionPermission(
+        process_map, registry, url, render_frame_host->GetProcess()->GetID(),
+        APIPermission::ID::kClipboardRead);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  if (!is_extension_paste_allowed && !is_content_script_paste_allowed &&
+      !render_frame_host->HasTransientUserActivation() &&
+      status != blink::mojom::PermissionStatus::GRANTED) {
+    // Paste requires either (1) origination from a chrome extension, (2) user
+    // activation, or (3) granted web permission.
+    return false;
+  }
+  return true;
+}
+
+void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
     content::WebContents* web_contents,
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
     const std::string& data,
-    IsClipboardPasteAllowedCallback callback) {
+    IsClipboardPasteContentAllowedCallback callback) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Safe browsing does not support images, so accept without checking.
   // TODO(crbug.com/1013584): check policy on what to do about unsupported
   // types when it is implemented.
   if (data_type == ui::ClipboardFormatType::GetBitmapType()) {
-    std::move(callback).Run(ClipboardPasteAllowed(true));
+    std::move(callback).Run(ClipboardPasteContentAllowed(true));
     return;
   }
 
@@ -5844,20 +5891,20 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowed(
     enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
         web_contents, std::move(dialog_data),
         base::BindOnce(
-            [](IsClipboardPasteAllowedCallback callback,
+            [](IsClipboardPasteContentAllowedCallback callback,
                const enterprise_connectors::ContentAnalysisDelegate::Data& data,
                const enterprise_connectors::ContentAnalysisDelegate::Result&
                    result) {
               std::move(callback).Run(
-                  ClipboardPasteAllowed(result.text_results[0]));
+                  ClipboardPasteContentAllowed(result.text_results[0]));
             },
             std::move(callback)),
         safe_browsing::DeepScanAccessPoint::PASTE);
   } else {
-    std::move(callback).Run(ClipboardPasteAllowed(true));
+    std::move(callback).Run(ClipboardPasteContentAllowed(true));
   }
 #else
-  std::move(callback).Run(ClipboardPasteAllowed(true));
+  std::move(callback).Run(ClipboardPasteContentAllowed(true));
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 }
 

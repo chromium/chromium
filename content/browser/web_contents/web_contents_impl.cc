@@ -8375,21 +8375,22 @@ RenderFrameHostImpl* WebContentsImpl::GetMainFrameForInnerDelegate(
   return nullptr;
 }
 
-void WebContentsImpl::IsClipboardPasteAllowed(
+void WebContentsImpl::IsClipboardPasteContentAllowed(
     const GURL& url,
     const ui::ClipboardFormatType& data_type,
     const std::string& data,
-    IsClipboardPasteAllowedCallback callback) {
+    IsClipboardPasteContentAllowedCallback callback) {
   ++suppress_unresponsive_renderer_count_;
-  GetContentClient()->browser()->IsClipboardPasteAllowed(
+  GetContentClient()->browser()->IsClipboardPasteContentAllowed(
       this, url, data_type, data,
-      base::BindOnce(&WebContentsImpl::IsClipboardPasteAllowedWrapperCallback,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          &WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebContentsImpl::IsClipboardPasteAllowedWrapperCallback(
-    IsClipboardPasteAllowedCallback callback,
-    ClipboardPasteAllowed allowed) {
+void WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback(
+    IsClipboardPasteContentAllowedCallback callback,
+    ClipboardPasteContentAllowed allowed) {
   std::move(callback).Run(allowed);
   --suppress_unresponsive_renderer_count_;
 }

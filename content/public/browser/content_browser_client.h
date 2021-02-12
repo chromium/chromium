@@ -247,11 +247,11 @@ class TtsControllerDelegate;
 // the observer interfaces.)
 class CONTENT_EXPORT ContentBrowserClient {
  public:
-  // Callback used with IsClipboardPasteAllowed() method.
-  using ClipboardPasteAllowed =
-      base::StrongAlias<class ClipboardPasteAllowedTag, bool>;
-  using IsClipboardPasteAllowedCallback =
-      base::OnceCallback<void(ClipboardPasteAllowed)>;
+  // Callback used with IsClipboardPasteContentAllowed() method.
+  using ClipboardPasteContentAllowed =
+      base::StrongAlias<class ClipboardPasteContentAllowedTag, bool>;
+  using IsClipboardPasteContentAllowedCallback =
+      base::OnceCallback<void(ClipboardPasteContentAllowed)>;
 
   virtual ~ContentBrowserClient() = default;
 
@@ -1877,9 +1877,22 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& origin,
       base::OnceCallback<void(base::Optional<std::string>)> callback);
 
-  // Determines if a clipboard paste using |data| of type |data_type| is allowed
-  // in this renderer frame.  Possible data types supported for paste can be
-  // seen in the ClipboardHostImpl class.  Text based formats will use the
+  // Check whether paste is allowed. To paste, an implementation may require a
+  // `render_frame_host` to have user activation or various permissions.
+  // Primary checks should be done in the renderer, to allow for errors to be
+  // emitted, but this allows for a security recheck in the browser in case of
+  // compromised renderers.
+  //
+  // Due to potential race conditions, permissions may be disallowed here in
+  // uncompromised renderers. For example, a permission may be granted when
+  // checked in the renderer, but the permission may be revoked by the time
+  // this check starts.
+  virtual bool IsClipboardPasteAllowed(
+      content::RenderFrameHost* render_frame_host);
+
+  // Determines if a clipboard paste containing |data| of type |data_type| is
+  // allowed in this renderer frame.  Possible data types supported for paste
+  // are in the ClipboardHostImpl class.  Text based formats will use the
   // data_type ui::ClipboardFormatType::GetPlainTextType() unless it is known
   // to be of a more specific type, like RTF or HTML, in which case a type
   // such as ui::ClipboardFormatType::GetRtfType() or
@@ -1896,12 +1909,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // The callback is called, possibly asynchronously, with a status indicating
   // whether the operation is allowed or not.
-  virtual void IsClipboardPasteAllowed(
+  virtual void IsClipboardPasteContentAllowed(
       content::WebContents* web_contents,
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
       const std::string& data,
-      IsClipboardPasteAllowedCallback callback);
+      IsClipboardPasteContentAllowedCallback callback);
 
   // Allows the embedder to override normal user activation checks done when
   // entering fullscreen. For example, it is used in layout tests to allow

@@ -275,10 +275,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
 
-  // Callback used with IsClipboardPasteAllowed() method.
-  using ClipboardPasteAllowed = ContentBrowserClient::ClipboardPasteAllowed;
-  using IsClipboardPasteAllowedCallback =
-      ContentBrowserClient::IsClipboardPasteAllowedCallback;
+  // Callback used with IsClipboardPasteContentAllowed() method.
+  using ClipboardPasteContentAllowed =
+      ContentBrowserClient::ClipboardPasteContentAllowed;
+  using IsClipboardPasteContentAllowedCallback =
+      ContentBrowserClient::IsClipboardPasteContentAllowedCallback;
 
   // An accessibility reset is only allowed to prevent very rare corner cases
   // or race conditions where the browser and renderer get out of sync. If
@@ -416,11 +417,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
-  // RenderFrameHostDelegate::IsClipboardPasteAllowed().  See the description of
-  // the latter method for complete details.
-  void IsClipboardPasteAllowed(const ui::ClipboardFormatType& data_type,
-                               const std::string& data,
-                               IsClipboardPasteAllowedCallback callback);
+  // RenderFrameHostDelegate::IsClipboardPasteContentAllowed().  See the
+  // description of the latter method for complete details.
+  void IsClipboardPasteContentAllowed(
+      const ui::ClipboardFormatType& data_type,
+      const std::string& data,
+      IsClipboardPasteContentAllowedCallback callback);
 
   void SendAccessibilityEventsToManager(
       const AXEventNotificationDetails& details);

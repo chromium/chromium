@@ -10274,12 +10274,12 @@ RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
   return blink::mojom::AuthenticatorStatus::SUCCESS;
 }
 
-void RenderFrameHostImpl::IsClipboardPasteAllowed(
+void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
     const ui::ClipboardFormatType& data_type,
     const std::string& data,
-    IsClipboardPasteAllowedCallback callback) {
-  delegate_->IsClipboardPasteAllowed(GetLastCommittedURL(), data_type, data,
-                                     std::move(callback));
+    IsClipboardPasteContentAllowedCallback callback) {
+  delegate_->IsClipboardPasteContentAllowed(GetLastCommittedURL(), data_type,
+                                            data, std::move(callback));
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::ParentOrOuterDelegateFrame() {

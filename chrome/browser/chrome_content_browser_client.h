@@ -684,12 +684,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       base::OnceCallback<void(base::Optional<std::string>)> callback) override;
 #endif
 
-  void IsClipboardPasteAllowed(
+  bool IsClipboardPasteAllowed(
+      content::RenderFrameHost* render_frame_host) override;
+
+  void IsClipboardPasteContentAllowed(
       content::WebContents* web_contents,
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
       const std::string& data,
-      IsClipboardPasteAllowedCallback callback) override;
+      IsClipboardPasteContentAllowedCallback callback) override;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   bool ShouldAllowPluginCreation(

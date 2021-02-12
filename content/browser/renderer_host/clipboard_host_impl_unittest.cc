@@ -32,18 +32,20 @@ class ClipboardHostImplNoRFH : public ClipboardHostImpl {
       : ClipboardHostImpl(/*render_frame_host=*/nullptr),
         receiver_(this, std::move(receiver)) {}
 
-  void StartIsPasteAllowedRequest(uint64_t seqno,
-                                  const ui::ClipboardFormatType& data_type,
-                                  std::string data) override {}
+  void StartIsPasteContentAllowedRequest(
+      uint64_t seqno,
+      const ui::ClipboardFormatType& data_type,
+      std::string data) override {}
 
   void CompleteRequest(uint64_t seqno) {
-    FinishPasteIfAllowed(seqno, ClipboardHostImpl::ClipboardPasteAllowed(true));
+    FinishPasteIfContentAllowed(
+        seqno, ClipboardHostImpl::ClipboardPasteContentAllowed(true));
   }
 
   using ClipboardHostImpl::CleanupObsoleteRequests;
   using ClipboardHostImpl::is_paste_allowed_requests_for_testing;
-  using ClipboardHostImpl::kIsPasteAllowedRequestTooOld;
-  using ClipboardHostImpl::PerformPasteIfAllowed;
+  using ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld;
+  using ClipboardHostImpl::PerformPasteIfContentAllowed;
 
   mojo::Receiver<blink::mojom::ClipboardHost> receiver_;
 };
@@ -98,17 +100,17 @@ TEST_F(ClipboardHostImplTest, SimpleImage) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, actual));
 }
 
-TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_AddCallback) {
-  ClipboardHostImpl::IsPasteAllowedRequest request;
+TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_AddCallback) {
+  ClipboardHostImpl::IsPasteContentAllowedRequest request;
   int count = 0;
 
   // First call to AddCallback should return true, the next false.
   EXPECT_TRUE(request.AddCallback(base::BindLambdaForTesting(
-      [&count](ClipboardHostImpl::ClipboardPasteAllowed allowed) {
+      [&count](ClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
         ++count;
       })));
   EXPECT_FALSE(request.AddCallback(base::BindLambdaForTesting(
-      [&count](ClipboardHostImpl::ClipboardPasteAllowed allowed) {
+      [&count](ClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
         ++count;
       })));
 
@@ -117,51 +119,54 @@ TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_AddCallback) {
   EXPECT_EQ(0, count);
 }
 
-TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_Complete) {
-  ClipboardHostImpl::IsPasteAllowedRequest request;
+TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_Complete) {
+  ClipboardHostImpl::IsPasteContentAllowedRequest request;
   int count = 0;
 
   // Add a callback.  It should not fire right away.
   request.AddCallback(base::BindLambdaForTesting(
-      [&count](ClipboardHostImpl::ClipboardPasteAllowed allowed) {
+      [&count](ClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
         ++count;
-        ASSERT_EQ(ClipboardHostImpl::ClipboardPasteAllowed(true), allowed);
+        ASSERT_EQ(ClipboardHostImpl::ClipboardPasteContentAllowed(true),
+                  allowed);
       }));
   EXPECT_EQ(0, count);
 
   // Complete the request.  Callback should fire.  Whether paste is allowed
   // or not is not important.
-  request.Complete(ClipboardHostImpl::ClipboardPasteAllowed(true));
+  request.Complete(ClipboardHostImpl::ClipboardPasteContentAllowed(true));
   EXPECT_EQ(1, count);
 
   // Adding a new callback after completion invokes it immediately.
   request.AddCallback(base::BindLambdaForTesting(
-      [&count](ClipboardHostImpl::ClipboardPasteAllowed allowed) {
+      [&count](ClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
         ++count;
-        ASSERT_EQ(ClipboardHostImpl::ClipboardPasteAllowed(true), allowed);
+        ASSERT_EQ(ClipboardHostImpl::ClipboardPasteContentAllowed(true),
+                  allowed);
       }));
   EXPECT_EQ(2, count);
 }
 
-TEST_F(ClipboardHostImplTest, IsPasteAllowedRequest_IsObsolete) {
-  ClipboardHostImpl::IsPasteAllowedRequest request;
+TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_IsObsolete) {
+  ClipboardHostImpl::IsPasteContentAllowedRequest request;
 
   // A request that is not too old is not obsolete, even if it has no callbacks.
   EXPECT_FALSE(request.IsObsolete(
-      request.time() + ClipboardHostImpl::kIsPasteAllowedRequestTooOld / 2));
+      request.time() +
+      ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld / 2));
 
   // A request that still has callbacks is not obsolete, even if older than
   // "too old".
   request.AddCallback(base::DoNothing());
   EXPECT_FALSE(request.IsObsolete(
-      request.time() + ClipboardHostImpl::kIsPasteAllowedRequestTooOld +
+      request.time() + ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
       base::TimeDelta::FromMicroseconds(1)));
 
   // A request is obsolete once it is too old and has no callbacks.
   // Whether paste is allowed or not is not important.
-  request.Complete(ClipboardHostImpl::ClipboardPasteAllowed(true));
+  request.Complete(ClipboardHostImpl::ClipboardPasteContentAllowed(true));
   EXPECT_TRUE(request.IsObsolete(
-      request.time() + ClipboardHostImpl::kIsPasteAllowedRequestTooOld +
+      request.time() + ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
       base::TimeDelta::FromMicroseconds(1)));
 }
 
@@ -189,14 +194,14 @@ class ClipboardHostImplScanTest : public ::testing::Test {
   ClipboardHostImplNoRFH fake_clipboard_host_impl_;
 };
 
-TEST_F(ClipboardHostImplScanTest, PerformPasteIfAllowed_EmptyData) {
+TEST_F(ClipboardHostImplScanTest, PerformPasteIfContentAllowed_EmptyData) {
   int count = 0;
 
   // When data is empty, the callback is invoked right away.
-  clipboard_host_impl()->PerformPasteIfAllowed(
+  clipboard_host_impl()->PerformPasteIfContentAllowed(
       1, ui::ClipboardFormatType::GetPlainTextType(), "",
       base::BindLambdaForTesting(
-          [&count](ClipboardHostImpl::ClipboardPasteAllowed allowed) {
+          [&count](ClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
             ++count;
           }));
 
@@ -206,13 +211,13 @@ TEST_F(ClipboardHostImplScanTest, PerformPasteIfAllowed_EmptyData) {
   EXPECT_EQ(1, count);
 }
 
-TEST_F(ClipboardHostImplScanTest, PerformPasteIfAllowed) {
+TEST_F(ClipboardHostImplScanTest, PerformPasteIfContentAllowed) {
   int count = 0;
 
-  clipboard_host_impl()->PerformPasteIfAllowed(
+  clipboard_host_impl()->PerformPasteIfContentAllowed(
       1, ui::ClipboardFormatType::GetPlainTextType(), "data",
       base::BindLambdaForTesting(
-          [&count](ClipboardHostImpl::ClipboardPasteAllowed allowed) {
+          [&count](ClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
             ++count;
           }));
 
@@ -232,7 +237,7 @@ TEST_F(ClipboardHostImplScanTest, PerformPasteIfAllowed) {
 
 TEST_F(ClipboardHostImplScanTest, CleanupObsoleteScanRequests) {
   // Perform a request and complete it.
-  clipboard_host_impl()->PerformPasteIfAllowed(
+  clipboard_host_impl()->PerformPasteIfContentAllowed(
       1, ui::ClipboardFormatType::GetPlainTextType(), "data",
       base::DoNothing());
   clipboard_host_impl()->CompleteRequest(1);
@@ -243,7 +248,7 @@ TEST_F(ClipboardHostImplScanTest, CleanupObsoleteScanRequests) {
   // Make sure an appropriate amount of time passes to make the request old.
   // It should be cleaned up.
   task_environment()->FastForwardBy(
-      ClipboardHostImplNoRFH::kIsPasteAllowedRequestTooOld +
+      ClipboardHostImplNoRFH::kIsPasteContentAllowedRequestTooOld +
       base::TimeDelta::FromMicroseconds(1));
   clipboard_host_impl()->CleanupObsoleteRequests();
   EXPECT_EQ(
