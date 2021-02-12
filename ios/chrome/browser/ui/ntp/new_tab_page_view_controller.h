@@ -63,6 +63,9 @@
 // of a header.
 - (void)updateLayoutForContentSuggestions;
 
+// Returns the current height of the content suggestions content.
+- (CGFloat)contentSuggestionsContentHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_VIEW_CONTROLLER_H_

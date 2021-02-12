@@ -679,9 +679,13 @@ const char kNTPHelpURL[] =
   web::NavigationItem* item = navigationManager->GetVisibleItem();
   CGFloat offset =
       item ? item->GetPageDisplayState().scroll_state().content_offset().y : 0;
-  if (offset > 0) {
-    // TODO(crbug.com/1114792): Create a protocol to stop having references to
-    // both of these ViewControllers directly.
+  CGFloat minimumOffset =
+      [self isRefactoredFeedVisible]
+          ? -self.ntpViewController.contentSuggestionsContentHeight
+          : 0;
+  // TODO(crbug.com/1114792): Create a protocol to stop having references to
+  // both of these ViewControllers directly.
+  if (offset > minimumOffset) {
     if ([self isRefactoredFeedVisible]) {
       [self.ntpViewController setContentOffset:offset];
     } else {

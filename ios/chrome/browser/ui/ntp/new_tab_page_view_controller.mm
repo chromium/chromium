@@ -220,17 +220,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
 
-  // Only get the bottom safe area inset.
-  UIEdgeInsets insets = UIEdgeInsetsZero;
-  insets.bottom = self.view.safeAreaInsets.bottom;
-  self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
-      insets;
-
   [self updateHeaderSynchronizerOffset];
-
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
   [self.headerSynchronizer updateConstraints];
+  [self updateContentSuggestionForCurrentLayout];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -284,6 +276,11 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
 - (void)updateLayoutForContentSuggestions {
   [self updateContentSuggestionForCurrentLayout];
+}
+
+- (CGFloat)contentSuggestionsContentHeight {
+  return self.contentSuggestionsViewController.collectionView.contentSize
+      .height;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -493,16 +490,14 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // Sets an inset to the Discover feed equal to the content suggestions height,
 // so that the content suggestions could act as the feed header.
 - (void)updateFeedInsetsForContentSuggestions {
-  CGFloat contentSuggestionsHeight =
-      self.contentSuggestionsViewController.collectionView.contentSize.height;
   // TODO(crbug.com/1114792): Handle landscape/iPad layout.
-  self.contentSuggestionsViewController.view.frame =
-      CGRectMake(0, -contentSuggestionsHeight, self.view.frame.size.width,
-                 contentSuggestionsHeight);
+  self.contentSuggestionsViewController.view.frame = CGRectMake(
+      0, -[self contentSuggestionsContentHeight], self.view.frame.size.width,
+      [self contentSuggestionsContentHeight]);
   self.discoverFeedWrapperViewController.feedCollectionView.contentInset =
       UIEdgeInsetsMake([self adjustedContentSuggestionsHeight], 0, 0, 0);
   self.contentSuggestionsHeightConstraint.constant =
-      self.contentSuggestionsViewController.collectionView.contentSize.height;
+      [self contentSuggestionsContentHeight];
   [self updateHeaderSynchronizerOffset];
 }
 
@@ -510,8 +505,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // content height and the safe area top insets.
 - (void)updateHeaderSynchronizerOffset {
   self.headerSynchronizer.additionalOffset =
-      self.contentSuggestionsViewController.collectionView.contentSize.height +
-      self.view.safeAreaInsets.top;
+      [self contentSuggestionsContentHeight] + self.view.safeAreaInsets.top;
 }
 
 // Content suggestions height adjusted with the safe area top insets.
