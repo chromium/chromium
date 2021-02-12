@@ -1300,7 +1300,14 @@ View* View::GetTooltipHandlerForPoint(const gfx::Point& point) {
 }
 
 gfx::NativeCursor View::GetCursor(const ui::MouseEvent& event) {
+#if defined(OS_WIN)
+  static ui::Cursor arrow;
+  if (!arrow.platform())
+    arrow.SetPlatformCursor(LoadCursor(nullptr, IDC_ARROW));
+  return arrow;
+#else
   return gfx::kNullCursor;
+#endif
 }
 
 bool View::HitTestPoint(const gfx::Point& point) const {

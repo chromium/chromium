@@ -4,16 +4,9 @@
 
 #include "ui/base/cursor/cursor_loader.h"
 
-#include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-
-#if defined(OS_WIN)
-#include "ui/base/cursor/win/win_cursor.h"
-#include "ui/base/cursor/win/win_cursor_factory.h"
-#endif
 
 #if defined(USE_OZONE)
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
@@ -38,24 +31,17 @@ PlatformCursor LoadInvisibleCursor() {
 
 }  // namespace
 
-#if defined(OS_WIN)
-TEST(CursorLoaderTest, InvisibleCursor) {
-  WinCursorFactory cursor_factory;
-  auto* invisible_cursor = static_cast<WinCursor*>(LoadInvisibleCursor());
-  ASSERT_NE(invisible_cursor, nullptr);
-  EXPECT_EQ(invisible_cursor->hcursor(), nullptr);
-}
-#endif
-
-#if defined(USE_OZONE) && !defined(USE_X11)
-TEST(CursorLoaderTest, InvisibleCursor) {
+#if !defined(USE_X11)
+TEST(CursorLoaderTest, InvisibleCursorOnNotX11) {
+#if defined(USE_OZONE)
   BitmapCursorFactoryOzone cursor_factory;
+#endif
   EXPECT_EQ(LoadInvisibleCursor(), nullptr);
 }
 #endif
 
 #if defined(USE_X11)
-TEST(CursorLoaderTest, InvisibleCursor) {
+TEST(CursorLoaderTest, InvisibleCursorOnX11) {
   X11CursorFactory cursor_factory;
   // Building an image cursor with an invalid SkBitmap should return the
   // invisible cursor in X11.

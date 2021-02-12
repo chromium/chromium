@@ -17,10 +17,13 @@
 
 namespace ui {
 
+#if defined(OS_WIN)
+typedef ::HCURSOR PlatformCursor;
+#else
 // NOTE: On Ozone platforms, the type is chosen at runtime, and is either
 // X11Cursor* or BitmapCursorOzone*.
-// On Windows, it's WinCursor*.
-using PlatformCursor = void*;
+typedef void* PlatformCursor;
+#endif
 
 // Ref-counted cursor that supports both default and custom cursors.
 class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) Cursor {

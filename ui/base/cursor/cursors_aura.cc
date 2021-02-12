@@ -19,7 +19,6 @@
 
 #if defined(OS_WIN)
 #include "ui/base/cursor/cursor_loader_win.h"
-#include "ui/base/cursor/win/win_cursor.h"
 #include "ui/gfx/icon_util.h"
 #endif
 
@@ -300,8 +299,7 @@ SkBitmap GetDefaultBitmap(const Cursor& cursor) {
   Cursor cursor_copy = cursor;
   ui::CursorLoaderWin cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
-  return IconUtil::CreateSkBitmapFromHICON(
-      static_cast<WinCursor*>(cursor_copy.platform())->hcursor());
+  return IconUtil::CreateSkBitmapFromHICON(cursor_copy.platform());
 #else
   int resource_id;
   gfx::Point hotspot;
@@ -320,8 +318,7 @@ gfx::Point GetDefaultHotspot(const Cursor& cursor) {
   Cursor cursor_copy = cursor;
   ui::CursorLoaderWin cursor_loader;
   cursor_loader.SetPlatformCursor(&cursor_copy);
-  return IconUtil::GetHotSpotFromHICON(
-      static_cast<WinCursor*>(cursor_copy.platform())->hcursor());
+  return IconUtil::GetHotSpotFromHICON(cursor_copy.platform());
 #else
   int resource_id;
   gfx::Point hotspot;

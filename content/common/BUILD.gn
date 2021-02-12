@@ -74,6 +74,7 @@ source_set("common") {
     "cursors/webcursor.cc",
     "cursors/webcursor.h",
     "cursors/webcursor_aura.cc",
+    "cursors/webcursor_aurawin.cc",
     "cursors/webcursor_ozone.cc",
     "fetch/fetch_api_request_proto.cc",
     "fetch/fetch_api_request_proto.h",
@@ -377,6 +378,10 @@ source_set("common") {
       "pepper_renderer_instance_data.cc",
       "pepper_renderer_instance_data.h",
     ]
+  }
+
+  if (!is_win || !use_aura) {
+    sources -= [ "cursors/webcursor_aurawin.cc" ]
   }
 
   if (is_mac) {

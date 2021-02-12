@@ -43,7 +43,7 @@ void CursorLoaderOzone::UnloadCursors() {
 void CursorLoaderOzone::SetPlatformCursor(gfx::NativeCursor* cursor) {
   DCHECK(cursor);
 
-  // The platform cursor was already set via WebCursor::GetNativeCursor.
+  // The platform cursor was already set via WebCursor::GetPlatformCursor.
   if (cursor->type() == mojom::CursorType::kCustom)
     return;
   cursor->set_image_scale_factor(scale());
