@@ -6,11 +6,13 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
 
 using chromecast::accessibility::FlutterSemanticsNode;
+using gallium::castos::BooleanProperties;
 using ::testing::StrictMock;
 
 namespace ui {
@@ -81,6 +83,40 @@ TEST_F(FlutterSemanticsNodeWrapperTest, GetId) {
   semantics_node->set_node_id(0);
   FlutterSemanticsNodeWrapper node(&ax_tree_source_, semantics_node);
   EXPECT_EQ(node.GetId(), 0);
+}
+
+TEST_F(FlutterSemanticsNodeWrapperTest, DisabledNode) {
+  SemanticsNode* semantics_node = CreateNewSemanticsNode();
+  semantics_node->set_node_id(0);
+
+  BooleanProperties* boolean_properties =
+      semantics_node->mutable_boolean_properties();
+  boolean_properties->set_has_enabled_state(false);
+  boolean_properties->set_is_enabled(false);
+
+  // Test has_enabled_state = false, is_enabled = false
+  FlutterSemanticsNodeWrapper node(&ax_tree_source_, semantics_node);
+  ui::AXNodeData out_data;
+  node.PopulateAXState(&out_data);
+  EXPECT_EQ(out_data.GetRestriction(), ax::mojom::Restriction::kNone);
+
+  // Test has_enabled_state = false, is_enabled = true
+  boolean_properties->set_has_enabled_state(false);
+  boolean_properties->set_is_enabled(true);
+  node.PopulateAXState(&out_data);
+  EXPECT_EQ(out_data.GetRestriction(), ax::mojom::Restriction::kNone);
+
+  // Test has_enabled_state = true, is_enabled = false
+  boolean_properties->set_has_enabled_state(true);
+  boolean_properties->set_is_enabled(true);
+  node.PopulateAXState(&out_data);
+  EXPECT_EQ(out_data.GetRestriction(), ax::mojom::Restriction::kNone);
+
+  // Test has_enabled_state = true, is_enabled = true
+  boolean_properties->set_has_enabled_state(true);
+  boolean_properties->set_is_enabled(false);
+  node.PopulateAXState(&out_data);
+  EXPECT_EQ(out_data.GetRestriction(), ax::mojom::Restriction::kDisabled);
 }
 
 }  // namespace accessibility

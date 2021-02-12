@@ -281,12 +281,10 @@ void FlutterSemanticsNodeWrapper::PopulateAXState(
                                   : ax::mojom::CheckedState::kFalse);
   }
 
-  // Put this back after b/148875421 is resolved. Flutter is sending
-  // many elements with a disabled flag which causes the reader to
-  // speak 'Disabled' even though it is not.
-  // if (!boolean_properties.is_enabled()) {
-  // out_data->SetRestriction(ax::mojom::Restriction::kDisabled);
-  //}
+  if (boolean_properties.has_enabled_state() &&
+      !boolean_properties.is_enabled()) {
+    out_data->SetRestriction(ax::mojom::Restriction::kDisabled);
+  }
 }
 
 void FlutterSemanticsNodeWrapper::Serialize(ui::AXNodeData* out_data) const {
