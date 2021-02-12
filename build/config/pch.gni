@@ -9,4 +9,9 @@ declare_args() {
   # but for distributed build system uses (like goma) or when
   # doing official builds.
   enable_precompiled_headers = !is_official_build && !use_goma
+  # TODO (crbug.com/1176750): Disable PCH on windows temporarily to unbreak the
+  # buildbots.
+  if (is_win) {
+    enable_precompiled_headers = false
+  }
 }
