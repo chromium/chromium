@@ -95,13 +95,10 @@ void PerfTestWithBVC::SetUp() {
   ios::AutocompleteClassifierFactory::GetForBrowserState(
       chrome_browser_state_.get());
 
-  // Generates a random session identifier.
-  NSString* session_id = [[NSUUID UUID] UUIDString];
-
   // Use the session to create a window which will contain the tabs.
   const base::FilePath& state_path = chrome_browser_state_->GetStatePath();
   SessionIOS* session =
-      [[SessionServiceIOS sharedService] loadSessionWithSessionID:session_id
+      [[SessionServiceIOS sharedService] loadSessionWithSessionID:nil
                                                         directory:state_path];
   DCHECK_EQ(session.sessionWindows.count, 1u);
 

@@ -20,7 +20,6 @@
 #import "ios/testing/scoped_block_swizzler.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,16 +32,6 @@ class BrowserViewWranglerTest : public PlatformTest {
   BrowserViewWranglerTest()
       : scene_state_([[SceneState alloc] initWithAppState:nil]),
         test_session_service_([[TestSessionService alloc] init]) {
-    if (@available(ios 13, *)) {
-      NSString* session_id = [[NSUUID UUID] UUIDString];
-      id scene_session = OCMClassMock([UISceneSession class]);
-      OCMStub([scene_session persistentIdentifier]).andReturn(session_id);
-
-      id scene = OCMClassMock([UIScene class]);
-      OCMStub([scene session]).andReturn(scene);
-      scene_state_.scene = scene;
-    }
-
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         SendTabToSelfSyncServiceFactory::GetInstance(),

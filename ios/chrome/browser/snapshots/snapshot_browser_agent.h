@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
+namespace base {
+class FilePath;
+}
 @class SnapshotCache;
 
 // Associates a SnapshotCache to a Browser.
@@ -22,13 +25,10 @@ class SnapshotBrowserAgent : BrowserObserver,
   SnapshotBrowserAgent();
   ~SnapshotBrowserAgent() override;
 
-  SnapshotBrowserAgent(const SnapshotBrowserAgent&) = delete;
-  SnapshotBrowserAgent& operator=(const SnapshotBrowserAgent&) = delete;
-
   // Set a session identification string that will be used to locate the
   // snapshots directory. Setting this more than once on the same agent is
   // probably a programming error.
-  void SetSessionID(NSString* session_identifier);
+  void SetSessionID(const std::string& session_identifier);
 
   // Maintains the snapshots storage including purging unused images and
   // performing any necessary migrations.
@@ -69,12 +69,17 @@ class SnapshotBrowserAgent : BrowserObserver,
   // Purges the snapshots folder of unused snapshots.
   void PurgeUnusedSnapshots();
 
+  // Returns the storage folder for snapshots.
+  base::FilePath GetStoragePath();
+
   // Returns the Tab IDs of all the WebStates in the Browser.
   NSSet<NSString*>* GetTabIDs();
 
-  __strong SnapshotCache* snapshot_cache_;
+  Browser* browser_;               // unowned.
+  SnapshotCache* snapshot_cache_;  // strong, owned.
 
-  Browser* browser_ = nullptr;
+  // Session identifier for this agent.
+  std::string session_identifier_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_BROWSER_AGENT_H_

@@ -60,8 +60,6 @@ class TabModelTest : public PlatformTest {
     // wanted.
     SessionRestorationBrowserAgent::CreateForBrowser(browser_.get(),
                                                      session_service_);
-    SessionRestorationBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID([[NSUUID UUID] UUIDString]);
     SetTabModel(CreateTabModel(nil));
   }
 

@@ -22,7 +22,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -46,6 +45,20 @@
 namespace {
 const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
 NSString* const kRootObjectKey = @"root";  // Key for the root object.
+
+// The directory name inside BrowserStatedirectory which contain all sessions
+// directories.
+const base::FilePath::CharType kSessionDirectory[] =
+    FILE_PATH_LITERAL("Sessions");
+
+// The session file name on disk.
+const base::FilePath::CharType kSessionFileName[] =
+    FILE_PATH_LITERAL("session.plist");
+
+// Convert |path| to NSString.
+NSString* PathAsNSString(const base::FilePath& path) {
+  return base::SysUTF8ToNSString(path.AsUTF8Unsafe());
+}
 }
 
 @implementation NSKeyedUnarchiver (CrLegacySessionCompatibility)
@@ -173,10 +186,9 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
 - (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
                               completion:(base::OnceClosure)callback {
-  NSString* sessionsDirectory = base::SysUTF8ToNSString(
-      SessionsDirectoryForDirectory(directory).AsUTF8Unsafe());
+  const base::FilePath sessionDirectory = directory.Append(kSessionDirectory);
   NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
-      contentsOfDirectoryAtPath:sessionsDirectory
+      contentsOfDirectoryAtPath:PathAsNSString(sessionDirectory)
                           error:nil];
 
   // If there were no session ids, then scenes are not supported fall back to
@@ -204,10 +216,14 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
                            directory:(const base::FilePath&)directory {
-  DCHECK(sessionID.length != 0);
-  return base::SysUTF8ToNSString(
-      SessionPathForDirectory(directory, sessionID, kSessionFileName)
-          .AsUTF8Unsafe());
+  // TODO(crbug.com/1165798): remove when the sessionID is guaranteed to
+  // always be an non-empty string.
+  if (!sessionID.length)
+    return PathAsNSString(directory.Append(kSessionFileName));
+
+  return PathAsNSString(directory.Append(kSessionDirectory)
+                            .Append(base::SysNSStringToUTF8(sessionID))
+                            .Append(kSessionFileName));
 }
 
 #pragma mark - Private methods

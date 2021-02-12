@@ -12,7 +12,6 @@
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
-#import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -129,11 +128,13 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 }
 
 - (NSString*)sceneSessionID {
-  id maybe_scene = nil;
-  if (@available(ios 13, *))
-    maybe_scene = _scene;
-
-  return SessionIdentifierForScene(maybe_scene);
+  NSString* sessionID = nil;
+  if (@available(ios 13, *)) {
+    if (base::ios::IsMultiwindowSupported()) {
+      sessionID = _scene.session.persistentIdentifier;
+    }
+  }
+  return sessionID;
 }
 
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
