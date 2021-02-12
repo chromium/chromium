@@ -238,6 +238,15 @@ void DefineCursor(x11::Window window, x11::Cursor cursor) {
       .Sync();
 }
 
+size_t RowBytesForVisualWidth(const x11::Connection::VisualInfo& visual_info,
+                              int width) {
+  auto bpp = visual_info.format->bits_per_pixel;
+  auto align = visual_info.format->scanline_pad;
+  size_t row_bits = bpp * width;
+  row_bits += (align - (row_bits % align)) % align;
+  return (row_bits + 7) / 8;
+}
+
 void DrawPixmap(x11::Connection* connection,
                 x11::VisualId visual,
                 x11::Drawable drawable,
@@ -257,11 +266,7 @@ void DrawPixmap(x11::Connection* connection,
   if (!visual_info)
     return;
 
-  auto bpp = visual_info->format->bits_per_pixel;
-  auto align = visual_info->format->scanline_pad;
-  size_t row_bits = bpp * width;
-  row_bits += (align - (row_bits % align)) % align;
-  size_t row_bytes = (row_bits + 7) / 8;
+  size_t row_bytes = RowBytesForVisualWidth(*visual_info, width);
 
   auto color_type = ColorTypeForVisual(visual);
   if (color_type == kUnknown_SkColorType) {
