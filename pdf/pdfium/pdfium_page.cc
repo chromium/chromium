@@ -698,22 +698,27 @@ std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo(
   return highlight_info;
 }
 
-std::vector<PDFEngine::AccessibilityTextFieldInfo>
-PDFiumPage::GetTextFieldInfo() {
-  std::vector<PDFEngine::AccessibilityTextFieldInfo> text_field_info;
+std::vector<AccessibilityTextFieldInfo> PDFiumPage::GetTextFieldInfo(
+    uint32_t text_run_count) {
+  std::vector<AccessibilityTextFieldInfo> text_field_info;
   if (!available_)
     return text_field_info;
 
   PopulateAnnotations();
 
   text_field_info.reserve(text_fields_.size());
-  for (const TextField& text_field : text_fields_) {
-    PDFEngine::AccessibilityTextFieldInfo cur_info;
+  for (size_t i = 0; i < text_fields_.size(); ++i) {
+    const TextField& text_field = text_fields_[i];
+    AccessibilityTextFieldInfo cur_info;
     cur_info.name = text_field.name;
     cur_info.value = text_field.value;
+    cur_info.index_in_page = i;
     cur_info.is_read_only = !!(text_field.flags & FPDF_FORMFLAG_READONLY);
     cur_info.is_required = !!(text_field.flags & FPDF_FORMFLAG_REQUIRED);
     cur_info.is_password = !!(text_field.flags & FPDF_FORMFLAG_TEXT_PASSWORD);
+    // TODO(crbug.com/1030242): Update text run index to nearest text run to
+    // text field bounds.
+    cur_info.text_run_index = text_run_count;
     cur_info.bounds = gfx::RectF(
         text_field.bounding_rect.x(), text_field.bounding_rect.y(),
         text_field.bounding_rect.width(), text_field.bounding_rect.height());

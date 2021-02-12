@@ -63,6 +63,7 @@ class UrlLoader;
 struct AccessibilityLinkInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
+struct AccessibilityTextFieldInfo;
 struct AccessibilityTextRunInfo;
 struct DocumentAttachmentInfo;
 struct DocumentMetadata;
@@ -285,19 +286,6 @@ class PDFEngine {
         const base::Location& from_here = base::Location::Current()) = 0;
   };
 
-  struct AccessibilityTextFieldInfo {
-    AccessibilityTextFieldInfo();
-    AccessibilityTextFieldInfo(const AccessibilityTextFieldInfo& that);
-    ~AccessibilityTextFieldInfo();
-
-    std::string name;
-    std::string value;
-    bool is_read_only;
-    bool is_required;
-    bool is_password;
-    gfx::RectF bounds;
-  };
-
   virtual ~PDFEngine() {}
 
   // Most of these functions are similar to the Pepper functions of the same
@@ -427,7 +415,8 @@ class PDFEngine {
   // For all the text fields in page |page_index|, get their properties like
   // name, value, bounding boxes etc.
   virtual std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
-      int page_index) = 0;
+      int page_index,
+      uint32_t text_run_count) = 0;
 
   // Gets the PDF document's print scaling preference. True if the document can
   // be scaled to fit.

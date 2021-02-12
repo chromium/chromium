@@ -37,6 +37,7 @@ class Thumbnail;
 struct AccessibilityLinkInfo;
 struct AccessibilityHighlightInfo;
 struct AccessibilityImageInfo;
+struct AccessibilityTextFieldInfo;
 struct AccessibilityTextRunInfo;
 struct AccessibilityTextStyleInfo;
 
@@ -77,7 +78,8 @@ class PDFiumPage {
       const std::vector<AccessibilityTextRunInfo>& text_runs);
   // For all the text fields on the page, get their properties like name,
   // value, bounding boxes, etc.
-  std::vector<PDFEngine::AccessibilityTextFieldInfo> GetTextFieldInfo();
+  std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
+      uint32_t text_run_count);
 
   enum Area {
     NONSELECTABLE_AREA,

@@ -515,13 +515,6 @@ void ShutdownSDK() {
 #endif  // defined(PDF_ENABLE_V8)
 }
 
-PDFEngine::AccessibilityTextFieldInfo::AccessibilityTextFieldInfo() = default;
-
-PDFEngine::AccessibilityTextFieldInfo::AccessibilityTextFieldInfo(
-    const AccessibilityTextFieldInfo& that) = default;
-
-PDFEngine::AccessibilityTextFieldInfo::~AccessibilityTextFieldInfo() = default;
-
 PDFiumEngine::PDFiumEngine(PDFEngine::Client* client,
                            PDFiumFormFiller::ScriptOption script_option)
     : client_(client),
@@ -2606,10 +2599,11 @@ std::vector<AccessibilityHighlightInfo> PDFiumEngine::GetHighlightInfo(
   return pages_[page_index]->GetHighlightInfo(text_runs);
 }
 
-std::vector<PDFEngine::AccessibilityTextFieldInfo>
-PDFiumEngine::GetTextFieldInfo(int page_index) {
+std::vector<AccessibilityTextFieldInfo> PDFiumEngine::GetTextFieldInfo(
+    int page_index,
+    uint32_t text_run_count) {
   DCHECK(PageIndexInBounds(page_index));
-  return pages_[page_index]->GetTextFieldInfo();
+  return pages_[page_index]->GetTextFieldInfo(text_run_count);
 }
 
 bool PDFiumEngine::GetPrintScaling() {
