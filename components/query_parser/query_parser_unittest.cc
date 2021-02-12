@@ -19,18 +19,14 @@ class QueryParserTest : public testing::Test {
   };
 
   std::string QueryToString(const std::string& query);
-
- protected:
-  QueryParser query_parser_;
 };
 
 // Test helper: Convert a user query string in 8-bit (for hardcoding
 // convenience) to a SQLite query string.
 std::string QueryParserTest::QueryToString(const std::string& query) {
   base::string16 sqlite_query;
-  query_parser_.ParseQuery(base::UTF8ToUTF16(query),
-                           MatchingAlgorithm::DEFAULT,
-                           &sqlite_query);
+  QueryParser::ParseQuery(base::UTF8ToUTF16(query), MatchingAlgorithm::DEFAULT,
+                          &sqlite_query);
   return base::UTF16ToUTF8(sqlite_query);
 }
 
@@ -86,10 +82,10 @@ TEST_F(QueryParserTest, NumWords) {
 
   for (size_t i = 0; i < base::size(data); ++i) {
     base::string16 query_string;
-    EXPECT_EQ(data[i].expected_word_count,
-              query_parser_.ParseQuery(base::UTF8ToUTF16(data[i].input),
-                                       MatchingAlgorithm::DEFAULT,
-                                       &query_string));
+    EXPECT_EQ(
+        data[i].expected_word_count,
+        QueryParser::ParseQuery(base::UTF8ToUTF16(data[i].input),
+                                MatchingAlgorithm::DEFAULT, &query_string));
   }
 }
 
@@ -121,14 +117,13 @@ TEST_F(QueryParserTest, ParseQueryNodesAndMatch) {
     { "foo blah",      "\"foo bar blah\"", true,  1, 4, 9, 13 },
   };
   for (size_t i = 0; i < base::size(data); ++i) {
-    QueryParser parser;
     query_parser::QueryNodeVector query_nodes;
-    parser.ParseQueryNodes(base::UTF8ToUTF16(data[i].query),
-                           MatchingAlgorithm::DEFAULT, &query_nodes);
+    QueryParser::ParseQueryNodes(base::UTF8ToUTF16(data[i].query),
+                                 MatchingAlgorithm::DEFAULT, &query_nodes);
     Snippet::MatchPositions match_positions;
     ASSERT_EQ(data[i].matches,
-              parser.DoesQueryMatch(base::UTF8ToUTF16(data[i].text),
-                                    query_nodes, &match_positions));
+              QueryParser::DoesQueryMatch(base::UTF8ToUTF16(data[i].text),
+                                          query_nodes, &match_positions));
     size_t offset = 0;
     if (data[i].m1_start != 0 || data[i].m1_end != 0) {
       ASSERT_TRUE(match_positions.size() >= 1);
@@ -159,10 +154,8 @@ TEST_F(QueryParserTest, ParseQueryWords) {
   };
   for (size_t i = 0; i < base::size(data); ++i) {
     std::vector<base::string16> results;
-    QueryParser parser;
-    parser.ParseQueryWords(base::UTF8ToUTF16(data[i].text),
-                           MatchingAlgorithm::DEFAULT,
-                           &results);
+    QueryParser::ParseQueryWords(base::UTF8ToUTF16(data[i].text),
+                                 MatchingAlgorithm::DEFAULT, &results);
     ASSERT_EQ(data[i].word_count, results.size());
     EXPECT_EQ(data[i].w1, base::UTF16ToUTF8(results[0]));
     if (results.size() == 2)

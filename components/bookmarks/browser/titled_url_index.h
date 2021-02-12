@@ -85,7 +85,6 @@ class TitledUrlIndex {
   // containing |node| and the matches.
   base::Optional<TitledUrlMatch> MatchTitledUrlNodeWithQuery(
       const TitledUrlNode* node,
-      query_parser::QueryParser* parser,
       const query_parser::QueryNodeVector& query_nodes,
       bool match_ancestor_titles);
 

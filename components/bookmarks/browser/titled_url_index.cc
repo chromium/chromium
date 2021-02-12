@@ -94,9 +94,9 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   // We use a QueryParser to fill in match positions for us. It's not the most
   // efficient way to go about this, but by the time we get here we know what
   // matches and so this shouldn't be performance critical.
-  query_parser::QueryParser parser;
   query_parser::QueryNodeVector query_nodes;
-  parser.ParseQueryNodes(query, matching_algorithm, &query_nodes);
+  query_parser::QueryParser::ParseQueryNodes(query, matching_algorithm,
+                                             &query_nodes);
 
   // The highest typed counts should be at the beginning of the results vector
   // so that the best matches will always be included in the results. The loop
@@ -106,8 +106,8 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   std::vector<TitledUrlMatch> results;
   for (TitledUrlNodes::const_iterator i = sorted_nodes.begin();
        i != sorted_nodes.end() && results.size() < max_count; ++i) {
-    base::Optional<TitledUrlMatch> match = MatchTitledUrlNodeWithQuery(
-        *i, &parser, query_nodes, match_ancestor_titles);
+    base::Optional<TitledUrlMatch> match =
+        MatchTitledUrlNodeWithQuery(*i, query_nodes, match_ancestor_titles);
     if (match)
       results.push_back(match.value());
   }
@@ -125,7 +125,6 @@ void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,
 
 base::Optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     const TitledUrlNode* node,
-    query_parser::QueryParser* parser,
     const query_parser::QueryNodeVector& query_nodes,
     bool match_ancestor_titles) {
   if (!node) {
@@ -139,14 +138,14 @@ base::Optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   query_parser::QueryWordVector title_words, url_words, ancestor_words;
   const base::string16 lower_title =
       base::i18n::ToLower(Normalize(node->GetTitledUrlNodeTitle()));
-  parser->ExtractQueryWords(lower_title, &title_words);
+  query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
   base::OffsetAdjuster::Adjustments adjustments;
-  parser->ExtractQueryWords(
+  query_parser::QueryParser::ExtractQueryWords(
       CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments),
       &url_words);
   if (match_ancestor_titles) {
     for (auto ancestor : node->GetTitledUrlNodeAncestorTitles()) {
-      parser->ExtractQueryWords(
+      query_parser::QueryParser::ExtractQueryWords(
           base::i18n::ToLower(Normalize(base::string16(ancestor))),
           &ancestor_words);
     }
@@ -258,10 +257,9 @@ std::vector<base::string16> TitledUrlIndex::ExtractQueryWords(
   std::vector<base::string16> terms;
   if (query.empty())
     return std::vector<base::string16>();
-  query_parser::QueryParser parser;
-  parser.ParseQueryWords(base::i18n::ToLower(query),
-                         query_parser::MatchingAlgorithm::DEFAULT,
-                         &terms);
+  query_parser::QueryParser::ParseQueryWords(
+      base::i18n::ToLower(query), query_parser::MatchingAlgorithm::DEFAULT,
+      &terms);
   return terms;
 }
 

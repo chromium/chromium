@@ -20,7 +20,7 @@ class QueryNodeList;
 
 // Used by HasMatchIn.
 struct QueryWord {
-  // The work to match against.
+  // The word to match against.
   base::string16 word;
 
   // The starting position of the word in the original text.
@@ -75,7 +75,8 @@ using QueryNodeVector = std::vector<std::unique_ptr<query_parser::QueryNode>>;
 // normalized queries that can be passed to the SQLite backend.
 class QueryParser {
  public:
-  QueryParser();
+  QueryParser() = delete;
+  ~QueryParser() = delete;
 
   // For CJK ideographs and Korean Hangul, even a single character
   // can be useful in prefix matching, but that may give us too many
@@ -90,40 +91,40 @@ class QueryParser {
 
   // Parse a query into a SQLite query. The resulting query is placed in
   // |sqlite_query| and the number of words is returned.
-  int ParseQuery(const base::string16& query,
-                 MatchingAlgorithm matching_algorithm,
-                 base::string16* sqlite_query);
+  static int ParseQuery(const base::string16& query,
+                        MatchingAlgorithm matching_algorithm,
+                        base::string16* sqlite_query);
 
   // Parses |query|, returning the words that make up it. Any words in quotes
   // are put in |words| without the quotes. For example, the query text
   // "foo bar" results in two entries being added to words, one for foo and one
   // for bar.
-  void ParseQueryWords(const base::string16& query,
-                       MatchingAlgorithm matching_algorithm,
-                       std::vector<base::string16>* words);
+  static void ParseQueryWords(const base::string16& query,
+                              MatchingAlgorithm matching_algorithm,
+                              std::vector<base::string16>* words);
 
   // Parses |query|, returning the nodes that constitute the valid words in the
   // query. This is intended for later usage with DoesQueryMatch. Ownership of
   // the nodes passes to the caller.
-  void ParseQueryNodes(const base::string16& query,
-                       MatchingAlgorithm matching_algorithm,
-                       QueryNodeVector* nodes);
+  static void ParseQueryNodes(const base::string16& query,
+                              MatchingAlgorithm matching_algorithm,
+                              QueryNodeVector* nodes);
 
   // Returns true if the string text matches the query nodes created by a call
   // to ParseQuery. If the query does match, each of the matching positions in
   // the text is added to |match_positions|.
-  bool DoesQueryMatch(const base::string16& text,
-                      const QueryNodeVector& nodes,
-                      Snippet::MatchPositions* match_positions);
+  static bool DoesQueryMatch(const base::string16& text,
+                             const QueryNodeVector& nodes,
+                             Snippet::MatchPositions* match_positions);
 
   // Returns true if all of the |words| match the query |nodes| created by a
   // call to ParseQuery.
-  bool DoesQueryMatch(const QueryWordVector& words,
-                      const QueryNodeVector& nodes);
+  static bool DoesQueryMatch(const QueryWordVector& words,
+                             const QueryNodeVector& nodes);
 
   // Extracts the words from |text|, placing each word into |words|.
-  void ExtractQueryWords(const base::string16& text,
-                         QueryWordVector* words);
+  static void ExtractQueryWords(const base::string16& text,
+                                QueryWordVector* words);
 
   // Sorts the match positions in |matches| by their first index, then
   // coalesces any match positions that intersect each other.
@@ -132,9 +133,9 @@ class QueryParser {
  private:
   // Does the work of parsing |query|; creates nodes in |root| as appropriate.
   // This is invoked from both of the ParseQuery methods.
-  bool ParseQueryImpl(const base::string16& query,
-                      MatchingAlgorithm matching_algorithm,
-                      QueryNodeList* root);
+  static bool ParseQueryImpl(const base::string16& query,
+                             MatchingAlgorithm matching_algorithm,
+                             QueryNodeList* root);
 
   DISALLOW_COPY_AND_ASSIGN(QueryParser);
 };

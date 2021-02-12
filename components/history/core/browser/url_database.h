@@ -317,8 +317,6 @@ class URLDatabase {
   // have keyword search terms.
   bool has_keyword_search_terms_;
 
-  query_parser::QueryParser query_parser_;
-
   DISALLOW_COPY_AND_ASSIGN(URLDatabase);
 };
 

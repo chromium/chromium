@@ -319,8 +319,6 @@ bool QueryNodePhrase::HasMatchIn(const QueryWordVector& words) const {
   return MatchesAll(words, &first_word, &last_word);
 }
 
-QueryParser::QueryParser() {}
-
 // static
 bool QueryParser::IsWordLongEnoughForPrefixSearch(
     const base::string16& word, MatchingAlgorithm matching_algorithm) {
@@ -337,6 +335,7 @@ bool QueryParser::IsWordLongEnoughForPrefixSearch(
   return word.size() >= minimum_length;
 }
 
+// static
 int QueryParser::ParseQuery(const base::string16& query,
                             MatchingAlgorithm matching_algorithm,
                             base::string16* sqlite_query) {
@@ -346,6 +345,7 @@ int QueryParser::ParseQuery(const base::string16& query,
   return root.AppendToSQLiteQuery(sqlite_query);
 }
 
+// static
 void QueryParser::ParseQueryWords(const base::string16& query,
                                   MatchingAlgorithm matching_algorithm,
                                   std::vector<base::string16>* words) {
@@ -355,6 +355,7 @@ void QueryParser::ParseQueryWords(const base::string16& query,
   root.AppendWords(words);
 }
 
+// static
 void QueryParser::ParseQueryNodes(const base::string16& query,
                                   MatchingAlgorithm matching_algorithm,
                                   QueryNodeVector* nodes) {
@@ -363,6 +364,7 @@ void QueryParser::ParseQueryNodes(const base::string16& query,
     nodes->swap(*root.children());
 }
 
+// static
 bool QueryParser::DoesQueryMatch(const base::string16& text,
                                  const QueryNodeVector& query_nodes,
                                  Snippet::MatchPositions* match_positions) {
@@ -394,6 +396,7 @@ bool QueryParser::DoesQueryMatch(const base::string16& text,
   return true;
 }
 
+// static
 bool QueryParser::DoesQueryMatch(const QueryWordVector& query_words,
                                  const QueryNodeVector& query_nodes) {
   if (query_nodes.empty() || query_words.empty())
@@ -406,6 +409,7 @@ bool QueryParser::DoesQueryMatch(const QueryWordVector& query_words,
   return true;
 }
 
+// static
 bool QueryParser::ParseQueryImpl(const base::string16& query,
                                  MatchingAlgorithm matching_algorithm,
                                  QueryNodeList* root) {
@@ -451,6 +455,7 @@ bool QueryParser::ParseQueryImpl(const base::string16& query,
   return true;
 }
 
+// static
 void QueryParser::ExtractQueryWords(const base::string16& text,
                                     QueryWordVector* words) {
   base::i18n::BreakIterator iter(text, base::i18n::BreakIterator::BREAK_WORD);
