@@ -69,8 +69,3 @@ crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-a
 
 # [TablesNG]
 crbug.com/958381 fast/table/overflowHidden.html [ Crash ]
-
-# [css-counter-styles]
-# Need to implement predefined counter style 'simp-chinese-informal' as a
-# custom counter style.
-crbug.com/687225 fast/css/content-counter-large-negative-cjk.html [ Failure ]
