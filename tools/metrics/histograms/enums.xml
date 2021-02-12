@@ -41736,7 +41736,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="LaunchCause">
-  <int value="0" label="Other"/>
+  <int value="0" label="Other - External"/>
   <int value="1" label="Chrome Custom Tab"/>
   <int value="2" label="Trusted Web Activity"/>
   <int value="3" label="Recents (aka App Overview)"/>
@@ -41751,6 +41751,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="External Search Intent (eg. Third Party Voice Search results)"/>
   <int value="11"
       label="Notification (eg. SW Notification, Media Controls, etc.)"/>
+  <int value="12" label="External VIEW intent"/>
+  <int value="13" label="Other - From Chrome"/>
 </enum>
 
 <enum name="LauncherRankingItemType">

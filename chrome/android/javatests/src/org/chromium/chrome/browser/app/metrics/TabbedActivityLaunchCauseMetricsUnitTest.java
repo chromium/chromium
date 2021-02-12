@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.metrics;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.Browser;
 import android.speech.RecognizerResultsIntent;
 
 import androidx.test.filters.SmallTest;
@@ -25,6 +26,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -210,5 +212,62 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         ++count;
         Assert.assertEquals(
                 count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testExternalViewIntent() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testChromeViewIntent() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID,
+                ContextUtils.getApplicationContext().getPackageName());
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testOtherChromeIntent() throws Throwable {
+        int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME);
+        Intent intent = new Intent();
+        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID,
+                ContextUtils.getApplicationContext().getPackageName());
+        IntentHandler.addTrustedIntentExtras(intent);
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(
+                count, histogramCountForValue(LaunchCauseMetrics.LaunchCause.OTHER_CHROME));
     }
 }

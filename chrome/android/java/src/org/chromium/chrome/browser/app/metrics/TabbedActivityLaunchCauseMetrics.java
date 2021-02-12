@@ -82,9 +82,14 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.OPEN_IN_BROWSER_FROM_MENU;
         }
 
-        // TODO(https://crbug.com/1163961): Implement remaining ChromeTabbedActivity launch cause
-        // metrics.
+        @IntentHandler.ExternalAppId
+        int intentSender = IntentHandler.determineExternalIntentSource(launchIntent);
+        if (Intent.ACTION_VIEW.equals(launchIntent.getAction())
+                && intentSender != IntentHandler.ExternalAppId.CHROME) {
+            return LaunchCause.EXTERNAL_VIEW_INTENT;
+        }
 
+        if (intentSender == IntentHandler.ExternalAppId.CHROME) return LaunchCause.OTHER_CHROME;
         return LaunchCause.OTHER;
     }
 
