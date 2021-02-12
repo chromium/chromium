@@ -2136,6 +2136,11 @@
       name: "WebAppWindowControlsOverlay",
     },
     {
+      name: "WebAssemblyExceptions",
+      origin_trial_feature_name: "WebAssemblyExceptions",
+      status: "test",
+    },
+    {
       name: "WebAssemblySimd",
       origin_trial_feature_name: "WebAssemblySimd",
       status: "test",

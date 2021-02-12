@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+
+<script src="../../wasm/resources/wasm-module-builder.js"></script>
+<script src="resources/wasm-exceptions-origin-trial.js"></script>
+<script>
+test(testWasmExceptionsDisabled,
+     "Test that WebAssembly exceptions are disabled without origin trial token");
+promise_test(testWasmExceptionsDisabledOnWorker,
+     "Test that WebAssembly exceptions are disabled in worker without origin trial token");
+</script>
