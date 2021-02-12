@@ -82,14 +82,10 @@ component("lib") {
       "assistant_settings_impl.h",
       "libassistant_service_host_impl.cc",
       "libassistant_service_host_impl.h",
-      "platform/file_provider_impl.cc",
-      "platform/file_provider_impl.h",
       "platform/network_provider_impl.cc",
       "platform/network_provider_impl.h",
       "platform_api_impl.cc",
       "platform_api_impl.h",
-      "utils.cc",
-      "utils.h",
     ]
 
     if (enable_fake_assistant_microphone) {
@@ -105,7 +101,6 @@ component("lib") {
       "//chromeos/assistant/internal:libassistant",
       "//chromeos/assistant/internal/proto/google3",
       "//chromeos/dbus",
-      "//chromeos/resources",
       "//chromeos/services/assistant/proxy",
       "//chromeos/services/assistant/public/cpp/migration",
       "//chromeos/services/libassistant",
@@ -116,7 +111,6 @@ component("lib") {
       "//libassistant/shared/public:export",
       "//net",
       "//services/network/public/cpp",
-      "//ui/base",
       "//url",
     ]
   }

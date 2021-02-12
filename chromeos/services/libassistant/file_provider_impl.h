@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PLATFORM_FILE_PROVIDER_IMPL_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_FILE_PROVIDER_IMPL_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_FILE_PROVIDER_IMPL_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_FILE_PROVIDER_IMPL_H_
 
 #include <string>
 
@@ -12,7 +12,7 @@
 #include "libassistant/shared/public/platform_file.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 class FileProviderImpl : public assistant_client::FileProvider {
  public:
@@ -35,7 +35,7 @@ class FileProviderImpl : public assistant_client::FileProvider {
   DISALLOW_COPY_AND_ASSIGN(FileProviderImpl);
 };
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PLATFORM_FILE_PROVIDER_IMPL_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_FILE_PROVIDER_IMPL_H_

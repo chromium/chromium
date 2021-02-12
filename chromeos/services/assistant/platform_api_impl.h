@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "chromeos/services/assistant/platform/file_provider_impl.h"
 #include "chromeos/services/assistant/platform/network_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
@@ -31,11 +30,9 @@ class PlatformApiImpl : public CrosPlatformApi {
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner);
   ~PlatformApiImpl() override;
 
-  assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
 
  private:
-  FileProviderImpl file_provider_;
   NetworkProviderImpl network_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformApiImpl);

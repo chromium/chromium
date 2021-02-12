@@ -8,6 +8,7 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/audio/audio_output_provider_impl.h"
 #include "chromeos/services/libassistant/fake_auth_provider.h"
+#include "chromeos/services/libassistant/file_provider_impl.h"
 #include "chromeos/services/libassistant/power_manager_provider_impl.h"
 #include "chromeos/services/libassistant/system_provider_impl.h"
 #include "media/audio/audio_device_description.h"
@@ -18,7 +19,8 @@ namespace libassistant {
 PlatformApi::PlatformApi()
     : audio_output_provider_(std::make_unique<AudioOutputProviderImpl>(
           media::AudioDeviceDescription::kDefaultDeviceId)),
-      fake_auth_provider_(std::make_unique<FakeAuthProvider>()) {
+      fake_auth_provider_(std::make_unique<FakeAuthProvider>()),
+      file_provider_(std::make_unique<FileProviderImpl>()) {
   // Only enable native power features if they are supported by the UI.
   std::unique_ptr<PowerManagerProviderImpl> provider;
   if (assistant::features::IsPowerManagerEnabled()) {
@@ -40,12 +42,6 @@ void PlatformApi::Bind(
 PlatformApi& PlatformApi::SetAudioInputProvider(
     assistant_client::AudioInputProvider* provider) {
   audio_input_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetFileProvider(
-    assistant_client::FileProvider* provider) {
-  file_provider_ = provider;
   return *this;
 }
 

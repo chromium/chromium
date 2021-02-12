@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/file_provider_impl.h"
+#include "chromeos/services/libassistant/file_provider_impl.h"
 
 #include "base/files/file_util.h"
 #include "chromeos/grit/chromeos_resources.h"
-#include "chromeos/services/assistant/utils.h"
+#include "chromeos/services/libassistant/util.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 namespace {
 
 constexpr int kReadFileSizeLimitInBytes = 10 * 1024 * 1024;
@@ -99,5 +99,5 @@ bool FileProviderImpl::GetResource(uint16_t resource_id, std::string* out) {
   return true;
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

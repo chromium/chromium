@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/libassistant/test_support/libassistant_service_tester.h"
+#include "base/base_paths.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace chromeos {
@@ -20,7 +21,8 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory() {
 }  // namespace
 
 LibassistantServiceTester::LibassistantServiceTester()
-    : service_(service_remote_.BindNewPipeAndPassReceiver(),
+    : home_dir_override_(base::DIR_HOME),
+      service_(service_remote_.BindNewPipeAndPassReceiver(),
                /*platform_api=*/nullptr,
                &assistant_manager_service_delegate_) {
   BindControllers();

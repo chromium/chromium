@@ -10,4 +10,5 @@ include_rules = [
   "+services/media_session/public/mojom",
   "+services/network/public",
   "+services/network/test",
+  "+ui/base",
 ]

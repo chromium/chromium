@@ -50,7 +50,6 @@ LibassistantService::LibassistantService(
     platform_api_
         ->SetAudioInputProvider(
             &audio_input_controller_->audio_input_provider())
-        .SetFileProvider(&platform_api->GetFileProvider())
         .SetNetworkProvider(&platform_api->GetNetworkProvider());
   }
 }

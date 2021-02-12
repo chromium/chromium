@@ -13,11 +13,6 @@ namespace assistant {
 FakePlatformApi::FakePlatformApi() = default;
 FakePlatformApi::~FakePlatformApi() = default;
 
-assistant_client::FileProvider& FakePlatformApi::GetFileProvider() {
-  NOTIMPLEMENTED();
-  abort();
-}
-
 assistant_client::NetworkProvider& FakePlatformApi::GetNetworkProvider() {
   NOTIMPLEMENTED();
   abort();

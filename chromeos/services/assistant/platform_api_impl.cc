@@ -9,14 +9,8 @@
 #include <vector>
 
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/assistant/utils.h"
-#include "libassistant/shared/public/assistant_export.h"
-#include "libassistant/shared/public/platform_api.h"
-#include "libassistant/shared/public/platform_factory.h"
 
-using assistant_client::FileProvider;
 using assistant_client::NetworkProvider;
-using assistant_client::PlatformApi;
 
 namespace chromeos {
 namespace assistant {
@@ -32,10 +26,6 @@ PlatformApiImpl::PlatformApiImpl(
     : network_provider_(platform_delegate) {}
 
 PlatformApiImpl::~PlatformApiImpl() = default;
-
-FileProvider& PlatformApiImpl::GetFileProvider() {
-  return file_provider_;
-}
 
 NetworkProvider& PlatformApiImpl::GetNetworkProvider() {
   return network_provider_;

@@ -8,7 +8,6 @@
 #include "base/macros.h"
 
 namespace assistant_client {
-class FileProvider;
 class NetworkProvider;
 }  // namespace assistant_client
 
@@ -23,9 +22,6 @@ class CrosPlatformApi {
  public:
   CrosPlatformApi() = default;
   virtual ~CrosPlatformApi() = default;
-
-  // Returns the file provider to be used by libassistant.
-  virtual assistant_client::FileProvider& GetFileProvider() = 0;
 
   // Returns the network provider to be used by libassistant.
   virtual assistant_client::NetworkProvider& GetNetworkProvider() = 0;
