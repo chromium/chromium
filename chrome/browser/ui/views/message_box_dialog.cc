@@ -315,12 +315,23 @@ void ShowWarningMessageBoxWithCheckbox(
                              base::Passed(std::move(callback))));
 }
 
-MessageBoxResult ShowQuestionMessageBox(gfx::NativeWindow parent,
-                                        const base::string16& title,
-                                        const base::string16& message) {
+MessageBoxResult ShowQuestionMessageBoxSync(gfx::NativeWindow parent,
+                                            const base::string16& title,
+                                            const base::string16& message) {
   return MessageBoxDialog::Show(
       parent, title, message, chrome::MESSAGE_BOX_TYPE_QUESTION,
       base::string16(), base::string16(), base::string16());
+}
+
+void ShowQuestionMessageBox(
+    gfx::NativeWindow parent,
+    const base::string16& title,
+    const base::string16& message,
+    base::OnceCallback<void(MessageBoxResult)> callback) {
+  MessageBoxDialog::Show(parent, title, message,
+                         chrome::MESSAGE_BOX_TYPE_QUESTION, base::string16(),
+                         base::string16(), base::string16(),
+                         std::move(callback));
 }
 
 MessageBoxResult ShowMessageBoxWithButtonText(gfx::NativeWindow parent,

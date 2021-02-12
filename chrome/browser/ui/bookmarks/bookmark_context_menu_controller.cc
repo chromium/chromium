@@ -92,7 +92,7 @@ BookmarkContextMenuController::BookmarkContextMenuController(
     BookmarkContextMenuControllerDelegate* delegate,
     Browser* browser,
     Profile* profile,
-    PageNavigator* navigator,
+    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
     BookmarkLaunchLocation opened_from,
     const BookmarkNode* parent,
     const std::vector<const BookmarkNode*>& selection)
@@ -100,7 +100,7 @@ BookmarkContextMenuController::BookmarkContextMenuController(
       delegate_(delegate),
       browser_(browser),
       profile_(profile),
-      navigator_(navigator),
+      get_navigator_(std::move(get_navigator)),
       opened_from_(opened_from),
       parent_(parent),
       selection_(selection),
@@ -217,8 +217,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
           GetActionForLocationAndDisposition(opened_from_, initial_disposition);
       if (action)
         base::RecordAction(*action);
-      chrome::OpenAll(parent_window_, navigator_, selection_,
-                      initial_disposition, profile_);
+      chrome::OpenAllIfAllowed(browser_, std::move(get_navigator_), selection_,
+                               initial_disposition);
       break;
     }
 

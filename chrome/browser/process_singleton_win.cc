@@ -175,7 +175,7 @@ bool ProcessLaunchNotification(
 }
 
 bool DisplayShouldKillMessageBox() {
-  return chrome::ShowQuestionMessageBox(
+  return chrome::ShowQuestionMessageBoxSync(
              NULL, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
              l10n_util::GetStringUTF16(IDS_BROWSER_HUNGBROWSER_MESSAGE)) !=
          chrome::MESSAGE_BOX_RESULT_NO;

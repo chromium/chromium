@@ -1170,8 +1170,12 @@ void AppMenu::CreateBookmarkMenu() {
   // TODO(oshima): Replace with views only API.
   views::Widget* parent = views::Widget::GetWidgetForNativeWindow(
       browser_->window()->GetNativeWindow());
-  bookmark_menu_delegate_.reset(
-      new BookmarkMenuDelegate(browser_, browser_, parent));
+  bookmark_menu_delegate_.reset(new BookmarkMenuDelegate(
+      browser_,
+      base::BindRepeating(
+          [](content::PageNavigator* navigator) { return navigator; },
+          browser_),
+      parent));
   bookmark_menu_delegate_->Init(this, bookmark_menu_,
                                 model->bookmark_bar_node(), 0,
                                 BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,

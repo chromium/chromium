@@ -24,13 +24,15 @@ using bookmarks::BookmarkNode;
 using content::PageNavigator;
 using views::MenuItemView;
 
-BookmarkMenuController::BookmarkMenuController(Browser* browser,
-                                               PageNavigator* page_navigator,
-                                               views::Widget* parent,
-                                               const BookmarkNode* node,
-                                               size_t start_child_index,
-                                               bool for_drop)
-    : menu_delegate_(new BookmarkMenuDelegate(browser, page_navigator, parent)),
+BookmarkMenuController::BookmarkMenuController(
+    Browser* browser,
+    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
+    views::Widget* parent,
+    const BookmarkNode* node,
+    size_t start_child_index,
+    bool for_drop)
+    : menu_delegate_(
+          new BookmarkMenuDelegate(browser, std::move(get_navigator), parent)),
       node_(node),
       observer_(nullptr),
       for_drop_(for_drop),
@@ -73,10 +75,6 @@ MenuItemView* BookmarkMenuController::menu() const {
 
 MenuItemView* BookmarkMenuController::context_menu() const {
   return menu_delegate_->context_menu();
-}
-
-void BookmarkMenuController::SetPageNavigator(PageNavigator* navigator) {
-  menu_delegate_->SetPageNavigator(navigator);
 }
 
 base::string16 BookmarkMenuController::GetTooltipText(int id,

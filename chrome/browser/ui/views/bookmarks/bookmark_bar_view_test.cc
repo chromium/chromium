@@ -319,6 +319,9 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     ViewEventTestBase::SetUp();
     ASSERT_TRUE(bb_view_);
 
+    static_cast<TestBrowserWindow*>(browser_->window())
+        ->SetNativeWindow(window()->GetNativeWindow());
+
     // Verify the layout triggered by the initial size preserves the overflow
     // state calculated in GetPreferredSizeForContents().
     EXPECT_TRUE(GetBookmarkButton(5)->GetVisible());

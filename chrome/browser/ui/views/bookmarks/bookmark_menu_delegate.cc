@@ -68,12 +68,13 @@ SkColor TextColorForMenu(MenuItemView* menu, views::Widget* widget) {
 
 }  // namespace
 
-BookmarkMenuDelegate::BookmarkMenuDelegate(Browser* browser,
-                                           PageNavigator* navigator,
-                                           views::Widget* parent)
+BookmarkMenuDelegate::BookmarkMenuDelegate(
+    Browser* browser,
+    base::RepeatingCallback<content::PageNavigator*()> get_navigator,
+    views::Widget* parent)
     : browser_(browser),
       profile_(browser->profile()),
-      page_navigator_(navigator),
+      get_navigator_(std::move(get_navigator)),
       parent_(parent),
       menu_(nullptr),
       parent_menu_item_(nullptr),
@@ -127,12 +128,6 @@ void BookmarkMenuDelegate::Init(views::MenuDelegate* real_delegate,
   }
 }
 
-void BookmarkMenuDelegate::SetPageNavigator(PageNavigator* navigator) {
-  page_navigator_ = navigator;
-  if (context_menu_.get())
-    context_menu_->SetPageNavigator(navigator);
-}
-
 const BookmarkModel* BookmarkMenuDelegate::GetBookmarkModel() const {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
@@ -184,10 +179,8 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 
   RecordBookmarkLaunch(location_,
                        ProfileMetrics::GetBrowserProfileType(profile_));
-  chrome::OpenAll(parent_->GetNativeWindow(), page_navigator_, selection,
-                  ui::DispositionFromEventFlags(mouse_event_flags),
-                  profile_);
-  // NOTE: |this| may be deleted.
+  chrome::OpenAllIfAllowed(browser_, std::move(get_navigator_), selection,
+                           ui::DispositionFromEventFlags(mouse_event_flags));
 }
 
 bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
@@ -341,7 +334,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
   const BookmarkNode* node = menu_id_to_node_map_[id];
   std::vector<const BookmarkNode*> nodes(1, node);
   context_menu_.reset(
-      new BookmarkContextMenu(parent_, browser_, profile_, page_navigator_,
+      new BookmarkContextMenu(parent_, browser_, profile_, get_navigator_,
                               BOOKMARK_LAUNCH_LOCATION_APP_MENU, node->parent(),
                               nodes, ShouldCloseOnRemove(node)));
   context_menu_->set_observer(this);
