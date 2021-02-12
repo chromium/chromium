@@ -866,7 +866,7 @@ void AppListView::Layout() {
 
   app_list_background_shield_->UpdateBounds(contents_bounds);
 
-  UpdateAppListBackgroundYPosition(app_list_state_);
+  UpdateAppListBackgroundYPosition(target_app_list_state_);
 }
 
 void AppListView::OnThemeChanged() {
@@ -1269,7 +1269,7 @@ void AppListView::MaybeCreateAccessibilityEvent(AppListViewState new_state) {
 
 void AppListView::EnsureWidgetBoundsMatchCurrentState() {
   const gfx::Rect new_target_bounds =
-      GetPreferredWidgetBoundsForState(app_list_state_);
+      GetPreferredWidgetBoundsForState(target_app_list_state_);
   aura::Window* window = GetWidget()->GetNativeView();
   if (new_target_bounds == window->GetTargetBounds())
     return;
@@ -1286,7 +1286,7 @@ void AppListView::EnsureWidgetBoundsMatchCurrentState() {
 
   // Update the widget bounds to accommodate the new work
   // area.
-  SetState(app_list_state_);
+  SetState(target_app_list_state_);
 }
 
 int AppListView::GetRemainingBoundsAnimationDistance() const {
@@ -1626,10 +1626,30 @@ bool AppListView::HandleScroll(const gfx::Point& location,
 void AppListView::SetState(AppListViewState new_state) {
   AppListViewState new_state_override = new_state;
   ConvertAppListStateToFullscreenEquivalent(&new_state_override);
-  MaybeCreateAccessibilityEvent(new_state_override);
+
+  target_app_list_state_ = new_state_override;
+
+  // Update the contents view state to match the app list view state.
+  // Updating the contents view state may cause a nested `SetState()` call.
+  // Bind the current state update to a weak ptr that gets invalidated when
+  // `SetState()` gets called again to detect whether `SetState()` got called
+  // again.
+  set_state_weak_factory_.InvalidateWeakPtrs();
+  base::WeakPtr<AppListView> set_state_request =
+      set_state_weak_factory_.GetWeakPtr();
+
   // Clear the drag state before closing the view.
   if (new_state_override == AppListViewState::kClosed)
     SetIsInDrag(false);
+
+  SetChildViewsForStateTransition(new_state_override);
+
+  // Bail out if `SetChildViewForStateTransition()` caused another call to
+  // `SetState()`.
+  if (!set_state_request)
+    return;
+
+  MaybeCreateAccessibilityEvent(new_state_override);
 
   // Prepare state transition notifier for the new state transition.
   state_transition_notifier_->Reset(new_state_override);
@@ -1662,9 +1682,6 @@ void AppListView::SetState(AppListViewState new_state) {
   // synchronously).
   state_transition_notifier_->Activate();
 
-  // Update the contents view state to match the app list view state.
-  SetChildViewsForStateTransition(app_list_state_);
-
   // Updates the visibility of app list items according to the change of
   // |app_list_state_|.
   GetAppsContainerView()->UpdateControlVisibility(app_list_state_, is_in_drag_);
@@ -1682,7 +1699,7 @@ void AppListView::UpdateWindowTitle() {
           IDS_APP_LIST_LAUNCHER_ACCESSIBILITY_ANNOUNCEMENT));
       return;
     }
-    switch (app_list_state_) {
+    switch (target_app_list_state_) {
       case AppListViewState::kPeeking:
         window->SetTitle(l10n_util::GetStringUTF16(
             IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT));
@@ -1856,7 +1873,7 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
 
 void AppListView::SetStateFromSearchBoxView(bool search_box_is_empty,
                                             bool triggered_by_contents_change) {
-  switch (app_list_state_) {
+  switch (target_app_list_state_) {
     case AppListViewState::kPeeking:
       if (!search_box_is_empty || search_box_view()->is_search_box_active())
         SetState(AppListViewState::kHalf);
@@ -1958,7 +1975,8 @@ void AppListView::SetIsInDrag(bool is_in_drag) {
         kAppListDragInClamshellMaxLatencyHistogram);
   }
 
-  GetAppsContainerView()->UpdateControlVisibility(app_list_state_, is_in_drag_);
+  GetAppsContainerView()->UpdateControlVisibility(target_app_list_state_,
+                                                  is_in_drag_);
 }
 
 void AppListView::OnHomeLauncherGainingFocusWithoutAnimation() {
@@ -2114,7 +2132,7 @@ void AppListView::OnWindowBoundsChanged(aura::Window* window,
   UpdateAppListConfig(window);
 
   gfx::Transform transform;
-  if (ShouldHideRoundedCorners(app_list_state_, new_bounds))
+  if (ShouldHideRoundedCorners(target_app_list_state_, new_bounds))
     transform.Translate(0, -(delegate_->GetShelfSize() / 2));
 
   // Avoid setting new transform if the shield is animating to (or already has)
@@ -2172,14 +2190,15 @@ void AppListView::SetShelfHasRoundedCorners(bool shelf_has_rounded_corners) {
     animation_end_timestamp = animation_end_timestamp_;
   }
   app_list_background_shield_->UpdateBackgroundRadius(
-      app_list_state_, shelf_has_rounded_corners_, animation_end_timestamp);
+      target_app_list_state_, shelf_has_rounded_corners_,
+      animation_end_timestamp);
 }
 
 void AppListView::UpdateChildViewsYPositionAndOpacity() {
-  if (app_list_state_ == AppListViewState::kClosed)
+  if (target_app_list_state_ == AppListViewState::kClosed)
     return;
 
-  UpdateAppListBackgroundYPosition(app_list_state_);
+  UpdateAppListBackgroundYPosition(target_app_list_state_);
 
   // Update the opacity of the background shield.
   SetBackgroundShieldColor();
@@ -2436,7 +2455,7 @@ void AppListView::EndDragFromShelf(AppListViewState app_list_state) {
   SetIsInDrag(false);
 
   if (app_list_state == AppListViewState::kClosed ||
-      app_list_state_ == AppListViewState::kClosed) {
+      target_app_list_state_ == AppListViewState::kClosed) {
     Dismiss();
   } else {
     SetState(app_list_state);
