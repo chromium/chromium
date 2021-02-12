@@ -537,6 +537,11 @@ def main():
 
   projects = 'clang;compiler-rt;lld;chrometools;clang-tools-extra'
 
+  if sys.platform == 'darwin':
+    # clang needs libc++, else -stdlib=libc++ won't find includes
+    # (this is needed for bootstrap builds and for building the fuchsia runtime)
+    projects += ';libcxx'
+
   base_cmake_args = [
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
@@ -558,16 +563,6 @@ def main():
       # See crbug.com/1126219: Use native symbolizer instead of DIA
       '-DLLVM_ENABLE_DIA_SDK=OFF',
   ]
-
-  if sys.platform == 'darwin':
-    # clang needs libc++, else -stdlib=libc++ won't find includes
-    # (this is needed for bootstrap builds and for building the fuchsia runtime)
-    # We don't use the libcxx headers in the chrome build, they're just there
-    # for building small test programs using `clang` manually. Given that, and
-    # given that the libcxx test suite is very slow, omit libcxx's tests from
-    # check-all.
-    projects += ';libcxx'
-    base_cmake_args += [ '-DLIBCXX_INCLUDE_TESTS=OFF' ]
 
   if args.gcc_toolchain:
     # Use the specified gcc installation for building.
