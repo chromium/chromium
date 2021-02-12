@@ -163,7 +163,7 @@ class WPTManifest(object):
         for test_type in self.test_types:
             if test_type not in items:
                 continue
-            for filename, records in items[test_type].iteritems():
+            for filename, records in items[test_type].items():
                 for item in filter(self._is_not_jsshell, records):
                     url_for_item = self._get_url_from_item(item)
                     url_items[url_for_item] = item

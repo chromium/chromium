@@ -186,7 +186,7 @@ class TestExpectations(object):
         args:
             path: Absolute path of expectations file."""
         content = self._expectations_dict[path]
-        idx = self._expectations_dict.keys().index(path)
+        idx = list(self._expectations_dict.keys()).index(path)
         typ_expectations = self._expectations[idx]
         lines = []
 

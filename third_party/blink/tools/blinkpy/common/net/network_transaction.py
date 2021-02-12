@@ -28,7 +28,7 @@
 
 import logging
 import time
-import urllib2
+from six.moves import urllib
 
 _log = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class NetworkTransaction(object):
         while True:
             try:
                 return request()
-            except urllib2.HTTPError as error:
+            except urllib.error.HTTPError as error:
                 if self._return_none_on_404 and error.code == 404:
                     return None
                 self._check_for_timeout()

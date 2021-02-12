@@ -33,7 +33,8 @@ import json
 import logging
 import os.path
 import urllib
-import urllib2
+
+from six.moves import urllib
 
 from blinkpy.web_tests.models.typ_types import Expectation, ResultType
 
@@ -162,9 +163,9 @@ class BotTestExpectationsFactory(object):
     def _results_url_for_builder(self, builder, use_try_step=False):
         test_type = (self.STEP_NAME_TRY if use_try_step else self.STEP_NAME)
         return self.RESULTS_URL_FORMAT % (
-            urllib.quote(test_type),
-            urllib.quote(self.builders.master_for_builder(builder)),
-            urllib.quote(builder))
+            urllib.parse.quote(test_type),
+            urllib.parse.quote(self.builders.master_for_builder(builder)),
+            urllib.parse.quote(builder))
 
     def _results_json_for_builder(self, builder):
         results_url = self._results_url_for_builder(
@@ -172,9 +173,8 @@ class BotTestExpectationsFactory(object):
         try:
             _log.debug('Fetching flakiness data from appengine: %s',
                        results_url)
-            return ResultsJSON(builder, json.load(
-                urllib2.urlopen(results_url)))
-        except urllib2.URLError as error:
+            return ResultsJSON(builder, json.load(urllib.urlopen(results_url)))
+        except urllib.error.URLError as error:
             _log.warning(
                 'Could not retrieve flakiness data from the bot.  url: %s',
                 results_url)
@@ -185,9 +185,9 @@ class BotTestExpectationsFactory(object):
         try:
             _log.debug('Fetching flakiness data from appengine: %s',
                        results_url)
-            return ResultsFilter(builder, json.load(
-                urllib2.urlopen(results_url)))
-        except urllib2.URLError as error:
+            return ResultsFilter(builder,
+                                 json.load(urllib.urlopen(results_url)))
+        except urllib.URLError as error:
             _log.warning(
                 'Could not retrieve flakiness data from the bot.  url: %s',
                 results_url)

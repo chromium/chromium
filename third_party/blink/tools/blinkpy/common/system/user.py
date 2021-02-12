@@ -33,6 +33,8 @@ import re
 import sys
 import webbrowser
 
+from six.moves import input
+
 from blinkpy.common.system.executive import Executive
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.platform_info import PlatformInfo
@@ -52,7 +54,7 @@ class User(object):
 
     # FIXME: These are @classmethods because bugzilla.py doesn't have a Tool object (thus no User instance).
     @classmethod
-    def prompt(cls, message, repeat=1, input_func=raw_input):
+    def prompt(cls, message, repeat=1, input_func=input):
         response = None
         while repeat and not response:
             repeat -= 1
@@ -96,16 +98,16 @@ class User(object):
                          list_title,
                          list_items,
                          can_choose_multiple=False,
-                         input_func=raw_input):
-        print list_title
+                         input_func=input):
+        print(list_title)
         i = 0
         for item in list_items:
             i += 1
-            print '%2d. %s' % (i, item)
+            print('%2d. %s' % (i, item))
         return cls._wait_on_list_response(list_items, can_choose_multiple,
                                           input_func)
 
-    def confirm(self, message=None, default=DEFAULT_YES, input_func=raw_input):
+    def confirm(self, message=None, default=DEFAULT_YES, input_func=input):
         if not message:
             message = 'Continue?'
         choice = {'y': 'Y/n', 'n': 'y/N'}[default]

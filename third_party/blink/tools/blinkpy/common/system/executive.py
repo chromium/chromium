@@ -39,6 +39,8 @@ import sys
 import threading
 import time
 
+import six
+
 _log = logging.getLogger(__name__)
 
 
@@ -72,7 +74,7 @@ class ScriptError(Exception):
         self.cwd = cwd
 
     def message_with_output(self):
-        return unicode(self)
+        return six.text_type(self)
 
     def command_name(self):
         command_path = self.script_args
@@ -298,7 +300,7 @@ class Executive(object):
         # See https://bugs.webkit.org/show_bug.cgi?id=37528
         # for an example of a regression caused by passing a unicode string directly.
         # FIXME: We may need to encode differently on different platforms.
-        if isinstance(user_input, unicode):
+        if isinstance(user_input, six.text_type):
             user_input = user_input.encode(self._child_process_encoding())
         return (self.PIPE, user_input)
 
@@ -309,7 +311,7 @@ class Executive(object):
         args = self._stringify_args(args)
         escaped_args = []
         for arg in args:
-            if isinstance(arg, unicode):
+            if isinstance(arg, six.text_type):
                 # Escape any non-ascii characters for easy copy/paste
                 arg = arg.encode('unicode_escape')
             # FIXME: Do we need to fix quotes here?
@@ -447,7 +449,7 @@ class Executive(object):
 
     def _stringify_args(self, args):
         # Popen will throw an exception if args are non-strings (like int())
-        string_args = map(unicode, args)
+        string_args = map(six.text_type, args)
         # The Windows implementation of Popen cannot handle unicode strings. :(
         return map(self._encode_argument_if_needed, string_args)
 

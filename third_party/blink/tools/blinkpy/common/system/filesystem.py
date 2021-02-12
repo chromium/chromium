@@ -30,10 +30,10 @@
 A FileSystem object can be used to represent dependency on the
 filesystem, and can be replaced with a MockFileSystem in tests.
 """
+from __future__ import unicode_literals
 
 import codecs
 import errno
-import exceptions
 import glob
 import hashlib
 import logging
@@ -44,6 +44,12 @@ import subprocess
 import sys
 import tempfile
 import time
+
+try:
+    import exceptions
+except ImportError:
+    # In py3, exceptions were moved into builtins
+    import builtins as exceptions
 
 _log = logging.getLogger(__name__)
 
@@ -75,7 +81,7 @@ class FileSystem(object):
         """
         if sys.platform == 'win32' and len(path) >= self.WINDOWS_MAX_PATH:
             assert not path.startswith(r'\\'), "must not already be UNC"
-            return ur'\\?\%s' % (self.abspath(path), )
+            return r'\\?\%s' % (self.abspath(path), )
         return path
 
     def abspath(self, path):
