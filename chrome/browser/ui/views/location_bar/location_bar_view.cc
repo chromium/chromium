@@ -65,6 +65,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -282,6 +283,12 @@ void LocationBarView::Init() {
           autofill::features::kAutofillEnableToolbarStatusChip)) {
     params.types_enabled.push_back(PageActionIconType::kSaveCard);
     params.types_enabled.push_back(PageActionIconType::kLocalCardMigration);
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillAddressProfileSavePrompt)) {
+      // TODO(crbug.com/1167060): Place this in the proper order upon having
+      // final mocks.
+      params.types_enabled.push_back(PageActionIconType::kSaveAutofillAddress);
+    }
   }
   if (browser_ && !is_popup_mode_)
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
@@ -640,7 +647,7 @@ void LocationBarView::Layout() {
   // If rich autocompletion is enabled, split |location_bounds| horizontally for
   // the |omnibox_view_| and |omnibox_additional_text_view_|.
   if (OmniboxFieldTrial::RichAutocompletionShowAdditionalText() &&
-             !omnibox_view_->GetText().empty()) {
+      !omnibox_view_->GetText().empty()) {
     auto omnibox_bounds = location_bounds;
     omnibox_bounds.set_width(std::min(
         omnibox_view_->GetUnelidedTextWidth() + 10, location_bounds.width()));

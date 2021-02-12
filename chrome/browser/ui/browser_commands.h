@@ -151,6 +151,7 @@ bool IsCurrentTabUnreadInReadLater(Browser* browser);
 void MaybeShowBookmarkBarForReadLater(Browser* browser);
 void SaveCreditCard(Browser* browser);
 void MigrateLocalCards(Browser* browser);
+void SaveAutofillAddress(Browser* browser);
 void Translate(Browser* browser);
 void ManagePasswordsForPage(Browser* browser);
 void SendTabToSelfFromPageAction(Browser* browser);

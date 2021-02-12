@@ -8,18 +8,20 @@
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/save_address_profile_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
 
-class SaveAddressProfileView;
+class AutofillBubbleBase;
 
 // The controller functionality for SaveAddressProfileView.
 class SaveAddressProfileBubbleControllerImpl
     : public AutofillBubbleControllerBase,
       public SaveAddressProfileBubbleController,
+      public SaveAddressProfileIconController,
       public content::WebContentsUserData<
           SaveAddressProfileBubbleControllerImpl> {
  public:
@@ -42,6 +44,11 @@ class SaveAddressProfileBubbleControllerImpl
       AutofillClient::SaveAddressProfileOfferUserDecision decision) override;
   void OnBubbleClosed() override;
 
+  // SaveAddressProfileIconController:
+  void OnPageActionIconClicked() override;
+  bool IsBubbleActive() const override;
+  AutofillBubbleBase* GetSaveBubbleView() const override;
+
  protected:
   // AutofillBubbleControllerBase:
   PageActionIconType GetPageActionIconType() override;
@@ -61,6 +68,11 @@ class SaveAddressProfileBubbleControllerImpl
   // Contains the details of the address profile that will be saved if the user
   // accepts.
   AutofillProfile address_profile_;
+
+  // Whether the bubble is going to be shown upon user gesture (e.g. click on
+  // the page action icon) or automatically (e.g. upon detection of an address
+  // during form submission).
+  bool shown_by_user_gesture_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

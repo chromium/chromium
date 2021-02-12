@@ -32,6 +32,7 @@ void SaveAddressProfileBubbleControllerImpl::OfferSave(
   address_profile_ = profile;
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
+  shown_by_user_gesture_ = false;
   Show();
 }
 
@@ -52,6 +53,23 @@ void SaveAddressProfileBubbleControllerImpl::OnBubbleClosed() {
   UpdatePageActionIcon();
 }
 
+void SaveAddressProfileBubbleControllerImpl::OnPageActionIconClicked() {
+  // Don't show the bubble if it's already visible.
+  if (bubble_view())
+    return;
+  shown_by_user_gesture_ = true;
+  Show();
+}
+
+bool SaveAddressProfileBubbleControllerImpl::IsBubbleActive() const {
+  return bubble_view() != nullptr;
+}
+
+AutofillBubbleBase* SaveAddressProfileBubbleControllerImpl::GetSaveBubbleView()
+    const {
+  return bubble_view();
+}
+
 PageActionIconType
 SaveAddressProfileBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveCard;
@@ -60,11 +78,10 @@ SaveAddressProfileBubbleControllerImpl::GetPageActionIconType() {
 void SaveAddressProfileBubbleControllerImpl::DoShowBubble() {
   DCHECK(!bubble_view());
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  set_bubble_view(
-      browser->window()
-          ->GetAutofillBubbleHandler()
-          ->ShowSaveAddressProfileBubble(web_contents(), this,
-                                         /*is_user_gesture=*/false));
+  set_bubble_view(browser->window()
+                      ->GetAutofillBubbleHandler()
+                      ->ShowSaveAddressProfileBubble(web_contents(), this,
+                                                     shown_by_user_gesture_));
   DCHECK(bubble_view());
 }
 

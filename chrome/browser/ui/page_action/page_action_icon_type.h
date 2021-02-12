@@ -17,6 +17,7 @@ enum class PageActionIconType {
   kPwaInstall,
   kQRCodeGenerator,
   kReaderMode,
+  kSaveAutofillAddress,
   kSaveCard,
   kSendTabToSelf,
   kSharedClipboard,

@@ -130,6 +130,7 @@
 #define IDC_WINDOW_CLOSE_TABS_TO_RIGHT  35022
 #define IDC_WINDOW_CLOSE_OTHER_TABS     35023
 #define IDC_NEW_TAB_TO_RIGHT            35024
+#define IDC_SAVE_AUTOFILL_ADDRESS     35025
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.

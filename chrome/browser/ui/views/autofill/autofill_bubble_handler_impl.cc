@@ -127,10 +127,16 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
     content::WebContents* web_contents,
     SaveAddressProfileBubbleController* controller,
     bool is_user_gesture) {
-  views::View* anchor_view =
-      toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveCard);
+  views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
+      PageActionIconType::kSaveAutofillAddress);
   SaveAddressProfileView* bubble =
       new SaveAddressProfileView(anchor_view, web_contents, controller);
+  DCHECK(bubble);
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kSaveAutofillAddress);
+  DCHECK(icon_view);
+  bubble->SetHighlightedButton(icon_view);
   views::BubbleDialogDelegateView::CreateBubble(bubble);
   bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
                                : LocationBarBubbleDelegateView::AUTOMATIC);

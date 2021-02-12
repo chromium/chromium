@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
+#include "chrome/browser/ui/views/autofill/save_address_profile_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
@@ -121,6 +122,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             params.browser->profile()->GetPrefs());
         page_action_icons_.push_back(reader_mode_icon_);
         break;
+      case PageActionIconType::kSaveAutofillAddress:
+        save_autofill_address_icon_ = new autofill::SaveAddressProfileIconView(
+            params.command_updater, params.icon_label_bubble_delegate,
+            params.page_action_icon_delegate);
+        page_action_icons_.push_back(save_autofill_address_icon_);
+        break;
       case PageActionIconType::kSaveCard:
         save_payment_icon_ = new autofill::SavePaymentIconView(
             params.command_updater, params.icon_label_bubble_delegate,
@@ -203,6 +210,8 @@ PageActionIconView* PageActionIconController::GetIconView(
       return qrcode_generator_icon_view_;
     case PageActionIconType::kReaderMode:
       return reader_mode_icon_;
+    case PageActionIconType::kSaveAutofillAddress:
+      return save_autofill_address_icon_;
     case PageActionIconType::kSaveCard:
       return save_payment_icon_;
     case PageActionIconType::kSendTabToSelf:

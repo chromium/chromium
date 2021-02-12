@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -37,6 +38,12 @@ ToolbarAccountIconContainerView::ToolbarAccountIconContainerView(
       PageActionIconType::kLocalCardMigration,
       PageActionIconType::kSaveCard,
   };
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAddressProfileSavePrompt)) {
+    // TODO(crbug.com/1167060): Place this in the proper order upon having
+    // final mocks.
+    params.types_enabled.push_back(PageActionIconType::kSaveAutofillAddress);
+  }
   params.browser = browser_;
   params.command_updater = browser_->command_controller();
   params.icon_label_bubble_delegate = this;
