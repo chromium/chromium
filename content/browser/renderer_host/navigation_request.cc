@@ -2245,6 +2245,28 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   }
 }
 
+const GURL& NavigationRequest::GetOriginalRequestURL() {
+  // If the navigation resulted in an error we should return the URL used to
+  // commit, even if the navigation went through redirects. This is to preserve
+  // the previous behavior where we use the redirect chain from the renderer to
+  // get the original request URL. When we commit an error page, the redirect
+  // chain in the renderer only contains the commit URL.
+  if (net_error_ != net::OK)
+    return GetURL();
+
+  // Otherwise, return the first URL in the redirect chain. If the navigation
+  // is started by a client redirect, this will be the URL of the document that
+  // started the redirect. Otherwise, this will be the first destination URL
+  // of the navigation, before any server redirects.
+  // TODO(https://crbug.com/1176636): Reconsider the behavior with client
+  // redirects, as all script-initiated navigations are considered client
+  // redirects, which means the client redirect might not always trigger
+  // immediately (or at all, if the navigation depends on user interaction)
+  // if we decide to do a reload with the original URL.
+  DCHECK(!redirect_chain_.empty());
+  return redirect_chain_[0];
+}
+
 GURL NavigationRequest::GetWebBundleURL() {
   if (!response())
     return GURL();

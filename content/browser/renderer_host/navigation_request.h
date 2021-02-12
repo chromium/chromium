@@ -798,6 +798,21 @@ class CONTENT_EXPORT NavigationRequest
   // WebBundle. Otherwise, returns an empty URL.
   GURL GetWebBundleURL();
 
+  // Returns the original request url:
+  // - If this navigation resulted in an error page, this will return the URL
+  // of the page that failed to load.
+  // - If this is navigation is triggered by loadDataWithBaseURL or related
+  // functions, this will return the data URL (or data header, in case of
+  // loadDataAsStringWithBaseURL).
+  // - Otherwise, this will return the first URL in |redirect_chain_|. This
+  // means if the navigation is started due to a client redirect, we will return
+  // the URL of the page that initiated the client redirect. Otherwise we will
+  // return the first destination URL for this navigation.
+  // NOTE: This might result in a different value than original_url in
+  // |commit_params_|, which is always set to the first destination URL for this
+  // navigation.
+  const GURL& GetOriginalRequestURL();
+
  private:
   friend class NavigationRequestTest;
 

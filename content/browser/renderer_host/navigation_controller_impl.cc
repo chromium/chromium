@@ -1572,7 +1572,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   new_entry->SetTransitionType(params.transition);
   new_entry->set_site_instance(
       static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance()));
-  new_entry->SetOriginalRequestURL(params.original_request_url);
+  new_entry->SetOriginalRequestURL(request->GetOriginalRequestURL());
 
   if (!is_same_document) {
     DCHECK_EQ(request->IsOverridingUserAgent() && !rfh->GetParent(),

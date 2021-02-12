@@ -8852,8 +8852,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     navigation_request = CreateNavigationRequestForCommit(
         params->url, params->origin, params->referrer.Clone(),
         params->transition, params->should_replace_current_entry,
-        params->gesture, params->redirects, params->original_request_url,
-        params->page_state, is_same_document_navigation,
+        params->gesture, params->redirects, params->url, params->page_state,
+        is_same_document_navigation,
         same_document_params &&
             same_document_params->is_history_api_navigation);
   }
@@ -9184,7 +9184,6 @@ RenderFrameHostImpl::CommitAsTracedValue(
   value->SetInteger("post_id", params.post_id);
   value->SetInteger("http_status_code", params.http_status_code);
   value->SetBoolean("url_is_unreachable", params.url_is_unreachable);
-  value->SetString("original_request_url", params.original_request_url.spec());
   value->SetBoolean("is_overriding_user_agent",
                     params.is_overriding_user_agent);
   value->SetBoolean("history_list_was_cleared",
@@ -10030,10 +10029,10 @@ void RenderFrameHostImpl::
                         params.url == kUnreachableWebDataURL);
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "original_req_url",
-                             params.original_request_url.spec());
-  SCOPED_CRASH_KEY_BOOL(
-      "VerifyDidCommit", "original_same_doc",
-      params.original_request_url.EqualsIgnoringRef(GetLastCommittedURL()));
+                             request->commit_params().original_url.spec());
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "original_same_doc",
+                        request->commit_params().original_url.EqualsIgnoringRef(
+                            GetLastCommittedURL()));
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_committed_url",
                              GetLastCommittedURL().spec());

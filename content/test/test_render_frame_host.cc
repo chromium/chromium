@@ -527,8 +527,8 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
   params->method = "GET";
   params->http_status_code = response_code;
   params->history_list_was_cleared = simulate_history_list_was_cleared_;
-  params->original_request_url = url;
   params->post_id = -1;
+  params->redirects.push_back(url);
 
   // Simulate Blink assigning an item and document sequence number to the
   // navigation.

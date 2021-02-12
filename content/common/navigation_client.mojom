@@ -116,9 +116,6 @@ struct DidCommitProvisionalLoadParams {
   // Serialized history item state to store in the navigation entry.
   PageState page_state;
 
-  // Original request's URL.
-  url.mojom.Url original_request_url;
-
   // User agent override used to navigate.
   bool is_overriding_user_agent;
 

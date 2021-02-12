@@ -493,6 +493,7 @@ void Navigator::DidNavigate(
   // attributed to the right page.
   bool has_embedding_control = HasEmbeddingControl(navigation_request.get());
   bool is_error_page = navigation_request->IsErrorPage();
+  const GURL original_request_url = navigation_request->GetOriginalRequestURL();
 
   render_frame_host->DidNavigate(params, navigation_request.get(),
                                  did_create_new_document);
@@ -523,7 +524,7 @@ void Navigator::DidNavigate(
   // necessary, please).
 
   // TODO(carlosk): Move this out.
-  RecordNavigationMetrics(details, params, site_instance);
+  RecordNavigationMetrics(details, params, site_instance, original_request_url);
 
   // Now that something has committed, we don't need to track whether the
   // initial page has been accessed.
@@ -1004,11 +1005,12 @@ void Navigator::LogRendererInitiatedBeforeUnloadTime(
 void Navigator::RecordNavigationMetrics(
     const LoadCommittedDetails& details,
     const mojom::DidCommitProvisionalLoadParams& params,
-    SiteInstance* site_instance) {
+    SiteInstance* site_instance,
+    const GURL& original_request_url) {
   DCHECK(site_instance->HasProcess());
 
   if (!details.is_main_frame || !navigation_data_ ||
-      navigation_data_->url_ != params.original_request_url) {
+      navigation_data_->url_ != original_request_url) {
     return;
   }
 

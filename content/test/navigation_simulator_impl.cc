@@ -321,7 +321,6 @@ NavigationSimulatorImpl::NavigationSimulatorImpl(
                            ? render_frame_host->frame_tree_node()
                            : web_contents->GetMainFrame()->frame_tree_node()),
       request_(nullptr),
-      original_url_(original_url),
       navigation_url_(original_url),
       initial_method_("GET"),
       browser_initiated_(browser_initiated),
@@ -362,7 +361,6 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
   CHECK(render_frame_host_);
   CHECK_EQ(frame_tree_node_, request_->frame_tree_node());
   state_ = STARTED;
-  original_url_ = request->commit_params().original_url;
   navigation_url_ = request_->GetURL();
   // |remote_endpoint_| cannot be inferred from the request.
   // |initial_method_| cannot be set after the request has started.
@@ -1305,7 +1303,6 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
     int last_http_status_code) {
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->url = navigation_url_;
-  params->original_request_url = original_url_;
   params->referrer = mojo::Clone(referrer_);
   params->contents_mime_type = contents_mime_type_;
   params->transition = transition_;

@@ -214,7 +214,8 @@ class CONTENT_EXPORT Navigator {
   void RecordNavigationMetrics(
       const LoadCommittedDetails& details,
       const mojom::DidCommitProvisionalLoadParams& params,
-      SiteInstance* site_instance);
+      SiteInstance* site_instance,
+      const GURL& original_request_url);
 
   // Called when a renderer initiated navigation has started. Returns the
   // pending NavigationEntry to be used. Either null or a new one owned

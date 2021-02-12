@@ -41,6 +41,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
  public:
   ~NavigationSimulatorImpl() override;
 
+  // TODO(https://crbug.com/1131832): Remove |original_url| as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateBrowserInitiated(
       const GURL& original_url,
       WebContents* contents);
@@ -49,6 +50,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       int offset,
       WebContents* web_contents);
 
+  // TODO(https://crbug.com/1131832): Remove |original_url| as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateRendererInitiated(
       const GURL& original_url,
       RenderFrameHost* render_frame_host);
@@ -264,7 +266,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // Note: additional parameters to modify the navigation should be properly
   // initialized (if needed) in InitializeFromStartedRequest.
-  GURL original_url_;
   GURL navigation_url_;
   net::IPEndPoint remote_endpoint_;
   bool was_fetched_via_cache_ = false;

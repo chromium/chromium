@@ -395,23 +395,6 @@ bool MaybeGetOverriddenURL(WebDocumentLoader* document_loader, GURL* output) {
   return false;
 }
 
-// Returns the original request url. If there is no redirect, the original
-// url is the same as document loader's OriginalUrl(). If the WebDocumentLoader
-// belongs to a frame was loaded by loadData, the original url will be
-// it's UnreachableURL().
-GURL GetOriginalRequestURL(WebDocumentLoader* document_loader) {
-  GURL overriden_url;
-  if (MaybeGetOverriddenURL(document_loader, &overriden_url))
-    return overriden_url;
-
-  std::vector<GURL> redirects;
-  GetRedirectChain(document_loader, &redirects);
-  if (!redirects.empty())
-    return redirects.at(0);
-
-  return document_loader->OriginalUrl();
-}
-
 // Returns false unless this is a top-level navigation.
 bool IsTopLevelNavigation(WebFrame* frame) {
   return frame->Parent() == nullptr;
@@ -4845,11 +4828,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     // Send the user agent override back.
     params->is_overriding_user_agent =
         internal_data->is_overriding_user_agent();
-
-    // Track the URL of the original request.  We use the first entry of the
-    // redirect chain if it exists because the chain may have started in another
-    // process.
-    params->original_request_url = GetOriginalRequestURL(document_loader);
 
     params->history_list_was_cleared =
         navigation_state->commit_params().should_clear_history_list;
