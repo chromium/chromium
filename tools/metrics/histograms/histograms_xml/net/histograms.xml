@@ -2353,6 +2353,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicHttpStream.ResponseStatus"
+    enum="QuicRstStreamErrorCodes" expires_after="2022-02-09">
+  <owner>bnc@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Stream error of QuicSpdyStream when QuicHttpStream::ComputeResponseStatus()
+    returns ERR_QUIC_PROTOCOL_ERROR, for investigating b/177893733.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicNetworkDegradingDurationTillConnected" units="ms"
     expires_after="2021-05-11">
   <owner>zhongyi@chromium.org</owner>

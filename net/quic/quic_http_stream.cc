@@ -8,7 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -791,11 +791,9 @@ int QuicHttpStream::ComputeResponseStatus() const {
   if (!response_info_)
     return ERR_CONNECTION_CLOSED;
 
-  // Explicit stream error are always fatal.
-  if (stream_->stream_error() != quic::QUIC_STREAM_NO_ERROR &&
-      stream_->stream_error() != quic::QUIC_STREAM_CONNECTION_ERROR) {
-    return ERR_QUIC_PROTOCOL_ERROR;
-  }
+  base::UmaHistogramEnumeration("Net.QuicHttpStream.ResponseStatus",
+                                stream_->stream_error(),
+                                quic::QUIC_STREAM_LAST_ERROR);
 
   return ERR_QUIC_PROTOCOL_ERROR;
 }
