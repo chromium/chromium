@@ -232,7 +232,7 @@
       </template>
 
       <!-- Primary account icon, name and email -->
-      <div class="device-account-container" tabIndex="0"
+      <div class="device-account-container"
           aria-labelledby="deviceAccountFullName"
           aria-describedby="deviceAccountEmail">
         <div class="profile-icon device-account-icon"
@@ -273,7 +273,6 @@
           [[getAccountListHeader_(isChildUser_)]]
           <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
             <cr-tooltip-icon
-                aria-hidden="true"
                 class="secondary-accounts-tooltip"
                 icon-class="cr:info-outline"
                 tooltip-text="[[getSecondaryAccountsTooltip_(accounts_)]]"
