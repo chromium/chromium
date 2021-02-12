@@ -1089,6 +1089,7 @@ public class InstantStartTest {
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     @ParameterAnnotations.UseMethodParameter(FeedParams.class)
+    @DisabledTest(message = "crbug.com/1177555")
     public void renderSingleAsHomepage_Landscape(boolean isFeedV2) throws IOException {
         // clang-format on
         setFeedVersion(isFeedV2);
