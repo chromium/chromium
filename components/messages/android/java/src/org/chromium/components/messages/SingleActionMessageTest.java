@@ -43,7 +43,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     private Callback<Animator> mAnimatorStartCallback;
 
     private CallbackHelper mDismissCallback;
-    private Callback<PropertyModel> mEmptyDismissCallback = (model) -> {};
+    private SingleActionMessage.DismissCallback mEmptyDismissCallback =
+            (model, dismissReason) -> {};
 
     private AccessibilityUtil mAccessibilityUtil;
 
@@ -81,7 +82,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         Assert.assertEquals(
                 "Message container should not have any view after the message is hidden.", 0,
                 container.getChildCount());
-        message.dismiss();
+        message.dismiss(DismissReason.UNKNOWN);
         mDismissCallback.waitForFirst(
                 "Dismiss callback should be called when message is dismissed");
     }
@@ -140,7 +141,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
                 .with(MessageBannerProperties.ON_PRIMARY_ACTION, () -> {})
                 .with(MessageBannerProperties.ON_TOUCH_RUNNABLE, () -> {})
                 .with(MessageBannerProperties.ON_DISMISSED,
-                        () -> { mDismissCallback.notifyCalled(); })
+                        (dismissReason) -> { mDismissCallback.notifyCalled(); })
                 .build();
     }
 }

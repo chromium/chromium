@@ -7,6 +7,7 @@ package org.chromium.components.messages;
 import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -38,7 +39,11 @@ public class MessageBannerProperties {
     public static final WritableObjectPropertyKey<String> SECONDARY_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
     // TODO(crbug.com/1123947): remove this since on_dismissed is not a property of the view?
-    public static final WritableObjectPropertyKey<Runnable> ON_DISMISSED =
+    /**
+     * The callback invoked when the message is dismissed. DismissReason is passed through the
+     * callback's parameter.
+     */
+    public static final WritableObjectPropertyKey<Callback<Integer>> ON_DISMISSED =
             new WritableObjectPropertyKey<>();
 
     // Following properties should only be accessed by the message banner component.

@@ -51,7 +51,7 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
                      bool user_signed_in);
   void TriggerActionClick();
   void TriggerBlocklistClick();
-  void TriggerMessageDismissedCallback();
+  void TriggerMessageDismissedCallback(messages::DismissReason dismiss_reason);
 
   messages::MessageWrapper* GetMessageWrapper();
 
@@ -121,9 +121,10 @@ void SavePasswordMessageDelegateTest::TriggerBlocklistClick() {
       base::android::AttachCurrentThread());
 }
 
-void SavePasswordMessageDelegateTest::TriggerMessageDismissedCallback() {
+void SavePasswordMessageDelegateTest::TriggerMessageDismissedCallback(
+    messages::DismissReason dismiss_reason) {
   GetMessageWrapper()->HandleDismissCallback(
-      base::android::AttachCurrentThread());
+      base::android::AttachCurrentThread(), static_cast<int>(dismiss_reason));
   EXPECT_EQ(nullptr, GetMessageWrapper());
   metrics_recorder_.reset();
 }
@@ -180,7 +181,7 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues) {
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_SETTINGS),
             GetMessageWrapper()->GetSecondaryIconResourceId());
 
-  TriggerMessageDismissedCallback();
+  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }
 
 // Tests that the description is set correctly when the user is signed.
@@ -197,7 +198,7 @@ TEST_F(SavePasswordMessageDelegateTest, SignedInDescription) {
   EXPECT_NE(base::string16::npos, GetMessageWrapper()->GetDescription().find(
                                       base::ASCIIToUTF16(kAccountEmail)));
 
-  TriggerMessageDismissedCallback();
+  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }
 
 // Tests that password form is saved and metrics recorded correctly when the
@@ -212,7 +213,7 @@ TEST_F(SavePasswordMessageDelegateTest, SaveOnActionClick) {
   EXPECT_NE(nullptr, GetMessageWrapper());
   TriggerActionClick();
   EXPECT_NE(nullptr, GetMessageWrapper());
-  TriggerMessageDismissedCallback();
+  TriggerMessageDismissedCallback(messages::DismissReason::PRIMARY_ACTION);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
   VerifyUkmMetrics(
@@ -233,7 +234,28 @@ TEST_F(SavePasswordMessageDelegateTest, DontSaveOnDismiss) {
   EXPECT_CALL(*form_manager, Save()).Times(0);
   CreateMessage(std::move(form_manager), false /*user_signed_in*/);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  TriggerMessageDismissedCallback();
+  TriggerMessageDismissedCallback(messages::DismissReason::GESTURE);
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  VerifyUkmMetrics(
+      test_ukm_recorder,
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined);
+  histogram_tester.ExpectUniqueSample(
+      kDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_CANCEL, 1);
+}
+
+// Tests that password form is not saved and metrics recorded correctly when the
+// message is autodismissed.
+TEST_F(SavePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  auto form_manager = CreateFormManager(GURL(kDefaultUrl));
+  EXPECT_CALL(*form_manager, Save()).Times(0);
+  CreateMessage(std::move(form_manager), false /*user_signed_in*/);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  TriggerMessageDismissedCallback(messages::DismissReason::TIMER);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 
   VerifyUkmMetrics(

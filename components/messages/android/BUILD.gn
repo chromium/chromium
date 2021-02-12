@@ -37,6 +37,7 @@ android_library("java") {
     "//third_party/android_deps:androidx_core_core_java",
     "//ui/android:ui_java",
   ]
+  srcjar_deps = [ ":message_enums_java" ]
 }
 
 android_resources("java_resources") {
@@ -63,6 +64,7 @@ static_library("android") {
   sources = [
     "message_dispatcher_bridge.cc",
     "message_dispatcher_bridge.h",
+    "message_enums.h",
     "message_wrapper.cc",
     "message_wrapper.h",
   ]
@@ -71,6 +73,10 @@ static_library("android") {
     "//base",
     "//content/public/browser",
   ]
+}
+
+java_cpp_enum("message_enums_java") {
+  sources = [ "message_enums.h" ]
 }
 
 # Build target for Messages manager code, that owns and initializes

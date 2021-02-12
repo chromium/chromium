@@ -49,13 +49,13 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     }
 
     @Override
-    public void dismissMessage(PropertyModel messageProperties) {
-        mMessageQueueManager.dismissMessage(messageProperties);
+    public void dismissMessage(PropertyModel messageProperties, @DismissReason int dismissReason) {
+        mMessageQueueManager.dismissMessage(messageProperties, dismissReason);
     }
 
     @Override
-    public void dismissAllMessages() {
-        mMessageQueueManager.dismissAllMessages();
+    public void dismissAllMessages(@DismissReason int dismissReason) {
+        mMessageQueueManager.dismissAllMessages(dismissReason);
     }
 
     @Override

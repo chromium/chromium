@@ -21,6 +21,7 @@ public interface MessageDispatcher {
      * Dismisses a message referenced by its PropertyModel. Hides the message if it is currently
      * displayed. Displays the next message in the queue if available.
      * @param messageProperties The PropertyModel of the message to be dismissed.
+     * @param dismissReason The reason why the message is being dismissed.
      */
-    void dismissMessage(PropertyModel messageProperties);
+    void dismissMessage(PropertyModel messageProperties, @DismissReason int dismissReason);
 }

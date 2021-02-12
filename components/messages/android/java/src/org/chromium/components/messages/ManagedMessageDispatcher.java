@@ -30,6 +30,7 @@ public interface ManagedMessageDispatcher
     /**
      * Dismiss all the enqueued messages. The currently being displayed message will be
      * hidden at once without animations.
+     * @param dismissReason The reason why messages are dismissed.
      */
-    void dismissAllMessages();
+    void dismissAllMessages(@DismissReason int dismissReason);
 }

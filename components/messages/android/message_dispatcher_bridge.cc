@@ -24,19 +24,20 @@ void MessageDispatcherBridge::EnqueueMessage(
 }
 
 // static
-void MessageDispatcherBridge::DismissMessage(
-    MessageWrapper* message,
-    content::WebContents* web_contents) {
+void MessageDispatcherBridge::DismissMessage(MessageWrapper* message,
+                                             content::WebContents* web_contents,
+                                             DismissReason dismiss_reason) {
   base::android::ScopedJavaLocalRef<jobject> jmessage(
       message->GetJavaMessageWrapper());
   JNIEnv* env = base::android::AttachCurrentThread();
-  message->HandleDismissCallback(env);
+  message->HandleDismissCallback(env, static_cast<int>(dismiss_reason));
   // DismissMessage can be called in the process of WebContents destruction.
   // In this case WebContentsAndroid is already torn down. We shouldn't call
   // GetJavaWebContents() because it recreates WebContentsAndroid.
   if (!web_contents->IsBeingDestroyed()) {
     Java_MessageDispatcherBridge_dismissMessage(
-        env, jmessage, web_contents->GetJavaWebContents());
+        env, jmessage, web_contents->GetJavaWebContents(),
+        static_cast<int>(dismiss_reason));
   }
 }
 

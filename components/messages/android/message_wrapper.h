@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/strings/string16.h"
+#include "components/messages/android/message_enums.h"
 
 namespace messages {
 
@@ -21,8 +22,10 @@ namespace messages {
 // enqueue the message through |MessageDispatcherBridge|.
 class MessageWrapper {
  public:
+  using DismissCallback = base::OnceCallback<void(DismissReason)>;
+
   MessageWrapper(base::OnceClosure action_callback,
-                 base::OnceClosure dismiss_callback);
+                 DismissCallback dismiss_callback);
   ~MessageWrapper();
 
   MessageWrapper(const MessageWrapper&) = delete;
@@ -54,7 +57,7 @@ class MessageWrapper {
   // Following methods forward calls from java to provided callbacks.
   void HandleActionClick(JNIEnv* env);
   void HandleSecondaryActionClick(JNIEnv* env);
-  void HandleDismissCallback(JNIEnv* env);
+  void HandleDismissCallback(JNIEnv* env, int dismiss_reason);
 
   const base::android::JavaRef<jobject>& GetJavaMessageWrapper() const;
 
@@ -62,7 +65,7 @@ class MessageWrapper {
   base::android::ScopedJavaGlobalRef<jobject> java_message_wrapper_;
   base::OnceClosure action_callback_;
   base::OnceClosure secondary_action_callback_;
-  base::OnceClosure dismiss_callback_;
+  DismissCallback dismiss_callback_;
   bool message_dismissed_;
 };
 
