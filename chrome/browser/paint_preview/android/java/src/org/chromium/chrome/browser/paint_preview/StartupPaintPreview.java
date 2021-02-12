@@ -274,9 +274,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
             if (!mTabbedPaintPreview.isAttached()) return;
 
-            // If the tab is hidden as a result of pausing the activity we shouldn't remove it.
-            if (hidingType == TabHidingType.ACTIVITY_HIDDEN) return;
-
             remove(StartupPaintPreviewMetrics.ExitCause.TAB_HIDDEN);
         }
 
