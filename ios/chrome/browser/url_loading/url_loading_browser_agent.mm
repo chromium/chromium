@@ -54,7 +54,9 @@ void StartLeakingMemory() {
 // separate function so it will show up in stack traces. If a delay parameter is
 // present, the main thread will be frozen for that number of seconds. If a
 // crash parameter is "true" (which is the default value), the browser will
-// crash after this delay. Any other value will not trigger a crash.
+// crash after this delay. If a crash parameter is "later", the browser will
+// crash in another thread (nsexception only).  Any other value will not
+// trigger a crash.
 NOINLINE void InduceBrowserCrash(const GURL& url) {
   std::string delay_string;
   if (net::GetValueForKeyInQuery(url, "delay", &delay_string)) {
@@ -69,8 +71,27 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
   if (net::GetValueForKeyInQuery(url, "leak", &leak_string) &&
       (leak_string == "" || leak_string == "true")) {
     StartLeakingMemory();
+    return;
   }
 #endif
+
+  std::string exception;
+  if (net::GetValueForKeyInQuery(url, "nsexception", &exception) &&
+      (exception == "" || exception == "true")) {
+    NSArray* empty_array = @[];
+    [empty_array objectAtIndex:42];
+    return;
+  }
+
+  if (net::GetValueForKeyInQuery(url, "nsexception", &exception) &&
+      exception == "later") {
+    dispatch_async(
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+          NSArray* empty_array = @[];
+          [empty_array objectAtIndex:42];
+        });
+    return;
+  }
 
   std::string crash_string;
   if (!net::GetValueForKeyInQuery(url, "crash", &crash_string) ||
