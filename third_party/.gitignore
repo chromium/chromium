@@ -122,7 +122,7 @@
 /jacoco/lib/
 /javalang/src/
 /jdk/current
-/jdk/extras
+/jdk/extras/java_8
 /jsr-305/src
 /junit/src
 /khronos_glcts
