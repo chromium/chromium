@@ -4269,6 +4269,8 @@ static_library("browser") {
     sources += [
       "apps/app_service/app_notifications.cc",
       "apps/app_service/app_notifications.h",
+      "apps/app_service/app_web_contents_data.cc",
+      "apps/app_service/app_web_contents_data.h",
       "apps/app_service/arc_activity_adaptive_icon_impl.cc",
       "apps/app_service/arc_activity_adaptive_icon_impl.h",
       "apps/app_service/arc_apps.cc",

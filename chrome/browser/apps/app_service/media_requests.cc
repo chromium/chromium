@@ -24,6 +24,21 @@ MediaRequests::MediaRequests() = default;
 
 MediaRequests::~MediaRequests() = default;
 
+bool MediaRequests::IsNewRequest(const std::string& app_id,
+                                 const content::WebContents* web_contents,
+                                 const content::MediaRequestState state) {
+  if (state != content::MEDIA_REQUEST_STATE_DONE) {
+    return false;
+  }
+
+  DCHECK(web_contents);
+
+  return !HasRequest(app_id, web_contents,
+                     app_id_to_web_contents_for_camera_) &&
+         !HasRequest(app_id, web_contents,
+                     app_id_to_web_contents_for_microphone_);
+}
+
 AccessingRequest MediaRequests::UpdateRequests(
     const std::string& app_id,
     const content::WebContents* web_contents,
@@ -62,6 +77,29 @@ AccessingRequest MediaRequests::RemoveRequests(const std::string& app_id) {
   return AccessingRequest(
       MaybeRemoveRequest(app_id, app_id_to_web_contents_for_camera_),
       MaybeRemoveRequest(app_id, app_id_to_web_contents_for_microphone_));
+}
+
+AccessingRequest MediaRequests::OnWebContentsDestroyed(
+    const std::string& app_id,
+    const content::WebContents* web_contents) {
+  return AccessingRequest(
+      MaybeRemoveRequest(app_id, web_contents,
+                         app_id_to_web_contents_for_camera_),
+      MaybeRemoveRequest(app_id, web_contents,
+                         app_id_to_web_contents_for_microphone_));
+}
+
+bool MediaRequests::HasRequest(
+    const std::string& app_id,
+    const content::WebContents* web_contents,
+    const std::map<std::string, std::set<const content::WebContents*>>&
+        app_id_to_web_contents) {
+  auto it = app_id_to_web_contents.find(app_id);
+  if (it != app_id_to_web_contents.end() &&
+      it->second.find(web_contents) != it->second.end()) {
+    return true;
+  }
+  return false;
 }
 
 base::Optional<bool> MediaRequests::MaybeAddRequest(

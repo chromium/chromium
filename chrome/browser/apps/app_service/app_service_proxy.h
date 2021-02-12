@@ -93,6 +93,7 @@ class AppServiceProxy : public KeyedService,
 
   mojo::Remote<apps::mojom::AppService>& AppService();
   apps::AppRegistryCache& AppRegistryCache();
+  apps::AppCapabilityAccessCache& AppCapabilityAccessCache();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::InstanceRegistry& InstanceRegistry();
