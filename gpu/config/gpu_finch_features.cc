@@ -12,6 +12,7 @@
 #include "base/android/android_image_reader_compat.h"
 #include "base/android/build_info.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -46,6 +47,11 @@ const base::Feature kUseGles2ForOopR{"UseGles2ForOopR",
 // SurfaceControl.
 const base::Feature kAndroidSurfaceControl{"AndroidSurfaceControl",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
+// https://crbug.com/1176185 List of devices on which SurfaceControl should be
+// disabled.
+const base::FeatureParam<std::string> kAndroidSurfaceControlBlocklist{
+    &kAndroidSurfaceControl, "AndroidSurfaceControlBlocklist", "capri|caprip"};
 
 // Use AImageReader for MediaCodec and MediaPlyer on android.
 const base::Feature kAImageReader{"AImageReader",
@@ -184,6 +190,15 @@ bool IsAImageReaderEnabled() {
 }
 
 bool IsAndroidSurfaceControlEnabled() {
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  auto disable_patterns =
+      base::SplitString(kAndroidSurfaceControlBlocklist.Get(), "|",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& disable_pattern : disable_patterns) {
+    if (base::MatchPattern(build_info->device(), disable_pattern))
+      return false;
+  }
+
   return IsAImageReaderEnabled() &&
          base::FeatureList::IsEnabled(kAndroidSurfaceControl) &&
          gfx::SurfaceControl::IsSupported();
