@@ -3,8 +3,21 @@
 // found in the LICENSE file.
 
 // Uncomment as these modules are migrated to Polymer 3.
+import './crostini_page/crostini_arc_adb.m.js';
+import './crostini_page/crostini_arc_adb_confirmation_dialog.m.js';
+import './crostini_page/crostini_disk_resize_confirmation_dialog.m.js';
+import './crostini_page/crostini_disk_resize_dialog.m.js';
+import './crostini_page/crostini_export_import.m.js';
+import './crostini_page/crostini_import_confirmation_dialog.m.js';
+import './crostini_page/crostini_mic_sharing_dialog.m.js';
+import './crostini_page/crostini_page.m.js';
+import './crostini_page/crostini_port_forwarding.m.js';
+import './crostini_page/crostini_port_forwarding_add_port_dialog.m.js';
+import './crostini_page/crostini_subpage.m.js';
 import './date_time_page/date_time_page.m.js';
 import './date_time_page/timezone_selector.m.js';
+import './guest_os/guest_os_shared_usb_devices.m.js';
+import './guest_os/guest_os_shared_paths.m.js';
 import './os_a11y_page/os_a11y_page.m.js';
 import './on_startup_page/on_startup_page.m.js';
 import './os_a11y_page/manage_a11y_page.m.js';
@@ -39,6 +52,8 @@ import './os_reset_page/os_powerwash_dialog.m.js';
 import './os_reset_page/os_reset_page.m.js';
 import './os_files_page/smb_shares_page.m.js';
 
+export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.m.js';
+export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.m.js';
 export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/cr_components/chromeos/smb_shares/smb_browser_proxy.m.js';
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../languages_page/languages_browser_proxy.m.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';

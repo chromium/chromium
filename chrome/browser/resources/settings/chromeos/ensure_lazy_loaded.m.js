@@ -15,8 +15,9 @@ export function ensureLazyLoaded() {
       'os-settings-powerwash-dialog',
       'os-settings-reset-page',
       'os-settings-files-page',
-      'settings-smb-shares-page',
       'os-printing-page',
+      'settings-crostini-page',
+      'settings-smb-shares-page',
     ];
     if (!loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled')) {
       lazyLoadPages.push('os-settings-privacy-page');

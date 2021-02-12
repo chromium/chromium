@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {loadTimeData} from '../../i18n_setup.js';
 // #import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 // Identifiers for the default Crostini VM and container.

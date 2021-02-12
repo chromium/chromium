@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+// #import 'chrome://os-settings/chromeos/lazy_load.js';
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
 // #import {TestGuestOsBrowserProxy} from './test_guest_os_browser_proxy.m.js';
@@ -14,7 +15,7 @@
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
-// #import {GuestOsBrowserProxyImpl, CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {GuestOsBrowserProxyImpl, CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 // #import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
