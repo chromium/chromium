@@ -208,6 +208,7 @@ if (is_win || is_mac) {
       # the former as a dependency.
       allow_circular_includes_from = [ "//chrome/updater/win:lib" ]
       deps += [
+        "//chrome/installer/util:with_no_strings",
         "//chrome/updater/app/server/win:updater_idl_idl",
         "//chrome/updater/app/server/win:updater_internal_idl_idl",
         "//chrome/updater/app/server/win:updater_legacy_idl_idl",

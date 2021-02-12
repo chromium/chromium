@@ -4,6 +4,9 @@
 
 #include "chrome/updater/win/setup/setup_util.h"
 
+#include <shlobj.h>
+#include <windows.h>
+
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -20,9 +23,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
+#include "chrome/installer/util/install_service_work_item.h"
+#include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
 #include "chrome/updater/win/task_scheduler.h"
@@ -71,6 +77,119 @@ bool RegisterWakeTask(const base::CommandLine& run_command) {
 void UnregisterWakeTask() {
   auto task_scheduler = TaskScheduler::CreateInstance();
   task_scheduler->DeleteTask(kTaskName);
+}
+
+std::vector<GUID> GetSideBySideInterfaces() {
+  return {
+      __uuidof(IUpdaterInternal),
+      __uuidof(IUpdaterInternalCallback),
+  };
+}
+
+std::vector<GUID> GetActiveInterfaces() {
+  return {
+      __uuidof(IAppBundleWeb),     __uuidof(IAppWeb),
+      __uuidof(ICompleteStatus),   __uuidof(ICurrentState),
+      __uuidof(IGoogleUpdate3Web), __uuidof(IUpdateState),
+      __uuidof(IUpdater),          __uuidof(IUpdaterObserver),
+  };
+}
+
+std::vector<CLSID> GetSideBySideServers() {
+  return {__uuidof(UpdaterInternalClass)};
+}
+
+std::vector<CLSID> GetActiveServers() {
+  return {__uuidof(UpdaterClass), __uuidof(GoogleUpdate3WebUserClass)};
+}
+
+void AddInstallComInterfaceWorkItems(HKEY root,
+                                     const base::FilePath& typelib_path,
+                                     GUID iid,
+                                     WorkItemList* list) {
+  const base::string16 iid_reg_path = GetComIidRegistryPath(iid);
+  const base::string16 typelib_reg_path = GetComTypeLibRegistryPath(iid);
+
+  // Delete any old registrations first.
+  for (const auto& reg_path : {iid_reg_path, typelib_reg_path}) {
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
+      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
+  }
+
+  // Registering the Ole Automation marshaler with the CLSID
+  // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the
+  // interfaces.
+  list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
+                                WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
+                               WorkItem::kWow64Default, L"",
+                               L"{00020424-0000-0000-C000-000000000046}", true);
+  list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\TypeLib",
+                                WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\TypeLib",
+                               WorkItem::kWow64Default, L"",
+                               base::win::WStringFromGUID(iid), true);
+
+  // The TypeLib registration for the Ole Automation marshaler.
+  const base::FilePath qualified_typelib_path =
+      typelib_path.Append(GetComTypeLibResourceIndex(iid));
+  list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
+                                WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
+                               WorkItem::kWow64Default, L"",
+                               qualified_typelib_path.value(), true);
+  list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
+                                WorkItem::kWow64Default);
+  list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
+                               WorkItem::kWow64Default, L"",
+                               qualified_typelib_path.value(), true);
+}
+
+void AddInstallServerWorkItems(HKEY root,
+                               CLSID clsid,
+                               const base::FilePath& com_server_path,
+                               WorkItemList* list) {
+  const base::string16 clsid_reg_path = GetComServerClsidRegistryPath(clsid);
+
+  // Delete any old registrations first.
+  for (const auto& reg_path : {clsid_reg_path}) {
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
+      list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
+  }
+
+  list->AddCreateRegKeyWorkItem(root, clsid_reg_path, WorkItem::kWow64Default);
+  const base::string16 local_server32_reg_path =
+      base::StrCat({clsid_reg_path, L"\\LocalServer32"});
+  list->AddCreateRegKeyWorkItem(root, local_server32_reg_path,
+                                WorkItem::kWow64Default);
+
+  base::CommandLine run_com_server_command(com_server_path);
+  run_com_server_command.AppendSwitch(kServerSwitch);
+#if !defined(NDEBUG)
+  run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
+  run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
+                                           "*/chrome/updater/*=2");
+#endif
+
+  list->AddSetRegValueWorkItem(
+      root, local_server32_reg_path, WorkItem::kWow64Default, L"",
+      run_com_server_command.GetCommandLineString(), true);
+}
+
+// Adds work items to register the COM Service with Windows.
+void AddComServiceWorkItems(const base::FilePath& com_service_path,
+                            WorkItemList* list) {
+  DCHECK(::IsUserAnAdmin());
+
+  if (com_service_path.empty()) {
+    LOG(DFATAL) << "com_service_path is invalid.";
+    return;
+  }
+
+  list->AddWorkItem(new installer::InstallServiceWorkItem(
+      kWindowsServiceName, kWindowsServiceName,
+      base::CommandLine(com_service_path), base::ASCIIToUTF16(UPDATER_KEY),
+      {__uuidof(UpdaterServiceClass)}, {}));
 }
 
 base::string16 GetComServerClsidRegistryPath(REFCLSID clsid) {
@@ -126,22 +245,6 @@ base::string16 GetComTypeLibResourceIndex(REFIID iid) {
   };
   auto index = kTypeLibIndexes.find(iid);
   return index != kTypeLibIndexes.end() ? index->second : L"";
-}
-
-std::vector<GUID> GetInterfaces() {
-  static const std::vector<GUID> kInterfaces = {
-      __uuidof(IAppBundleWeb),
-      __uuidof(IAppWeb),
-      __uuidof(ICompleteStatus),
-      __uuidof(ICurrentState),
-      __uuidof(IGoogleUpdate3Web),
-      __uuidof(IUpdateState),
-      __uuidof(IUpdater),
-      __uuidof(IUpdaterInternal),
-      __uuidof(IUpdaterInternalCallback),
-      __uuidof(IUpdaterObserver),
-  };
-  return kInterfaces;
 }
 
 std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps) {

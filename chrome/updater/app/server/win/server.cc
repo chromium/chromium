@@ -7,9 +7,11 @@
 #include <wrl/implements.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/system/sys_info.h"
@@ -17,13 +19,16 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
+#include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
+#include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/setup/uninstall.h"
 #include "chrome/updater/win/wrl_module.h"
 #include "components/prefs/pref_service.h"
@@ -177,8 +182,31 @@ void ComServerApp::UninstallSelf() {
 }
 
 bool ComServerApp::SwapRPCInterfaces() {
-  // TODO(crbug.com/1098935): Update non-side-by-side COM registration.
-  return true;
+  std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
+
+  base::FilePath versioned_directory;
+  if (!GetVersionedDirectory(&versioned_directory))
+    return false;
+  for (const CLSID& clsid : GetActiveServers()) {
+    // TODO(crbug.com/1096654): Use HKLM for system.
+    AddInstallServerWorkItems(
+        HKEY_CURRENT_USER, clsid,
+        versioned_directory.Append(FILE_PATH_LITERAL("updater.exe")),
+        list.get());
+  }
+
+  // TODO(crbug.com/1096654): Add support for is_machine: A call to
+  // AddComServiceWorkItems is needed.
+
+  for (const GUID& iid : GetActiveInterfaces()) {
+    // TODO(crbug.com/1096654): Use HKLM for system.
+    AddInstallComInterfaceWorkItems(
+        HKEY_CURRENT_USER,
+        versioned_directory.Append(FILE_PATH_LITERAL("updater.exe")), iid,
+        list.get());
+  }
+
+  return list->Do();
 }
 
 }  // namespace updater

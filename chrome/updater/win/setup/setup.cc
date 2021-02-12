@@ -24,7 +24,6 @@
 #include "base/version.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
-#include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
@@ -52,53 +51,9 @@ void AddComServerWorkItems(HKEY root,
     return;
   }
 
-  for (const auto& clsid :
-       {__uuidof(UpdaterClass), __uuidof(UpdaterInternalClass),
-        __uuidof(GoogleUpdate3WebUserClass)}) {
-    const base::string16 clsid_reg_path = GetComServerClsidRegistryPath(clsid);
-
-    // Delete any old registrations first.
-    for (const auto& reg_path : {clsid_reg_path}) {
-      for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
-        list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
-    }
-
-    list->AddCreateRegKeyWorkItem(root, clsid_reg_path,
-                                  WorkItem::kWow64Default);
-    const base::string16 local_server32_reg_path =
-        base::StrCat({clsid_reg_path, L"\\LocalServer32"});
-    list->AddCreateRegKeyWorkItem(root, local_server32_reg_path,
-                                  WorkItem::kWow64Default);
-
-    base::CommandLine run_com_server_command(com_server_path);
-    run_com_server_command.AppendSwitch(kServerSwitch);
-#if !defined(NDEBUG)
-    run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
-    run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                             "*/chrome/updater/*=2");
-#endif
-
-    list->AddSetRegValueWorkItem(
-        root, local_server32_reg_path, WorkItem::kWow64Default, L"",
-        run_com_server_command.GetCommandLineString(), true);
+  for (const auto& clsid : GetSideBySideServers()) {
+    AddInstallServerWorkItems(root, clsid, com_server_path, list);
   }
-}
-
-// Adds work items to register the COM Service with Windows.
-void AddComServiceWorkItems(const base::FilePath& com_service_path,
-                            WorkItemList* list) {
-  DCHECK(list);
-  DCHECK(::IsUserAnAdmin());
-
-  if (com_service_path.empty()) {
-    LOG(DFATAL) << "com_service_path is invalid.";
-    return;
-  }
-
-  list->AddWorkItem(new installer::InstallServiceWorkItem(
-      kWindowsServiceName, kWindowsServiceName,
-      base::CommandLine(com_service_path), base::ASCIIToUTF16(UPDATER_KEY),
-      {__uuidof(UpdaterServiceClass)}, {}));
 }
 
 // Adds work items to register the COM Interfaces with Windows.
@@ -106,48 +61,9 @@ void AddComInterfacesWorkItems(HKEY root,
                                const base::FilePath& typelib_path,
                                WorkItemList* list) {
   DCHECK(list);
-  if (typelib_path.empty()) {
-    LOG(DFATAL) << "typelib_path is invalid.";
-    return;
-  }
 
-  for (const auto& iid : GetInterfaces()) {
-    const base::string16 iid_reg_path = GetComIidRegistryPath(iid);
-    const base::string16 typelib_reg_path = GetComTypeLibRegistryPath(iid);
-
-    // Delete any old registrations first.
-    for (const auto& reg_path : {iid_reg_path, typelib_reg_path}) {
-      for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
-        list->AddDeleteRegKeyWorkItem(root, reg_path, key_flag);
-    }
-
-    // Registering the Ole Automation marshaler with the CLSID
-    // {00020424-0000-0000-C000-000000000046} as the proxy/stub for the
-    // interfaces.
-    list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\ProxyStubClsid32",
-                                  WorkItem::kWow64Default);
-    list->AddSetRegValueWorkItem(
-        root, iid_reg_path + L"\\ProxyStubClsid32", WorkItem::kWow64Default,
-        L"", L"{00020424-0000-0000-C000-000000000046}", true);
-    list->AddCreateRegKeyWorkItem(root, iid_reg_path + L"\\TypeLib",
-                                  WorkItem::kWow64Default);
-    list->AddSetRegValueWorkItem(root, iid_reg_path + L"\\TypeLib",
-                                 WorkItem::kWow64Default, L"",
-                                 base::win::WStringFromGUID(iid), true);
-
-    // The TypeLib registration for the Ole Automation marshaler.
-    const base::FilePath qualified_typelib_path =
-        typelib_path.Append(GetComTypeLibResourceIndex(iid));
-    list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
-                                  WorkItem::kWow64Default);
-    list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
-                                 WorkItem::kWow64Default, L"",
-                                 qualified_typelib_path.value(), true);
-    list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
-                                  WorkItem::kWow64Default);
-    list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
-                                 WorkItem::kWow64Default, L"",
-                                 qualified_typelib_path.value(), true);
+  for (const auto& iid : GetSideBySideInterfaces()) {
+    AddInstallComInterfaceWorkItems(root, typelib_path, iid, list);
   }
 }
 
@@ -247,11 +163,6 @@ int Setup(bool is_machine) {
       FILE_PATH_LITERAL("updater.exe");
   AddComServerWorkItems(key, versioned_dir.Append(kUpdaterExe),
                         install_list.get());
-
-  if (is_machine) {
-    AddComServiceWorkItems(versioned_dir.Append(kUpdaterExe),
-                           install_list.get());
-  }
 
   AddComInterfacesWorkItems(key, versioned_dir.Append(kUpdaterExe),
                             install_list.get());

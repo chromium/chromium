@@ -12,6 +12,8 @@
 #include "base/strings/string16.h"
 #include "base/win/windows_types.h"
 
+class WorkItemList;
+
 namespace base {
 class CommandLine;
 class FilePath;
@@ -39,8 +41,37 @@ base::string16 GetComTypeLibRegistryPath(REFIID iid);
 // details.
 base::string16 GetComTypeLibResourceIndex(REFIID iid);
 
-// Returns the interfaces ids of all interfaces declared in IDL of the updater.
-std::vector<GUID> GetInterfaces();
+// Returns the interfaces ids of all interfaces declared in IDL of the updater
+// that can be installed side-by-side with other instances of the updater.
+std::vector<GUID> GetSideBySideInterfaces();
+
+// Returns the interfaces ids of all interfaces declared in IDL of the updater
+// that can only be installed for the active instance of the updater.
+std::vector<GUID> GetActiveInterfaces();
+
+// Returns the CLSIDs of servers that can be installed side-by-side with other
+// instances of the updater.
+std::vector<CLSID> GetSideBySideServers();
+
+// Returns the CLSIDs of servers that can only be installed for the active
+// instance of the updater.
+std::vector<CLSID> GetActiveServers();
+
+// Adds work items to `list` to install the interface `iid`.
+void AddInstallComInterfaceWorkItems(HKEY root,
+                                     const base::FilePath& typelib_path,
+                                     GUID iid,
+                                     WorkItemList* list);
+
+// Adds work items to `list` to install the server `iid`.
+void AddInstallServerWorkItems(HKEY root,
+                               CLSID iid,
+                               const base::FilePath& executable_path,
+                               WorkItemList* list);
+
+// Adds work items to `list` to install the COM service.
+void AddComServiceWorkItems(const base::FilePath& com_service_path,
+                            WorkItemList* list);
 
 // Parses the run time dependency file which contains all dependencies of
 // the `updater` target. This file is a text file, where each line of

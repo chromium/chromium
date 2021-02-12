@@ -59,7 +59,14 @@ void DeleteComService() {
 }
 
 void DeleteComInterfaces(HKEY root) {
-  for (const auto& iid : GetInterfaces()) {
+  for (const auto& iid : GetActiveInterfaces()) {
+    for (const auto& reg_path :
+         {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
+      InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
+    }
+  }
+  // TODO(crbug.com/1175095): Support candidate-specific uninstallation.
+  for (const auto& iid : GetSideBySideInterfaces()) {
     for (const auto& reg_path :
          {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
       InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
@@ -145,7 +152,8 @@ int UninstallCandidate(bool is_machine) {
     updater::UnregisterWakeTask();
   }
 
-  // TODO(crbug.com/1140562): Remove the UpdateServiceInternal server as well.
+  // TODO(crbug.com/1175095): Remove the UpdateServiceInternal server as well.
+  // TODO(crbug.com/1175095): Remove COM interfaces.
 
   return RunUninstallScript(false);
 }
