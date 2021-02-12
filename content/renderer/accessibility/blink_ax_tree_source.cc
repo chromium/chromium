@@ -129,10 +129,12 @@ bool SearchForExactlyOneInnerImage(WebAXObject obj,
   if (max_depth == 0 && obj.ChildCount())
     return false;
 
+  // Don't count ignored nodes toward depth.
+  int next_depth = obj.AccessibilityIsIgnored() ? max_depth : max_depth - 1;
+
   // Recurse.
   for (unsigned int i = 0; i < obj.ChildCount(); i++) {
-    if (!SearchForExactlyOneInnerImage(obj.ChildAt(i), inner_image,
-                                       max_depth - 1))
+    if (!SearchForExactlyOneInnerImage(obj.ChildAt(i), inner_image, next_depth))
       return false;
   }
 
@@ -384,7 +386,9 @@ void BlinkAXTreeSource::GetChildren(
 
     // The child may be invalid due to issues in blink accessibility code.
     if (child.IsDetached()) {
-      NOTREACHED();
+      NOTREACHED() << "Should not try to serialize an invalid child:"
+                   << "\nParent: " << parent.ToString(true).Utf8()
+                   << "\nChild: " << child.ToString(true).Utf8();
       continue;
     }
 

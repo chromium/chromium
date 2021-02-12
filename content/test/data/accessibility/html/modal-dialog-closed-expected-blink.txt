@@ -8,3 +8,5 @@ rootWebArea
 ++++++++++menuListPopup invisible
 ++++++++++++menuListOption name='This should be in the tree.' selected=true
 ++++++colorWell value='#000000'
+++++++++genericContainer ignored
+++++++++++genericContainer ignored

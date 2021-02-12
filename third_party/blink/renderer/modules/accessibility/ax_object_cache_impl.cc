@@ -1040,6 +1040,15 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!obj)
     return;
 
+  // Check for root web area with a parent, which is a popup document.
+  if (obj->RoleValue() == ax::mojom::blink::Role::kRootWebArea &&
+      obj->CachedParentObject()) {
+    // Removing a popup document root, must invalidate the parent's children.
+    // TODO(accessibility) Perhaps caller should do this, as in other cases.
+    DCHECK_NE(obj->GetDocument(), &GetDocument());
+    ChildrenChanged(obj->CachedParentObject());
+  }
+
   obj->Detach();
   RemoveAXID(obj);
 
@@ -1066,6 +1075,7 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
     return;
 
   AXID ax_id = layout_object_mapping_.at(layout_object);
+
   Remove(ax_id);
   layout_object_mapping_.erase(layout_object);
 }

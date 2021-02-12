@@ -5,3 +5,5 @@ rootWebArea
 ++++++++button inputType='button' name='Choose File'
 ++++++++++staticText name='Choose File'
 ++++++++++++inlineTextBox name='Choose File'
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored invisible name='No file chosen'

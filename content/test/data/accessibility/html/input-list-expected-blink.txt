@@ -5,5 +5,8 @@ rootWebArea focusable
 ++++++++staticText name='Choose a pokemon '
 ++++++++++inlineTextBox name='Choose a pokemon '
 ++++++++textFieldWithComboBox editable focusable autoComplete='list' name='Choose a pokemon' haspopup=listbox
-++++++++++genericContainer editable
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++genericContainer ignored
 ++++++genericContainer ignored invisible

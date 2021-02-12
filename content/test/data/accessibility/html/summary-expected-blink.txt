@@ -7,3 +7,4 @@ rootWebArea
 ++++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='details tag'
 ++++++++++++inlineTextBox name='details tag'
+++++++++genericContainer ignored invisible

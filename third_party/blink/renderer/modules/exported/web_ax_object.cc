@@ -1260,9 +1260,6 @@ void WebAXObject::HandleAutofillStateChanged(
 }
 
 WebString WebAXObject::ToString(bool verbose) const {
-  if (IsDetached())
-    return WebString();
-
   return private_->ToString(verbose);
 }
 

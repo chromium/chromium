@@ -72,6 +72,7 @@ rootWebArea
 ++++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Details'
 ++++++++++++inlineTextBox name='Details'
+++++++++genericContainer ignored invisible
 ++++++group
 ++++++++headerAsNonLandmark
 ++++++++++staticText name='This should NOT have banner role.'
@@ -122,6 +123,7 @@ rootWebArea
 ++++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Details'
 ++++++++++++inlineTextBox name='Details'
+++++++++genericContainer ignored invisible
 ++++++group
 ++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark
@@ -171,6 +173,7 @@ rootWebArea
 ++++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Details'
 ++++++++++++inlineTextBox name='Details'
+++++++++genericContainer ignored invisible
 ++++++group
 ++++++++footerAsNonLandmark
 ++++++++++staticText name='This should NOT have footer role.'
@@ -221,6 +224,7 @@ rootWebArea
 ++++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Details'
 ++++++++++++inlineTextBox name='Details'
+++++++++genericContainer ignored invisible
 ++++++group
 ++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark

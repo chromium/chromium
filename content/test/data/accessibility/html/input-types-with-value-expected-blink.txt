@@ -12,9 +12,12 @@ rootWebArea
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
 ++++++++spinButton editable name='Number:' value='3' editableRoot=true valueForRange=3.00
-++++++++++genericContainer editable
-++++++++++++staticText editable name='3'
-++++++++++++++inlineTextBox name='3'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++++++staticText editable name='3'
+++++++++++++++++++inlineTextBox name='3'
+++++++++++++genericContainer ignored
 ++++++labelText
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
@@ -26,9 +29,12 @@ rootWebArea
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
 ++++++++searchBox editable name='Search:' value='search' editableRoot=true
-++++++++++genericContainer editable
-++++++++++++staticText editable name='search'
-++++++++++++++inlineTextBox name='search'
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer editable
+++++++++++++++++staticText editable name='search'
+++++++++++++++++++inlineTextBox name='search'
+++++++++++++genericContainer ignored
 ++++++labelText
 ++++++++staticText name='Tel: '
 ++++++++++inlineTextBox name='Tel: '
