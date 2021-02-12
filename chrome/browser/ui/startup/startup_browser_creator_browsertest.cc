@@ -2262,7 +2262,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       command_line, current_dir,
-      GetStartupProfilePath(user_data_dir, current_dir, command_line));
+      GetStartupProfilePath(user_data_dir, current_dir, command_line,
+                            /*ignore_profile_picker=*/false));
   base::RunLoop().RunUntilIdle();
 
   // The picker is shown again if no profile was previously opened.
