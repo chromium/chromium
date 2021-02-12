@@ -25,6 +25,9 @@ class NET_EXPORT SSLConfigServiceDefaults : public SSLConfigService {
   bool CanShareConnectionWithClientCerts(
       const std::string& hostname) const override;
 
+  bool ShouldSuppressLegacyTLSWarning(
+      const std::string& hostname) const override;
+
  private:
   // Default value of prefs.
   const SSLContextConfig default_config_;

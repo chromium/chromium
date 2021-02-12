@@ -54,6 +54,8 @@ component("network_service") {
     "ignore_errors_cert_verifier.h",
     "keepalive_statistics_recorder.cc",
     "keepalive_statistics_recorder.h",
+    "legacy_tls_config_distributor.cc",
+    "legacy_tls_config_distributor.h",
     "mojo_host_resolver_impl.cc",
     "mojo_host_resolver_impl.h",
     "net_log_exporter.cc",

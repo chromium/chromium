@@ -6,10 +6,15 @@ import("//services/network/public/cpp/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 group("proto") {
-  public_deps = []
+  public_deps = [ ":tls_deprecation_config_proto" ]
+
   if (is_ct_supported) {
     public_deps += [ ":sct_audit_report_proto" ]
   }
+}
+
+proto_library("tls_deprecation_config_proto") {
+  sources = [ "tls_deprecation_config.proto" ]
 }
 
 if (is_ct_supported) {

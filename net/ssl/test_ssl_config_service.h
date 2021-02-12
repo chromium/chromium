@@ -20,6 +20,9 @@ class TestSSLConfigService : public SSLConfigService {
   bool CanShareConnectionWithClientCerts(
       const std::string& hostname) const override;
 
+  bool ShouldSuppressLegacyTLSWarning(
+      const std::string& hostname) const override;
+
  private:
   SSLContextConfig config_;
 };

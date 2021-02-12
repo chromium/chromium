@@ -27,6 +27,7 @@
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/sth_set_component_remover.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
+#include "chrome/browser/component_updater/tls_deprecation_config_component_installer.h"
 #include "chrome/browser/component_updater/trust_token_key_commitments_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/common/buildflags.h"
@@ -168,6 +169,7 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 
   RegisterSafetyTipsComponent(cus);
   RegisterCrowdDenyComponent(cus);
+  RegisterTLSDeprecationConfigComponent(cus);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_ANDROID)
   component_updater::RegisterGamesComponent(cus, profile_prefs);

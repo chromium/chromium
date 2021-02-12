@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package chrome_browser_ssl;
+
+option optimize_for = LITE_RUNTIME;
+
+// The set of sites to be used as a control group for Legacy TLS experiments.
+// Warning UI will not be shown on these sites.
+message LegacyTLSExperimentConfig {
+  optional uint32 version_id = 1;
+  // SHA-256 hash of the hostname of sites in the control group (e.g., for
+  // "https://test.example.com/foo" the hostname is "test.example.com"). This
+  // list must be in sorted order (alphanumeric by hash value).
+  repeated string control_site_hashes = 2;
+}

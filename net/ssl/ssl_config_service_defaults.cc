@@ -18,4 +18,9 @@ bool SSLConfigServiceDefaults::CanShareConnectionWithClientCerts(
   return false;
 }
 
+bool SSLConfigServiceDefaults::ShouldSuppressLegacyTLSWarning(
+    const std::string& hostname) const {
+  return false;
+}
+
 }  // namespace net

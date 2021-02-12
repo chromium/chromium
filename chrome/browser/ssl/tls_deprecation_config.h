@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_SSL_TLS_DEPRECATION_CONFIG_H_
+#define CHROME_BROWSER_SSL_TLS_DEPRECATION_CONFIG_H_
+
+#include <string>
+
+class GURL;
+
+void SetRemoteTLSDeprecationConfig(const std::string& binary_config);
+
+bool ShouldSuppressLegacyTLSWarning(const GURL& url);
+
+void ResetTLSDeprecationConfigForTesting();
+
+#endif  // CHROME_BROWSER_SSL_TLS_DEPRECATION_CONFIG_H_
