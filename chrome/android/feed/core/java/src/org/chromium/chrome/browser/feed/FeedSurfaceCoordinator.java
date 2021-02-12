@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -57,6 +56,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 SnackbarManager snackbarManager,
                 NativePageNavigationDelegate pageNavigationDelegate, UiConfig uiConfig,
                 boolean placeholderShown, BottomSheetController bottomSheetController,
-                Supplier<Tab> tabSupplier, FeedV1ActionOptions v1ActionOptions,
+                WindowAndroid windowAndroid, FeedV1ActionOptions v1ActionOptions,
                 Supplier<ShareDelegate> shareDelegateSupplier);
 
         /**
@@ -109,7 +109,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private final FeedSurfaceMediator mMediator;
     private final BottomSheetController mBottomSheetController;
     private final FeedV1ActionOptions mV1ActionOptions;
-    private final Supplier<Tab> mTabSupplier;
+    private final WindowAndroid mWindowAndroid;
     private final Supplier<ShareDelegate> mShareSupplier;
 
     private UiConfig mUiConfig;
@@ -251,10 +251,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     /**
      * Constructs a new FeedSurfaceCoordinator.
-     *  @param activity The containing {@link ChromeActivity}.
+     * @param activity The containing {@link ChromeActivity}.
      * @param snackbarManager The {@link SnackbarManager} displaying Snackbar UI.
      * @param tabModelSelector {@link TabModelSelector} object.
-     * @param tabProvider Provides the current active tab.
+     * @param windowAndroid The window of the page.
      * @param snapScrollHelper The {@link SnapScrollHelper} for the New Tab Page.
      * @param ntpHeader The extra header on top of the feeds for the New Tab Page.
      * @param sectionHeaderView The {@link SectionHeaderView} for the feed.
@@ -266,10 +266,10 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * @param profile The current user profile.
      * @param isPlaceholderShownInitially Whether the placeholder is shown initially.
      * @param bottomSheetController The bottom sheet controller, used in v2.
-     * @param shareDelegateSupplier
+     * @param shareDelegateSupplier The supplier for the share delegate used to share articles.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
-            TabModelSelector tabModelSelector, Supplier<Tab> tabProvider,
+            TabModelSelector tabModelSelector, WindowAndroid windowAndroid,
             @Nullable SnapScrollHelper snapScrollHelper, @Nullable View ntpHeader,
             @Nullable SectionHeaderView sectionHeaderView, FeedV1ActionOptions actionOptions,
             boolean showDarkBackground, FeedSurfaceDelegate delegate,
@@ -290,7 +290,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
         mV1ActionOptions = actionOptions;
-        mTabSupplier = tabProvider;
+        mWindowAndroid = windowAndroid;
         mShareSupplier = shareDelegateSupplier;
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
 
@@ -394,7 +394,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
         mStream = mStreamWrapper.createStream(mProfile, mActivity, mShowDarkBackground,
                 mSnackbarManager, mPageNavigationDelegate, mUiConfig, mIsPlaceholderShownInitially,
-                mBottomSheetController, mTabSupplier, mV1ActionOptions, mShareSupplier);
+                mBottomSheetController, mWindowAndroid, mV1ActionOptions, mShareSupplier);
 
         mStreamLifecycleManager = mDelegate.createStreamLifecycleManager(mStream, mActivity);
 

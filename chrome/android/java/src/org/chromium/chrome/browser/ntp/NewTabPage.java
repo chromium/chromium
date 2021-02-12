@@ -81,6 +81,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
@@ -278,13 +279,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param tab The {@link Tab} that contains this new tab page.
      * @param bottomSheetController The controller for bottom sheets, used by the feed.
      * @param shareDelegateSupplier Supplies the Delegate used to open SharingHub.
+     * @param windowAndroid
      */
     public NewTabPage(Activity activity, BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Tab> activityTabProvider, SnackbarManager snackbarManager,
             ActivityLifecycleDispatcher lifecycleDispatcher, TabModelSelector tabModelSelector,
             boolean isTablet, NewTabPageUma uma, boolean isInNightMode,
             NativePageHost nativePageHost, Tab tab, BottomSheetController bottomSheetController,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier) {
+            ObservableSupplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -346,7 +348,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mActivityLifecycleDispatcher.register(mLifecycleObserver);
 
         updateSearchProviderHasLogo();
-        initializeMainView(activity, activityTabProvider, snackbarManager, tabModelSelector, uma,
+        initializeMainView(activity, windowAndroid, snackbarManager, tabModelSelector, uma,
                 isInNightMode, bottomSheetController, shareDelegateSupplier);
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -389,7 +391,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     /**
      * Create and initialize the main view contained in this NewTabPage.
      * @param activity The activity used to initialize the view.
-     * @param tabProvider Provides the current active tab.
+     * @param windowAndroid Provides the current active tab.
      * @param snackbarManager {@link SnackbarManager} object.
      * @param tabModelSelector {@link TabModelSelector} object.
      * @param uma {@link NewTabPageUma} object recording user metrics.
@@ -397,7 +399,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param bottomSheetController The controller for bottom sheets.  Used by the feed.
      * @param shareDelegateSupplier Supplies a delegate used to open SharingHub.
      */
-    protected void initializeMainView(Activity activity, Supplier<Tab> tabProvider,
+    protected void initializeMainView(Activity activity, WindowAndroid windowAndroid,
             SnackbarManager snackbarManager, TabModelSelector tabModelSelector, NewTabPageUma uma,
             boolean isInNightMode, BottomSheetController bottomSheetController,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier) {
@@ -421,8 +423,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         }
 
         mFeedSurfaceProvider =
-                new FeedSurfaceCoordinator(activity, snackbarManager, tabModelSelector, tabProvider,
-                        new SnapScrollHelper(mNewTabPageManager, mNewTabPageLayout),
+                new FeedSurfaceCoordinator(activity, snackbarManager, tabModelSelector,
+                        windowAndroid, new SnapScrollHelper(mNewTabPageManager, mNewTabPageLayout),
                         mNewTabPageLayout, sectionHeaderView, new FeedV1ActionOptions(),
                         isInNightMode, this, mNewTabPageManager.getNavigationDelegate(), profile,
                         /* isPlaceholderShownInitially= */ false, bottomSheetController,

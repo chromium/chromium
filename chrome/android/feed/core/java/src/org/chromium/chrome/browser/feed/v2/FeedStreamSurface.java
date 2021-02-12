@@ -71,6 +71,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -221,11 +222,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
      * Makes it easier to test.
      */
     public static class ShareHelperWrapper {
-        private Supplier<Tab> mTabSupplier;
+        private WindowAndroid mWindowAndroid;
         private Supplier<ShareDelegate> mShareDelegateSupplier;
         public ShareHelperWrapper(
-                Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
-            mTabSupplier = tabSupplier;
+                WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier) {
+            mWindowAndroid = windowAndroid;
             mShareDelegateSupplier = shareDelegateSupplier;
         }
 
@@ -234,9 +235,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
          * Brings up the share sheet.
          */
         public void share(String url, String title) {
-            ShareParams params =
-                    new ShareParams.Builder(mTabSupplier.get().getWindowAndroid(), title, url)
-                            .build();
+            ShareParams params = new ShareParams.Builder(mWindowAndroid, title, url).build();
             mShareDelegateSupplier.get().share(
                     params, new ChromeShareExtras.Builder().build(), ShareOrigin.FEED);
         }

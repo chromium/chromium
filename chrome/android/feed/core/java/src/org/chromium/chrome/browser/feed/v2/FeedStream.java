@@ -26,9 +26,9 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +58,14 @@ public class FeedStream implements Stream {
     public FeedStream(Activity activity, boolean isBackgroundDark, SnackbarManager snackbarManager,
             NativePageNavigationDelegate nativePageNavigationDelegate,
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
-            Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
+            WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier) {
         // TODO(petewil): Use isBackgroundDark to turn on dark theme.
         this.mActivity = activity;
 
         this.mFeedStreamSurface = new FeedStreamSurface(activity, isBackgroundDark, snackbarManager,
                 nativePageNavigationDelegate, bottomSheetController,
                 HelpAndFeedbackLauncherImpl.getInstance(), isPlaceholderShown,
-                new FeedStreamSurface.ShareHelperWrapper(tabSupplier, shareDelegateSupplier));
+                new FeedStreamSurface.ShareHelperWrapper(windowAndroid, shareDelegateSupplier));
     }
 
     @Override

@@ -14,10 +14,10 @@ import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Wraps management of the Feed V2 stream.
@@ -40,10 +40,10 @@ public class FeedStreamWrapper implements FeedSurfaceCoordinator.StreamWrapper {
     public Stream createStream(Profile profile, Activity activity, boolean showDarkBackground,
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
             UiConfig uiConfig, boolean placeholderShown,
-            BottomSheetController bottomSheetController, Supplier<Tab> tabSupplier,
+            BottomSheetController bottomSheetController, WindowAndroid windowAndroid,
             FeedV1ActionOptions v1ActionOptions, Supplier<ShareDelegate> shareDelegateSupplier) {
         mStream = new FeedStream(activity, showDarkBackground, snackbarManager,
-                pageNavigationDelegate, bottomSheetController, placeholderShown, tabSupplier,
+                pageNavigationDelegate, bottomSheetController, placeholderShown, windowAndroid,
                 shareDelegateSupplier);
         return mStream;
     }

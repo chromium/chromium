@@ -38,9 +38,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,7 +63,7 @@ public class FeedStreamTest {
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock
-    private Supplier<Tab> mTabSupplier;
+    private WindowAndroid mWindowAndroid;
     @Mock
     private Supplier<ShareDelegate> mShareDelegateSupplier;
 
@@ -82,7 +82,7 @@ public class FeedStreamTest {
         // Surfaces won't open until after startup.
         FeedStreamSurface.startup();
         mFeedStream = new FeedStream(mActivity, false, mSnackbarManager, mPageNavigationDelegate,
-                mBottomSheetController, /* isPlaceholderShown= */ false, mTabSupplier,
+                mBottomSheetController, /* isPlaceholderShown= */ false, mWindowAndroid,
                 mShareDelegateSupplier);
         mFeedStream.onCreate(null);
         mRecyclerView = (RecyclerView) mFeedStream.getView();
