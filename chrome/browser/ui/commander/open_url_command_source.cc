@@ -46,10 +46,7 @@ CommandSource::CommandResults OpenURLCommandSource::GetCommands(
     if (score == 0)
       continue;
 
-    auto item = std::make_unique<CommandItem>();
-    item->title = title;
-    item->score = score;
-    item->matched_ranges = ranges;
+    auto item = std::make_unique<CommandItem>(title, score, ranges);
     // base::Unretained is safe because commands are reset when a browser is
     // closed.
     item->command =

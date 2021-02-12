@@ -90,10 +90,7 @@ CommandSource::CommandResults BookmarkCommandSource::GetCommands(
   base::string16 open_title = base::ASCIIToUTF16("Open bookmark...");
   double score = finder.Find(open_title, &ranges);
   if (score > 0) {
-    auto verb = std::make_unique<CommandItem>();
-    verb->title = open_title;
-    verb->score = score;
-    verb->matched_ranges = ranges;
+    auto verb = std::make_unique<CommandItem>(open_title, score, ranges);
     // base::Unretained is safe because commands are cleared on browser close.
     verb->command = std::make_pair(
         open_title,

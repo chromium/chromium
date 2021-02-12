@@ -49,11 +49,9 @@ std::unique_ptr<TestCommandSource> CreateNoOpCommandSource() {
 
 std::unique_ptr<CommandItem> CreateNoOpCommandItem(const base::string16& title,
                                                    double score) {
-  auto item = std::make_unique<CommandItem>();
-  item->title = title;
-  item->score = score;
-  item->matched_ranges.emplace_back(0, title.size());
-  item->command = base::BindOnce([]() {});
+  std::vector<gfx::Range> ranges{{0, title.size()}};
+  auto item = std::make_unique<CommandItem>(title, score, ranges);
+  item->command = base::DoNothing::Once();
   return item;
 }
 

@@ -26,11 +26,8 @@ struct WindowMatch {
   double score;
 
   std::unique_ptr<CommandItem> ToCommandItem() const {
-    auto item = std::make_unique<CommandItem>();
-    item->title = title;
+    auto item = std::make_unique<CommandItem>(title, score, matched_ranges);
     item->entity_type = CommandItem::Entity::kWindow;
-    item->score = score;
-    item->matched_ranges = matched_ranges;
     return item;
   }
 };
@@ -161,10 +158,7 @@ CommandSource::CommandResults WindowCommandSource::GetCommands(
 
   double score = finder.Find(open_title, &ranges);
   if (score > 0) {
-    auto verb = std::make_unique<CommandItem>();
-    verb->title = open_title;
-    verb->score = score;
-    verb->matched_ranges = ranges;
+    auto verb = std::make_unique<CommandItem>(open_title, score, ranges);
     verb->command = std::make_pair(
         open_title, base::BindRepeating(&SwitchCommandsForWindowsMatching,
                                         base::Unretained(browser)));
@@ -172,10 +166,7 @@ CommandSource::CommandResults WindowCommandSource::GetCommands(
   }
   score = finder.Find(merge_title, &ranges);
   if (score > 0) {
-    auto verb = std::make_unique<CommandItem>();
-    verb->title = merge_title;
-    verb->score = score;
-    verb->matched_ranges = ranges;
+    auto verb = std::make_unique<CommandItem>(merge_title, score, ranges);
     verb->command = std::make_pair(
         merge_title, base::BindRepeating(&MergeCommandsForWindowsMatching,
                                          base::Unretained(browser)));

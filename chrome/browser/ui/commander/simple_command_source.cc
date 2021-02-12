@@ -77,11 +77,7 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
     if (score == 0)
       continue;
 
-    auto item = std::make_unique<CommandItem>();
-    item->title = title;
-    item->score = score;
-    item->matched_ranges = ranges;
-
+    auto item = std::make_unique<CommandItem>(title, score, ranges);
     ui::Accelerator accelerator;
     ui::AcceleratorProvider* provider =
         chrome::AcceleratorProviderForBrowser(browser);

@@ -61,7 +61,11 @@ struct CommandItem {
   using CompositeCommand = std::pair<base::string16, CompositeCommandProvider>;
 
   CommandItem();
+  CommandItem(const base::string16& title,
+              double score,
+              const std::vector<gfx::Range>& ranges);
   virtual ~CommandItem();
+
   CommandItem(const CommandItem& other) = delete;
   CommandItem& operator=(const CommandItem& other) = delete;
   CommandItem(CommandItem&& other);

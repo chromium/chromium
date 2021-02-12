@@ -7,6 +7,10 @@
 namespace commander {
 
 CommandItem::CommandItem() = default;
+CommandItem::CommandItem(const base::string16& title,
+                         double score,
+                         const std::vector<gfx::Range>& ranges)
+    : title(title), score(score), matched_ranges(ranges) {}
 CommandItem::~CommandItem() = default;
 CommandItem::CommandItem(CommandItem&& other) = default;
 CommandItem& CommandItem::operator=(CommandItem&& other) = default;
