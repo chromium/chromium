@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
+#include "ui/ozone/public/platform_clipboard.h"
 
 namespace ui {
 
@@ -20,8 +21,24 @@ class WaylandConnection;
 // Implements high level (protocol-agnostic) interface to a Wayland data device.
 class WaylandDataDeviceBase {
  public:
+  class SelectionDelegate {
+   public:
+    virtual void OnSelectionOffer(WaylandDataOfferBase* offer) = 0;
+    virtual void OnSelectionDataReceived(const std::string& mime_type,
+                                         PlatformClipboard::Data contents) = 0;
+
+   protected:
+    virtual ~SelectionDelegate() = default;
+  };
+
   explicit WaylandDataDeviceBase(WaylandConnection* connection);
   virtual ~WaylandDataDeviceBase();
+
+  // Sets the delegate instance responsible for handling section events.
+  void set_selection_delegate(SelectionDelegate* selection_delegate) {
+    DCHECK(!selection_delegate_ || !selection_delegate);
+    selection_delegate_ = selection_delegate;
+  }
 
   // Returns MIME types given by the current data offer.
   const std::vector<std::string>& GetAvailableMimeTypes() const;
@@ -50,6 +67,8 @@ class WaylandDataDeviceBase {
 
   void RegisterDeferredReadClosure(base::OnceClosure closure);
 
+  SelectionDelegate* selection_delegate() { return selection_delegate_; }
+
  private:
   // wl_callback_listener callback
   static void DeferredReadCallback(void* data,
@@ -58,9 +77,11 @@ class WaylandDataDeviceBase {
 
   void DeferredReadCallbackInternal(struct wl_callback* cb, uint32_t time);
 
-  // Used to call out to WaylandConnection once clipboard data
-  // has been successfully read.
-  WaylandConnection* const connection_ = nullptr;
+  SelectionDelegate* selection_delegate_ = nullptr;
+
+  // Used to call out to WaylandConnection once clipboard data has been
+  // successfully read.
+  WaylandConnection* const connection_;
 
   // Offer that holds the most-recent clipboard selection, or null if no
   // clipboard data is available.

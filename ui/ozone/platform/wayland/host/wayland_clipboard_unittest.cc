@@ -11,11 +11,15 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/location.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -162,6 +166,59 @@ TEST_P(WaylandClipboardTest, IsSelectionOwner) {
   Sync();
 
   ASSERT_FALSE(clipboard_->IsSelectionOwner(ClipboardBuffer::kCopyPaste));
+}
+
+// Ensures WaylandClipboard correctly handles overlapping read requests for
+// different clipboard buffers.
+TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
+  // Offer a piece of text in kCopyPaste clipboard buffer.
+  auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
+  data_offer->OnOffer(kMimeTypeTextUtf8,
+                      ToClipboardData(std::string(kSampleClipboardText)));
+  data_device_manager_->data_device()->OnSelection(data_offer);
+  Sync();
+
+  // Post a read request for kSelection buffer, which will start its execution
+  // after kCopyPaste request (below) starts.
+  PlatformClipboard::DataMap selection_data_;
+  base::MockCallback<PlatformClipboard::RequestDataClosure> selection_callback;
+  EXPECT_CALL(selection_callback, Run(_)).Times(1);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PlatformClipboard::RequestClipboardData,
+                     base::Unretained(clipboard_), ClipboardBuffer::kSelection,
+                     kMimeTypeTextUtf8, base::Unretained(&selection_data_),
+                     selection_callback.Get()));
+
+  // Instantly start a clipboard read request for kCopyPaste buffer (the actual
+  // data transfer will take place asynchronously. See WaylandDataDevice impl)
+  // and ensure read callback is called and |copy_paste_data_| is filled as
+  // expected, regardless any other request that may arrive in the meantime.
+  PlatformClipboard::DataMap copy_paste_data_;
+  base::RunLoop run_loop;
+  clipboard_->RequestClipboardData(
+      ClipboardBuffer::kCopyPaste, kMimeTypeTextUtf8, &copy_paste_data_,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const base::Optional<PlatformClipboard::Data>& data) {
+            ASSERT_TRUE(data.has_value());
+            EXPECT_EQ(kSampleClipboardText,
+                      std::string(data->get()->front_as<const char>(),
+                                  data->get()->size()));
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+
+  Sync();
+  run_loop.Run();
+
+  EXPECT_TRUE(selection_data_.empty());
+
+  EXPECT_EQ(1u, copy_paste_data_.size());
+  EXPECT_TRUE(base::Contains(copy_paste_data_, kMimeTypeTextUtf8));
+  auto contents = copy_paste_data_[kMimeTypeTextUtf8];
+  EXPECT_EQ(kSampleClipboardText,
+            std::string(contents->front_as<const char>(), contents->size()));
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

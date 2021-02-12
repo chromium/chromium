@@ -7,13 +7,10 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/public/platform_clipboard.h"
 
 namespace wl {
@@ -60,11 +57,6 @@ class WaylandClipboard : public PlatformClipboard {
       PlatformClipboard::SequenceNumberUpdateCb cb) override;
   bool IsSelectionBufferAvailable() const override;
 
-  // TODO(nickdiego): Get rid of these methods once DataDevice implementations
-  // are decoupled from WaylandClipboard.
-  void SetData(PlatformClipboard::Data contents, const std::string& mime_type);
-  void UpdateSequenceNumber(ClipboardBuffer buffer);
-
  private:
   // Get the wl::Clipboard instance owning a given |buffer|. Can return null in
   // case |buffer| is unsupported. E.g: primary selection is not available.
@@ -73,17 +65,6 @@ class WaylandClipboard : public PlatformClipboard {
   // WaylandConnection providing optional data device managers, e.g: gtk
   // primary selection.
   WaylandConnection* const connection_;
-
-  // Holds a temporary instance of the client's clipboard content
-  // so that we can asynchronously write to it.
-  PlatformClipboard::DataMap* data_map_ = nullptr;
-
-  // Notifies whenever clipboard sequence number is changed. Can be empty if
-  // not set.
-  PlatformClipboard::SequenceNumberUpdateCb update_sequence_cb_;
-
-  // Stores the callback to be invoked upon data reading from clipboard.
-  PlatformClipboard::RequestDataClosure read_clipboard_closure_;
 
   const std::unique_ptr<wl::Clipboard> copypaste_clipboard_;
   std::unique_ptr<wl::Clipboard> primary_selection_clipboard_;

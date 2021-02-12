@@ -23,7 +23,8 @@ class ZwpPrimarySelectionDeviceManager {
   ZwpPrimarySelectionDeviceManager(
       zwp_primary_selection_device_manager_v1* manager,
       WaylandConnection* connection);
-  ZwpPrimarySelectionDeviceManager(const ZwpPrimarySelectionDeviceManager&) = delete;
+  ZwpPrimarySelectionDeviceManager(const ZwpPrimarySelectionDeviceManager&) =
+      delete;
   ZwpPrimarySelectionDeviceManager& operator=(
       const ZwpPrimarySelectionDeviceManager&) = delete;
   ~ZwpPrimarySelectionDeviceManager();
