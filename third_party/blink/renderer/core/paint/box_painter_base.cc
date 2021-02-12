@@ -578,7 +578,7 @@ void FillRectWithPaintWorklet(const Document* document,
                               GraphicsContext& context,
                               const Vector<Color>& animated_colors,
                               const Vector<double>& offsets) {
-  FloatRect src_rect = dest_rect.Rect();
+  FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
   BackgroundColorPaintImageGenerator* generator =
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
   scoped_refptr<Image> paint_worklet_image =

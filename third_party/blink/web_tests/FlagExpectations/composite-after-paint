@@ -64,13 +64,6 @@ crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pend
 
 crbug.com/1124979 compositing/video/video-controls-layer-creation.html [ Pass Failure ]
 
-crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/one-element-animation.html [ Crash ]
-crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/one-element-three-keyframes-animation1.html [ Crash ]
-crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/one-element-three-keyframes-animation2.html [ Crash ]
-crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/one-element-three-keyframes-animation3.html [ Crash ]
-crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/one-element-transition.html [ Crash ]
-crbug.com/1150468 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/animations/animation-fallback-replace.html [ Crash ]
-
 crbug.com/1157199 external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 crbug.com/1157199 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/column-count-crash.https.html [ Crash ]
 
