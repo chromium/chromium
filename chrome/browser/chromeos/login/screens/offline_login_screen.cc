@@ -169,7 +169,6 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
 
 void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
   bool offline_limit_expired = false;
-
   const std::string sanitized_email = gaia::SanitizeEmail(email);
   const AccountId account_id = user_manager::known_user::GetAccountId(
       sanitized_email, std::string(), AccountType::UNKNOWN);
@@ -186,14 +185,22 @@ void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
                                   offline_signin_interval.value()) <=
         base::TimeDelta();
   }
-
   if (offline_limit_expired) {
     RecordEvent(OfflineLoginEvent::kOfflineLoginBlockedByTimeLimit);
     view_->ShowOnlineRequiredDialog();
-  } else {
-    RecordEvent(OfflineLoginEvent::kOfflineLoginEnabled);
-    view_->ShowPasswordPage();
+    return;
   }
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (user && user->force_online_signin()) {
+    RecordEvent(OfflineLoginEvent::kOfflineLoginBlockedByInvalidToken);
+    view_->ShowPasswordPage();
+    return;
+  }
+
+  RecordEvent(OfflineLoginEvent::kOfflineLoginEnabled);
+  view_->ShowPasswordPage();
 }
 
 void OfflineLoginScreen::StartIdleDetection() {
