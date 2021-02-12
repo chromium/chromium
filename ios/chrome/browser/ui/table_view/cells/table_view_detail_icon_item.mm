@@ -20,8 +20,6 @@ namespace {
 // Proportion of Cell's textLabel/detailTextLabel. This guarantees that the
 // textLabel occupies 75% of the row space and detailTextLabel occupies 25%.
 const CGFloat kCellLabelsWidthProportion = 3.0f;
-// Padding used between the detail text and the AccessoryType.
-const CGFloat kDetailTextTrailingPadding = 6;
 
 }  // namespace
 
@@ -166,7 +164,7 @@ const CGFloat kDetailTextTrailingPadding = 6;
       // Text labels.
       [_textStackView.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor
-                         constant:-kDetailTextTrailingPadding],
+                         constant:-kTableViewTrailingContentPadding],
       _iconHiddenConstraint,
 
       // Leading constraint for |customSeparator|.

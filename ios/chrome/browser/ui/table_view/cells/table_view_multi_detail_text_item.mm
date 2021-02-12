@@ -118,7 +118,7 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
                                  constant:-kTableViewHorizontalSpacing],
     [_trailingDetailTextLabel.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
-                       constant:-kTableViewHorizontalSpacing],
+                       constant:-kTableViewTrailingContentPadding],
 
     // Make sure that the detail text doesn't take too much space.
     [_trailingDetailTextLabel.widthAnchor

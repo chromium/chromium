@@ -190,7 +190,7 @@ const CGFloat kHorizontalPaddingBetweenTextAndError = 5;
     // Set trailing anchors.
     [_errorIcon.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
-                       constant:-kTableViewOneLabelCellVerticalSpacing],
+                       constant:-kTableViewTrailingContentPadding],
     [_detailTextLabel.trailingAnchor
         constraintEqualToAnchor:_errorIcon.leadingAnchor
                        constant:-kHorizontalPaddingBetweenTextAndError],

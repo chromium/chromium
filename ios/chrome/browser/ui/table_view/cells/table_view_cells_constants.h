@@ -53,6 +53,10 @@ extern const CGFloat kTableViewIconImageSize;
 // Padding used between the image and the text labels.
 extern const CGFloat kTableViewImagePadding;
 
+// Padding used between the trailing content and the trailing of the
+// contentView.
+extern const CGFloat kTableViewTrailingContentPadding;
+
 // A masked password string(e.g. "••••••••").
 extern NSString* const kMaskedPassword;
 
