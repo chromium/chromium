@@ -6259,15 +6259,6 @@ IN_PROC_BROWSER_TEST_P(
 
     // On main-frame browser-initiated frame reloads with no redirects, the
     // redirect chain only contains the original URL once.
-    // This should've contained two copies of `start_url`, because the browser
-    // actually sent the previous FNE's redirect chain at commit, containing the
-    // one entry of `start_url` from before. The renderer should've added one
-    // more entry of `start_url` (as the current document URL) and sent that
-    // back to the browser, but the renderer actually thought that the redirect
-    // chain is empty (because it checked for the redirect_response array,
-    // instead of the redirects array). So we end up with a redirect chain of
-    // size 1.
-    // TODO(https://crbug.com/1171225): Fix this.
     EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
     EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
 
@@ -6284,7 +6275,7 @@ IN_PROC_BROWSER_TEST_P(
 // Checks the contents of the redirect chain after reloads on a subframe.
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
-    FrameNavigationEntry_MainFrameRedirectChain_NormalThenReloads_Subframe) {
+    FrameNavigationEntry_SubframeRedirectChain_NormalThenReloads) {
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
@@ -6317,7 +6308,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL iframe_url = iframe->current_url();
 
   {
-    // Renderer-initiated reload on the iframe.
+    // Renderer-initiated frame reload on the iframe.
     TestNavigationManager navigation_manager(shell()->web_contents(),
                                              iframe_url);
     EXPECT_TRUE(ExecJs(iframe, "location.reload();"));
@@ -6344,7 +6335,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   {
-    // Browser-initiated reload.
+    // Browser-initiated frame reload.
     TestNavigationManager navigation_manager(shell()->web_contents(),
                                              iframe_url);
     root->child_at(0)->current_frame_host()->Reload();
@@ -6355,18 +6346,13 @@ IN_PROC_BROWSER_TEST_P(
         controller.GetLastCommittedEntry()->GetFrameEntry(iframe);
     EXPECT_EQ(iframe_url, frame_entry->url());
 
-    // On subframe browser-initiated reloads, the redirect chain only contains
-    // the original URL once.
-    // This should've contained three copies of `iframe_url`,because the browser
-    // actually sent the previous FNE's redirect chain at commit, containing the
-    // two entries seen above. The renderer should've added one more entry of
-    // `iframe_url` (as the current document URL) and sent that back to the
-    // browser, but the renderer actually thought that the redirect chain is
-    // empty (because it checked for the redirect_response array, instead of the
-    // redirects array). So we end up with a redirect chain of size 1.
-    // TODO(https://crbug.com/1171225): Fix this.
-    EXPECT_EQ(frame_entry->redirect_chain().size(), 1u);
+    // On subframe browser-initiated frame reloads, the redirect chain contains
+    // the previous navigation's redirect chain and the reloaded URL, so it will
+    // contain three entries of |iframe_url|.
+    EXPECT_EQ(frame_entry->redirect_chain().size(), 3u);
     EXPECT_EQ(frame_entry->redirect_chain()[0], iframe_url);
+    EXPECT_EQ(frame_entry->redirect_chain()[1], iframe_url);
+    EXPECT_EQ(frame_entry->redirect_chain()[2], iframe_url);
   }
 }
 

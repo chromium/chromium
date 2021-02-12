@@ -44,9 +44,10 @@ void NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
   const GURL original_url = !commit_params->original_url.is_empty()
                                 ? commit_params->original_url
                                 : common_params->url;
-  GURL url = original_url;
+  GURL current_url = original_url;
+
   resource_load_info_notifier_wrapper->NotifyResourceLoadInitiated(
-      request_id, url,
+      request_id, original_url,
       !commit_params->original_method.empty() ? commit_params->original_method
                                               : common_params->method,
       common_params->referrer->url,
@@ -58,45 +59,76 @@ void NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
       is_main_frame ? network::mojom::RequestDestination::kDocument
                     : network::mojom::RequestDestination::kIframe,
       is_main_frame ? net::HIGHEST : net::LOWEST);
-  size_t redirect_count = commit_params->redirect_response.size();
 
-  if (redirect_count != commit_params->redirects.size()) {
-    // We currently incorrectly send empty redirect_response and redirect_infos
-    // on frame reloads and some cases involving throttles.
-    // TODO(https://crbug.com/1171225): Fix this.
-    DCHECK_EQ(0u, redirect_count);
-    DCHECK_EQ(0u, commit_params->redirect_infos.size());
-    DCHECK_NE(0u, commit_params->redirects.size());
-  }
+  // Use the various redirect arrays sent by the browser to construct the
+  // redirect chain for this navigation.
+  size_t redirect_count = commit_params->redirects.size();
   navigation_params->redirects.reserve(redirect_count);
   navigation_params->redirects.resize(redirect_count);
-  for (size_t i = 0; i < redirect_count; ++i) {
-    blink::WebNavigationParams::RedirectInfo& redirect =
-        navigation_params->redirects[i];
-    auto& redirect_info = commit_params->redirect_infos[i];
-    auto& redirect_response = commit_params->redirect_response[i];
-    WebURLLoaderImpl::PopulateURLResponse(
-        url, *redirect_response, &redirect.redirect_response,
-        response_head->ssl_info.has_value(), request_id);
-    resource_load_info_notifier_wrapper->NotifyResourceRedirectReceived(
-        redirect_info, std::move(redirect_response));
-    if (url.SchemeIs(url::kDataScheme))
-      redirect.redirect_response.SetHttpStatusCode(200);
-    redirect.new_url = redirect_info.new_url;
-    redirect.new_referrer =
-        blink::WebString::FromUTF8(redirect_info.new_referrer);
-    redirect.new_referrer_policy =
-        blink::ReferrerUtils::NetToMojoReferrerPolicy(
-            redirect_info.new_referrer_policy);
-    redirect.new_http_method =
-        blink::WebString::FromLatin1(redirect_info.new_method);
-    url = redirect_info.new_url;
+
+  if (redirect_count != commit_params->redirect_infos.size() ||
+      redirect_count != commit_params->redirect_response.size()) {
+    // We currently incorrectly send empty redirect_response and redirect_infos
+    // on frame reloads and restarted navigations.
+    // TODO(https://crbug.com/1171225): Fix this.
+    CHECK_EQ(0u, commit_params->redirect_response.size());
+    CHECK_EQ(0u, commit_params->redirect_infos.size());
+    CHECK_NE(0u, redirect_count);
+    for (size_t i = 0; i < redirect_count; ++i) {
+      blink::WebNavigationParams::RedirectInfo& redirect =
+          navigation_params->redirects[i];
+      // |commit_params->redirect_infos| and |commit_params->redirect_response|
+      // are both empty, and we can only use |commit_params->redirects| to build
+      // the redirect chain in the renderer. We can use the next element in the
+      // |commit_params->redirects| array to get the next URL after the
+      // redirect. If we hit the end of the array, we should update
+      // |current_url| to use the final/commit URL.
+      current_url = (i == redirect_count - 1) ? GURL(navigation_params->url)
+                                              : commit_params->redirects[i + 1];
+      redirect.new_url = current_url;
+      // Since we can't use |commit_params->redirect_infos|, we should fill the
+      // referrer & method with the final value used for commit. This is OK
+      // because DocumentLoader will go through all the redirects and eventually
+      // use the final/commit value anyways.
+      redirect.new_referrer = navigation_params->referrer;
+      redirect.new_referrer_policy = navigation_params->referrer_policy;
+      redirect.new_http_method = navigation_params->http_method;
+    }
+  } else {
+    // In the common case, use all the redirects arrays to build the redirect
+    // chain.
+    for (size_t i = 0; i < redirect_count; ++i) {
+      blink::WebNavigationParams::RedirectInfo& redirect =
+          navigation_params->redirects[i];
+
+      // Redirects might result in a change of URL, referrer, and method.
+      auto& redirect_info = commit_params->redirect_infos[i];
+      redirect.new_url = redirect_info.new_url;
+      redirect.new_referrer =
+          blink::WebString::FromUTF8(redirect_info.new_referrer);
+      redirect.new_referrer_policy =
+          blink::ReferrerUtils::NetToMojoReferrerPolicy(
+              redirect_info.new_referrer_policy);
+      redirect.new_http_method =
+          blink::WebString::FromLatin1(redirect_info.new_method);
+
+      auto& redirect_response = commit_params->redirect_response[i];
+      WebURLLoaderImpl::PopulateURLResponse(
+          current_url, *redirect_response, &redirect.redirect_response,
+          response_head->ssl_info.has_value(), request_id);
+      resource_load_info_notifier_wrapper->NotifyResourceRedirectReceived(
+          redirect_info, std::move(redirect_response));
+      if (current_url.SchemeIs(url::kDataScheme))
+        redirect.redirect_response.SetHttpStatusCode(200);
+
+      current_url = redirect_info.new_url;
+    }
   }
 
   WebURLLoaderImpl::PopulateURLResponse(
-      url, *response_head, &navigation_params->response,
+      current_url, *response_head, &navigation_params->response,
       response_head->ssl_info.has_value(), request_id);
-  if (url.SchemeIs(url::kDataScheme))
+  if (current_url.SchemeIs(url::kDataScheme))
     navigation_params->response.SetHttpStatusCode(200);
 
   if (url_loader_client_endpoints) {
