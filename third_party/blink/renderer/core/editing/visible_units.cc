@@ -392,11 +392,6 @@ bool IsEndOfEditableOrNonEditableContent(
   return IsTextControl(next_position.DeepEquivalent().AnchorNode());
 }
 
-static LayoutUnit BoundingBoxLogicalHeight(LayoutObject* o,
-                                           const LayoutRect& rect) {
-  return o->Style()->IsHorizontalWritingMode() ? rect.Height() : rect.Width();
-}
-
 // TODO(editing-dev): The semantics seems wrong when we're in a one-letter block
 // with first-letter style, e.g., <div>F</div>, where the letter is laid-out in
 // an anonymous first-letter LayoutTextFragment instead of the LayoutObject of
@@ -429,9 +424,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
           (o->IsLayoutInline() && IsEmptyInline(LineLayoutItem(o)) &&
            // TODO(crbug.com/771398): Find alternative ways to check whether an
            // empty LayoutInline is rendered, without checking InlineBox.
-           BoundingBoxLogicalHeight(
-               o,
-               To<LayoutInline>(o)->PhysicalLinesBoundingBox().ToLayoutRect())))
+           !To<LayoutInline>(o)->PhysicalLinesBoundingBox().IsEmpty()))
         return true;
     }
   }

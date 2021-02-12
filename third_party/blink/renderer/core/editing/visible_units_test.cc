@@ -92,6 +92,24 @@ TEST_F(VisibleUnitsTest, characterAfter) {
                      CreateVisiblePositionInFlatTree(*two->firstChild(), 2)));
 }
 
+// http://crbug.com/1176202
+TEST_F(VisibleUnitsTest, CanonicalPositionOfWithBefore) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/15px Ahem; }"
+      "b::before { content: '\\u200B'");
+  // |LayoutInline::PhysicalLinesBoundingBox()| for <span></span> returns
+  //    LayoutNG: (0,0)+(0x10)
+  //    Legacy:   (0,0)+(0x0)
+  //  because we don't cull empty <span> in LayoutNG.
+  SetBodyContent("<div contenteditable id=target><span></span><b></b></div>");
+  Element& target = *GetElementById("target");
+
+  EXPECT_EQ(Position(target, 0), CanonicalPositionOf(Position(target, 0)));
+  EXPECT_EQ(Position(target, 0), CanonicalPositionOf(Position(target, 1)));
+  EXPECT_EQ(Position(target, 0), CanonicalPositionOf(Position(target, 2)));
+}
+
 TEST_F(VisibleUnitsTest, canonicalPositionOfWithHTMLHtmlElement) {
   const char* body_content =
       "<html><div id=one contenteditable>1</div><span id=two "
