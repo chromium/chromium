@@ -10,6 +10,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/holding_space/holding_space_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -24,7 +25,7 @@
 namespace ash {
 
 // Appearance.
-constexpr gfx::Insets kPinButtonMargins(4);
+constexpr gfx::Insets kCheckmarkAndPinButtonContainerPadding(4);
 constexpr gfx::Size kPinButtonSize(24, 24);
 constexpr gfx::Size kPlayIconSize(32, 32);
 
@@ -48,22 +49,25 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
   if (item->type() == HoldingSpaceItem::Type::kScreenRecording)
     AddPlayIcon();
 
-  views::View* pin_button_container =
+  views::View* checkmark_and_pin_button_container =
       AddChildView(std::make_unique<views::View>());
-
-  auto* layout =
-      pin_button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kPinButtonMargins));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  auto* layout = checkmark_and_pin_button_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          kCheckmarkAndPinButtonContainerPadding));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  views::View* pin = AddPin(pin_button_container);
+  // Checkmark.
+  AddCheckmark(/*parent=*/checkmark_and_pin_button_container);
 
-  // Create contrasting background for the pin icon.
-  pin->SetBackground(views::CreateRoundedRectBackground(
-      HoldingSpaceColorProvider::Get()->GetBackgroundColor(),
-      kPinButtonSize.width() / 2));
+  // Spacer.
+  views::View* spacer = checkmark_and_pin_button_container->AddChildView(
+      std::make_unique<views::View>());
+  layout->SetFlexForView(spacer, 1);
+
+  // Pin.
+  auto* pin = AddPin(/*parent=*/checkmark_and_pin_button_container);
   pin->SetPreferredSize(kPinButtonSize);
 }
 
@@ -88,6 +92,12 @@ void HoldingSpaceItemScreenCaptureView::OnHoldingSpaceItemUpdated(
     TooltipTextChanged();
 }
 
+void HoldingSpaceItemScreenCaptureView::OnThemeChanged() {
+  HoldingSpaceItemView::OnThemeChanged();
+  pin()->SetBackground(holding_space_util::CreateCircleBackground(
+      HoldingSpaceColorProvider::Get()->GetBackgroundColor()));
+}
+
 void HoldingSpaceItemScreenCaptureView::UpdateImage() {
   image_->SetImage(
       item()->image().GetImageSkia(kHoldingSpaceScreenCaptureSize));
@@ -108,16 +118,13 @@ void HoldingSpaceItemScreenCaptureView::AddPlayIcon() {
   auto* play_icon =
       play_icon_container->AddChildView(std::make_unique<views::ImageView>());
   play_icon->SetID(kHoldingSpaceScreenCapturePlayIconId);
+  play_icon->SetBackground(holding_space_util::CreateCircleBackground(
+      HoldingSpaceColorProvider::Get()->GetBackgroundColor()));
   play_icon->SetImage(gfx::CreateVectorIcon(
       vector_icons::kPlayArrowIcon, kHoldingSpaceIconSize,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonIconColor)));
   play_icon->SetPreferredSize(kPlayIconSize);
-
-  // Create contrasting background for the play icon.
-  play_icon->SetBackground(views::CreateRoundedRectBackground(
-      HoldingSpaceColorProvider::Get()->GetBackgroundColor(),
-      kPlayIconSize.width() / 2));
 }
 
 BEGIN_METADATA(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)

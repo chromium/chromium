@@ -23,7 +23,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
-#include "ui/views/painter.h"
 
 namespace ash {
 namespace {
@@ -35,37 +34,6 @@ constexpr gfx::Insets kLabelMargins(0, 0, 0, /*right=*/2);
 constexpr gfx::Insets kPadding(8, 8, 8, /*right=*/10);
 constexpr int kPreferredHeight = 40;
 constexpr int kPreferredWidth = 160;
-
-// CirclePainter ---------------------------------------------------------------
-
-class CirclePainter : public views::Painter {
- public:
-  CirclePainter(SkColor color, const gfx::InsetsF& insets)
-      : color_(color), insets_(insets) {}
-  CirclePainter(const CirclePainter&) = delete;
-  CirclePainter& operator=(const CirclePainter&) = delete;
-  ~CirclePainter() override = default;
-
- private:
-  // views::Painter:
-  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
-
-  void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
-    gfx::RectF bounds{gfx::SizeF(size)};
-    bounds.Inset(insets_);
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(color_);
-
-    canvas->DrawCircle(
-        bounds.CenterPoint(),
-        std::min(bounds.size().width(), bounds.size().height()) / 2.f, flags);
-  }
-
-  const SkColor color_;
-  const gfx::InsetsF insets_;
-};
 
 // PaintCallbackLabel ----------------------------------------------------------
 
@@ -103,15 +71,22 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
 
   SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight));
 
+  auto* image_and_checkmark_container =
+      AddChildView(std::make_unique<views::View>());
+  image_and_checkmark_container->SetLayoutManager(
+      std::make_unique<views::FillLayout>());
+
   // Image.
-  image_ = AddChildView(std::make_unique<RoundedImageView>(
-      kHoldingSpaceChipIconSize / 2, RoundedImageView::Alignment::kLeading));
+  image_ = image_and_checkmark_container->AddChildView(
+      std::make_unique<RoundedImageView>(
+          kHoldingSpaceChipIconSize / 2,
+          RoundedImageView::Alignment::kLeading));
 
   // Shrink circular background by a single pixel to prevent painting outside of
   // the image which may otherwise occur due to pixel rounding. Failure to do so
   // could result in white paint artifacts.
-  image_->SetBackground(views::CreateBackgroundFromPainter(
-      std::make_unique<CirclePainter>(SK_ColorWHITE, gfx::InsetsF(0.5f))));
+  image_->SetBackground(holding_space_util::CreateCircleBackground(
+      SK_ColorWHITE, gfx::InsetsF(0.5f)));
 
   // Subscribe to be notified of changes to `item_`'s image.
   image_subscription_ =
@@ -119,6 +94,9 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
           &HoldingSpaceItemChipView::UpdateImage, base::Unretained(this)));
 
   UpdateImage();
+
+  // Checkmark.
+  AddCheckmark(/*parent=*/image_and_checkmark_container);
 
   auto* label_and_pin_button_container =
       AddChildView(std::make_unique<views::View>());
@@ -153,7 +131,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   pin_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  pin_ = AddPin(/*parent=*/pin_button_container);
+  AddPin(/*parent=*/pin_button_container);
 }
 
 HoldingSpaceItemChipView::~HoldingSpaceItemChipView() = default;
@@ -172,23 +150,34 @@ void HoldingSpaceItemChipView::OnHoldingSpaceItemUpdated(
     label_->SetText(item->text());
 }
 
-void HoldingSpaceItemChipView::OnPinVisiblityChanged(bool pin_visible) {
-  // The `label_` must be repainted to update its mask for `pin_` visibility.
+void HoldingSpaceItemChipView::OnPinVisibilityChanged(bool pin_visible) {
+  // The `label_` must be repainted to update its mask for `pin()` visibility.
   label_->SchedulePaint();
 }
 
+void HoldingSpaceItemChipView::OnSelectedChanged() {
+  HoldingSpaceItemView::OnSelectedChanged();
+  image_->SetVisible(!selected());
+  UpdateLabel();
+}
+
+void HoldingSpaceItemChipView::OnThemeChanged() {
+  HoldingSpaceItemView::OnThemeChanged();
+  UpdateLabel();
+}
+
 void HoldingSpaceItemChipView::OnPaintLabelMask(gfx::Canvas* canvas) {
-  // When the `pin_` is not visible no masking is necessary.
-  if (!pin_->GetVisible())
+  // When the `pin()` is not visible no masking is necessary.
+  if (!pin()->GetVisible())
     return;
 
-  // When the `pin_` is visible, `label_` fades out its tail to avoid overlap.
+  // When the `pin()` is visible, `label_` fades out its tail to avoid overlap.
   gfx::Point gradient_start, gradient_end;
   if (base::i18n::IsRTL()) {
-    gradient_end.set_x(pin_->width());
+    gradient_end.set_x(pin()->width());
     gradient_start.set_x(gradient_end.x() + kLabelMaskGradientWidth);
   } else {
-    gradient_end.set_x(label_->width() - pin_->width());
+    gradient_end.set_x(label_->width() - pin()->width());
     gradient_start.set_x(gradient_end.x() - kLabelMaskGradientWidth);
   }
 
@@ -205,6 +194,14 @@ void HoldingSpaceItemChipView::UpdateImage() {
   image_->SetImage(item()->image().GetImageSkia(
       gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize)));
   SchedulePaint();
+}
+
+void HoldingSpaceItemChipView::UpdateLabel() {
+  label_->SetEnabledColor(
+      selected() ? AshColorProvider::Get()->GetControlsLayerColor(
+                       AshColorProvider::ControlsLayerType::kFocusRingColor)
+                 : AshColorProvider::Get()->GetContentLayerColor(
+                       AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)

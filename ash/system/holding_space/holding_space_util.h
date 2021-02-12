@@ -7,12 +7,15 @@
 
 #include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/insets_f.h"
 
 namespace ui {
 class LayerAnimationObserver;
 }  // namespace ui
 
 namespace views {
+class Background;
 class Label;
 class View;
 }  // namespace views
@@ -48,6 +51,15 @@ void ApplyStyle(views::Label* label, LabelStyle style);
 std::unique_ptr<views::Label> CreateLabel(
     LabelStyle style,
     const base::string16& text = base::string16());
+
+// Creates a circular background of the specified `color` and `fixed_size`.
+std::unique_ptr<views::Background> CreateCircleBackground(SkColor color,
+                                                          size_t fixed_size);
+
+// Creates a circular background of the specified `color` and optional `insets`.
+std::unique_ptr<views::Background> CreateCircleBackground(
+    SkColor color,
+    const gfx::InsetsF& insets = gfx::InsetsF());
 
 }  // namespace holding_space_util
 }  // namespace ash

@@ -15,6 +15,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class ImageView;
 class ToggleImageButton;
 }  // namespace views
 
@@ -54,6 +55,7 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   void OnMouseEvent(ui::MouseEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnThemeChanged() override;
 
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item) override;
@@ -71,8 +73,13 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   bool selected() const { return selected_; }
 
  protected:
+  views::ImageView* AddCheckmark(views::View* parent);
   views::ToggleImageButton* AddPin(views::View* parent);
-  virtual void OnPinVisiblityChanged(bool pin_visible) {}
+  virtual void OnPinVisibilityChanged(bool pin_visible) {}
+  virtual void OnSelectedChanged();
+
+  views::ImageView* checkmark() { return checkmark_; }
+  views::ToggleImageButton* pin() { return pin_; }
 
  private:
   void OnPaintFocus(gfx::Canvas* canvas, gfx::Size size);
@@ -89,6 +96,7 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   const std::string item_id_;
 
   // Owned by view hierarchy.
+  views::ImageView* checkmark_ = nullptr;
   views::ToggleImageButton* pin_ = nullptr;
 
   // Owners for the layers used to paint focused and selected states.

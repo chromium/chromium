@@ -10,8 +10,10 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
+#include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -21,6 +23,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
@@ -35,6 +38,9 @@ namespace {
 // `HoldingSpaceItemView`. Class name is not an adequate identifier as it may be
 // overridden by subclasses.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsHoldingSpaceItemViewProperty, false)
+
+// Appearance.
+constexpr size_t kCheckmarkBackgroundSize = 18;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -190,6 +196,21 @@ void HoldingSpaceItemView::OnMouseReleased(const ui::MouseEvent& event) {
   delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
 }
 
+void HoldingSpaceItemView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  AshColorProvider* const ash_color_provider = AshColorProvider::Get();
+
+  // Checkmark.
+  checkmark_->SetBackground(holding_space_util::CreateCircleBackground(
+      ash_color_provider->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor),
+      kCheckmarkBackgroundSize));
+  checkmark_->SetImage(gfx::CreateVectorIcon(
+      kCheckIcon, kHoldingSpaceIconSize,
+      ash_color_provider->IsDarkModeEnabled() ? gfx::kGoogleGrey900
+                                              : SK_ColorWHITE));
+}
+
 void HoldingSpaceItemView::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item) {
   if (item_ == item)
@@ -223,6 +244,14 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
 
   selected_ = selected;
   InvalidateLayer(selected_layer_owner_->layer());
+  OnSelectedChanged();
+}
+
+views::ImageView* HoldingSpaceItemView::AddCheckmark(views::View* parent) {
+  DCHECK(!checkmark_);
+  checkmark_ = parent->AddChildView(std::make_unique<views::ImageView>());
+  checkmark_->SetVisible(selected());
+  return checkmark_;
 }
 
 views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
@@ -253,6 +282,10 @@ views::ToggleImageButton* HoldingSpaceItemView::AddPin(views::View* parent) {
                                         base::Unretained(this)));
 
   return pin_;
+}
+
+void HoldingSpaceItemView::OnSelectedChanged() {
+  checkmark_->SetVisible(selected());
 }
 
 void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {
@@ -306,7 +339,7 @@ void HoldingSpaceItemView::OnPinPressed() {
 void HoldingSpaceItemView::UpdatePin() {
   if (!IsMouseHovered()) {
     pin_->SetVisible(false);
-    OnPinVisiblityChanged(false);
+    OnPinVisibilityChanged(false);
     return;
   }
 
@@ -316,7 +349,7 @@ void HoldingSpaceItemView::UpdatePin() {
 
   pin_->SetToggled(!is_item_pinned);
   pin_->SetVisible(true);
-  OnPinVisiblityChanged(true);
+  OnPinVisibilityChanged(true);
 }
 
 BEGIN_METADATA(HoldingSpaceItemView, views::View)
