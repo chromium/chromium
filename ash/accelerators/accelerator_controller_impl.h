@@ -229,6 +229,9 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
   void ParseSideVolumeButtonLocationInfo();
 
  private:
+  // A map for looking up actions from accelerators.
+  using AcceleratorActionMap = std::map<ui::Accelerator, AcceleratorAction>;
+
   // Initializes the accelerators this class handles as a target.
   void Init();
 
@@ -302,7 +305,7 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
 
   // A map from accelerators to the AcceleratorAction values, which are used in
   // the implementation.
-  std::map<ui::Accelerator, AcceleratorAction> accelerators_;
+  AcceleratorActionMap accelerators_;
 
   std::map<AcceleratorAction, const DeprecatedAcceleratorData*>
       actions_with_deprecations_;
