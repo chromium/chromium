@@ -2733,9 +2733,15 @@ TEST_F(DownloadProtectionServiceTest,
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   EXPECT_EQ(0, sb_service_->download_report_count());
 
-  // Report successfully sent if user opted-in extended reporting, not in
-  // incognito, and download item has a token stored.
+  // No report sent if the download is not considered dangerous.
   SetExtendedReportingPreference(true);
+  download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
+  EXPECT_EQ(0, sb_service_->download_report_count());
+
+  // Report successfully sent if user opted-in extended reporting, not in
+  // incognito, download item has a token stored and the download is detected to
+  // be dangerous.
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   EXPECT_EQ(1, sb_service_->download_report_count());
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, true);
@@ -2754,6 +2760,7 @@ TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   base::FilePath target_path;
   target_path = target_path.AppendASCII("filepath");
   EXPECT_CALL(item, GetTargetFilePath()).WillRepeatedly(ReturnRef(target_path));
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
 
   TestExtensionEventObserver event_observer(test_event_router_);
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);

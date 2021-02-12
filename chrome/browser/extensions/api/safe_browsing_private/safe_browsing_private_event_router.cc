@@ -109,6 +109,27 @@ bool IsClientValid(const std::string& dm_token,
   return client && client->dm_token() == dm_token;
 }
 
+std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
+  switch (danger_type) {
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
+      return "DANGEROUS_FILE_TYPE";
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
+      return "DANGEROUS_URL";
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
+      return "DANGEROUS";
+    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
+      return "UNCOMMON";
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
+      return "DANGEROUS_HOST";
+    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
+      return "POTENTIALLY_UNWANTED";
+    default:
+      // This can be reached when reporting an opened download that doesn't have
+      // a verdict yet.
+      return "UNKNOWN";
+  }
+}
+
 }  // namespace
 
 namespace extensions {
@@ -281,6 +302,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
+    const download::DownloadDangerType danger_type,
     const int64_t content_size) {
   api::safe_browsing_private::DangerousDownloadInfo params;
   params.url = url.spec();
@@ -312,7 +334,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
           [](const std::string& url, const std::string& file_name,
              const std::string& download_digest_sha256,
              const std::string& user_name, const std::string& mime_type,
-             const int64_t content_size) {
+             const std::string& threat_type, const int64_t content_size) {
             // Convert |params| to a real-time event dictionary and report it.
             base::Value event(base::Value::Type::DICTIONARY);
             event.SetStringKey(kKeyUrl, url);
@@ -330,10 +352,12 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
                                safe_browsing::EventResultToString(
                                    safe_browsing::EventResult::BYPASSED));
             event.SetBoolKey(kKeyClickedThrough, true);
+            event.SetStringKey(kKeyThreatType, threat_type);
             return event;
           },
           params.url, params.file_name, params.download_digest_sha256,
-          params.user_name, mime_type, content_size));
+          params.user_name, mime_type, DangerTypeToThreatType(danger_type),
+          content_size));
 }
 
 void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
@@ -710,6 +734,19 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const GURL& url,
     const std::string& file_name,
     const std::string& download_digest_sha256,
+    const download::DownloadDangerType danger_type,
+    const std::string& mime_type,
+    const int64_t content_size,
+    safe_browsing::EventResult event_result) {
+  OnDangerousDownloadEvent(url, file_name, download_digest_sha256,
+                           DangerTypeToThreatType(danger_type), mime_type,
+                           content_size, event_result);
+}
+
+void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
+    const GURL& url,
+    const std::string& file_name,
+    const std::string& download_digest_sha256,
     const std::string& threat_type,
     const std::string& mime_type,
     const int64_t content_size,
@@ -751,6 +788,18 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
           },
           url.spec(), file_name, download_digest_sha256, GetProfileUserName(),
           threat_type, mime_type, content_size, event_result));
+}
+
+void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
+    const GURL& url,
+    const std::string& file_name,
+    const std::string& download_digest_sha256,
+    const download::DownloadDangerType danger_type,
+    const std::string& mime_type,
+    const int64_t content_size) {
+  OnDangerousDownloadWarningBypassed(url, file_name, download_digest_sha256,
+                                     DangerTypeToThreatType(danger_type),
+                                     mime_type, content_size);
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(

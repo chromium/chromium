@@ -33,27 +33,6 @@ bool DangerTypeIsDangerous(download::DownloadDangerType danger_type) {
           danger_type == download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED);
 }
 
-std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
-  switch (danger_type) {
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
-      return "DANGEROUS_FILE_TYPE";
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
-      return "DANGEROUS_URL";
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-      return "DANGEROUS";
-    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
-      return "UNCOMMON";
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
-      return "DANGEROUS_HOST";
-    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-      return "POTENTIALLY_UNWANTED";
-    default:
-      // Expects to only be called with the dangerous threat types listed above.
-      NOTREACHED() << "Unexpected danger type: " << danger_type;
-      return "UNKNOWN";
-  }
-}
-
 void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
   // If |download| has a deep scanning malware verdict, then it means the
   // dangerous file has already been reported.
@@ -76,9 +55,8 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
       router->OnDangerousDownloadEvent(
           download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
           base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-          DangerTypeToThreatType(download->GetDangerType()),
-          download->GetMimeType(), download->GetTotalBytes(),
-          EventResult::WARNED);
+          download->GetDangerType(), download->GetMimeType(),
+          download->GetTotalBytes(), EventResult::WARNED);
     }
   }
 }
@@ -98,7 +76,7 @@ void ReportDangerousDownloadWarningBypassed(
       router->OnDangerousDownloadWarningBypassed(
           download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
           base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-          DangerTypeToThreatType(original_danger_type), download->GetMimeType(),
+          original_danger_type, download->GetMimeType(),
           download->GetTotalBytes());
     }
   }

@@ -408,6 +408,13 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
   if (browser_context->IsOffTheRecord())
     return;
 
+  // Only report downloads that are known to be dangerous, or downloads that are
+  // opened while scanning isn't done.
+  if (!item->IsDangerous() &&
+      item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
+    return;
+  }
+
   OnDangerousDownloadOpened(item, profile);
   if (sb_service_ &&
       !token.empty() &&  // Only dangerous downloads have token stored.
@@ -569,7 +576,7 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
     router->OnDangerousDownloadOpened(
         item->GetURL(), item->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-        item->GetMimeType(), item->GetTotalBytes());
+        item->GetMimeType(), item->GetDangerType(), item->GetTotalBytes());
   }
 }
 

@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -120,6 +121,7 @@ class SafeBrowsingPrivateEventRouter
                                  const std::string& file_name,
                                  const std::string& download_digest_sha256,
                                  const std::string& mime_type,
+                                 const download::DownloadDangerType danger_type,
                                  const int64_t content_size);
 
   // Notifies listeners that the user saw a security interstitial.
@@ -178,6 +180,13 @@ class SafeBrowsingPrivateEventRouter
                                 const std::string& mime_type,
                                 const int64_t content_size,
                                 safe_browsing::EventResult event_result);
+  void OnDangerousDownloadEvent(const GURL& url,
+                                const std::string& file_name,
+                                const std::string& download_digest_sha256,
+                                const download::DownloadDangerType danger_type,
+                                const std::string& mime_type,
+                                const int64_t content_size,
+                                safe_browsing::EventResult event_result);
 
   // Notifies listeners that the user bypassed a download warning.
   // - |url| is the download URL
@@ -189,6 +198,13 @@ class SafeBrowsingPrivateEventRouter
       const std::string& file_name,
       const std::string& download_digest_sha256,
       const std::string& threat_type,
+      const std::string& mime_type,
+      const int64_t content_size);
+  void OnDangerousDownloadWarningBypassed(
+      const GURL& url,
+      const std::string& file_name,
+      const std::string& download_digest_sha256,
+      const download::DownloadDangerType danger_type,
       const std::string& mime_type,
       const int64_t content_size);
 

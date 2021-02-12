@@ -29,6 +29,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -171,9 +172,11 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
 
   void TriggerOnDangerousDownloadOpenedEvent() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnDangerousDownloadOpened(GURL("https://evil.com/malware.exe"),
-                                    "/path/to/malware.exe",
-                                    "sha256_of_malware_exe", "exe", 1234);
+        ->OnDangerousDownloadOpened(
+            GURL("https://evil.com/malware.exe"), "/path/to/malware.exe",
+            "sha256_of_malware_exe", "exe",
+            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
+            1234);
   }
 
   void TriggerOnSecurityInterstitialShownEvent() {
