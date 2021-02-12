@@ -10204,6 +10204,13 @@ histogram as enum -->
   <int value="3" label="Reading"/>
 </enum>
 
+<enum name="ChromeOSHiddenUserPodsOfflineLogin">
+  <summary>Tracks if offline user login is allowed.</summary>
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Blocked by time limit expired"/>
+  <int value="2" label="Blocked by invalid sync token"/>
+</enum>
+
 <enum name="ChromeOSJankinessTriggerStatus">
   <int value="0" label="CollectionAttempted"/>
   <int value="1" label="Throttled"/>

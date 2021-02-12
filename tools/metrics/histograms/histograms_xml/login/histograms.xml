@@ -128,6 +128,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Login.OfflineLoginWithHiddenUserPods"
+    enum="ChromeOSHiddenUserPodsOfflineLogin" expires_after="M95">
+  <owner>mslus@chromium.org</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Records offline login attempts with user pods hidden on the login screen.
+  </summary>
+</histogram>
+
 <histogram name="Login.OfflineSuccess.Attempts" units="units"
     expires_after="2021-07-18">
   <owner>rsorokin@chromium.org</owner>
