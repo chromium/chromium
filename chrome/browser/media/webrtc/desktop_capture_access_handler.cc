@@ -36,8 +36,6 @@
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/media_stream_request.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -139,15 +137,14 @@ struct DesktopCaptureAccessHandler::PendingAccessRequest {
 
 DesktopCaptureAccessHandler::DesktopCaptureAccessHandler()
     : picker_factory_(new DesktopMediaPickerFactoryImpl()),
-      display_notification_(true) {
-  AddNotificationObserver();
-}
+      display_notification_(true),
+      web_contents_collection_(this) {}
 
 DesktopCaptureAccessHandler::DesktopCaptureAccessHandler(
     std::unique_ptr<DesktopMediaPickerFactory> picker_factory)
-    : picker_factory_(std::move(picker_factory)), display_notification_(false) {
-  AddNotificationObserver();
-}
+    : picker_factory_(std::move(picker_factory)),
+      display_notification_(false),
+      web_contents_collection_(this) {}
 
 DesktopCaptureAccessHandler::~DesktopCaptureAccessHandler() = default;
 
@@ -479,6 +476,9 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
     }
   }
 
+  // Ensure we are observing the deletion of |web_contents|.
+  web_contents_collection_.StartObserving(web_contents);
+
   RequestsQueue& queue = pending_requests_[web_contents];
   queue.push_back(std::make_unique<PendingAccessRequest>(
       std::move(picker), request, std::move(callback), extension));
@@ -607,21 +607,11 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
     ProcessQueuedAccessRequest(queue, web_contents);
 }
 
-void DesktopCaptureAccessHandler::AddNotificationObserver() {
+void DesktopCaptureAccessHandler::WebContentsDestroyed(
+    content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  notifications_registrar_.Add(this,
-                               content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-                               content::NotificationService::AllSources());
-}
 
-void DesktopCaptureAccessHandler::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_DESTROYED, type);
-
-  pending_requests_.erase(content::Source<content::WebContents>(source).ptr());
+  pending_requests_.erase(web_contents);
 }
 
 void DesktopCaptureAccessHandler::DeletePendingAccessRequest(

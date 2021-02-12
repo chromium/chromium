@@ -18,8 +18,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/desktop_media_id.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,10 +87,7 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void NotifyWebContentsDestroyed() {
-    access_handler_->Observe(
-        content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-        content::Source<content::WebContents>(web_contents()),
-        content::NotificationDetails());
+    access_handler_->WebContentsDestroyed(web_contents());
   }
 
   DesktopMediaPicker::Params GetParams() {

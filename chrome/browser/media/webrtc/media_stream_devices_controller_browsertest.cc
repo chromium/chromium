@@ -941,15 +941,18 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   const int prompt_contents_index =
       browser()->tab_strip_model()->GetIndexOfWebContents(prompt_contents);
 
-  // Now request permissions, but before the callback is asynchronously called,
-  // destroy the tab.
+  // Now request permissions, but before the request is handled, destroy the
+  // tab.
   permission_bubble_media_access_handler_->HandleRequest(
       prompt_contents,
       CreateRequest(example_audio_id(), example_video_id(), false),
       base::BindOnce([](const blink::MediaStreamDevices& devices,
                         blink::mojom::MediaStreamRequestResult result,
                         std::unique_ptr<content::MediaStreamUI> ui) {
-        ADD_FAILURE() << " this callback shouldn't be reached";
+        // The permission may be dismissed before we have a chance to delete the
+        // request.
+        EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
+                  result);
       }),
       nullptr);
   // Since the mock prompt factory holds a reference to the

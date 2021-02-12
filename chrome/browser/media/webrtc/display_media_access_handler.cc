@@ -57,17 +57,15 @@ struct DisplayMediaAccessHandler::PendingAccessRequest {
 };
 
 DisplayMediaAccessHandler::DisplayMediaAccessHandler()
-    : picker_factory_(new DesktopMediaPickerFactoryImpl()) {
-  AddNotificationObserver();
-}
+    : picker_factory_(new DesktopMediaPickerFactoryImpl()),
+      web_contents_collection_(this) {}
 
 DisplayMediaAccessHandler::DisplayMediaAccessHandler(
     std::unique_ptr<DesktopMediaPickerFactory> picker_factory,
     bool display_notification)
     : display_notification_(display_notification),
-      picker_factory_(std::move(picker_factory)) {
-  AddNotificationObserver();
-}
+      picker_factory_(std::move(picker_factory)),
+      web_contents_collection_(this) {}
 
 DisplayMediaAccessHandler::~DisplayMediaAccessHandler() = default;
 
@@ -171,7 +169,11 @@ void DisplayMediaAccessHandler::HandleRequest(
     return;
   }
 
+  // Ensure we are observing the deletion of |web_contents|.
+  web_contents_collection_.StartObserving(web_contents);
+
   RequestsQueue& queue = pending_requests_[web_contents];
+
   queue.push_back(std::make_unique<PendingAccessRequest>(
       std::move(picker), request, std::move(callback)));
   // If this is the only request then pop picker UI.
@@ -321,21 +323,11 @@ void DisplayMediaAccessHandler::OnPickerDialogResults(
     ProcessQueuedAccessRequest(queue, web_contents);
 }
 
-void DisplayMediaAccessHandler::AddNotificationObserver() {
+void DisplayMediaAccessHandler::WebContentsDestroyed(
+    content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  notifications_registrar_.Add(this,
-                               content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-                               content::NotificationService::AllSources());
-}
 
-void DisplayMediaAccessHandler::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(content::NOTIFICATION_WEB_CONTENTS_DESTROYED, type);
-
-  pending_requests_.erase(content::Source<content::WebContents>(source).ptr());
+  pending_requests_.erase(web_contents);
 }
 
 void DisplayMediaAccessHandler::DeletePendingAccessRequest(

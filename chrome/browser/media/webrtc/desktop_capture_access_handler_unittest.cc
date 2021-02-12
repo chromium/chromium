@@ -136,10 +136,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void NotifyWebContentsDestroyed() {
-    access_handler_->Observe(
-        content::NOTIFICATION_WEB_CONTENTS_DESTROYED,
-        content::Source<content::WebContents>(web_contents()),
-        content::NotificationDetails());
+    access_handler_->WebContentsDestroyed(web_contents());
   }
 
   const DesktopCaptureAccessHandler::RequestsQueues& GetRequestQueues() {
