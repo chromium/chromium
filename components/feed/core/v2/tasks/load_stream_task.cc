@@ -19,6 +19,7 @@
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 
@@ -45,9 +46,11 @@ Result::Result(Result&&) = default;
 Result& Result::operator=(Result&&) = default;
 
 LoadStreamTask::LoadStreamTask(LoadType load_type,
+                               const StreamType& stream_type,
                                FeedStream* stream,
                                base::OnceCallback<void(Result)> done_callback)
     : load_type_(load_type),
+      stream_type_(stream_type),
       stream_(stream),
       done_callback_(std::move(done_callback)) {
   latencies_ = std::make_unique<LoadLatencyTimes>();
@@ -63,8 +66,9 @@ void LoadStreamTask::Run() {
   // task is added to the task queue. Maybe we can simplify this.
 
   // First, ensure we still should load the model.
-  LoadStreamStatus should_not_attempt_reason = stream_->ShouldAttemptLoad(
-      /*model_loading=*/true);
+  LoadStreamStatus should_not_attempt_reason =
+      stream_->ShouldAttemptLoad(stream_type_,
+                                 /*model_loading=*/true);
   if (should_not_attempt_reason != LoadStreamStatus::kNoStatus) {
     return Done(should_not_attempt_reason);
   }
@@ -75,9 +79,9 @@ void LoadStreamTask::Run() {
       (load_type_ == LoadType::kInitialLoad)
           ? LoadStreamFromStoreTask::LoadType::kFullLoad
           : LoadStreamFromStoreTask::LoadType::kPendingActionsOnly;
-
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      load_from_store_type, stream_->GetStore(), stream_->MissedLastRefresh(),
+      load_from_store_type, stream_type_, stream_->GetStore(),
+      stream_->MissedLastRefresh(),
       base::BindOnce(&LoadStreamTask::LoadFromStoreComplete, GetWeakPtr()));
   load_from_store_task_->Execute(base::DoNothing());
 }
@@ -96,7 +100,7 @@ void LoadStreamTask::LoadFromStoreComplete(
       result.status == LoadStreamStatus::kLoadedFromStore) {
     auto model = std::make_unique<StreamModel>();
     model->Update(std::move(result.update_request));
-    stream_->LoadModel(std::move(model));
+    stream_->LoadModel(stream_type_, std::move(model));
     Done(LoadStreamStatus::kLoadedFromStore);
     return;
   }
@@ -111,7 +115,8 @@ void LoadStreamTask::LoadFromStoreComplete(
     stale_store_state_ = std::move(result.update_request);
   }
 
-  LoadStreamStatus final_status = stream_->ShouldMakeFeedQueryRequest();
+  LoadStreamStatus final_status =
+      stream_->ShouldMakeFeedQueryRequest(stream_type_);
   if (final_status != LoadStreamStatus::kNoStatus) {
     Done(final_status);
     return;
@@ -130,11 +135,12 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   upload_actions_result_ =
       std::make_unique<UploadActionsTask::Result>(std::move(result));
   latencies_->StepComplete(LoadLatencyTimes::kUploadActions);
+  // TODO(crbug/1152592): Send a different network request type for WebFeeds.
   stream_->GetNetwork()->SendQueryRequest(
       NetworkRequestType::kFeedQuery,
       CreateFeedQueryRefreshRequest(
           GetRequestReason(load_type_),
-          stream_->GetRequestMetadata(/*is_for_next_page=*/false),
+          stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/false),
           stream_->GetMetadata()->GetConsistencyToken()),
       force_signed_out_request,
       base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
@@ -144,7 +150,7 @@ void LoadStreamTask::QueryRequestComplete(
     FeedNetwork::QueryRequestResult result) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 
-  DCHECK(!stream_->GetModel(kInterestStream));
+  DCHECK(!stream_->GetModel(stream_type_));
 
   network_response_info_ = result.response_info;
 
@@ -169,6 +175,7 @@ void LoadStreamTask::QueryRequestComplete(
   loaded_new_content_from_network_ = true;
 
   stream_->GetStore()->OverwriteStream(
+      stream_type_,
       std::make_unique<StreamModelUpdateRequest>(
           *response_data.model_update_request),
       base::DoNothing());
@@ -183,7 +190,7 @@ void LoadStreamTask::QueryRequestComplete(
   if (load_type_ != LoadType::kBackgroundRefresh) {
     auto model = std::make_unique<StreamModel>();
     model->Update(std::move(response_data.model_update_request));
-    stream_->LoadModel(std::move(model));
+    stream_->LoadModel(stream_type_, std::move(model));
   }
 
   if (response_data.request_schedule)
@@ -198,10 +205,11 @@ void LoadStreamTask::Done(LoadStreamStatus status) {
   if (stale_store_state_ && status != LoadStreamStatus::kLoadedFromNetwork) {
     auto model = std::make_unique<StreamModel>();
     model->Update(std::move(stale_store_state_));
-    stream_->LoadModel(std::move(model));
+    stream_->LoadModel(stream_type_, std::move(model));
     status = LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure;
   }
   Result result;
+  result.stream_type = stream_type_;
   result.load_from_store_status = load_from_store_status_;
   result.stored_content_age = stored_content_age_;
   result.final_status = status;

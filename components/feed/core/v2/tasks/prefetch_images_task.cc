@@ -12,6 +12,7 @@
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/load_stream_from_store_task.h"
 
@@ -44,7 +45,8 @@ void PrefetchImagesTask::Run() {
   }
 
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, stream_->GetStore(),
+      LoadStreamFromStoreTask::LoadType::kFullLoad, kInterestStream,
+      stream_->GetStore(),
       /*missed_last_refresh=*/false,
       base::BindOnce(&PrefetchImagesTask::LoadStreamComplete,
                      base::Unretained(this)));

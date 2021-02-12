@@ -162,6 +162,7 @@ class TextProtoPrinter {
     PRINT_FIELD(next_page_token);
     PRINT_FIELD(last_added_time_millis);
     PRINT_FIELD(shared_state_id);
+    PRINT_FIELD(stream_id);
     EndMessage();
     return *this;
   }
@@ -169,6 +170,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(consistency_token);
     PRINT_FIELD(next_action_id);
+    PRINT_FIELD(stream_schema_version);
     EndMessage();
     return *this;
   }
@@ -213,6 +215,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(content_id);
     PRINT_FIELD(frame);
+    PRINT_FIELD(stream_id);
     EndMessage();
     return *this;
   }
@@ -220,6 +223,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(content_id);
     PRINT_FIELD(shared_state_data);
+    PRINT_FIELD(stream_id);
     EndMessage();
     return *this;
   }

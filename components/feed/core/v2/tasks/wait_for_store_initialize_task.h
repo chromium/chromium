@@ -27,6 +27,7 @@ class WaitForStoreInitializeTask : public offline_pages::Task {
 
   void OnStoreInitialized();
   void OnMetadataLoaded(std::unique_ptr<feedstore::Metadata> metadata);
+  void Done(feedstore::Metadata metadata);
 
   FeedStream* stream_;
   FeedStore* store_;

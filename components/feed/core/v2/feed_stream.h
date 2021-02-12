@@ -98,6 +98,10 @@ class FeedStream : public FeedStreamApi,
 
     LocalActionId GetNextActionId();
 
+    const feedstore::Metadata& GetMetadataProtoForTesting() const {
+      return metadata_;
+    }
+
    private:
     FeedStore* store_;
     feedstore::Metadata metadata_;
@@ -199,7 +203,8 @@ class FeedStream : public FeedStreamApi,
   // State shared for the sake of implementing FeedStream. Typically these
   // functions are used by tasks.
 
-  void LoadModel(std::unique_ptr<StreamModel> model);
+  void LoadModel(const StreamType& stream_type,
+                 std::unique_ptr<StreamModel> model);
 
   void SetRequestSchedule(RequestSchedule schedule);
 
@@ -227,7 +232,8 @@ class FeedStream : public FeedStreamApi,
 
   // Determines if we should attempt loading the stream or refreshing at all.
   // Returns |LoadStreamStatus::kNoStatus| if loading may be attempted.
-  LoadStreamStatus ShouldAttemptLoad(bool model_loading = false);
+  LoadStreamStatus ShouldAttemptLoad(const StreamType& stream_type,
+                                     bool model_loading = false);
 
   // Whether the last scheduled refresh was missed.
   bool MissedLastRefresh();
@@ -237,7 +243,8 @@ class FeedStream : public FeedStreamApi,
   // Otherwise returns the reason. If |consume_quota| is false, no quota is
   // consumed. This can be used to predict the likely result on a subsequent
   // call.
-  LoadStreamStatus ShouldMakeFeedQueryRequest(bool is_load_more = false,
+  LoadStreamStatus ShouldMakeFeedQueryRequest(const StreamType& stream_type,
+                                              bool is_load_more = false,
                                               bool consume_quota = true);
 
   // Returns true if a FeedQuery request made right now should be made without
@@ -250,7 +257,7 @@ class FeedStream : public FeedStreamApi,
 
   // Triggers a stream load. The load will be aborted if |ShouldAttemptLoad()|
   // is not true.
-  void TriggerStreamLoad();
+  void TriggerStreamLoad(const StreamType& stream_type);
 
   // Only to be called by ClearAllTask. This clears other stream data stored in
   // memory.
@@ -259,7 +266,8 @@ class FeedStream : public FeedStreamApi,
   // Returns the model if it is loaded, or null otherwise.
   StreamModel* GetModel(const StreamType& stream_type);
 
-  RequestMetadata GetRequestMetadata(bool is_for_next_page) const;
+  RequestMetadata GetRequestMetadata(const StreamType& stream_type,
+                                     bool is_for_next_page) const;
 
   const WireResponseTranslator* GetWireResponseTranslator() const {
     return wire_response_translator_;
@@ -269,7 +277,8 @@ class FeedStream : public FeedStreamApi,
   offline_pages::TaskQueue* GetTaskQueueForTesting();
   // Loads |model|. Should be used for testing in place of typical model
   // loading from network or storage.
-  void LoadModelForTesting(std::unique_ptr<StreamModel> model);
+  void LoadModelForTesting(const StreamType& stream_type,
+                           std::unique_ptr<StreamModel> model);
   void SetWireResponseTranslatorForTesting(
       const WireResponseTranslator* wire_response_translator) {
     wire_response_translator_ = wire_response_translator;
@@ -304,7 +313,7 @@ class FeedStream : public FeedStreamApi,
   }
 
   // Re-evaluate whether or not activity logging should currently be enabled.
-  void UpdateIsActivityLoggingEnabled();
+  void UpdateIsActivityLoggingEnabled(const StreamType& stream_type);
 
   void GetPrefetchSuggestions(
       base::OnceCallback<void(std::vector<offline_pages::PrefetchSuggestion>)>

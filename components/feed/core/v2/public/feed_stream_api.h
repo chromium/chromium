@@ -35,21 +35,36 @@ class PersistentKeyValueStore;
 class StreamType {
  public:
   enum class Type {
+    // An unspecified stream type. Used only to represent an uninitialized
+    // stream type value.
+    kUnspecified,
+    // The For-You feed stream.
     kInterest,
+    // The Web Feed stream.
     kWebFeed,
   };
-  constexpr explicit StreamType(Type t) : type(t) {}
-  bool operator<(const StreamType& rhs) const { return type < rhs.type; }
-  bool operator==(const StreamType& rhs) const { return type == rhs.type; }
+  constexpr StreamType() = default;
+  constexpr explicit StreamType(Type t) : type_(t) {}
+  bool operator<(const StreamType& rhs) const { return type_ < rhs.type_; }
+  bool operator==(const StreamType& rhs) const { return type_ == rhs.type_; }
 
-  bool IsInterest() const { return type == Type::kInterest; }
-  bool IsWebFeed() const { return type == Type::kWebFeed; }
+  bool IsInterest() const { return type_ == Type::kInterest; }
+  bool IsWebFeed() const { return type_ == Type::kWebFeed; }
+
+  // Returns a human-readable value, for debugging/DCHECK prints.
+  std::string ToString() const;
 
  private:
-  Type type = Type::kInterest;
+  Type type_ = Type::kUnspecified;
 };
 
+inline std::ostream& operator<<(std::ostream& os,
+                                const StreamType& stream_type) {
+  return os << stream_type.ToString();
+}
+
 constexpr StreamType kInterestStream(StreamType::Type::kInterest);
+constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
 
 // This is the public access point for interacting with the Feed stream
 // contents.

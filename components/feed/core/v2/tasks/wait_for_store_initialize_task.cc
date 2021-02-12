@@ -25,8 +25,20 @@ void WaitForStoreInitializeTask::OnStoreInitialized() {
 
 void WaitForStoreInitializeTask::OnMetadataLoaded(
     std::unique_ptr<feedstore::Metadata> metadata) {
-  if (metadata)
-    stream_->GetMetadata()->Populate(std::move(*metadata));
+  if (!metadata || metadata->stream_schema_version() != 1) {
+    if (!metadata) {
+      metadata = std::make_unique<feedstore::Metadata>();
+    }
+    store_->UpgradeFromStreamSchemaV0(
+        std::move(*metadata), base::BindOnce(&WaitForStoreInitializeTask::Done,
+                                             base::Unretained(this)));
+    return;
+  }
+  Done(std::move(*metadata));
+}
+
+void WaitForStoreInitializeTask::Done(feedstore::Metadata metadata) {
+  stream_->GetMetadata()->Populate(std::move(metadata));
   TaskComplete();
 }
 

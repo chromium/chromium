@@ -46,6 +46,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   };
 
   LoadStreamFromStoreTask(LoadType load_type,
+                          const StreamType& stream_type,
                           FeedStore* store,
                           bool missed_last_refresh,
                           base::OnceCallback<void(Result)> callback);
@@ -69,6 +70,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
 
   LoadStreamStatus stale_reason_ = LoadStreamStatus::kNoStatus;
   LoadType load_type_;
+  StreamType stream_type_;
   FeedStore* store_;  // Unowned.
   bool ignore_staleness_ = false;
   bool missed_last_refresh_ = false;

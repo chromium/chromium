@@ -56,7 +56,8 @@ void GetPrefetchSuggestionsTask::Run() {
   }
 
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, stream_->GetStore(),
+      LoadStreamFromStoreTask::LoadType::kFullLoad, kInterestStream,
+      stream_->GetStore(),
       /*missed_last_refresh=*/false,
       base::BindOnce(&GetPrefetchSuggestionsTask::LoadStreamComplete,
                      base::Unretained(this)));

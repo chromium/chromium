@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/json/string_escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -46,6 +47,10 @@ void StreamModel::SetStoreObserver(StoreObserver* store_observer) {
   DCHECK(!store_observer || !store_observer_)
       << "Attempting to set store_observer multiple times";
   store_observer_ = store_observer;
+}
+
+void StreamModel::SetStreamType(const StreamType& stream_type) {
+  stream_type_ = stream_type;
 }
 
 void StreamModel::AddObserver(Observer* observer) {
@@ -108,6 +113,7 @@ void StreamModel::Update(
       }
       // Note: We might be overwriting some shared-states unnecessarily.
       StoreUpdate store_update;
+      store_update.stream_type = stream_type_;
       store_update.overwrite_stream_data = has_clear_all;
       store_update.update_request =
           std::make_unique<StreamModelUpdateRequest>(*update_request);
@@ -169,6 +175,7 @@ void StreamModel::ExecuteOperations(
 
   if (store_observer_) {
     StoreUpdate store_update;
+    store_update.stream_type = stream_type_;
     store_update.operations = std::move(operations);
     store_update.sequence_number = next_structure_sequence_number_++;
     store_observer_->OnStoreChange(std::move(store_update));

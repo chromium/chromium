@@ -14,6 +14,7 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/types.h"
 
@@ -27,10 +28,12 @@ LoadStreamFromStoreTask::Result& LoadStreamFromStoreTask::Result::operator=(
 
 LoadStreamFromStoreTask::LoadStreamFromStoreTask(
     LoadType load_type,
+    const StreamType& stream_type,
     FeedStore* store,
     bool missed_last_refresh,
     base::OnceCallback<void(Result)> callback)
     : load_type_(load_type),
+      stream_type_(stream_type),
       store_(store),
       missed_last_refresh_(missed_last_refresh),
       result_callback_(std::move(callback)),
@@ -40,6 +43,7 @@ LoadStreamFromStoreTask::~LoadStreamFromStoreTask() = default;
 
 void LoadStreamFromStoreTask::Run() {
   store_->LoadStream(
+      stream_type_,
       base::BindOnce(&LoadStreamFromStoreTask::LoadStreamDone, GetWeakPtr()));
 }
 
@@ -88,7 +92,8 @@ void LoadStreamFromStoreTask::LoadStreamDone(
   }
 
   store_->ReadContent(
-      std::move(referenced_content_ids), {result.stream_data.shared_state_id()},
+      stream_type_, std::move(referenced_content_ids),
+      {result.stream_data.shared_state_id()},
       base::BindOnce(&LoadStreamFromStoreTask::LoadContentDone, GetWeakPtr()));
 
   update_request_->stream_data = std::move(result.stream_data);

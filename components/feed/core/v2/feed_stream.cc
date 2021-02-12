@@ -26,6 +26,7 @@
 #include "components/feed/core/v2/offline_page_spy.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/refresh_task_scheduler.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream_model.h"
@@ -247,14 +248,13 @@ StreamModel* FeedStream::GetModel(const StreamType& stream_type) {
   return stream ? stream->model.get() : nullptr;
 }
 
-void FeedStream::TriggerStreamLoad() {
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
-  Stream& stream = GetStream(kInterestStream);
+void FeedStream::TriggerStreamLoad(const StreamType& stream_type) {
+  Stream& stream = GetStream(stream_type);
   if (stream.model || stream.model_loading_in_progress)
     return;
 
   // If we should not load the stream, abort and send a zero-state update.
-  LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad();
+  LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad(stream_type);
   if (do_not_attempt_reason != LoadStreamStatus::kNoStatus) {
     InitialStreamLoadComplete(LoadStreamTask::Result(do_not_attempt_reason));
     return;
@@ -264,20 +264,19 @@ void FeedStream::TriggerStreamLoad() {
 
   stream.surface_updater->LoadStreamStarted();
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      LoadStreamTask::LoadType::kInitialLoad, this,
+      LoadStreamTask::LoadType::kInitialLoad, stream_type, this,
       base::BindOnce(&FeedStream::InitialStreamLoadComplete,
                      base::Unretained(this))));
 }
 
 void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
-  Stream& stream = GetStream(kInterestStream);
+  Stream& stream = GetStream(result.stream_type);
   PopulateDebugStreamData(result, *profile_prefs_);
   metrics_reporter_->OnLoadStream(
       result.load_from_store_status, result.final_status,
       result.loaded_new_content_from_network, result.stored_content_age,
       std::move(result.latencies));
-  UpdateIsActivityLoggingEnabled();
+  UpdateIsActivityLoggingEnabled(result.stream_type);
 
   stream.model_loading_in_progress = false;
   stream.surface_updater->LoadStreamComplete(stream.model != nullptr,
@@ -301,8 +300,8 @@ bool FeedStream::IsActivityLoggingEnabled() const {
   return is_activity_logging_enabled_ && CanUploadActions();
 }
 
-void FeedStream::UpdateIsActivityLoggingEnabled() {
-  Stream& stream = GetStream(kInterestStream);
+void FeedStream::UpdateIsActivityLoggingEnabled(const StreamType& stream_type) {
+  Stream& stream = GetStream(stream_type);
   is_activity_logging_enabled_ =
       stream.model &&
       ((stream.model->signed_in() && stream.model->logging_enabled()) ||
@@ -328,7 +327,7 @@ void FeedStream::AttachSurface(SurfaceInterface* surface) {
     return;
   }
 
-  TriggerStreamLoad();
+  TriggerStreamLoad(surface->GetStreamType());
   stream.surface_updater->SurfaceAdded(surface);
 
   // Cancel any scheduled model unload task.
@@ -400,7 +399,7 @@ void FeedStream::LoadMore(const SurfaceInterface& surface,
   }
   // We want to abort early to avoid showing a loading spinner if it's not
   // necessary.
-  if (ShouldMakeFeedQueryRequest(/*is_load_more=*/true,
+  if (ShouldMakeFeedQueryRequest(surface.GetStreamType(), /*is_load_more=*/true,
                                  /*consume_quota=*/false) !=
       LoadStreamStatus::kNoStatus) {
     return std::move(callback).Run(false);
@@ -414,15 +413,14 @@ void FeedStream::LoadMore(const SurfaceInterface& surface,
   load_more_complete_callbacks_.push_back(std::move(callback));
   if (load_more_complete_callbacks_.size() == 1) {
     task_queue_.AddTask(std::make_unique<LoadMoreTask>(
-        this,
+        surface.GetStreamType(), this,
         base::BindOnce(&FeedStream::LoadMoreComplete, base::Unretained(this))));
   }
 }
 
 void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
-  UpdateIsActivityLoggingEnabled();
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
-  Stream& stream = GetStream(kInterestStream);
+  UpdateIsActivityLoggingEnabled(result.stream_type);
+  Stream& stream = GetStream(result.stream_type);
   metrics_reporter_->OnLoadMore(result.final_status);
   stream.surface_updater->SetLoadingMore(false);
   std::vector<base::OnceCallback<void(bool)>> moved_callbacks =
@@ -537,8 +535,8 @@ void FeedStream::ForceRefreshForDebugging() {
 
 void FeedStream::ForceRefreshForDebuggingTask() {
   UnloadModel(kInterestStream);
-  store_->ClearStreamData(base::DoNothing());
-  TriggerStreamLoad();
+  store_->ClearStreamData(kInterestStream, base::DoNothing());
+  TriggerStreamLoad(kInterestStream);
 }
 
 std::string FeedStream::DumpStateForDebugging() {
@@ -585,8 +583,9 @@ bool FeedStream::HasSurfaceAttached() const {
   return stream && stream->surface_updater->HasSurfaceAttached();
 }
 
-void FeedStream::LoadModelForTesting(std::unique_ptr<StreamModel> model) {
-  LoadModel(std::move(model));
+void FeedStream::LoadModelForTesting(const StreamType& stream_type,
+                                     std::unique_ptr<StreamModel> model) {
+  LoadModel(stream_type, std::move(model));
 }
 offline_pages::TaskQueue* FeedStream::GetTaskQueueForTesting() {
   return &task_queue_;
@@ -605,28 +604,30 @@ void FeedStream::SetIdleCallbackForTesting(
 void FeedStream::OnStoreChange(StreamModel::StoreUpdate update) {
   if (!update.operations.empty()) {
     DCHECK(!update.update_request);
-    store_->WriteOperations(update.sequence_number, update.operations);
+    store_->WriteOperations(update.stream_type, update.sequence_number,
+                            update.operations);
   } else {
     DCHECK(update.update_request);
     if (update.overwrite_stream_data) {
       DCHECK_EQ(update.sequence_number, 0);
-      store_->OverwriteStream(std::move(update.update_request),
+      store_->OverwriteStream(update.stream_type,
+                              std::move(update.update_request),
                               base::DoNothing());
     } else {
-      store_->SaveStreamUpdate(update.sequence_number,
+      store_->SaveStreamUpdate(update.stream_type, update.sequence_number,
                                std::move(update.update_request),
                                base::DoNothing());
     }
   }
 }
 
-LoadStreamStatus FeedStream::ShouldAttemptLoad(bool model_loading) {
+LoadStreamStatus FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
+                                               bool model_loading) {
   // Don't try to load the model if it's already loaded, or in the process of
   // being loaded. Because |ShouldAttemptLoad()| is used both before and during
   // the load process, we need to ignore this check when |model_loading| is
   // true.
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
-  Stream& stream = GetStream(kInterestStream);
+  Stream& stream = GetStream(stream_type);
   if (stream.model || (!model_loading && stream.model_loading_in_progress))
     return LoadStreamStatus::kModelAlreadyLoaded;
 
@@ -651,15 +652,16 @@ bool FeedStream::MissedLastRefresh() {
   return scheduled_time < base::Time::Now();
 }
 
-LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(bool is_load_more,
-                                                        bool consume_quota) {
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
-  Stream& stream = GetStream(kInterestStream);
+LoadStreamStatus FeedStream::ShouldMakeFeedQueryRequest(
+    const StreamType& stream_type,
+    bool is_load_more,
+    bool consume_quota) {
+  Stream& stream = GetStream(stream_type);
   if (!is_load_more) {
     // Time has passed since calling |ShouldAttemptLoad()|, call it again to
     // confirm we should still attempt loading.
     const LoadStreamStatus should_not_attempt_reason =
-        ShouldAttemptLoad(/*model_loading=*/true);
+        ShouldAttemptLoad(stream_type, /*model_loading=*/true);
     if (should_not_attempt_reason != LoadStreamStatus::kNoStatus) {
       return should_not_attempt_reason;
     }
@@ -687,9 +689,9 @@ bool FeedStream::ShouldForceSignedOutFeedQueryRequest() const {
   return base::TimeTicks::Now() < signed_out_refreshes_until_;
 }
 
-RequestMetadata FeedStream::GetRequestMetadata(bool is_for_next_page) const {
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
-  const Stream* stream = FindStream(kInterestStream);
+RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
+                                               bool is_for_next_page) const {
+  const Stream* stream = FindStream(stream_type);
   DCHECK(stream);
   RequestMetadata result;
   result.chrome_info = chrome_info_;
@@ -726,10 +728,11 @@ RequestMetadata FeedStream::GetRequestMetadata(bool is_for_next_page) const {
 }
 
 void FeedStream::OnEulaAccepted() {
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
-  Stream& stream = GetStream(kInterestStream);
-  if (stream.surface_updater->HasSurfaceAttached())
-    TriggerStreamLoad();
+  for (auto& item : streams_) {
+    if (item.second.surface_updater->HasSurfaceAttached()) {
+      TriggerStreamLoad(item.second.type);
+    }
+  }
 }
 
 void FeedStream::OnAllHistoryDeleted() {
@@ -771,14 +774,14 @@ void FeedStream::ExecuteRefreshTask() {
   // through this refresh, it will be overwritten.
   SetRequestSchedule(feed::prefs::GetRequestSchedule(*profile_prefs_));
 
-  LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad();
+  LoadStreamStatus do_not_attempt_reason = ShouldAttemptLoad(kInterestStream);
   if (do_not_attempt_reason != LoadStreamStatus::kNoStatus) {
     BackgroundRefreshComplete(LoadStreamTask::Result(do_not_attempt_reason));
     return;
   }
 
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      LoadStreamTask::LoadType::kBackgroundRefresh, this,
+      LoadStreamTask::LoadType::kBackgroundRefresh, kInterestStream, this,
       base::BindOnce(&FeedStream::BackgroundRefreshComplete,
                      base::Unretained(this))));
 }
@@ -834,17 +837,18 @@ void FeedStream::UploadAction(
       std::move(action), upload_now, this, std::move(callback)));
 }
 
-void FeedStream::LoadModel(std::unique_ptr<StreamModel> model) {
-  // TODO(crbug/1152592): Parameterize stream loading by stream type.
-  Stream& stream = GetStream(kInterestStream);
+void FeedStream::LoadModel(const StreamType& stream_type,
+                           std::unique_ptr<StreamModel> model) {
+  Stream& stream = GetStream(stream_type);
   DCHECK(!stream.model);
   stream.model = std::move(model);
+  stream.model->SetStreamType(stream_type);
   stream.model->SetStoreObserver(this);
   stream.surface_updater->SetModel(stream.model.get());
   if (stream.type.IsInterest()) {
     offline_page_spy_->SetModel(stream.model.get());
   }
-  ScheduleModelUnloadIfNoSurfacesAttached(stream.type);
+  ScheduleModelUnloadIfNoSurfacesAttached(stream_type);
 }
 
 void FeedStream::SetRequestSchedule(RequestSchedule schedule) {

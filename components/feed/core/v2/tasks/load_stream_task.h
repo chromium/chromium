@@ -42,7 +42,7 @@ class LoadStreamTask : public offline_pages::Task {
     ~Result();
     Result(Result&&);
     Result& operator=(Result&&);
-
+    StreamType stream_type;
     // Final status of loading the stream.
     LoadStreamStatus final_status = LoadStreamStatus::kNoStatus;
     // Status of just loading the stream from the persistent store, if that
@@ -62,6 +62,7 @@ class LoadStreamTask : public offline_pages::Task {
   };
 
   LoadStreamTask(LoadType load_type,
+                 const StreamType& stream_type,
                  FeedStream* stream,
                  base::OnceCallback<void(Result)> done_callback);
   ~LoadStreamTask() override;
@@ -80,6 +81,7 @@ class LoadStreamTask : public offline_pages::Task {
   void Done(LoadStreamStatus status);
 
   LoadType load_type_;
+  StreamType stream_type_;
   FeedStream* stream_;  // Unowned.
   std::unique_ptr<LoadStreamFromStoreTask> load_from_store_task_;
   std::unique_ptr<StreamModelUpdateRequest> stale_store_state_;

@@ -6,6 +6,17 @@
 
 namespace feed {
 
+std::string StreamType::ToString() const {
+  switch (type_) {
+    case Type::kUnspecified:
+      return "Unspecified";
+    case Type::kInterest:
+      return "ForYou";
+    case Type::kWebFeed:
+      return "WebFeed";
+  }
+}
+
 FeedStreamApi::FeedStreamApi() = default;
 FeedStreamApi::~FeedStreamApi() = default;
 

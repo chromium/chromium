@@ -26,12 +26,14 @@ class FeedStream;
 class LoadMoreTask : public offline_pages::Task {
  public:
   struct Result {
+    StreamType stream_type;
     // Final status of loading the stream.
     LoadStreamStatus final_status = LoadStreamStatus::kNoStatus;
     bool loaded_new_content_from_network = false;
   };
 
-  LoadMoreTask(FeedStream* stream,
+  LoadMoreTask(const StreamType& stream_type,
+               FeedStream* stream,
                base::OnceCallback<void(Result)> done_callback);
   ~LoadMoreTask() override;
   LoadMoreTask(const LoadMoreTask&) = delete;
@@ -47,6 +49,7 @@ class LoadMoreTask : public offline_pages::Task {
   void QueryRequestComplete(FeedNetwork::QueryRequestResult result);
   void Done(LoadStreamStatus status);
 
+  StreamType stream_type_;
   FeedStream* stream_;  // Unowned.
   base::TimeTicks fetch_start_time_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;

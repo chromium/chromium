@@ -16,6 +16,7 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "components/feed/core/v2/public/feed_stream_api.h"
 #include "components/feed/core/v2/stream_model/ephemeral_change.h"
 #include "components/feed/core/v2/stream_model/feature_tree.h"
 
@@ -53,6 +54,7 @@ class StreamModel {
     ~StoreUpdate();
     StoreUpdate(StoreUpdate&&);
     StoreUpdate& operator=(StoreUpdate&&);
+    StreamType stream_type;
 
     // Sequence number to use when writing to the store.
     int32_t sequence_number = 0;
@@ -83,6 +85,7 @@ class StreamModel {
   StreamModel(const StreamModel& src) = delete;
   StreamModel& operator=(const StreamModel&) = delete;
 
+  void SetStreamType(const StreamType& stream_type);
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   void SetStoreObserver(StoreObserver* store_observer);
@@ -144,6 +147,10 @@ class StreamModel {
   const stream_model::FeatureTree* GetFinalFeatureTree() const;
 
   void UpdateFlattenedTree();
+
+  // The stream type for which this model is used. Used only for forwarding to
+  // observers.
+  StreamType stream_type_;
 
   base::ObserverList<Observer> observers_;
   StoreObserver* store_observer_ = nullptr;  // Unowned.

@@ -14,16 +14,15 @@ option optimize_for = LITE_RUNTIME;
 
 // Actual data stored by the client.
 // This data is sourced from the wire protocol, which is converted upon receipt.
-// This would replace both Journal and Content stores.
 //
-// TODO(crbug/1152592): Support multiple streams.
 // This is the 'value' in the key/value store.
 // Keys are defined as:
+// [Key format]                     -> [Record field]
 // S/<stream-id>                    -> stream_data
 // T/<stream-id>/<sequence-number>  -> stream_structures
-// c/<content-id>                   -> content
-// a/<id>                           -> action
-// s/<content-id>                   -> shared_state
+// c/<stream-id>/<content-id>       -> content
+// s/<stream-id>/<content-id>       -> shared_state
+// a/<action-id>                    -> action
 // m                                -> metadata
 message Record {
   oneof data {
@@ -52,6 +51,8 @@ message StreamData {
   bool logging_enabled = 8;
   // Has the privacy notice been fulfilled?
   bool privacy_notice_fulfilled = 9;
+  // Stream ID. Should match the id value stored in the record's key.
+  string stream_id = 10;
 
   reserved 3, 5;
 }
@@ -70,10 +71,17 @@ message Metadata {
   int32 next_action_id = 2;
   // The most recent session identifier.
   SessionID session_id = 3;
+  // Schema version number. Schema versions:
+  // 0: Initial version.
+  // 1: Current version. Added <stream-id> to the key patterns of "content" and
+  // "shared_state"
+  //    records.
+  int32 stream_schema_version = 4;
 }
 
 // A set of StreamStructures that should be applied to a stream.
 message StreamStructureSet {
+  // Stream ID. Should match the id value stored in the record's key.
   string stream_id = 1;
   int32 sequence_number = 2;
   repeated StreamStructure structures = 3;
@@ -139,6 +147,8 @@ message Content {
   // Opaque content. The UI layer knows how to parse and render this as a slice.
   bytes frame = 2;
   repeated feedwire.PrefetchMetadata prefetch_metadata = 3;
+  // Stream ID. Should match the id value stored in the record's key.
+  string stream_id = 4;
 }
 
 // This represents a shared state item.
@@ -146,6 +156,8 @@ message StreamSharedState {
   feedwire.ContentId content_id = 1;
   // Opaque data required to render content.
   bytes shared_state_data = 2;
+  // Stream ID. Should match the id value stored in the record's key.
+  string stream_id = 3;
 }
 
 // A stored action awaiting upload.
