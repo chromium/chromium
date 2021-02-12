@@ -1793,8 +1793,14 @@ WindowAgent* GetWindowAgentForOrigin(LocalFrame* frame,
 }
 
 void DocumentLoader::InitializeWindow(Document* owner_document) {
+  // Provisional frames shouldn't be doing anything other than act as a
+  // placeholder. Enforce a strict sandbox and ensure a unique opaque origin.
+  // TODO(dcheng): Actually enforce strict sandbox flags for provisional frame.
+  // For some reason, doing so breaks some random devtools tests.
   auto sandbox_flags = CalculateSandboxFlags();
-  auto security_origin = CalculateOrigin(owner_document, sandbox_flags);
+  auto security_origin = frame_->IsProvisional()
+                             ? SecurityOrigin::CreateUniqueOpaque()
+                             : CalculateOrigin(owner_document, sandbox_flags);
 
   // In some rare cases, we'll re-use a LocalDOMWindow for a new Document. For
   // example, when a script calls window.open("..."), the browser gives

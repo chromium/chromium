@@ -9773,10 +9773,11 @@ TEST_F(WebFrameTest, NavigateRemoteToLocalWithOpener) {
       popup_helper.CreateProvisional(*popup_remote_frame);
   popup_remote_frame->Swap(popup_local_frame);
 
-  // The initial document created during the remote-to-local swap should have
-  // inherited its opener's SecurityOrigin.
-  EXPECT_TRUE(main_frame->GetSecurityOrigin().CanAccess(
+  // The initial document created in a provisional frame should not be
+  // scriptable by any other frame.
+  EXPECT_FALSE(main_frame->GetSecurityOrigin().CanAccess(
       popup_helper.LocalMainFrame()->GetSecurityOrigin()));
+  EXPECT_TRUE(popup_helper.LocalMainFrame()->GetSecurityOrigin().IsOpaque());
 }
 
 TEST_F(WebFrameTest, SwapWithOpenerCycle) {

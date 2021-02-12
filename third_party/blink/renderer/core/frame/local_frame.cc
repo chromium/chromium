@@ -3001,6 +3001,15 @@ void LocalFrame::AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr info) {
 
 void LocalFrame::SwapInImmediately() {
   SwapIn();
+  // Normally, this happens as part of committing a cross-Document navigation.
+  // However, there is no navigation being committed here. Instead, the browser
+  // navigation code is optimistically early-swapping in this frame to replace a
+  // crashed subframe after starting a navigation.
+  //
+  // While the provisional frame has a unique opaque origin, the Blink bindings
+  // code still expects the WindowProxy to be initialized for the access check
+  // failed callbacks.
+  DomWindow()->GetScriptController().UpdateDocument();
 }
 
 void LocalFrame::StopLoading() {
