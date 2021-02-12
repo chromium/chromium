@@ -65,7 +65,7 @@ if (enable_vulkan) {
     deps = [
       ":vulkan_function_pointers",
       "//base",
-      "//third_party/vulkan_memory_allocator:vulkan_memory_allocator_with_usage",
+      "//third_party/vulkan_memory_allocator",
     ]
   }
 
