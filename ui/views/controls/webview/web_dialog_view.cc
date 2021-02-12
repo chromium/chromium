@@ -20,6 +20,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -68,6 +69,9 @@ void ObservableWebView::ResourceLoadComplete(
 void ObservableWebView::ResetDelegate() {
   delegate_ = nullptr;
 }
+
+BEGIN_METADATA(ObservableWebView, WebView)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // WebDialogView, public:
@@ -472,5 +476,9 @@ void WebDialogView::InitDialog() {
   if (!disable_url_load_for_test_)
     web_view_->LoadInitialURL(GetDialogContentURL());
 }
+
+BEGIN_METADATA(WebDialogView, ClientView)
+ADD_READONLY_PROPERTY_METADATA(ObservableWebView*, WebView);
+END_METADATA
 
 }  // namespace views

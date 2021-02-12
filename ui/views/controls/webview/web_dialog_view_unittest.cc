@@ -19,6 +19,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/web_dialogs/test/test_web_contents_handler.h"
@@ -182,6 +183,10 @@ TEST_F(WebDialogViewUnitTest, ObservableWebViewOnWebDialogViewClosed) {
   content::GlobalRequestID request_id;
   blink::mojom::ResourceLoadInfo resource_load_info;
   web_view()->ResourceLoadComplete(rfh, request_id, resource_load_info);
+}
+
+TEST_F(WebDialogViewUnitTest, MetadataTest) {
+  test::TestViewMetadata(web_dialog_view());
 }
 
 }  // namespace views

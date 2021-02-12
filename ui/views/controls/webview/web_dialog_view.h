@@ -17,6 +17,7 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/controls/webview/webview_export.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -33,8 +34,12 @@ namespace views {
 // A kind of webview that can notify its delegate when its content is ready.
 class ObservableWebView : public WebView {
  public:
+  METADATA_HEADER(ObservableWebView);
+
   ObservableWebView(content::BrowserContext* browser_context,
                     ui::WebDialogDelegate* delegate);
+  ObservableWebView(const ObservableWebView&) = delete;
+  ObservableWebView& operator=(const ObservableWebView&) = delete;
   ~ObservableWebView() override;
 
   // content::WebContentsObserver
@@ -51,8 +56,6 @@ class ObservableWebView : public WebView {
 
  private:
   ui::WebDialogDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObservableWebView);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,12 +76,16 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
                                      public ui::WebDialogDelegate,
                                      public WidgetDelegate {
  public:
+  METADATA_HEADER(WebDialogView);
+
   // |handler| must not be nullptr.
   // |use_dialog_frame| indicates whether to use dialog frame view for non
   // client frame view.
   WebDialogView(content::BrowserContext* context,
                 ui::WebDialogDelegate* delegate,
                 std::unique_ptr<WebContentsHandler> handler);
+  WebDialogView(const WebDialogView&) = delete;
+  WebDialogView& operator=(const WebDialogView&) = delete;
   ~WebDialogView() override;
 
   content::WebContents* web_contents();
@@ -170,6 +177,9 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   // Initializes the contents of the dialog.
   void InitDialog();
 
+  // Accessor used by metadata only.
+  ObservableWebView* GetWebView() const { return web_view_; }
+
   // This view is a delegate to the HTML content since it needs to get notified
   // about when the dialog is closing. For all other actions (besides dialog
   // closing) we delegate to the creator of this view, which we keep track of
@@ -205,8 +215,6 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   bool disable_url_load_for_test_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDialogView);
 };
 
 }  // namespace views
