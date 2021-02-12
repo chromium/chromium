@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/media_start_stop_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/features.h"
@@ -124,6 +125,18 @@ class PictureInPictureContentBrowserTest : public ContentBrowserTest {
     SetBrowserClientForTesting(old_browser_client_);
 
     ContentBrowserTest::TearDownOnMainThread();
+  }
+
+  void WaitForPlaybackState(OverlayWindow::PlaybackState playback_state) {
+    // Make sure to wait if not yet in the |playback_state| state.
+    if (overlay_window()->playback_state() != playback_state) {
+      MediaStartStopObserver observer(
+          shell()->web_contents(),
+          playback_state == OverlayWindow::PlaybackState::kPlaying
+              ? MediaStartStopObserver::Type::kStart
+              : MediaStartStopObserver::Type::kStop);
+      observer.Wait();
+    }
   }
 
   TestWebContentsDelegate* web_contents_delegate() {
@@ -302,8 +315,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
-  EXPECT_EQ(overlay_window()->playback_state(),
-            OverlayWindow::PlaybackState::kPlaying);
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPlaying);
 
   // Simulate pausing playback by interacting with the PiP window.
   ASSERT_TRUE(ExecJs(shell(), "addPauseEventListener();"));
@@ -313,8 +325,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
-  EXPECT_EQ(overlay_window()->playback_state(),
-            OverlayWindow::PlaybackState::kPaused);
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
 }
 
 class MediaSessionPictureInPictureContentBrowserTest
@@ -359,8 +370,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
-  EXPECT_EQ(overlay_window()->playback_state(),
-            OverlayWindow::PlaybackState::kPlaying);
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPlaying);
 
   // Simulate pausing playback by invoking the Media Session "pause" action
   // through interaction with the PiP window.
@@ -372,8 +382,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
-  EXPECT_EQ(overlay_window()->playback_state(),
-            OverlayWindow::PlaybackState::kPaused);
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
 }
 
 class AutoPictureInPictureContentBrowserTest
