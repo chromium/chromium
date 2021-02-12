@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_handler.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -123,16 +124,12 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
 
   chromeos::multidevice_setup::AddLocalizedStrings(source);
   source->UseStringsJs();
-  source->SetDefaultResource(
-      IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
 
-  // Note: The |kMultiDeviceSetupResourcesSize| and |kMultideviceSetupResources|
-  // fields are defined in the generated file
-  // chrome/grit/multidevice_setup_resources_map.h.
-  for (size_t i = 0; i < kMultideviceSetupResourcesSize; ++i) {
-    source->AddResourcePath(kMultideviceSetupResources[i].path,
-                            kMultideviceSetupResources[i].id);
-  }
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kMultideviceSetupResources,
+                      kMultideviceSetupResourcesSize),
+      IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());

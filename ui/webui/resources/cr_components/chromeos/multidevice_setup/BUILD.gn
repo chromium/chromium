@@ -108,8 +108,10 @@ js_type_check("closure_compile_module") {
     ":multidevice_setup.m",
     ":multidevice_setup_browser_proxy.m",
     ":multidevice_setup_delegate.m",
+    ":multidevice_setup_shared_css.m",
     ":setup_succeeded_page.m",
     ":start_setup_page.m",
+    ":ui_page.m",
     ":ui_page_container_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -148,6 +150,7 @@ js_library("multidevice_setup.m") {
     ":fake_mojo_service.m",
     ":mojo_api.m",
     ":multidevice_setup_delegate.m",
+    ":multidevice_setup_shared_css.m",
     ":password_page.m",
     ":setup_succeeded_page.m",
     ":start_setup_page.m",
@@ -171,7 +174,10 @@ js_library("multidevice_setup_delegate.m") {
 
 js_library("password_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/password_page.m.js" ]
-  deps = [ ":multidevice_setup_browser_proxy.m" ]
+  deps = [
+    ":multidevice_setup_browser_proxy.m",
+    ":multidevice_setup_shared_css.m",
+  ]
   extra_deps = [ ":password_page_module" ]
   externs_list = chrome_extension_public_externs +
                  [ "$externs_path/quick_unlock_private.js" ]
@@ -182,6 +188,7 @@ js_library("setup_succeeded_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/setup_succeeded_page.m.js" ]
   deps = [
     ":multidevice_setup_browser_proxy.m",
+    ":multidevice_setup_shared_css.m",
     ":ui_page_container_behavior.m",
   ]
   extra_deps = [ ":setup_succeeded_page_module" ]
@@ -191,6 +198,7 @@ js_library("start_setup_page.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/start_setup_page.m.js" ]
   deps = [
     ":multidevice_setup_delegate.m",
+    ":multidevice_setup_shared_css.m",
     ":ui_page_container_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -206,14 +214,29 @@ js_library("ui_page_container_behavior.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("multidevice_setup_shared_css.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.m.js" ]
+  deps = []
+  extra_deps = [ ":multidevice_setup_shared_css_module" ]
+}
+
+js_library("ui_page.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/ui_page.m.js" ]
+  deps = [ ":multidevice_setup_shared_css.m" ]
+  extra_deps = [ ":ui_page_module" ]
+}
+
 group("polymer3_elements") {
   public_deps = [
     ":button_bar_module",
+    ":icons_module",
     ":modulize",
     ":multidevice_setup_module",
+    ":multidevice_setup_shared_css_module",
     ":password_page_module",
     ":setup_succeeded_page_module",
     ":start_setup_page_module",
+    ":ui_page_module",
   ]
 }
 
@@ -255,6 +278,26 @@ polymer_modulizer("start_setup_page") {
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("multidevice_setup_shared_css") {
+  js_file = "multidevice_setup_shared_css.m.js"
+  html_file = "multidevice_setup_shared_css.html"
+  html_type = "style-module"
+}
+
+polymer_modulizer("ui_page") {
+  js_file = "ui_page.js"
+  html_file = "ui_page.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("icons") {
+  js_file = "icons.m.js"
+  html_file = "icons.html"
+  html_type = "iron-iconset"
 }
 
 js_modulizer("modulize") {

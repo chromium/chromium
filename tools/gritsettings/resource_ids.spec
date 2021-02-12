@@ -118,8 +118,9 @@
     "META": {"sizes": {"includes": [35]}},
     "includes": [1370],
   },
-  "chrome/browser/resources/chromeos/multidevice_setup/multidevice_setup_resources.grd": {
-    "structures": [1400],
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/multidevice_setup/multidevice_setup_resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [1380],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commander/commander_resources.grd": {
     "META": {"sizes": {"includes": [15]}},
