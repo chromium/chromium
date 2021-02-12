@@ -195,13 +195,18 @@ if (enable_pdf) {
     visibility = [ ":*" ]
 
     sources = [
+      "accessibility_helper.cc",
+      "accessibility_helper.h",
       "accessibility_structs.cc",
       "accessibility_structs.h",
     ]
 
     configs += [ ":pdf_common_config" ]
 
-    deps = [ "//ui/gfx/geometry" ]
+    deps = [
+      "//base",
+      "//ui/gfx/geometry",
+    ]
   }
 
   source_set("ppapi_migration") {
