@@ -39,43 +39,50 @@ void PointScanController::Start() {
 
 void PointScanController::StartHorizontalRangeScan() {
   state_ = PointScanState::kHorizontalRangeScanning;
-  horizontal_range_layer_.reset(new PointScanLayer(this));
+  horizontal_range_layer_.reset(
+      new PointScanLayer(this, PointScanLayer::Orientation::HORIZONTAL,
+                         PointScanLayer::Type::RANGE));
   horizontal_range_layer_info_.offset_bound =
       horizontal_range_layer_->bounds().width() - kDefaultRangeWidthDips;
-  horizontal_range_layer_->StartHorizontalRangeScanning();
+  horizontal_range_layer_->Start();
 }
 
 void PointScanController::StartHorizontalLineScan() {
   state_ = PointScanState::kHorizontalScanning;
   horizontal_range_layer_->Pause();
-  horizontal_line_layer_.reset(new PointScanLayer(this));
+  horizontal_line_layer_.reset(
+      new PointScanLayer(this, PointScanLayer::Orientation::HORIZONTAL,
+                         PointScanLayer::Type::LINE));
   horizontal_line_layer_info_.offset = horizontal_range_layer_info_.offset;
   horizontal_line_layer_info_.offset_start =
       horizontal_range_layer_info_.offset;
   horizontal_line_layer_info_.offset_bound =
       horizontal_range_layer_info_.offset + kDefaultRangeWidthDips;
-  horizontal_line_layer_->StartHorizontalScanning();
+  horizontal_line_layer_->Start();
 }
 
 void PointScanController::StartVerticalRangeScan() {
   state_ = PointScanState::kVerticalRangeScanning;
   horizontal_line_layer_->Pause();
   horizontal_range_layer_->SetOpacity(0);
-  vertical_range_layer_.reset(new PointScanLayer(this));
+  vertical_range_layer_.reset(
+      new PointScanLayer(this, PointScanLayer::Orientation::VERTICAL,
+                         PointScanLayer::Type::RANGE));
   vertical_range_layer_info_.offset_bound =
       vertical_range_layer_->bounds().height() - kDefaultRangeHeightDips;
-  vertical_range_layer_->StartVerticalRangeScanning();
+  vertical_range_layer_->Start();
 }
 
 void PointScanController::StartVerticalLineScan() {
   state_ = PointScanState::kVerticalScanning;
   vertical_range_layer_->Pause();
-  vertical_line_layer_.reset(new PointScanLayer(this));
+  vertical_line_layer_.reset(new PointScanLayer(
+      this, PointScanLayer::Orientation::VERTICAL, PointScanLayer::Type::LINE));
   vertical_line_layer_info_.offset = vertical_range_layer_info_.offset;
   vertical_line_layer_info_.offset_start = vertical_range_layer_info_.offset;
   vertical_line_layer_info_.offset_bound =
       vertical_range_layer_info_.offset + kDefaultRangeHeightDips;
-  vertical_line_layer_->StartVerticalScanning();
+  vertical_line_layer_->Start();
 }
 
 void PointScanController::Stop() {
