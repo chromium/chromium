@@ -75,6 +75,12 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions() {
       false);
 }
 
+bool ShouldRetrieveOptimizationGuidePredictionsOnCrossOriginNavigations() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kLoadingPredictorUseOptimizationGuide,
+      "retrieve_predictions_on_cross_origin_navigations", false);
+}
+
 size_t GetMaxInflightPreresolves() {
   return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
       kLoadingPredictorInflightPredictiveActions, "max_inflight_preresolves",

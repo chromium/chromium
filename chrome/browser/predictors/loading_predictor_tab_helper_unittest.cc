@@ -745,6 +745,140 @@ TEST_F(
       OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
 }
 
+class LoadingPredictorTabHelperOptimizationGuideDeciderCrossOriginTest
+    : public LoadingPredictorTabHelperOptimizationGuideDeciderTest {
+ public:
+  LoadingPredictorTabHelperOptimizationGuideDeciderCrossOriginTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kLoadingPredictorUseOptimizationGuide,
+          {
+              {"retrieve_predictions_on_cross_origin_navigations", "true"},
+          }},
+         // Need to add otherwise GetForProfile() returns null.
+         {optimization_guide::features::kOptimizationHints, {}}},
+        {
+            // Disabling prefetch here to test preconnect passthrough. Prefetch
+            // is
+            // tested in following test class.
+            features::kLoadingPredictorPrefetch,
+            // Disable local predictions to ensure that opt guide logic is
+            // consulted.
+            features::kLoadingPredictorUseLocalPredictions,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that document on load completed is recorded with correct navigation
+// id and that optimization guide is consulted if cross-origin feature param
+// is enabled.
+TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderCrossOriginTest,
+       DocumentOnLoadCompletedOptimizationGuideNotFromGWS) {
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::OptimizationMetadata optimization_metadata;
+  optimization_guide::proto::LoadingPredictorMetadata lp_metadata;
+  lp_metadata.add_subresources()->set_url("http://test.org/resource1");
+  lp_metadata.add_subresources()->set_url("http://other.org/resource2");
+  lp_metadata.add_subresources()->set_url("http://other.org/resource3");
+  optimization_metadata.set_loading_predictor_metadata(lp_metadata);
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
+                                base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(optimization_metadata)));
+  NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
+  auto navigation_id =
+      CreateNavigationID(GetTabID(), "http://test.org",
+                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
+
+  // Adding subframe navigation to ensure that the committed main frame url will
+  // be used.
+  auto* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  NavigateAndCommitInFrame("http://sub.test.org", subframe);
+
+  base::Optional<OptimizationGuidePrediction> prediction =
+      OptimizationGuidePrediction();
+  prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
+  url::Origin main_frame_origin = url::Origin::Create(GURL("http://test.org"));
+  PreconnectPrediction preconnect_prediction = CreatePreconnectPrediction(
+      "", false,
+      {{url::Origin::Create(GURL("http://other.org")), 1,
+        net::NetworkIsolationKey(main_frame_origin, main_frame_origin)}});
+  prediction->preconnect_prediction = preconnect_prediction;
+  prediction->predicted_subresources = {GURL("http://test.org/resource1"),
+                                        GURL("http://other.org/resource2"),
+                                        GURL("http://other.org/resource3")};
+  EXPECT_CALL(*mock_collector_,
+              RecordMainFrameLoadComplete(navigation_id, prediction));
+  tab_helper_->DocumentOnLoadCompletedInMainFrame();
+
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.OptimizationHintsReceiveStatus",
+      OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
+
+  // Make sure it is not requested for same origin.
+  NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org/otherpage");
+}
+
+// Tests that document on load completed is recorded with correct navigation
+// id and optimization guide prediction.
+TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderCrossOriginTest,
+       DocumentOnLoadCompletedOptimizationGuideStillRequestsOnGws) {
+  NavigateToGwsInMainFrame();
+
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::OptimizationMetadata optimization_metadata;
+  optimization_guide::proto::LoadingPredictorMetadata lp_metadata;
+  lp_metadata.add_subresources()->set_url("http://test.org/resource1");
+  lp_metadata.add_subresources()->set_url("http://other.org/resource2");
+  lp_metadata.add_subresources()->set_url("http://other.org/resource3");
+  optimization_metadata.set_loading_predictor_metadata(lp_metadata);
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
+      CanApplyOptimizationAsync(_, optimization_guide::proto::LOADING_PREDICTOR,
+                                base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(optimization_metadata)));
+  NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
+  auto navigation_id =
+      CreateNavigationID(GetTabID(), "http://test.org",
+                         web_contents()->GetMainFrame()->GetPageUkmSourceId());
+
+  // Adding subframe navigation to ensure that the committed main frame url will
+  // be used.
+  auto* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  NavigateAndCommitInFrame("http://sub.test.org", subframe);
+
+  base::Optional<OptimizationGuidePrediction> prediction =
+      OptimizationGuidePrediction();
+  prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
+  url::Origin main_frame_origin = url::Origin::Create(GURL("http://test.org"));
+  PreconnectPrediction preconnect_prediction = CreatePreconnectPrediction(
+      "", false,
+      {{url::Origin::Create(GURL("http://other.org")), 1,
+        net::NetworkIsolationKey(main_frame_origin, main_frame_origin)}});
+  prediction->preconnect_prediction = preconnect_prediction;
+  prediction->predicted_subresources = {GURL("http://test.org/resource1"),
+                                        GURL("http://other.org/resource2"),
+                                        GURL("http://other.org/resource3")};
+  EXPECT_CALL(*mock_collector_,
+              RecordMainFrameLoadComplete(navigation_id, prediction));
+  tab_helper_->DocumentOnLoadCompletedInMainFrame();
+
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.OptimizationHintsReceiveStatus",
+      OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
+}
+
 class LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest
     : public LoadingPredictorTabHelperOptimizationGuideDeciderTest {
  public:
