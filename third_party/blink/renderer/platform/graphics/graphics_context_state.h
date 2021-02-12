@@ -34,6 +34,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint/draw_looper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -84,11 +85,11 @@ class PLATFORM_EXPORT GraphicsContextState final {
   void SetFillColor(const Color&);
 
   // Shadow. (This will need tweaking if we use draw loopers for other things.)
-  SkDrawLooper* DrawLooper() const {
+  DrawLooper* GetDrawLooper() const {
     DCHECK_EQ(fill_flags_.getLooper(), stroke_flags_.getLooper());
     return fill_flags_.getLooper().get();
   }
-  void SetDrawLooper(sk_sp<SkDrawLooper>);
+  void SetDrawLooper(sk_sp<DrawLooper>);
 
   // Text. (See TextModeFill & friends.)
   TextDrawingModeFlags TextDrawingMode() const { return text_drawing_mode_; }

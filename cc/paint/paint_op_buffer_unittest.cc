@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_image_builder.h"
@@ -32,7 +33,6 @@
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
-#include "third_party/skia/include/effects/SkLayerDrawLooper.h"
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
 
 using testing::_;
@@ -1166,15 +1166,11 @@ std::vector<PaintFlags> test_flags = {
       flags.setColorFilter(SkColorMatrixFilter::MakeLightingFilter(
           SK_ColorYELLOW, SK_ColorGREEN));
 
-      SkLayerDrawLooper::Builder looper_builder;
-      looper_builder.addLayer();
-      looper_builder.addLayer(2.3f, 4.5f);
-      SkLayerDrawLooper::LayerInfo layer_info;
-      layer_info.fPaintBits |= SkLayerDrawLooper::kMaskFilter_Bit;
-      layer_info.fColorMode = SkBlendMode::kDst;
-      layer_info.fOffset.set(-1.f, 5.2f);
-      looper_builder.addLayer(layer_info);
-      flags.setLooper(looper_builder.detach());
+      DrawLooperBuilder looper_builder;
+      looper_builder.AddUnmodifiedContent();
+      looper_builder.AddShadow({2.3f, 4.5f}, 0, SK_ColorBLACK, 0);
+      looper_builder.AddShadow({-1.f, 5.2f}, 0, SK_ColorBLACK, 0);
+      flags.setLooper(looper_builder.Detach());
 
       sk_sp<PaintShader> shader = PaintShader::MakeColor(SK_ColorTRANSPARENT);
       PaintOpSerializationTestUtils::FillArbitraryShaderValues(shader.get(),
@@ -3158,21 +3154,17 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
 TEST(PaintOpBufferTest, DrawImageRectOpWithLooperNoImageProvider) {
   PaintOpBuffer buffer;
   PaintImage image = CreateDiscardablePaintImage(gfx::Size(100, 100));
-  SkLayerDrawLooper::Builder sk_draw_looper_builder;
-  sk_draw_looper_builder.addLayer(20.0, 20.0);
-  SkLayerDrawLooper::LayerInfo info_unmodified;
-  sk_draw_looper_builder.addLayerOnTop(info_unmodified);
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddUnmodifiedContent();
+  draw_looper_builder.AddUnmodifiedContent();
 
   PaintFlags paint_flags;
-  paint_flags.setLooper(sk_draw_looper_builder.detach());
+  paint_flags.setLooper(draw_looper_builder.Detach());
   buffer.push<DrawImageRectOp>(image, SkRect::MakeWH(100, 100),
                                SkRect::MakeWH(100, 100), SkSamplingOptions(),
                                &paint_flags, SkCanvas::kFast_SrcRectConstraint);
 
   testing::StrictMock<MockCanvas> canvas;
-  EXPECT_CALL(canvas, willSave);
-  EXPECT_CALL(canvas, didTranslate);
-  EXPECT_CALL(canvas, willRestore);
   EXPECT_CALL(canvas, onDrawImageRect2).Times(2);
 
   buffer.Playback(&canvas, PlaybackParams(nullptr));
@@ -3181,21 +3173,17 @@ TEST(PaintOpBufferTest, DrawImageRectOpWithLooperNoImageProvider) {
 TEST(PaintOpBufferTest, DrawImageRectOpWithLooperWithImageProvider) {
   PaintOpBuffer buffer;
   PaintImage image = CreateDiscardablePaintImage(gfx::Size(100, 100));
-  SkLayerDrawLooper::Builder sk_draw_looper_builder;
-  sk_draw_looper_builder.addLayer(20.0, 20.0);
-  SkLayerDrawLooper::LayerInfo info_unmodified;
-  sk_draw_looper_builder.addLayerOnTop(info_unmodified);
+  DrawLooperBuilder draw_looper_builder;
+  draw_looper_builder.AddUnmodifiedContent();
+  draw_looper_builder.AddUnmodifiedContent();
 
   PaintFlags paint_flags;
-  paint_flags.setLooper(sk_draw_looper_builder.detach());
+  paint_flags.setLooper(draw_looper_builder.Detach());
   buffer.push<DrawImageRectOp>(image, SkRect::MakeWH(100, 100),
                                SkRect::MakeWH(100, 100), SkSamplingOptions(),
                                &paint_flags, SkCanvas::kFast_SrcRectConstraint);
 
   testing::StrictMock<MockCanvas> canvas;
-  EXPECT_CALL(canvas, willSave);
-  EXPECT_CALL(canvas, didTranslate);
-  EXPECT_CALL(canvas, willRestore);
   EXPECT_CALL(canvas, onDrawImageRect2).Times(2);
 
   std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};

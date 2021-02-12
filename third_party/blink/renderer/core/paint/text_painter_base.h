@@ -55,7 +55,7 @@ class CORE_EXPORT TextPainterBase {
                                     bool horizontal,
                                     GraphicsContextStateSaver&,
                                     ShadowMode = kBothShadowsAndTextProper);
-  static sk_sp<SkDrawLooper> CreateDrawLooper(
+  static sk_sp<DrawLooper> CreateDrawLooper(
       const ShadowList* shadow_list,
       DrawLooperBuilder::ShadowAlphaMode,
       const Color& current_color,

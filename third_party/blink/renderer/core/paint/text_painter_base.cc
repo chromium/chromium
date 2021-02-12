@@ -119,7 +119,7 @@ void TextPainterBase::UpdateGraphicsContext(
 }
 
 // static
-sk_sp<SkDrawLooper> TextPainterBase::CreateDrawLooper(
+sk_sp<DrawLooper> TextPainterBase::CreateDrawLooper(
     const ShadowList* shadow_list,
     DrawLooperBuilder::ShadowAlphaMode alpha_mode,
     const Color& current_color,

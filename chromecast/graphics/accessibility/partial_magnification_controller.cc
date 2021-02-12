@@ -4,7 +4,6 @@
 
 #include "chromecast/graphics/accessibility/partial_magnification_controller.h"
 
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"

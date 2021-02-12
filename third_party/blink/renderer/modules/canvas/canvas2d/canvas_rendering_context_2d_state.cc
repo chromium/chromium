@@ -461,14 +461,14 @@ void CanvasRenderingContext2DState::ClearResolvedFilter() const {
   resolved_filter_.reset();
 }
 
-SkDrawLooper* CanvasRenderingContext2DState::EmptyDrawLooper() const {
+DrawLooper* CanvasRenderingContext2DState::EmptyDrawLooper() const {
   if (!empty_draw_looper_)
     empty_draw_looper_ = DrawLooperBuilder().DetachDrawLooper();
 
   return empty_draw_looper_.get();
 }
 
-SkDrawLooper* CanvasRenderingContext2DState::ShadowOnlyDrawLooper() const {
+DrawLooper* CanvasRenderingContext2DState::ShadowOnlyDrawLooper() const {
   if (!shadow_only_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;
     draw_looper_builder.AddShadow(shadow_offset_, clampTo<float>(shadow_blur_),
@@ -480,7 +480,7 @@ SkDrawLooper* CanvasRenderingContext2DState::ShadowOnlyDrawLooper() const {
   return shadow_only_draw_looper_.get();
 }
 
-SkDrawLooper* CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper()
+DrawLooper* CanvasRenderingContext2DState::ShadowAndForegroundDrawLooper()
     const {
   if (!shadow_and_foreground_draw_looper_) {
     DrawLooperBuilder draw_looper_builder;

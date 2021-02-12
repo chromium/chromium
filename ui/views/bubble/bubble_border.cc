@@ -14,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"

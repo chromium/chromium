@@ -9,7 +9,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"

@@ -17,7 +17,6 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/containers/adapters.h"
 #include "base/strings/string_number_conversions.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/clip_recorder.h"

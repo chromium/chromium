@@ -262,17 +262,7 @@ void PaintOpReader::Read(PaintFlags* flags) {
   ReadFlattenable(&flags->mask_filter_);
   ReadFlattenable(&flags->color_filter_);
 
-  if (enable_security_constraints_) {
-    size_t bytes = 0;
-    ReadSize(&bytes);
-    if (bytes != 0u) {
-      SetInvalid();
-      return;
-    }
-  } else {
-    ReadFlattenable(&flags->draw_looper_);
-  }
-
+  Read(&flags->draw_looper_);
   Read(&flags->image_filter_);
   Read(&flags->shader_);
 }
@@ -485,6 +475,42 @@ void PaintOpReader::Read(sk_sp<SkTextBlob>* blob) {
   *blob = std::move(deserialized_blob);
   memory_ += data_bytes;
   remaining_bytes_ -= data_bytes;
+}
+
+void PaintOpReader::Read(sk_sp<DrawLooper>* looper) {
+  bool has_looper = false;
+  ReadSimple(&has_looper);
+  if (!has_looper) {
+    *looper = nullptr;
+    return;
+  }
+
+  DrawLooperBuilder builder;
+  size_t count;
+  ReadSimple(&count);
+  if (!valid_) {
+    *looper = nullptr;
+    return;
+  }
+
+  for (size_t i = 0; i < count; ++i) {
+    SkPoint offset;
+    float blurSigma;
+    SkColor color;
+    uint32_t flags;
+
+    ReadSimple(&offset.fX);
+    ReadSimple(&offset.fY);
+    ReadSimple(&blurSigma);
+    ReadSimple(&color);
+    ReadSimple(&flags);
+    if (!valid_) {
+      *looper = nullptr;
+      return;
+    }
+    builder.AddShadow(offset, blurSigma, color, flags);
+  }
+  *looper = builder.Detach();
 }
 
 void PaintOpReader::Read(sk_sp<PaintShader>* shader) {

@@ -6,7 +6,6 @@
 #define UI_GFX_IMAGE_IMAGE_SKIA_OPERATIONS_H_
 
 #include "skia/ext/image_operations.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/color_utils.h"

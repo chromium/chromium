@@ -6,7 +6,6 @@
 
 #include "ash/shell.h"
 #include "base/check_op.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/shadow_value.h"

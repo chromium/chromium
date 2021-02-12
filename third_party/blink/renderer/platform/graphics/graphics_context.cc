@@ -224,7 +224,7 @@ DOMNodeId GraphicsContext::GetDOMNodeId() const {
   return dom_node_id_;
 }
 
-void GraphicsContext::SetDrawLooper(sk_sp<SkDrawLooper> draw_looper) {
+void GraphicsContext::SetDrawLooper(sk_sp<DrawLooper> draw_looper) {
   MutableState()->SetDrawLooper(std::move(draw_looper));
 }
 

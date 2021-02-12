@@ -20,6 +20,8 @@ cc_component("paint") {
     "display_item_list.h",
     "draw_image.cc",
     "draw_image.h",
+    "draw_looper.cc",
+    "draw_looper.h",
     "element_id.cc",
     "element_id.h",
     "filter_operation.cc",

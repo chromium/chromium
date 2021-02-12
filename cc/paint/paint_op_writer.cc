@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "cc/paint/draw_image.h"
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
@@ -217,11 +218,7 @@ void PaintOpWriter::Write(const PaintFlags& flags) {
   WriteFlattenable(flags.mask_filter_.get());
   WriteFlattenable(flags.color_filter_.get());
 
-  if (enable_security_constraints_)
-    WriteSize(static_cast<size_t>(0u));
-  else
-    WriteFlattenable(flags.draw_looper_.get());
-
+  Write(flags.draw_looper_.get());
   Write(flags.image_filter_.get());
   Write(flags.shader_.get(), flags.getFilterQuality());
 }
@@ -462,6 +459,24 @@ void PaintOpWriter::Write(SkMatrix matrix) {
 
 void PaintOpWriter::Write(const SkM44& matrix) {
   WriteSimple(matrix);
+}
+
+void PaintOpWriter::Write(const DrawLooper* looper) {
+  if (!looper) {
+    WriteSimple(false);
+    return;
+  }
+
+  WriteSimple(true);
+  WriteSimple(looper->layers_.size());
+
+  for (auto const& layer : looper->layers_) {
+    WriteSimple(layer.offset.fX);
+    WriteSimple(layer.offset.fY);
+    WriteSimple(layer.blurSigma);
+    WriteSimple(layer.color);
+    WriteSimple(layer.flags);
+  }
 }
 
 void PaintOpWriter::Write(const PaintShader* shader, SkFilterQuality quality) {
