@@ -14,15 +14,20 @@ namespace ui {
 class Layer;
 }
 
+namespace gfx {
+class Size;
+}
+
 namespace viz {
 class CopyOutputResult;
 }
 
 namespace ash {
 
-// Creates the new layer using the image in |copy_result|.
+// Creates the new layer with |layer_size| using the image in |copy_result|.
 ASH_EXPORT std::unique_ptr<ui::Layer> CreateLayerFromCopyOutputResult(
-    std::unique_ptr<viz::CopyOutputResult> copy_result);
+    std::unique_ptr<viz::CopyOutputResult> copy_result,
+    const gfx::Size& layer_size);
 
 using LayerCopyCallback =
     base::OnceCallback<void(std::unique_ptr<ui::Layer> new_layer)>;

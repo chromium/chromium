@@ -19,7 +19,7 @@ void CopyCopyOutputResultToLayer(
   DCHECK(!copy_result->IsEmpty());
   DCHECK_EQ(copy_result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
 
-  const gfx::Size layer_size = copy_result->size();
+  const gfx::Size layer_size = target_layer->size();
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::MakeGL(
           copy_result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
@@ -33,13 +33,15 @@ void CopyCopyOutputResultToLayer(
 
 void CopyToNewLayerOnCopyRequestFinished(
     LayerCopyCallback layer_copy_callback,
+    const gfx::Size& layer_size,
     std::unique_ptr<viz::CopyOutputResult> copy_result) {
   if (!copy_result || copy_result->IsEmpty()) {
     std::move(layer_copy_callback).Run(nullptr);
     return;
   }
 
-  auto copy_layer = CreateLayerFromCopyOutputResult(std::move(copy_result));
+  auto copy_layer =
+      CreateLayerFromCopyOutputResult(std::move(copy_result), layer_size);
   std::move(layer_copy_callback).Run(std::move(copy_layer));
 }
 
@@ -63,16 +65,17 @@ void CopyToLayerOnCopyRequestFinished(
 }  // namespace
 
 std::unique_ptr<ui::Layer> CreateLayerFromCopyOutputResult(
-    std::unique_ptr<viz::CopyOutputResult> copy_result) {
+    std::unique_ptr<viz::CopyOutputResult> copy_result,
+    const gfx::Size& layer_size) {
   auto copy_layer = std::make_unique<ui::Layer>();
-  copy_layer->SetBounds(gfx::Rect(copy_result->size()));
+  copy_layer->SetBounds(gfx::Rect(layer_size));
   CopyCopyOutputResultToLayer(std::move(copy_result), copy_layer.get());
   return copy_layer;
 }
 
 void CopyLayerContentToNewLayer(ui::Layer* layer, LayerCopyCallback callback) {
-  auto new_callback =
-      base::BindOnce(&CopyToNewLayerOnCopyRequestFinished, std::move(callback));
+  auto new_callback = base::BindOnce(&CopyToNewLayerOnCopyRequestFinished,
+                                     std::move(callback), layer->size());
   auto copy_request = std::make_unique<viz::CopyOutputRequest>(
       viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
       std::move(new_callback));
