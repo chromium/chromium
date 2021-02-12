@@ -58,7 +58,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
           qr_generator_key,
       std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings);
 
-  void set_usb_device_manager(mojo::Remote<device::mojom::UsbDeviceManager>);
+  // set_android_accessory_params configures values necessary for discovering
+  // Android AOA devices. The |aoa_request_description| is a string that is sent
+  // to the device to describe the type of request and may appears in
+  // permissions UI on the device.
+  void set_android_accessory_params(
+      mojo::Remote<device::mojom::UsbDeviceManager>,
+      std::string aoa_request_description);
 
   void set_network_context(network::mojom::NetworkContext*);
 
@@ -121,6 +127,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #endif  // defined(OS_MAC)
   base::Optional<mojo::Remote<device::mojom::UsbDeviceManager>>
       usb_device_manager_;
+  std::string aoa_request_description_;
   network::mojom::NetworkContext* network_context_ = nullptr;
   base::Optional<std::vector<CableDiscoveryData>> cable_data_;
   base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;

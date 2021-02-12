@@ -25,6 +25,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -37,6 +38,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_MAC)
 #include "device/fido/mac/authenticator.h"
@@ -389,7 +391,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
     content::GetDeviceService().BindUsbDeviceManager(
         usb_device_manager.BindNewPipeAndPassReceiver());
-    discovery_factory->set_usb_device_manager(std::move(usb_device_manager));
+    discovery_factory->set_android_accessory_params(
+        std::move(usb_device_manager),
+        l10n_util::GetStringUTF8(IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION));
     discovery_factory->set_network_context(
         SystemNetworkContextManager::GetInstance()->GetContext());
   }

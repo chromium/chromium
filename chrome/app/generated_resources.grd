@@ -10769,6 +10769,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CABLEV2_AOA_DESCRIPTION" desc="Contents of the dialog shown when the user tries to sign-in using a phone as a security key.">
         Use a USB cable to connect your phone to your computer. If your phone is already connected, unplug it and plug it back in.
       </message>
+      <message name="IDS_WEBAUTHN_CABLEV2_AOA_REQUEST_DESCRIPTION" desc="Potentially displayed in a permissions dialog on Android to describe the type of request that a computer, that is connected over USB, is making. In this context the request from the computer is to use the Android device as a security key. A 'security key' is typically a physical USB token used for authentication (e.g. a gNubby) but in this case the phone is acting as one. The translation of 'security key' should match the phrase used in TC IDs such as 1685482178220389035 and 7775033610159191691">
+        Security key request
+      </message>
 
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION_SHORT" desc="Second line of text in an item letting the user know that they can use their phone as a security key. The user needs to check their phone and respond to a notification that will ask them to press a button on the phone's screen to confirm that they're logging in.">
         Unlock your phone and confirm it's you

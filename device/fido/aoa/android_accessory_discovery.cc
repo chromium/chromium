@@ -34,9 +34,11 @@ static base::flat_set<std::string>& KnownAccessories() {
 }
 
 AndroidAccessoryDiscovery::AndroidAccessoryDiscovery(
-    mojo::Remote<device::mojom::UsbDeviceManager> device_manager)
+    mojo::Remote<device::mojom::UsbDeviceManager> device_manager,
+    std::string request_description)
     : FidoDeviceDiscovery(FidoTransportProtocol::kUsbHumanInterfaceDevice),
-      device_manager_(std::move(device_manager)) {}
+      device_manager_(std::move(device_manager)),
+      request_description_(std::move(request_description)) {}
 
 AndroidAccessoryDiscovery::~AndroidAccessoryDiscovery() = default;
 
@@ -367,8 +369,7 @@ void AndroidAccessoryDiscovery::OnConfigurationStepComplete(
       break;
 
     case 2:
-      // Description. TODO(agl): translate
-      encoded_string = VectorFromString("Security key request");
+      encoded_string = VectorFromString(request_description_.c_str());
       break;
 
     case 3:

@@ -85,8 +85,11 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
     }
     case FidoTransportProtocol::kAndroidAccessory:
       if (usb_device_manager_) {
-        return SingleDiscovery(std::make_unique<AndroidAccessoryDiscovery>(
-            std::move(usb_device_manager_.value())));
+        auto ret = SingleDiscovery(std::make_unique<AndroidAccessoryDiscovery>(
+            std::move(usb_device_manager_.value()),
+            std::move(aoa_request_description_)));
+        usb_device_manager_.reset();
+        return ret;
       }
       return {};
   }
@@ -108,9 +111,11 @@ void FidoDiscoveryFactory::set_cable_data(
   v2_pairings_ = std::move(v2_pairings);
 }
 
-void FidoDiscoveryFactory::set_usb_device_manager(
-    mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager) {
+void FidoDiscoveryFactory::set_android_accessory_params(
+    mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager,
+    std::string aoa_request_description) {
   usb_device_manager_.emplace(std::move(usb_device_manager));
+  aoa_request_description_ = std::move(aoa_request_description);
 }
 
 void FidoDiscoveryFactory::set_network_context(
