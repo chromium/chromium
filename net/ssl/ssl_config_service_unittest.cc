@@ -27,10 +27,6 @@ class MockSSLConfigService : public SSLConfigService {
     return false;
   }
 
-  bool ShouldSuppressLegacyTLSWarning(const std::string& host) const override {
-    return false;
-  }
-
   // Sets the SSLContextConfig to be returned by GetSSLContextConfig and
   // processes any updates.
   void SetSSLContextConfig(const SSLContextConfig& config) {

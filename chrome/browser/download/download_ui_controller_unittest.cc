@@ -393,7 +393,6 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_HistoryDownload) {
 TEST_F(DownloadUIControllerTest, LegacyTLSMetrics) {
   base::HistogramTester histograms;
   SecurityStateTabHelper::CreateForWebContents(web_contents());
-  InitializeEmptyLegacyTLSConfig();
 
   auto navigation =
       CreateLegacyTLSNavigation(GURL(kLegacyTLSURL), web_contents());
@@ -416,36 +415,9 @@ TEST_F(DownloadUIControllerTest, LegacyTLSMetrics) {
   histograms.ExpectUniqueSample("Security.LegacyTLS.DownloadStarted", true, 1);
 }
 
-TEST_F(DownloadUIControllerTest, LegacyTLSControlSiteMetrics) {
-  base::HistogramTester histograms;
-  SecurityStateTabHelper::CreateForWebContents(web_contents());
-  InitializeLegacyTLSConfigWithControl();
-
-  auto navigation =
-      CreateLegacyTLSNavigation(GURL(kLegacyTLSURL), web_contents());
-  navigation->Commit();
-
-  // Start a download from the same page, setting up the mock item to correctly
-  // associate with the WebContents of the previous navigation.
-  std::unique_ptr<MockDownloadItem> item(CreateMockInProgressDownload());
-  GURL download_url("https://download.test/file.bin");
-  EXPECT_CALL(*item, GetURL()).WillRepeatedly(ReturnRef(download_url));
-  EXPECT_CALL(*item, GetOriginalUrl()).WillRepeatedly(ReturnRef(download_url));
-  content::DownloadItemUtils::AttachInfo(item.get(), browser_context(),
-                                         web_contents());
-
-  DownloadUIController controller(manager(), GetTestDelegate());
-
-  ASSERT_TRUE(manager_observer());
-  manager_observer()->OnDownloadCreated(manager(), item.get());
-
-  histograms.ExpectUniqueSample("Security.LegacyTLS.DownloadStarted", false, 1);
-}
-
 TEST_F(DownloadUIControllerTest, LegacyTLSGoodSiteMetrics) {
   base::HistogramTester histograms;
   SecurityStateTabHelper::CreateForWebContents(web_contents());
-  InitializeEmptyLegacyTLSConfig();
 
   auto navigation =
       CreateNonlegacyTLSNavigation(GURL("https://good.test"), web_contents());
