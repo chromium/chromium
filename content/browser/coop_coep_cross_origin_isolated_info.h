@@ -50,6 +50,9 @@ class CONTENT_EXPORT CoopCoepCrossOriginIsolatedInfo {
   base::Optional<url::Origin> origin_;
 };
 
+CONTENT_EXPORT std::ostream& operator<<(
+    std::ostream& out,
+    const CoopCoepCrossOriginIsolatedInfo& info);
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_COOP_COEP_CROSS_ORIGIN_ISOLATED_INFO_H_

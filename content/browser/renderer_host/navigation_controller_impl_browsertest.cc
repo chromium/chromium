@@ -10490,8 +10490,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
             error_site_instance->GetProcess()->GetID());
   EXPECT_EQ(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
 
-  EXPECT_EQ(ProcessLock::CreateForErrorPage(),
-            policy->GetProcessLock(error_site_instance->GetProcess()->GetID()));
+  EXPECT_TRUE(policy->GetProcessLock(error_site_instance->GetProcess()->GetID())
+                  .is_error_page());
 }
 
 // Test to verify that LoadPostCommitErrorPage loads an error page in a subframe

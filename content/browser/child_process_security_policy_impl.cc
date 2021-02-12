@@ -170,11 +170,6 @@ void LogCanAccessDataForOriginCrashKeys(
 }  // namespace
 
 // static
-ProcessLock ProcessLock::CreateForErrorPage() {
-  return ProcessLock(SiteInfo::CreateForErrorPage());
-}
-
-// static
 ProcessLock ProcessLock::CreateAllowAnySite(
     const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
   return ProcessLock(

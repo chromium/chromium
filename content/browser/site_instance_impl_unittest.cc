@@ -641,6 +641,20 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   site_url = SiteInstance::GetSiteForURL(&context, test_url);
   EXPECT_EQ(GURL("http://google.com"), site_url);
 
+  // Error page URLs.
+  auto error_site_info = SiteInfo::CreateForErrorPage(
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+  test_url = GURL(kUnreachableWebDataURL);
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  EXPECT_EQ(error_site_info.site_url(), site_url);
+
+  // Verify that other URLs that use the chrome-error scheme also map
+  // to the error page SiteInfo. These type of URLs should not appear in the
+  // codebase, but the mapping is intended to cover the whole scheme.
+  test_url = GURL("chrome-error://someerror");
+  site_url = SiteInstance::GetSiteForURL(&context, test_url);
+  EXPECT_EQ(error_site_info.site_url(), site_url);
+
   DrainMessageLoop();
 }
 
@@ -1795,6 +1809,82 @@ TEST_F(SiteInstanceTest, DoesSiteRequireDedicatedProcess) {
               DoesURLRequireDedicatedProcess(isolation_context, GURL(url)));
   }
   SetBrowserClientForTesting(regular_client);
+}
+
+TEST_F(SiteInstanceTest, ErrorPage) {
+  const GURL non_error_page_url("http://foo.com");
+  const GURL error_page_url(kUnreachableWebDataURL);
+
+  const auto non_isolated_coi =
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated();
+  const auto isolated_coi = CoopCoepCrossOriginIsolatedInfo::CreateIsolated(
+      url::Origin::Create(non_error_page_url));
+
+  const auto non_isolated_error_site_info =
+      SiteInfo::CreateForErrorPage(non_isolated_coi);
+  const auto isolated_error_site_info =
+      SiteInfo::CreateForErrorPage(isolated_coi);
+
+  // Verify that non-isolated and isolated error page SiteInfos are not
+  // equal, but indicate they are both for error pages.
+  EXPECT_NE(non_isolated_error_site_info, isolated_error_site_info);
+  EXPECT_TRUE(non_isolated_error_site_info.is_error_page());
+  EXPECT_EQ(
+      non_isolated_coi,
+      non_isolated_error_site_info.coop_coep_cross_origin_isolated_info());
+  EXPECT_TRUE(isolated_error_site_info.is_error_page());
+  EXPECT_EQ(isolated_coi,
+            isolated_error_site_info.coop_coep_cross_origin_isolated_info());
+
+  // Verify that non-error URLs don't generate error page SiteInfos and
+  // non-isolated and isolated SiteInfos do not match even though the URL is
+  // the same.
+  const auto non_isolated_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(non_error_page_url),
+      non_isolated_coi);
+  const auto isolated_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(non_error_page_url), isolated_coi);
+  EXPECT_NE(non_isolated_error_site_info, non_isolated_instance->GetSiteInfo());
+  EXPECT_NE(isolated_error_site_info, isolated_instance->GetSiteInfo());
+  EXPECT_NE(non_isolated_instance->GetSiteInfo(),
+            isolated_instance->GetSiteInfo());
+
+  // Verify that an error page URL results in error page SiteInfos that match
+  // the corresponding isolation info.
+  const auto non_isolated_error_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(error_page_url), non_isolated_coi);
+  const auto isolated_error_instance = SiteInstanceImpl::CreateForUrlInfo(
+      context(), UrlInfo::CreateForTesting(error_page_url), isolated_coi);
+  EXPECT_EQ(non_isolated_error_site_info,
+            non_isolated_error_instance->GetSiteInfo());
+  EXPECT_EQ(non_isolated_coi,
+            non_isolated_error_instance->GetCoopCoepCrossOriginIsolatedInfo());
+
+  EXPECT_EQ(isolated_error_site_info, isolated_error_instance->GetSiteInfo());
+  EXPECT_EQ(isolated_coi,
+            isolated_error_instance->GetCoopCoepCrossOriginIsolatedInfo());
+
+  // Verify that deriving a SiteInfo for an error page URL always returns
+  // an error page SiteInfo with the correct isolation info.
+  EXPECT_EQ(non_isolated_error_site_info,
+            non_isolated_instance->DeriveSiteInfo(
+                UrlInfo::CreateForTesting(error_page_url)));
+  EXPECT_EQ(isolated_error_site_info,
+            isolated_instance->DeriveSiteInfo(
+                UrlInfo::CreateForTesting(error_page_url)));
+
+  // Verify GetRelatedSiteInstance() called with an error page URL always
+  // returns an error page SiteInfo with the correct isolation info.
+  const auto non_isolated_related_instance =
+      non_isolated_instance->GetRelatedSiteInstance(error_page_url);
+  const auto isolated_related_instance =
+      isolated_instance->GetRelatedSiteInstance(error_page_url);
+  EXPECT_EQ(non_isolated_error_site_info,
+            static_cast<SiteInstanceImpl*>(non_isolated_related_instance.get())
+                ->GetSiteInfo());
+  EXPECT_EQ(isolated_error_site_info,
+            static_cast<SiteInstanceImpl*>(isolated_related_instance.get())
+                ->GetSiteInfo());
 }
 
 }  // namespace content

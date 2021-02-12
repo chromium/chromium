@@ -51,7 +51,8 @@ class StoragePartitionImpl;
 // content/public/browser/site_info.h.
 class CONTENT_EXPORT SiteInfo {
  public:
-  static SiteInfo CreateForErrorPage();
+  static SiteInfo CreateForErrorPage(
+      const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
   static SiteInfo CreateForDefaultSiteInstance(
       const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info);
   static SiteInfo CreateForGuest(const GURL& guest_site_url);
@@ -123,6 +124,7 @@ class CONTENT_EXPORT SiteInfo {
   }
 
   bool is_guest() const { return is_guest_; }
+  bool is_error_page() const;
 
   // Returns true if the site_url() is empty.
   bool is_empty() const { return site_url().possibly_invalid_spec().empty(); }
