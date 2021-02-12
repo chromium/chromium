@@ -36,13 +36,14 @@ String DisplayItemClient::SafeDebugName(bool known_to_be_safe) const {
     return DebugName();
   }
 
-  // If the caller is not sure, we must ensure the client is alive, and it's
-  // not a destroyed client at the same address of a new client.
+  // If the caller is not sure, we must ensure the client is alive.
+  if (!IsAlive())
+    return "DEAD";
+
   if (IsJustCreated())
     return "Just created:" + DebugName();
-  if (IsAlive())
-    return DebugName();
-  return "DEAD";
+
+  return DebugName();
 }
 
 #endif  // DCHECK_IS_ON()
