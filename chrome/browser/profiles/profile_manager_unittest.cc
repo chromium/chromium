@@ -1968,10 +1968,9 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
                 ProfileKeepAliveOrigin::kBrowserWindow, 1)));
   }
 
+  base::RunLoop().RunUntilIdle();
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Profile* should've been destroyed by now.
   EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  content::RunAllTasksUntilIdle();
 }

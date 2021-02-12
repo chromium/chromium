@@ -380,16 +380,19 @@ TEST_F(DownloadStatusUpdaterTest, HoldsKeepAlive) {
   // Profile 1 has a download in progress.
   Profile* profile1 = testing_profiles_[0];
   SetItemValues(0, 0, 10, 20, true);
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
       profile1, ProfileKeepAliveOrigin::kDownloadInProgress));
 
   // Profile 2 doesn't have a download in progress.
   Profile* profile2 = testing_profiles_[1];
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
       profile2, ProfileKeepAliveOrigin::kDownloadInProgress));
 
   // Complete Profile 1's download. It should release its keepalive.
   CompleteItem(0, 0);
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
       profile1, ProfileKeepAliveOrigin::kDownloadInProgress));
 }
