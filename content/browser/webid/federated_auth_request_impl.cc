@@ -139,7 +139,7 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
   // depending on |status|.
   switch (status) {
     case IdpNetworkRequestManager::SigninResponse::kLoadIdp: {
-      GURL idp_signin_page_url = GURL(base::StringPiece(response));
+      GURL idp_signin_page_url = idp_endpoint_url_.Resolve(response);
       if (!IdpUrlIsValid(idp_signin_page_url)) {
         CompleteRequest(RequestIdTokenStatus::kError, "");
         return;
