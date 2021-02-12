@@ -1,9 +1,9 @@
 AXWebArea
 ++AXTable AXColumnHeaderUIElements=[:4, :6]
 ++++AXRow AXIndex=0
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
+++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXDescription='Firstname' AXRowIndexRange={len: 1, loc: 0}
 ++++++++AXStaticText AXValue='Firstname'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
+++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXDescription='Lastname' AXRowIndexRange={len: 1, loc: 0}
 ++++++++AXStaticText AXValue='Lastname'
 ++++AXRow AXIndex=1
 ++++++AXCell AXColumnHeaderUIElements=[:4] AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 1}
