@@ -391,6 +391,7 @@ source_set("unit_tests") {
     "mediastream/pushable_media_stream_video_source_test.cc",
     "mediastream/user_media_client_test.cc",
     "mediastream/video_track_adapter_unittest.cc",
+    "mediastream/video_track_signal_underlying_sink_test.cc",
     "mediastream/webaudio_media_stream_audio_sink_test.cc",
     "mediastream/webmediaplayer_ms_test.cc",
     "nfc/nfc_proxy_test.cc",

@@ -104,6 +104,8 @@ blink_modules_sources("mediastream") {
     "video_track_adapter.h",
     "video_track_adapter_settings.cc",
     "video_track_adapter_settings.h",
+    "video_track_signal_underlying_sink.cc",
+    "video_track_signal_underlying_sink.h",
     "web_media_stream_device_observer.cc",
     "web_media_stream_utils.cc",
     "webaudio_media_stream_audio_sink.cc",
