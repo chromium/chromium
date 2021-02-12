@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/network_service_instance.h"
@@ -207,6 +208,16 @@ std::string WebEngineContentBrowserClient::GetAcceptLangs(
   DCHECK_EQ(main_parts_->browser_context(), context);
   return static_cast<WebEngineBrowserContext*>(context)
       ->GetPreferredLanguages();
+}
+
+base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
+    content::WebContents* web_contents,
+    net::SSLCertRequestInfo* cert_request_info,
+    net::ClientCertIdentityList client_certs,
+    std::unique_ptr<content::ClientCertificateDelegate> delegate) {
+  // Continue without a certificate.
+  delegate->ContinueWithCertificate(nullptr, nullptr);
+  return base::OnceClosure();
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

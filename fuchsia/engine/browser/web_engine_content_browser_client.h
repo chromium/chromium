@@ -52,6 +52,11 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
                                       int child_process_id) final;
   std::string GetApplicationLocale() final;
   std::string GetAcceptLangs(content::BrowserContext* context) final;
+  base::OnceClosure SelectClientCertificate(
+      content::WebContents* web_contents,
+      net::SSLCertRequestInfo* cert_request_info,
+      net::ClientCertIdentityList client_certs,
+      std::unique_ptr<content::ClientCertificateDelegate> delegate) final;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
       content::NavigationHandle* navigation_handle) final;
