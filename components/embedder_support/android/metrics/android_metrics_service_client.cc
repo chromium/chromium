@@ -30,6 +30,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
+#include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -317,6 +318,8 @@ void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
           content::CreateNetworkConnectionTrackerAsyncGetter()));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<CPUMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<EntropyStateProvider>(pref_service_));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ScreenInfoMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(

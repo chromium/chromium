@@ -174,6 +174,10 @@ public class AwMetricsIntegrationTest {
             Assert.assertEquals(
                     ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
         }
+        Assert.assertTrue(
+                "Should have some low_entropy_source", systemProfile.hasLowEntropySource());
+        Assert.assertTrue(
+                "Should have some old_low_entropy_source", systemProfile.hasOldLowEntropySource());
     }
 
     @Test

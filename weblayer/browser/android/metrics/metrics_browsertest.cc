@@ -103,6 +103,8 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, ProtoHasExpectedFields) {
   EXPECT_TRUE(system_profile.has_channel());
   EXPECT_TRUE(system_profile.has_install_date());
   EXPECT_TRUE(system_profile.has_application_locale());
+  EXPECT_TRUE(system_profile.has_low_entropy_source());
+  EXPECT_TRUE(system_profile.has_old_low_entropy_source());
   EXPECT_EQ("Android", system_profile.os().name());
   EXPECT_TRUE(system_profile.os().has_version());
   EXPECT_TRUE(system_profile.hardware().has_system_ram_mb());
