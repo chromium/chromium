@@ -916,16 +916,6 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
 
       CommitPending(std::move(speculative_render_frame_host_), nullptr,
                     request->coop_status().require_browsing_instance_swap());
-
-      // Ensure that renderer-initiated main frame navigations that swap away
-      // from a non-live RenderFrameHost before commit do not leave the old URL
-      // visible in the address bar above a scriptable about:blank document.
-      // TODO(https://crbug.com/1072817): Remove this logic when removing the
-      // early commit.
-      if (frame_tree_node_->IsMainFrame() && request->IsRendererInitiated()) {
-        GetNavigationController().HideEntryForEarlySwapAfterCrash(
-            render_frame_host_.get());
-      }
     }
   }
   DCHECK(navigation_rfh &&

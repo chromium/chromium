@@ -3936,34 +3936,6 @@ void NavigationControllerImpl::DidAccessInitialMainDocument() {
   delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
 }
 
-void NavigationControllerImpl::HideEntryForEarlySwapAfterCrash(
-    RenderFrameHostImpl* rfh) {
-  // Nothing to do if there is no last committed entry to hide, or if we aren't
-  // swapping RenderFrameHosts before commit after a crash.
-  if (!GetLastCommittedEntry() || ShouldSkipEarlyCommitPendingForCrashedFrame())
-    return;
-
-  // Create a temporary about:blank NavigationEntry to show if we swap to a
-  // scriptable RenderFrameHost before the navigation commits (after a crash).
-  // The previous last committed entry will be set aside and restored if we go
-  // anywhere else or attempt a reload, just like a post-commit error page.
-  //
-  // Other uses of post-commit error pages will put the original entry back in
-  // RendererDidNavigate before creating a subsequent post-commit error page in
-  // InsertOrReplaceEntry.
-  //
-  // TODO(https://crbug.com/1072817): Remove this hack after we stop swapping
-  // RenderFrameHosts before the navigation commits.
-  InsertOrReplaceEntry(
-      std::make_unique<NavigationEntryImpl>(
-          rfh->GetSiteInstance(), GURL(url::kAboutBlankURL), Referrer(),
-          url::Origin() /* initiator origin */,
-          base::string16() /* extra_headers */, ui::PAGE_TRANSITION_LINK,
-          true /*is_renderer_initiated*/,
-          nullptr /* blob_url_loader_factory */),
-      true /* replace */, true /* was_post_commit_error */);
-}
-
 void NavigationControllerImpl::UpdateStateForFrame(
     RenderFrameHostImpl* rfhi,
     const blink::PageState& page_state) {

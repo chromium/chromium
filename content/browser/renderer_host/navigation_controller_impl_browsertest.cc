@@ -12176,90 +12176,6 @@ IN_PROC_BROWSER_TEST_P(
                           "!!(iframe.contentDocument)"));
 }
 
-// Verifies that we do not show a crashed page's URL above another site's
-// initial empty document. See https://crbug.com/1111646.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       VerifyURLAfterNavigatingCrashedPopup) {
-  // This test only makes sense if you can crash the cross-site popup's process.
-  if (!AreAllSitesIsolatedForTesting())
-    return;
-
-  // Navigate to a page.
-  GURL opener_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), opener_url));
-  RenderFrameHost* opener_frame = shell()->web_contents()->GetMainFrame();
-  scoped_refptr<SiteInstance> opener_site_instance =
-      opener_frame->GetSiteInstance();
-
-  // Open a cross-site popup that commits in a new process.
-  GURL popup_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  Shell* popup_shell = OpenPopup(opener_frame, popup_url, "popup");
-  EXPECT_TRUE(popup_shell);
-  WebContentsImpl* popup_contents =
-      static_cast<WebContentsImpl*>(popup_shell->web_contents());
-  NavigationControllerImpl& controller = popup_contents->GetController();
-  RenderFrameHostImpl* popup_main_frame = popup_contents->GetMainFrame();
-  scoped_refptr<SiteInstance> popup_site_instance =
-      popup_main_frame->GetSiteInstance();
-  EXPECT_NE(opener_frame->GetProcess(), popup_main_frame->GetProcess());
-  NavigationEntryImpl* entry_b = controller.GetLastCommittedEntry();
-  EXPECT_EQ(popup_url, entry_b->GetURL());
-
-  // Crash the popup. The URL should still be visible.
-  {
-    RenderProcessHost* process_b = popup_main_frame->GetProcess();
-    RenderProcessHostWatcher crash_observer(
-        process_b, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-    process_b->Shutdown(0);
-    crash_observer.Wait();
-  }
-  EXPECT_EQ(entry_b, controller.GetLastCommittedEntry());
-  EXPECT_EQ(popup_url, entry_b->GetURL());
-
-  // Navigate the existing popup to a same-site URL that does not commit. (Here,
-  // we use a data URL that gets blocked.) There is no commit event to wait for,
-  // but the window.open call should trigger a RenderFrameHost swap because the
-  // previous RenderFrameHost isn't live.
-  EXPECT_TRUE(
-      ExecJs(shell(), "var popup = window.open('data:text/html,a', 'popup');"));
-
-  if (ShouldSkipEarlyCommitPendingForCrashedFrame()) {
-    // Once https://crbug.com/1072817 is fixed, the sad tab will remain sad
-    // after the unsuccessful navigation above and no content will be visible
-    // below it.
-    EXPECT_EQ(popup_main_frame, popup_contents->GetMainFrame());
-    EXPECT_EQ(popup_site_instance,
-              popup_contents->GetMainFrame()->GetSiteInstance());
-    EXPECT_FALSE(popup_main_frame->IsRenderFrameLive());
-    EXPECT_EQ(entry_b, controller.GetLastCommittedEntry());
-    return;
-  }
-
-  // TODO(https://crbug.com/1072817): Remove the expectations below once we stop
-  // swapping RFHs before the navigation commits.
-
-  // When the RFH swaps (due to an optimization), ensure we do not show the
-  // previous last committed entry of the popup above the scriptable initial
-  // empty document of the new RFH.
-  EXPECT_NE(popup_main_frame, popup_contents->GetMainFrame());
-  EXPECT_EQ(opener_site_instance,
-            popup_contents->GetMainFrame()->GetSiteInstance());
-  EXPECT_NE(entry_b, controller.GetLastCommittedEntry());
-  EXPECT_EQ(GURL(url::kAboutBlankURL),
-            controller.GetLastCommittedEntry()->GetURL());
-
-  // The original last committed entry should be preserved in case of reload.
-  {
-    TestNavigationObserver reload_observer(popup_contents);
-    controller.Reload(ReloadType::NORMAL, false);
-    reload_observer.Wait();
-  }
-  EXPECT_NE(opener_site_instance,
-            popup_contents->GetMainFrame()->GetSiteInstance());
-  EXPECT_EQ(entry_b, controller.GetLastCommittedEntry());
-  EXPECT_EQ(popup_url, controller.GetLastCommittedEntry()->GetURL());
-}
-
 // Starts a navigation to |url_to_start_| just before the DidCommitNavigation
 // call for |url_to_intercept_| gets processed.
 class NavigationStarterBeforeDidCommitNavigation
@@ -12377,50 +12293,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(url2, controller.GetEntryAtOffset(1)->GetURL());
 }
 
-// Test to verify that after loading a post-commit error page, forward entries
-// are preserved and are treated as navigating to the entry after the page that
-// was active when the post-commit error page was triggered.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       ForwardOnBrowserInitiatedErrorPageNavigation) {
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-
-  GURL url1(embedded_test_server()->GetURL("/title1.html"));
-  GURL url2(embedded_test_server()->GetURL("/title2.html"));
-
-  // Navigate to a valid page.
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-
-  // Navigate to a different page.
-  EXPECT_TRUE(NavigateToURL(shell(), url2));
-
-  // Go back.
-  controller.GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-  // Trigger a post-commit error page navigation and ensure forward history is
-  // preserved.
-  TestNavigationObserver error_observer(shell()->web_contents());
-  controller.LoadPostCommitErrorPage(shell()->web_contents()->GetMainFrame(),
-                                     url1, "Error Page",
-                                     net::ERR_BLOCKED_BY_CLIENT);
-  error_observer.Wait();
-  EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
-  EXPECT_EQ(2, controller.GetEntryCount());
-  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
-
-  // Make sure forward is treated as going forward from the page that was
-  // visible when the post-commit error page was loaded.
-  controller.GoForward();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_EQ(2, controller.GetEntryCount());
-  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
-  // Check that the previous entry has been replaced with the original visit
-  // to the site (i.e. it shouldn't be the error page).
-  EXPECT_EQ(PAGE_TYPE_NORMAL, controller.GetEntryAtOffset(-1)->GetPageType());
-  EXPECT_EQ(url1, controller.GetEntryAtOffset(-1)->GetURL());
-}
-
 // Test to verify that after loading a post-commit error page, reload
 // triggers a navigation to the previous page (the page that was active when
 // the navigation to an error was triggered).
@@ -12512,58 +12384,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Only one entry should exist in the controller of the cloned tab.
   EXPECT_EQ(1, new_controller.GetEntryCount());
-}
-
-// Test to verify that loading a second post-commit error page preserves the
-// original entry and not the previous post-commit error page.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       DoublePostCommitErrorPage) {
-  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-
-  GURL url1(embedded_test_server()->GetURL("/title1.html"));
-  GURL url2(embedded_test_server()->GetURL("/title2.html"));
-
-  // Navigate to a valid page.
-  EXPECT_TRUE(NavigateToURL(shell(), url1));
-
-  // Navigate to a different page.
-  EXPECT_TRUE(NavigateToURL(shell(), url2));
-  int initial_entry_index = controller.GetLastCommittedEntryIndex();
-  int initial_entry_id = controller.GetLastCommittedEntry()->GetUniqueID();
-
-  // Trigger a first post-commit error page navigation.
-  TestNavigationObserver error_observer1(shell()->web_contents());
-  controller.LoadPostCommitErrorPage(shell()->web_contents()->GetMainFrame(),
-                                     GURL(url::kAboutBlankURL), "Error Page 1",
-                                     net::ERR_BLOCKED_BY_CLIENT);
-  error_observer1.Wait();
-  EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
-  EXPECT_EQ(2, controller.GetEntryCount());
-  EXPECT_EQ(initial_entry_index, controller.GetLastCommittedEntryIndex());
-
-  // Trigger a second post-commit error page navigation.
-  TestNavigationObserver error_observer2(shell()->web_contents());
-  controller.LoadPostCommitErrorPage(shell()->web_contents()->GetMainFrame(),
-                                     GURL("data:text/html,2"), "Error Page 2",
-                                     net::ERR_BLOCKED_BY_CLIENT);
-  error_observer2.Wait();
-  EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
-  EXPECT_EQ(2, controller.GetEntryCount());
-  EXPECT_EQ(initial_entry_index, controller.GetLastCommittedEntryIndex());
-
-  // Make sure reload triggers a reload of the original page, not either error,
-  // and that we get back to the original entry.
-  controller.Reload(ReloadType::NORMAL, false);
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  EXPECT_EQ(initial_entry_index, controller.GetLastCommittedEntryIndex());
-
-  // We should be in the initial entry and no longer be in an error page.
-  EXPECT_EQ(initial_entry_id,
-            controller.GetLastCommittedEntry()->GetUniqueID());
-  EXPECT_EQ(PAGE_TYPE_NORMAL,
-            controller.GetLastCommittedEntry()->GetPageType());
-  EXPECT_EQ(url2, controller.GetLastCommittedEntry()->GetURL());
 }
 
 // Tests that the navigation entry is marked as skippable on back/forward button
