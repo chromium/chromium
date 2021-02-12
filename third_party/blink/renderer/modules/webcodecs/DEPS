@@ -6,6 +6,7 @@ include_rules = [
 
     "+gpu/command_buffer/client/shared_image_interface.h",
     "+gpu/command_buffer/client/raster_interface.h",
+    "+gpu/config/gpu_feature_info.h",
     "+gpu/GLES2/gl2extchromium.h",
 
     "+media/audio",

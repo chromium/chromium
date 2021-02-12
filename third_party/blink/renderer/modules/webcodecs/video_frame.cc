@@ -11,6 +11,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/single_release_callback.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
@@ -202,24 +203,6 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
 #endif
 }
 
-bool PreferAcceleratedImages(const media::VideoFrame& frame) {
-  if (frame.format() == media::PIXEL_FORMAT_I420A)
-    return false;
-
-  if (frame.HasTextures())
-    return true;
-
-  if (frame.format() == media::PIXEL_FORMAT_ARGB ||
-      frame.format() == media::PIXEL_FORMAT_XRGB ||
-      frame.format() == media::PIXEL_FORMAT_ABGR ||
-      frame.format() == media::PIXEL_FORMAT_XBGR) {
-    return false;
-  }
-
-  constexpr int kCpuEfficientFrameSize = 320u * 240u;
-  return frame.visible_rect().size().GetArea() > kCpuEfficientFrameSize;
-}
-
 scoped_refptr<StaticBitmapImage> CreateImage(
     scoped_refptr<media::VideoFrame> frame) {
   // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
@@ -256,102 +239,47 @@ scoped_refptr<StaticBitmapImage> CreateImage(
         Thread::Current()->GetTaskRunner(), std::move(release_callback));
   }
 
-  const bool is_mappable =
-      frame->IsMappable() && (frame->format() == media::PIXEL_FORMAT_I420 ||
-                              frame->format() == media::PIXEL_FORMAT_I420A);
-  const bool is_texturable =
-      frame->HasTextures() && (frame->format() == media::PIXEL_FORMAT_I420 ||
-                               frame->format() == media::PIXEL_FORMAT_I420A ||
-                               frame->format() == media::PIXEL_FORMAT_NV12);
-  const bool is_rgb = frame->format() == media::PIXEL_FORMAT_ARGB ||
-                      frame->format() == media::PIXEL_FORMAT_XRGB ||
-                      frame->format() == media::PIXEL_FORMAT_ABGR ||
-                      frame->format() == media::PIXEL_FORMAT_XBGR;
-
-  if (!is_mappable && !is_texturable && !is_rgb) {
-    DLOG(ERROR) << "Unsupported VideoFrame: " << frame->AsHumanReadableString();
-    return nullptr;
-  }
-
-  if (!PreferAcceleratedImages(*frame)) {
-    auto info = SkImageInfo::Make(
-        frame->visible_rect().width(), frame->visible_rect().height(),
-        kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
-
-    sk_sp<SkData> image_pixels = TryAllocateSkData(info.computeMinByteSize());
-    if (!image_pixels)
-      return nullptr;
-
-    media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
-        frame.get(), image_pixels->writable_data(), info.minRowBytes());
-    return UnacceleratedStaticBitmapImage::Create(SkImage::MakeRasterData(
-        info, std::move(image_pixels), info.minRowBytes()));
-  }
-
   auto raster_context_provider = GetRasterContextProvider();
-  if (!raster_context_provider) {
-    DLOG(ERROR) << "Graphics context unavailable.";
-    return nullptr;
-  }
 
-  auto* ri = raster_context_provider->RasterInterface();
-  auto* shared_image_interface =
-      raster_context_provider->SharedImageInterface();
-  uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY;
-  if (raster_context_provider->ContextCapabilities().supports_oop_raster) {
-    usage |= gpu::SHARED_IMAGE_USAGE_RASTER |
-             gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  }
-
-  gpu::MailboxHolder dest_holder;
-  // Use coded_size() to comply with media::ConvertFromVideoFrameYUV.
-  dest_holder.mailbox = shared_image_interface->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, frame->coded_size(), gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      gpu::kNullSurfaceHandle);
-  dest_holder.sync_token = shared_image_interface->GenUnverifiedSyncToken();
-  dest_holder.texture_target = GL_TEXTURE_2D;
-
-  if (frame->NumTextures() == 1) {
-    ri->WaitSyncTokenCHROMIUM(dest_holder.sync_token.GetConstData());
-    ri->CopySubTexture(frame->mailbox_holder(0).mailbox, dest_holder.mailbox,
-                       GL_TEXTURE_2D, 0, 0, 0, 0, frame->coded_size().width(),
-                       frame->coded_size().height(), GL_FALSE, GL_FALSE);
-  } else {
-    media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
-        frame.get(), raster_context_provider.get(), dest_holder);
-  }
-
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-  auto release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
-      [](scoped_refptr<viz::RasterContextProvider> provider,
-         gpu::Mailbox mailbox, const gpu::SyncToken& sync_token, bool is_lost) {
-        provider->SharedImageInterface()->DestroySharedImage(sync_token,
-                                                             mailbox);
-      },
-      raster_context_provider, dest_holder.mailbox));
-
-  const auto sk_image_info = SkImageInfo::Make(
-      frame->coded_size().width(), frame->coded_size().height(),
-      kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
-
-  auto image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      dest_holder.mailbox, sync_token, 0u, sk_image_info,
-      dest_holder.texture_target, true,
-      SharedGpuContext::ContextProviderWrapper(),
-      base::PlatformThread::CurrentRef(), Thread::Current()->GetTaskRunner(),
-      std::move(release_callback));
-
+  std::unique_ptr<CanvasResourceProvider> resource_provider;
   if (frame->HasTextures()) {
-    // Attach a new sync token to |frame|, so it's not destroyed
-    // before |image| is fully created.
-    media::WaitAndReplaceSyncTokenClient client(ri);
-    frame->UpdateReleaseSyncToken(&client);
+    if (!raster_context_provider)
+      return nullptr;  // Unable to get/create a shared main thread context.
+    if (!raster_context_provider->GrContext() &&
+        !raster_context_provider->ContextCapabilities().supports_oop_raster) {
+      return nullptr;  // The context has been lost.
+    }
   }
-  return image;
+
+  if (!raster_context_provider ||
+      raster_context_provider->GetGpuFeatureInfo().IsWorkaroundEnabled(
+          DISABLE_IMAGEBITMAP_FROM_VIDEO_USING_GPU) ||
+      !SharedGpuContext::IsGpuCompositingEnabled()) {
+    resource_provider = CanvasResourceProvider::CreateBitmapProvider(
+        IntSize(frame->visible_rect().size()), kLow_SkFilterQuality,
+        CanvasResourceParams(),
+        CanvasResourceProvider::ShouldInitialize::kCallClear);
+  } else {
+    resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
+        IntSize(frame->visible_rect().size()), kLow_SkFilterQuality,
+        CanvasResourceParams(CanvasColorSpace::kSRGB, kN32_SkColorType,
+                             kPremul_SkAlphaType),  // Default canvas settings,
+        CanvasResourceProvider::ShouldInitialize::kCallClear,
+        SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
+        false,  // Origin of GL texture is bottom left on screen
+        gpu::SHARED_IMAGE_USAGE_DISPLAY);
+  }
+
+  cc::PaintFlags media_flags;
+  media_flags.setAlpha(0xFF);
+  media_flags.setFilterQuality(kLow_SkFilterQuality);
+  media_flags.setBlendMode(SkBlendMode::kSrc);
+
+  media::PaintCanvasVideoRenderer().Paint(
+      frame.get(), resource_provider->Canvas(),
+      gfx::RectF(frame->visible_rect()), media_flags, media::kNoTransformation,
+      raster_context_provider.get());
+  return resource_provider->Snapshot();
 }
 
 bool IsSupportedPlanarFormat(const media::VideoFrame& frame) {
