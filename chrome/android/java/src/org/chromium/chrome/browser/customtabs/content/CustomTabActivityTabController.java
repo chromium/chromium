@@ -446,13 +446,11 @@ public class CustomTabActivityTabController implements InflationObserver {
         }
 
         recordWebContentsStateOnLaunch(WebContentsState.NO_WEBCONTENTS);
-        if (mCustomTabIncognitoManager.get().isEnabledIncognitoCCT()) {
+        if (mIntentDataProvider.isIncognito()) {
             return mWebContentsFactory.createWebContentsWithWarmRenderer(
                     mCustomTabIncognitoManager.get().getProfile(), false);
         } else {
-            Profile profile = mIntentDataProvider.isIncognito()
-                    ? mProfileProvider.getPrimaryOTRProfile()
-                    : mProfileProvider.getLastUsedRegularProfile();
+            Profile profile = mProfileProvider.getLastUsedRegularProfile();
             return mWebContentsFactory.createWebContentsWithWarmRenderer(profile, false);
         }
     }

@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.addActionButtonToIntent;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
+import static org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider.EXTRA_FORCE_ENABLE_FOR_EXPERIMENT;
 
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -162,6 +164,15 @@ public class CustomTabActivityIncognitoTest {
         return mCustomTabActivityTestRule.getActivity();
     }
 
+    private void assertProfileUsedIsNonPrimary() throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Profile profile = Profile.fromWebContents(
+                    mCustomTabActivityTestRule.getActivity().getCurrentWebContents());
+            assertTrue(profile.isOffTheRecord());
+            assertFalse(profile.isPrimaryOTRProfile());
+        });
+    }
+
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
@@ -169,6 +180,7 @@ public class CustomTabActivityIncognitoTest {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         assertTrue(activity.getActivityTab().isIncognito());
+        assertProfileUsedIsNonPrimary();
     }
 
     @Test
@@ -212,10 +224,10 @@ public class CustomTabActivityIncognitoTest {
     @Features.DisableFeatures({ChromeFeatureList.CCT_INCOGNITO})
     public void canLaunchFirstPartyIncognitoWithExtraWhenDisabled() throws Exception {
         Intent intent = createMinimalIncognitoCustomTabIntent();
-        intent.putExtra(
-                IncognitoCustomTabIntentDataProvider.EXTRA_FORCE_ENABLE_FOR_EXPERIMENT, true);
+        intent.putExtra(EXTRA_FORCE_ENABLE_FOR_EXPERIMENT, true);
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         assertTrue(activity.getActivityTab().isIncognito());
+        assertProfileUsedIsNonPrimary();
     }
 
     @Test

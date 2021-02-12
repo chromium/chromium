@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProv
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
@@ -102,11 +101,6 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
         KEY.detachFromAllHosts(manager);
     }
 
-    public boolean isEnabledIncognitoCCT() {
-        return mIntentDataProvider.isIncognito()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO);
-    }
-
     public Profile getProfile() {
         if (mOTRProfileID == null) mOTRProfileID = OTRProfileID.createUnique("CCT:Incognito");
         return Profile.getLastUsedRegularProfile().getOffTheRecordProfile(mOTRProfileID);
@@ -114,7 +108,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
 
     @Override
     public void onFinishNativeInitialization() {
-        if (isEnabledIncognitoCCT()) {
+        if (mIntentDataProvider.isIncognito()) {
             initializeIncognito();
         }
     }
