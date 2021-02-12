@@ -17,6 +17,8 @@
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_display_configurator.h"
 #include "chromecast/ui/display_settings/gamma_configurator.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #endif  // defined(USE_AURA)
 
 namespace chromecast {
@@ -98,7 +100,9 @@ void DisplaySettingsManagerImpl::AddReceiver(
 
 void DisplaySettingsManagerImpl::SetScreenPowerOn(PowerToggleCallback callback) {
 #if defined(USE_AURA)
-  display_configurator_->EnableDisplay(std::move(callback));
+  display_configurator_->EnableDisplay(
+      base::BindOnce(&DisplaySettingsManagerImpl::OnScreenEnabled,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 #endif  // defined(USE_AURA)
 }
 
@@ -190,6 +194,19 @@ void DisplaySettingsManagerImpl::UpdateBrightness(float brightness,
                                                   base::TimeDelta duration) {
   if (brightness_animation_)
     brightness_animation_->AnimateToNewValue(brightness, duration);
+}
+
+void DisplaySettingsManagerImpl::OnScreenEnabled(PowerToggleCallback callback,
+                                                 bool status) {
+#if defined(USE_AURA)
+  // Force a swap buffers otherwise we might be stuck showing the modeset
+  // buffer.
+  window_manager_->GetRootWindow()
+      ->GetHost()
+      ->compositor()
+      ->ScheduleFullRedraw();
+#endif  // defined(USE_AURA)
+  std::move(callback).Run(status);
 }
 
 }  // namespace chromecast
