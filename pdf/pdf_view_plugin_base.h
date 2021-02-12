@@ -17,6 +17,8 @@
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace base {
@@ -123,6 +125,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // aren't painted by the PDF engine).
   void CalculateBackgroundParts();
 
+  // Bound the given scroll position to the document.
+  gfx::PointF BoundScrollPositionToDocument(const gfx::PointF& scroll_position);
+
   // Computes document width/height in device pixels, based on current zoom and
   // device scale
   int GetDocumentPixelWidth() const;
@@ -133,12 +138,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   const gfx::Rect& available_area() const { return available_area_; }
 
-  const gfx::Size& document_size() const { return document_size_; }
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
   const gfx::Size& plugin_size() const { return plugin_size_; }
-
-  const gfx::Size& plugin_dip_size() const { return plugin_dip_size_; }
 
   const gfx::Point& plugin_offset() const { return plugin_offset_; }
 

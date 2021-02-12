@@ -23,7 +23,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -2261,19 +2260,6 @@ void OutOfProcessInstance::RecordDocumentMetrics() {
 void OutOfProcessInstance::UserMetricsRecordAction(const std::string& action) {
   // TODO(raymes): Move this function to PPB_UMA_Private.
   pp::PDF::UserMetricsRecordAction(this, pp::Var(action));
-}
-
-gfx::PointF OutOfProcessInstance::BoundScrollPositionToDocument(
-    const gfx::PointF& scroll_position) {
-  float max_x = std::max(
-      document_size().width() * float{zoom()} - plugin_dip_size().width(),
-      0.0f);
-  float x = base::ClampToRange(scroll_position.x(), 0.0f, max_x);
-  float max_y = std::max(
-      document_size().height() * float{zoom()} - plugin_dip_size().height(),
-      0.0f);
-  float y = base::ClampToRange(scroll_position.y(), 0.0f, max_y);
-  return gfx::PointF(x, y);
 }
 
 bool OutOfProcessInstance::SendInputEventToEngine(const pp::InputEvent& event) {

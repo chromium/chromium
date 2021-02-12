@@ -20,6 +20,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
@@ -32,6 +33,7 @@
 #include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
@@ -250,6 +252,17 @@ void PdfViewPluginBase::CalculateBackgroundParts() {
                             plugin_size().height() - bottom);
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
+}
+
+gfx::PointF PdfViewPluginBase::BoundScrollPositionToDocument(
+    const gfx::PointF& scroll_position) {
+  float max_x = std::max(
+      document_size_.width() * float{zoom_} - plugin_dip_size_.width(), 0.0f);
+  float x = base::ClampToRange(scroll_position.x(), 0.0f, max_x);
+  float max_y = std::max(
+      document_size_.height() * float{zoom_} - plugin_dip_size_.height(), 0.0f);
+  float y = base::ClampToRange(scroll_position.y(), 0.0f, max_y);
+  return gfx::PointF(x, y);
 }
 
 int PdfViewPluginBase::GetDocumentPixelWidth() const {

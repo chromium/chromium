@@ -27,7 +27,6 @@
 #include "ppapi/cpp/private/find_private.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -279,9 +278,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // Sends the thumbnail image data.
   void SendThumbnail(const std::string& message_id, Thumbnail thumbnail);
-
-  // Bound the given scroll position to the document.
-  gfx::PointF BoundScrollPositionToDocument(const gfx::PointF& scroll_position);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
