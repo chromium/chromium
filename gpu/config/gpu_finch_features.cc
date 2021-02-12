@@ -240,6 +240,10 @@ bool IsAndroidSurfaceControlEnabled() {
   if (!IsAImageReaderEnabled())
     return false;
 
+  // SurfaceControl requires at least 3 frames in flight.
+  if (LimitAImageReaderMaxSizeToOne())
+    return false;
+
   // On WebView we also require zero copy to use SurfaceControl
   if (IsWebViewZeroCopyVideoEnabled() &&
       base::FeatureList::IsEnabled(kWebViewSurfaceControl))
@@ -255,6 +259,11 @@ bool IsAndroidSurfaceControlEnabled() {
 // should be 1 irrespecticve of the feature LimitAImageReaderMaxSizeToOne
 // enabled or not. Get() returns default value even if the feature is disabled.
 bool LimitAImageReaderMaxSizeToOne() {
+  // Always limit image reader to 1 frame for Android TV. Many TVs doesn't work
+  // with more than 1 frame and it's very hard to localize which models do.
+  if (base::android::BuildInfo::GetInstance()->is_tv())
+    return true;
+
   return (FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
                              kLimitAImageReaderMaxSizeToOneBlocklist.Get()));
 }

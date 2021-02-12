@@ -4,10 +4,14 @@
 
 package org.chromium.base;
 
+import static android.content.Context.UI_MODE_SERVICE;
+
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.text.TextUtils;
@@ -55,6 +59,8 @@ public class BuildInfo {
     public final String customThemes;
     /** Product version as stored in Android resources. */
     public final String resourcesVersion;
+    /** Whether we're running on Android TV or not */
+    public final boolean isTV;
 
     private static class Holder { private static BuildInfo sInstance = new BuildInfo(); }
 
@@ -88,6 +94,7 @@ public class BuildInfo {
                 String.valueOf(
                         ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion),
                 isDebugAndroid() ? "1" : "0",
+                buildInfo.isTV ? "1" : "0",
         };
     }
 
@@ -188,6 +195,13 @@ public class BuildInfo {
             // The value is truncated, as this is used for crash and UMA reporting.
             androidBuildFingerprint = Build.FINGERPRINT.substring(
                     0, Math.min(Build.FINGERPRINT.length(), MAX_FINGERPRINT_LENGTH));
+
+            // See https://developer.android.com/training/tv/start/hardware.html#runtime-check.
+            UiModeManager uiModeManager =
+                    (UiModeManager) appContext.getSystemService(UI_MODE_SERVICE);
+            isTV = uiModeManager != null
+                    && uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+
         } catch (NameNotFoundException e) {
             throw new RuntimeException(e);
         }
