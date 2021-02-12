@@ -18,7 +18,6 @@ import org.chromium.base.EarlyTraceEvent.AsyncEvent;
 import org.chromium.base.EarlyTraceEvent.Event;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 
 import java.util.ArrayList;
@@ -35,16 +34,6 @@ public class EarlyTraceEventTest {
     private static final String EVENT_NAME2 = "MyOtherEvent";
     private static final long EVENT_ID = 1;
 
-    List<Event> getMatchingCompletedEvents(String eventName) {
-        List<Event> matchingEvents = new ArrayList<Event>();
-        for (Event evt : EarlyTraceEvent.sEvents) {
-            if (evt.mName.equals(eventName)) {
-                matchingEvents.add(evt);
-            }
-        }
-        return matchingEvents;
-    }
-
     @Before
     public void setUp() {
         LibraryLoader.getInstance().ensureInitialized();
@@ -54,7 +43,6 @@ public class EarlyTraceEventTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
-    @DisabledTest(message = "https://crbug.com/1173968")
     public void testCanRecordEvent() {
         EarlyTraceEvent.enable();
         long myThreadId = Process.myTid();
@@ -62,10 +50,12 @@ public class EarlyTraceEventTest {
         long beforeThreadMillis = SystemClock.currentThreadTimeMillis();
         EarlyTraceEvent.begin(EVENT_NAME, false /*isToplevel*/);
         EarlyTraceEvent.end(EVENT_NAME, false /*isToplevel*/);
+        Assert.assertTrue(EarlyTraceEvent.enabled());
         long afterNanos = SystemClock.elapsedRealtimeNanos();
         long afterThreadMillis = SystemClock.currentThreadTimeMillis();
 
-        List<Event> matchingEvents = getMatchingCompletedEvents(EVENT_NAME);
+        List<Event> matchingEvents =
+                EarlyTraceEvent.getMatchingCompletedEventsForTesting(EVENT_NAME);
         Assert.assertEquals(2, matchingEvents.size());
         Event beginEvent = matchingEvents.get(0);
         Event endEvent = matchingEvents.get(1);
@@ -121,7 +111,8 @@ public class EarlyTraceEventTest {
         }
         long afterNanos = SystemClock.elapsedRealtimeNanos();
 
-        List<Event> matchingEvents = getMatchingCompletedEvents(EVENT_NAME);
+        List<Event> matchingEvents =
+                EarlyTraceEvent.getMatchingCompletedEventsForTesting(EVENT_NAME);
         Assert.assertEquals(2, matchingEvents.size());
         Event beginEvent = matchingEvents.get(0);
         Event endEvent = matchingEvents.get(1);
@@ -140,7 +131,8 @@ public class EarlyTraceEventTest {
         EarlyTraceEvent.enable();
         EarlyTraceEvent.begin(EVENT_NAME, true /*isToplevel*/);
 
-        List<Event> matchingEvents = getMatchingCompletedEvents(EVENT_NAME);
+        List<Event> matchingEvents =
+                EarlyTraceEvent.getMatchingCompletedEventsForTesting(EVENT_NAME);
         Assert.assertEquals(1, matchingEvents.size());
         Event beginEvent = matchingEvents.get(0);
         Assert.assertEquals(EVENT_NAME, beginEvent.mName);
@@ -200,7 +192,8 @@ public class EarlyTraceEventTest {
         thread.start();
         thread.join();
 
-        List<Event> matchingEvents = getMatchingCompletedEvents(EVENT_NAME);
+        List<Event> matchingEvents =
+                EarlyTraceEvent.getMatchingCompletedEventsForTesting(EVENT_NAME);
         Assert.assertEquals(2, matchingEvents.size());
         Event beginEvent = matchingEvents.get(0);
         Event endEvent = matchingEvents.get(1);
@@ -251,6 +244,9 @@ public class EarlyTraceEventTest {
         CommandLine.getInstance().appendSwitch("trace-early-java-in-child");
         EarlyTraceEvent.onCommandLineAvailableInChildProcess();
         Assert.assertTrue(EarlyTraceEvent.enabled());
+
+        // Eliminate side effects.
+        CommandLine.getInstance().removeSwitch("trace-early-java-in-child");
     }
 
     @Test

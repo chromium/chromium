@@ -300,6 +300,19 @@ public class EarlyTraceEvent {
         }
     }
 
+    @VisibleForTesting
+    static List<Event> getMatchingCompletedEventsForTesting(String eventName) {
+        synchronized (sLock) {
+            List<Event> matchingEvents = new ArrayList<Event>();
+            for (Event evt : EarlyTraceEvent.sEvents) {
+                if (evt.mName.equals(eventName)) {
+                    matchingEvents.add(evt);
+                }
+            }
+            return matchingEvents;
+        }
+    }
+
     private static void dumpEvents(List<Event> events) {
         long offsetNanos = getOffsetNanos();
         for (Event e : events) {
@@ -339,16 +352,6 @@ public class EarlyTraceEvent {
         long nativeNowNanos = TimeUtilsJni.get().getTimeTicksNowUs() * 1000;
         long javaNowNanos = SystemClock.elapsedRealtimeNanos();
         return nativeNowNanos - javaNowNanos;
-    }
-
-    /**
-     * Returns a key which consists of |name| and the ID of the current thread.
-     * The key is used with pending events making them thread-specific, thus avoiding
-     * an exception when similarly named events are started from multiple threads.
-     */
-    @VisibleForTesting
-    static String makeEventKeyForCurrentThread(String name) {
-        return name + "@" + Process.myTid();
     }
 
     @NativeMethods
