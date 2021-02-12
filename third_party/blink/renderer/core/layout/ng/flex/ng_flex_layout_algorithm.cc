@@ -322,10 +322,7 @@ LayoutUnit NGFlexLayoutAlgorithm::CalculateFixedCrossSize(
 }
 
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
-    const NGBlockNode& flex_item,
-    const NGPhysicalBoxStrut& physical_margins = NGPhysicalBoxStrut(),
-    const MinMaxSizes& cross_axis_min_max = MinMaxSizes{
-        kIndefiniteSize, kIndefiniteSize}) const {
+    const NGBlockNode& flex_item) const {
   const ComputedStyle& child_style = flex_item.Style();
   NGConstraintSpaceBuilder space_builder(ConstraintSpace(),
                                          child_style.GetWritingDirection(),
@@ -334,23 +331,10 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
   space_builder.SetIsPaintedAtomically(true);
 
-  NGBoxStrut margins = physical_margins.ConvertToLogical(
-      ConstraintSpace().GetWritingDirection());
-  LogicalSize child_available_size = ChildAvailableSize();
   if (!ShouldItemShrinkToFit(flex_item)) {
     space_builder.SetStretchInlineSizeIfAuto(true);
-    if (cross_axis_min_max.min_size != kIndefiniteSize &&
-        WillChildCrossSizeBeContainerCrossSize(flex_item)) {
-      LayoutUnit cross_size =
-          CalculateFixedCrossSize(cross_axis_min_max, margins);
-      if (is_column_) {
-        space_builder.SetIsFixedInlineSize(true);
-        child_available_size.inline_size = cross_size;
-      } else {
-        space_builder.SetIsFixedBlockSize(true);
-        child_available_size.block_size = cross_size;
-      }
-    }
+    if (WillChildCrossSizeBeContainerCrossSize(flex_item) && !is_column_)
+      space_builder.SetStretchBlockSizeIfAuto(true);
   }
 
   // For determining the intrinsic block-size we make %-block-sizes resolve
@@ -361,7 +345,7 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     space_builder.SetIsFixedBlockSizeIndefinite(true);
   }
 
-  space_builder.SetAvailableSize(child_available_size);
+  space_builder.SetAvailableSize(ChildAvailableSize());
   space_builder.SetPercentageResolutionSize(child_percentage_size);
   // TODO(dgrogan): The SetReplacedPercentageResolutionSize calls in this file
   // may be untested. Write a test or determine why they're unnecessary.
@@ -601,9 +585,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     base::Optional<LayoutUnit> calculated_intrinsic_block_size;
     auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
       if (!calculated_intrinsic_block_size) {
-        NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(
-            child, physical_child_margins,
-            min_max_sizes_in_cross_axis_direction);
+        NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
         scoped_refptr<const NGLayoutResult> layout_result =
             child.Layout(child_space, /* break_token */ nullptr);
         calculated_intrinsic_block_size = layout_result->IntrinsicBlockSize();
@@ -1054,8 +1036,6 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
       space_builder.SetIsPaintedAtomically(true);
 
       LogicalSize available_size;
-      NGBoxStrut margins = flex_item.physical_margins_.ConvertToLogical(
-          ConstraintSpace().GetWritingDirection());
       LayoutUnit fixed_aspect_ratio_cross_size = kIndefiniteSize;
       if (RuntimeEnabledFeatures::FlexAspectRatioEnabled() &&
           flex_item.ng_input_node_.HasAspectRatio() &&
@@ -1088,9 +1068,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
                                     flex_item.main_axis_border_padding_;
         space_builder.SetIsFixedBlockSize(true);
         if (WillChildCrossSizeBeContainerCrossSize(flex_item.ng_input_node_)) {
-          space_builder.SetIsFixedInlineSize(true);
-          available_size.inline_size = CalculateFixedCrossSize(
-              flex_item.min_max_cross_sizes_.value(), margins);
+          space_builder.SetStretchInlineSizeIfAuto(true);
         } else if (fixed_aspect_ratio_cross_size != kIndefiniteSize) {
           space_builder.SetIsFixedInlineSize(true);
           available_size.inline_size = fixed_aspect_ratio_cross_size;
@@ -1109,9 +1087,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
         available_size.block_size = ChildAvailableSize().block_size;
         space_builder.SetIsFixedInlineSize(true);
         if (WillChildCrossSizeBeContainerCrossSize(flex_item.ng_input_node_)) {
-          space_builder.SetIsFixedBlockSize(true);
-          available_size.block_size = CalculateFixedCrossSize(
-              flex_item.min_max_cross_sizes_.value(), margins);
+          space_builder.SetStretchBlockSizeIfAuto(true);
         } else if (fixed_aspect_ratio_cross_size != kIndefiniteSize) {
           space_builder.SetIsFixedBlockSize(true);
           available_size.block_size = fixed_aspect_ratio_cross_size;
