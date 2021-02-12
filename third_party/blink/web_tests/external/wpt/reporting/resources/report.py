@@ -5,7 +5,7 @@ import uuid
 
 from wptserve.utils import isomorphic_decode
 
-def retrieve_from_stash(request, key, timeout, default_value, min_count=None):
+def retrieve_from_stash(request, key, timeout, default_value, min_count=None, retain=False):
   """Retrieve the set of reports for a given report ID.
 
   This will extract either the set of reports, credentials, or request count
@@ -22,14 +22,17 @@ def retrieve_from_stash(request, key, timeout, default_value, min_count=None):
     time.sleep(0.5)
     with request.server.stash.lock:
       value = request.server.stash.take(key=key)
-      if value is not None and (min_count is None or len(value) >= min_count):
-        request.server.stash.put(key=key, value=value)
-        # If the last report received looks like a CSP report-uri report, then
-        # extract it from the list and return it alone. (This is until the CSP
-        # tests are modified to expect a list of reports returned in all cases.)
-        if isinstance(value,list) and 'csp-report' in value[-1]:
-          value = value[-1]
-        return json.dumps(value)
+      if value is not None:
+        have_sufficient_reports = (min_count is None or len(value) >= min_count)
+        if retain or not have_sufficient_reports:
+          request.server.stash.put(key=key, value=value)
+        if have_sufficient_reports:
+          # If the last report received looks like a CSP report-uri report, then
+          # extract it from the list and return it alone. (This is until the CSP
+          # tests are modified to expect a list of reports returned in all cases.)
+          if isinstance(value,list) and 'csp-report' in value[-1]:
+            value = value[-1]
+          return json.dumps(value)
 
   return default_value
 
@@ -67,10 +70,11 @@ def main(request, response):
       min_count = int(request.GET.first(b"min_count"))
     except:
       min_count = 1
+    retain = (b"retain" in request.GET)
 
     op = request.GET.first(b"op", b"")
     if op in (b"retrieve_report", b""):
-      return [(b"Content-Type", b"application/json")], retrieve_from_stash(request, key, timeout, u'[]', min_count)
+      return [(b"Content-Type", b"application/json")], retrieve_from_stash(request, key, timeout, u'[]', min_count, retain)
 
     if op == b"retrieve_cookies":
       return [(b"Content-Type", b"application/json")], u"{ \"reportCookies\" : " + str(retrieve_from_stash(request, cookie_key, timeout, u"\"None\"")) + u"}"

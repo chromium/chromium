@@ -31,6 +31,8 @@ Supported GET parameters:
  `min_count`: The minimum number of reports to return with the `retrieve_report`
    operation. If there have been fewer than this many reports received, then an
    empty report list will be returned instead.
+ `retain`: If present, reports will remain in the stash after being retrieved.
+   By default, reports are cleared once retrieved.
 
 Operations:
  `retrieve_report`: Returns all reports received so far for this reportID, as a
