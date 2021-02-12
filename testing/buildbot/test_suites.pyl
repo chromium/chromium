@@ -103,6 +103,18 @@
     # MM emulator CQ builder currently has limited capacity so some composition
     # test suites cannot be fullly enabled at once.
     'android_marshmallow_emulator_limited_capacity_gtests': {
+      # Tests from android_specific_chromium_gtests
+      'chrome_public_test_apk': {
+        'swarming': {
+          'shards': 20,
+        },
+        'mixins': [
+          'chrome-gold-service-account',
+          'skia_gold_test',
+          'enable_resultdb',
+        ],
+      },
+
       # Tests from chromium_gtests_for_devices_with_graphical_output
       'unit_tests': {
         'android_swarming': {

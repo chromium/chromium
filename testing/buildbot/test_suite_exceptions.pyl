@@ -766,6 +766,23 @@
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
         },
       },
+      'android-marshmallow-x86-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter',
+        ],
+        'swarming': {
+          # TODO(crbug.com/1127110): Revisit shards and machine_type if there
+          # are n2 machines available in the test pool.
+          'shards': 25,
+          'dimension_sets': [
+            {
+              'machine_type': 'e2-standard-8', # use 8-core to shorten runtime
+            },
+          ],
+        },
+        # TODD(crbug.com/1127110): Remove experimental once it works fine.
+        'experiment_percentage': 50,
+      },
       'android-marshmallow-x86-rel-non-cq': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter',
