@@ -774,8 +774,6 @@ void LocalFrameView::PerformLayout(bool in_subtree_layout) {
         if (!LayoutFromRootObject(*root))
           continue;
 
-        root->PaintingLayer()->UpdateLayerPositionsAfterLayout();
-
         // We need to ensure that we mark up all layoutObjects up to the
         // LayoutView for paint invalidation. This simplifies our code as we
         // just always do a full tree walk.
@@ -953,9 +951,6 @@ void LocalFrameView::UpdateLayout() {
                                            DocumentLifecycle::kLayoutClean);
 
   frame_timing_requests_dirty_ = true;
-
-  if (!in_subtree_layout)
-    GetLayoutView()->EnclosingLayer()->UpdateLayerPositionsAfterLayout();
 
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"), "LayoutTree", this,
@@ -2006,6 +2001,7 @@ void LocalFrameView::PerformPostLayoutTasks() {
   DCHECK(!IsInPerformLayout());
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::performPostLayoutTasks");
 
+  GetLayoutView()->EnclosingLayer()->UpdateLayerPositionsAfterLayout();
   frame_->Selection().DidLayout();
 
   DCHECK(frame_->GetDocument());
