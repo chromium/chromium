@@ -8,6 +8,7 @@
 #include "chrome/browser/video_tutorials/internal/tutorial_manager.h"
 
 #include <deque>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,6 +33,8 @@ class TutorialManagerImpl : public TutorialManager {
   void GetTutorial(FeatureType feature_type,
                    SingleItemCallback callback) override;
   const std::vector<std::string>& GetSupportedLanguages() override;
+  const std::vector<std::string>& GetAvailableLanguagesForTutorial(
+      FeatureType feature_type) override;
   base::Optional<std::string> GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
   void SaveGroups(std::unique_ptr<std::vector<TutorialGroup>> groups) override;
@@ -55,6 +58,9 @@ class TutorialManagerImpl : public TutorialManager {
 
   // List of languages for which we have tutorials.
   std::vector<std::string> supported_languages_;
+
+  // List of supported languages per tutorial.
+  std::map<FeatureType, std::vector<std::string>> languages_for_tutorials_;
 
   // We only keep the tutorials for the preferred locale.
   base::Optional<TutorialGroup> tutorial_group_;

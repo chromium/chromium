@@ -29,6 +29,10 @@ class TutorialManager {
   // Returns a list of languages for which video tutorials are available.
   virtual const std::vector<std::string>& GetSupportedLanguages() = 0;
 
+  // Returns a list of languages in which a given tutorial is available.
+  virtual const std::vector<std::string>& GetAvailableLanguagesForTutorial(
+      FeatureType feature_type) = 0;
+
   // Returns the preferred locale for the video tutorials.
   virtual base::Optional<std::string> GetPreferredLocale() = 0;
 
