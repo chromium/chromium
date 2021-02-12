@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
 #if defined(TOOLKIT_VIEWS)
@@ -45,12 +46,12 @@
 #include "ui/resources/grit/ui_resources.h"
 #endif
 
-using bookmarks::BookmarkModel;
-using bookmarks::BookmarkNode;
-
 namespace chrome {
-
 namespace {
+
+using ::bookmarks::BookmarkModel;
+using ::bookmarks::BookmarkNode;
+using ::ui::mojom::DragOperation;
 
 #if defined(TOOLKIT_VIEWS)
 // Image source that flips the supplied source image in RTL.
@@ -168,36 +169,37 @@ int GetBookmarkDragOperation(content::BrowserContext* browser_context,
   return ui::DragDropTypes::DRAG_COPY | move;
 }
 
-int GetPreferredBookmarkDropOperation(int source_operations, int operations) {
+DragOperation GetPreferredBookmarkDropOperation(int source_operations,
+                                                int operations) {
   int common_ops = (source_operations & operations);
   if (!common_ops)
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
   if (ui::DragDropTypes::DRAG_COPY & common_ops)
-    return ui::DragDropTypes::DRAG_COPY;
+    return DragOperation::kCopy;
   if (ui::DragDropTypes::DRAG_LINK & common_ops)
-    return ui::DragDropTypes::DRAG_LINK;
+    return DragOperation::kLink;
   if (ui::DragDropTypes::DRAG_MOVE & common_ops)
-    return ui::DragDropTypes::DRAG_MOVE;
-  return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kMove;
+  return DragOperation::kNone;
 }
 
-int GetBookmarkDropOperation(Profile* profile,
-                             const ui::DropTargetEvent& event,
-                             const bookmarks::BookmarkNodeData& data,
-                             const BookmarkNode* parent,
-                             size_t index) {
+DragOperation GetBookmarkDropOperation(Profile* profile,
+                                       const ui::DropTargetEvent& event,
+                                       const bookmarks::BookmarkNodeData& data,
+                                       const BookmarkNode* parent,
+                                       size_t index) {
   const base::FilePath& profile_path = profile->GetPath();
 
   if (data.IsFromProfilePath(profile_path) && data.size() > 1)
     // Currently only accept one dragged node at a time.
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   if (!IsValidBookmarkDropLocation(profile, data, parent, index))
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
   if (!model->client()->CanBeEditedByUser(parent))
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   const BookmarkNode* dragged_node =
       data.GetFirstNode(model, profile->GetPath());
@@ -206,9 +208,9 @@ int GetBookmarkDropOperation(Profile* profile,
     if (!model->client()->CanBeEditedByUser(dragged_node)) {
       // Do a copy instead of a move when dragging bookmarks that the user can't
       // modify.
-      return ui::DragDropTypes::DRAG_COPY;
+      return DragOperation::kCopy;
     }
-    return ui::DragDropTypes::DRAG_MOVE;
+    return DragOperation::kMove;
   }
 
   // User is dragging from another app, copy.

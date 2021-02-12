@@ -246,7 +246,7 @@ bool BookmarkMenuDelegate::CanDrop(MenuItemView* menu,
   return (drop_node == NULL);
 }
 
-int BookmarkMenuDelegate::GetDropOperation(
+ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
     MenuItemView* item,
     const ui::DropTargetEvent& event,
     views::MenuDelegate::DropPosition* position) {

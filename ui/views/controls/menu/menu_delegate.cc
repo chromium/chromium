@@ -91,11 +91,12 @@ bool MenuDelegate::AreDropTypesRequired(MenuItemView* menu) {
   return false;
 }
 
-int MenuDelegate::GetDropOperation(MenuItemView* item,
-                                   const ui::DropTargetEvent& event,
-                                   DropPosition* position) {
+ui::mojom::DragOperation MenuDelegate::GetDropOperation(
+    MenuItemView* item,
+    const ui::DropTargetEvent& event,
+    DropPosition* position) {
   NOTREACHED() << "If you override CanDrop, you need to override this too";
-  return ui::DragDropTypes::DRAG_NONE;
+  return ui::mojom::DragOperation::kNone;
 }
 
 ui::mojom::DragOperation MenuDelegate::OnPerformDrop(

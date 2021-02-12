@@ -852,12 +852,13 @@ bool AppMenu::CanDrop(MenuItemView* menu, const ui::OSExchangeData& data) {
          bookmark_menu_delegate_->CanDrop(menu, data);
 }
 
-int AppMenu::GetDropOperation(MenuItemView* item,
-                              const ui::DropTargetEvent& event,
-                              DropPosition* position) {
+ui::mojom::DragOperation AppMenu::GetDropOperation(
+    MenuItemView* item,
+    const ui::DropTargetEvent& event,
+    DropPosition* position) {
   return IsBookmarkCommand(item->GetCommand())
              ? bookmark_menu_delegate_->GetDropOperation(item, event, position)
-             : ui::DragDropTypes::DRAG_NONE;
+             : ui::mojom::DragOperation::kNone;
 }
 
 ui::mojom::DragOperation AppMenu::OnPerformDrop(

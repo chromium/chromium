@@ -9,6 +9,7 @@
 
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
@@ -67,17 +68,20 @@ int GetBookmarkDragOperation(content::BrowserContext* browser_context,
 
 // Calculates the drop operation given |source_operations| and the ideal
 // set of drop operations (|operations|). This prefers the following ordering:
-// COPY, LINK then MOVE.
-int GetPreferredBookmarkDropOperation(int source_operations, int operations);
+// `DragOperation::kCopy`, `DragOperation::kLink` then `DragOperation::kMove`.
+ui::mojom::DragOperation GetPreferredBookmarkDropOperation(
+    int source_operations,
+    int operations);
 
 // Returns the preferred drop operation on a bookmark menu/bar.
 // |parent| is the parent node the drop is to occur on and |index| the index the
 // drop is over.
-int GetBookmarkDropOperation(Profile* profile,
-                             const ui::DropTargetEvent& event,
-                             const bookmarks::BookmarkNodeData& data,
-                             const bookmarks::BookmarkNode* parent,
-                             size_t index);
+ui::mojom::DragOperation GetBookmarkDropOperation(
+    Profile* profile,
+    const ui::DropTargetEvent& event,
+    const bookmarks::BookmarkNodeData& data,
+    const bookmarks::BookmarkNode* parent,
+    size_t index);
 
 // Returns true if the bookmark data can be dropped on |drop_parent| at
 // |index|. A drop from a separate profile is always allowed, where as

@@ -161,14 +161,15 @@ class VIEWS_EXPORT MenuDelegate {
   // is set based on the location of the mouse, reset to specify a different
   // position.
   //
-  // If a drop should not be allowed, returned ui::DragDropTypes::DRAG_NONE.
-  virtual int GetDropOperation(MenuItemView* item,
-                               const ui::DropTargetEvent& event,
-                               DropPosition* position);
+  // If a drop should not be allowed, returns DragOperation::kNone.
+  virtual ui::mojom::DragOperation GetDropOperation(
+      MenuItemView* item,
+      const ui::DropTargetEvent& event,
+      DropPosition* position);
 
   // Invoked to perform the drop operation. This is ONLY invoked if CanDrop()
   // returned true for the parent menu item, and GetDropOperation() returned an
-  // operation other than ui::DragDropTypes::DRAG_NONE.
+  // operation other than DragOperation::kNone.
   //
   // |menu| is the menu the drop occurred on.
   virtual ui::mojom::DragOperation OnPerformDrop(

@@ -113,7 +113,7 @@ bool BookmarkMenuController::CanDrop(MenuItemView* menu,
   return menu_delegate_->CanDrop(menu, data);
 }
 
-int BookmarkMenuController::GetDropOperation(
+ui::mojom::DragOperation BookmarkMenuController::GetDropOperation(
     MenuItemView* item,
     const ui::DropTargetEvent& event,
     DropPosition* position) {

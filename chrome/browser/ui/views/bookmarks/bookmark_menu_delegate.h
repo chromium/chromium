@@ -110,9 +110,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
                       std::set<ui::ClipboardFormatType>* format_types);
   bool AreDropTypesRequired(views::MenuItemView* menu);
   bool CanDrop(views::MenuItemView* menu, const ui::OSExchangeData& data);
-  int GetDropOperation(views::MenuItemView* item,
-                       const ui::DropTargetEvent& event,
-                       views::MenuDelegate::DropPosition* position);
+  ui::mojom::DragOperation GetDropOperation(
+      views::MenuItemView* item,
+      const ui::DropTargetEvent& event,
+      views::MenuDelegate::DropPosition* position);
   ui::mojom::DragOperation OnPerformDrop(
       views::MenuItemView* menu,
       views::MenuDelegate::DropPosition position,

@@ -1060,8 +1060,9 @@ int MenuController::OnDragUpdated(SubmenuView* source,
       query_menu_item = menu_item->GetParentMenuItem();
       drop_position = MenuDelegate::DropPosition::kOn;
     }
-    drop_operation = menu_item->GetDelegate()->GetDropOperation(
-        query_menu_item, event, &drop_position);
+    drop_operation =
+        static_cast<int>(menu_item->GetDelegate()->GetDropOperation(
+            query_menu_item, event, &drop_position));
 
     // If the menu has a submenu, schedule the submenu to open.
     SetSelection(menu_item, menu_item->HasSubmenu() ? SELECTION_OPEN_SUBMENU

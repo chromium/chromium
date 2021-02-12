@@ -171,9 +171,9 @@ class MenuViewDragAndDropTest : public MenuTestBase,
   bool AreDropTypesRequired(views::MenuItemView* menu) override;
   bool CanDrop(views::MenuItemView* menu,
                const ui::OSExchangeData& data) override;
-  int GetDropOperation(views::MenuItemView* item,
-                       const ui::DropTargetEvent& event,
-                       DropPosition* position) override;
+  DragOperation GetDropOperation(views::MenuItemView* item,
+                                 const ui::DropTargetEvent& event,
+                                 DropPosition* position) override;
   DragOperation OnPerformDrop(views::MenuItemView* menu,
                               DropPosition position,
                               const ui::DropTargetEvent& event) override;
@@ -264,10 +264,11 @@ bool MenuViewDragAndDropTest::CanDrop(views::MenuItemView* menu,
          contents == base::ASCIIToUTF16(kTestTopLevelDragData);
 }
 
-int MenuViewDragAndDropTest::GetDropOperation(views::MenuItemView* item,
-                                              const ui::DropTargetEvent& event,
-                                              DropPosition* position) {
-  return ui::DragDropTypes::DRAG_MOVE;
+DragOperation MenuViewDragAndDropTest::GetDropOperation(
+    views::MenuItemView* item,
+    const ui::DropTargetEvent& event,
+    DropPosition* position) {
+  return DragOperation::kMove;
 }
 
 DragOperation MenuViewDragAndDropTest::OnPerformDrop(

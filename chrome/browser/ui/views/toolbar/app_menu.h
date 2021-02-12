@@ -69,9 +69,9 @@ class AppMenu : public views::MenuDelegate,
   bool AreDropTypesRequired(views::MenuItemView* menu) override;
   bool CanDrop(views::MenuItemView* menu,
                const ui::OSExchangeData& data) override;
-  int GetDropOperation(views::MenuItemView* item,
-                       const ui::DropTargetEvent& event,
-                       DropPosition* position) override;
+  ui::mojom::DragOperation GetDropOperation(views::MenuItemView* item,
+                                            const ui::DropTargetEvent& event,
+                                            DropPosition* position) override;
   ui::mojom::DragOperation OnPerformDrop(
       views::MenuItemView* menu,
       DropPosition position,
