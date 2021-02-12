@@ -1,0 +1,275 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="kab">
+<translation id="1028699632127661925">Tuzna ɣer <ph name="DEVICE_NAME" />...</translation>
+<translation id="111910763555783249">Iɣewwaṛen n yilɣa</translation>
+<translation id="1127811143501539442">{DAYS,plural, =1{1 n wass aya}other{# n wussan aya}}</translation>
+<translation id="1156623771253174079">{SECONDS,plural, =1{1 n tsedat aya}other{# n tsedatin aya}}</translation>
+<translation id="1169783199079129864">{MINUTES,plural, =1{1 tsd}other{# tsd}}</translation>
+<translation id="1181037720776840403">Kkes</translation>
+<translation id="1201402288615127009">Ɣer zdat</translation>
+<translation id="1218444235442067213"><ph name="APP_NAME" />, Asnas Play Store</translation>
+<translation id="1243314992276662751">Sali</translation>
+<translation id="1266864766717917324">Ur izmir ara ad yebḍu <ph name="CONTENT_TYPE" /></translation>
+<translation id="1269641567813814718">Rrbaḥ</translation>
+<translation id="1290982764014248209">Senkez <ph name="DRAGGED_APP" /> ɣer ukaram <ph name="FOLDER_NAME" />.</translation>
+<translation id="1291104554099683393">Ɛreḍ beṭṭu n uḍris d tigezmin timecṭaḥ.</translation>
+<translation id="1293699935367580298">Esc</translation>
+<translation id="1306549533752902673">ISNASEN YETTUWELLHEN</translation>
+<translation id="1368832886055348810">Seg uzelmaḍ ɣer uyeffus</translation>
+<translation id="1383876407941801731">Nadi</translation>
+<translation id="1398853756734560583">Semɣer</translation>
+<translation id="1414271762428216854"><ph name="APP_NAME" />, asnas yettusbedden</translation>
+<translation id="1450753235335490080">Ur yezmir ara ad yebḍu <ph name="CONTENT_TYPE" /></translation>
+<translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> yettubeddel s <ph name="SECOND_ITEM_TITLE" /></translation>
+<translation id="1498028757988366001">Tnudaḍ ɣef waya uqbel. Tukksa n '<ph name="QUERY" />' seg uzray-inek·inem ad t-yekkes i lebda seg umiḍan-inek·inem seg meṛṛa ibenkan-inek·inem.</translation>
+<translation id="1510238584712386396">Tanekra</translation>
+<translation id="1591184457164800433">MINUTES,plural, =1{1 tesdat d }other{# tesdatin d }}</translation>
+<translation id="1643823602425662293">Alɣu</translation>
+<translation id="169515659049020177">Shift</translation>
+<translation id="1710340000377843106">tura</translation>
+<translation id="1752946267035950200">MINUTES,plural, =1{1 tesdat}other{# tesdatin}}</translation>
+<translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
+<translation id="1801827354178857021">Tawala</translation>
+<translation id="1803208670097017349">{MONTHS,plural, =1{1 waggur}other{# wagguren}}</translation>
+<translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
+<translation id="1830179671306812954">{HOURS,plural, =1{1 asrag d }other{# isragen d }}</translation>
+<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ur yinṭiḍ ara</translation>
+<translation id="1842960171412779397">fren</translation>
+<translation id="1859234291848436338">Tanila n tira</translation>
+<translation id="1860796786778352021">Amdal n wulɣu</translation>
+<translation id="186476001994626254">Agbur n usenteḍ uḥric Web</translation>
+<translation id="1871244248791675517">Ins</translation>
+<translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
+<translation id="1901303067676059328">Fren &amp;akk</translation>
+<translation id="19085484004813472">Tagi d tamahilt tamaynut</translation>
+<translation id="2006524834898217237">Ḍmen iben-a yeqqen ɣer Internet.</translation>
+<translation id="208586643495776849">Ttxil-k·m εreḍ tikkelt-nniḍen</translation>
+<translation id="2141853158323869627">{DAYS,plural, =1{1ass}other{#ussan}}</translation>
+<translation id="2148716181193084225">Ass-a</translation>
+<translation id="2161656808144014275">Aḍris</translation>
+<translation id="2168039046890040389">Asawen n usebter</translation>
+<translation id="2190355936436201913">(d ilem)</translation>
+<translation id="2192232475740621500">Seqdec taneẓẓi taddayt</translation>
+<translation id="219905428774326614">Tanekra, meṛṛa isnasen</translation>
+<translation id="2267918077332197517">Sewḥel meṛṛa ilɣa i d-yekkan seg usmel-a</translation>
+<translation id="2289052229480071835">Sit ɣef yisaḍasen innalanen n ugdil-inek·inem.</translation>
+<translation id="2295140143284145483">Tafrant</translation>
+<translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
+<translation id="2353636109065292463">Asenqed n tuqqna-inek·inem ɣer Internet</translation>
+<translation id="2388990488038464401">Siwel i wuṭṭun-a seg tilifun-inek·inem?</translation>
+<translation id="24452542372838207">Snefli alɣu</translation>
+<translation id="2445449901874883781">Seqdec taneẓẓi tafellayt</translation>
+<translation id="2482878487686419369">Ilɣa</translation>
+<translation id="2497284189126895209">Akk ifuyla</translation>
+<translation id="2515586267016047495">Alt</translation>
+<translation id="2522350507219695259">Aseddeṛ yemmed</translation>
+<translation id="252373100621549798">Askan arussin</translation>
+<translation id="2545651323591713692">Sgen i tenzadt</translation>
+<translation id="2570734079541893434">Sefrek iɣewwaren</translation>
+<translation id="2573731672208488250">{HOURS,plural, =1{in 1 srg}other{in # srgn}}</translation>
+<translation id="2583543531130364912">Seddeṛ agdil-i·im annalan</translation>
+<translation id="2586657967955657006">Γefwafus</translation>
+<translation id="2666092431469916601">Afellay</translation>
+<translation id="2701330563083355633">Yettwabḍa seg <ph name="DEVICE_NAME" /></translation>
+<translation id="271033894570825754">Amaynut</translation>
+<translation id="2743387203779672305">Nɣel ɣer ɣefwafus</translation>
+<translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
+<translation id="2803313416453193357">Ldi afaylu</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{1 aseggas aya}other{# iseggasen aya}}</translation>
+<translation id="2878511608894704031">Kkes kullec</translation>
+<translation id="2907671656515444832">{DAYS,plural, =1{deg 1 wass}other{deg # wussan}}</translation>
+<translation id="2931838996092594335">sit</translation>
+<translation id="2981684127883932071">Askan n yisumar</translation>
+<translation id="3036649622769666520">Ldi ifuyla</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MAṬ</translation>
+<translation id="3068711042108640621">Tannagt n zelmeḍ</translation>
+<translation id="3087734570205094154">Adday</translation>
+<translation id="3126026824346185272">Ctrl</translation>
+<translation id="3157931365184549694">Err-d</translation>
+<translation id="3183922693828471536">Drurem ɣer da</translation>
+<translation id="3234408098842461169">Taneccabt n ukessar</translation>
+<translation id="3291688615589870984">{DAYS,plural, =1{1 wass}other{# wussan}}</translation>
+<translation id="3295886253693811851">Sεeddi asiwel seg</translation>
+<translation id="3306688585798492231">Askan usliɣ</translation>
+<translation id="335581015389089642">Inaw</translation>
+<translation id="3389286852084373014">Aḍris meqqer aṭas</translation>
+<translation id="3406306243914553062">Agbur n HTML</translation>
+<translation id="348799646910989694">Taneccabt tettwaffer s wudem awurman</translation>
+<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
+<translation id="3600566671520689681">{DAYS,plural, =1{mazal 1 wass}other{mazal # wussan}}</translation>
+<translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> Afaylu</translation>
+<translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
+<translation id="3618849550573277856">Nadi “<ph name="LOOKUP_STRING" />”</translation>
+<translation id="3622035490309591977">Azray n ɣefwafus</translation>
+<translation id="364720409959344976">Fren akaram ara d-yalin</translation>
+<translation id="3660179305079774227">Taneccabt n usawen</translation>
+<translation id="3670030362669914947">Amḍan</translation>
+<translation id="3740362395218339114"><ph name="QUANTITY" /> GAṬ/s</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GAṬ</translation>
+<translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
+<translation id="3842239759367498783">Kemmel taɣuri seg yibenk n uziraz-inek·inem <ph name="TITLE" /></translation>
+<translation id="385051799172605136">Γer deffir</translation>
+<translation id="3889424535448813030">Taneccabt ɣer uyeffus</translation>
+<translation id="3897092660631435901">Umuɣ</translation>
+<translation id="3909791450649380159">Cu&amp;t</translation>
+<translation id="3990502903496589789">Tama tayeffust</translation>
+<translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ulɣu ur nettwaɣra}other{# ilɣa ur nettwaɣra}}</translation>
+<translation id="4202807286478387388">εeddi</translation>
+<translation id="4250229828105606438">Tuṭṭfa n ugdil</translation>
+<translation id="4266252015790371705">{MONTHS,plural, =1{1 waggur aya}other{# wagguren aya}}</translation>
+<translation id="4289300219472526559">Bdu ameslay</translation>
+<translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> yettusenkez ɣer ukaram <ph name="FOLDER_NAME" />.</translation>
+<translation id="4306392492252714209">Kkes seg ɣefwafus.</translation>
+<translation id="4316910396681052118">MEṚṚA ISNASEN</translation>
+<translation id="4491109536499578614">Tugna</translation>
+<translation id="4588090240171750605">Drurem ɣer uyeffus</translation>
+<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, asesmel n yitran <ph name="RATING_SCORE" /></translation>
+<translation id="4648249871170053485"><ph name="APP_NAME" />, iwellihen n usnas</translation>
+<translation id="4690510401873698237">Tannagt n wadda</translation>
+<translation id="4724120544754982507">Agens n wulɣu, <ph name="UNREAD_NOTIFICATION_COUNT" /> ilɣa ur nettwaɣra ara</translation>
+<translation id="4730374152663651037">YETTUSEQDAC S TUGET</translation>
+<translation id="4788285488841504513">{MONTHS,plural, =1{mazal 1 waggur}other{mazal # wagguren}}</translation>
+<translation id="4888938634149558681">Sεeddi asiwel</translation>
+<translation id="4968171027979920686">{SECONDS,plural, =1{1 tasint}other{# tasinin}}</translation>
+<translation id="4971687151119236543">Abrid yezrin n umidyat</translation>
+<translation id="5046499563572181734">Sit da</translation>
+<translation id="5076340679995252485">&amp;Senteḍ</translation>
+<translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> yettusuddes s <ph name="IN_PLACE_APP" /> i tmerna n uaram amaynut.</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5266161281976477809">Akerdis n ukcaf</translation>
+<translation id="5278860589123563674">Tuzna tecceḍ</translation>
+<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> yesra ad terreḍ ddehn-ik·im.</translation>
+<translation id="528468243742722775">Taggara</translation>
+<translation id="5329858601952122676">&amp;Kkes</translation>
+<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> nnig n <ph name="IN_PLACE_APP" />, serreḥ i tmerna n ukaram.</translation>
+<translation id="5463830097259460683">Imujit &amp;&amp; Izamulen</translation>
+<translation id="5476505524087279545">kkes aṛcam</translation>
+<translation id="547979256943495781">Tannagt ɣef uyeffus</translation>
+<translation id="5528053674512161860">Alluy n usebter ur yeddi ara acku azegrir n ugrudem n useqdac n uneflay (dev_ui) ur yettusebded ara</translation>
+<translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> anagraw</translation>
+<translation id="5583640892426849032">Tallunt ɣer deffir</translation>
+<translation id="5613020302032141669">Taneccabt ɣer uzelmaḍ</translation>
+<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> yesra ad terreḍ ɣer-s ddehn-ik·im.</translation>
+<translation id="5675363643668471212">Aferdis n tannagt</translation>
+<translation id="5754277640426581776">MINUTES,plural, =1{1 tsd}other{# tsdn}}</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{irmed ass-a}=1{ irmed 1 n wass aya}other{irmed # wussan aya}}</translation>
+<translation id="5768079895599174203">{DAYS,plural, =1{1 wass d }other{# wussan d }}</translation>
+<translation id="5789643057113097023">.</translation>
+<translation id="5843690142429128814">Tugna.</translation>
+<translation id="5866104238061687188">{YEARS,plural, =1{deg 1 sgs}other{deg # sgsn}}</translation>
+<translation id="588258955323874662">Agdil aččuran</translation>
+<translation id="5906667377645263094">{SECONDS,plural, =1{mazal 1 tasint}other{mazal # tasinin}}</translation>
+<translation id="5941711191222866238">Semẓi</translation>
+<translation id="5943826764092288734">{HOURS,plural, =1{1 asrag}other{# isragen}}</translation>
+<translation id="6012623610530968780">Asebter <ph name="SELECTED_PAGE" /> n <ph name="TOTAL_PAGE_NUM" /></translation>
+<translation id="6022924867608035986">Sfeḍ aḍris n tbewwaḍt n unadi</translation>
+<translation id="6040143037577758943">Mdel</translation>
+<translation id="6119846243427417423">rmed</translation>
+<translation id="6129953537138746214">Tallunt</translation>
+<translation id="6134259848159370930">Nadi ibenk-inek·inem, isnasen, iɣewwaren d web.</translation>
+<translation id="6135826906199951471">Kkes</translation>
+<translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
+<translation id="6156262341071374681">Snefli ɣer meṛṛa isnasen</translation>
+<translation id="6165508094623778733">Issin ugar</translation>
+<translation id="6166852626429024716">Nadi ibenk-inek·inem, isnasen, iɣewwaren, web…</translation>
+<translation id="6264365405983206840">Fren &amp;Akk</translation>
+<translation id="6351032674660237738">ISUMAR N USNAS</translation>
+<translation id="6364916375976753737">Drurem ɣer uzelmaḍ</translation>
+<translation id="6394627529324717982">Tafrayt</translation>
+<translation id="6397363302884558537">Ḥbes ameslay</translation>
+<translation id="6404817160109697034">{SECONDS,plural, =1{1 tasint aya}other{# tasinin aya}}</translation>
+<translation id="6417265370957905582">Tallalt n Google</translation>
+<translation id="6430678249303439055">Sewḥel meṛṛa ilɣa i d-yekkan seg usnas-a</translation>
+<translation id="6483402905448010557">{SECONDS,plural, =1{1 tasint aya}other{# tasinin aya}}</translation>
+<translation id="6503257047630241175">Agbur RTF</translation>
+<translation id="6539092367496845964">Yella wayen ur nteddu ara akken iwata. Ɛreḍ tikkelt-nniḍen ticki.</translation>
+<translation id="654149438358937226">Sewḥel meṛṛa ilɣa</translation>
+<translation id="6567071839949112727">sit ɣef umaraw</translation>
+<translation id="6578407462441924264">D udrig</translation>
+<translation id="6612467943526193239">I wakken ad teffɣeḍ seg useddeṛ sit ɣef Esc.</translation>
+<translation id="6620110761915583480">Sekles afaylu</translation>
+<translation id="6699343763173986273">Media next track</translation>
+<translation id="6710213216561001401">Yezrin</translation>
+<translation id="6786750046913594791">Mdel akaram</translation>
+<translation id="6808150112686056157">Aseḥbes n umidyat</translation>
+<translation id="6845383723252244143">Fren akaram</translation>
+<translation id="6845533974506654842">sit</translation>
+<translation id="6863590663815976734">{HOURS,plural, =1{mazal 1 usrag}other{mazal # isragen}}</translation>
+<translation id="688711909580084195">Asebter web s war azwel</translation>
+<translation id="6902419395050653510">Agbur n HTML.</translation>
+<translation id="6907759265145635167"><ph name="QUANTITY" /> PB/s</translation>
+<translation id="6917971086528278418">{YEARS,plural, =1{mazal 1 useggas}other{mazal # iseggasen}}</translation>
+<translation id="6945221475159498467">Fren</translation>
+<translation id="6965382102122355670">IH</translation>
+<translation id="6974053822202609517">Seg uyeffus ɣer uzelmaḍ</translation>
+<translation id="7052633198403197513">F1</translation>
+<translation id="7130207228079676353">AHAT</translation>
+<translation id="7170202025028120564">Iɣewwaren n uskan n usnas-ine·inem ad ttusnasen deg wallus n usenker i d-iteddun.</translation>
+<translation id="7222373446505536781">F11</translation>
+<translation id="7238427729722629793">MINUTES,plural, =1{mazal 1 tsedat}other{mazal # n tsedatin}}</translation>
+<translation id="7319740667687257810">tanekra, askan abruyan</translation>
+<translation id="7365057348334984696">MINUTES,plural, =1{1 tsedat aya}other{# tsedatin aya}}</translation>
+<translation id="7389409599945284130"><ph name="MESSAGE" />..</translation>
+<translation id="7410957453383678442">MINUTES,plural, =1{mazal 1 tsedat}other{mazal # n tsedatin}}</translation>
+<translation id="7430878839542012341">Kkes anadi-a seg uzray-inek·inem?</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7507604095951736240">Imujit</translation>
+<translation id="7620655452534002301">Y·tettwakkes.</translation>
+<translation id="7658239707568436148">Sefsex</translation>
+<translation id="7781829728241885113">Iḍelli</translation>
+<translation id="7814458197256864873">&amp;Nɣel</translation>
+<translation id="7848989271541991537">Senkez ɣer usebter <ph name="PAGE_NUMBER" />, ɣer yizirig <ph name="ROW_NUMBER" />, ɣer tgejdit <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7879499977785298635">Ur sewḥal ara</translation>
+<translation id="7907591526440419938">Ldi afaylu</translation>
+<translation id="7952747673138230804">Chrome OS yeskan-d isumar i ugbur amaynut i usnirem. Yuzen tidaddanin i usnerni n tɣara kan ma yella tferneḍ beṭṭu n yisefka n useqdec. <ph name="MANAGE_SETTINGS" /></translation>
+<translation id="7969046989155602842">Taladna</translation>
+<translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Ugar n 1 ulɣu ur nettwaɣra}other{Ugar n # n ulɣuyen ur nettwaɣra}}</translation>
+<translation id="8086866675552927481">{MINUTES,plural, =1{deg 1 tsd}other{deg # tsdn}}</translation>
+<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
+<translation id="8090736967111090568">Amḍan seg <ph name="ORIGIN" /></translation>
+<translation id="8106081041558092062">{HOURS,plural, =1{1 usrag aya}other{# isragen aya}}</translation>
+<translation id="8131263257437993507">{SECONDS,plural, =1{mazal 1 tesnat}other{mazal # tasinin}}</translation>
+<translation id="8134065097954893699">Ales asali n usebter-a</translation>
+<translation id="8152264887680882389"><ph name="TEXT" />, asmad awurman</translation>
+<translation id="815598010540052116">Drurem d akessar</translation>
+<translation id="8179976553408161302">Sekcem</translation>
+<translation id="8210608804940886430">Asebter n wadda</translation>
+<translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="8245914219290430011">Iccer</translation>
+<translation id="8247998213073982446"><ph name="APP_NAME" />, asnas</translation>
+<translation id="8259556432390118667">Azal n yini asdamrawan</translation>
+<translation id="8328145009876646418">Tama tazelmaḍt</translation>
+<translation id="8331626408530291785">Drurem d asawen</translation>
+<translation id="8352146631962686268">{YEARS,plural, =1{1 useggas}other{# iseggasen}}</translation>
+<translation id="838869780401515933">tick</translation>
+<translation id="8393700583063109961">Azen izen</translation>
+<translation id="8394908167088220973">MTaɣuri n umidyat/Asteεfu</translation>
+<translation id="8458811141851741261">{YEARS,plural, =1{1sgs}other{#sgsn}}</translation>
+<translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Afaylu (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
+<translation id="8649597172973390955">Eǧǧ tannagt tezga tettwaskan</translation>
+<translation id="8677655579646609597"><ph name="QUANTITY" /> KAṬ/s</translation>
+<translation id="8685326675965865247">Nadi ibenk-inek·inem, isnasen, iɣewwaren d web. Seqdec tiqeffalin n tneccabin i wakken ad tinigeḍ deg yisnasen-inek·inem.</translation>
+<translation id="8725488761726303204">+<ph name="NUMBER" /> more</translation>
+<translation id="8730621377337864115">Yemmed</translation>
+<translation id="8772073294905169192">{HOURS,plural, =1{1srg}other{#srgn}}</translation>
+<translation id="8798099450830957504">Amezwer</translation>
+<translation id="8806053966018712535">Akaram <ph name="FOLDER_NAME" /></translation>
+<translation id="883911313571074303">Ɛelleq tugna</translation>
+<translation id="8841375032071747811">Taqeffalt n tuɣalin</translation>
+<translation id="8867568208303837180">Tuzna...</translation>
+<translation id="8876215549894133151">Amasal:</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KAṬ</translation>
+<translation id="8926951137623668982">Err tannagt tezga tɣumm</translation>
+<translation id="8996630695507351249">Ḍmen <ph name="TARGET_DEVICE_NAME" /> yeqqen ɣer Internet.</translation>
+<translation id="9002566407876343676">ldi</translation>
+<translation id="9044832324875206639">{SECONDS,plural, =1{1 tsnt}other{# tsn}}</translation>
+<translation id="9059834730836941392">Fneẓ ilɣa</translation>
+<translation id="9150735707954472829">Iccer</translation>
+<translation id="9161053988251441839">ASNASEN I D-YETTUSUMREN</translation>
+<translation id="9170848237812810038">&amp;Sefsex</translation>
+<translation id="9178475906033259337">Askan n yigmaḍ i <ph name="QUERY" /></translation>
+<translation id="932327136139879170">Agejdan</translation>
+<translation id="944069440740578670">Ilɣa ur nettwaɣra ara</translation>
+<translation id="974545358917229949">Askan n <ph name="RESULT_COUNT" /> yigmaḍ i <ph name="QUERY" /></translation>
+</translationbundle>
