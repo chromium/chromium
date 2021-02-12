@@ -46,6 +46,13 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
     to_transfer = DOMArrayBuffer::Create(Content()->Data(), ByteLength());
   }
 
+  return to_transfer->TransferDetachable(isolate, result);
+}
+
+bool DOMArrayBuffer::TransferDetachable(v8::Isolate* isolate,
+                                        ArrayBufferContents& result) {
+  DCHECK(IsDetachable(isolate));
+
   if (IsDetached()) {
     result.Detach();
     return false;
@@ -61,7 +68,7 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
 
   Vector<v8::Local<v8::ArrayBuffer>, 4> buffer_handles;
   v8::HandleScope handle_scope(isolate);
-  AccumulateArrayBuffersForAllWorlds(isolate, to_transfer, buffer_handles);
+  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
 
   for (const auto& buffer_handle : buffer_handles)
     buffer_handle->Detach();
