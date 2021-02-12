@@ -6974,6 +6974,33 @@
       },
     },
 
+    # These tests run on Ozone/Wayland CI tester.
+    # Will replicate chromium_linux_gtests with OZONE_WAYLAND variant.
+    # Unfortunatelly, we can't have chromium_linux_gtests matrix
+    # compound test added here as the script that generates config
+    # doesn't permit so. Thus, this will be a mirrored list of tests
+    # from chromium_linux_gtests.
+    'linux_ozone_wayland_ci_tests': {
+      'aura_gtests': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'linux_ozone_wayland_and_x11_gtests': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+      'linux_ozone_common_gtests': {
+        'variants': [
+          'OZONE_WAYLAND',
+        ]
+      },
+    },
+
+    # These tests run on Ozone/Wayland CQ tester.
+    # Only essential tests are running as long as
+    # the capacity is limited.
     'linux_ozone_wayland_tests': {
       'linux_ozone_wayland_and_x11_gtests': {
         'variants': [
@@ -6987,6 +7014,38 @@
       },
     },
 
+    # These tests run on Ozone/X11 CI tester.
+    # Will replicate chromium_linux_gtests with OZONE_X11 variant.
+    # Unfortunatelly, we can't have chromium_linux_gtests matrix
+    # compound test added here as the script that generates config
+    # doesn't permit so. Thus, this will be a mirrored list of tests
+    # from chromium_linux_gtests.
+    'linux_ozone_x11_ci_tests': {
+      'aura_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'linux_ozone_x11_only_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'linux_ozone_wayland_and_x11_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+      'linux_ozone_common_gtests': {
+        'variants': [
+          'OZONE_X11',
+        ]
+      },
+    },
+
+    # These tests run on Ozone/X11 CQ tester.
+    # Only essential tests are running as long as
+    # the capacity is limited.
     'linux_ozone_x11_tests': {
       'linux_ozone_x11_only_gtests': {
         'variants': [

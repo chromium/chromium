@@ -4941,7 +4941,7 @@
           'linux-xenial',
          ],
         'test_suites': {
-         'gtest_tests': 'linux_ozone_wayland_tests',
+         'gtest_tests': 'linux_ozone_wayland_ci_tests',
         },
       },
       'Linux Tester (Ozone X11)': {
@@ -4949,7 +4949,7 @@
           'linux-xenial',
         ],
         'test_suites': {
-         'gtest_tests': 'linux_ozone_x11_tests',
+         'gtest_tests': 'linux_ozone_x11_ci_tests',
         },
       },
       'Linux Tests': {
