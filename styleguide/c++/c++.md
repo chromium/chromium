@@ -47,7 +47,7 @@ status of Chromium's C++ support is covered in more detail in
 ## Code formatting
 
   * Put `*` and `&` by the type rather than the variable name.
-  * In class declarations, group function overrides together within each access
+  * In class declarations, group function overrides together within each access
     control section, with one labeled group per parent class.
   * Prefer `(foo == 0)` to `(0 == foo)`.
 
@@ -287,6 +287,17 @@ these:
     bots in a bad state. Use the `ASSERT_xx()` and `EXPECT_xx()` family of
     macros, which report failures gracefully and can continue running other
     tests.
+  * Dereferencing a null pointer in C++ is generally UB (undefined behavior) as
+    the compiler is free to assume a dereference means the pointer is not null
+    and may apply optimizations based on that. As such, there is sometimes a
+    strong opinion to `CHECK()` pointers before dereference. Chromium builds
+    with the `no-delete-null-pointer-checks` Clang/GCC flag which prevents such
+    optimizations, meaning the side effect of a null dereference would just be
+    the use of 0x0 which will lead to a crash on all the platforms Chromium
+    supports. As such we do not use `CHECK()` to guard pointer deferences. A
+    `DCHECK()` can be used to document that a pointer is never null, and doing
+    so as early as possible can help with debugging, though our styleguide now
+    recommends using a reference instead of a pointer when it cannot be null.
 
 ## Miscellany
 
