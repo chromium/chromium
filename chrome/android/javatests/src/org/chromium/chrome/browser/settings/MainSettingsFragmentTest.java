@@ -224,6 +224,7 @@ public class MainSettingsFragmentTest {
     @EnableFeatures(
             {ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.SAFE_BROWSING_SECTION_UI})
     @DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/1172608")
     public void
     testRenderDifferentSignedInStatesWithSafetyCheck() throws IOException {
         launchSettingsActivity();
