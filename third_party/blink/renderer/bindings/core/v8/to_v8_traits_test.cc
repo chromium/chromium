@@ -4,8 +4,13 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_address_space.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 
 namespace blink {
 
@@ -213,6 +218,45 @@ TEST(ToV8TraitsTest, NullableScriptWrappable) {
   EventTarget* event_target = EventTarget::Create(scope.GetScriptState());
   TEST_TOV8_TRAITS(scope, IDLNullable<EventTarget>, "[object EventTarget]",
                    event_target);
+}
+
+TEST(ToV8TraitsTest, NullableDictionary) {
+  const V8TestingScope scope;
+  // bindings::DictionaryBase
+  TEST_TOV8_TRAITS(scope, IDLNullable<bindings::DictionaryBase>, "null",
+                   nullptr);
+  // IDLDictionaryBase
+  DOMPointInit* dom_point_init = DOMPointInit::Create();
+  TEST_TOV8_TRAITS(scope, IDLNullable<DOMPointInit>, "null", nullptr);
+  TEST_TOV8_TRAITS(scope, IDLNullable<DOMPointInit>, "[object Object]",
+                   dom_point_init);
+}
+
+TEST(ToV8TraitsTest, NullableCallbackFunction) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8CreateHTMLCallback>, "null", nullptr);
+  V8CreateHTMLCallback* v8_create_html_callback =
+      V8CreateHTMLCallback::Create(scope.GetContext()->Global());
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8CreateHTMLCallback>, "[object Window]",
+                   v8_create_html_callback);
+}
+
+TEST(ToV8TraitsTest, NullableCallbackInterface) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8CreateHTMLCallback>, "null", nullptr);
+  V8EventListener* v8_event_listener =
+      V8EventListener::Create(scope.GetContext()->Global());
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8EventListener>, "[object Window]",
+                   v8_event_listener);
+}
+
+TEST(ToV8TraitsTest, NullableEnumeration) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "null", base::nullopt);
+  const base::Optional<V8AddressSpace> v8_address_space =
+      V8AddressSpace::Create("public");
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "public",
+                   v8_address_space);
 }
 
 }  // namespace

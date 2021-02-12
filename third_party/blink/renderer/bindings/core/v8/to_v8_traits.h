@@ -175,9 +175,9 @@ struct ToV8Traits<
     T,
     typename std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        ScriptWrappable* impl)
+                                        T* script_wrappable)
       WARN_UNUSED_RESULT {
-    return ToV8(script_state->GetIsolate(), impl,
+    return ToV8(script_state->GetIsolate(), script_wrappable,
                 script_state->GetContext()->Global());
   }
 
@@ -185,18 +185,20 @@ struct ToV8Traits<
   // a receiver object (a creation context object) which is needed to create
   // a wrapper.
   static v8::MaybeLocal<v8::Value> ToV8(v8::Isolate* isolate,
-                                        ScriptWrappable* impl,
+                                        T* script_wrappable,
                                         v8::Local<v8::Object> creation_context)
       WARN_UNUSED_RESULT {
-    if (UNLIKELY(!impl)) {
+    if (UNLIKELY(!script_wrappable)) {
       return v8::Null(isolate);
     }
-    v8::Local<v8::Value> wrapper = DOMDataStore::GetWrapper(impl, isolate);
+    v8::Local<v8::Value> wrapper =
+        DOMDataStore::GetWrapper(script_wrappable, isolate);
     if (!wrapper.IsEmpty()) {
       return wrapper;
     }
 
-    if (!impl->WrapV2(isolate, creation_context).ToLocal(&wrapper)) {
+    if (!script_wrappable->WrapV2(isolate, creation_context)
+             .ToLocal(&wrapper)) {
       return v8::MaybeLocal<v8::Value>();
     }
     return wrapper;
@@ -208,9 +210,9 @@ template <typename T>
 struct ToV8Traits<T,
                   typename std::enable_if_t<
                       std::is_base_of<bindings::DictionaryBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const bindings::DictionaryBase* dictionary) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const T* dictionary)
+      WARN_UNUSED_RESULT {
     DCHECK(dictionary);
     v8::Local<v8::Value> v8_value = dictionary->CreateV8Object(
         script_state->GetIsolate(), script_state->GetContext()->Global());
@@ -225,10 +227,10 @@ struct ToV8Traits<
     T,
     typename std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const IDLDictionaryBase* dictionary)
+                                        const T* dictionary)
       WARN_UNUSED_RESULT {
     DCHECK(dictionary);
-    return dictionary->ToV8Impl(script_state->GetContext(),
+    return dictionary->ToV8Impl(script_state->GetContext()->Global(),
                                 script_state->GetIsolate());
   }
 };
@@ -239,15 +241,14 @@ struct ToV8Traits<T,
                   typename std::enable_if_t<
                       std::is_base_of<CallbackFunctionBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        CallbackFunctionBase* callback)
-      WARN_UNUSED_RESULT {
+                                        T* callback) WARN_UNUSED_RESULT {
     // creation_context (|script_state->GetContext()|) is intentionally ignored.
     // Callback functions are not wrappers nor clonable. ToV8 on a callback
     // function must be used only when it's in the same world.
     DCHECK(callback);
     DCHECK(&callback->GetWorld() ==
            &ScriptState::From(script_state->GetContext())->World());
-    return callback->CallbackObject().As<v8::Value>();
+    return callback->CallbackObject().template As<v8::Value>();
   }
 };
 
@@ -257,15 +258,14 @@ struct ToV8Traits<T,
                   typename std::enable_if_t<
                       std::is_base_of<CallbackInterfaceBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        CallbackInterfaceBase* callback)
-      WARN_UNUSED_RESULT {
+                                        T* callback) WARN_UNUSED_RESULT {
     // creation_context (|script_state->GetContext()|) is intentionally ignored.
     // Callback Interfaces are not wrappers nor clonable. ToV8 on a callback
     // interface must be used only when it's in the same world.
     DCHECK(callback);
     DCHECK(&callback->GetWorld() ==
            &ScriptState::From(script_state->GetContext())->World());
-    return callback->CallbackObject().As<v8::Value>();
+    return callback->CallbackObject().template As<v8::Value>();
   }
 };
 
@@ -274,9 +274,9 @@ template <typename T>
 struct ToV8Traits<T,
                   typename std::enable_if_t<
                       std::is_base_of<bindings::EnumerationBase, T>::value>> {
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const bindings::EnumerationBase& enumeration) WARN_UNUSED_RESULT {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const T& enumeration)
+      WARN_UNUSED_RESULT {
     return V8String(script_state->GetIsolate(), enumeration.AsCStr());
   }
 };
@@ -371,7 +371,7 @@ struct ToV8Traits<
     IDLNullable<T>,
     typename std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        ScriptWrappable* script_wrappable)
+                                        T* script_wrappable)
       WARN_UNUSED_RESULT {
     if (!script_wrappable)
       return v8::Null(script_state->GetIsolate());
@@ -385,6 +385,74 @@ struct ToV8Traits<
     if (!script_wrappable)
       return v8::Null(isolate);
     return ToV8Traits<T>::ToV8(isolate, script_wrappable, creation_context);
+  }
+};
+
+// Nullable Dictionary
+template <typename T>
+struct ToV8Traits<IDLNullable<T>,
+                  typename std::enable_if_t<
+                      std::is_base_of<bindings::DictionaryBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const T* dictionary)
+      WARN_UNUSED_RESULT {
+    if (!dictionary)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, dictionary);
+  }
+};
+
+// Nullable Dictionary (Old implementation)
+template <typename T>
+struct ToV8Traits<
+    IDLNullable<T>,
+    typename std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const T* dictionary)
+      WARN_UNUSED_RESULT {
+    if (!dictionary)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, dictionary);
+  }
+};
+
+// Nullable Callback function
+template <typename T>
+struct ToV8Traits<IDLNullable<T>,
+                  typename std::enable_if_t<
+                      std::is_base_of<CallbackFunctionBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        T* callback) WARN_UNUSED_RESULT {
+    if (!callback)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<CallbackFunctionBase>::ToV8(script_state, callback);
+  }
+};
+
+// Nullable Callback interface
+template <typename T>
+struct ToV8Traits<IDLNullable<T>,
+                  typename std::enable_if_t<
+                      std::is_base_of<CallbackInterfaceBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        T* callback) WARN_UNUSED_RESULT {
+    if (!callback)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<CallbackInterfaceBase>::ToV8(script_state, callback);
+  }
+};
+
+// Nullable Enumeration
+template <typename T>
+struct ToV8Traits<IDLNullable<T>,
+                  typename std::enable_if_t<
+                      std::is_base_of<bindings::EnumerationBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const base::Optional<T>& enumeration)
+      WARN_UNUSED_RESULT {
+    if (!enumeration)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, *enumeration);
   }
 };
 
