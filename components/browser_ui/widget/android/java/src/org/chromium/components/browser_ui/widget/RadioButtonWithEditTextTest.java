@@ -35,6 +35,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -237,6 +238,7 @@ public class RadioButtonWithEditTextTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/1177183")
     public void testFocusChange() {
         Assert.assertFalse(mRadioButtonWithEditText.hasFocus());
         TestThreadUtils.runOnUiThreadBlocking(() -> { mRadioButtonWithEditText.setChecked(true); });
