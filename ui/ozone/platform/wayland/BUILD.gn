@@ -18,7 +18,6 @@ source_set("wayland") {
     "client_native_pixmap_factory_wayland.h",
     "common/data_util.cc",
     "common/data_util.h",
-    "common/wayland.cc",
     "common/wayland.h",
     "common/wayland_object.cc",
     "common/wayland_object.h",

@@ -17,6 +17,8 @@ class MockSurface;
 // Manage wl_compositor object.
 class TestCompositor : public GlobalObject {
  public:
+  static constexpr uint32_t kVersion = 4;
+
   TestCompositor();
   ~TestCompositor() override;
 
