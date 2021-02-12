@@ -22,7 +22,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -181,7 +183,13 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                         ? R.string.sync_category_title
                         : R.string.manage_sync_title);
         setHasOptionsMenu(true);
-        // TODO(https://crbug.com/1063982): Change accessibility text for Advanced Sync Flow.
+        if (mIsFromSigninScreen) {
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setHomeActionContentDescription(
+                    R.string.prefs_manage_sync_settings_content_description);
+            RecordUserAction.record("Signin_Signin_ShowAdvancedSyncSettings");
+        }
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
 
