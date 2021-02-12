@@ -39,6 +39,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
@@ -6927,7 +6928,14 @@ void Document::BeginLifecycleUpdatesIfRenderingReady() {
   if (!HaveRenderBlockingResourcesLoaded())
     return;
   font_preload_manager_->WillBeginRendering();
-  View()->BeginLifecycleUpdates();
+  // TODO(japhet): If IsActive() is true, View() should always be non-null.
+  // Speculative fix for https://crbug.com/1171891
+  if (auto* view = View()) {
+    view->BeginLifecycleUpdates();
+  } else {
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 Vector<IconURL> Document::IconURLs(int icon_types_mask) {
