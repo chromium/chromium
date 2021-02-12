@@ -176,6 +176,11 @@ suite('PrivacySandboxSettingsEnabled', function() {
     document.body.innerHTML = '';
     page = /** @type {!SettingsPrivacyPageElement} */
         (document.createElement('settings-privacy-page'));
+    page.prefs = {
+      privacy_sandbox: {
+        apis_enabled: {value: true},
+      },
+    };
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -184,7 +189,21 @@ suite('PrivacySandboxSettingsEnabled', function() {
     assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
   });
 
-  test('clickPrivacySandboxElement', async function() {
+  test('privacySandboxRowSublabel', async function() {
+    page.set('prefs.privacy_sandbox.apis_enabled.value', true);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('privacySandboxTrialsEnabled'),
+        page.$$('#privacySandboxLinkRow').subLabel);
+
+    page.set('prefs.privacy_sandbox.apis_enabled.value', false);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('privacySandboxTrialsDisabled'),
+        page.$$('#privacySandboxLinkRow').subLabel);
+  });
+
+  test('clickPrivacySandboxRow', async function() {
     page.$$('#privacySandboxLinkRow').click();
     // Ensure UMA is logged.
     assertEquals(

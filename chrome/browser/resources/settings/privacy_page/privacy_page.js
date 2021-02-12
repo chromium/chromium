@@ -337,4 +337,14 @@ Polymer({
   tryShowHatsSurvey_() {
     HatsBrowserProxyImpl.getInstance().tryShowSurvey();
   },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computePrivacySandboxSublabel_() {
+    return this.getPref('privacy_sandbox.apis_enabled').value ?
+        this.i18n('privacySandboxTrialsEnabled') :
+        this.i18n('privacySandboxTrialsDisabled');
+  },
 });

@@ -1207,6 +1207,12 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_DETAILS" desc="Label of a button in the Privacy Sandbox page that leads the user to more details about the Privacy Sandbox.">
     Details
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_ENABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are enabled.">
+    Trial features are on
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_DISABLED" desc="A short description that informs the user that the Privacy Sandbox trial features are disabled.">
+    Trial features are off
+  </message>
 
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_SECTION_TITLE" desc="'Safety check' is a noun phrase (sentence case). 'Safety check' refers to an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.">

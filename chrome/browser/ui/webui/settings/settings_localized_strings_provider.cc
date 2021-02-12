@@ -1436,9 +1436,15 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
 
 void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                               Profile* profile) {
-  // Strings that need to be available in any case.
+  // Strings used outside the privacy sandbox page. The i18n preprocessor might
+  // replace those before the corresponding flag value is checked, which is why
+  // they are included independently of the flag value.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"privacySandboxTitle", IDS_SETTINGS_PRIVACY_SANDBOX_TITLE},
+      {"privacySandboxTrialsEnabled",
+       IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_ENABLED},
+      {"privacySandboxTrialsDisabled",
+       IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_DISABLED},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
