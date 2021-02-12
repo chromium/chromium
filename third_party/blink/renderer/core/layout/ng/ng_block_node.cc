@@ -1074,8 +1074,24 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
   // child layout.
   if (!ChildLayoutBlockedByDisplayLock()) {
     if (UNLIKELY(flow_thread)) {
-      PlaceChildrenInFlowThread(flow_thread, constraint_space,
-                                physical_fragment, previous_break_token);
+      // Hold off writing legacy data for the entire multicol container until
+      // done with the last fragment (we may have multiple if nested within
+      // another fragmentation context). This way we'll get everything in order.
+      // We'd otherwise mess up in complex cases of nested column balancing. The
+      // column layout algorithms may retry layout for a given fragment, which
+      // would confuse the code that writes back to legacy objects, so that we
+      // wouldn't always update column sets or establish fragmentainer groups
+      // correctly.
+      if (is_last_fragment) {
+        const NGBlockBreakToken* incoming_break_token = nullptr;
+        for (const NGPhysicalBoxFragment& multicol_fragment :
+             box_->PhysicalFragments()) {
+          PlaceChildrenInFlowThread(flow_thread, constraint_space,
+                                    multicol_fragment, incoming_break_token);
+          incoming_break_token =
+              To<NGBlockBreakToken>(multicol_fragment.BreakToken());
+        }
+      }
     } else {
       PlaceChildrenInLayoutBox(physical_fragment, previous_break_token);
     }
