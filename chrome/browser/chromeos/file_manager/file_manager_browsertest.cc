@@ -231,8 +231,7 @@ class FilesAppBrowserTest : public FileManagerBrowserTestBase,
   DISALLOW_COPY_AND_ASSIGN(FilesAppBrowserTest);
 };
 
-// TODO(crbug.com/1177117) Re-enable test
-IN_PROC_BROWSER_TEST_P(FilesAppBrowserTest, DISABLED_Test) {
+IN_PROC_BROWSER_TEST_P(FilesAppBrowserTest, Test) {
   StartTest();
 }
 
