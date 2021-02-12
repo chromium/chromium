@@ -31,6 +31,7 @@ class DebugOverlayHandler : public BaseWebUIHandler {
 
   base::FilePath screenshot_dir_;
   int screenshot_index_ = 0;
+  bool add_resolution_to_filename_ = false;
 };
 
 }  // namespace chromeos
