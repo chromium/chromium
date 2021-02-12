@@ -3,6 +3,7 @@ precision mediump float;
 uniform sampler2D uDepthTexture;
 uniform mat4 uUvTransform;
 uniform float uRawValueToMeters;
+uniform float uAlpha;
 
 varying vec2 vTexCoord;
 
@@ -33,7 +34,7 @@ void main(void) {
 
   highp float normalized_depth = clamp(
     DepthGetMeters(uDepthTexture, texCoord.xy) / kMaxDepthInMeters, 0.0, 1.0);
-  gl_FragColor = vec4(DepthGetColorVisualization(normalized_depth), 0.75);
+  gl_FragColor = vec4(DepthGetColorVisualization(normalized_depth), uAlpha);
 }
 
 // Insert turbo.glsl here.

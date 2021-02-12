@@ -219,6 +219,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
               depthTexture: gl.getUniformLocation(shaderProgram, 'uDepthTexture'),
               uvTransform: gl.getUniformLocation(shaderProgram, 'uUvTransform'),
               rawValueToMeters: gl.getUniformLocation(shaderProgram, 'uRawValueToMeters'),
+              alpha: gl.getUniformLocation(shaderProgram, 'uAlpha'),
             },
         };
 
@@ -372,6 +373,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         gl.uniform1f(programInfo.uniformLocations.rawValueToMeters,
                      depthData.rawValueToMeters);
+
+        gl.uniform1f(programInfo.uniformLocations.alpha,
+                     0.75);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       }

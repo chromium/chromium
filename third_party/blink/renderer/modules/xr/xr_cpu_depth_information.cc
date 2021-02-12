@@ -78,11 +78,9 @@ float XRCPUDepthInformation::getDepthInMeters(
   depth_coordinates.Scale(size_.width(), size_.height(), 1.0);
 
   uint32_t column = base::ClampToRange<uint32_t>(
-      static_cast<uint32_t>(std::round(depth_coordinates.x())), 0,
-      size_.width() - 1);
+      static_cast<uint32_t>(depth_coordinates.x()), 0, size_.width() - 1);
   uint32_t row = base::ClampToRange<uint32_t>(
-      static_cast<uint32_t>(std::round(depth_coordinates.y())), 0,
-      size_.height() - 1);
+      static_cast<uint32_t>(depth_coordinates.y()), 0, size_.height() - 1);
 
   auto checked_index =
       base::CheckAdd(column, base::CheckMul(row, size_.width()));

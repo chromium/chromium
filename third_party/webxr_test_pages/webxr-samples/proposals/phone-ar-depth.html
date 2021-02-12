@@ -70,10 +70,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       attribute vec2 aVertexPosition;
       attribute float aDepthDistance;
 
+      uniform float uPointSize;
+
       varying float vDepthDistance;
 
       void main(void) {
-        gl_PointSize = 15.0;
+        gl_PointSize = uPointSize;
         gl_Position = vec4(aVertexPosition, -1.0, 1.0);
         vDepthDistance = aDepthDistance;
       }
@@ -206,6 +208,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
               depthDistance: gl.getAttribLocation(shaderProgram, 'aDepthDistance'),
             },
             uniformLocations: {
+              pointSize: gl.getUniformLocation(shaderProgram, 'uPointSize'),
+              alpha: gl.getUniformLocation(shaderProgram, 'uAlpha'),
             },
         };
 
@@ -423,6 +427,47 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         return vertices_data;
       }
 
+      function calculateVerticesFromViewCoordinatesSupersampled(depthData, viewport) {
+        // For verification only.
+
+        const smaller_depth_dim = Math.min(depthData.width, depthData.height);
+        const larger_depth_dim = Math.max(depthData.width, depthData.height);
+
+        const X_RANGE = 0.1;
+        const Y_RANGE = 0.1;
+
+        const NUM_SAMPLES_X = Math.trunc(4 * smaller_depth_dim);
+        const NUM_SAMPLES_Y = Math.trunc(4 * larger_depth_dim);
+
+        const vertices_data = [];
+
+        for(let x = 0; x <= X_RANGE; x += 1/NUM_SAMPLES_X) {
+          for(let y = 0; y <= X_RANGE; y += 1/NUM_SAMPLES_Y ) {
+            const distance = depthData.getDepthInMeters(x, y);
+
+            // We need to convert normalized view coordinates to normalized device coordinates,
+            // with the origin at the center of a cube with side length = 2 and Y growing upward.
+            const depth_coords_ndc = vec3.fromValues(x, y, 0.0);
+
+            // First, fix up the Y axis:
+            depth_coords_ndc[1] = 1 - depth_coords_ndc[1];
+
+            // Then, convert to range [-1, 1]:
+            depth_coords_ndc[0] = (2.0 * depth_coords_ndc[0]) - 1;
+            depth_coords_ndc[1] = (2.0 * depth_coords_ndc[1]) - 1;
+
+            if(depth_coords_ndc[0] > 1 || depth_coords_ndc[0] < -1 ||
+               depth_coords_ndc[1] > 1 || depth_coords_ndc[1] < -1) {
+              continue;
+            }
+
+            vertices_data.push(depth_coords_ndc[0], depth_coords_ndc[1], distance);
+          }
+        }
+
+        return vertices_data;
+      }
+
       function renderDepthInformationCPU(depthData, view, viewport) {
         const vertices_data = calculateVerticesFromViewCoordinates(depthData, viewport);
 
@@ -454,6 +499,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         gl.enableVertexAttribArray(
           programInfo.attribLocations.depthDistance
         );
+
+        gl.uniform1f(programInfo.uniformLocations.pointSize,
+                     15.0);
+
+        gl.uniform1f(programInfo.uniformLocations.alpha,
+                     0.9);
 
         gl.drawArrays(gl.POINTS, 0, vertices_data.length / 3);
       }
