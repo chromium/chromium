@@ -47,6 +47,8 @@ const base::flat_map<std::string, ButtonInfo>& GetMenuButtonDetails() {
           IDS_ASH_SWITCH_ACCESS_END_TEXT_SELECTION}},
         {"increment",
          {&kSwitchAccessIncrementIcon, IDS_ASH_SWITCH_ACCESS_INCREMENT}},
+        {"itemScan",
+         {&kSwitchAccessItemScanIcon, IDS_ASH_SWITCH_ACCESS_ITEM_SCAN}},
         {"jumpToBeginningOfText",
          {&kSwitchAccessJumpToBeginningOfTextIcon,
           IDS_ASH_SWITCH_ACCESS_JUMP_TO_BEGINNING_OF_TEXT}},

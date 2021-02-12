@@ -114,6 +114,7 @@ chrome.accessibilityPrivate.SwitchAccessMenuAction = {
   DICTATION: 'dictation',
   END_TEXT_SELECTION: 'endTextSelection',
   INCREMENT: 'increment',
+  ITEM_SCAN: 'itemScan',
   JUMP_TO_BEGINNING_OF_TEXT: 'jumpToBeginningOfText',
   JUMP_TO_END_OF_TEXT: 'jumpToEndOfText',
   KEYBOARD: 'keyboard',

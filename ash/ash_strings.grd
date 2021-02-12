@@ -831,6 +831,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SWITCH_ACCESS_INCREMENT" desc="The label for the Switch Access menu option to increment the selected input.">
         Increment
       </message>
+      <message name="IDS_ASH_SWITCH_ACCESS_ITEM_SCAN" desc="The label for the Switch Access menu option to begin scanning through items onscreen.">
+        Item Scan
+      </message>
       <message name="IDS_ASH_SWITCH_ACCESS_JUMP_TO_BEGINNING_OF_TEXT" desc="The label for the Switch Access menu option to move the cursor to the beginning of the text.">
         Beginning
       </message>
