@@ -1207,9 +1207,6 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_OPEN_IN_FILE_DOWNLOAD_FAILED" desc="The message of the alert informing a user that the download of the file to be opened in another application failed. [Length: 60em] [iOS only]">
         The file could not be downloaded at this time.
       </message>
-      <message name="IDS_IOS_OPEN_IN_NO_APPS_REGISTERED" desc="The message of the alert informing the user that there are no applications registered for the specified file type. [Length: 60em] [iOS only]">
-        There are no applications installed that can open this file.
-      </message>
       <message name="IDS_IOS_OPEN_SOURCE_LICENSES" desc="The label to access the open source licenses, displayed in the application settings [Length: 30em] [iOS only]">
         Open Source Licenses
       </message>

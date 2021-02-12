@@ -85,8 +85,8 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
       : presenter_([[FakeContainedPresenter alloc] init]),
         base_view_controller_([[UIViewController alloc] init]),
         browser_(std::make_unique<TestBrowser>()),
-        document_interaction_controller_class_(
-            OCMClassMock([UIDocumentInteractionController class])),
+        activity_view_controller_class_(
+            OCMClassMock([UIActivityViewController class])),
         tab_helper_(&web_state_),
         coordinator_([[DownloadManagerCoordinator alloc]
             initWithBaseViewController:base_view_controller_
@@ -103,7 +103,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
       [coordinator_ stop];
     }
 
-    [document_interaction_controller_class_ stopMocking];
+    [activity_view_controller_class_ stopMocking];
     [application_ stopMocking];
     [[InstallationNotifier sharedInstance] stopPolling];
   }
@@ -114,7 +114,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   ScopedKeyWindow scoped_key_window_;
   web::FakeWebState web_state_;
-  id document_interaction_controller_class_;
+  id activity_view_controller_class_;
   StubTabHelper tab_helper_;
   // Application can be lazily created by tests, but it has to be OCMock.
   // Destructor will call -stopMocking on this object to make sure that
