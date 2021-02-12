@@ -78,7 +78,6 @@ class CSSImageSetValue : public CSSValueList {
   Member<StyleImage> cached_image_;
   float cached_scale_factor_;
 
-  bool is_ad_related_ = false;
   CSSParserMode parser_mode_;
   Vector<ImageWithScale> images_in_set_;
 };

@@ -61,17 +61,8 @@ void CSSImageSetValue::FillImageSet() {
     SECURITY_DCHECK(i < length);
     const auto& scale_factor_value = To<CSSPrimitiveValue>(Item(i));
 
-    ImageWithScale image;
-    image.index = image_index;
-    image.scale_factor = scale_factor_value.GetFloatValue();
-
-    // Only set for the first image as all images in a set should have identical
-    // is_ad_related bits.
-    const auto& image_value = To<CSSImageValue>(Item(image_index));
-    if (!images_in_set_.size())
-      is_ad_related_ = image_value.GetIsAdRelated();
-    DCHECK_EQ(is_ad_related_, image_value.GetIsAdRelated());
-    images_in_set_.push_back(image);
+    images_in_set_.push_back(
+        ImageWithScale{image_index, scale_factor_value.GetFloatValue()});
     ++i;
   }
 
@@ -122,7 +113,7 @@ StyleImage* CSSImageSetValue::CacheImage(
         ReferrerUtils::MojoReferrerPolicyResolveDefault(
             image_value.GetReferrer().referrer_policy));
     resource_request.SetReferrerString(image_value.GetReferrer().referrer);
-    if (is_ad_related_)
+    if (image_value.GetIsAdRelated())
       resource_request.SetIsAdResource();
     ResourceLoaderOptions options(
         document.GetExecutionContext()->GetCurrentWorld());
