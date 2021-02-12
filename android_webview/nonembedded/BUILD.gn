@@ -109,9 +109,29 @@ android_library("services_java") {
   ]
 }
 
+source_set("component_updater") {
+  sources = [
+    "component_updater/aw_component_updater_configurator.cc",
+    "component_updater/aw_component_updater_configurator.h",
+  ]
+  deps = [
+    "//base",
+    "//components/component_updater",
+    "//components/prefs",
+    "//components/services/patch/content",
+    "//components/services/unzip/content",
+    "//components/update_client",
+    "//components/update_client:patch_impl",
+    "//components/update_client:unzip_impl",
+    "//components/version_info",
+    "//components/version_info/android:channel_getter",
+  ]
+}
+
 source_set("nonembedded") {
   sources = [ "webview_apk_application.cc" ]
   deps = [
+    ":component_updater",
     ":nonembedded_jni_headers",
     "//android_webview/common",
     "//base",

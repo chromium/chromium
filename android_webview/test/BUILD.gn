@@ -450,12 +450,15 @@ test("android_webview_unittests") {
     "//android_webview/browser/lifecycle",
     "//android_webview/browser/metrics",
     "//android_webview/common",
+    "//android_webview/nonembedded:component_updater",
     "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/component_updater",
     "//components/embedder_support/android:util",
     "//components/metrics",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//components/update_client",
     "//content:content",
     "//content/test:test_support",
     "//mojo/core/embedder",
@@ -492,6 +495,9 @@ test("android_webview_unittests") {
     "../browser/scoped_add_feature_flags_unittests.cc",
     "../browser/state_serializer_unittest.cc",
     "../lib/webview_tests.cc",
+
+    # TODO(crbug.com/1173887) move to nonembedded unit tests suite.
+    "../nonembedded/component_updater/aw_component_updater_configurator_unittest.cc",
   ]
 
   deps += [ "//v8:v8_external_startup_data_assets" ]
