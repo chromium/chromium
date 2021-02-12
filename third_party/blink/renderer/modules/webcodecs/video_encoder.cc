@@ -57,6 +57,16 @@
 #include "media/video/vpx_video_encoder.h"
 #endif
 
+namespace WTF {
+
+template <>
+struct CrossThreadCopier<media::Status>
+    : public CrossThreadCopierPassThrough<media::Status> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+}  // namespace WTF
+
 namespace blink {
 
 namespace {
@@ -309,11 +319,11 @@ void VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown(
     return;
   }
 
-  auto output_cb = WTF::BindRepeating(
+  auto output_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
       &VideoEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(this),
       // We can't use |active_config_| from |this| because it can change by
       // the time the callback is executed.
-      WrapCrossThreadPersistent(active_config_.Get()), reset_count_);
+      WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::Status status) {
@@ -333,8 +343,9 @@ void VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown(
 
   media_encoder_->Initialize(
       active_config_->profile, active_config_->options, std::move(output_cb),
-      WTF::Bind(done_callback, WrapCrossThreadWeakPersistent(this),
-                WrapCrossThreadPersistent(request)));
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          done_callback, WrapCrossThreadWeakPersistent(this),
+          WrapCrossThreadPersistent(request))));
 }
 
 std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
@@ -437,8 +448,10 @@ void VideoEncoder::ProcessEncode(Request* request) {
                                   "Can't readback frame textures.");
       auto task_runner = Thread::Current()->GetTaskRunner();
       task_runner->PostTask(
-          FROM_HERE, WTF::Bind(done_callback, WrapWeakPersistent(this),
-                               WrapPersistent(request), std::move(status)));
+          FROM_HERE,
+          ConvertToBaseOnceCallback(CrossThreadBindOnce(
+              done_callback, WrapCrossThreadWeakPersistent(this),
+              WrapCrossThreadPersistent(request), std::move(status))));
       return;
     }
   }
@@ -454,10 +467,10 @@ void VideoEncoder::ProcessEncode(Request* request) {
   bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
                   request->encodeOpts->keyFrameNonNull();
   --requested_encodes_;
-  media_encoder_->Encode(
-      frame, keyframe,
-      WTF::Bind(done_callback, WrapCrossThreadWeakPersistent(this),
-                WrapCrossThreadPersistent(request)));
+  media_encoder_->Encode(frame, keyframe,
+                         ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                             done_callback, WrapCrossThreadWeakPersistent(this),
+                             WrapCrossThreadPersistent(request))));
 
   // We passed a copy of frame() above, so this should be safe to close here.
   request->frame->close();
@@ -475,10 +488,12 @@ void VideoEncoder::OnReceivedGpuFactories(
 
   // Delay create the hw encoder until HW encoder support is known, so that
   // GetVideoEncodeAcceleratorSupportedProfiles() can give a reliable answer.
-  auto on_encoder_support_known_cb = WTF::Bind(
-      &VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown,
-      WrapCrossThreadWeakPersistent(this), WrapCrossThreadPersistent(request),
-      CrossThreadUnretained(gpu_factories));
+  auto on_encoder_support_known_cb =
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          &VideoEncoder::CreateAndInitializeEncoderOnEncoderSupportKnown,
+          WrapCrossThreadWeakPersistent(this),
+          WrapCrossThreadPersistent(request),
+          CrossThreadUnretained(gpu_factories)));
   gpu_factories->NotifyEncoderSupportKnown(
       std::move(on_encoder_support_known_cb));
 }
@@ -551,17 +566,20 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
       return;
     }
 
-    auto output_cb = WTF::BindRepeating(
-        &VideoEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(self),
-        // We can't use |active_config_| from |this| because it can change by
-        // the time the callback is executed.
-        WrapCrossThreadPersistent(self->active_config_.Get()),
-        self->reset_count_);
+    auto output_cb =
+        ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
+            &VideoEncoder::CallOutputCallback,
+            WrapCrossThreadWeakPersistent(self),
+            // We can't use |active_config_| from |this| because it can change
+            // by the time the callback is executed.
+            WrapCrossThreadPersistent(self->active_config_.Get()),
+            self->reset_count_));
 
     self->media_encoder_->ChangeOptions(
         self->active_config_->options, std::move(output_cb),
-        WTF::Bind(reconf_callback, WrapCrossThreadWeakPersistent(self),
-                  WrapCrossThreadPersistent(req)));
+        ConvertToBaseOnceCallback(CrossThreadBindOnce(
+            reconf_callback, WrapCrossThreadWeakPersistent(self),
+            WrapCrossThreadPersistent(req))));
   };
 
   stall_request_processing_ = true;
@@ -599,9 +617,9 @@ void VideoEncoder::ProcessFlush(Request* request) {
   };
 
   stall_request_processing_ = true;
-  media_encoder_->Flush(WTF::Bind(done_callback,
-                                  WrapCrossThreadWeakPersistent(this),
-                                  WrapCrossThreadPersistent(request)));
+  media_encoder_->Flush(ConvertToBaseOnceCallback(
+      CrossThreadBindOnce(done_callback, WrapCrossThreadWeakPersistent(this),
+                          WrapCrossThreadPersistent(request))));
 }
 
 void VideoEncoder::CallOutputCallback(
