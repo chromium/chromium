@@ -136,7 +136,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
-        mMediator.updateLocationBarIcon();
+        mMediator.updateLocationBarIcon(StatusView.IconTransitionType.CROSSFADE);
         mMediator.setStatusClickListener(this);
     }
 

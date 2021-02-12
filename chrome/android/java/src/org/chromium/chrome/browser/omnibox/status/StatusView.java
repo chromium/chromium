@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.status;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RotateDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
@@ -18,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
@@ -26,13 +29,25 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.widget.Toast;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * StatusView is a location bar's view displaying status (icons and/or text).
  */
 public class StatusView extends LinearLayout {
+    @IntDef({IconTransitionType.CROSSFADE, IconTransitionType.ROTATE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IconTransitionType {
+        int CROSSFADE = 0;
+        int ROTATE = 1;
+    }
     public static final int ICON_ANIMATION_DURATION_MS = 225;
+    private static final int ICON_ROTATION_DURATION_MS = 250;
+    private static final int ICON_ROTATION_DEGREES = 180;
 
     private @Nullable View mIncognitoBadge;
     private int mIncognitoBadgeEndPaddingWithIcon;
@@ -192,7 +207,7 @@ public class StatusView extends LinearLayout {
     /**
      * Start animating transition of status icon.
      */
-    private void animateStatusIcon() {
+    private void animateStatusIcon(@IconTransitionType int transitionType) {
         Drawable targetIcon = mStatusIconDrawable;
         boolean wantIconHidden = mStatusIconDrawable == null;
 
@@ -229,14 +244,32 @@ public class StatusView extends LinearLayout {
                         && ((TransitionDrawable) existingDrawable).getNumberOfLayers() == 2) {
                     existingDrawable = ((TransitionDrawable) existingDrawable).getDrawable(1);
                 }
-                TransitionDrawable newImage =
-                        new TransitionDrawable(new Drawable[] {existingDrawable, targetIcon});
+
+                TransitionDrawable newImage = new TransitionDrawable(new Drawable[] {
+                        existingDrawable,
+                        transitionType == IconTransitionType.ROTATE ? getRotatedIcon(targetIcon)
+                                                                    : targetIcon});
 
                 mIconView.setImageDrawable(newImage);
 
                 // Note: crossfade controls blending, not animation.
                 newImage.setCrossFadeEnabled(true);
-                newImage.startTransition(mAnimationsEnabled ? ICON_ANIMATION_DURATION_MS : 0);
+
+                if (transitionType == IconTransitionType.CROSSFADE) {
+                    newImage.startTransition(mAnimationsEnabled ? ICON_ANIMATION_DURATION_MS : 0);
+                } else {
+                    mIconView.animate()
+                            .setDuration(ICON_ROTATION_DURATION_MS)
+                            .rotationBy(ICON_ROTATION_DEGREES)
+                            .setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR)
+                            .withStartAction(
+                                    () -> { newImage.startTransition(ICON_ANIMATION_DURATION_MS); })
+                            .withEndAction(() -> {
+                                mIconView.setRotation(0);
+                                mIconView.setImageDrawable(targetIcon);
+                            })
+                            .start();
+                }
 
                 // Update the touch delegate only if the icons are swapped without animating the
                 // image view.
@@ -245,6 +278,16 @@ public class StatusView extends LinearLayout {
                 mIconView.setImageDrawable(targetIcon);
             }
         }
+    }
+
+    /** Returns a rotated version of the icon passed in. */
+    private Drawable getRotatedIcon(@NonNull Drawable icon) {
+        RotateDrawable rotated = new RotateDrawable();
+        rotated.setDrawable(icon);
+        rotated.setToDegrees(ICON_ROTATION_DEGREES);
+        // Jump drawable to its target state.
+        rotated.setLevel(10000);
+        return rotated;
     }
 
     /**
@@ -280,9 +323,10 @@ public class StatusView extends LinearLayout {
         mAnimationsEnabled = enabled;
     }
 
-    void setStatusIconResources(Drawable statusIconDrawable) {
+    void setStatusIconResources(
+            @Nullable Drawable statusIconDrawable, @IconTransitionType int transitionType) {
         mStatusIconDrawable = statusIconDrawable;
-        animateStatusIcon();
+        animateStatusIcon(transitionType);
     }
 
     /** Specify the status icon alpha. */

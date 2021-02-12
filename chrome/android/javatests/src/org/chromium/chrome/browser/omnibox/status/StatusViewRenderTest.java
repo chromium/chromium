@@ -29,6 +29,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -183,10 +184,11 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
             Drawable locationIcon =
                     ContentSettingsResources.getContentSettingsIcon(mStatusView.getContext(),
                             ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW);
+            PermissionIconResource statusIcon = new PermissionIconResource(locationIcon);
+            statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
             mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
             mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-            mStatusModel.set(
-                    StatusProperties.STATUS_ICON_RESOURCE, new StatusIconResource(locationIcon));
+            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         });
         mRenderTestRule.render(mStatusView, "status_view_with_location_permission_icon");
     }

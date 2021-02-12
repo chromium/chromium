@@ -7,18 +7,24 @@ package org.chromium.chrome.browser.omnibox.status;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.util.ObjectsCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.chrome.R;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -36,6 +42,8 @@ public class StatusProperties {
         private String mIconIdentifier;
         private Bitmap mBitmap;
         private Drawable mDrawable;
+        private @StatusView.IconTransitionType int mIconTransitionType =
+                StatusView.IconTransitionType.CROSSFADE;
 
         /** Constructor for a custom drawable. */
         StatusIconResource(Drawable drawable) {
@@ -66,6 +74,17 @@ public class StatusProperties {
         int getIconResForTesting() {
             if (mIconRes == null) return 0;
             return mIconRes;
+        }
+
+        /** Set the animation transition type for this icon. */
+        void setTransitionType(@StatusView.IconTransitionType int type) {
+            mIconTransitionType = type;
+        }
+
+        /** @return The animation transition type for this icon. */
+        @StatusView.IconTransitionType
+        int getTransitionType() {
+            return mIconTransitionType;
         }
 
         /** @return The {@link Drawable} for this StatusIconResource. */
@@ -106,6 +125,78 @@ public class StatusProperties {
             if (mDrawable != otherResource.mDrawable) return false;
 
             return true;
+        }
+    }
+
+    /**
+     * Encapsulates a permission icon for StatusView. Adds a circle background and icon color
+     * highlight.
+     */
+    static class PermissionIconResource extends StatusIconResource {
+        private static Bitmap sCircleBackground;
+
+        PermissionIconResource(Drawable drawable) {
+            super(drawable);
+        }
+
+        PermissionIconResource(String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
+            super(iconIdentifier, bitmap, tint);
+        }
+
+        PermissionIconResource(@DrawableRes int iconRes, @ColorRes int tint) {
+            super(iconRes, tint);
+        }
+
+        /** Returns a {@link Drawable} for this StatusIconResource. */
+        @Override
+        Drawable getDrawable(Context context, Resources resources) {
+            Drawable icon = super.getDrawable(context, resources);
+            if (icon == null) {
+                return null;
+            }
+            icon.setColorFilter(
+                    ApiCompatibilityUtils.getColor(resources, R.color.default_icon_color_blue),
+                    PorterDuff.Mode.SRC_IN);
+            Bitmap circleCopy = getCircleBackground(resources);
+            Canvas canvas = new Canvas(circleCopy);
+            float radius = 0.5f * canvas.getWidth();
+            Bitmap iconBitmap = createScaledIcon(icon, 0.9f);
+            canvas.drawBitmap(iconBitmap, radius - iconBitmap.getWidth() / 2,
+                    radius - iconBitmap.getHeight() / 2, null);
+            return new BitmapDrawable(resources, circleCopy);
+        }
+
+        /** Returns a scaled bitmap of the icon passed in. */
+        private Bitmap createScaledIcon(@NonNull Drawable icon, float scaleFactor) {
+            // Create bitmap and canvas from icon.
+            Bitmap iconBitmap = Bitmap.createBitmap(
+                    icon.getIntrinsicWidth(), icon.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(iconBitmap);
+            int side = canvas.getWidth();
+            assert side == canvas.getHeight();
+            icon.setBounds(0, 0, side, side);
+            icon.draw(canvas);
+
+            // Scale bitmap
+            int scaledWidth = Math.round(icon.getIntrinsicWidth() * scaleFactor);
+            int scaledHeight = Math.round(icon.getIntrinsicHeight() * scaleFactor);
+            return Bitmap.createScaledBitmap(iconBitmap, scaledWidth, scaledHeight, false);
+        }
+
+        /** Returns a bitmap of the circle icon to be used for the Drawable. */
+        private Bitmap getCircleBackground(Resources resources) {
+            if (sCircleBackground == null) {
+                int width = resources.getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
+                float radius = 0.5f * width;
+                sCircleBackground = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(sCircleBackground);
+                Paint paint = new Paint();
+                paint.setColor(ApiCompatibilityUtils.getColor(
+                        resources, R.color.toolbar_background_primary));
+                paint.setAntiAlias(true);
+                canvas.drawCircle(radius, radius, radius, paint);
+            }
+            return sCircleBackground.copy(sCircleBackground.getConfig(), true);
         }
     }
 

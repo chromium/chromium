@@ -26,7 +26,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.page_info.PageInfoIPHController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -196,7 +198,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
         if (mPageSecurityLevel == level) return;
         mPageSecurityLevel = level;
         updateStatusVisibility();
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**
@@ -204,7 +206,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
      */
     void setSecurityIconResource(@DrawableRes int securityIcon) {
         mSecurityIconRes = securityIcon;
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**
@@ -212,7 +214,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
      */
     void setSecurityIconTint(@ColorRes int tintList) {
         mSecurityIconTintRes = tintList;
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**
@@ -220,7 +222,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
      */
     void setSecurityIconDescription(@StringRes int desc) {
         mSecurityIconDescriptionRes = desc;
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**
@@ -242,7 +244,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
      */
     void setShowIconsWhenUrlFocused(boolean showIconWhenFocused) {
         mShowStatusIconWhenUrlFocused = showIconWhenFocused;
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**
@@ -284,7 +286,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
         mUrlHasFocus = urlHasFocus;
         updateStatusVisibility();
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
         // Set the default match to be a search on an unfocus event to avoid the globe sticking
         // around for subsequent focus events.
@@ -345,7 +347,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
             mModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
         }
 
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**
@@ -425,7 +427,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mNavigationIconTintRes = tintColor;
         if (textColor != 0) mModel.set(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES, textColor);
 
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**
@@ -454,7 +456,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mIsSearchEngineStateSetup = true;
         mIsSearchEngineGoogle = isSearchEngineGoogle;
         mSearchEngineLogoUrl = searchEngineUrl;
-        updateLocationBarIcon();
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     /**
@@ -468,7 +470,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
      *     - shown only if specified,
      *     - not shown if URL is focused.
      */
-    void updateLocationBarIcon() {
+    void updateLocationBarIcon(@IconTransitionType int transitionType) {
         // Reset the last saved permission.
         mLastPermission = ContentSettingsType.DEFAULT;
         // Update the accessibility description before continuing since we need it either way.
@@ -503,8 +505,11 @@ public class StatusMediator implements PermissionDialogController.Observer {
                               : R.color.locationbar_status_preview_color_light;
         }
 
-        mModel.set(StatusProperties.STATUS_ICON_RESOURCE,
-                icon == 0 ? null : new StatusIconResource(icon, tint));
+        StatusIconResource statusIcon = icon == 0 ? null : new StatusIconResource(icon, tint);
+        if (statusIcon != null) {
+            statusIcon.setTransitionType(transitionType);
+        }
+        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         mModel.set(StatusProperties.STATUS_ICON_ACCESSIBILITY_TOAST_RES, toast);
     }
 
@@ -623,7 +628,7 @@ public class StatusMediator implements PermissionDialogController.Observer {
     /* package */ void updateLocationBarIconForDefaultMatchCategory(boolean defaultMatchIsSearch) {
         if (defaultMatchIsSearch != mUrlBarTextIsSearch) {
             mUrlBarTextIsSearch = defaultMatchIsSearch;
-            updateLocationBarIcon();
+            updateLocationBarIcon(IconTransitionType.CROSSFADE);
         }
     }
 
@@ -692,13 +697,18 @@ public class StatusMediator implements PermissionDialogController.Observer {
         assert mLastPermission != ContentSettingsType.DEFAULT;
         Drawable permissionIcon =
                 ContentSettingsResources.getContentSettingsIcon(mContext, mLastPermission, result);
-        // TODO(crbug.com/1158288): Animate the icon change.
+        PermissionIconResource statusIcon = new PermissionIconResource(permissionIcon);
+        statusIcon.setTransitionType(IconTransitionType.ROTATE);
         // Set the timer to switch the icon back afterwards.
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
-        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, new StatusIconResource(permissionIcon));
+        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         mPermissionTaskHandler.postDelayed(
-                mCallbackController.makeCancelable(this::updateLocationBarIcon),
+                mCallbackController.makeCancelable(this::resetPermissionIcon),
                 PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+    }
+
+    private void resetPermissionIcon() {
+        updateLocationBarIcon(IconTransitionType.ROTATE);
     }
 
     public int getLastPermission() {
