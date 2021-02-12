@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/dcheck_is_on.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/resources_util.h"
 #include "chrome/grit/theme_resources.h"
@@ -58,10 +57,6 @@ constexpr char kTipMarqueeViewClickToLearnMore[] = "Click to learn more";
 //  --tip-marquee-view-test=learn-more
 //      Displays a tip with a "learn more" link that displays a sample bubble
 //
-#define TIP_MARQUEE_VIEW_DEMO_ENABLED() DCHECK_IS_ON()
-
-#if TIP_MARQUEE_VIEW_DEMO_ENABLED()
-
 constexpr char kTipMarqueeViewTestSwitch[] = "tip-marquee-view-test";
 constexpr char kTipMarqueeViewTestTypeSimple[] = "simple";
 constexpr char kTipMarqueeViewTestTypeLearnMore[] = "learn-more";
@@ -154,7 +149,6 @@ void MaybeShowTestTipMarqueeView(TipMarqueeView* marquee) {
   }
 }
 
-#endif  // TIP_MARQUEE_VIEW_DEMO_ENABLED()
 // TODO(crbug.com/1171654): remove the entire section above before this code
 // ships, once the UX demo is over.
 // ------------------------------------------------------------------
@@ -217,9 +211,7 @@ TipMarqueeView::TipMarqueeView(int text_context, int text_style) {
 
   SetVisible(false);
 
-#if TIP_MARQUEE_VIEW_DEMO_ENABLED()
   MaybeShowTestTipMarqueeView(this);
-#endif
 }
 
 TipMarqueeView::~TipMarqueeView() = default;
