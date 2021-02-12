@@ -49,7 +49,8 @@ class BrowserAppMenuButton : public AppMenuButton {
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   void OnThemeChanged() override;

@@ -8,6 +8,7 @@
 #include "components/exo/wm_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/aura/client/drag_drop_delegate.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/wm/core/wm_core_switches.h"
@@ -87,9 +88,10 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
     return aura::client::DragUpdateInfo();
   }
   void OnDragExited() override {}
-  int OnPerformDrop(const ui::DropTargetEvent& event,
-                    std::unique_ptr<ui::OSExchangeData> data) override {
-    return 0;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) override {
+    return ui::mojom::DragOperation::kNone;
   }
 
   // Overridden from VSyncTimingManager::Delegate:

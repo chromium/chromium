@@ -1244,7 +1244,7 @@ void DesktopNativeWidgetAura::OnDragExited() {
   drop_helper_->OnDragExit();
 }
 
-int DesktopNativeWidgetAura::OnPerformDrop(
+ui::mojom::DragOperation DesktopNativeWidgetAura::OnPerformDrop(
     const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data) {
   DCHECK(drop_helper_.get() != nullptr);

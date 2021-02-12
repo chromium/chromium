@@ -27,7 +27,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
@@ -1735,8 +1735,8 @@ int View::OnDragUpdated(const ui::DropTargetEvent& event) {
 
 void View::OnDragExited() {}
 
-int View::OnPerformDrop(const ui::DropTargetEvent& event) {
-  return ui::DragDropTypes::DRAG_NONE;
+ui::mojom::DragOperation View::OnPerformDrop(const ui::DropTargetEvent& event) {
+  return ui::mojom::DragOperation::kNone;
 }
 
 void View::OnDragDone() {}

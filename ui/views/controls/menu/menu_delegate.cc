@@ -4,6 +4,7 @@
 
 #include "ui/views/controls/menu/menu_delegate.h"
 
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/menu/menu_config.h"
 
@@ -97,11 +98,12 @@ int MenuDelegate::GetDropOperation(MenuItemView* item,
   return ui::DragDropTypes::DRAG_NONE;
 }
 
-int MenuDelegate::OnPerformDrop(MenuItemView* menu,
-                                DropPosition position,
-                                const ui::DropTargetEvent& event) {
+ui::mojom::DragOperation MenuDelegate::OnPerformDrop(
+    MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
   NOTREACHED() << "If you override CanDrop, you need to override this too";
-  return ui::DragDropTypes::DRAG_NONE;
+  return ui::mojom::DragOperation::kNone;
 }
 
 bool MenuDelegate::CanDrag(MenuItemView* menu) {

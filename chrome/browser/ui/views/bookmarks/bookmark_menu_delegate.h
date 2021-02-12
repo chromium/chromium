@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class Browser;
@@ -112,9 +113,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   int GetDropOperation(views::MenuItemView* item,
                        const ui::DropTargetEvent& event,
                        views::MenuDelegate::DropPosition* position);
-  int OnPerformDrop(views::MenuItemView* menu,
-                    views::MenuDelegate::DropPosition position,
-                    const ui::DropTargetEvent& event);
+  ui::mojom::DragOperation OnPerformDrop(
+      views::MenuItemView* menu,
+      views::MenuDelegate::DropPosition position,
+      const ui::DropTargetEvent& event);
   bool ShowContextMenu(views::MenuItemView* source,
                        int id,
                        const gfx::Point& p,

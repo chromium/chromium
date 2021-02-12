@@ -73,6 +73,7 @@
 #include "extensions/common/extension_set.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
@@ -1058,14 +1059,15 @@ void BookmarkBarView::OnDragExited() {
   drop_info_.reset();
 }
 
-int BookmarkBarView::OnPerformDrop(const ui::DropTargetEvent& event) {
+ui::mojom::DragOperation BookmarkBarView::OnPerformDrop(
+    const ui::DropTargetEvent& event) {
   StopShowFolderDropMenuTimer();
 
   if (bookmark_drop_menu_)
     bookmark_drop_menu_->Cancel();
 
   if (!drop_info_.get() || !drop_info_->location.operation)
-    return ui::DragDropTypes::DRAG_NONE;
+    return ui::mojom::DragOperation::kNone;
 
   const BookmarkNode* root =
       (drop_info_->location.button_type == DROP_OTHER_FOLDER)

@@ -13,15 +13,13 @@
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/dragdrop/drag_drop_types.h"
-#import "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#import "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
-
-using base::ASCIIToUTF16;
 
 @interface NSView (DragSessionTestingDonor)
 @end
@@ -120,6 +118,9 @@ enumerateDraggingItemsWithOptions:(NSDraggingItemEnumerationOptions)enumOpts
 namespace views {
 namespace test {
 
+using ::base::ASCIIToUTF16;
+using ::ui::mojom::DragOperation;
+
 // View object that will receive and process dropped data from the test.
 class DragDropView : public View {
  public:
@@ -141,8 +142,8 @@ class DragDropView : public View {
     return ui::DragDropTypes::DRAG_COPY;
   }
 
-  int OnPerformDrop(const ui::DropTargetEvent& event) override {
-    return ui::DragDropTypes::DRAG_MOVE;
+  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
+    return DragOperation::kMove;
   }
 
  private:
@@ -311,9 +312,9 @@ class DragDropCloseView : public DragDropView {
   DragDropCloseView() {}
 
   // View:
-  int OnPerformDrop(const ui::DropTargetEvent& event) override {
+  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
     GetWidget()->CloseNow();
-    return ui::DragDropTypes::DRAG_MOVE;
+    return DragOperation::kMove;
   }
 
  private:

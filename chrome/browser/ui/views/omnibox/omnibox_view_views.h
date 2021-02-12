@@ -465,7 +465,7 @@ class OmniboxViewViews : public OmniboxView,
   void AppendDropFormats(
       int* formats,
       std::set<ui::ClipboardFormatType>* format_types) override;
-  int OnDrop(const ui::OSExchangeData& data) override;
+  ui::mojom::DragOperation OnDrop(const ui::OSExchangeData& data) override;
   void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) override;
 
   // ui::SimpleMenuModel::Delegate:

@@ -26,6 +26,7 @@
 #include "base/containers/adapters.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -36,8 +37,9 @@
 #include "ui/views/vector_icons.h"
 
 namespace ash {
-
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 // Animation.
 constexpr base::TimeDelta kAnimationDuration =
@@ -339,16 +341,17 @@ void HoldingSpaceTray::OnDragExited() {
   UpdateDropTargetState(/*is_drop_target=*/false);
 }
 
-int HoldingSpaceTray::OnPerformDrop(const ui::DropTargetEvent& event) {
+DragOperation HoldingSpaceTray::OnPerformDrop(
+    const ui::DropTargetEvent& event) {
   UpdateDropTargetState(/*is_drop_target=*/false);
 
   std::vector<base::FilePath> unpinned_file_paths(
       ExtractUnpinnedFilePaths(event.data()));
   if (unpinned_file_paths.empty())
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
-  return ui::DragDropTypes::DRAG_COPY;
+  return DragOperation::kCopy;
 }
 
 void HoldingSpaceTray::Layout() {

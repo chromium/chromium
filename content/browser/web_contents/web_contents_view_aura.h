@@ -219,8 +219,9 @@ class CONTENT_EXPORT WebContentsViewAura
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event,
-                    std::unique_ptr<ui::OSExchangeData> data) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) override;
   void DragEnteredCallback(ui::DropTargetEvent event,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,

@@ -26,6 +26,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/init/input_method_factory.h"
@@ -1952,7 +1953,7 @@ TEST_F(TextfieldTest, DragAndDrop_AcceptDrop) {
       ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_MOVE);
   EXPECT_EQ(ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_MOVE,
             textfield_->OnDragUpdated(drop));
-  EXPECT_EQ(ui::DragDropTypes::DRAG_COPY, textfield_->OnPerformDrop(drop));
+  EXPECT_EQ(ui::mojom::DragOperation::kCopy, textfield_->OnPerformDrop(drop));
   EXPECT_STR_EQ("hello string world", textfield_->GetText());
 
   // Ensure that textfields do not accept non-OSExchangeData::STRING types.
@@ -2045,7 +2046,7 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheRight) {
   EXPECT_TRUE(textfield_->CanDrop(data));
   ui::DropTargetEvent drop_a(data, kDropPoint, kDropPoint, operations);
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
-  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnPerformDrop(drop_a));
+  EXPECT_EQ(ui::mojom::DragOperation::kMove, textfield_->OnPerformDrop(drop_a));
   EXPECT_STR_EQ("h welloorld", textfield_->GetText());
   textfield_->OnDragDone();
 
@@ -2096,7 +2097,7 @@ TEST_F(TextfieldTest, DragAndDrop_ToTheLeft) {
   gfx::PointF drop_point(GetCursorPositionX(1), cursor_y);
   ui::DropTargetEvent drop_a(data, drop_point, drop_point, operations);
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnDragUpdated(drop_a));
-  EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE, textfield_->OnPerformDrop(drop_a));
+  EXPECT_EQ(ui::mojom::DragOperation::kMove, textfield_->OnPerformDrop(drop_a));
   EXPECT_STR_EQ("h worlellod", textfield_->GetText());
   textfield_->OnDragDone();
 

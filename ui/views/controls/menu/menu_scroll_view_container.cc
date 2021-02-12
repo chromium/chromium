@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
@@ -84,8 +85,9 @@ class MenuScrollButton : public View {
     host_->GetMenuItem()->GetMenuController()->OnDragExitedScrollButton(host_);
   }
 
-  int OnPerformDrop(const ui::DropTargetEvent& event) override {
-    return ui::DragDropTypes::DRAG_NONE;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override {
+    return ui::mojom::DragOperation::kNone;
   }
 
   void OnPaint(gfx::Canvas* canvas) override {

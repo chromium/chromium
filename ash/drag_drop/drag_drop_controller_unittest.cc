@@ -33,7 +33,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event.h"
@@ -50,13 +50,13 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+namespace ash {
+namespace {
+
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
-
-namespace ash {
-
-namespace {
+using ::ui::mojom::DragOperation;
 
 // A simple view that makes sure RunShellDrag is invoked on mouse drag.
 class DragTestView : public views::View {
@@ -128,9 +128,9 @@ class DragTestView : public views::View {
 
   void OnDragExited() override { num_drag_exits_++; }
 
-  int OnPerformDrop(const ui::DropTargetEvent& event) override {
+  DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
     num_drops_++;
-    return ui::DragDropTypes::DRAG_COPY;
+    return DragOperation::kCopy;
   }
 
   void OnDragDone() override { drag_done_received_ = true; }
@@ -274,12 +274,13 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
                 State::kDragUpdateInvoked == state_);
     state_ = State::kDragExitInvoked;
   }
-  int OnPerformDrop(const ui::DropTargetEvent& event,
-                    std::unique_ptr<ui::OSExchangeData> data) override {
+  DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) override {
     EXPECT_EQ(State::kDragUpdateInvoked, state_);
     EXPECT_EQ(window_, event.target());
     state_ = State::kPerformDropInvoked;
-    return ui::DragDropTypes::DRAG_MOVE;
+    return DragOperation::kMove;
   }
 
  private:

@@ -25,11 +25,14 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/events/event.h"
 
 namespace exo {
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 enum class DataEvent {
   kOffer,
@@ -175,8 +178,8 @@ TEST_F(DataDeviceTest, DataEventsDrop) {
       FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
                                 base::Unretained(&delegate_), true));
 
-  int result = device_->OnPerformDrop(event);
-  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK, result);
+  DragOperation result = device_->OnPerformDrop(event);
+  EXPECT_EQ(DragOperation::kLink, result);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kDrop, events[0]);
 }
@@ -209,8 +212,8 @@ TEST_F(DataDeviceTest, DeleteDataDeviceDuringDrop) {
   device_->OnDragEntered(event);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&]() { device_.reset(); }));
-  int result = device_->OnPerformDrop(event);
-  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, result);
+  DragOperation result = device_->OnPerformDrop(event);
+  EXPECT_EQ(DragOperation::kNone, result);
 }
 
 TEST_F(DataDeviceTest, DeleteDataOfferDuringDrag) {
@@ -254,8 +257,8 @@ TEST_F(DataDeviceTest, DataOfferNotFinished) {
       FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
                                 base::Unretained(&delegate_), false));
 
-  int result = device_->OnPerformDrop(event);
-  EXPECT_EQ(ui::DragDropTypes::DRAG_NONE, result);
+  DragOperation result = device_->OnPerformDrop(event);
+  EXPECT_EQ(DragOperation::kNone, result);
   ASSERT_EQ(1u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kDrop, events[0]);
 }

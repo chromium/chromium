@@ -1311,7 +1311,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Invoked during a drag and drop session when OnDragUpdated returns a valid
   // operation and the user release the mouse.
-  virtual int OnPerformDrop(const ui::DropTargetEvent& event);
+  virtual ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event);
 
   // Invoked from DoDrag after the drag completes. This implementation does
   // nothing, and is intended for subclasses to do cleanup.

@@ -10,12 +10,14 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
-
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 const View* g_drag_entered_callback_view = nullptr;
 
@@ -77,17 +79,17 @@ void DropHelper::OnDragExit() {
   deepest_view_ = target_view_ = nullptr;
 }
 
-int DropHelper::OnDrop(const OSExchangeData& data,
-                       const gfx::Point& root_view_location,
-                       int drag_operation) {
+DragOperation DropHelper::OnDrop(const OSExchangeData& data,
+                                 const gfx::Point& root_view_location,
+                                 int drag_operation) {
   View* drop_view = target_view_;
   deepest_view_ = target_view_ = nullptr;
   if (!drop_view)
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   if (drag_operation == ui::DragDropTypes::DRAG_NONE) {
     drop_view->OnDragExited();
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
   }
 
   gfx::Point view_location(root_view_location);

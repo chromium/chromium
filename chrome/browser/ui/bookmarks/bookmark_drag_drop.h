@@ -71,11 +71,12 @@ void DragBookmarksForTest(Profile* profile,
 // |copy| indicates the source operation: if true then the bookmarks in |data|
 // are copied, otherwise they are moved if they belong to the same |profile|.
 // Returns the drop type used.
-int DropBookmarks(Profile* profile,
-                  const bookmarks::BookmarkNodeData& data,
-                  const bookmarks::BookmarkNode* parent_node,
-                  size_t index,
-                  bool copy);
+ui::mojom::DragOperation DropBookmarks(
+    Profile* profile,
+    const bookmarks::BookmarkNodeData& data,
+    const bookmarks::BookmarkNode* parent_node,
+    size_t index,
+    bool copy);
 
 }  // namespace chrome
 

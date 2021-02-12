@@ -286,7 +286,7 @@ int BookmarkMenuDelegate::GetDropOperation(
       profile_, event, drop_data_, drop_parent, index_to_drop_at);
 }
 
-int BookmarkMenuDelegate::OnPerformDrop(
+ui::mojom::DragOperation BookmarkMenuDelegate::OnPerformDrop(
     MenuItemView* menu,
     views::MenuDelegate::DropPosition position,
     const ui::DropTargetEvent& event) {

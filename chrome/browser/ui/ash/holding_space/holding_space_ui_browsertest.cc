@@ -27,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
@@ -363,9 +364,10 @@ class DropTargetView : public views::WidgetDelegateView {
     return ui::DragDropTypes::DRAG_COPY;
   }
 
-  int OnPerformDrop(const ui::DropTargetEvent& event) override {
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override {
     EXPECT_TRUE(event.data().GetFilename(&copied_file_path_));
-    return ui::DragDropTypes::DRAG_COPY;
+    return ui::mojom::DragOperation::kCopy;
   }
 
   void InitWidget(aura::Window* context) {

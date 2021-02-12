@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/test/ui_controls_aura.h"
 #include "ui/views/view.h"
@@ -57,9 +58,10 @@ class TargetView : public views::View {
   int OnDragUpdated(const ui::DropTargetEvent& event) override {
     return ui::DragDropTypes::DRAG_MOVE;
   }
-  int OnPerformDrop(const ui::DropTargetEvent& event) override {
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override {
     dropped_ = true;
-    return ui::DragDropTypes::DRAG_MOVE;
+    return ui::mojom::DragOperation::kMove;
   }
 
   bool dropped() const { return dropped_; }

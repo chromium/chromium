@@ -267,7 +267,8 @@ void SubmenuView::OnDragExited() {
   parent_menu_item_->GetMenuController()->OnDragExited(this);
 }
 
-int SubmenuView::OnPerformDrop(const ui::DropTargetEvent& event) {
+ui::mojom::DragOperation SubmenuView::OnPerformDrop(
+    const ui::DropTargetEvent& event) {
   DCHECK(parent_menu_item_->GetMenuController());
   return parent_menu_item_->GetMenuController()->OnPerformDrop(this, event);
 }

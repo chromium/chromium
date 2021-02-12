@@ -11,6 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 
 namespace ui {
@@ -56,8 +57,9 @@ class AURA_EXPORT DragDropDelegate {
   // also stored in the DropTargetEvent. Implementor of this function should be
   // aware of keeping the OSExchageData alive until it wants to access it
   // through the parameter or the stored reference in DropTargetEvent.
-  virtual int OnPerformDrop(const ui::DropTargetEvent& event,
-                            std::unique_ptr<ui::OSExchangeData> data) = 0;
+  virtual ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) = 0;
 
  protected:
   virtual ~DragDropDelegate() {}

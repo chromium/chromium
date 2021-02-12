@@ -13,6 +13,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -119,10 +120,12 @@ int BookmarkMenuController::GetDropOperation(
   return menu_delegate_->GetDropOperation(item, event, position);
 }
 
-int BookmarkMenuController::OnPerformDrop(MenuItemView* menu,
-                                          DropPosition position,
-                                          const ui::DropTargetEvent& event) {
-  int result = menu_delegate_->OnPerformDrop(menu, position, event);
+ui::mojom::DragOperation BookmarkMenuController::OnPerformDrop(
+    MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  ui::mojom::DragOperation result =
+      menu_delegate_->OnPerformDrop(menu, position, event);
   if (for_drop_)
     delete this;
   return result;

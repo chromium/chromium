@@ -548,7 +548,8 @@ void DragDropController::Drop(aura::Window* target,
     ui::Event::DispatcherApi(&e).set_target(target);
 
     ui::OSExchangeData copied_data(drag_data_->provider().Clone());
-    drag_operation_ = delegate->OnPerformDrop(e, std::move(drag_data_));
+    drag_operation_ =
+        static_cast<int>(delegate->OnPerformDrop(e, std::move(drag_data_)));
     if (drag_operation_ == 0 && tab_drag_drop_delegate_) {
       gfx::Point location_in_screen = event.root_location();
       ::wm::ConvertPointToScreen(target->GetRootWindow(), &location_in_screen);

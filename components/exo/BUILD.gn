@@ -92,6 +92,7 @@ static_library("exo") {
     "//ui/accessibility:ax_base",
     "//ui/aura",
     "//ui/base/cursor",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime",
     "//ui/compositor",
     "//ui/compositor_extra",
@@ -212,6 +213,7 @@ source_set("test_support") {
     "//gpu",
     "//skia",
     "//ui/aura",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime/init",
     "//ui/compositor",
     "//ui/compositor:test_support",
@@ -320,7 +322,7 @@ source_set("unit_tests") {
       "//chromeos/ui/frame",
       "//ui/base:test_support",
       "//ui/base/cursor/mojom:cursor_type",
-      "//ui/base/dragdrop/mojom:mojom_shared",
+      "//ui/base/dragdrop/mojom",
       "//ui/gfx/geometry",
     ]
   }

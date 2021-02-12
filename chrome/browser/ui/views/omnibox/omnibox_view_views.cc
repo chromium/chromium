@@ -73,6 +73,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/ime/input_method.h"
@@ -107,9 +108,10 @@
 #include "chrome/browser/browser_process.h"
 #endif
 
-using metrics::OmniboxEventProto;
-
 namespace {
+
+using ::metrics::OmniboxEventProto;
+using ::ui::mojom::DragOperation;
 
 // OmniboxState ---------------------------------------------------------------
 
@@ -2420,9 +2422,9 @@ void OmniboxViewViews::AppendDropFormats(
   *formats = *formats | ui::OSExchangeData::URL;
 }
 
-int OmniboxViewViews::OnDrop(const ui::OSExchangeData& data) {
+DragOperation OmniboxViewViews::OnDrop(const ui::OSExchangeData& data) {
   if (HasTextBeingDragged())
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   base::string16 text;
   if (data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES)) {
@@ -2435,14 +2437,14 @@ int OmniboxViewViews::OnDrop(const ui::OSExchangeData& data) {
   } else if (data.HasString() && data.GetString(&text)) {
     text = StripJavascriptSchemas(base::CollapseWhitespace(text, true));
   } else {
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
   }
 
   SetUserText(text);
   if (!HasFocus())
     RequestFocus();
   SelectAll(false);
-  return ui::DragDropTypes::DRAG_COPY;
+  return DragOperation::kCopy;
 }
 
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {

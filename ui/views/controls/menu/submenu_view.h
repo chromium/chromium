@@ -88,7 +88,8 @@ class VIEWS_EXPORT SubmenuView : public View,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
 
   // Scrolls on menu item boundaries.
   bool OnMouseWheel(const ui::MouseWheelEvent& e) override;

@@ -37,6 +37,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -614,11 +615,11 @@ void BrowserActionsContainer::OnDragExited() {
   SchedulePaint();
 }
 
-int BrowserActionsContainer::OnPerformDrop(
+ui::mojom::DragOperation BrowserActionsContainer::OnPerformDrop(
     const ui::DropTargetEvent& event) {
   BrowserActionDragData data;
   if (!data.Read(event.data()))
-    return ui::DragDropTypes::DRAG_NONE;
+    return ui::mojom::DragOperation::kNone;
 
   // Make sure we have the same view as we started with.
   DCHECK_EQ(GetIdAt(data.index()), data.id());
@@ -641,7 +642,7 @@ int BrowserActionsContainer::OnPerformDrop(
   toolbar_actions_bar_->OnDragDrop(data.index(), i, drag_type);
 
   OnDragExited();  // Perform clean up after dragging.
-  return ui::DragDropTypes::DRAG_MOVE;
+  return ui::mojom::DragOperation::kMove;
 }
 
 void BrowserActionsContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {

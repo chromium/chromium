@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -68,9 +69,9 @@ class VIEWS_EXPORT DropHelper {
   //
   // NOTE: implementations must invoke OnDragOver before invoking this,
   // supplying the return value from OnDragOver as the drag_operation.
-  int OnDrop(const OSExchangeData& data,
-             const gfx::Point& root_view_location,
-             int drag_operation);
+  ui::mojom::DragOperation OnDrop(const OSExchangeData& data,
+                                  const gfx::Point& root_view_location,
+                                  int drag_operation);
 
   // Calculates the target view for a drop given the specified location in
   // the coordinate system of the rootview. This tries to avoid continually

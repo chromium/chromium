@@ -11,6 +11,7 @@
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/font_list.h"
@@ -170,9 +171,10 @@ class VIEWS_EXPORT MenuDelegate {
   // operation other than ui::DragDropTypes::DRAG_NONE.
   //
   // |menu| is the menu the drop occurred on.
-  virtual int OnPerformDrop(MenuItemView* menu,
-                            DropPosition position,
-                            const ui::DropTargetEvent& event);
+  virtual ui::mojom::DragOperation OnPerformDrop(
+      MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event);
 
   // Invoked to determine if it is possible for the user to drag the specified
   // menu item.

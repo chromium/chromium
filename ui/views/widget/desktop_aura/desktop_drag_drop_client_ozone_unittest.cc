@@ -14,7 +14,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
@@ -25,8 +25,10 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
 namespace views {
-
 namespace {
+
+using ::ui::mojom::DragOperation;
+
 class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
  public:
   FakePlatformWindow() { SetWmDragHandler(this, this); }
@@ -154,7 +156,9 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
   int last_event_flags() const { return last_event_flags_; }
   ui::OSExchangeData* received_data() const { return received_data_.get(); }
 
-  void SetOperation(int operation) { destination_operation_ = operation; }
+  void SetOperation(DragOperation operation) {
+    destination_operation_ = operation;
+  }
 
  private:
   // aura::client::DragDropDelegate:
@@ -177,14 +181,15 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
     last_event_flags_ = event.flags();
 
     return aura::client::DragUpdateInfo(
-        destination_operation_,
+        static_cast<int>(destination_operation_),
         ui::DataTransferEndpoint(ui::EndpointType::kDefault));
   }
 
   void OnDragExited() override { ++num_exits_; }
 
-  int OnPerformDrop(const ui::DropTargetEvent& event,
-                    std::unique_ptr<ui::OSExchangeData> data) override {
+  DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) override {
     // The event must always have valid data.  This will crash if it doesn't.
     // See crbug.com/1151836.
     auto dummy_copy = event.data().provider().Clone();
@@ -200,7 +205,7 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
   int num_exits_;
   int num_drops_;
   std::unique_ptr<ui::OSExchangeData> received_data_;
-  int destination_operation_;
+  DragOperation destination_operation_;
   int last_event_flags_ = ui::EF_NONE;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDragDropDelegate);
@@ -283,7 +288,7 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
 // TODO(1119787): fix this.
 TEST_F(DesktopDragDropClientOzoneTest, DISABLED_StartDrag) {
   // Set the operation which the destination can accept.
-  dragdrop_delegate_->SetOperation(ui::DragDropTypes::DRAG_COPY);
+  dragdrop_delegate_->SetOperation(DragOperation::kCopy);
   // Start Drag and Drop with the operations suggested.
   int operation = StartDragAndDrop(ui::DragDropTypes::DRAG_COPY |
                                    ui::DragDropTypes::DRAG_MOVE);
@@ -302,7 +307,7 @@ TEST_F(DesktopDragDropClientOzoneTest, DISABLED_StartDrag) {
 TEST_F(DesktopDragDropClientOzoneTest, DISABLED_StartDragCtrlPressed) {
   SetModifiers(ui::EF_CONTROL_DOWN);
   // Set the operation which the destination can accept.
-  dragdrop_delegate_->SetOperation(ui::DragDropTypes::DRAG_COPY);
+  dragdrop_delegate_->SetOperation(DragOperation::kCopy);
   // Start Drag and Drop with the operations suggested.
   int operation = StartDragAndDrop(ui::DragDropTypes::DRAG_COPY |
                                    ui::DragDropTypes::DRAG_MOVE);
@@ -319,7 +324,7 @@ TEST_F(DesktopDragDropClientOzoneTest, DISABLED_StartDragCtrlPressed) {
 
 TEST_F(DesktopDragDropClientOzoneTest, ReceiveDrag) {
   // Set the operation which the destination can accept.
-  int operation = ui::DragDropTypes::DRAG_MOVE;
+  auto operation = DragOperation::kMove;
   dragdrop_delegate_->SetOperation(operation);
 
   // Set the data which will be delivered.
@@ -341,7 +346,7 @@ TEST_F(DesktopDragDropClientOzoneTest, ReceiveDrag) {
 
   // The |updated_operation| decided through negotiation should be
   // 'ui::DragDropTypes::DRAG_MOVE'.
-  EXPECT_EQ(operation, updated_operation);
+  EXPECT_EQ(static_cast<int>(operation), updated_operation);
 
   base::string16 string_data;
   dragdrop_delegate_->received_data()->GetString(&string_data);
@@ -358,7 +363,7 @@ TEST_F(DesktopDragDropClientOzoneTest, TargetDestroyedDuringDrag) {
       ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_MOVE;
 
   // Set the operation which the destination can accept.
-  dragdrop_delegate_->SetOperation(ui::DragDropTypes::DRAG_MOVE);
+  dragdrop_delegate_->SetOperation(DragOperation::kMove);
 
   // Set the data which will be delivered.
   const base::string16 sample_data = base::ASCIIToUTF16("ReceiveDrag");
@@ -386,7 +391,7 @@ TEST_F(DesktopDragDropClientOzoneTest, TargetDestroyedDuringDrag) {
   auto another_dragdrop_delegate = std::make_unique<FakeDragDropDelegate>();
   aura::client::SetDragDropDelegate(another_window,
                                     another_dragdrop_delegate.get());
-  another_dragdrop_delegate->SetOperation(ui::DragDropTypes::DRAG_COPY);
+  another_dragdrop_delegate->SetOperation(DragOperation::kCopy);
 
   auto another_platform_window = std::make_unique<FakePlatformWindow>();
   ui::WmDragHandler* drag_handler =

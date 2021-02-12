@@ -47,6 +47,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
 #include "ui/base/models/image_model.h"
@@ -859,14 +860,14 @@ int AppMenu::GetDropOperation(MenuItemView* item,
              : ui::DragDropTypes::DRAG_NONE;
 }
 
-int AppMenu::OnPerformDrop(MenuItemView* menu,
-                           DropPosition position,
-                           const ui::DropTargetEvent& event) {
+ui::mojom::DragOperation AppMenu::OnPerformDrop(
+    MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
   if (!IsBookmarkCommand(menu->GetCommand()))
-    return ui::DragDropTypes::DRAG_NONE;
+    return ui::mojom::DragOperation::kNone;
 
-  int result = bookmark_menu_delegate_->OnPerformDrop(menu, position, event);
-  return result;
+  return bookmark_menu_delegate_->OnPerformDrop(menu, position, event);
 }
 
 bool AppMenu::ShowContextMenu(MenuItemView* source,

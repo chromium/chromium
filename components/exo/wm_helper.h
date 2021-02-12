@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 namespace aura {
 class Window;
@@ -55,7 +56,8 @@ class WMHelper : public aura::client::DragDropDelegate {
     virtual aura::client::DragUpdateInfo OnDragUpdated(
         const ui::DropTargetEvent& event) = 0;
     virtual void OnDragExited() = 0;
-    virtual int OnPerformDrop(const ui::DropTargetEvent& event) = 0;
+    virtual ui::mojom::DragOperation OnPerformDrop(
+        const ui::DropTargetEvent& event) = 0;
 
    protected:
     virtual ~DragDropObserver() {}
@@ -151,8 +153,9 @@ class WMHelper : public aura::client::DragDropDelegate {
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override = 0;
   void OnDragExited() override = 0;
-  int OnPerformDrop(const ui::DropTargetEvent& event,
-                    std::unique_ptr<ui::OSExchangeData> data) override = 0;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) override = 0;
 
   // Registers an AppPropertyResolver. Multiple resolver can be registered and
   // all resolvers are called in the registration order by the method below.

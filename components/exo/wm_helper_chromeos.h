@@ -110,8 +110,9 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event,
-                    std::unique_ptr<ui::OSExchangeData> data) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data) override;
 
   // Overridden from VSyncTimingManager::Delegate:
   void AddVSyncParameterObserver(

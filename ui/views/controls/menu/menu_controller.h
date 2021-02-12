@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -186,7 +187,8 @@ class VIEWS_EXPORT MenuController
   void OnDragEntered(SubmenuView* source, const ui::DropTargetEvent& event);
   int OnDragUpdated(SubmenuView* source, const ui::DropTargetEvent& event);
   void OnDragExited(SubmenuView* source);
-  int OnPerformDrop(SubmenuView* source, const ui::DropTargetEvent& event);
+  ui::mojom::DragOperation OnPerformDrop(SubmenuView* source,
+                                         const ui::DropTargetEvent& event);
 
   // Invoked from the scroll buttons of the MenuScrollViewContainer.
   void OnDragEnteredScrollButton(SubmenuView* source, bool is_up);

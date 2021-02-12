@@ -72,9 +72,10 @@ class AppMenu : public views::MenuDelegate,
   int GetDropOperation(views::MenuItemView* item,
                        const ui::DropTargetEvent& event,
                        DropPosition* position) override;
-  int OnPerformDrop(views::MenuItemView* menu,
-                    DropPosition position,
-                    const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      views::MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event) override;
   bool ShowContextMenu(views::MenuItemView* source,
                        int command_id,
                        const gfx::Point& p,

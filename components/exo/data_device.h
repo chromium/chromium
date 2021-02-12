@@ -61,7 +61,8 @@ class DataDevice : public WMHelper::DragDropObserver,
   aura::client::DragUpdateInfo OnDragUpdated(
       const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
 
   // Overridden from ui::ClipboardObserver:
   void OnClipboardDataChanged() override;

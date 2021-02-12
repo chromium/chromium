@@ -35,6 +35,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/paint_recorder.h"
@@ -46,6 +47,8 @@
 #endif
 
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 using FileSupportedCallback =
     base::OnceCallback<void(const GURL& url, bool supported)>;
@@ -93,13 +96,13 @@ bool GetURLForDrop(const ui::DropTargetEvent& event, GURL* url) {
          url->is_valid();
 }
 
-int GetDropEffect(const ui::DropTargetEvent& event, const GURL& url) {
+DragOperation GetDropEffect(const ui::DropTargetEvent& event, const GURL& url) {
   const int source_ops = event.source_operations();
   if (source_ops & ui::DragDropTypes::DRAG_COPY)
-    return ui::DragDropTypes::DRAG_COPY;
+    return DragOperation::kCopy;
   if (source_ops & ui::DragDropTypes::DRAG_LINK)
-    return ui::DragDropTypes::DRAG_LINK;
-  return ui::DragDropTypes::DRAG_MOVE;
+    return DragOperation::kLink;
+  return DragOperation::kMove;
 }
 
 }  // namespace
@@ -195,8 +198,9 @@ int BrowserRootView::OnDragUpdated(const ui::DropTargetEvent& event) {
     }
 
     drop_target->HandleDragUpdate(drop_info_->index);
-    return drop_info_->index ? GetDropEffect(event, drop_info_->url)
-                             : ui::DragDropTypes::DRAG_NONE;
+    return drop_info_->index
+               ? static_cast<int>(GetDropEffect(event, drop_info_->url))
+               : ui::DragDropTypes::DRAG_NONE;
   }
 
   OnDragExited();
@@ -207,11 +211,11 @@ void BrowserRootView::OnDragExited() {
   drop_info_.reset();
 }
 
-int BrowserRootView::OnPerformDrop(const ui::DropTargetEvent& event) {
+DragOperation BrowserRootView::OnPerformDrop(const ui::DropTargetEvent& event) {
   using base::UserMetricsAction;
 
   if (!drop_info_)
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   // Ensure we call HandleDragExited() on |drop_info_|'s |target| when this
   // function returns.
@@ -231,7 +235,7 @@ int BrowserRootView::OnPerformDrop(const ui::DropTargetEvent& event) {
   // |drop_info| was created.
   if (!drop_info->file_supported || !url.is_valid() ||
       url.SchemeIs(url::kJavaScriptScheme))
-    return ui::DragDropTypes::DRAG_NONE;
+    return DragOperation::kNone;
 
   NavigateParams params(browser_view_->browser(), url,
                         ui::PAGE_TRANSITION_LINK);

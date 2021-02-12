@@ -1592,6 +1592,7 @@ static_library("ui") {
       "//third_party/blink/public/common:headers",
       "//third_party/libaddressinput",
       "//third_party/libaddressinput:strings",
+      "//ui/base/dragdrop/mojom",
       "//ui/events",
     ]
     public_deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
@@ -4250,10 +4251,10 @@ static_library("ui") {
       "//components/ui_devtools/views",
       "//device/vr/buildflags:buildflags",
       "//services/media_session/public/mojom",
-      "//ui/base/dragdrop/mojom:mojom_shared",
       "//ui/gfx/geometry",
       "//ui/views:buildflags",
     ]
+    public_deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
 
     allow_circular_includes_from += [ "//chrome/browser/ui/views" ]
 

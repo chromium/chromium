@@ -77,7 +77,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  int OnPerformDrop(const ui::DropTargetEvent& event) override;
+  ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
   void Layout() override;
 
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {

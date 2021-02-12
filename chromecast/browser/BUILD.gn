@@ -501,6 +501,7 @@ cast_source_set("browser_base") {
       "//content/public/browser",
       "//services/viz/privileged/mojom/compositing",
       "//third_party/grpc:grpc++",
+      "//ui/base/dragdrop/mojom",
       "//ui/display/manager",
     ]
   }

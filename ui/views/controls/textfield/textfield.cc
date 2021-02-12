@@ -28,6 +28,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -102,8 +103,9 @@
 #endif
 
 namespace views {
-
 namespace {
+
+using ::ui::mojom::DragOperation;
 
 // An enum giving different model properties unique keys for the
 // OnPropertyChanged call.
@@ -950,13 +952,13 @@ void Textfield::OnDragExited() {
   SchedulePaint();
 }
 
-int Textfield::OnPerformDrop(const ui::DropTargetEvent& event) {
+DragOperation Textfield::OnPerformDrop(const ui::DropTargetEvent& event) {
   DCHECK(CanDrop(event.data()));
   drop_cursor_visible_ = false;
 
   if (controller_) {
-    int drag_operation = controller_->OnDrop(event.data());
-    if (drag_operation != ui::DragDropTypes::DRAG_NONE)
+    DragOperation drag_operation = controller_->OnDrop(event.data());
+    if (drag_operation != DragOperation::kNone)
       return drag_operation;
   }
 
@@ -987,7 +989,7 @@ int Textfield::OnPerformDrop(const ui::DropTargetEvent& event) {
   skip_input_method_cancel_composition_ = false;
   UpdateAfterChange(TextChangeType::kUserTriggered, true);
   OnAfterUserAction();
-  return move ? ui::DragDropTypes::DRAG_MOVE : ui::DragDropTypes::DRAG_COPY;
+  return move ? DragOperation::kMove : DragOperation::kCopy;
 }
 
 void Textfield::OnDragDone() {

@@ -1376,8 +1376,7 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
                          weak_ptr_factory_.GetWeakPtr(), event,
                          std::move(drop_data)));
 
-  drag_info.drag_operation = ConvertFromDragOperationsMask(
-      static_cast<blink::DragOperationsMask>(current_drag_op_));
+  drag_info.drag_operation = static_cast<int>(current_drag_op_);
   return drag_info;
 }
 
@@ -1513,11 +1512,11 @@ void WebContentsViewAura::FinishOnPerformDropCallback(
   current_drop_data_.reset();
 }
 
-int WebContentsViewAura::OnPerformDrop(
+ui::mojom::DragOperation WebContentsViewAura::OnPerformDrop(
     const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data) {
   if (web_contents_->ShouldIgnoreInputEvents())
-    return ui::DragDropTypes::DRAG_NONE;
+    return ui::mojom::DragOperation::kNone;
 
   web_contents_->GetInputEventRouter()
       ->GetRenderWidgetHostAtPointAsynchronously(
@@ -1526,8 +1525,7 @@ int WebContentsViewAura::OnPerformDrop(
           base::BindOnce(&WebContentsViewAura::PerformDropCallback,
                          weak_ptr_factory_.GetWeakPtr(), event,
                          std::move(data)));
-  return ConvertFromDragOperationsMask(
-      static_cast<blink::DragOperationsMask>(current_drag_op_));
+  return current_drag_op_;
 }
 
 void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,

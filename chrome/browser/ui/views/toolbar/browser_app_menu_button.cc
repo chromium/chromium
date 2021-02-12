@@ -28,6 +28,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -215,8 +216,9 @@ void BrowserAppMenuButton::OnDragExited() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-int BrowserAppMenuButton::OnPerformDrop(const ui::DropTargetEvent& event) {
-  return ui::DragDropTypes::DRAG_MOVE;
+ui::mojom::DragOperation BrowserAppMenuButton::OnPerformDrop(
+    const ui::DropTargetEvent& event) {
+  return ui::mojom::DragOperation::kMove;
 }
 
 std::unique_ptr<views::InkDropHighlight>
