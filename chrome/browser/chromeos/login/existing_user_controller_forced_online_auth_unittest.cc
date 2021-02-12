@@ -42,16 +42,21 @@ const char kFirstSAMLUserEmail[] = "bob@corp.example.com";
 const char kSecondSAMLUserId[] = "67891";
 const char kSecondSAMLUserEmail[] = "alice@corp.example.com";
 
+const char kFirstGaiaUserId[] = "88888";
+const char kFirstGaiaUserEmail[] = "bob@gaia.example.com";
+const char kSecondGaiaUserId[] = "88884";
+const char kSecondGaiaUserEmail[] = "alice@gaia.example.com";
+
 const char kSamlToken1[] = "saml-token-1";
 const char kSamlToken2[] = "saml-token-2";
 
-constexpr base::TimeDelta kSamlOnlineShortDelay =
+constexpr base::TimeDelta kLoginOnlineShortDelay =
     base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kSamlOnlineLongDelay =
+constexpr base::TimeDelta kLoginOnlineLongDelay =
     base::TimeDelta::FromSeconds(100);
-constexpr base::TimeDelta kSamlOnlineVeryLongDelay =
+constexpr base::TimeDelta kLoginOnlineVeryLongDelay =
     base::TimeDelta::FromSeconds(1000);
-constexpr base::TimeDelta kSamlOnlineOffset = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kLoginOnlineOffset = base::TimeDelta::FromSeconds(1);
 
 class FakeUserManagerWithLocalState : public chromeos::FakeChromeUserManager {
  public:
@@ -132,6 +137,12 @@ class ExistingUserControllerForcedOnlineAuthTest : public ::testing::Test {
   const AccountId saml_login_account2_id_ =
       AccountId::FromUserEmailGaiaId(kSecondSAMLUserEmail, kSecondSAMLUserId);
 
+  const AccountId gaia_login_account1_id_ =
+      AccountId::FromUserEmailGaiaId(kFirstGaiaUserEmail, kFirstGaiaUserId);
+
+  const AccountId gaia_login_account2_id_ =
+      AccountId::FromUserEmailGaiaId(kSecondGaiaUserEmail, kSecondGaiaUserId);
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -153,27 +164,29 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest, SamlOnlineAuthSingleUser) {
   const base::Time now = base::DefaultClock::GetInstance()->Now();
   user_manager::known_user::SetLastOnlineSignin(saml_login_account1_id_, now);
   user_manager::known_user::SetOfflineSigninLimit(saml_login_account1_id_,
-                                                  kSamlOnlineShortDelay);
+                                                  kLoginOnlineShortDelay);
 
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
   existing_user_controller()->Init(mock_user_manager()->GetUsers());
   EXPECT_TRUE(screen_refresh_timer()->IsRunning());
   // Check timer again 1s after its expacted expiry.
-  task_environment_.FastForwardBy(kSamlOnlineShortDelay + kSamlOnlineOffset);
+  task_environment_.FastForwardBy(kLoginOnlineShortDelay + kLoginOnlineOffset);
   EXPECT_FALSE(screen_refresh_timer()->IsRunning());
   EXPECT_TRUE(is_force_online_flag_set());
 }
 
-// Verfies that SAMLOfflineSigninTimeLimit policy does not affect nonSAML user.
-TEST_F(ExistingUserControllerForcedOnlineAuthTest, NoSamlUser) {
+// Verfies that `SAMLOfflineSigninLimiter` does affect SAML and non SAML user.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       OfflineLimiteOutOfSessionSAMLAndNonSAML) {
   const base::Time now = base::DefaultClock::GetInstance()->Now();
   user_manager::known_user::SetLastOnlineSignin(saml_login_account1_id_, now);
   user_manager::known_user::SetOfflineSigninLimit(saml_login_account1_id_,
-                                                  kSamlOnlineShortDelay);
+                                                  kLoginOnlineShortDelay);
 
   mock_user_manager()->AddUser(saml_login_account1_id_);
   existing_user_controller()->Init(mock_user_manager()->GetUsers());
-  EXPECT_FALSE(screen_refresh_timer()->IsRunning());
+  // Expect true due user has value in `kOfflineSigninLimit`.
+  EXPECT_TRUE(screen_refresh_timer()->IsRunning());
   EXPECT_FALSE(is_force_online_flag_set());
 }
 
@@ -182,22 +195,22 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest, SamlOnlineAuthTwoSamlUsers) {
   base::Time now = base::DefaultClock::GetInstance()->Now();
   user_manager::known_user::SetLastOnlineSignin(saml_login_account1_id_, now);
   user_manager::known_user::SetOfflineSigninLimit(saml_login_account1_id_,
-                                                  kSamlOnlineLongDelay);
+                                                  kLoginOnlineLongDelay);
 
-  task_environment_.FastForwardBy(kSamlOnlineShortDelay);
+  task_environment_.FastForwardBy(kLoginOnlineShortDelay);
   now = base::DefaultClock::GetInstance()->Now();
   user_manager::known_user::SetLastOnlineSignin(saml_login_account2_id_, now);
   user_manager::known_user::SetOfflineSigninLimit(saml_login_account2_id_,
-                                                  kSamlOnlineVeryLongDelay);
+                                                  kLoginOnlineVeryLongDelay);
 
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account2_id_);
   existing_user_controller()->Init(mock_user_manager()->GetUsers());
   EXPECT_TRUE(screen_refresh_timer()->IsRunning());
   // The timer should be re-started after
-  // (kSamlOnlineLongDelay - kSamlOnlineShortDelay) s.
-  task_environment_.FastForwardBy(kSamlOnlineLongDelay - kSamlOnlineShortDelay +
-                                  kSamlOnlineOffset);
+  // (kLoginOnlineLongDelay - kLoginOnlineShortDelay) s.
+  task_environment_.FastForwardBy(kLoginOnlineLongDelay -
+                                  kLoginOnlineShortDelay + kLoginOnlineOffset);
   EXPECT_TRUE(screen_refresh_timer()->IsRunning());
 }
 
@@ -209,16 +222,16 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   user_manager::known_user::SetLastOnlineSignin(saml_login_account2_id_, now);
 
   user_manager::known_user::SetOfflineSigninLimit(saml_login_account1_id_,
-                                                  kSamlOnlineShortDelay);
+                                                  kLoginOnlineShortDelay);
   user_manager::known_user::SetOfflineSigninLimit(saml_login_account2_id_,
-                                                  kSamlOnlineLongDelay);
+                                                  kLoginOnlineLongDelay);
 
   mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
   mock_user_manager()->AddUser(saml_login_account2_id_);
   existing_user_controller()->Init(mock_user_manager()->GetUsers());
   EXPECT_TRUE(screen_refresh_timer()->IsRunning());
-  task_environment_.FastForwardBy(kSamlOnlineShortDelay + kSamlOnlineOffset);
-  EXPECT_FALSE(screen_refresh_timer()->IsRunning());
+  task_environment_.FastForwardBy(kLoginOnlineShortDelay + kLoginOnlineOffset);
+  EXPECT_TRUE(screen_refresh_timer()->IsRunning());
   EXPECT_TRUE(is_force_online_flag_set());
 }
 
@@ -236,6 +249,97 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   EXPECT_FALSE(is_force_online_flag_set());
 }
 
+// Tests login screen update when `GaiaOfflineSigninTimeLimitDays` policy is set
+// and the last online sign in has not been set. This is the case for those
+// devices that went through the online signin in the first login before the
+// introduction of `GaiaOfflineSigninTimeLimitDays` policy logic which didn't
+// store the last online sign in.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       GaiaOnlineAuthSingleUserNoLastOnlineSignin) {
+  const base::Time now = base::DefaultClock::GetInstance()->Now();
+  user_manager::known_user::SetOfflineSigninLimit(gaia_login_account1_id_,
+                                                  kLoginOnlineShortDelay);
+
+  mock_user_manager()->AddUser(gaia_login_account1_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  // Since `LastOnlinesignin` value is null and there is a limit, it will
+  // enforce the next login to be online. No timer should be running.
+  EXPECT_FALSE(screen_refresh_timer()->IsRunning());
+  EXPECT_TRUE(is_force_online_flag_set());
+
+  // User logged in online after enforcement.
+  user_manager::known_user::SetLastOnlineSignin(gaia_login_account1_id_, now);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_TRUE(screen_refresh_timer()->IsRunning());
+  // Check timer again 1s after its expacted expiry.
+  task_environment_.FastForwardBy(kLoginOnlineShortDelay + kLoginOnlineOffset);
+  EXPECT_FALSE(screen_refresh_timer()->IsRunning());
+  EXPECT_TRUE(is_force_online_flag_set());
+}
+
+// Tests login screen update when `GaiaOfflineSigninTimeLimitDays` policy is set
+// and the last online sign in has been set.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       GaiaOnlineAuthSingleUserLastOnlineSignin) {
+  const base::Time now = base::DefaultClock::GetInstance()->Now();
+  user_manager::known_user::SetLastOnlineSignin(gaia_login_account1_id_, now);
+  user_manager::known_user::SetOfflineSigninLimit(gaia_login_account1_id_,
+                                                  kLoginOnlineShortDelay);
+
+  mock_user_manager()->AddUser(gaia_login_account1_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_TRUE(screen_refresh_timer()->IsRunning());
+  // Check timer again 1s after its expacted expiry.
+  task_environment_.FastForwardBy(kLoginOnlineShortDelay + kLoginOnlineOffset);
+  EXPECT_FALSE(screen_refresh_timer()->IsRunning());
+  EXPECT_TRUE(is_force_online_flag_set());
+}
+
+// Tests login screen update functionality for 2 Gaia without SAML users.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest, GaiaOnlineAuthTwoGaiaUsers) {
+  base::Time now = base::DefaultClock::GetInstance()->Now();
+  user_manager::known_user::SetLastOnlineSignin(gaia_login_account1_id_, now);
+  user_manager::known_user::SetOfflineSigninLimit(gaia_login_account1_id_,
+                                                  kLoginOnlineLongDelay);
+
+  task_environment_.FastForwardBy(kLoginOnlineShortDelay);
+  now = base::DefaultClock::GetInstance()->Now();
+  user_manager::known_user::SetLastOnlineSignin(gaia_login_account2_id_, now);
+  user_manager::known_user::SetOfflineSigninLimit(gaia_login_account2_id_,
+                                                  kLoginOnlineVeryLongDelay);
+
+  mock_user_manager()->AddUser(gaia_login_account1_id_);
+  mock_user_manager()->AddUser(gaia_login_account2_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_TRUE(screen_refresh_timer()->IsRunning());
+  // The timer should be re-started after
+  // (kLoginOnlineLongDelay - kLoginOnlineShortDelay) s.
+  task_environment_.FastForwardBy(kLoginOnlineLongDelay -
+                                  kLoginOnlineShortDelay + kLoginOnlineOffset);
+  EXPECT_TRUE(screen_refresh_timer()->IsRunning());
+}
+
+// Tests unset `GaiaOfflineTimeLimitDays` policy value in local state.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       GaiaOnlineAuthGaiaPolicyNotSet) {
+  const base::Time now = base::DefaultClock::GetInstance()->Now();
+  // No `LastOnlineSignin` value, case where devices didn't store that value in
+  // the first Gaia login.
+  user_manager::known_user::SetOfflineSigninLimit(gaia_login_account1_id_,
+                                                  base::nullopt);
+
+  // Case where the user has already stored last online signin.
+  user_manager::known_user::SetLastOnlineSignin(gaia_login_account2_id_, now);
+  user_manager::known_user::SetOfflineSigninLimit(gaia_login_account2_id_,
+                                                  base::nullopt);
+
+  mock_user_manager()->AddUser(gaia_login_account1_id_);
+  mock_user_manager()->AddUser(gaia_login_account2_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_FALSE(screen_refresh_timer()->IsRunning());
+  EXPECT_FALSE(is_force_online_flag_set());
+}
+
 // Tests creation of password sync token checker for 2 SAML users. Only one of
 // them has local copy of password sync token.
 TEST_F(ExistingUserControllerForcedOnlineAuthTest,
@@ -248,7 +352,7 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   existing_user_controller()->Init(mock_user_manager()->GetUsers());
   EXPECT_EQ(password_sync_token_checkers_size(), 1);
   get_password_sync_token_checker(kSamlToken1)->OnTokenVerified(true);
-  task_environment_.FastForwardBy(kSamlOnlineShortDelay);
+  task_environment_.FastForwardBy(kLoginOnlineShortDelay);
   EXPECT_TRUE(get_password_sync_token_checker(kSamlToken1)->IsCheckPending());
 }
 
@@ -267,7 +371,7 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   EXPECT_EQ(password_sync_token_checkers_size(), 2);
   get_password_sync_token_checker(kSamlToken1)
       ->OnApiCallFailed(PasswordSyncTokenFetcher::ErrorType::kServerError);
-  task_environment_.FastForwardBy(kSamlOnlineShortDelay);
+  task_environment_.FastForwardBy(kLoginOnlineShortDelay);
   EXPECT_TRUE(get_password_sync_token_checker(kSamlToken1)->IsCheckPending());
 }
 

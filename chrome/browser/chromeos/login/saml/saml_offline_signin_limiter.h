@@ -25,8 +25,11 @@ class Clock;
 namespace chromeos {
 
 // Enforces a limit on the length of time for which a user authenticated via
-// SAML can use offline authentication against a cached password before being
-// forced to go through online authentication against GAIA again.
+// Gaia without SAML or with SAML can use offline authentication against a
+// cached password before being forced to go through online authentication
+// against GAIA again.
+// TODO(b/179637649): Change `SAMLOfflineSigninLimiter` class name since the
+// class becomes applied to non-SAML users too.
 class SAMLOfflineSigninLimiter
     : public KeyedService,
       public base::PowerObserver,

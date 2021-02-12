@@ -55,6 +55,10 @@ enum ReauthReason {
   // Corrupted cryptohome
   UNRECOVERABLE_CRYPTOHOME = 10,
 
+  // Gaia policy is set, which requires re-auth on every login if the offline
+  // login time limit has been reached.
+  GAIA_REAUTH_POLICY = 11,
+
   // Must be the last value in this list.
   NUM_REAUTH_FLOW_REASONS,
 };

@@ -47687,6 +47687,9 @@ from previous Chrome versions.
   <int value="10" label="UnrecoverableCryptohome">
     Cryptohome was corrupted and deemed unrecoverable.
   </int>
+  <int value="11" label="GAIA_REAUTH_POLICY">
+    Admin policy required re-auth for Gaia without SAML users.
+  </int>
 </enum>
 
 <enum name="LoginScreenUserClickTarget">

@@ -8992,7 +8992,7 @@
       'owners': ['rodmartin@google.com', 'chromeos-commercial-identity@google.com', 'file://components/policy/resources/OWNERS'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': -1, 'maximum': 365 },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:90-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

@@ -539,17 +539,14 @@ void ExistingUserController::UpdateLoginDisplay(
   GetLoginDisplayHost()->OnPreferencesChanged();
 }
 
-// Check SAML offline time limits for `users` and schedules next
-// check if needed and returns true if any of user's force online
-// sign-in flag is changed.
+// Check GAIA with/without SAML offline time limits for `users` and
+// schedules next check if needed and returns true if any of user's force
+// online sign-in flag is changed.
 bool ExistingUserController::ForceOnlineFlagChanged(
     const user_manager::UserList& users) {
   bool force_online_flag_changed = false;
   base::TimeDelta min_delta = base::TimeDelta::Max();
   for (auto* user : users) {
-    if (!user->using_saml()) {
-      continue;
-    }
     const base::Optional<base::TimeDelta> offline_signin_limit =
         user_manager::known_user::GetOfflineSigninLimit(user->GetAccountId());
     if (!offline_signin_limit) {
