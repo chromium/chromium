@@ -137,7 +137,8 @@ public class WebViewApkApplication extends Application {
             }
             // Should not call LibraryLoader.initialize() since this will reset UmaRecorder
             // delegate.
-            LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW);
+            LibraryLoader.getInstance().setLibraryProcessType(
+                    LibraryProcessType.PROCESS_WEBVIEW_NONEMBEDDED);
             LibraryLoader.getInstance().loadNow();
         } catch (Throwable unused) {
             // Happens for WebView Stub. Throws NoClassDefFoundError because of no

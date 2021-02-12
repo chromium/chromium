@@ -4,6 +4,7 @@
 
 #include "android_webview/nonembedded/webview_apk_process.h"
 
+#include "base/android/library_loader/library_loader_hooks.h"
 #include "base/base_paths_android.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -15,9 +16,9 @@
 namespace android_webview {
 
 // static
-// TODO(crbug.com/1173887): Ensure that this can't be called from WebView
-// embedder code.
 WebViewApkProcess* WebViewApkProcess::GetInstance() {
+  CHECK_EQ(base::android::GetLibraryProcessType(),
+           base::android::PROCESS_WEBVIEW_NONEMBEDDED);
   static base::NoDestructor<WebViewApkProcess> instance;
   return instance.get();
 }

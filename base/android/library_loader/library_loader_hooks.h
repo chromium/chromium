@@ -33,6 +33,8 @@ enum LibraryProcessType {
   PROCESS_WEBLAYER = 5,
   // Shared library is running in child process as part of weblayer.
   PROCESS_WEBLAYER_CHILD = 6,
+  // Shared library is running in a non-embedded WebView process.
+  PROCESS_WEBVIEW_NONEMBEDDED = 7,
 };
 
 // Returns the library process type this library was loaded for.
