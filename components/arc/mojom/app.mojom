@@ -100,6 +100,25 @@ struct RawIconPngData {
   array<uint8>? background_icon_png_data;
 };
 
+// The window bounds information.
+struct Bounds {
+  int32 x;
+  int32 y;
+  int32 width;
+  int32 height;
+};
+
+// The window information to launch an app.
+// This should be kept in sync with WindowInfo in
+// components/services/app_service/public/mojom/types.mojom, and
+// MakeArcWindowInfo in chrome/browser/apps/app_service/launch_utils.cc
+struct WindowInfo {
+  int32 window_id = -1;
+  int32 state = -1;
+  int64 display_id = -1;
+  Bounds? bounds;
+};
+
 // Describes a Play Store app discovery result.
 struct AppDiscoveryResult {
   string? launch_intent_uri;

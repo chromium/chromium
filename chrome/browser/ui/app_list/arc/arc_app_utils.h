@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom-forward.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 
 class Profile;
 
@@ -105,6 +106,10 @@ class AppLaunchObserver : public base::CheckedObserver {
 // Checks if a given app should be hidden in launcher.
 bool ShouldShowInLauncher(const std::string& app_id);
 
+// Helper to create arc::mojom::WindowInfoPtr using |display_id|, which is the
+// id of the display from which the app is launched.
+arc::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id);
+
 // Launch Android Settings app.
 bool LaunchAndroidSettingsApp(content::BrowserContext* context,
                               int event_flags,
@@ -122,7 +127,7 @@ bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,
                int event_flags,
                UserInteractionType user_action,
-               int64_t display_id);
+               arc::mojom::WindowInfoPtr window_info);
 
 bool LaunchAppWithIntent(content::BrowserContext* context,
                          const std::string& app_id,

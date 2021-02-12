@@ -6,6 +6,7 @@
 
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 
@@ -59,7 +60,7 @@ void ArcShelfSpinnerItemController::OnAppStatesChanged(
 
   // Close() destroys this object, so start launching the app first.
   arc::LaunchApp(observed_profile_, arc_app_id, event_flags_,
-                 user_interaction_type_, display_id_);
+                 user_interaction_type_, arc::MakeWindowInfo(display_id_));
   Close();
 }
 

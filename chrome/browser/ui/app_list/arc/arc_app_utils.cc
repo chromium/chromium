@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
@@ -245,11 +246,18 @@ bool ShouldShowInLauncher(const std::string& app_id) {
   return true;
 }
 
+arc::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id) {
+  arc::mojom::WindowInfoPtr window_info = arc::mojom::WindowInfo::New();
+  window_info->display_id = display_id;
+  return window_info;
+}
+
 bool LaunchAndroidSettingsApp(content::BrowserContext* context,
                               int event_flags,
                               int64_t display_id) {
-  return LaunchApp(context, kSettingsAppId, event_flags,
-                   UserInteractionType::APP_STARTED_FROM_SETTINGS, display_id);
+  return LaunchAppWithIntent(
+      context, kSettingsAppId, base::nullopt /* launch_intent */, event_flags,
+      UserInteractionType::APP_STARTED_FROM_SETTINGS, display_id);
 }
 
 bool LaunchPlayStoreWithUrl(const std::string& url) {
@@ -268,15 +276,18 @@ bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,
                int event_flags,
                arc::UserInteractionType user_action) {
-  return LaunchApp(context, app_id, event_flags, user_action,
-                   display::kInvalidDisplayId);
+  return LaunchAppWithIntent(context, app_id, base::nullopt /* launch_intent */,
+                             event_flags, user_action,
+                             display::kInvalidDisplayId);
 }
 
 bool LaunchApp(content::BrowserContext* context,
                const std::string& app_id,
                int event_flags,
                arc::UserInteractionType user_action,
-               int64_t display_id) {
+               arc::mojom::WindowInfoPtr window_info) {
+  int64_t display_id =
+      window_info ? window_info->display_id : display::kInvalidDisplayId;
   return LaunchAppWithIntent(context, app_id, base::nullopt /* launch_intent */,
                              event_flags, user_action, display_id);
 }

@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/dip_px_util.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
@@ -567,7 +568,7 @@ void ArcApps::Launch(const std::string& app_id,
   int64_t display_id =
       window_info ? window_info->display_id : display::kInvalidDisplayId;
   arc::LaunchApp(profile_, app_id, event_flags, user_interaction_type.value(),
-                 display_id);
+                 MakeArcWindowInfo(std::move(window_info)));
 
   full_restore::SaveAppLaunchInfo(profile_->GetPath(),
                                   std::make_unique<full_restore::AppLaunchInfo>(

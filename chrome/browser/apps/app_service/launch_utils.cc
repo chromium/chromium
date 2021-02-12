@@ -246,4 +246,23 @@ apps::mojom::WindowInfoPtr MakeWindowInfo(int64_t display_id) {
   return window_info;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+arc::mojom::WindowInfoPtr MakeArcWindowInfo(
+    apps::mojom::WindowInfoPtr window_info) {
+  arc::mojom::WindowInfoPtr arc_window_info = arc::mojom::WindowInfo::New();
+  arc_window_info->window_id = window_info->window_id;
+  arc_window_info->state = window_info->state;
+  arc_window_info->display_id = window_info->display_id;
+  if (window_info->bounds) {
+    arc::mojom::BoundsPtr bounds = arc::mojom::Bounds::New();
+    bounds->x = window_info->bounds->x;
+    bounds->y = window_info->bounds->y;
+    bounds->width = window_info->bounds->width;
+    bounds->height = window_info->bounds->height;
+    arc_window_info->bounds = std::move(bounds);
+  }
+  return arc_window_info;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace apps
