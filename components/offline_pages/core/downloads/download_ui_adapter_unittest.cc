@@ -240,6 +240,7 @@ class DownloadUIAdapterTest : public testing::Test,
   void OnItemUpdated(const OfflineItem& item,
                      const base::Optional<UpdateDelta>& update_delta) override;
   void OnItemRemoved(const ContentId& id) override;
+  void OnContentProviderGoingDown() override;
 
   // Runs until all of the tasks that are not delayed are gone from the task
   // queue.
@@ -313,6 +314,8 @@ void DownloadUIAdapterTest::OnItemUpdated(
 void DownloadUIAdapterTest::OnItemRemoved(const ContentId& id) {
   deleted_guids.push_back(id.id);
 }
+
+void DownloadUIAdapterTest::OnContentProviderGoingDown() {}
 
 void DownloadUIAdapterTest::PumpLoop() {
   task_runner_->RunUntilIdle();

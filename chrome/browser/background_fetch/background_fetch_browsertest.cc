@@ -208,6 +208,7 @@ class OfflineContentProviderObserver final
     DCHECK_GE(item.progress.value, latest_item_.progress.value);
     latest_item_ = item;
   }
+  void OnContentProviderGoingDown() override {}
 
   const OfflineItem& latest_item() const { return latest_item_; }
 

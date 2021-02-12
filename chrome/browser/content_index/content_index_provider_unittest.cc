@@ -105,6 +105,7 @@ class ContentIndexProviderImplTest : public testing::Test,
                      const base::Optional<UpdateDelta>& update_delta) override {
     NOTREACHED();
   }
+  void OnContentProviderGoingDown() override {}
 
   content::ContentIndexEntry CreateEntry(const std::string& id) {
     auto description = blink::mojom::ContentDescription::New(

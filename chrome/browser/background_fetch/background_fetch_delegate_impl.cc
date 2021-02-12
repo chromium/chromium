@@ -361,9 +361,7 @@ void BackgroundFetchDelegateImpl::DownloadUrl(
   if (job_details.job_state == JobDetails::State::kPendingWillStartPaused ||
       job_details.job_state ==
           JobDetails::State::kPendingWillStartDownloading) {
-    // Create a notification.
-    for (auto* observer : observers_)
-      observer->OnItemsAdded({job_details.offline_item});
+    NotifyItemsAdded({job_details.offline_item});
     job_details.MarkJobAsStarted();
   }
 
@@ -654,8 +652,7 @@ void BackgroundFetchDelegateImpl::UpdateOfflineItemAndUpdateObservers(
   job_details->UpdateOfflineItem();
 
   auto update_delta = std::move(job_details->update_delta);
-  for (auto* observer : observers_)
-    observer->OnItemUpdated(job_details->offline_item, update_delta);
+  NotifyItemUpdated(job_details->offline_item, update_delta);
 }
 
 void BackgroundFetchDelegateImpl::OpenItem(
@@ -821,16 +818,6 @@ void BackgroundFetchDelegateImpl::ChangeSchedule(
     const offline_items_collection::ContentId& id,
     base::Optional<offline_items_collection::OfflineItemSchedule> schedule) {
   NOTIMPLEMENTED();
-}
-
-void BackgroundFetchDelegateImpl::AddObserver(Observer* observer) {
-  DCHECK(!observers_.count(observer));
-
-  observers_.insert(observer);
-}
-
-void BackgroundFetchDelegateImpl::RemoveObserver(Observer* observer) {
-  observers_.erase(observer);
 }
 
 bool BackgroundFetchDelegateImpl::IsGuidOutstanding(

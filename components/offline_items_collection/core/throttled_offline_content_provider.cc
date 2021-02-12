@@ -30,12 +30,10 @@ ThrottledOfflineContentProvider::ThrottledOfflineContentProvider(
       update_queued_(false),
       wrapped_provider_(provider) {
   DCHECK(wrapped_provider_);
-  wrapped_provider_->AddObserver(this);
+  observation_.Observe(wrapped_provider_);
 }
 
-ThrottledOfflineContentProvider::~ThrottledOfflineContentProvider() {
-  wrapped_provider_->RemoveObserver(this);
-}
+ThrottledOfflineContentProvider::~ThrottledOfflineContentProvider() = default;
 
 void ThrottledOfflineContentProvider::OpenItem(const OpenParams& open_params,
                                                const ContentId& id) {
@@ -119,27 +117,14 @@ void ThrottledOfflineContentProvider::ChangeSchedule(
   wrapped_provider_->ChangeSchedule(id, std::move(schedule));
 }
 
-void ThrottledOfflineContentProvider::AddObserver(
-    OfflineContentProvider::Observer* observer) {
-  DCHECK(observer);
-  observers_.AddObserver(observer);
-}
-
-void ThrottledOfflineContentProvider::RemoveObserver(
-    OfflineContentProvider::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void ThrottledOfflineContentProvider::OnItemsAdded(
     const OfflineItemList& items) {
-  for (auto& observer : observers_)
-    observer.OnItemsAdded(items);
+  NotifyItemsAdded(items);
 }
 
 void ThrottledOfflineContentProvider::OnItemRemoved(const ContentId& id) {
   updates_.erase(id);
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(id);
+  NotifyItemRemoved(id);
 }
 
 void ThrottledOfflineContentProvider::OnItemUpdated(
@@ -173,6 +158,10 @@ void ThrottledOfflineContentProvider::OnItemUpdated(
       delay_between_updates_ - current_delay);
 }
 
+void ThrottledOfflineContentProvider::OnContentProviderGoingDown() {
+  observation_.Reset();
+}
+
 void ThrottledOfflineContentProvider::UpdateItemIfPresent(
     const OfflineItem& item) {
   auto it = updates_.find(item.id);
@@ -188,8 +177,7 @@ void ThrottledOfflineContentProvider::FlushUpdates() {
   for (auto item_pair : updates) {
     auto& item = item_pair.second.first;
     auto& update = item_pair.second.second;
-    for (auto& observer : observers_)
-      observer.OnItemUpdated(item, update);
+    NotifyItemUpdated(item, update);
   }
 }
 

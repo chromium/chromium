@@ -25,12 +25,10 @@ DownloadShelfController::DownloadShelfController(Profile* profile)
     : profile_(profile) {
   aggregator_ =
       OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
-  aggregator_->AddObserver(this);
+  observation_.Observe(aggregator_);
 }
 
-DownloadShelfController::~DownloadShelfController() {
-  aggregator_->RemoveObserver(this);
-}
+DownloadShelfController::~DownloadShelfController() = default;
 
 void DownloadShelfController::OnItemsAdded(
     const OfflineContentProvider::OfflineItemList& items) {
@@ -68,6 +66,10 @@ void DownloadShelfController::OnItemUpdated(
     model->SetWasUINotified(true);
     OnNewOfflineItemReady(std::move(model));
   }
+}
+
+void DownloadShelfController::OnContentProviderGoingDown() {
+  observation_.Reset();
 }
 
 void DownloadShelfController::OnNewOfflineItemReady(

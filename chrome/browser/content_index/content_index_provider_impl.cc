@@ -144,11 +144,9 @@ void ContentIndexProviderImpl::OnContentAdded(
   OfflineItemList items(1, EntryToOfflineItem(entry));
 
   // Delete the entry before adding it just in case the ID was overwritten.
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(items[0].id);
+  NotifyItemRemoved(items[0].id);
 
-  for (auto& observer : observers_)
-    observer.OnItemsAdded(items);
+  NotifyItemsAdded(items);
 
   metrics_.RecordContentAdded(url::Origin::Create(entry.launch_url.GetOrigin()),
                               entry.description->category);
@@ -163,8 +161,7 @@ void ContentIndexProviderImpl::OnContentDeleted(
   std::string entry_key =
       EntryKey(service_worker_registration_id, origin, description_id);
   ContentId id(kProviderNamespace, entry_key);
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(id);
+  NotifyItemRemoved(id);
 }
 
 void ContentIndexProviderImpl::OpenItem(
@@ -401,12 +398,4 @@ void ContentIndexProviderImpl::ChangeSchedule(
     const ContentId& id,
     base::Optional<OfflineItemSchedule> schedule) {
   NOTREACHED();
-}
-
-void ContentIndexProviderImpl::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void ContentIndexProviderImpl::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }

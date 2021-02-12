@@ -96,22 +96,6 @@ DownloadUIAdapter::~DownloadUIAdapter() {
     aggregator_->UnregisterProvider(kOfflinePageNamespace);
 }
 
-void DownloadUIAdapter::AddObserver(
-    OfflineContentProvider::Observer* observer) {
-  DCHECK(observer);
-  if (observers_.HasObserver(observer))
-    return;
-  observers_.AddObserver(observer);
-}
-
-void DownloadUIAdapter::RemoveObserver(
-    OfflineContentProvider::Observer* observer) {
-  DCHECK(observer);
-  if (!observers_.HasObserver(observer))
-    return;
-  observers_.RemoveObserver(observer);
-}
-
 void DownloadUIAdapter::OfflinePageModelLoaded(OfflinePageModel* model) {
   // This signal is not used here.
 }
@@ -136,12 +120,10 @@ void DownloadUIAdapter::OfflinePageAdded(OfflinePageModel* model,
   // Otherwise, for pages of suggested articles, they'll be added to the UI
   // since they're added to Offline Page database directly, so OnItemsAdded is
   // used.
-  for (auto& observer : observers_) {
-    if (!is_suggested)
-      observer.OnItemUpdated(offline_item, base::nullopt);
-    else
-      observer.OnItemsAdded({offline_item});
-  }
+  if (!is_suggested)
+    NotifyItemUpdated(offline_item, base::nullopt);
+  else
+    NotifyItemsAdded({offline_item});
 }
 
 // OfflinePageModel::Observer
@@ -149,9 +131,7 @@ void DownloadUIAdapter::OfflinePageDeleted(const OfflinePageItem& item) {
   if (!delegate_->IsVisibleInUI(item.client_id))
     return;
 
-  for (auto& observer : observers_) {
-    observer.OnItemRemoved(ContentId(kOfflinePageNamespace, item.client_id.id));
-  }
+  NotifyItemRemoved(ContentId(kOfflinePageNamespace, item.client_id.id));
 }
 
 // OfflinePageModel::Observer
@@ -171,8 +151,7 @@ void DownloadUIAdapter::OnAdded(const SavePageRequest& added_request) {
   OfflineItem offline_item(
       OfflineItemConversions::CreateOfflineItem(added_request));
 
-  for (auto& observer : observers_)
-    observer.OnItemsAdded({offline_item});
+  NotifyItemsAdded({offline_item});
 }
 
 // RequestCoordinator::Observer
@@ -195,15 +174,13 @@ void DownloadUIAdapter::OnCompleted(
                  RequestNotifier::BackgroundSavePageResult::USER_CANCELED ||
              status == RequestNotifier::BackgroundSavePageResult::
                            DOWNLOAD_THROTTLED) {
-    for (auto& observer : observers_)
-      observer.OnItemRemoved(item.id);
+    NotifyItemRemoved(item.id);
   } else {
     item.state = offline_items_collection::OfflineItemState::FAILED;
     // Actual cause could be server or network related, but we need to pick
     // a fail_state.
     item.fail_state = offline_items_collection::FailState::SERVER_FAILED;
-    for (auto& observer : observers_)
-      observer.OnItemUpdated(item, base::nullopt);
+    NotifyItemUpdated(item, base::nullopt);
   }
 }
 
@@ -213,8 +190,7 @@ void DownloadUIAdapter::OnChanged(const SavePageRequest& request) {
     return;
 
   OfflineItem offline_item(OfflineItemConversions::CreateOfflineItem(request));
-  for (OfflineContentProvider::Observer& observer : observers_)
-    observer.OnItemUpdated(offline_item, base::nullopt);
+  NotifyItemUpdated(offline_item, base::nullopt);
 }
 
 // RequestCoordinator::Observer
@@ -225,8 +201,7 @@ void DownloadUIAdapter::OnNetworkProgress(const SavePageRequest& request,
 
   OfflineItem offline_item(OfflineItemConversions::CreateOfflineItem(request));
   offline_item.received_bytes = received_bytes;
-  for (auto& observer : observers_)
-    observer.OnItemUpdated(offline_item, base::nullopt);
+  NotifyItemUpdated(offline_item, base::nullopt);
 }
 
 void DownloadUIAdapter::GetAllItems(
@@ -366,8 +341,7 @@ void DownloadUIAdapter::OnPageGetForThumbnailAdded(
 
   offline_items_collection::UpdateDelta update_delta;
   update_delta.visuals_changed = true;
-  for (auto& observer : observers_)
-    observer.OnItemUpdated(offline_item, update_delta);
+  NotifyItemUpdated(offline_item, update_delta);
 }
 
 // TODO(dimich): Remove this method since it is not used currently. If needed,

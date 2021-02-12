@@ -102,6 +102,8 @@ class ContentIndexTest : public InProcessBrowserTest,
     NOTREACHED();
   }
 
+  void OnContentProviderGoingDown() override {}
+
   // TabStripModelObserver implementation:
   void TabChangedAt(content::WebContents* contents,
                     int index,

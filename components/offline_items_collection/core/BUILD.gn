@@ -16,6 +16,7 @@ static_library("core") {
     "launch_location.h",
     "offline_content_aggregator.cc",
     "offline_content_aggregator.h",
+    "offline_content_provider.cc",
     "offline_content_provider.h",
     "offline_item.cc",
     "offline_item.h",

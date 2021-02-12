@@ -428,21 +428,6 @@ void DownloadOfflineContentProvider::OnRenameDownloadCallbackDone(
       OfflineItemUtils::ConvertDownloadRenameResultToRenameResult(result));
 }
 
-void DownloadOfflineContentProvider::AddObserver(
-    OfflineContentProvider::Observer* observer) {
-  if (observers_.HasObserver(observer))
-    return;
-  observers_.AddObserver(observer);
-}
-
-void DownloadOfflineContentProvider::RemoveObserver(
-    OfflineContentProvider::Observer* observer) {
-  if (!observers_.HasObserver(observer))
-    return;
-
-  observers_.RemoveObserver(observer);
-}
-
 void DownloadOfflineContentProvider::OnManagerGoingDown(
     SimpleDownloadManagerCoordinator* manager) {
   std::vector<DownloadItem*> all_items;
@@ -451,8 +436,7 @@ void DownloadOfflineContentProvider::OnManagerGoingDown(
   for (auto* item : all_items) {
     if (!ShouldShowDownloadItem(item))
       continue;
-    for (auto& observer : observers_)
-      observer.OnItemRemoved(ContentId(name_space_, item->GetGuid()));
+    NotifyItemRemoved(ContentId(name_space_, item->GetGuid()));
   }
 
   manager_ = nullptr;
@@ -500,8 +484,7 @@ void DownloadOfflineContentProvider::OnDownloadRemoved(DownloadItem* item) {
 #endif
 
   ContentId contentId(name_space_, item->GetGuid());
-  for (auto& observer : observers_)
-    observer.OnItemRemoved(contentId);
+  NotifyItemRemoved(contentId);
 }
 
 void DownloadOfflineContentProvider::OnProfileCreated(Profile* profile) {
@@ -547,8 +530,7 @@ void DownloadOfflineContentProvider::GetAllDownloads(
 void DownloadOfflineContentProvider::UpdateObservers(
     const OfflineItem& item,
     const base::Optional<UpdateDelta>& update_delta) {
-  for (auto& observer : observers_)
-    observer.OnItemUpdated(item, update_delta);
+  NotifyItemUpdated(item, update_delta);
 }
 
 void DownloadOfflineContentProvider::CheckForExternallyRemovedDownloads() {

@@ -85,8 +85,6 @@ class DownloadOfflineContentProvider
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
   void ResumeDownload(const ContentId& id, bool has_user_gesture) override;
-  void AddObserver(OfflineContentProvider::Observer* observer) override;
-  void RemoveObserver(OfflineContentProvider::Observer* observer) override;
 
   // Entry point for associating this class with a download item. Must be called
   // for all new and in-progress downloads, after which this class will start
@@ -133,7 +131,6 @@ class DownloadOfflineContentProvider
   // Ensure that download core service is started.
   void EnsureDownloadCoreServiceStarted();
 
-  base::ObserverList<OfflineContentProvider::Observer>::Unchecked observers_;
   OfflineContentAggregator* aggregator_;
   std::string name_space_;
   SimpleDownloadManagerCoordinator* manager_;
