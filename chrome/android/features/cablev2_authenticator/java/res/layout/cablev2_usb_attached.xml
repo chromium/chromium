@@ -12,13 +12,12 @@
   <TextView
       a:id="@+id/usb_label"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:ignore="HardcodedText"
       style="@style/TextAppearance.Headline.Primary"
       a:layout_width="match_parent"
       a:layout_height="wrap_content"
       a:layout_marginBottom="40dp"
       a:gravity="center"
-      a:text="Connected with USB cable" />
+      a:text="@string/cablev2_usb_discon_title" />
 
   <ImageView
       a:id="@+id/usb_icon_disconnect"
@@ -34,11 +33,10 @@
   <TextView
       a:id="@+id/usb_title"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:ignore="HardcodedText"
       style="@style/TextAppearance.TextLarge.Secondary"
       a:layout_width="match_parent"
       a:layout_height="wrap_content"
       a:gravity="center"
-      a:text="Disconnect when you're done." />
+      a:text="@string/cablev2_usb_discon_body" />
 
 </LinearLayout>

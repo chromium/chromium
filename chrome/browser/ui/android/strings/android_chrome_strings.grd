@@ -4096,6 +4096,58 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
          Google Chrome as a Security Key
       </message>
 
+      <message name="IDS_CABLEV2_REGISTRATION_SUCCEEDED"
+        desc="The text of a small pop-up, that appears at the bottom of the screen on Android, informing the user that their attempt to register their phone as an authentication device was successful. The translation of the verb should hopefully match that in TC ID 1295743531323106866. (The attached image doesn't show the pop-up at the bottom because it's too fleeting to screenshot, so I've drawn in roughly what it looks like.)">
+         Registration succeeded
+      </message>
+
+      <message name="IDS_CABLEV2_REGISTRATION_FAILED"
+        desc="The text of a small pop-up, that appears at the bottom of the screen on Android, informing the user that their attempt to register their phone as an authentication device was unsuccessful. The translation of the verb should hopefully match that in TC ID 1295743531323106866. (The attached image doesn't show the pop-up at the bottom because it's too fleeting to screenshot, so I've drawn in roughly what it looks like.)">
+         Registration failed
+      </message>
+
+      <message name="IDS_CABLEV2_SIGN_IN_SUCCEEDED"
+        desc="The text of a small pop-up, that appears at the bottom of the screen on Android, informing the user that their attempt to sign-in using their phone as an authentication device was successful. The translation of 'sign-in' should hopefully match that in TC ID 6840924527405570820. (The attached image doesn't show the pop-up at the bottom because it's too fleeting to screenshot, so I've drawn in roughly what it looks like.)">
+         Sign-in succeeded
+      </message>
+
+      <message name="IDS_CABLEV2_SIGN_IN_FAILED"
+        desc="The text of a small pop-up, that appears at the bottom of the screen on Android, informing the user that their attempt to sign-in using their phone as an authentication device was unsuccessful. The translation of 'sign-in' should hopefully match that in TC ID 6840924527405570820. (The attached image doesn't show the pop-up at the bottom because it's too fleeting to screenshot, so I've drawn in roughly what it looks like.)">
+         Sign-in failed
+      </message>
+
+      <message name="IDS_CABLEV2_USB_PROMPT_TITLE" desc="The title of a screen that advises the user to try connecting their phone with a USB cable. This appears when the user is trying to sign in to a desktop/laptop by using their phone. If the connection isn't working (for example because they have no internet service on their phone) then we suggest that they can use a physical cable to connect the phone with the desktop/laptop. This title is rather generic and a different message is shown below to give precise instructions.">
+         Connection seems to be taking quite long…
+      </message>
+
+      <message name="IDS_CABLEV2_USB_PROMPT_BODY" desc="The body of a screen that advises the user to try connecting their phone with a USB cable. This appears when the user is trying to sign in to a desktop/laptop by using their phone. If the connection isn't working (for example because they have no internet service on their phone) then we suggest that they can use a physical cable to connect the phone with the desktop/laptop.">
+         Try connecting your phone with a USB cable
+      </message>
+
+      <message name="IDS_CABLEV2_USB_DISCON_TITLE" desc="The title of a screen that advises the user to disconnect their phone. This shows when the user has connected their phone to their computer using a USB cable and needs to disconnect it once they have finished their current actions.">
+         Connected with USB cable
+      </message>
+
+      <message name="IDS_CABLEV2_USB_DISCON_BODY" desc="The body of a screen that advises the user to disconnect their phone. This shows when the user has connected their phone to their computer using a USB cable and needs to disconnect it once they have finished their current actions.">
+         Disconnect when you’re done
+      </message>
+
+      <message name="IDS_CABLEV2_SERVERLINK_CONNECTING_TO_YOUR_DEVICE" desc="The title of a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it.">
+         Connecting to your device…
+      </message>
+
+      <message name="IDS_CABLEV2_SERVERLINK_STATUS_CONNECTING" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it.">
+        This may take a minute
+      </message>
+
+      <message name="IDS_CABLEV2_SERVERLINK_STATUS_CONNECTED" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. (In the attached image, this text will appear in place of the text 'This may take a minute'.) This text is shown once the connection to the desktop/laptop has completed and the phone is awaiting instructions.">
+        Connected to device
+      </message>
+
+      <message name="IDS_CABLEV2_SERVERLINK_STATUS_PROCESSING" desc="A small subheader on a screen that is shown when a user is connecting their phone to a desktop or laptop computer in order to sign in with it. (In the attached image, this text will appear in place of the text 'This may take a minute'.) This text is shown once a challenge from the desktop/laptop has been received.">
+        Processing request
+      </message>
+
       <!-- QR Code -->
       <message name="IDS_QR_CODE_SHARE_ICON_LABEL" desc="Icon label for sharing with QR Code activity.">
         QR Code

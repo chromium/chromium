@@ -118,10 +118,9 @@ public class CableAuthenticatorUI
     }
 
     @Override
-    @SuppressLint("SetTextI18n")
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle("Security Key");
+        getActivity().setTitle(R.string.cablev2_activity_title);
         ViewGroup top = new LinearLayout(getContext());
         View v = null;
 
@@ -279,7 +278,6 @@ public class CableAuthenticatorUI
         }
     }
 
-    @SuppressLint("SetTextI18n")
     void onStatus(int code) {
         switch (mMode) {
             case QR:
@@ -295,14 +293,18 @@ public class CableAuthenticatorUI
 
             case SERVER_LINK:
                 // These values must match up with the Status enum in v2_authenticator.h
-                // TODO(agl): translate
+                int id = -1;
                 if (code == 1) {
-                    mStatusText.setText("Waiting for other computer");
+                    id = R.string.cablev2_serverlink_status_connecting;
                 } else if (code == 2) {
-                    mStatusText.setText("Connected to other computer");
+                    id = R.string.cablev2_serverlink_status_connected;
                 } else if (code == 3) {
-                    mStatusText.setText("Processing request");
+                    id = R.string.cablev2_serverlink_status_processing;
+                } else {
+                    break;
                 }
+
+                mStatusText.setText(getResources().getString(id));
                 break;
 
             case FCM:
@@ -343,30 +345,27 @@ public class CableAuthenticatorUI
         mAuthenticator.onActivityResult(requestCode, resultCode, data);
     }
 
-    @SuppressLint("SetTextI18n")
     void onAuthenticatorConnected() {}
 
     void onAuthenticatorResult(CableAuthenticator.Result result) {
         getActivity().runOnUiThread(() -> {
-            // TODO: Temporary UI, needs i18n.
-            String toast = "An error occured. Please try again.";
+            int id = -1;
             switch (result) {
                 case REGISTER_OK:
-                    toast = "Registration succeeded";
+                    id = R.string.cablev2_registration_succeeded;
                     break;
                 case REGISTER_ERROR:
-                    toast = "Registration failed";
+                    id = R.string.cablev2_registration_failed;
                     break;
                 case SIGN_OK:
-                    toast = "Sign-in succeeded";
+                    id = R.string.cablev2_sign_in_succeeded;
                     break;
                 case SIGN_ERROR:
-                    toast = "Sign-in failed";
-                    break;
                 case OTHER:
+                    id = R.string.cablev2_sign_in_failed;
                     break;
             }
-            Toast.makeText(getActivity(), toast, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getResources().getString(id), Toast.LENGTH_SHORT).show();
         });
     }
 

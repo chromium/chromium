@@ -8,61 +8,50 @@
     a:layout_width="match_parent"
     a:layout_height="match_parent"
     a:orientation="vertical"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="HardcodedText">
-
-  <ImageView
-      a:id="@+id/logo"
-      a:layout_width="match_parent"
-      a:layout_height="24dp"
-      a:layout_marginTop="56dp"
-      a:contentDescription="@null"
-      a:gravity="center_horizontal"
-      a:src="@drawable/product_logo_name"/>
+    xmlns:tools="http://schemas.android.com/tools">
 
   <TextView
       a:layout_width="match_parent"
       a:layout_height="wrap_content"
-      a:layout_marginTop="24dp"
+      a:layout_marginTop="104dp"
       a:layout_marginLeft="24dp"
       a:layout_marginRight="24dp"
-      a:fontFamily="@font/chrome_google_sans"
       a:gravity="center_horizontal"
-      a:text="Connecting to your device"
-      a:textColor="@color/modern_grey_900"
-      a:textSize="24sp"/>
+      a:text="@string/cablev2_serverlink_connecting_to_your_device"
+      a:textSize="24sp" />
 
-    <RelativeLayout
+  <RelativeLayout
+      a:layout_width="wrap_content"
+      a:layout_height="wrap_content"
+      a:layoutDirection="ltr"
+      a:layout_marginTop="52dp"
+      a:layout_marginLeft="24dp"
+      a:layout_marginRight="24dp"
+      a:layout_gravity="center_horizontal">
+    <ImageView
+        a:id="@+id/spinner"
+        a:contentDescription="@null"
         a:layout_width="wrap_content"
         a:layout_height="wrap_content"
-        a:layoutDirection="ltr"
-        a:layout_marginTop="52dp"
-        a:layout_marginLeft="24dp"
-        a:layout_marginRight="24dp"
-        a:layout_gravity="center_horizontal">
-      <ImageView
-          a:id="@+id/spinner"
-          a:contentDescription="Spinning circle"
-          a:layout_width="wrap_content"
-          a:layout_height="wrap_content"
-          a:layout_gravity="center"
-          a:layout_centerInParent="true"
-          a:layout_centerVertical="true"/>
-      <ImageView
-          a:contentDescription="Lock icon"
-          a:layout_height="wrap_content"
-          a:layout_width="wrap_content"
-          a:src="@drawable/ic_lock_googblue_48dp"
-          a:layout_centerInParent="true"
-          a:layout_centerVertical="true"/>
-    </RelativeLayout>
-
-    <TextView
-        a:id="@+id/status_text"
-        a:layout_width="wrap_content"
+        a:layout_gravity="center"
+        a:layout_centerInParent="true"
+        a:layout_centerVertical="true" />
+    <ImageView
+        a:contentDescription="@null"
         a:layout_height="wrap_content"
-        a:layout_marginTop="4dp"
-        a:layout_gravity="center_horizontal"
-        a:padding="0px"
-        a:textSize="14sp"/>
+        a:layout_width="wrap_content"
+        a:src="@drawable/ic_lock_googblue_48dp"
+        a:layout_centerInParent="true"
+        a:layout_centerVertical="true" />
+  </RelativeLayout>
+
+  <TextView
+      a:id="@+id/status_text"
+      a:layout_width="wrap_content"
+      a:layout_height="wrap_content"
+      a:layout_marginTop="4dp"
+      a:layout_gravity="center_horizontal"
+      a:padding="0px"
+      a:textSize="14sp" />
+
 </LinearLayout>
