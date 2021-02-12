@@ -864,10 +864,14 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_EditCommandsNoMenu) {
 // the NSEvent is sent to NSApplication in ui/base/test/ui_controls_mac.mm .
 // This test is disabled on only the Mac until the problem is resolved.
 // See http://crbug.com/425859 for more information.
-#if !defined(OS_MAC)
+#if defined(OS_MAC)
+#define MAYBE_NewWindow_OpenInNewTab DISABLED_NewWindow_OpenInNewTab
+#else
+#define MAYBE_NewWindow_OpenInNewTab NewWindow_OpenInNewTab
+#endif
 // Tests that Ctrl+Click/Cmd+Click on a link fires up the newwindow API.
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, NewWindow_OpenInNewTab) {
-  content::WebContents* embedder_web_contents = NULL;
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_NewWindow_OpenInNewTab) {
+  content::WebContents* embedder_web_contents = nullptr;
 
   ExtensionTestMessageListener loaded_listener("Loaded", false);
   std::unique_ptr<ExtensionTestMessageListener> done_listener(
@@ -888,7 +892,6 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, NewWindow_OpenInNewTab) {
   // Wait for the embedder to receive a 'newwindow' event.
   ASSERT_TRUE(done_listener->WaitUntilSatisfied());
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(DISABLED_WebViewPopupInteractiveTest,
                        PopupPositioningBasic) {
