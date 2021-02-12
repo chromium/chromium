@@ -326,6 +326,14 @@ bool CanUseCachedIntrinsicInlineSizes(const MinMaxSizesInput& input,
                                   constraint_space.TableCellBorders())
     return false;
 
+  // We may have something like:
+  // "grid-template-columns: repeat(auto-fill, 50px); min-width: 50%;"
+  // In this specific case our min/max sizes are now dependent on what
+  // "min-width" resolves to - which is unique to grid.
+  if (node.IsGrid() && (style.LogicalMinWidth().IsPercentOrCalc() ||
+                        style.LogicalMaxWidth().IsPercentOrCalc()))
+    return false;
+
   return true;
 }
 

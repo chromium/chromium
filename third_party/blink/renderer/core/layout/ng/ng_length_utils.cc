@@ -558,14 +558,17 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     LayoutUnit intrinsic_size,
     LayoutUnit available_block_size_adjustment,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max) {
-  return {ResolveMinBlockLength(
-              constraint_space, style, border_padding, style.LogicalMinHeight(),
-              available_block_size_adjustment,
-              opt_percentage_resolution_block_size_for_min_max),
-          ResolveMaxBlockLength(
-              constraint_space, style, border_padding, style.LogicalMaxHeight(),
-              available_block_size_adjustment,
-              opt_percentage_resolution_block_size_for_min_max)};
+  MinMaxSizes sizes = {
+      ResolveMinBlockLength(constraint_space, style, border_padding,
+                            style.LogicalMinHeight(),
+                            available_block_size_adjustment,
+                            opt_percentage_resolution_block_size_for_min_max),
+      ResolveMaxBlockLength(constraint_space, style, border_padding,
+                            style.LogicalMaxHeight(),
+                            available_block_size_adjustment,
+                            opt_percentage_resolution_block_size_for_min_max)};
+  sizes.max_size = std::max(sizes.max_size, sizes.min_size);
+  return sizes;
 }
 
 MinMaxSizes ComputeTransferredMinMaxInlineSizes(

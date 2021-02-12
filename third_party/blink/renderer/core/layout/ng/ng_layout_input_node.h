@@ -116,6 +116,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsFlexibleBox() const {
     return IsBlock() && box_->IsFlexibleBoxIncludingNG();
   }
+  bool IsGrid() const { return IsBlock() && box_->IsLayoutGridIncludingNG(); }
   bool ShouldBeConsideredAsReplaced() const {
     return box_->ShouldBeConsideredAsReplaced();
   }

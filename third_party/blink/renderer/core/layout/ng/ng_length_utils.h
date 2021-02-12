@@ -380,6 +380,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
     sizes.max_size = std::min(sizes.max_size, transferred_sizes.max_size);
   }
 
+  sizes.max_size = std::max(sizes.max_size, sizes.min_size);
   return sizes;
 }
 

@@ -573,47 +573,50 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
   if (!track_list.HasAutoRepeater())
     return 0;
 
-  enum AutoResolveType {
-    // If the grid container has a definite size or max size in the relevant
-    // axis, then the number of repetitions is the largest possible positive
-    // integer that does not cause the grid to overflow.
-    kMaxLessThan,
-    // Otherwise, if the grid container has a definite min size in the relevant
-    // axis, the number of repetitions is the smallest possible positive integer
-    // that fulfills that minimum requirement.
-    kMinGreaterThan
-  };
-  AutoResolveType auto_resolve_type = kMaxLessThan;
-
+  // TODO(ikilpatrick): Move this block up to the constructor, and create two
+  // members for "grid_available_size_" and "max_grid_available_size_".
   LayoutUnit available_size = (track_direction == kForColumns)
                                   ? ChildAvailableSize().inline_size
                                   : ChildAvailableSize().block_size;
-  // Handle the case for |kMinGreaterThan|.
+
+  // Represents the largest available-size the grid can consume. Typically this
+  // is the same as available-size, but if the initial border-box size is
+  // indefinite it may be larger. This is used for determining the number of
+  // auto repetitions.
+  LayoutUnit max_available_size = available_size;
+
   if (available_size == kIndefiniteSize) {
-    auto_resolve_type = kMinGreaterThan;
+    MinMaxSizes sizes;
+    LayoutUnit border_scrollbar_padding;
     if (track_direction == kForColumns) {
-      const Length& min_length = Style().LogicalMinWidth();
-
-      // A style of "min-width: min-content" isn't resolvable in the intrinsic
-      // phase as it'd be a circular definition.
-      if (min_length.IsAuto() ||
-          InlineLengthUnresolvable(ConstraintSpace(), min_length) ||
-          min_length.IsContentOrIntrinsic()) {
-        return 1;
-      }
-      available_size = ResolveMinInlineLength(
+      border_scrollbar_padding =
+          container_builder_.BorderScrollbarPadding().InlineSum();
+      sizes = ComputeMinMaxInlineSizes(
           ConstraintSpace(), Style(), container_builder_.BorderPadding(),
-          base::Optional<MinMaxSizes>(), min_length);
+          [&border_scrollbar_padding](MinMaxSizesType) -> MinMaxSizesResult {
+            // If we've reached here we are inside the ComputeMinMaxSizes pass,
+            // and also have something like "min-width: min-content". This is
+            // cyclic. Just return the border/scrollbar/padding as our
+            // "intrinsic" size.
+            return MinMaxSizesResult(
+                {border_scrollbar_padding, border_scrollbar_padding},
+                /* depends_on_percentage_block_size */ false);
+          });
     } else {
-      const Length& min_length = Style().LogicalMinHeight();
-
-      if (BlockLengthUnresolvable(ConstraintSpace(), min_length))
-        return 1;
-
-      available_size =
-          ResolveMinBlockLength(ConstraintSpace(), Style(),
-                                container_builder_.BorderPadding(), min_length);
+      border_scrollbar_padding =
+          container_builder_.BorderScrollbarPadding().BlockSum();
+      sizes = ComputeMinMaxBlockSizes(ConstraintSpace(), Style(),
+                                      container_builder_.BorderPadding(),
+                                      /* intrinsic_size */ kIndefiniteSize);
     }
+
+    // Keep an infinite max-size as infinite.
+    max_available_size =
+        sizes.max_size == LayoutUnit::Max()
+            ? LayoutUnit::Max()
+            : (sizes.max_size - border_scrollbar_padding).ClampNegativeToZero();
+    available_size =
+        (sizes.min_size - border_scrollbar_padding).ClampNegativeToZero();
   }
 
   const LayoutUnit grid_gap = GridGap(track_direction, available_size);
@@ -654,8 +657,9 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
       // value to avoid division by zero. It is suggested that this floor be
       // 1px.
       if (track_list.RepeatType(repeater_index) !=
-          NGGridTrackRepeater::kNoAutoRepeat)
+          NGGridTrackRepeater::kNoAutoRepeat) {
         track_contribution = std::max(LayoutUnit(1), track_contribution);
+      }
 
       repeater_size += track_contribution + grid_gap;
     }
@@ -669,27 +673,39 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
     }
   }
 
-  // Add one |grid_gap| back into the available space to account for the extra
-  // one added to the end.
-
-  // If the extra grid gap was added to the end to the non_auto_specified_size,
-  // adding it to the available size here will cancel it out. If it was added to
-  // the auto_repeater_size, expanding the the extra gap to the remaining space
-  // will account for it as well.
-  const LayoutUnit remaining_space =
-      available_size + grid_gap - non_auto_specified_size;
-
   DCHECK_GT(auto_repeater_size, 0);
-  // If any amount of repetitions would cause us to overflow, repeat once.
-  if (remaining_space < 0 || auto_repeater_size > remaining_space)
-    return 1u;
 
-  // Return the smallest amount that is larger than the remaining space.
-  if (auto_resolve_type == kMinGreaterThan)
-    return CeilToInt(remaining_space / auto_repeater_size);
+  // We can compute the number of repetitions by satisfying the expression
+  // below. Notice that we subtract an extra |grid_gap| since it was included
+  // in the contribution for the last set in the collection.
+  //   available_size =
+  //       (repetitions * auto_repeater_size) +
+  //       non_auto_specified_size - grid_gap
+  //
+  // Solving for repetitions we have:
+  //   repetitions =
+  //       available_size - (non_auto_specified_size - grid_gap) /
+  //       auto_repeater_size
+  non_auto_specified_size -= grid_gap;
 
-  // Return the largest amount that is smaller than the remaining space.
-  return std::max(1, FloorToInt(remaining_space / auto_repeater_size));
+  // First we want to allow as many repetitions as possible, up to the max
+  // available-size. Only do this if we have a definite max-size.
+  // If a definite available-size was provided, |max_available_size| will be
+  // set to that value.
+  if (max_available_size != LayoutUnit::Max()) {
+    // Use floor to ensure that the auto repeater sizes goes under the max
+    // available-size.
+    const int count = FloorToInt(
+        (max_available_size - non_auto_specified_size) / auto_repeater_size);
+    return (count <= 0) ? 1u : count;
+  }
+
+  // Next, consider the min available-size, which was already used to floor
+  // |available_size|. Use ceil to ensure that the auto repeater size goes
+  // above this min available-size.
+  const int count = CeilToInt((available_size - non_auto_specified_size) /
+                              auto_repeater_size);
+  return (count <= 0) ? 1u : count;
 }
 
 namespace {
