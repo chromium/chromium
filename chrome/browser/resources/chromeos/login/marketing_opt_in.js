@@ -38,9 +38,32 @@ Polymer({
     },
 
     /**
-     * Whether the short version of the unsubscribe disclaimer should be shown.
+     * Whether the new OOBE layout is enabled.
+     *
+     * @type {boolean}
      */
-    hasShortDisclaimer_: {
+    newLayoutEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('newLayoutEnabled') &&
+            loadTimeData.getBoolean('newLayoutEnabled');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * Whether the long version of the unsubscribe disclaimer should be shown on
+     * top.
+     */
+    hasTopLongDisclaimer_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Whether the animation should be shown in the content area.
+     */
+    hasAnimationInContent_: {
       type: Boolean,
       value: false,
     },
@@ -72,9 +95,11 @@ Polymer({
 
   /** Shortcut method to control animation */
   setAnimationPlay_(played) {
-    this.$['marketingOptInOverviewDialog']
-        .querySelector('.marketing-animation')
-        .setPlay(played);
+    if (this.newLayoutEnabled_) {
+      this.$$('.new-marketing-animation').setPlay(played);
+    } else {
+      this.$$('.marketing-animation').setPlay(played);
+    }
   },
 
   /** Called when dialog is shown */
@@ -85,9 +110,10 @@ Polymer({
         'optInDefaultState' in data && data.optInDefaultState;
     this.hasLegalFooter_ =
         'legalFooterVisibility' in data && data.legalFooterVisibility;
-    this.hasShortDisclaimer_ =
-        this.marketingOptInVisible_ && !this.hasLegalFooter_;
-
+    this.hasTopLongDisclaimer_ =
+        !this.newLayoutEnabled_ && this.hasLegalFooter_;
+    this.hasAnimationInContent_ =
+        !this.newLayoutEnabled_ && !this.hasLegalFooter_;
     this.isAccessibilitySettingsShown_ = false;
     this.setAnimationPlay_(true);
     this.$.marketingOptInOverviewDialog.show();

@@ -242,10 +242,10 @@ void MarketingOptInScreenTest::ExpectLegalFooterVisibility(bool visibility) {
   ExpectOptInOptionAvailable();
   if (visibility) {
     test::OobeJS().ExpectVisiblePath(kChromebookEmailLegalFooterDiv);
+    // Only the old animation is invisible when the legal footer is shown.
     test::OobeJS().ExpectHiddenPath(kChromebookEmailAnimation);
   } else {
     test::OobeJS().ExpectHiddenPath(kChromebookEmailLegalFooterDiv);
-    test::OobeJS().ExpectVisiblePath(kChromebookEmailAnimation);
   }
 }
 

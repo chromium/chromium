@@ -8,7 +8,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 
@@ -34,35 +34,50 @@
 
 <dom-module id="marketing-opt-in-element">
   <template>
-    <style include="oobe-dialog-host"></style>
+    <style include="oobe-dialog-host">
+      #bottom-unsubscribe-disclaimer {
+        margin-bottom: 15px;
+      }
+      #legalFooter {
+        margin-top: auto;
+      }
+      :host-context(html:not([new-layout])) #legalFooter {
+        margin-top: 20px;
+      }
+    </style>
     <link rel="stylesheet" href="marketing_opt_in.css">
-    <oobe-dialog id="marketingOptInOverviewDialog" role="dialog" has-buttons
+    <oobe-adaptive-dialog id="marketingOptInOverviewDialog" role="dialog"
         hidden="[[isAccessibilitySettingsShown_]]"
-        title-key="marketingOptInScreenTitle"
         aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
         aria-describedby="marketing-opt-in-subtitle">
-      <hd-iron-icon slot="oobe-icon" icon1x="oobe-32:checkmark"
+      <hd-iron-icon slot="icon" icon1x="oobe-32:checkmark"
           icon2x="oobe-32:checkmark">
       </hd-iron-icon>
-      <div slot="subtitle" id="marketing-opt-in-subtitle">
-        <!-- No marketing opt in sign up option -->
-        <div hidden="[[marketingOptInVisible_]]">
-          [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
-        </div>
-        <!-- Marketing opt in, normal version -->
-        <div hidden="[[!hasShortDisclaimer_]]">
-          [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
-          [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeShort')]]
-        </div>
-        <!-- Marketing opt in, with legal footer -->
-        <div hidden="[[!hasLegalFooter_]]">
-          <div>[[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]</div>
-          <div>
-            [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
-          </div>
-        </div>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'marketingOptInScreenTitle')]]
+      </h1>
+      <!-- No marketing opt in -->
+      <div slot="subtitle" hidden="[[marketingOptInVisible_]]">
+        [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
       </div>
-      <div slot="footer" class="layout vertical flex">
+      <!-- Marketing opt in -->
+      <div slot="subtitle" hidden="[[!marketingOptInVisible_]]">
+        [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
+        <!-- Without legal footer: short unsubscribe sentence -->
+        <span hidden="[[hasLegalFooter_]]">
+          [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeShort')]]
+        </span>
+      </div>
+      <!-- Long unsubscribe disclaimer: shown here only in old layouts -->
+      <div slot="subtitle" hidden="[[!hasTopLongDisclaimer_]]">
+        [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
+      </div>
+      <!-- Animation -->
+      <div slot="subtitle" hidden="[[!newLayoutEnabled_]]">
+        <cr-lottie class="new-marketing-animation" animation-url="all_set.json">
+        </cr-lottie>
+      </div>
+      <div slot="content" class="layout vertical flex">
         <div class="marketing-option layout horizontal center"
             hidden="[[!marketingOptInVisible_]]"
             id="marketing-opt-in-toggle">
@@ -75,17 +90,24 @@
               aria-labelledby="chromebookUpdatesOptionLabel">
           </cr-toggle>
         </div>
+        <!-- Animation: shown here only in old layouts -->
         <div id="animation" class="marketing-animation-container"
-            hidden="[[hasLegalFooter_]]">
+            hidden="[[!hasAnimationInContent_]]">
           <cr-lottie class="marketing-animation" animation-url="all_set.json">
           </cr-lottie>
         </div>
         <div id="legalFooter" hidden="[[!hasLegalFooter_]]" class="legal-info">
-          Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+          <div id="bottom-unsubscribe-disclaimer"
+              hidden="[[!newLayoutEnabled_]]">
+            [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
+          </div>
+          <div>
+            Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+          </div>
           <div>www.google.com</div>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal justified">
+      <div slot="bottom-buttons">
         <div>
           <oobe-welcome-secondary-button
               hidden="[[!isA11ySettingsButtonVisible_]]"
@@ -101,17 +123,19 @@
             id="marketing-opt-in-next-button">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
-    <oobe-dialog id="finalAccessibilityPage" role="dialog" has-buttons
+    <oobe-adaptive-dialog id="finalAccessibilityPage" role="dialog"
         hidden="[[!isAccessibilitySettingsShown_]]"
-        title-key="finalA11yPageTitle"
         aria-label$="[[i18nDynamic(locale, 'finalA11yPageTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
+      <hd-iron-icon slot="icon"
           icon1x="marketing-opt-in-32:accessibility"
           icon2x="marketing-opt-in-64:accessibility">
       </hd-iron-icon>
-      <div slot="footer" class="layout vertical">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'finalA11yPageTitle')]]
+      </h1>
+      <div slot="content" class="layout vertical">
         <oobe-a11y-option id="a11yNavButtonToggle"
             on-change="onA11yNavButtonsSettingChanged_">
           <span slot="title">
@@ -135,6 +159,6 @@
             text-key="finalA11yPageDoneButtonTitle">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>
