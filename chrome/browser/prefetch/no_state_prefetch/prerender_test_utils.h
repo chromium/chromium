@@ -80,7 +80,6 @@ class FakeSafeBrowsingDatabaseManager
   DISALLOW_COPY_AND_ASSIGN(FakeSafeBrowsingDatabaseManager);
 };
 
-// NoStatePrefetchContents that stops the UI message loop on DidStopLoading().
 class TestNoStatePrefetchContents : public NoStatePrefetchContents,
                                     public content::RenderWidgetHostObserver {
  public:
@@ -110,7 +109,9 @@ class TestNoStatePrefetchContents : public NoStatePrefetchContents,
 
  private:
   // WebContentsObserver overrides.
-  void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
+  void RenderFrameHostChanged(
+      content::RenderFrameHost* old_frame_host,
+      content::RenderFrameHost* new_frame_host) override;
 
   // RenderWidgetHostObserver overrides.
   void RenderWidgetHostVisibilityChanged(content::RenderWidgetHost* widget_host,

@@ -183,16 +183,19 @@ bool TestNoStatePrefetchContents::CheckURL(const GURL& url) {
   return true;
 }
 
-void TestNoStatePrefetchContents::RenderFrameCreated(
-    content::RenderFrameHost* frame_host) {
-  if (!frame_host->GetParent()) {
+void TestNoStatePrefetchContents::RenderFrameHostChanged(
+    content::RenderFrameHost* old_frame_host,
+    content::RenderFrameHost* new_frame_host) {
+  // Watch for the speculative main frame being committed.
+  if (!new_frame_host->GetParent()) {
     // Used to make sure the main frame widget is hidden and, if used,
     // subsequently shown.
-    observer_.Add(frame_host->GetRenderWidgetHost());
-    new_main_frame_ = frame_host;
+    observer_.Add(new_frame_host->GetRenderWidgetHost());
+    new_main_frame_ = new_frame_host;
   }
 
-  NoStatePrefetchContents::RenderFrameCreated(frame_host);
+  NoStatePrefetchContents::RenderFrameHostChanged(old_frame_host,
+                                                  new_frame_host);
 }
 
 void TestNoStatePrefetchContents::RenderWidgetHostVisibilityChanged(
