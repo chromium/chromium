@@ -6,7 +6,6 @@
 #include "base/bind.h"
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
-#include "content/browser/cache_storage/cache_storage.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 
