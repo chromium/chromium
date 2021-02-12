@@ -117,23 +117,16 @@ bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
   if ((event.key_code() == ui::VKEY_SPACE ||
        event.key_code() == ui::VKEY_RETURN) &&
       !editor_bubble_tracker_.is_open()) {
-    if (base::FeatureList::IsEnabled(features::kTabGroupsCollapse)) {
-      // The collapse feature changes the behavior from showing the
-      // editor bubble to toggling the collapsed state of the group.
-      bool successful_toggle =
-          tab_strip_->controller()->ToggleTabGroupCollapsedState(
-              group().value(), ToggleTabGroupCollapsedStateOrigin::kKeyboard);
-      if (successful_toggle) {
+    bool successful_toggle =
+        tab_strip_->controller()->ToggleTabGroupCollapsedState(
+            group().value(), ToggleTabGroupCollapsedStateOrigin::kKeyboard);
+    if (successful_toggle) {
 #if defined(OS_WIN)
         NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
 #else
         NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 #endif
         LogCollapseTime();
-      }
-    } else {
-      editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-          tab_strip_->controller()->GetBrowser(), group().value(), this));
     }
     return true;
   }
@@ -181,21 +174,13 @@ bool TabGroupHeader::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
-  if (base::FeatureList::IsEnabled(features::kTabGroupsCollapse)) {
-    // The collapse feature changes the left click behavior from showing the
-    // editor bubble to toggling the collapsed state of the group.
-    if (event.IsLeftMouseButton() && !dragging()) {
-      bool successful_toggle =
-          tab_strip_->controller()->ToggleTabGroupCollapsedState(
-              group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
-      if (successful_toggle)
-        LogCollapseTime();
-    }
-
-  } else if (!dragging() && !editor_bubble_tracker_.is_open()) {
-    // (TODO): Delete this else statement once collapse launches since
-    // ShowContextMenuForViewImpl() will handle spawning the bubble on right
-    // clicks.
+  if (event.IsLeftMouseButton() && !dragging()) {
+    bool successful_toggle =
+        tab_strip_->controller()->ToggleTabGroupCollapsedState(
+            group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
+    if (successful_toggle)
+      LogCollapseTime();
+  } else if (event.IsRightMouseButton() && !dragging()) {
     editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
         tab_strip_->controller()->GetBrowser(), group().value(), this));
   }
@@ -218,18 +203,11 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
   tab_strip_->UpdateHoverCard(nullptr);
   switch (event->type()) {
     case ui::ET_GESTURE_TAP: {
-      if (base::FeatureList::IsEnabled(features::kTabGroupsCollapse)) {
-        // The collapse feature changes the behavior from showing the
-        // editor bubble to toggling the collapsed state of the group.
-        bool successful_toggle =
-            tab_strip_->controller()->ToggleTabGroupCollapsedState(
-                group().value(), ToggleTabGroupCollapsedStateOrigin::kGesture);
-        if (successful_toggle)
-          LogCollapseTime();
-      } else {
-        editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-            tab_strip_->controller()->GetBrowser(), group().value(), this));
-      }
+      bool successful_toggle =
+          tab_strip_->controller()->ToggleTabGroupCollapsedState(
+              group().value(), ToggleTabGroupCollapsedStateOrigin::kGesture);
+      if (successful_toggle)
+        LogCollapseTime();
       break;
     }
 

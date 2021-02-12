@@ -56,8 +56,6 @@ extern const base::Feature kSignInProfileCreation;
 
 extern const base::Feature kTabGroupsAutoCreate;
 
-extern const base::Feature kTabGroupsCollapse;
-
 extern const base::Feature kTabGroupsCollapseFreezing;
 
 extern const base::Feature kTabGroupsFeedback;

@@ -178,8 +178,7 @@ class TabGroupEditorBubbleViewDialogBrowserTestWithFreezingEnabled
  public:
   TabGroupEditorBubbleViewDialogBrowserTestWithFreezingEnabled() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroupsCollapse, features::kTabGroupsCollapseFreezing},
-        {});
+        {features::kTabGroupsCollapseFreezing}, {});
   }
 
  private:

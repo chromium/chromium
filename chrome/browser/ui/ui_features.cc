@@ -82,10 +82,6 @@ const base::Feature kSignInProfileCreation{"SignInProfileCreation",
 const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables tab groups to be collapsed and expanded. https://crbug.com/1018230
-const base::Feature kTabGroupsCollapse{"TabGroupsCollapse",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables tabs to be frozen when collapsed. https://crbug.com/1110108
 const base::Feature kTabGroupsCollapseFreezing{
     "TabGroupsCollapseFreezing", base::FEATURE_DISABLED_BY_DEFAULT};
