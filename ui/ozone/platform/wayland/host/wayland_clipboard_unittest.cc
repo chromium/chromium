@@ -87,9 +87,9 @@ class MockClipboardClient {
   DISALLOW_COPY_AND_ASSIGN(MockClipboardClient);
 };
 
-class WaylandDataDeviceManagerTest : public WaylandTest {
+class WaylandClipboardTest : public WaylandTest {
  public:
-  WaylandDataDeviceManagerTest() {}
+  WaylandClipboardTest() = default;
 
   void SetUp() override {
     WaylandTest::SetUp();
@@ -108,10 +108,10 @@ class WaylandDataDeviceManagerTest : public WaylandTest {
   std::unique_ptr<MockClipboardClient> clipboard_client_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataDeviceManagerTest);
+  DISALLOW_COPY_AND_ASSIGN(WaylandClipboardTest);
 };
 
-TEST_P(WaylandDataDeviceManagerTest, WriteToClipboard) {
+TEST_P(WaylandClipboardTest, WriteToClipboard) {
   // The client writes data to the clipboard ...
   std::vector<uint8_t> data_vector(
       kSampleClipboardText,
@@ -136,7 +136,7 @@ TEST_P(WaylandDataDeviceManagerTest, WriteToClipboard) {
   run_loop.Run();
 }
 
-TEST_P(WaylandDataDeviceManagerTest, ReadFromClipboard) {
+TEST_P(WaylandClipboardTest, ReadFromClipboard) {
   // TODO(nickdiego): implement this in terms of an actual wl_surface that
   // gets focused and compositor sends data_device data to it.
   auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
@@ -158,7 +158,7 @@ TEST_P(WaylandDataDeviceManagerTest, ReadFromClipboard) {
   Sync();
 }
 
-TEST_P(WaylandDataDeviceManagerTest, ReadFromClipboardWithoutOffer) {
+TEST_P(WaylandClipboardTest, ReadFromClipboardWithoutOffer) {
   // When no data offer is advertised and client requests clipboard data
   // from the server, the response callback should be gracefully called with
   // an empty string.
@@ -171,7 +171,7 @@ TEST_P(WaylandDataDeviceManagerTest, ReadFromClipboardWithoutOffer) {
   clipboard_client_->ReadData(kMimeTypeTextUtf8, std::move(callback));
 }
 
-TEST_P(WaylandDataDeviceManagerTest, IsSelectionOwner) {
+TEST_P(WaylandClipboardTest, IsSelectionOwner) {
   auto callback = base::BindOnce([]() {});
   std::vector<uint8_t> data_vector(
       kSampleClipboardText,
@@ -193,11 +193,11 @@ TEST_P(WaylandDataDeviceManagerTest, IsSelectionOwner) {
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
-                         WaylandDataDeviceManagerTest,
+                         WaylandClipboardTest,
                          ::testing::Values(kXdgShellStable));
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
-                         WaylandDataDeviceManagerTest,
+                         WaylandClipboardTest,
                          ::testing::Values(kXdgShellV6));
 
 }  // namespace ui
