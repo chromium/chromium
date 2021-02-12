@@ -314,13 +314,6 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // The colorspace for the h264 container.
   const VideoColorSpace container_color_space_;
 
-  // If |decoder_buffer_is_complete_frame_| is true, then it is assumed that
-  // each DecoderBuffer contains a complete frame of video. After processing a
-  // DecoderBuffer, if there is a pending frame, it will be sent to the
-  // |accelerator_| immediately rather than waiting for a bitstream indication
-  // for the next frame, EOS or an AUD.
-  bool decoder_buffer_is_complete_frame_ = false;
-
   // Parser in use.
   H264Parser parser_;
 

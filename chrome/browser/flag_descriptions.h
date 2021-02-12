@@ -741,9 +741,6 @@ extern const char kGlobalMediaControlsOverlayControlsDescription[];
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 
-extern const char kH264DecoderBufferIsCompleteFrameName[];
-extern const char kH264DecoderBufferIsCompleteFrameDescription[];
-
 extern const char kHandwritingGestureName[];
 extern const char kHandwritingGestureDescription[];
 

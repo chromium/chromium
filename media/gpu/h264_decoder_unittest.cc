@@ -399,20 +399,6 @@ TEST_F(H264DecoderTest, Decode10BitStream) {
   ASSERT_TRUE(decoder_->Flush());
 }
 
-// TODO(jkardatzke): Remove this test if we keep the flag for DecoderBuffers
-// are complete frames because this code path will never get called.
-TEST_F(H264DecoderTest, DISABLED_OutputPictureFailureCausesFlushToFail) {
-  // Provide one frame so that Decode() will not try to output a frame, so
-  // Flush() will.
-  SetInputFrameFiles({
-      kBaselineFrame0,
-  });
-  ASSERT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
-  EXPECT_CALL(*accelerator_, OutputPicture(_)).WillRepeatedly(Return(false));
-  ASSERT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
-  ASSERT_FALSE(decoder_->Flush());
-}
-
 TEST_F(H264DecoderTest, OutputPictureFailureCausesDecodeToFail) {
   // Provide enough data that Decode() will try to output a frame.
   SetInputFrameFiles({

@@ -883,11 +883,4 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
   return false;
 }
 
-// When enabled, causes the H264Decoder to treat each DecoderBuffer sent to it
-// as a complete frame, rather than waiting for a following indicator for frame
-// completeness. Temporary flag to allow verifying if this change breaks
-// anything.
-const base::Feature kH264DecoderBufferIsCompleteFrame{
-    "H264DecoderBufferIsCompleteFrame", base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace media

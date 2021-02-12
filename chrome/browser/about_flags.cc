@@ -6662,11 +6662,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableIncognitoShortcutOnDesktop)},
 #endif  // defined(OS_WIN)
 
-    {"h264-decoder-is-buffer-complete-frame",
-     flag_descriptions::kH264DecoderBufferIsCompleteFrameName,
-     flag_descriptions::kH264DecoderBufferIsCompleteFrameDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kH264DecoderBufferIsCompleteFrame)},
-
     {"content-settings-redesign",
      flag_descriptions::kContentSettingsRedesignName,
      flag_descriptions::kContentSettingsRedesignDescription, kOsDesktop,

@@ -1261,12 +1261,6 @@ const char kGlobalMediaControlsOverlayControlsDescription[] =
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";
 
-const char kH264DecoderBufferIsCompleteFrameName[] =
-    "H.264 Decoder Buffer Is Complete Frame";
-const char kH264DecoderBufferIsCompleteFrameDescription[] =
-    "H.264 decoder will treat each DecoderBuffer as a complete frame. Defaults "
-    "to enabled.";
-
 const char kHandwritingGestureName[] = "Handwriting Gestures";
 const char kHandwritingGestureDescription[] =
     "Enables handwriting gestures within the virtual keyboard. This will send "

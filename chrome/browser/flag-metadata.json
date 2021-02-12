@@ -2973,11 +2973,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "h264-decoder-is-buffer-complete-frame",
-    "owners": [ "jkardatzke", "mcasas" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "handwriting-gesture",
     "owners": [ "essential-inputs-team@google.com" ],
     "expiry_milestone": 90

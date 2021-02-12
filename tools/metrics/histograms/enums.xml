@@ -43559,7 +43559,6 @@ from previous Chrome versions.
   <int value="-1532014193" label="disable-encryption-migration"/>
   <int value="-1530711962" label="PrivacyElevatedAndroid:disabled"/>
   <int value="-1529907580" label="ImeServiceConnectable:disabled"/>
-  <int value="-1529899201" label="H264DecoderBufferIsCompleteFrame:disabled"/>
   <int value="-1529631789" label="enable-unsafe-fast-js-calls"/>
   <int value="-1529140321" label="ReadLater:enabled"/>
   <int value="-1528455406" label="OmniboxPedalSuggestions:enabled"/>
@@ -47066,7 +47065,6 @@ from previous Chrome versions.
   <int value="1701972870" label="NTPSnippetsIncreasedVisibility:enabled"/>
   <int value="1702090999" label="ClearOldBrowsingData:disabled"/>
   <int value="1703927420" label="PiexWasm:enabled"/>
-  <int value="1705332854" label="H264DecoderBufferIsCompleteFrame:enabled"/>
   <int value="1705724232" label="use-android-midi-api"/>
   <int value="1706682238" label="ContextualSearchTranslations:disabled"/>
   <int value="1707283026" label="SyncPseudoUSSExtensions:disabled"/>

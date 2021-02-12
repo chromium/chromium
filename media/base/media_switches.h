@@ -134,7 +134,6 @@ MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsOverlayControls;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsPictureInPicture;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsSeamlessTransfer;
 MEDIA_EXPORT extern const base::Feature kGlobalMediaControlsModernUI;
-MEDIA_EXPORT extern const base::Feature kH264DecoderBufferIsCompleteFrame;
 MEDIA_EXPORT extern const base::Feature kHardwareMediaKeyHandling;
 MEDIA_EXPORT extern const base::Feature kHardwareSecureDecryption;
 MEDIA_EXPORT extern const base::Feature kInternalMediaSession;
