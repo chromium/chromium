@@ -1727,6 +1727,31 @@ void NavigationRequest::StartNavigation(bool is_for_commit) {
 
 void NavigationRequest::ResetForCrossDocumentRestart() {
   DCHECK(IsSameDocument());
+  if (common_params_->navigation_type ==
+      mojom::NavigationType::HISTORY_SAME_DOCUMENT) {
+    // TODO(crbug.com/1169423): A same document history navigation was performed
+    // but there was no commit yet in the renderer. Where did this navigation
+    // come from?
+    SCOPED_CRASH_KEY_STRING256(
+        "history_no_commit", "url_from",
+        render_frame_host_->GetLastCommittedURL().spec());
+    SCOPED_CRASH_KEY_NUMBER("history_no_commit", "nav_entry_id",
+                            commit_params_->nav_entry_id);
+    SCOPED_CRASH_KEY_NUMBER("history_no_commit", "history_list_offset",
+                            commit_params_->current_history_list_offset);
+    SCOPED_CRASH_KEY_NUMBER("history_no_commit", "history_list_length",
+                            commit_params_->current_history_list_length);
+    SCOPED_CRASH_KEY_BOOL("history_no_commit", "was_discarded",
+                          commit_params_->was_discarded);
+    SCOPED_CRASH_KEY_BOOL("history_no_commit", "is_browser_initiated",
+                          commit_params_->is_browser_initiated);
+    SCOPED_CRASH_KEY_BOOL(
+        "history_no_commit", "in_new_child",
+        common_params_->is_history_navigation_in_new_child_frame);
+    SCOPED_CRASH_KEY_BOOL("history_no_commit", "in_main_frame",
+                          IsInMainFrame());
+    base::debug::DumpWithoutCrashing();
+  }
 
   // Reset the NavigationHandle, which is now incorrectly marked as
   // same-document. Ensure |loader_| does not exist as it can hold raw pointers

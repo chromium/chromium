@@ -5064,7 +5064,12 @@ blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
     // If this is marked as a same document load but we haven't committed
     // anything, we can't proceed with the load. The browser shouldn't let this
     // happen.
-    CHECK(!GetWebFrame()->GetCurrentHistoryItem().IsNull());
+    // TODO(crbug.com/1169423): A same document history navigation was performed
+    // but there was no commit yet in the renderer. Where did this navigation
+    // come from? Figure it out, make this a CHECK again, and drop the Restart.
+    DCHECK(!GetWebFrame()->GetCurrentHistoryItem().IsNull());
+    if (GetWebFrame()->GetCurrentHistoryItem().IsNull())
+      return blink::mojom::CommitResult::RestartCrossDocument;
 
     // Additionally, if the current history item's document sequence number
     // doesn't match the one sent from the browser, it is possible that this
