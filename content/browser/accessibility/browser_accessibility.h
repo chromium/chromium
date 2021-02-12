@@ -76,7 +76,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   // Called after the object is first initialized and again every time
   // its data changes.
-  virtual void OnDataChanged() {}
+  virtual void OnDataChanged();
 
   // Called when the location changed.
   virtual void OnLocationChanged() {}
@@ -608,6 +608,11 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   // If the node has a child tree, get the root node.
   BrowserAccessibility* PlatformGetRootOfChildTree() const;
+
+#if DCHECK_IS_ON()
+  // DCHECKs to determine whether current node is valid.
+  void CheckValidity() const;
+#endif
 
   // Given a set of map of spelling text attributes and a start offset, merge
   // them into the given map of existing text attributes. Merges the given

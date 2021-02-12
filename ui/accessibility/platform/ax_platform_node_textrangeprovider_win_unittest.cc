@@ -3608,9 +3608,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderGetChildren) {
   static_text_7.AddState(ax::mojom::State::kIgnored);
 
   button_8.role = ax::mojom::Role::kButton;
-  // Hack: This attribute is needed to be able to get a text range provider
+  // Hack: The kEditableRoot attribute is needed to get a text range provider
   // located on this element (see AXPlatformNodeWin::GetPatternProvider).
   button_8.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  // When kEditableRoot is set, kEditable is also expected.
+  button_8.AddState(ax::mojom::State::kEditable);
   button_8.child_ids = {image_9.id, static_text_10.id};
 
   image_9.role = ax::mojom::Role::kImage;

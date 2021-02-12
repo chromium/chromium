@@ -1004,11 +1004,27 @@ bool AXNodeData::IsPlainTextField() const {
   // We need to check both the role and editable state, because some ARIA text
   // fields may in fact not be editable, whilst some editable fields might not
   // have the role.
-  return !HasState(ax::mojom::State::kRichlyEditable) &&
-         (role == ax::mojom::Role::kTextField ||
-          role == ax::mojom::Role::kTextFieldWithComboBox ||
-          role == ax::mojom::Role::kSearchBox ||
-          GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot));
+  if (HasState(ax::mojom::State::kRichlyEditable))
+    return false;
+
+  // Blink adds the "kEditableRoot" attribute to all nodes that are at the root
+  // of any editable region, such as an <input> or a <textarea> field.
+  if (GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot)) {
+    DCHECK(HasState(ax::mojom::State::kEditable));
+    return true;
+  }
+
+  // Has editable ARIA role, but is not actually editable.
+  // In theory, a webpage author could create a plain text field by using any of
+  // the following ARIA roles, even on elements that do not have the
+  // contenteditable attribute set. For example, <div role="textbox">. However,
+  // in practice it might be difficult to create such a plain text field because
+  // it would be hard to support text selection and a caret without specifying
+  // contenteditable="true"
+  // Exposing these roles as plain text fields is harmless and simplifies tests.
+  return role == ax::mojom::Role::kTextField ||
+         role == ax::mojom::Role::kTextFieldWithComboBox ||
+         role == ax::mojom::Role::kSearchBox;
 }
 
 bool AXNodeData::IsRichTextField() const {

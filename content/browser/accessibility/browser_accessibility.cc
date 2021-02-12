@@ -51,38 +51,68 @@ BrowserAccessibility::~BrowserAccessibility() = default;
 
 namespace {
 
+// Get the text field's deepest container descendant can contain text.
+// This is the deepest generic container descendant, or the textfield itself.
 const BrowserAccessibility* GetTextContainerForPlainTextField(
     const BrowserAccessibility& text_field) {
   DCHECK(text_field.IsPlainTextField());
-  DCHECK_EQ(1u, text_field.InternalChildCount());
+
   // Text fields wrap their static text and inline text boxes in generic
   // containers, and some, like input type=search, wrap the wrapper as well.
-  // Structure is like this:
-  // Text field
-  // -- Generic container
-  // ---- Generic container  (optional, only occurs in some controls)
-  // ------ Static text   <-- (optional, does not exist if field is empty)
-  // -------- Inline text box children (can be multiple)
-  // ------ Line Break (optional,  a placeholder break element if the text data
+  // There are several cases for the structure:
+  // 1. An empty plain text field:
+  // -- Generic container <-- there can be any number of these in a chain.
+  //    Some empty textfields have the below structure, with empty text boxes.
+  // 2. A single line, plain text field with some text in it:
+  // -- Generic container <-- there can be any number of these in a chain.
+  // ---- Static text
+  // ------ Inline text box children (zero or more)
+  // ---- Line Break (optional,  a placeholder break element if the text data
   //                    ends with '\n' or '\r')
-  // This method will return the lowest generic container.
-  const BrowserAccessibility* child = text_field.InternalGetFirstChild();
-  DCHECK_EQ(child->GetRole(), ax::mojom::Role::kGenericContainer);
-  DCHECK_LE(child->InternalChildCount(), 2u);
-  if (child->InternalChildCount() == 1) {
-    const BrowserAccessibility* grand_child = child->InternalGetFirstChild();
-    if (grand_child->GetRole() == ax::mojom::Role::kGenericContainer) {
-      // There is not always a static text child of the grandchild, but if there
-      // is, it must be static text.
-      DCHECK(!grand_child->InternalGetFirstChild() ||
-             grand_child->InternalGetFirstChild()->GetRole() ==
-                 ax::mojom::Role::kStaticText);
-      return grand_child;
-    }
-    DCHECK_EQ(child->InternalGetFirstChild()->GetRole(),
-              ax::mojom::Role::kStaticText);
+  // 3. A multiline text area with some text in it:
+  //    Similar to #2, but can repeat the static text, line break children
+  //    multiple times.
+
+  if (!text_field.InternalGetFirstChild()) {
+    // Known cases where this happens:
+    // - Hidden: A container of the field is aria-hidden.
+    //   See the dump tree test AccessibilityAriaHiddenFocusedInput.
+    // - Uneditable: element has an ARIA role that looks editable but doesn't
+    //   have an attached editor: <div role=textbox> with no contenteditable.
+    DCHECK(
+        text_field.GetData().IsInvisible() ||
+        !text_field.GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot))
+        << "A plain text field that is visible and content editable should "
+           "have children: "
+        << text_field.ToString();
+    return &text_field;
   }
-  return child;
+
+  BrowserAccessibility* text_container = text_field.InternalDeepestFirstChild();
+
+  // Non-empty text fields expose a set of static text objects with one or more
+  // inline text boxes each. On some platforms, such as Android, we don't enable
+  // inline text boxes, and only the static text objects are exposed.
+  if (text_container->GetRole() == ax::mojom::Role::kInlineTextBox)
+    text_container = text_container->InternalGetParent();
+
+  // Get the parent of the static text, if any.
+  if (text_container->GetRole() == ax::mojom::Role::kStaticText)
+    text_container = text_container->InternalGetParent();
+
+  // Return deepest generic container descendant.
+  if (text_container->GetRole() == ax::mojom::Role::kGenericContainer)
+    return text_container;
+
+  // ARIA textbox + contenteditable=plaintext-only, the input is the container.
+  if (text_container->IsPlainTextField())
+    return text_container;
+
+  NOTREACHED() << "No valid inner text container found for plain text field:"
+               << "\nTextfield: " << text_field.ToString()
+               << "\nBest text container found:" << text_container->ToString();
+
+  return text_container;
 }
 
 int GetBoundaryTextOffsetInsideBaseAnchor(
@@ -113,6 +143,19 @@ void BrowserAccessibility::Init(BrowserAccessibilityManager* manager,
   DCHECK(node);
   manager_ = manager;
   node_ = node;
+}
+
+#if DCHECK_IS_ON()
+void BrowserAccessibility::CheckValidity() const {
+  if (IsPlainTextField())
+    GetTextContainerForPlainTextField(*this);  // Contains validity DCHECKs.
+}
+#endif  // DCHECK_IS_ON()
+
+void BrowserAccessibility::OnDataChanged() {
+#if DCHECK_IS_ON()
+  CheckValidity();
+#endif  // DCHECK_IS_ON()
 }
 
 bool BrowserAccessibility::PlatformIsLeaf() const {

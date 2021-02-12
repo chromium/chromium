@@ -1166,13 +1166,17 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   search_box.child_ids.push_back(search_box_text.id);
   search_box.child_ids.push_back(new_line.id);
 
-  ui::AXNodeData text_field;
+  ui::AXNodeData text_field, text_field_text_container;
   text_field.id = 7;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   text_field.AddState(ax::mojom::State::kEditable);
   text_field.AddState(ax::mojom::State::kFocusable);
   text_field.SetValue("Text field text");
+  // Append expected structure inside of textfield.
+  text_field_text_container.id = 70;
+  text_field_text_container.role = ax::mojom::Role::kGenericContainer;
+  text_field.child_ids.push_back(text_field_text_container.id);
 
   ui::AXNodeData link, link_text;
   link.id = 8;
@@ -1200,8 +1204,9 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           MakeAXTreeUpdate(root, combo_box, combo_box_text, search_box,
-                           search_box_text, new_line, text_field, link,
-                           link_text, slider, slider_text),
+                           search_box_text, new_line, text_field,
+                           text_field_text_container, link, link_text, slider,
+                           slider_text),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());

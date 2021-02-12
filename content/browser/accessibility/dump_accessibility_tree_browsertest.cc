@@ -2168,6 +2168,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputTypes) {
   RunHtmlTest(FILE_PATH_LITERAL("input-types.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputTypesWithValue) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-types-with-value.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputUrl) {
   RunHtmlTest(FILE_PATH_LITERAL("input-url.html"));
 }
