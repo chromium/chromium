@@ -6,6 +6,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 
 using gpu::gles2::GLES2Interface;
@@ -48,6 +49,100 @@ DisplayResourceProviderGL::DisplayResourceProviderGL(
                               compositor_context_provider,
                               shared_bitmap_manager,
                               enable_shared_images) {}
+
+const DisplayResourceProvider::ChildResource*
+DisplayResourceProviderGL::LockForRead(ResourceId id, bool overlay_only) {
+  // TODO(ericrk): We should never fail TryGetResource, but we appear to be
+  // doing so on Android in rare cases. Handle this gracefully until a better
+  // solution can be found. https://crbug.com/811858
+  ChildResource* resource = TryGetResource(id);
+  if (!resource)
+    return nullptr;
+
+  // Mailbox sync_tokens must be processed by a call to WaitSyncToken() prior to
+  // calling LockForRead().
+  DCHECK_NE(NEEDS_WAIT, resource->synchronization_state());
+  DCHECK(resource->is_gpu_resource_type());
+
+  const gpu::Mailbox& mailbox = resource->transferable.mailbox_holder.mailbox;
+  GLES2Interface* gl = ContextGL();
+  DCHECK(gl);
+  if (!resource->gl_id) {
+    if (mailbox.IsSharedImage() && enable_shared_images_) {
+      resource->gl_id =
+          gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+    } else {
+      resource->gl_id = gl->CreateAndConsumeTextureCHROMIUM(
+          resource->transferable.mailbox_holder.mailbox.name);
+    }
+    resource->SetLocallyUsed();
+  }
+  if (mailbox.IsSharedImage() && enable_shared_images_) {
+    if (overlay_only) {
+      if (resource->lock_for_overlay_count == 0) {
+        // If |lock_for_read_count| > 0, then BeginSharedImageAccess has
+        // already been called with READ, so don't re-lock with OVERLAY.
+        if (resource->lock_for_read_count == 0) {
+          gl->BeginSharedImageAccessDirectCHROMIUM(
+              resource->gl_id, GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM);
+        }
+      }
+    } else {
+      if (resource->lock_for_read_count == 0) {
+        // If |lock_for_overlay_count| > 0, then we have already begun access
+        // for OVERLAY. End this access and "upgrade" it to READ.
+        // See https://crbug.com/1113925 for how this can go wrong.
+        if (resource->lock_for_overlay_count > 0)
+          gl->EndSharedImageAccessDirectCHROMIUM(resource->gl_id);
+        gl->BeginSharedImageAccessDirectCHROMIUM(
+            resource->gl_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+      }
+    }
+  }
+
+  if (overlay_only)
+    resource->lock_for_overlay_count++;
+  else
+    resource->lock_for_read_count++;
+  if (resource->transferable.read_lock_fences_enabled) {
+    if (current_read_lock_fence_.get())
+      current_read_lock_fence_->Set();
+    resource->read_lock_fence = current_read_lock_fence_;
+  }
+
+  return resource;
+}
+
+void DisplayResourceProviderGL::UnlockForRead(ResourceId id,
+                                              bool overlay_only) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  ChildResource* resource = TryGetResource(id);
+  // TODO(ericrk): We should never fail to find id, but we appear to be
+  // doing so on Android in rare cases. Handle this gracefully until a better
+  // solution can be found. https://crbug.com/811858
+  if (!resource)
+    return;
+
+  DCHECK(resource->is_gpu_resource_type());
+  if (resource->transferable.mailbox_holder.mailbox.IsSharedImage() &&
+      enable_shared_images_) {
+    // If this is the last READ or OVERLAY access, then end access.
+    if (resource->lock_for_read_count + resource->lock_for_overlay_count == 1) {
+      DCHECK(resource->gl_id);
+      GLES2Interface* gl = ContextGL();
+      DCHECK(gl);
+      gl->EndSharedImageAccessDirectCHROMIUM(resource->gl_id);
+    }
+  }
+  if (overlay_only) {
+    DCHECK_GT(resource->lock_for_overlay_count, 0);
+    resource->lock_for_overlay_count--;
+  } else {
+    DCHECK_GT(resource->lock_for_read_count, 0);
+    resource->lock_for_read_count--;
+  }
+  TryReleaseResource(id, resource);
+}
 
 GLenum DisplayResourceProviderGL::GetResourceTextureTarget(ResourceId id) {
   return GetResource(id)->transferable.mailbox_holder.texture_target;

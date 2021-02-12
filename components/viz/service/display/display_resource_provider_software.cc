@@ -4,7 +4,10 @@
 
 #include "components/viz/service/display/display_resource_provider_software.h"
 
+#include <memory>
+
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/service/display/shared_bitmap_manager.h"
 
 namespace viz {
 
@@ -14,6 +17,57 @@ DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
                               /*compositor_context_provider=*/nullptr,
                               shared_bitmap_manager,
                               /*enable_shared_images=*/true) {}
+
+const DisplayResourceProvider::ChildResource*
+DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
+  // TODO(vasilyt): Todo below was added for Android and GPU resources and was
+  // copied here during refactoring. This shouldn't be necessary for software
+  // renderer case and should be removed.
+  // TODO(ericrk): We should never fail TryGetResource, but we appear to be
+  // doing so on Android in rare cases. Handle this gracefully until a better
+  // solution can be found. https://crbug.com/811858
+  ChildResource* resource = TryGetResource(id);
+  if (!resource)
+    return nullptr;
+
+  DCHECK(!resource->is_gpu_resource_type());
+
+  if (!resource->shared_bitmap) {
+    const SharedBitmapId& shared_bitmap_id =
+        resource->transferable.mailbox_holder.mailbox;
+    std::unique_ptr<SharedBitmap> bitmap =
+        shared_bitmap_manager_->GetSharedBitmapFromId(
+            resource->transferable.size, resource->transferable.format,
+            shared_bitmap_id);
+    if (bitmap) {
+      resource->shared_bitmap = std::move(bitmap);
+      resource->shared_bitmap_tracing_guid =
+          shared_bitmap_manager_->GetSharedBitmapTracingGUIDFromId(
+              shared_bitmap_id);
+    }
+  }
+
+  resource->lock_for_read_count++;
+  return resource;
+}
+
+void DisplayResourceProviderSoftware::UnlockForRead(ResourceId id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  ChildResource* resource = TryGetResource(id);
+  // TODO(vasilyt): Todo below was added for Android and GPU resources and was
+  // copied here during refactoring. This shouldn't be necessary for software
+  // renderer case and should be removed.
+  // TODO(ericrk): We should never fail to find id, but we appear to be
+  // doing so on Android in rare cases. Handle this gracefully until a better
+  // solution can be found. https://crbug.com/811858
+  if (!resource)
+    return;
+
+  DCHECK(!resource->is_gpu_resource_type());
+  DCHECK_GT(resource->lock_for_read_count, 0);
+  resource->lock_for_read_count--;
+  TryReleaseResource(id, resource);
+}
 
 void DisplayResourceProviderSoftware::PopulateSkBitmapWithResource(
     SkBitmap* sk_bitmap,
@@ -33,8 +87,7 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
-  const ChildResource* resource =
-      resource_provider->LockForRead(resource_id, false /* overlay_only */);
+  const ChildResource* resource = resource_provider->LockForRead(resource_id);
   DCHECK(resource);
   DCHECK(!resource->is_gpu_resource_type());
 
@@ -67,7 +120,7 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::
     ~ScopedReadLockSkImage() {
-  resource_provider_->UnlockForRead(resource_id_, false /* overlay_only */);
+  resource_provider_->UnlockForRead(resource_id_);
 }
 
 }  // namespace viz

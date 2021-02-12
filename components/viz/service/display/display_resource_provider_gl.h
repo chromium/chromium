@@ -92,6 +92,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
   };
 
  private:
+  const ChildResource* LockForRead(ResourceId id, bool overlay_only);
+  void UnlockForRead(ResourceId id, bool overlay_only);
+
   GLenum BindForSampling(ResourceId resource_id, GLenum unit, GLenum filter);
   void WaitSyncTokenInternal(ChildResource* resource);
 };

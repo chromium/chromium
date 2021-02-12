@@ -43,6 +43,11 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
   };
 
  private:
+  // These functions are used by ScopedReadLockSkImage to lock and unlock
+  // resources.
+  const ChildResource* LockForRead(ResourceId id);
+  void UnlockForRead(ResourceId id);
+
   void PopulateSkBitmapWithResource(SkBitmap* sk_bitmap,
                                     const ChildResource* resource);
 };
