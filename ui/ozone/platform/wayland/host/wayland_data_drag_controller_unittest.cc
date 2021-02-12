@@ -156,6 +156,10 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     return drag_handler_delegate_.get();
   }
 
+  wl::MockSurface* GetMockSurface(uint32_t id) {
+    return server_.GetObject<wl::MockSurface>(id);
+  }
+
   WaylandConnection* connection() { return connection_.get(); }
 
   WaylandWindow* window() { return window_.get(); }
@@ -668,6 +672,70 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
       PlatformWindowType::kTooltip, PlatformWindowType::kBubble};
   for (auto window_type : kNonToplevelWindowTypes)
     ScheduleTestTask(base::BindOnce(test, base::Unretained(this), window_type));
+
+  // Post a wl_data_source::cancelled notifying the client to tear down the drag
+  // session.
+  ScheduleDragCancel();
+
+  // Request to start the drag session, which spins a nested run loop.
+  RunDragLoopWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
+
+  origin_window->SetPointerFocus(restored_focus);
+}
+
+// Ensures that requests to create a |PlatformWindowType::kPopup| during drag
+// sessions return wl_subsurface-backed windows.
+TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesAuxiliaryWindow) {
+  auto* origin_window = window_.get();
+  const bool restored_focus = origin_window->has_pointer_focus();
+  origin_window->SetPointerFocus(true);
+
+  auto test = [](WaylandDataDragControllerTest* self) {
+    MockPlatformWindowDelegate delegate;
+    auto popup_window = self->CreateTestWindow(PlatformWindowType::kPopup,
+                                               gfx::Size(100, 40), &delegate);
+    popup_window->Show(false);
+    self->Sync();
+
+    auto* surface =
+        self->GetMockSurface(popup_window->root_surface()->GetSurfaceId());
+    ASSERT_TRUE(surface);
+    EXPECT_NE(nullptr, surface->sub_surface());
+  };
+
+  ScheduleTestTask(base::BindOnce(test, base::Unretained(this)));
+
+  // Post a wl_data_source::cancelled notifying the client to tear down the drag
+  // session.
+  ScheduleDragCancel();
+
+  // Request to start the drag session, which spins a nested run loop.
+  RunDragLoopWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
+
+  origin_window->SetPointerFocus(restored_focus);
+}
+
+// Ensures that requests to create a |PlatformWindowType::kMenu| during drag
+// sessions return xdg_popup-backed windows.
+TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
+  auto* origin_window = window_.get();
+  const bool restored_focus = origin_window->has_pointer_focus();
+  origin_window->SetPointerFocus(true);
+
+  auto test = [](WaylandDataDragControllerTest* self) {
+    MockPlatformWindowDelegate delegate;
+    auto menu_window = self->CreateTestWindow(PlatformWindowType::kMenu,
+                                              gfx::Size(100, 40), &delegate);
+    menu_window->Show(false);
+    self->Sync();
+
+    auto* surface =
+        self->GetMockSurface(menu_window->root_surface()->GetSurfaceId());
+    ASSERT_TRUE(surface);
+    EXPECT_EQ(nullptr, surface->sub_surface());
+  };
+
+  ScheduleTestTask(base::BindOnce(test, base::Unretained(this)));
 
   // Post a wl_data_source::cancelled notifying the client to tear down the drag
   // session.
