@@ -207,6 +207,10 @@ base::Optional<arc::UserInteractionType> GetUserInterationType(
       user_interaction_type =
           arc::UserInteractionType::APP_STARTED_FROM_SHARESHEET;
       break;
+    case apps::mojom::LaunchSource::kFromFullRestore:
+      user_interaction_type =
+          arc::UserInteractionType::APP_STARTED_FROM_FULL_RESTORE;
+      break;
     default:
       NOTREACHED();
       return base::nullopt;

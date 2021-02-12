@@ -220,6 +220,7 @@ enum LaunchSource {
   kFromArc = 17,                      // Arc.
   kFromSharesheet = 18,               // Sharesheet.
   kFromReleaseNotesNotification = 19, // Release Notes Notification.
+  kFromFullRestore = 20,              // Full restore.
 };
 
 enum TriState {
