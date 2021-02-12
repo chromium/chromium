@@ -78,9 +78,7 @@ namespace blink {
 DOMWebSocket::EventQueue::EventQueue(EventTarget* target)
     : state_(kActive), target_(target) {}
 
-DOMWebSocket::EventQueue::~EventQueue() {
-  ContextDestroyed();
-}
+DOMWebSocket::EventQueue::~EventQueue() = default;
 
 void DOMWebSocket::EventQueue::Dispatch(Event* event) {
   switch (state_) {

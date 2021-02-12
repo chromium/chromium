@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/impl/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -905,6 +906,32 @@ INSTANTIATE_TEST_SUITE_P(
     DOMWebSocketInvalidClosingCode,
     DOMWebSocketInvalidClosingCodeTest,
     testing::Values(0, 1, 998, 999, 1001, 2999, 5000, 9999, 65535));
+
+TEST(DOMWebSocketTest, GCWhileEventsPending) {
+  V8TestingScope scope;
+  {
+    DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+    EXPECT_CALL(websocket_scope.Channel(),
+                Connect(KURL("ws://example.com/"), String()))
+        .WillOnce(Return(true));
+    EXPECT_CALL(websocket_scope.Channel(), Disconnect());
+
+    auto& socket = websocket_scope.Socket();
+
+    // Cause events to be queued rather than fired.
+    socket.ContextLifecycleStateChanged(mojom::FrameLifecycleState::kPaused);
+
+    socket.Connect("ws://example.com/", Vector<String>(), ASSERT_NO_EXCEPTION);
+    socket.DidError();
+    socket.DidClose(DOMWebSocket::kClosingHandshakeIncomplete, 1006, "");
+
+    // Stop HasPendingActivity() from keeping the object alive.
+    socket.SetExecutionContext(nullptr);
+  }
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
 
 }  // namespace
 
