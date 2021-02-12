@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -289,8 +290,8 @@ public class AutofillAssistantUiController {
     }
 
     @CalledByNative
-    private void showFeedback(String debugContext) {
-        mCoordinator.showFeedback(debugContext);
+    private void showFeedback(String debugContext, @ScreenshotMode int screenshotMode) {
+        mCoordinator.showFeedback(debugContext, screenshotMode);
     }
 
     @CalledByNative

@@ -2740,6 +2740,7 @@ static_library("browser") {
       "android/feed/v2/refresh_task_scheduler_impl.cc",
       "android/feed/v2/refresh_task_scheduler_impl.h",
       "android/feedback/connectivity_checker.cc",
+      "android/feedback/screenshot_mode.h",
       "android/feedback/screenshot_task.cc",
       "android/foreign_session_helper.cc",
       "android/foreign_session_helper.h",
@@ -7041,6 +7042,9 @@ if (is_android) {
   }
   java_cpp_enum("tos_dialog_behavior_generated_enum") {
     sources = [ "first_run/android/first_run_prefs.h" ]
+  }
+  java_cpp_enum("screenshot_mode_enum") {
+    sources = [ "android/feedback/screenshot_mode.h" ]
   }
 }
 

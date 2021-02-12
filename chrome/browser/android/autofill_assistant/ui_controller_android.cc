@@ -32,6 +32,7 @@
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_root_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
+#include "chrome/browser/android/feedback/screenshot_mode.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -65,6 +66,7 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
+using chrome::android::ScreenshotMode;
 
 namespace autofill_assistant {
 
@@ -531,15 +533,12 @@ void UiControllerAndroid::SetSpinPoodle(bool enabled) {
   header_model_->SetSpinPoodle(enabled);
 }
 
-void UiControllerAndroid::OnFeedbackButtonClicked() {
+void UiControllerAndroid::OnHeaderFeedbackButtonClicked() {
   JNIEnv* env = AttachCurrentThread();
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
-      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()));
-}
-
-void UiControllerAndroid::OnFeedbackFormRequested() {
-  OnFeedbackButtonClicked();
+      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
+      ScreenshotMode::COMPOSITOR);
 }
 
 void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
@@ -884,7 +883,8 @@ void UiControllerAndroid::OnFeedbackButtonClicked(
   // directly stop.
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
-      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()));
+      ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
+      ScreenshotMode::COMPOSITOR);
 
   OnUserActionSelected(env, jcaller, index);
 }

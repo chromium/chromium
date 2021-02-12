@@ -561,6 +561,7 @@ android_library("chrome_java") {
     "//chrome:partner_bookmarks_javagen",
     "//chrome:quick_action_category_enum_javagen",
     "//chrome:supervised_user_url_filter_enum_javagen",
+    "//chrome/browser:screenshot_mode_enum",
     "//chrome/browser:sharing_dialog_type_generated_enum",
     "//chrome/browser:sharing_send_message_result_generated_enum",
     "//chrome/browser/notifications/scheduler/public:jni_enums",

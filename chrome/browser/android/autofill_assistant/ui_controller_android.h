@@ -122,14 +122,13 @@ class UiControllerAndroid : public ControllerObserver {
   void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) override;
   void OnShouldShowOverlayChanged(bool should_show) override;
-  void OnFeedbackFormRequested() override;
 
   // Called by AssistantOverlayDelegate:
   void OnUnexpectedTaps();
   void OnUserInteractionInsideTouchableArea();
 
   // Called by AssistantHeaderDelegate:
-  void OnFeedbackButtonClicked();
+  void OnHeaderFeedbackButtonClicked();
 
   // Called by AssistantGenericUiDelegate:
   void OnViewEvent(const EventHandler::EventKey& key);

@@ -36,6 +36,20 @@ public interface HelpAndFeedbackLauncher {
      * @param profile the current profile.
      * @param url the current URL. May be null.
      * @param categoryTag The category that this feedback report falls under.
+     * @param screenshotMode The kind of screenshot to include with the feedback.
+     */
+    // TODO(b/172422690): Add the feedback context.
+    void showFeedback(final Activity activity, Profile profile, @Nullable String url,
+            @Nullable final String categoryTag, int screenshotMode);
+
+    /**
+     * Starts an activity prompting the user to enter feedback.
+     *
+     * @param activity The activity to use for starting the feedback activity and to take a
+     *                 screenshot of.
+     * @param profile the current profile.
+     * @param url the current URL. May be null.
+     * @param categoryTag The category that this feedback report falls under.
      */
     void showFeedback(final Activity activity, Profile profile, @Nullable String url,
             @Nullable final String categoryTag);
