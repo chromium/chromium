@@ -514,6 +514,10 @@ void ProfileAttributesEntry::SetActiveTimeToNow() {
 }
 
 void ProfileAttributesEntry::SetIsOmitted(bool is_omitted) {
+  if (is_omitted) {
+    DCHECK(IsEphemeral()) << "Only ephemeral profiles can be omitted.";
+  }
+
   bool old_value = IsOmitted();
   is_omitted_ = is_omitted;
 
@@ -591,6 +595,11 @@ void ProfileAttributesEntry::RecordAccountMetrics() const {
 }
 
 void ProfileAttributesEntry::SetIsEphemeral(bool value) {
+  if (!value) {
+    DCHECK(!IsOmitted()) << "An omitted account should not be made "
+                            "non-ephemeral. Call SetIsOmitted(false) first.";
+  }
+
   SetBool(kProfileIsEphemeral, value);
 }
 

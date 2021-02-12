@@ -83,6 +83,7 @@ class ProfileListDesktopTest : public testing::Test {
     ProfileAttributesEntry* entry =
         storage->GetProfileAttributesWithPath(profile_path);
     ASSERT_NE(entry, nullptr);
+    entry->SetIsEphemeral(true);
     entry->SetIsOmitted(true);
   }
 

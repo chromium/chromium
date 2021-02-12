@@ -1273,6 +1273,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
     // Open a browser window for the profile if and only if the profile is not
     // omitted nor needing signin.
     if (std::binary_search(profiles_omit.begin(), profiles_omit.end(), i)) {
+      entry->SetIsEphemeral(true);
       entry->SetIsOmitted(true);
     } else if (std::binary_search(profiles_signin_required.begin(),
                                   profiles_signin_required.end(), i)) {
