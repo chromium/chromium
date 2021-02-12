@@ -5667,7 +5667,10 @@ crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ 
 crbug.com/1176691 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
 crbug.com/1176691 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
 
-
+# Temporarily disabled due to failures on https://ci.chromium.org/p/chromium/builders/ci/Linux%20Tests%20%28dbg%29%281%29
+crbug.com/1177568 http/tests/devtools/console/console-api-on-call-frame.js [ Pass Failure ]
+crbug.com/1177568 http/tests/devtools/runtime/evaluate-timeout.js [ Pass Failure ]
+crbug.com/1177568 http/tests/devtools/console/console-error-on-call-frame.js [ Pass Failure ]
 
 # Failing on Webkit Linux Leak
 crbug.com/1174806 external/wpt/css/selectors/focus-visible-006.html [ Pass Failure ]
