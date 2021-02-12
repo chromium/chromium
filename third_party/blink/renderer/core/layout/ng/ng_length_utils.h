@@ -430,11 +430,9 @@ CalculateDefaultBlockSize(const NGConstraintSpace& space,
 // - |out_replaced_size| intrinsic size of the element. It might have no value.
 // - |out_aspect_ratio| only set if out_replaced_size is empty.
 //   If out_replaced_size is not empty, that is the aspect ratio.
-// This routine will return one of the following:
-// - out_replaced_size, and no out_aspect_ratio
-// - out_aspect_ratio, and no out_replaced_size
-// - neither out_aspect_ratio, nor out_replaced_size
-// SVG elements can return any of the three options above.
+// This routine will return precisely one of |out_replaced_size| and
+// |out_aspect_ratio|. If |out_aspect_ratio| is filled in, both inline and block
+// componenents will be non-zero.
 CORE_EXPORT void ComputeReplacedSize(
     const NGBlockNode&,
     const NGConstraintSpace&,

@@ -909,15 +909,17 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   if (is_replaced) {
     ComputeReplacedSize(node, candidate_constraint_space, min_max_sizes,
                         &replaced_size, &aspect_ratio);
-    has_aspect_ratio_without_intrinsic_size =
-        !replaced_size && aspect_ratio && !aspect_ratio->IsEmpty();
+    DCHECK(replaced_size.has_value() != aspect_ratio.has_value());
+    has_aspect_ratio_without_intrinsic_size = aspect_ratio.has_value();
     // If we only have aspect ratio, and no replaced size, intrinsic size
     // defaults to 300x150. min_max_sizes gets computed from the intrinsic size.
     // We reset the min_max_sizes because spec says that OOF-positioned size
     // should not be constrained by intrinsic size in this case.
     // https://www.w3.org/TR/CSS22/visudet.html#inline-replaced-width
-    if (has_aspect_ratio_without_intrinsic_size)
+    if (has_aspect_ratio_without_intrinsic_size) {
       min_max_sizes = MinMaxSizes{LayoutUnit(), LayoutUnit::NearlyMax()};
+      DCHECK(!aspect_ratio->IsEmpty()) << *aspect_ratio;
+    }
   } else if (!candidate_style.AspectRatio().IsAuto()) {
     has_aspect_ratio_without_intrinsic_size = true;
     aspect_ratio = node.GetAspectRatio();

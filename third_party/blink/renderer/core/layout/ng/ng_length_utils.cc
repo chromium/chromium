@@ -892,7 +892,6 @@ void ComputeReplacedSize(const NGBlockNode& node,
     }
   }
   out_replaced_size->emplace(*replaced_inline, *replaced_block);
-  return;
 }
 
 int ResolveUsedColumnCount(int computed_count,
