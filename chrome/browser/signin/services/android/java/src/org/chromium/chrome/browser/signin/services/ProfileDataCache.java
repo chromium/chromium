@@ -151,7 +151,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
 
         for (String accountEmail : accountEmails) {
             if (!mCachedProfileData.containsKey(accountEmail)) {
-                ProfileDownloader.get().startFetchingAccountInfoFor(accountEmail);
+                AccountInfoService.get().startFetchingAccountInfoFor(accountEmail);
             }
         }
     }
@@ -203,7 +203,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
                 mProfileDataSource.addObserver(this);
                 updateCacheFromProfileDataSource();
             } else {
-                ProfileDownloader.get().addObserver(this);
+                AccountInfoService.get().addObserver(this);
             }
             mIdentityManager.addObserver(this);
         }
@@ -220,7 +220,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
             if (mProfileDataSource != null) {
                 mProfileDataSource.removeObserver(this);
             } else {
-                ProfileDownloader.get().removeObserver(this);
+                AccountInfoService.get().removeObserver(this);
             }
             mIdentityManager.removeObserver(this);
         }

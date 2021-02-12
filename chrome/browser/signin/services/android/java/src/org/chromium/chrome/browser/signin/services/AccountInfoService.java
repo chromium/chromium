@@ -20,26 +20,24 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import java.util.ArrayList;
 
 /**
- * Android wrapper of the ProfileDownloader which provides access from the Java layer.
- * The native ProfileDownloader requires its access to be in the UI thread.
- * See chrome/browser/profiles/profile_downloader.h/cc for more details.
+ * This class handles the {@link AccountInfo} fetch on Java side.
  */
-class ProfileDownloader {
-    private static final String TAG = "ProfileDownloader";
+final class AccountInfoService {
+    private static final String TAG = "AccountInfoService";
     private static final Object LOCK = new Object();
 
     @GuardedBy("LOCK")
-    private static ProfileDownloader sInstance;
+    private static AccountInfoService sInstance;
 
     private final ObserverList<ProfileDataSource.Observer> mObservers = new ObserverList<>();
 
     /**
      * Get the instance of ProfileDownloader.
      */
-    static ProfileDownloader get() {
+    static AccountInfoService get() {
         synchronized (LOCK) {
             if (sInstance == null) {
-                sInstance = new ProfileDownloader();
+                sInstance = new AccountInfoService();
             }
             return sInstance;
         }
@@ -50,7 +48,7 @@ class ProfileDownloader {
         synchronized (LOCK) {
             sInstance = null;
         }
-        PendingProfileDownloads.sPendingProfileDownloads = null;
+        PendingAccountInfoFetch.sPendingAccountInfoFetch = null;
     }
 
     /**
@@ -76,34 +74,34 @@ class ProfileDownloader {
     }
 
     /**
-     * Private class (package private for tests) to pend profile download requests when system
+     * Private class (package private for tests) to pend account info fetch requests when system
      * accounts have not been seeded into AccountTrackerService.
      * It listens onSystemAccountsSeedingComplete to finish pending
      * requests and onSystemAccountsChanged to clear outdated pending requests.
      */
     @VisibleForTesting
-    static class PendingProfileDownloads
+    static class PendingAccountInfoFetch
             implements AccountTrackerService.OnSystemAccountsSeededListener {
-        private static PendingProfileDownloads sPendingProfileDownloads;
+        private static PendingAccountInfoFetch sPendingAccountInfoFetch;
 
         private final ArrayList<String> mAccountEmails;
 
-        private PendingProfileDownloads() {
+        private PendingAccountInfoFetch() {
             mAccountEmails = new ArrayList<>();
         }
 
-        static PendingProfileDownloads get() {
+        static PendingAccountInfoFetch get() {
             ThreadUtils.assertOnUiThread();
-            if (sPendingProfileDownloads == null) {
-                sPendingProfileDownloads = new PendingProfileDownloads();
+            if (sPendingAccountInfoFetch == null) {
+                sPendingAccountInfoFetch = new PendingAccountInfoFetch();
                 IdentityServicesProvider.get()
                         .getAccountTrackerService(Profile.getLastUsedRegularProfile())
-                        .addSystemAccountsSeededListener(sPendingProfileDownloads);
+                        .addSystemAccountsSeededListener(sPendingAccountInfoFetch);
             }
-            return sPendingProfileDownloads;
+            return sPendingAccountInfoFetch;
         }
 
-        void pendProfileDownload(String accountEmail) {
+        void pendFetch(String accountEmail) {
             mAccountEmails.add(accountEmail);
         }
 
@@ -133,7 +131,7 @@ class ProfileDownloader {
                         .checkAndSeedSystemAccounts()) {
             fetchAccountInfo(accountEmail);
         } else {
-            PendingProfileDownloads.get().pendProfileDownload(accountEmail);
+            PendingAccountInfoFetch.get().pendFetch(accountEmail);
         }
     }
 
@@ -147,7 +145,7 @@ class ProfileDownloader {
         if (accountInfo == null) {
             Log.i(TAG, "No AccountInfo available for email:" + accountEmail);
         } else if (accountInfo.getAccountImage() != null) {
-            ProfileDownloader.get().notifyObservers(
+            AccountInfoService.get().notifyObservers(
                     new ProfileDataSource.ProfileData(accountEmail, accountInfo.getAccountImage(),
                             accountInfo.getFullName(), accountInfo.getGivenName()));
         } else {
