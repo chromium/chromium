@@ -224,8 +224,8 @@ Polymer({
         })
         .then(stream => {
           this.stream_ = stream;
-          if (stream) {
-            const video = this.$.video;
+          if (this.stream_) {
+            const video = this.$$('#video');
             video.srcObject = stream;
             video.play();
           }
@@ -238,7 +238,12 @@ Polymer({
               PageState.SCANNING_USER_FACING :
               PageState.SCANNING_ENVIRONMENT_FACING;
 
-          this.detectQrCode_(stream);
+          if (this.stream_) {
+            this.detectQrCode_();
+          }
+        })
+        .catch(e => {
+          this.state_ = PageState.FAILURE;
         });
   },
 
@@ -246,14 +251,13 @@ Polymer({
    * Continuously checks stream if it contains a QR code. If a QR code is
    * detected, activationCode is set to the QR code's value and the detection
    * stops.
-   * @param {MediaStream} stream
    * @private
    */
-  async detectQrCode_(stream) {
+  async detectQrCode_() {
     try {
       this.qrCodeDetectorTimer_ = setInterval(
           (async function() {
-            const capturer = new ImageCapture(stream.getVideoTracks()[0]);
+            const capturer = new ImageCapture(this.stream_.getVideoTracks()[0]);
             const frame = await capturer.grabFrame();
             const activationCode = await this.detectActivationCode_(frame);
             if (activationCode) {
