@@ -266,7 +266,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3226991577105957773">ja veel <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Ühtegi mobiilsidevõrku pole saadaval</translation>
 <translation id="3249513730522716925">Aken <ph name="WINDOW_TITLE" /> teisaldati töölaualt <ph name="ACTIVE_DESK" /> töölauale <ph name="TARGET_DESK" /></translation>
-<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, signaalitugevus <ph name="SIGNAL_STRENGTH" /> protsenti.</translation>
 <translation id="3255483164551725916">Mida sa teha oskad?</translation>
 <translation id="3269597722229482060">Paremklikk</translation>
 <translation id="3289674678944039601">Laadimine adapteri kaudu</translation>
@@ -696,6 +695,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7029814467594812963">Välju seansist</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google'i assistent</translation>
 <translation id="7042322267639375032">Ahenda olekuala</translation>
+<translation id="7055910611768509537">Elektronpliiatsit pole kasutatud üle nädala</translation>
 <translation id="7066646422045619941">Teie administraator on selle võrgu keelanud.</translation>
 <translation id="7067196344162293536">Automaatne pööramine</translation>
 <translation id="7068360136237591149">Ava failid</translation>

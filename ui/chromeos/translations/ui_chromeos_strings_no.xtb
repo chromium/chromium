@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Filen eller katalogen ikke er brukbar.</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1378727793141957596">Velkommen til Google Disk</translation>
+<translation id="1379911846207762492">Du kan gjøre filer tilgjengelige uten nett, slik at du kan bruke dem når du ikke har noen internettilkobling.</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1395262318152388157">Fremdriftsbryter</translation>
 <translation id="1404323374378969387">Norsk</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">For å åpne filer med <ph name="APP_NAME" />, kopiér dem til mappen for Windows-filer først.</translation>
 <translation id="3556731189587832921">Engelsk (USA) med internasjonalt datamaskintastatur</translation>
 <translation id="357479282490346887">Litauisk</translation>
+<translation id="3592251141500063301">Kunne ikke gjøre <ph name="FILE_NAME" /> tilgjengelig uten nett</translation>
 <translation id="3603385196401704894">Canadisk fransk</translation>
 <translation id="3606220979431771195">Tyrkisk F</translation>
 <translation id="3616113530831147358">Lyd</translation>

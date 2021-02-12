@@ -724,6 +724,7 @@
 <translation id="3761718714832595332">Сокри го статусот</translation>
 <translation id="3765032636089507299">Страницата „Безбедно прелистување“ е во фаза на создавање.</translation>
 <translation id="3765588406864124894">Поштенско сандаче 9</translation>
+<translation id="3767485424735936570">Правилото на администраторот не препорачува копирање и залепување на содржиниве на <ph name="VM_NAME" /></translation>
 <translation id="3778403066972421603">Сакате ли да ја зачувате картичкава на сметката на Google и на уредов?</translation>
 <translation id="3780694243617746492">Излезна фиока</translation>
 <translation id="3781428340399460090">Впечатливо розова</translation>
@@ -1097,7 +1098,6 @@
 <translation id="519422657042045905">Прибелешката не е достапна</translation>
 <translation id="5201306358585911203">Вметнатата страница во страницава вели</translation>
 <translation id="5205222826937269299">Потребно е име</translation>
-<translation id="5208899478506185232"><ph name="ONE_TIME_CODE" /> е вашиот код за <ph name="TOP_ORIGIN" /> (преку <ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="5209518306177824490">SHA-1 отпечаток од прст</translation>
 <translation id="5215116848420601511">Начини на плаќање и адреси преку Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1128,6 +1128,7 @@
 <translation id="5299298092464848405">Грешка при разложување на правилото</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5306593769196050043">Двата листа</translation>
+<translation id="5307166000025436103">Во ред</translation>
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5308689395849655368">Пријавување пад е оневозможено.</translation>
 <translation id="5314967030527622926">Производител на брошури</translation>
@@ -1458,6 +1459,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{Ниту еден}=1{Од 1 сајт (нема да ве одјавиме од сметката на Google)}one{Од # сајт (нема да ве одјавиме од сметката на Google)}other{Од # сајтови (нема да ве одјавиме од сметката на Google)}}</translation>
 <translation id="6648459603387803038">Администраторот може далечински да го менува поставувањето на прелистувачот. Со активноста на уредов може да се управува и надвор од Chrome.</translation>
 <translation id="6648524591329069940">Фонт Serif</translation>
+<translation id="6651270836885078973">Управувано од:</translation>
 <translation id="6652101503459149953">Користи Windows Hello</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="666259744093848177">(x86_64 преведен)</translation>

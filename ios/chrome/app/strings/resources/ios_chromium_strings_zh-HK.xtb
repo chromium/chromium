@@ -82,7 +82,6 @@
 <translation id="8776843108004031667">此帳戶和所有未儲存的資料將從 Chromium 中移除。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
-<translation id="912386518501777532">登出 Chromium 後，系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。已同步的資料仍會儲存在帳戶中。</translation>
 <translation id="921174536258924340">Chromium 無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

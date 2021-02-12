@@ -266,7 +266,6 @@
 <translation id="3226991577105957773">+ дагы <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Бир да мобилдик тармак жок</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезеси <ph name="ACTIVE_DESK" /> иш тактасынан <ph name="TARGET_DESK" /> иш тактасына жылдырылды</translation>
-<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" /> пайыз.</translation>
 <translation id="3255483164551725916">Эмне кыла аласыз?</translation>
 <translation id="3269597722229482060">Оң баскычын чыкылдатуу</translation>
 <translation id="3289674678944039601">Адаптер аркылуу кубатталууда</translation>
@@ -695,6 +694,7 @@
 <translation id="7029814467594812963">Сеанстан чыгуу</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Жардамчы</translation>
 <translation id="7042322267639375032">Статус аймагын жыйыштыруу</translation>
+<translation id="7055910611768509537">Стилус бир аптадан ашуун колдонулган жок</translation>
 <translation id="7066646422045619941">Бул тармакты администраторуңуз өчүргөн.</translation>
 <translation id="7067196344162293536">Авто буруу</translation>
 <translation id="7068360136237591149">Файлдарды ачуу</translation>

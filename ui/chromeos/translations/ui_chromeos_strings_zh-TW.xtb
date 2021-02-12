@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">檔案或目錄無法使用。</translation>
 <translation id="1363028406613469049">追蹤</translation>
 <translation id="1378727793141957596">歡迎使用 Google 雲端硬碟！</translation>
+<translation id="1379911846207762492">你可以將檔案設為可離線使用，以便在沒有網路連線時存取檔案。</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1395262318152388157">播放進度控制滑桿</translation>
 <translation id="1404323374378969387">挪威文</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">如要使用「<ph name="APP_NAME" />」開啟檔案，請先將檔案複製到 Windows 檔案資料夾。</translation>
 <translation id="3556731189587832921">英文 (美國) 搭配國際 PC 鍵盤</translation>
 <translation id="357479282490346887">立陶宛文</translation>
+<translation id="3592251141500063301">無法將「<ph name="FILE_NAME" />」設為可離線使用</translation>
 <translation id="3603385196401704894">加拿大法文</translation>
 <translation id="3606220979431771195">土耳其文 F</translation>
 <translation id="3616113530831147358">音訊</translation>

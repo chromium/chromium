@@ -721,6 +721,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3761718714832595332">Ocultar estado</translation>
 <translation id="3765032636089507299">A páxina de navegación segura está en construción.</translation>
 <translation id="3765588406864124894">Caixa de correo 9</translation>
+<translation id="3767485424735936570">A política do administrador non recomenda copiar e pegar este contido en <ph name="VM_NAME" /></translation>
 <translation id="3778403066972421603">Queres gardar esta tarxeta na túa conta de Google e neste dispositivo?</translation>
 <translation id="3780694243617746492">Bandexa de saída</translation>
 <translation id="3781428340399460090">Rosa fucsia</translation>
@@ -1094,7 +1095,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="519422657042045905">O modo de anotación non está dispoñible</translation>
 <translation id="5201306358585911203">Unha páxina inserida nesta páxina di</translation>
 <translation id="5205222826937269299">É obrigatorio introducir o nome</translation>
-<translation id="5208899478506185232"><ph name="ONE_TIME_CODE" /> é o teu código para <ph name="TOP_ORIGIN" /> (a través de <ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="5209518306177824490">Impresión dixital SHA-1</translation>
 <translation id="5215116848420601511">Métodos de pago e enderezos que usan Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1125,6 +1125,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5299298092464848405">Erro ao analizar a política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">As dúas follas</translation>
+<translation id="5307166000025436103">Válido</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5308689395849655368">Os informes de erros están desactivados.</translation>
 <translation id="5314967030527622926">Creador de folletos</translation>
@@ -1455,6 +1456,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6646269444027925224">{COUNT,plural, =0{Ningún}=1{De 1 sitio (non se pechará sesión na túa conta de Google)}other{De # sitios (non se pechará sesión na túa conta de Google)}}</translation>
 <translation id="6648459603387803038">O teu administrador pode cambiar a configuración do navegador de forma remota. A actividade deste dispositivo tamén se pode xestionar fóra de Chrome.</translation>
 <translation id="6648524591329069940">Tipo de letra con serifas</translation>
+<translation id="6651270836885078973">Xestionadas por:</translation>
 <translation id="6652101503459149953">Usar Windows Hello</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="666259744093848177">(x86_64 traducido)</translation>

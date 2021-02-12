@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Nije moguće koristiti datoteku ili direktorijum.</translation>
 <translation id="1363028406613469049">Pesma</translation>
 <translation id="1378727793141957596">Dobro došli u Google disk!</translation>
+<translation id="1379911846207762492">Možete da omogućite da fajlovi budu dostupni oflajn kada nemate internet vezu.</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1395262318152388157">Klizač za traženje</translation>
 <translation id="1404323374378969387">norveški</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">Da biste otvarali datoteke pomoću aplikacije <ph name="APP_NAME" />, prvo ih kopirajte u direktorijum sa Windows datotekama.</translation>
 <translation id="3556731189587832921">engleski (SAD) sa internacionalnom tastaturom za računar</translation>
 <translation id="357479282490346887">litvanski</translation>
+<translation id="3592251141500063301">Nismo uspeli da učinimo fajl <ph name="FILE_NAME" /> dostupnim oflajn</translation>
 <translation id="3603385196401704894">kanadska francuska</translation>
 <translation id="3606220979431771195">turska F</translation>
 <translation id="3616113530831147358">Audio</translation>

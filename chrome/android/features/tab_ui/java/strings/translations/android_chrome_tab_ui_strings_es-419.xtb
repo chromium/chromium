@@ -17,6 +17,7 @@
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2759453070259087442">Expande el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> pestañas.</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
+<translation id="3291470810748040983">Recibirás una alerta cuando baje el precio de uno de los artículos de las pestañas abiertas.</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestaña}other{Contraer el grupo de pestañas <ph name="TITLE_OF_GROUP" />, el cual tiene <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="3940195383040445971">Realizar seguimiento de precios en las pestañas</translation>

@@ -266,7 +266,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3226991577105957773">+ <ph name="COUNT" /> autres</translation>
 <translation id="3236488194889173876">Aucun réseau mobile disponible</translation>
 <translation id="3249513730522716925">La fenêtre <ph name="WINDOW_TITLE" /> a été déplacée du Bureau <ph name="ACTIVE_DESK" /> au Bureau <ph name="TARGET_DESK" /></translation>
-<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="3255483164551725916">Que sais-tu faire ?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3289674678944039601">En charge via un adaptateur</translation>

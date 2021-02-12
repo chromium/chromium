@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Файл або каталог не можна використовувати.</translation>
 <translation id="1363028406613469049">Композиція</translation>
 <translation id="1378727793141957596">Вітаємо на Диску Google!</translation>
+<translation id="1379911846207762492">Ви можете зробити файли доступними офлайн, щоб відкривати їх, коли немає інтернет-з'єднання.</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1395262318152388157">Повзунок пошуку</translation>
 <translation id="1404323374378969387">Норвезька</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">Щоб відкривати файли через додаток <ph name="APP_NAME" />, спершу скопіюйте їх у папку з файлами в ОС Windows.</translation>
 <translation id="3556731189587832921">Англійська (США), міжнародна розкладка для ПК</translation>
 <translation id="357479282490346887">Литовська</translation>
+<translation id="3592251141500063301">Не вдалося завантажити файл "<ph name="FILE_NAME" />" для доступу офлайн</translation>
 <translation id="3603385196401704894">Французька (Канада)</translation>
 <translation id="3606220979431771195">Турецька клавіатура F</translation>
 <translation id="3616113530831147358">Аудіо</translation>

@@ -3578,11 +3578,6 @@
 <translation id="6190022522129724693">預設彈出視視窗設定</translation>
 <translation id="6190367314942602985">回報使用者身分識別資訊</translation>
 <translation id="6195802366906945965">決定是否使用內建憑證驗證器來驗證伺服器憑證</translation>
-<translation id="6205094657236844092">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的網頁應用程式清單；使用者無法解除安裝或停用這些網頁應用程式。
-
-      這項政策的每個清單項目都是一個物件，由下列必要元素組成：<ph name="URL_LABEL" /> (要安裝的網頁應用程式網址) 和 2 個選擇性元素：<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (設定網頁應用程式的開啟方式，預設值是在新分頁中開啟) 和 <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (如要建立 <ph name="LINUX_OS_NAME" /> 和 Windows® 桌面捷徑，請設為 True)。
-
-      如需將應用程式固定到 <ph name="PRODUCT_OS_NAME" />檔案櫃，請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 政策。</translation>
 <translation id="6208896993204286313">回報 <ph name="PRODUCT_NAME" /> 政策資訊</translation>
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>
 <translation id="6212868225782276239">顯示所有印表機 (黑名單中的印表機除外)。</translation>

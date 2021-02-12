@@ -4070,6 +4070,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5627676517703583263">Surf smart med Chrome</translation>
 <translation id="5627832140542566187">Skjermretning</translation>
 <translation id="562935524653278697">Administratoren din har slått av synkronisering av bokmerker, logg, passord og andre innstillinger du har.</translation>
+<translation id="5631017369956619646">CPU-bruk</translation>
 <translation id="5632059346822207074">Nettstedet ber om tillatelse. Trykk på Ctrl + Frem for å svare</translation>
 <translation id="5632566673632479864">Kontoen din (<ph name="EMAIL" />) er ikke tillatt som primærkonto lenger. Siden denne kontoen administreres av <ph name="DOMAIN" />, slettes bokmerkene, loggen, passordene og andre innstillinger du har, fra denne enheten.</translation>
 <translation id="5632592977009207922">Laster ned, <ph name="PERCENT_REMAINING" /> % gjenstår</translation>
@@ -4207,6 +4208,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5798301976526354562">Tekststørrelse (gjelder også for direkteteksting)</translation>
 <translation id="579907812742603813">beskyttet innhold</translation>
 <translation id="579915268381781820">Sikkerhetsnøkkelen er fjernet.</translation>
+<translation id="5799478978078236781">Få tips om, tilbud på og oppdateringer for <ph name="DEVICE_TYPE" />, og gi tilbakemeldinger.</translation>
 <translation id="5799508265798272974">Virtuell Linux-maskin: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Målfilen har blitt komprimert eller fjernet siden siste nedlasting</translation>
 <translation id="5801568494490449797">Innstillinger</translation>
@@ -6023,6 +6025,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7880823633812189969">Lokale data slettes når du starter på nytt</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Se konto</translation>
+<translation id="7883792253546618164">Du kan avslutte abonnementet når som helst.</translation>
 <translation id="7885253890047913815">Nylige destinasjoner</translation>
 <translation id="7886605625338676841">e-SIM-kort</translation>
 <translation id="7887334752153342268">Dupliser</translation>

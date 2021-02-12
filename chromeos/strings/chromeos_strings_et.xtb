@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Tuvastati hõiveportaal</translation>
 <translation id="3188257591659621405">Minu failid</translation>
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
+<translation id="3226405216343213872">Skannerite otsimine</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="3268178239013324452">Ebaõnnestus – luuk on avatud</translation>
 <translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
@@ -147,6 +148,7 @@
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Prinditöö tühistamiseks vajutage sisestusklahvi.</translation>
 <translation id="4646949265910132906">Turvaline WiFi-ühendus</translation>
+<translation id="4652335678334611408">Salvesta seansi logi</translation>
 <translation id="4665014895760275686">Tootja</translation>
 <translation id="467510802200863975">Paroolid ei kattu</translation>
 <translation id="467715984478005772">Kahtlustatakse tulemüüri</translation>
@@ -278,6 +280,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannimine on lõpetatud. Skanniti üks leht.}other{Skannimine on lõpetatud. Skanniti {NUMBER_OF_PAGES} lehte}}</translation>
+<translation id="7449585358422953039">Seadet haldab <ph name="MANAGER" />.</translation>
 <translation id="7469648432129124067">Tuvastati portaal</translation>
 <translation id="7487067081878637334">Tehnoloogia</translation>
 <translation id="7490813197707563893">MAC-aadress</translation>

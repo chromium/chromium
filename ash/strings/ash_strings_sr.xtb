@@ -266,7 +266,6 @@
 <translation id="3226991577105957773">и још <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Није доступна ниједна мобилна мрежа</translation>
 <translation id="3249513730522716925">Прозор <ph name="WINDOW_TITLE" /> је премештен са радне површине <ph name="ACTIVE_DESK" /> на радну површину <ph name="TARGET_DESK" /></translation>
-<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /> одсто.</translation>
 <translation id="3255483164551725916">Шта можеш да радиш?</translation>
 <translation id="3269597722229482060">Десни клик</translation>
 <translation id="3289674678944039601">Пуни се преко адаптера</translation>
@@ -695,6 +694,7 @@
 <translation id="7029814467594812963">Изађи из сесије</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google помоћник</translation>
 <translation id="7042322267639375032">Скупите област статуса</translation>
+<translation id="7055910611768509537">Писаљка није коришћена дуже од недељу дана</translation>
 <translation id="7066646422045619941">Ову мрежу је онемогућио администратор.</translation>
 <translation id="7067196344162293536">Аутоматски ротирај</translation>
 <translation id="7068360136237591149">Отвори датотеке</translation>

@@ -4039,7 +4039,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5610038042047936818">Passer en mode Appareil photo</translation>
 <translation id="561030196642865721">Les cookies tiers sont autorisés sur ce site</translation>
 <translation id="5612734644261457353">Désolé, nous ne pouvons toujours pas valider votre mot de passe. Remarque : si vous l'avez modifié dernièrement, votre nouveau mot de passe ne sera appliqué qu'une fois que vous vous serez déconnecté. Veuillez donc utiliser votre ancien mot de passe.</translation>
-<translation id="561308544008485315">Voice Match aide l'Assistant Google à identifier votre voix sur votre Chromebook et à vous distinguer. Pour économiser la batterie, "Hey Google" n'est activé que si votre appareil est branché sur une source d'alimentation. Pour modifier ce réglage, accédez aux paramètres.
+<translation id="561308544008485315">Voice Match aide l'Assistant Google à identifier votre voix sur votre Chromebook et à vous reconnaître. Pour économiser la batterie, "Hey Google" n'est activé que si votre appareil est branché sur une source d'alimentation. Pour modifier ce réglage, accédez aux paramètres.
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />À noter<ph name="END_BOLD" /> : Il est possible qu'une personne ayant une voix similaire ou un enregistrement de votre voix puisse accéder à vos résultats personnalisés. Vous pourrez désactiver Voice Match plus tard dans les paramètres de l'Assistant.</translation>
 <translation id="5614190747811328134">Avertissement utilisateur</translation>
@@ -4062,6 +4062,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5627676517703583263">Naviguez intelligemment avec Chrome</translation>
 <translation id="5627832140542566187">Orientation de l'écran</translation>
 <translation id="562935524653278697">Votre administrateur a désactivé la synchronisation de vos favoris, de votre historique, de vos mots de passe et d'autres paramètres.</translation>
+<translation id="5631017369956619646">Utilisation de l'UC</translation>
 <translation id="5632059346822207074">Autorisation demandée, appuyez sur Ctrl+Suivant pour répondre</translation>
 <translation id="5632566673632479864">Votre compte <ph name="EMAIL" /> n'est plus autorisé comme compte principal. Étant donné que ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et les autres paramètres seront effacés de cet appareil.</translation>
 <translation id="5632592977009207922">Téléchargement en cours, <ph name="PERCENT_REMAINING" /> % restant</translation>

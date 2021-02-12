@@ -266,7 +266,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3226991577105957773">i jeszcze <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Brak dostępnych sieci komórkowych</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
-<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, siła sygnału <ph name="SIGNAL_STRENGTH" /> procent.</translation>
 <translation id="3255483164551725916">Co potrafisz?</translation>
 <translation id="3269597722229482060">Kliknij prawym</translation>
 <translation id="3289674678944039601">Ładowanie z zasilacza.</translation>
@@ -694,6 +693,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7029814467594812963">Zakończ sesję</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asystent Google</translation>
 <translation id="7042322267639375032">Zwiń pasek stanu</translation>
+<translation id="7055910611768509537">Rysik nie był używany od ponad tygodnia</translation>
 <translation id="7066646422045619941">Ta sieć została wyłączona przez administratora.</translation>
 <translation id="7067196344162293536">Obracanie automatyczne</translation>
 <translation id="7068360136237591149">Otwórz pliki</translation>

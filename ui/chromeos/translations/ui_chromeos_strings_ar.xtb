@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">الملف أو الدليل غير قابل للاستخدام.</translation>
 <translation id="1363028406613469049">مقطع صوتي</translation>
 <translation id="1378727793141957596">‏مرحبًا بك في Google Drive!</translation>
+<translation id="1379911846207762492">يمكنك إتاحة الوصول إلى الملفات بلا إنترنت عند عدم توفّر اتصال بالإنترنت.</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1395262318152388157">شريط تمرير البحث</translation>
 <translation id="1404323374378969387">النرويجية</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">‏لفتح الملفات باستخدام <ph name="APP_NAME" />، يُرجى نسخها أولاً إلى مجلد ملفات نظام التشغيل Windows.</translation>
 <translation id="3556731189587832921">الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الدولية</translation>
 <translation id="357479282490346887">الليتوانية</translation>
+<translation id="3592251141500063301">تعذَّرت إتاحة الملف "<ph name="FILE_NAME" />" بلا اتصال بالإنترنت.</translation>
 <translation id="3603385196401704894">الفرنسية الكندية</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>

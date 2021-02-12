@@ -277,6 +277,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कॅन करणे पूर्ण झाले. एक पेज स्कॅन केले}other{स्कॅन करणे पूर्ण झाले. {NUMBER_OF_PAGES} पेज स्कॅन केली}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> ने व्यवस्थापित केलेले.</translation>
 <translation id="7469648432129124067">पोर्टल डिटेक्ट केले</translation>
 <translation id="7487067081878637334">तंत्रज्ञान</translation>
 <translation id="7490813197707563893">MAC पत्ता</translation>

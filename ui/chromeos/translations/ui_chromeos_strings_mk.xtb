@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Датотеката или директориумот не може да се користат.</translation>
 <translation id="1363028406613469049">Песна</translation>
 <translation id="1378727793141957596">Добре дојдовте во Google Диск!</translation>
+<translation id="1379911846207762492">Може да ги направите датотеките да бидат достапни офлајн за да пристапувате до нив кога нема да имате интернет-врска.</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1395262318152388157">Барај лизгач</translation>
 <translation id="1404323374378969387">норвешки</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">За да отворате датотеки со <ph name="APP_NAME" />, прво копирајте ги во папката со датотеки на Windows.</translation>
 <translation id="3556731189587832921">англиски (САД) со меѓународна компјутерска тастатура</translation>
 <translation id="357479282490346887">литвански</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" /> не можеше да се направи да биде достапна офлајн</translation>
 <translation id="3603385196401704894">канадско француска</translation>
 <translation id="3606220979431771195">Турска-F</translation>
 <translation id="3616113530831147358">Аудио</translation>

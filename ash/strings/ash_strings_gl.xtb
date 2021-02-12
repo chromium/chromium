@@ -127,7 +127,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1989113344093894667">Non se puido realizar unha captura do contido</translation>
 <translation id="1993072747612765854">Máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Apagar</translation>
-<translation id="1998100899771863792">Este ordenador</translation>
+<translation id="1998100899771863792">Este escritorio</translation>
 <translation id="2012624427112548395">Ctrl+Buscar+H</translation>
 <translation id="2016340657076538683">Escribe unha mensaxe</translation>
 <translation id="2018630726571919839">Cóntame un chiste</translation>
@@ -266,7 +266,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> máis</translation>
 <translation id="3236488194889173876">Non hai ningunha rede móbil dispoñible</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
-<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />; intensidade do sinal: <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
 <translation id="3269597722229482060">Facer clic co botón dereito</translation>
 <translation id="3289674678944039601">Cargando cun adaptador</translation>

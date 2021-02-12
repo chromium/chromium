@@ -266,7 +266,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3226991577105957773">et <ph name="COUNT" /> autres</translation>
 <translation id="3236488194889173876">Aucun réseau mobile accessible</translation>
 <translation id="3249513730522716925">La fenêtre <ph name="WINDOW_TITLE" /> a passé du bureau <ph name="ACTIVE_DESK" /> au bureau <ph name="TARGET_DESK" /></translation>
-<translation id="3252068179161473151"><ph name="WIRELESS_PROVIDER" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %.</translation>
 <translation id="3255483164551725916">Que peux-tu faire?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3289674678944039601">Recharge par l'adaptateur</translation>
@@ -695,6 +694,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7029814467594812963">Fermer la session</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone de notifications</translation>
+<translation id="7055910611768509537">Le stylet n'a pas été utilisé depuis plus d'une semaine</translation>
 <translation id="7066646422045619941">Ce réseau est désactivé par votre administrateur.</translation>
 <translation id="7067196344162293536">Rotation automatique</translation>
 <translation id="7068360136237591149">Ouvrir des fichiers</translation>

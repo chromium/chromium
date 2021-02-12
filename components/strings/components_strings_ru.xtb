@@ -717,6 +717,7 @@
 <translation id="3761718714832595332">Скрыть статус</translation>
 <translation id="3765032636089507299">Страница безопасного просмотра находится в разработке.</translation>
 <translation id="3765588406864124894">Почтовый ящик 9</translation>
+<translation id="3767485424735936570">Администратор не рекомендует копировать и вставлять этот контент в командную строку <ph name="VM_NAME" />.</translation>
 <translation id="3778403066972421603">Хотите сохранить карту в аккаунте Google и на этом устройстве?</translation>
 <translation id="3780694243617746492">Выходной лоток</translation>
 <translation id="3781428340399460090">Ярко-розовый</translation>
@@ -1085,7 +1086,6 @@
 <translation id="519422657042045905">В этот PDF-файл нельзя добавлять заметки</translation>
 <translation id="5201306358585911203">Подтвердите действие</translation>
 <translation id="5205222826937269299">Введите имя или название</translation>
-<translation id="5208899478506185232">Ваш код для сервиса <ph name="TOP_ORIGIN" />: <ph name="ONE_TIME_CODE" /> (получен на сайте <ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="5209518306177824490">Отпечаток SHA-1</translation>
 <translation id="5215116848420601511">Способы оплаты и адреса из Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1116,6 +1116,7 @@
 <translation id="5299298092464848405">Не удалось выполнить анализ политики</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5306593769196050043">Оба листа</translation>
+<translation id="5307166000025436103">ОК</translation>
 <translation id="5308380583665731573">Подключение</translation>
 <translation id="5308689395849655368">Отчеты о сбоях отключены.</translation>
 <translation id="5314967030527622926">Изготовление буклета</translation>
@@ -1446,6 +1447,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{Нет}=1{С 1 сайта (вы останетесь в аккаунте Google)}one{С # сайта (вы останетесь в аккаунте Google)}few{С # сайтов (вы останетесь в аккаунте Google)}many{С # сайтов (вы останетесь в аккаунте Google)}other{С # сайта (вы останетесь в аккаунте Google)}}</translation>
 <translation id="6648459603387803038">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chrome на этом устройстве.</translation>
 <translation id="6648524591329069940">Шрифты с засечками</translation>
+<translation id="6651270836885078973">Управляет:</translation>
 <translation id="6652101503459149953">Использовать Windows Hello</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="666259744093848177">(код конвертирован с языка для архитектуры x86_64)</translation>

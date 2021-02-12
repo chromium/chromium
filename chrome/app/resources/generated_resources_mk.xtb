@@ -4076,6 +4076,7 @@
 <translation id="5627676517703583263">Прелистувајте паметно со Chrome</translation>
 <translation id="5627832140542566187">Ориентација на екранот</translation>
 <translation id="562935524653278697">Администраторот ја оневозможил синхронизацијата на обележувачите, историјата, лозинките и другите поставки.</translation>
+<translation id="5631017369956619646">Употреба на ЦПУ</translation>
 <translation id="5632059346822207074">Побарана е дозвола. Притиснете Ctrl + „Напред“ за да одговорите</translation>
 <translation id="5632566673632479864">Вашата сметка <ph name="EMAIL" /> веќе не е дозволена како примарна сметка. Бидејќи <ph name="DOMAIN" /> управува со сметкава, обележувачите, историјата, лозинките и другите поставки ќе се избришат од уредов.</translation>
 <translation id="5632592977009207922">Се презема, уште <ph name="PERCENT_REMAINING" /> %</translation>
@@ -4213,6 +4214,7 @@
 <translation id="5798301976526354562">Големина на текст (се применува и на „Автоматски титлови“)</translation>
 <translation id="579907812742603813">заштитени содржини</translation>
 <translation id="579915268381781820">Вашиот безбедносен клуч е отстранет.</translation>
+<translation id="5799478978078236781">Добивајте совети, понуди и новости за <ph name="DEVICE_TYPE" /> и споделувајте повратни информации.</translation>
 <translation id="5799508265798272974">Виртуелен уред на Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Целната датотека е отсечена или отстранета од последното преземање.</translation>
 <translation id="5801568494490449797">Претпочитани вредности</translation>
@@ -6029,6 +6031,7 @@
 <translation id="7880823633812189969">Локалните податоци ќе се избришат кога ќе рестартирате</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Прикажи сметка</translation>
+<translation id="7883792253546618164">Отпишете се во секое време.</translation>
 <translation id="7885253890047913815">Неодамнешни дестинации</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Направи дупликат</translation>

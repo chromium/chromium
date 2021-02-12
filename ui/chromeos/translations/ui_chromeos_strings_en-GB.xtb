@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">The file or the directory is not usable.</translation>
 <translation id="1363028406613469049">Track</translation>
 <translation id="1378727793141957596">Welcome to Google Drive!</translation>
+<translation id="1379911846207762492">You can make files available offline for access when you don't have an Internet connection.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1395262318152388157">Seek slider</translation>
 <translation id="1404323374378969387">Norwegian</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">To open files with <ph name="APP_NAME" />, first copy them to the Windows files folder.</translation>
 <translation id="3556731189587832921">English (US) with International PC keyboard</translation>
 <translation id="357479282490346887">Lithuanian</translation>
+<translation id="3592251141500063301">Could not make <ph name="FILE_NAME" /> available offline</translation>
 <translation id="3603385196401704894">Canadian French</translation>
 <translation id="3606220979431771195">Turkish-F</translation>
 <translation id="3616113530831147358">Audio</translation>

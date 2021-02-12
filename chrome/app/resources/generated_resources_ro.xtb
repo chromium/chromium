@@ -4047,6 +4047,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5627676517703583263">Navighează inteligent folosind Chrome</translation>
 <translation id="5627832140542566187">Orientarea afișajului</translation>
 <translation id="562935524653278697">Administratorul a dezactivat sincronizarea marcajelor, istoricului, parolelor și a altor setări.</translation>
+<translation id="5631017369956619646">Utilizarea procesorului</translation>
 <translation id="5632059346822207074">Permisiune necesară, apasă Ctrl + tasta Înainte pentru a răspunde</translation>
 <translation id="5632566673632479864">Contul tău <ph name="EMAIL" /> nu mai are permisiunea de a fi contul principal. Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv.</translation>
 <translation id="5632592977009207922">Se descarcă, a mai rămas <ph name="PERCENT_REMAINING" />%</translation>
@@ -4183,6 +4184,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5797070761912323120">Google poate folosi istoricul pentru a personaliza Căutarea, anunțurile și alte servicii Google</translation>
 <translation id="5798301976526354562">Dimensiunea textului (se aplică și pentru Subtitrări live)</translation>
 <translation id="579915268381781820">Cheia de securitate a fost eliminată.</translation>
+<translation id="5799478978078236781">Primește sfaturi, oferte și actualizări referitoare la <ph name="DEVICE_TYPE" /> și trimite feedback.</translation>
 <translation id="5799508265798272974">Mașină virtuală Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Fișierul de destinație a fost trunchiat sau eliminat de la ultima descărcare.</translation>
 <translation id="5801568494490449797">Preferințe</translation>
@@ -5989,6 +5991,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7880823633812189969">Datele locale vor fi șterse când repornești</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Afișați contul</translation>
+<translation id="7883792253546618164">Te poți dezabona în orice moment.</translation>
 <translation id="7885253890047913815">Destinații recente</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Dublură</translation>

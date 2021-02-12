@@ -4061,6 +4061,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5627676517703583263">Browse smart with Chrome</translation>
 <translation id="5627832140542566187">Display orientation</translation>
 <translation id="562935524653278697">Your administrator has disabled syncing of your bookmarks, history, passwords and other settings.</translation>
+<translation id="5631017369956619646">CPU Usage</translation>
 <translation id="5632059346822207074">Permission requested, press Ctrl + Forward to respond</translation>
 <translation id="5632566673632479864">Your account <ph name="EMAIL" /> is no longer allowed as the primary account. Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device.</translation>
 <translation id="5632592977009207922">Downloading, <ph name="PERCENT_REMAINING" />% remaining</translation>
@@ -4198,6 +4199,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5798301976526354562">Text size (also applies to Live Caption)</translation>
 <translation id="579907812742603813">protected content</translation>
 <translation id="579915268381781820">Your security key was removed.</translation>
+<translation id="5799478978078236781">Get <ph name="DEVICE_TYPE" /> tips, offers and updates, and share feedback.</translation>
 <translation id="5799508265798272974">Linux Virtual Machine: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Destination file was truncated or removed since last download.</translation>
 <translation id="5801568494490449797">Preferences</translation>
@@ -6011,6 +6013,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7880823633812189969">Local data will be deleted when you restart</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">View Account</translation>
+<translation id="7883792253546618164">Unsubscribe at any time.</translation>
 <translation id="7885253890047913815">Recent destinations</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Duplicate</translation>

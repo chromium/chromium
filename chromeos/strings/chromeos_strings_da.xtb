@@ -90,6 +90,7 @@
 <translation id="315738237743207937">Der blev registreret en loginportal</translation>
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
+<translation id="3226405216343213872">Søger efter scannere</translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
 <translation id="3268178239013324452">Handlingen mislykkedes – Åben låge</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
@@ -147,6 +148,7 @@
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
+<translation id="4652335678334611408">Gem sessionslog</translation>
 <translation id="4665014895760275686">Producent</translation>
 <translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>
 <translation id="467715984478005772">Der er muligvis en firewall</translation>

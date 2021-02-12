@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">O ficheiro ou o diretório não pode ser utilizado.</translation>
 <translation id="1363028406613469049">Faixa</translation>
 <translation id="1378727793141957596">Bem-vindo ao Google Drive!</translation>
+<translation id="1379911846207762492">Pode disponibilizar ficheiros offline para aceder quando não tiver uma ligação à Internet.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1395262318152388157">Controlo de deslize da procura</translation>
 <translation id="1404323374378969387">Norueguês</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">Para abrir ficheiros com a app <ph name="APP_NAME" />, copie-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="3556731189587832921">Inglês (EUA) com teclado de PC internacional</translation>
 <translation id="357479282490346887">Lituânia</translation>
+<translation id="3592251141500063301">Não foi possível disponibilizar offline o ficheiro <ph name="FILE_NAME" />.</translation>
 <translation id="3603385196401704894">Francês canadiano</translation>
 <translation id="3606220979431771195">Turco-F</translation>
 <translation id="3616113530831147358">Áudio</translation>

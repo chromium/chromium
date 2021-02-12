@@ -724,6 +724,7 @@
 <translation id="3761718714832595332">Απόκρυψη κατάστασης</translation>
 <translation id="3765032636089507299">Η σελίδα Ασφαλούς περιήγησης είναι υπό κατασκευή.</translation>
 <translation id="3765588406864124894">Γραμματοκιβώτιο 9</translation>
+<translation id="3767485424735936570">Η αντιγραφή και η επικόλληση αυτού του περιεχομένου στο <ph name="VM_NAME" /> δεν συνιστάται από την πολιτική διαχειριστή.</translation>
 <translation id="3778403066972421603">Θέλετε να αποθηκεύσετε αυτήν την κάρτα στον Λογαριασμό σας Google και σε αυτήν τη συσκευή;</translation>
 <translation id="3780694243617746492">Δίσκος εξόδου</translation>
 <translation id="3781428340399460090">Έντονο ροζ</translation>
@@ -1098,7 +1099,6 @@
 <translation id="519422657042045905">Ο σχολιασμός δεν διατίθεται</translation>
 <translation id="5201306358585911203">Μια ενσωματωμένη σελίδα σε αυτήν τη σελίδα λέει</translation>
 <translation id="5205222826937269299">Απαιτείται όνομα</translation>
-<translation id="5208899478506185232">Το <ph name="ONE_TIME_CODE" /> είναι ο κωδικός σας για το <ph name="TOP_ORIGIN" /> (μέσω <ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="5209518306177824490">Αποτύπωμα SHA-1</translation>
 <translation id="5215116848420601511">Τρόποι πληρωμής και διευθύνσεις που χρησιμοποιούν το Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1129,6 +1129,7 @@
 <translation id="5299298092464848405">Σφάλμα ανάλυσης πολιτικής</translation>
 <translation id="5300589172476337783">Εμφάνιση</translation>
 <translation id="5306593769196050043">Και τα δύο φύλλα</translation>
+<translation id="5307166000025436103">ΟΚ</translation>
 <translation id="5308380583665731573">Σύνδεση</translation>
 <translation id="5308689395849655368">Η αναφορά σφαλμάτων είναι απενεργοποιημένη.</translation>
 <translation id="5314967030527622926">Εργαλείο δημιουργίας φυλλαδίων</translation>
@@ -1459,6 +1460,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{Κανένας}=1{Από 1 ιστότοπο (δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google)}other{Από # ιστοτόπους (δεν θα αποσυνδεθείτε από τον Λογαριασμό σας Google)}}</translation>
 <translation id="6648459603387803038">Ο διαχειριστής σας μπορεί να αλλάξει τη ρύθμιση του προγράμματος περιήγησής σας απομακρυσμένα. Η διαχείριση της δραστηριότητας σε αυτήν τη συσκευή μπορεί επίσης να πραγματοποιηθεί εκτός Chrome.</translation>
 <translation id="6648524591329069940">Γραμματοσειρά Serif</translation>
+<translation id="6651270836885078973">Η διαχείριση γίνεται από:</translation>
 <translation id="6652101503459149953">Χρήση Windows Hello</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="666259744093848177">(x86_64 μεταφρασμένο)</translation>

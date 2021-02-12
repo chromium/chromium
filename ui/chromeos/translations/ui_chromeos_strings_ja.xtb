@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">このファイルまたはディレクトリは使用できません。</translation>
 <translation id="1363028406613469049">トラック</translation>
 <translation id="1378727793141957596">Google ドライブへようこそ。</translation>
+<translation id="1379911846207762492">インターネットに接続していないときにファイルをオフラインで使用可能にできます。</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1395262318152388157">シーク スライダー</translation>
 <translation id="1404323374378969387">ノルウェー語</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
 <translation id="3556731189587832921">英語（アメリカ）（インターナショナル PC）キーボード</translation>
 <translation id="357479282490346887">リトアニア語</translation>
+<translation id="3592251141500063301"><ph name="FILE_NAME" /> をオフラインで使用するよう設定できませんでした</translation>
 <translation id="3603385196401704894">フランス語（カナダ）</translation>
 <translation id="3606220979431771195">トルコ語-F</translation>
 <translation id="3616113530831147358">音声</translation>

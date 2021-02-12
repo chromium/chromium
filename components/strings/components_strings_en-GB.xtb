@@ -723,6 +723,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3761718714832595332">Hide status</translation>
 <translation id="3765032636089507299">The Safe Browsing page is under construction.</translation>
 <translation id="3765588406864124894">Mailbox 9</translation>
+<translation id="3767485424735936570">Copying and pasting this content to <ph name="VM_NAME" /> is not recommended by administrator policy</translation>
 <translation id="3778403066972421603">Do you want to save this card to your Google Account and on this device?</translation>
 <translation id="3780694243617746492">Output bin</translation>
 <translation id="3781428340399460090">Hot pink</translation>
@@ -1096,7 +1097,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="519422657042045905">Annotation not available</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
 <translation id="5205222826937269299">Name required</translation>
-<translation id="5208899478506185232"><ph name="ONE_TIME_CODE" /> is your code for <ph name="TOP_ORIGIN" /> (through <ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="5209518306177824490">SHA-1 Fingerprint</translation>
 <translation id="5215116848420601511">Payment methods and addresses using Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1127,6 +1127,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5299298092464848405">Error parsing policy</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5306593769196050043">Both sheets</translation>
+<translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5308689395849655368">Crash reporting is disabled.</translation>
 <translation id="5314967030527622926">Booklet maker</translation>
@@ -1457,6 +1458,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6646269444027925224">{COUNT,plural, =0{None}=1{From 1 site (you won't be signed out of your Google Account)}other{From # sites (you won't be signed out of your Google Account)}}</translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>
 <translation id="6648524591329069940">Serif Font</translation>
+<translation id="6651270836885078973">Managed by:</translation>
 <translation id="6652101503459149953">Use Windows Hello</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="666259744093848177">(x86_64 translated)</translation>

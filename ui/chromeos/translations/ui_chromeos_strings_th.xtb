@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">ไฟล์หรือไดเรกทอรีใช้งานไม่ได้</translation>
 <translation id="1363028406613469049">แทร็ก</translation>
 <translation id="1378727793141957596">ยินดีต้อนรับสู่ Google ไดรฟ์!</translation>
+<translation id="1379911846207762492">คุณทำให้ไฟล์ใช้งานแบบออฟไลน์ได้เพื่อเข้าถึงเมื่อไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1395262318152388157">แถบเลื่อนสำหรับกรอวิดีโอ</translation>
 <translation id="1404323374378969387">นอร์เวย์</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้คัดลอกไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
 <translation id="3556731189587832921">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์พีซีแบบสากล</translation>
 <translation id="357479282490346887">ลิทัวเนีย</translation>
+<translation id="3592251141500063301">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ไม่ได้</translation>
 <translation id="3603385196401704894">ฝรั่งเศสแบบแคนาดา</translation>
 <translation id="3606220979431771195">ภาษาตุรกี-F</translation>
 <translation id="3616113530831147358">เสียง</translation>

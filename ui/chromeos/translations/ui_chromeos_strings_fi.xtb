@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Tiedosto tai hakemisto ei ole käytettävissä.</translation>
 <translation id="1363028406613469049">Raita</translation>
 <translation id="1378727793141957596">Tervetuloa Google Driveen!</translation>
+<translation id="1379911846207762492">Voit ottaa tiedostoja käyttöön offline-tilassa, jotta voit käyttää niitä ilman internetyhteyttä.</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1395262318152388157">Kelaamisen liukusäädin</translation>
 <translation id="1404323374378969387">norja</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">Jos haluat avata tiedoston sovelluksella <ph name="APP_NAME" />, kopioi se ensin Windowsin tiedostot ‑kansioon.</translation>
 <translation id="3556731189587832921">englanti (Yhdysvallat), kansainvälinen PC-näppäimistö</translation>
 <translation id="357479282490346887">liettua</translation>
+<translation id="3592251141500063301">Tiedoston (<ph name="FILE_NAME" />) käyttöönotto offline-tilassa ei onnistunut</translation>
 <translation id="3603385196401704894">ranska (Kanada)</translation>
 <translation id="3606220979431771195">Turkki (tyyppi F)</translation>
 <translation id="3616113530831147358">Ääni</translation>

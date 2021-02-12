@@ -147,6 +147,7 @@
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Басып шығарудан бас тарту үшін "Enter" пернесін басыңыз.</translation>
 <translation id="4646949265910132906">Қорғалған Wi-Fi байланысы</translation>
+<translation id="4652335678334611408">Сеанс журналын сақтау</translation>
 <translation id="4665014895760275686">Өндірушісі</translation>
 <translation id="467510802200863975">Құпия сөздер сәйкес келмейді.</translation>
 <translation id="467715984478005772">Брандмауэр болуы мүмкін.</translation>
@@ -277,6 +278,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканерлеу аяқталды. 1 бет сканерленді.}other{Сканерлеу аяқталды. {NUMBER_OF_PAGES} бет сканерленді.}}</translation>
+<translation id="7449585358422953039"><ph name="MANAGER" /> басқарады.</translation>
 <translation id="7469648432129124067">Портал анықталды.</translation>
 <translation id="7487067081878637334">Технология</translation>
 <translation id="7490813197707563893">MAC мекенжайы</translation>

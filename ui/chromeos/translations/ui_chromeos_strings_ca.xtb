@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">El fitxer o directori no es pot fer servir.</translation>
 <translation id="1363028406613469049">Pista</translation>
 <translation id="1378727793141957596">Us donem la benvinguda a Google Drive.</translation>
+<translation id="1379911846207762492">Pots fer que els fitxers estiguin disponibles sense connexió per accedir-hi quan no tinguis Internet.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1395262318152388157">Control lliscant de cerca</translation>
 <translation id="1404323374378969387">Noruec</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">Per obrir fitxers amb <ph name="APP_NAME" />, primer copia'ls a la carpeta de fitxers de Windows.</translation>
 <translation id="3556731189587832921">Anglès (EUA) amb teclat internacional (PC)</translation>
 <translation id="357479282490346887">Lituà</translation>
+<translation id="3592251141500063301">No s'ha pogut fer que <ph name="FILE_NAME" /> estigui disponible sense connexió</translation>
 <translation id="3603385196401704894">Francès canadenc</translation>
 <translation id="3606220979431771195">Turc-F</translation>
 <translation id="3616113530831147358">Àudio</translation>

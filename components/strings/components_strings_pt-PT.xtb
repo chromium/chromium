@@ -724,6 +724,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3761718714832595332">Ocultar estado</translation>
 <translation id="3765032636089507299">A página de Navegação segura está em construção.</translation>
 <translation id="3765588406864124894">Caixa de correio 9</translation>
+<translation id="3767485424735936570">A ação de copiar e colar este conteúdo para <ph name="VM_NAME" /> não é recomendada pela política do administrador.</translation>
 <translation id="3778403066972421603">Pretende guardar este cartão na sua Conta Google e neste dispositivo?</translation>
 <translation id="3780694243617746492">Tabuleiro de saída</translation>
 <translation id="3781428340399460090">Rosa choque</translation>
@@ -1097,7 +1098,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="519422657042045905">As notas não estão disponíveis.</translation>
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
 <translation id="5205222826937269299">Nome obrigatório</translation>
-<translation id="5208899478506185232"><ph name="ONE_TIME_CODE" /> é o seu código para <ph name="TOP_ORIGIN" /> (através de <ph name="EMBEDDED_ORIGIN" />).</translation>
 <translation id="5209518306177824490">Impressão digital SHA-1</translation>
 <translation id="5215116848420601511">Métodos de pagamento e endereços com o Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1128,6 +1128,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5299298092464848405">Erro ao analisar a política</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5306593769196050043">Ambas as folhas</translation>
+<translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5308689395849655368">O relatório de falha está desativado.</translation>
 <translation id="5314967030527622926">Criador de folhetos</translation>
@@ -1458,6 +1459,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6646269444027925224">{COUNT,plural, =0{Nenhum}=1{De 1 site (a sessão na sua Conta Google não é terminada).}other{De # sites (a sessão na sua Conta Google não é terminada).}}</translation>
 <translation id="6648459603387803038">O administrador pode alterar a configuração do navegador remotamente. A atividade neste dispositivo também pode ser gerida fora do Chrome.</translation>
 <translation id="6648524591329069940">Tipo de letra Serif</translation>
+<translation id="6651270836885078973">Gerido por:</translation>
 <translation id="6652101503459149953">Utilizar o Windows Hello</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="666259744093848177">(x86_64 traduzido)</translation>

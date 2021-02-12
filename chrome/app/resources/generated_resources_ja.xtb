@@ -4046,6 +4046,7 @@
 <translation id="5627676517703583263">Chrome で賢くブラウジング</translation>
 <translation id="5627832140542566187">ディスプレイの向き</translation>
 <translation id="562935524653278697">管理者がブックマーク、履歴、パスワードなどの設定の同期を無効にしました。</translation>
+<translation id="5631017369956619646">CPU 使用状況</translation>
 <translation id="5632059346822207074">権限がリクエストされました。対応するには、Ctrl+Forward キーを押してください</translation>
 <translation id="5632566673632479864">お使いのアカウント <ph name="EMAIL" /> は、メイン アカウントとして使用できなくなりました。このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから削除されます。</translation>
 <translation id="5632592977009207922">ダウンロードしています（残り <ph name="PERCENT_REMAINING" />%）</translation>
@@ -4182,6 +4183,7 @@
 <translation id="5797070761912323120">検索、広告、その他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
 <translation id="5798301976526354562">テキストのサイズ（自動字幕起こしにも適用）</translation>
 <translation id="579915268381781820">セキュリティ キーは削除されています。</translation>
+<translation id="5799478978078236781"><ph name="DEVICE_TYPE" /> のご利用のヒント、特典、最新情報を受け取って、フィードバックをお送りいただけます。</translation>
 <translation id="5799508265798272974">Linux 仮想マシン: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">対象ファイルは前回のダウンロード後に一部または全体が削除されました。</translation>
 <translation id="5801568494490449797">設定</translation>
@@ -5987,6 +5989,7 @@
 <translation id="7880823633812189969">再起動すると、ローカルデータが削除されます</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">アカウントを表示</translation>
+<translation id="7883792253546618164">登録はいつでも解除できます。</translation>
 <translation id="7885253890047913815">最近使用した送信先</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">タブを複製</translation>

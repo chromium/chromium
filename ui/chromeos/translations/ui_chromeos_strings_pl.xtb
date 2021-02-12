@@ -36,6 +36,7 @@
 <translation id="1358735829858566124">Plik lub katalog nie nadaje się do użycia.</translation>
 <translation id="1363028406613469049">Utwór</translation>
 <translation id="1378727793141957596">Dysk Google – witamy</translation>
+<translation id="1379911846207762492">Możesz udostępnić pliki w trybie offline, aby móc z nich korzystać bez połączenia z internetem.</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1395262318152388157">Suwak wyszukiwania</translation>
 <translation id="1404323374378969387">Norweski</translation>
@@ -234,6 +235,7 @@
 <translation id="3553048479571901246">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw skopiuj je do folderu Pliki systemu Windows.</translation>
 <translation id="3556731189587832921">Angielski (USA) z komputerową klawiaturą międzynarodową</translation>
 <translation id="357479282490346887">Litewski</translation>
+<translation id="3592251141500063301">Pliku <ph name="FILE_NAME" /> nie udało się udostępnić offline</translation>
 <translation id="3603385196401704894">kanadyjski francuski</translation>
 <translation id="3606220979431771195">Turecki (wersja F)</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
