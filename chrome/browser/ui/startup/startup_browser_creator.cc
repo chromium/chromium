@@ -954,9 +954,14 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
   // decision to show the picker should instead be on the previous call to
   // ShouldShowProfilePickerAtProcessLaunch() issued from
   // GetStartupProfilePath().
+  // Ephemeral guest is added here just for symmetry, once we use other ways to
+  // indicate that picker should get opened, we can remove both IsGuestSession()
+  // and IsEphemeralGuestProfile().
   if (ShouldShowProfilePickerAtProcessLaunch(
           g_browser_process->profile_manager(), command_line) &&
-      last_used_profile && last_used_profile->IsGuestSession()) {
+      last_used_profile &&
+      (last_used_profile->IsGuestSession() ||
+       last_used_profile->IsEphemeralGuestProfile())) {
     // The guest session is used to indicate the the profile picker should be
     // displayed on start-up. See GetStartupProfilePath().
     ShowUserManager(/*is_process_startup=*/process_startup);
