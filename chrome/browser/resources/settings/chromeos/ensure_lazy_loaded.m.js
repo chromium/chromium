@@ -9,15 +9,16 @@ export function ensureLazyLoaded() {
   if (!lazyLoadPromise) {
     const script = document.createElement('script');
     script.type = 'module';
-    script.src = './lazy_load.js';
+    script.src = './chromeos/lazy_load.js';
     document.body.appendChild(script);
     const lazyLoadPages = [
-      'os-settings-powerwash-dialog',
-      'os-settings-reset-page',
-      'os-settings-files-page',
-      'os-printing-page',
       'settings-crostini-page',
-      'settings-smb-shares-page',
+      'settings-date-time-page',
+      'os-settings-a11y-page',
+      'os-settings-files-page',
+      'os-settings-languages-section',
+      'os-settings-printing-page',
+      'os-settings-reset-page',
     ];
     if (!loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled')) {
       lazyLoadPages.push('os-settings-privacy-page');
