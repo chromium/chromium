@@ -83,9 +83,10 @@ rootWebArea
 ++++++group
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
-++++++++++++headerAsNonLandmark
-++++++++++++++staticText name='This should NOT have banner role.'
-++++++++++++++++inlineTextBox name='This should NOT have banner role.'
+++++++++++++genericContainer ignored
+++++++++++++++headerAsNonLandmark
+++++++++++++++++staticText name='This should NOT have banner role.'
+++++++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++main
 ++++++++headerAsNonLandmark
 ++++++++++staticText name='This should NOT have banner role.'
@@ -135,9 +136,10 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
-++++++++++++++headerAsNonLandmark
-++++++++++++++++staticText name='This should NOT have banner role.'
-++++++++++++++++++inlineTextBox name='This should NOT have banner role.'
+++++++++++++++genericContainer ignored
+++++++++++++++++headerAsNonLandmark
+++++++++++++++++++staticText name='This should NOT have banner role.'
+++++++++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++main
 ++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark
@@ -180,9 +182,10 @@ rootWebArea
 ++++++none ignored
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
-++++++++++++footerAsNonLandmark
-++++++++++++++staticText name='This should NOT have footer role.'
-++++++++++++++++inlineTextBox name='This should NOT have footer role.'
+++++++++++++genericContainer ignored
+++++++++++++++footerAsNonLandmark
+++++++++++++++++staticText name='This should NOT have footer role.'
+++++++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++main
 ++++++++footerAsNonLandmark
 ++++++++++staticText name='This should NOT have footer role.'
@@ -232,9 +235,10 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
-++++++++++++++footerAsNonLandmark
-++++++++++++++++staticText name='This should NOT have footer role.'
-++++++++++++++++++inlineTextBox name='This should NOT have footer role.'
+++++++++++++++genericContainer ignored
+++++++++++++++++footerAsNonLandmark
+++++++++++++++++++staticText name='This should NOT have footer role.'
+++++++++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++main
 ++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark

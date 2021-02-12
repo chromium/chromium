@@ -81,6 +81,9 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     // Enable display locking, used in some tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "CSSContentVisibilityHiddenMatchable");
+    // LayoutNGTable table trees have an additional row GenericContainer.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "LayoutNGTable");
     // kDisableAXMenuList is true on Chrome OS by default. Make it consistent
     // for these cross-platform tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
