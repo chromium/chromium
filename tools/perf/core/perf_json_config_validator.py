@@ -28,7 +28,7 @@ _VALID_PERF_POOLS = {
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
     'fuchsia-perf-fyi': {'chrome.tests'},
-    'lacros-eve-perf-fyi': {'chrome.tests'},
+    'lacros-eve-perf': {'chrome.tests'}
 }
 
 
@@ -136,8 +136,9 @@ def ValidateTestingBuilder(builder_name, builder_data):
     _ValidateSwarmingDimension(
         builder_name,
         swarming_dimensions=test_config['swarming'].get('dimension_sets', {}))
-    if (test_config['isolate_name'] in
-        ('performance_test_suite', 'performance_webview_test_suite')):
+    if (test_config['isolate_name'] in ('performance_test_suite',
+                                        'performance_test_suite_eve',
+                                        'performance_webview_test_suite')):
       _ValidateShardingData(builder_name, test_config)
       _ValidateBrowserType(builder_name, test_config)
 

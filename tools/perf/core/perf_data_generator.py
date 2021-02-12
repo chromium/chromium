@@ -278,30 +278,6 @@ FYI_BUILDERS = {
             'web_runner_pkg', 'chromedriver', 'chromium_builder_perf'
         ],
     },
-    'lacros-eve-perf-fyi': {
-        'tests': [
-            {
-                'isolate':
-                'performance_test_suite_eve',
-                'extra_args': [
-                    # The magic hostname that resolves to a CrOS device in the test lab
-                    '--remote=variable_chromeos_device_hostname',
-                ],
-            },
-        ],
-        'platform':
-        'lacros',
-        'target_bits':
-        64,
-        'dimension': {
-            'pool': 'chrome.tests',
-            # TODO(crbug.com/971204): Explicitly set the gpu to None to make
-            # chromium_swarming recipe_module ignore this dimension.
-            'gpu': None,
-            'os': 'ChromeOS',
-            'device_type': 'eve',
-        },
-    },
 }
 
 # These configurations are taken from chromium_perf.py in
@@ -871,7 +847,31 @@ BUILDERS = {
         },
         'perf_trigger':
         False,
-    }
+    },
+    'lacros-eve-perf': {
+        'tests': [
+            {
+                'isolate':
+                'performance_test_suite_eve',
+                'extra_args': [
+                    # The magic hostname that resolves to a CrOS device in the test lab
+                    '--remote=variable_chromeos_device_hostname',
+                ],
+            },
+        ],
+        'platform':
+        'lacros',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests',
+            # TODO(crbug.com/971204): Explicitly set the gpu to None to make
+            # chromium_swarming recipe_module ignore this dimension.
+            'gpu': None,
+            'os': 'ChromeOS',
+            'device_type': 'eve',
+        },
+    },
 }
 
 # pylint: enable=line-too-long
@@ -1047,7 +1047,7 @@ def get_scheduled_non_telemetry_benchmarks(perf_waterfall_file):
     # TODO(eyaich): Determine new way to generate ownership based
     # on the benchmark bot map instead of on the generated tests
     # for new perf recipe.
-    if not name in ('performance_test_suite',
+    if not name in ('performance_test_suite', 'performance_test_suite_eve',
                     'performance_webview_test_suite',
                     'performance_weblayer_test_suite'):
       test_names.add(name)

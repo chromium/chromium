@@ -1096,6 +1096,52 @@
       }
     ]
   },
+  "lacros-eve-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=lacros-chrome",
+          "--upload-results",
+          "--test-shard-map-filename=lacros-eve-perf_map.json",
+          "--remote=variable_chromeos_device_hostname"
+        ],
+        "isolate_name": "performance_test_suite_eve",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite_eve",
+        "override_compile_targets": [
+          "performance_test_suite_eve"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_type": "eve",
+              "gpu": null,
+              "os": "ChromeOS",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 1
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "linux-builder-perf": {
     "additional_compile_targets": [
       "chromedriver",

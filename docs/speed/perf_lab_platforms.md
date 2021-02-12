@@ -18,6 +18,10 @@
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
  * [android-pixel4a_power-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4a_power-perf): Android QD4A.200102.001.A1.
 
+## Chromeos
+
+ * [lacros-eve-perf](https://ci.chromium.org/p/chrome/builders/ci/lacros-eve-perf): .
+
 ## Linux
 
  * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
