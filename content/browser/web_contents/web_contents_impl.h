@@ -861,7 +861,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* render_frame_host,
       const LoadCommittedDetails& details,
       const mojom::DidCommitProvisionalLoadParams&) override;
-  bool CanOverscrollContent() const override;
   void NotifyChangedNavigationState(InvalidateTypes changed_flags) override;
   bool ShouldTransferNavigation(bool is_main_frame_navigation) override;
   std::vector<std::unique_ptr<NavigationThrottle>> CreateThrottlesForNavigation(
@@ -1520,6 +1519,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // response. Will inform |delegate_| of the change in status so that it may,
   // for example, update the throbber.
   void SetNotWaitingForResponse();
+
+  // Determines if content is allowed to overscroll. This value comes from the
+  // WebContentsDelegate, but can also be overridden by the WebContents.
+  bool CanOverscrollContent() const;
 
   // Inner WebContents Helpers -------------------------------------------------
   //

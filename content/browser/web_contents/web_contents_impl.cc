@@ -1215,15 +1215,15 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   delegate_ = delegate;
   if (delegate_) {
     delegate_->Attach(this);
-    // Ensure the visible RVH reflects the new delegate's preferences.
-    if (view_)
-      view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-
     // RenderFrameDevToolsAgentHost should not be told about the main renderer
     // frame until/unless there is a `delegate_`.
     if (GetMainFrame()->IsRenderFrameLive())
       RenderFrameDevToolsAgentHost::WebContentsMainFrameCreated(this);
   }
+
+  // Re-read values from the new delegate and apply them.
+  if (view_)
+    view_->SetOverscrollControllerEnabled(CanOverscrollContent());
 }
 
 RenderFrameHostImpl* WebContentsImpl::GetMainFrame() {
@@ -3633,6 +3633,7 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
       // newly created object and give it one of its own member variables.
       RenderWidgetHostView* widget_view = new_view->CreateViewForWidget(
           new_contents_impl->GetRenderViewHost()->GetWidget());
+      view_->SetOverscrollControllerEnabled(CanOverscrollContent());
       if (!renderer_started_hidden) {
         // RenderWidgets for frames always initialize as hidden. If the renderer
         // created this window as visible, then we show it here.
@@ -5358,7 +5359,6 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
 
   if (delegate_)
     delegate_->DidNavigateMainFramePostCommit(this);
-  view_->SetOverscrollControllerEnabled(CanOverscrollContent());
 
   // The following events will not fire again if the page is restored from the
   // BackForwardCache. So fire them ourselves if needed.
@@ -5396,11 +5396,7 @@ bool WebContentsImpl::CanOverscrollContent() const {
   // Disable overscroll when touch emulation is on. See crbug.com/369938.
   if (force_disable_overscroll_content_)
     return false;
-
-  if (delegate_)
-    return delegate_->CanOverscrollContent();
-
-  return false;
+  return delegate_ && delegate_->CanOverscrollContent();
 }
 
 void WebContentsImpl::OnThemeColorChanged(RenderViewHostImpl* source) {
@@ -6799,9 +6795,6 @@ void WebContentsImpl::RenderViewCreated(RenderViewHost* render_view_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderViewCreated",
                         "render_view_host",
                         static_cast<void*>(render_view_host));
-  if (delegate_) {
-    view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-  }
 }
 
 void WebContentsImpl::RenderViewReady(RenderViewHost* rvh) {
@@ -7589,10 +7582,6 @@ void WebContentsImpl::NotifySwappedFromRenderManager(RenderFrameHost* old_frame,
     if (old_rvh != new_rvh)
       NotifyViewSwapped(old_rvh, new_rvh);
 
-    // Make sure the visible RVH reflects the new delegate's preferences.
-    if (delegate_)
-      view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-
     auto* rwhv = static_cast<RenderWidgetHostViewBase*>(new_frame->GetView());
     if (rwhv) {
       rwhv->SetMainFrameAXTreeID(new_frame->GetAXTreeID());
@@ -7639,6 +7628,7 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
       "render_view_host", static_cast<void*>(render_view_host));
   RenderWidgetHostViewBase* rwh_view =
       view_->CreateViewForWidget(render_view_host->GetWidget());
+  view_->SetOverscrollControllerEnabled(CanOverscrollContent());
   rwh_view->SetSize(GetSizeForMainFrame());
 }
 

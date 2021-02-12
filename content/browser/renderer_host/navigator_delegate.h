@@ -72,8 +72,6 @@ class CONTENT_EXPORT NavigatorDelegate {
       const LoadCommittedDetails& details,
       const mojom::DidCommitProvisionalLoadParams& params) = 0;
 
-  virtual bool CanOverscrollContent() const = 0;
-
   // Notification to the Navigator embedder that navigation state has
   // changed. This method corresponds to
   // WebContents::NotifyNavigationStateChanged.
