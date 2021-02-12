@@ -19,6 +19,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/io_buffer.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom-forward.h"
 
@@ -35,16 +36,30 @@ namespace content {
 // and AppCache storage which live on the IO thread.
 class AppCacheInternalsUI : public WebUIController {
  public:
+  explicit AppCacheInternalsUI(WebUI* web_ui);
+  ~AppCacheInternalsUI() override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(AppCacheInternalsUI);
+};
+
+class AppCacheInternalsHandler : public WebUIMessageHandler {
+ public:
   struct ProxyResponseEnquiry {
     std::string manifest_url;
     int64_t group_id;
     int64_t response_id;
   };
 
-  explicit AppCacheInternalsUI(WebUI* web_ui);
-  ~AppCacheInternalsUI() override;
+  AppCacheInternalsHandler();
+  ~AppCacheInternalsHandler() override;
 
-  base::WeakPtr<AppCacheInternalsUI> AsWeakPtr() {
+  // WebUIMessageHandler implementation.
+  void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
+  void OnJavascriptAllowed() override;
+
+  base::WeakPtr<AppCacheInternalsHandler> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -52,9 +67,9 @@ class AppCacheInternalsUI : public WebUIController {
   class Proxy : public AppCacheStorage::Delegate,
                 public base::RefCountedThreadSafe<Proxy> {
    public:
-    friend class AppCacheInternalsUI;
+    friend class AppCacheInternalsHandler;
 
-    Proxy(base::WeakPtr<AppCacheInternalsUI> appcache_internals_ui,
+    Proxy(base::WeakPtr<AppCacheInternalsHandler> appcache_internals_handler,
           const base::FilePath& storage_partition);
 
    private:
@@ -63,14 +78,15 @@ class AppCacheInternalsUI : public WebUIController {
     ~Proxy() override;
 
     void RequestAllAppCacheInfo();
-    void DeleteAppCache(const std::string& manifest_url);
+    void DeleteAppCache(const std::string& manifest_url,
+                        const std::string& callback_id);
     void RequestAppCacheDetails(const std::string& manifest_url);
     void RequestFileDetails(const ProxyResponseEnquiry& response_enquiry);
     void HandleFileDetailsRequest();
     void OnAllAppCacheInfoReady(
         scoped_refptr<AppCacheInfoCollection> collection,
         int net_result_code);
-    void OnAppCacheInfoDeleted(const std::string& manifest_url,
+    void OnAppCacheInfoDeleted(const std::string& callback_id,
                                int net_result_code);
     void OnGroupLoaded(AppCacheGroup* appcache_group,
                        const GURL& manifest_gurl) override;
@@ -86,7 +102,7 @@ class AppCacheInternalsUI : public WebUIController {
         const scoped_refptr<ChromeAppCacheService>& chrome_appcache_service);
     void Shutdown();
 
-    base::WeakPtr<AppCacheInternalsUI> appcache_internals_ui_;
+    base::WeakPtr<AppCacheInternalsHandler> appcache_internals_handler_;
     base::WeakPtr<AppCacheServiceImpl> appcache_service_;
     base::FilePath partition_path_;
     scoped_refptr<AppCacheStorageReference> disabled_appcache_storage_ref_;
@@ -97,17 +113,15 @@ class AppCacheInternalsUI : public WebUIController {
 
   void CreateProxyForPartition(StoragePartition* storage_partition);
   // Commands from Javascript side.
-  void GetAllAppCache(const base::ListValue* args);
-  void DeleteAppCache(const base::ListValue* args);
-  void GetAppCacheDetails(const base::ListValue* args);
-  void GetFileDetails(const base::ListValue* args);
+  void HandleGetAllAppCache(const base::ListValue* args);
+  void HandleDeleteAppCache(const base::ListValue* args);
+  void HandleGetAppCacheDetails(const base::ListValue* args);
+  void HandleGetFileDetails(const base::ListValue* args);
 
   // Results from commands to be sent to Javascript.
   void OnAllAppCacheInfoReady(scoped_refptr<AppCacheInfoCollection> collection,
                               const base::FilePath& partition_path);
-  void OnAppCacheInfoDeleted(const base::FilePath& partition_path,
-                             const std::string& manifest_url,
-                             bool deleted);
+  void OnAppCacheInfoDeleted(const std::string& callback_id, bool deleted);
   void OnAppCacheDetailsReady(
       const base::FilePath& partition_path,
       const std::string& manifest_url,
@@ -124,9 +138,9 @@ class AppCacheInternalsUI : public WebUIController {
 
   Proxy* GetProxyForPartitionPath(const base::FilePath& path);
   std::list<scoped_refptr<Proxy>> appcache_proxies_;
-  base::WeakPtrFactory<AppCacheInternalsUI> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AppCacheInternalsHandler> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AppCacheInternalsUI);
+  DISALLOW_COPY_AND_ASSIGN(AppCacheInternalsHandler);
 };
 
 }  // namespace content
