@@ -17,7 +17,7 @@ class COMPONENT_EXPORT(UI_BASE) DragDropTypes {
   // These constants match their equivalents in NSDragOperation and
   // should not be renumbered.
   // TODO(https://crbug.com/1093536): replace this enum with
-  // blink::mojom::DragOperation.
+  // ui::mojom::DragOperation.
   enum DragOperation {
     DRAG_NONE = 0,
     DRAG_COPY = 1,

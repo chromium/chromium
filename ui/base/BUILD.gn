@@ -90,6 +90,7 @@ component("base") {
     "default_style.h",
     "device_form_factor.h",
     "device_form_factor_desktop.cc",
+    "dragdrop/drag_drop_types.cc",
     "dragdrop/drag_drop_types.h",
     "dragdrop/drop_target_event.cc",
     "dragdrop/drop_target_event.h",
@@ -441,6 +442,7 @@ component("base") {
     "//third_party/zlib/google:compression_utils",
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
+    "//ui/base/dragdrop/mojom",
     "//ui/display",
     "//ui/events",
     "//ui/events/devices",
@@ -560,6 +562,7 @@ component("base") {
 
   if (!toolkit_views && !use_aura) {
     sources -= [
+      "dragdrop/drag_drop_types.cc",
       "dragdrop/drag_drop_types.h",
       "dragdrop/drop_target_event.cc",
       "dragdrop/drop_target_event.h",
