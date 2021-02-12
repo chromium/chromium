@@ -13,6 +13,7 @@
 // #import {assertEquals, assertTrue} from '../../../chai_assert.js';
 // #import {FakeESimManagerRemote} from './fake_esim_manager_remote.m.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
+// #import {FakeBarcodeDetector} from './fake_barcode_detector.m.js';
 // clang-format on
 
 suite('CrComponentsEsimFlowUiTest', function() {
@@ -95,6 +96,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
       eSimManagerRemote.addEuiccForTest(0);
       const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
       euicc = availableEuiccs.euiccs[0];
+
+      activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
+      activationCodePage.initBarcodeDetector();
       eSimPage.initSubflow();
 
       // Loading page should be showing.
@@ -120,7 +124,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
               .kErrorInvalidActivationCode);
 
       eSimPage.navigateForward();
-
       await flushAsync();
 
       // Install should fail and still be at activation code page.
