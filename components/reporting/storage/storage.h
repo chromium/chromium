@@ -21,6 +21,7 @@
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_queue.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -30,18 +31,10 @@ namespace reporting {
 // according to the priority.
 class Storage : public base::RefCountedThreadSafe<Storage> {
  public:
-  // Interface for Upload, forwarding to StorageQueue::UploaderInterface.
-  using UploaderInterface = StorageQueue::UploaderInterface;
-
-  // Callback type for UploadInterface provider for specified queue.
-  using StartUploadCb =
-      base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>(
-          Priority priority)>;
-
   // Creates Storage instance, and returns it with the completion callback.
   static void Create(
       const StorageOptions& options,
-      StartUploadCb start_upload_cb,
+      UploaderInterface::StartCb start_upload_cb,
       scoped_refptr<EncryptionModule> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb);
 
@@ -74,13 +67,6 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // be paased here.
   void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key);
 
-  // Returns `false` if encryption key has not been found in the Storage during
-  // initialization and not received from the server yet, and `true` otherwise.
-  // The result is lazy: the method may return `false` for some time even after
-  // the key has already been set - this is harmless, since resetting or even
-  // changing the key is OK at any time.
-  bool has_encryption_key() const;
-
   Storage(const Storage& other) = delete;
   Storage& operator=(const Storage& other) = delete;
 
@@ -100,7 +86,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Queues need to be added afterwards.
   Storage(const StorageOptions& options,
           scoped_refptr<EncryptionModule> encryption_module,
-          StartUploadCb start_upload_cb);
+          UploaderInterface::StartCb start_upload_cb);
 
   // Initializes the object by adding all queues for all priorities.
   // Must be called once and only once after construction.
@@ -126,7 +112,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   base::flat_map<Priority, scoped_refptr<StorageQueue>> queues_;
 
   // Upload provider callback.
-  const StartUploadCb start_upload_cb_;
+  const UploaderInterface::StartCb start_upload_cb_;
 };
 
 }  // namespace reporting

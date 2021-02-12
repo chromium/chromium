@@ -4247,6 +4247,7 @@ test("unit_tests") {
     "//components/page_load_metrics/browser:test_support",
     "//components/page_load_metrics/common:test_support",
     "//components/query_tiles:unit_tests",
+    "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/storage:test_support",
     "//components/resources",
     "//components/safe_browsing:buildflags",

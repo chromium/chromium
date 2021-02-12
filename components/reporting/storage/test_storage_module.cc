@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
-#include "components/reporting/storage/storage_module.h"
+#include "components/reporting/storage/storage_module_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,10 +42,6 @@ void TestStorageModuleStrict::AddRecordSuccessfully(
   record_ = std::move(record);
   priority_ = priority;
   std::move(callback).Run(Status::StatusOK());
-}
-
-bool TestStorageModuleStrict::has_encryption_key() const {
-  return false;  // No encryption in test module.
 }
 
 }  // namespace test

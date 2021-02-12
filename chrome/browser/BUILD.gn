@@ -1937,6 +1937,7 @@ static_library("browser") {
     "//components/payments/core",
     "//components/payments/core:error_strings",
     "//components/policy/proto",
+    "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/util:shared_queue",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:task_runner_context",

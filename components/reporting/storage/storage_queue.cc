@@ -38,6 +38,7 @@
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/resources/resource_interface.h"
 #include "components/reporting/storage/storage_configuration.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -667,8 +668,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
               scoped_refptr<StorageQueue> storage_queue)
       : TaskRunnerContext<Status>(
             base::BindOnce(&UploaderInterface::Completed,
-                           base::Unretained(uploader.get()),
-                           /*need_encryption_key=*/false),
+                           base::Unretained(uploader.get())),
             storage_queue->sequenced_task_runner_),
         uploader_(std::move(uploader)),
         storage_queue_weakptr_factory_{storage_queue.get()} {

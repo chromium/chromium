@@ -16,6 +16,8 @@
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/storage.h"
 #include "components/reporting/storage/storage_configuration.h"
+#include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -50,9 +52,10 @@ void StorageModule::UpdateEncryptionKey(
 // static
 void StorageModule::Create(
     const StorageOptions& options,
-    Storage::StartUploadCb start_upload_cb,
+    UploaderInterface::StartCb start_upload_cb,
     scoped_refptr<EncryptionModule> encryption_module,
-    base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)> callback) {
+    base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
+        callback) {
   scoped_refptr<StorageModule> instance =
       // Cannot base::MakeRefCounted, since constructor is protected.
       base::WrapRefCounted(new StorageModule());
@@ -60,8 +63,8 @@ void StorageModule::Create(
       options, start_upload_cb, encryption_module,
       base::BindOnce(
           [](scoped_refptr<StorageModule> instance,
-             base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)>
-                 callback,
+             base::OnceCallback<void(
+                 StatusOr<scoped_refptr<StorageModuleInterface>>)> callback,
              StatusOr<scoped_refptr<Storage>> storage) {
             if (!storage.ok()) {
               std::move(callback).Run(storage.status());
@@ -71,10 +74,6 @@ void StorageModule::Create(
             std::move(callback).Run(std::move(instance));
           },
           std::move(instance), std::move(callback)));
-}
-
-bool StorageModule::has_encryption_key() const {
-  return storage_->has_encryption_key();
 }
 
 }  // namespace reporting

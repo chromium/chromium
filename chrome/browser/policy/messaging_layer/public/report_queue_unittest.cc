@@ -19,7 +19,7 @@
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/proto/record_constants.pb.h"
-#include "components/reporting/storage/storage_module.h"
+#include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
@@ -126,12 +126,12 @@ class ReportQueueTest : public testing::Test {
  private:
   const DMToken dm_token_;
   const Destination destination_;
-  scoped_refptr<StorageModule> storage_module_;
+  scoped_refptr<StorageModuleInterface> storage_module_;
   ReportQueueConfiguration::PolicyCheckCallback policy_check_callback_;
 };
 
 // Enqueues a random string and ensures that the string arrives unaltered in the
-// |StorageModule|.
+// |StorageModuleInterface|.
 TEST_F(ReportQueueTest, SuccessfulStringRecord) {
   constexpr char kTestString[] = "El-Chupacabra";
   TestEvent<Status> a;
@@ -142,7 +142,7 @@ TEST_F(ReportQueueTest, SuccessfulStringRecord) {
 }
 
 // Enqueues a |base::Value| dictionary and ensures it arrives unaltered in the
-// |StorageModule|.
+// |StorageModuleInterface|.
 TEST_F(ReportQueueTest, SuccessfulBaseValueRecord) {
   constexpr char kTestKey[] = "TEST_KEY";
   constexpr char kTestValue[] = "TEST_VALUE";
@@ -161,7 +161,7 @@ TEST_F(ReportQueueTest, SuccessfulBaseValueRecord) {
 }
 
 // Enqueues a |TestMessage| and ensures that it arrives unaltered in the
-// |StorageModule|.
+// |StorageModuleInterface|.
 TEST_F(ReportQueueTest, SuccessfulProtoRecord) {
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");

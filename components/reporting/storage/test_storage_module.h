@@ -11,14 +11,14 @@
 #include "base/optional.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
-#include "components/reporting/storage/storage_module.h"
+#include "components/reporting/storage/storage_module_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
 namespace test {
 
-class TestStorageModuleStrict : public StorageModule {
+class TestStorageModuleStrict : public StorageModuleInterface {
  public:
   // As opposed to the production |StorageModule|, test module does not need to
   // call factory method - it is created directly by constructor.
@@ -31,10 +31,18 @@ class TestStorageModuleStrict : public StorageModule {
                base::OnceCallback<void(Status)> callback),
               (override));
 
+  MOCK_METHOD(void,
+              ReportSuccess,
+              (SequencingInformation sequencing_information, bool force),
+              (override));
+
+  MOCK_METHOD(void,
+              UpdateEncryptionKey,
+              (SignedEncryptionInfo signed_encryption_key),
+              (override));
+
   Record record() const;
   Priority priority() const;
-
-  bool has_encryption_key() const;
 
  protected:
   ~TestStorageModuleStrict() override;

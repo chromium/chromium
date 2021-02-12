@@ -27,6 +27,7 @@
 #include "components/reporting/encryption/encryption_module.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -38,37 +39,6 @@ namespace reporting {
 // sequencing id to be eliminated.
 class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
  public:
-  // Interface for Upload, which must be implemented by an object returned by
-  // |StartUpload| callback (see below).
-  // Every time StorageQueue starts an upload (by timer or immediately after
-  // Write) it uses this interface to hand available records over to the actual
-  // uploader. StorageQueue takes ownership of it and automatically discards
-  // after |Completed| returns.
-  class UploaderInterface {
-   public:
-    virtual ~UploaderInterface() = default;
-
-    // Unserializes every record and hands ownership over for processing (e.g.
-    // to add to the network message). Expects |processed_cb| to be called after
-    // the record or error status has been processed, with true if next record
-    // needs to be delivered and false if the Uploader should stop.
-    virtual void ProcessRecord(EncryptedRecord record,
-                               base::OnceCallback<void(bool)> processed_cb) = 0;
-
-    // Makes a note of a gap [start, start + count). Expects |processed_cb| to
-    // be called after the record or error status has been processed, with true
-    // if next record needs to be delivered and false if the Uploader should
-    // stop.
-    virtual void ProcessGap(SequencingInformation start,
-                            uint64_t count,
-                            base::OnceCallback<void(bool)> processed_cb) = 0;
-
-    // Finalizes the upload (e.g. sends the message to server and gets
-    // response). Called always, regardless of whether there were errors.
-    // Set |need_encryption_key| if key is needed (initially or periodically).
-    virtual void Completed(bool need_encryption_key, Status final_status) = 0;
-  };
-
   // Callback type for UploadInterface provider for this queue.
   using StartUploadCb =
       base::RepeatingCallback<StatusOr<std::unique_ptr<UploaderInterface>>()>;

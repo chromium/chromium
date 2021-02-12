@@ -78,8 +78,7 @@ class TestEvent {
   ResType result_;
 };
 
-class MockUploadClient
-    : public ::testing::NiceMock<StorageQueue::UploaderInterface> {
+class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
  public:
   // Mapping of <generation id, sequencing id> to matching record digest.
   // Whenever a record is uploaded and includes last record digest, this map
@@ -197,15 +196,13 @@ class MockUploadClient
         .Run(UploadGap(sequencing_information.sequencing_id(), count));
   }
 
-  void Completed(bool need_encryption_key, Status status) override {
-    UploadComplete(need_encryption_key, status);
-  }
+  void Completed(Status status) override { UploadComplete(status); }
 
   MOCK_METHOD(void, EncounterSeqId, (int64_t), (const));
   MOCK_METHOD(bool, UploadRecord, (int64_t, base::StringPiece), (const));
   MOCK_METHOD(bool, UploadRecordFailure, (int64_t, Status), (const));
   MOCK_METHOD(bool, UploadGap, (int64_t, uint64_t), (const));
-  MOCK_METHOD(void, UploadComplete, (bool, Status), (const));
+  MOCK_METHOD(void, UploadComplete, (Status), (const));
 
   // Helper class for setting up mock client expectations of a successful
   // completion.
@@ -213,7 +210,7 @@ class MockUploadClient
    public:
     explicit SetUp(MockUploadClient* client) : client_(client) {}
     ~SetUp() {
-      EXPECT_CALL(*client_, UploadComplete(_, Eq(Status::StatusOK())))
+      EXPECT_CALL(*client_, UploadComplete(Eq(Status::StatusOK())))
           .Times(1)
           .InSequence(client_->test_upload_sequence_,
                       client_->test_encounter_sequence_);
@@ -345,8 +342,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     return BuildStorageQueueOptionsPeriodic(base::TimeDelta::Max());
   }
 
-  StatusOr<std::unique_ptr<StorageQueue::UploaderInterface>>
-  BuildMockUploader() {
+  StatusOr<std::unique_ptr<UploaderInterface>> BuildMockUploader() {
     auto uploader =
         std::make_unique<MockUploadClient>(&last_record_digest_map_);
     set_mock_uploader_expectations_.Call(uploader.get());

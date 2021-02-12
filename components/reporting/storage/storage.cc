@@ -27,6 +27,7 @@
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_queue.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -110,18 +111,23 @@ std::vector<std::pair<Priority, QueueOptions>> ExpectedQueues(
 }  // namespace
 
 // Uploader interface adaptor for individual queue.
-class Storage::QueueUploaderInterface : public StorageQueue::UploaderInterface {
+class Storage::QueueUploaderInterface : public UploaderInterface {
  public:
-  QueueUploaderInterface(
-      Priority priority,
-      std::unique_ptr<Storage::UploaderInterface> storage_interface)
+  QueueUploaderInterface(Priority priority,
+                         std::unique_ptr<UploaderInterface> storage_interface)
       : priority_(priority), storage_interface_(std::move(storage_interface)) {}
 
   // Factory method.
-  static StatusOr<std::unique_ptr<StorageQueue::UploaderInterface>>
-  ProvideUploader(Priority priority, StartUploadCb start_upload_cb) {
-    ASSIGN_OR_RETURN(std::unique_ptr<Storage::UploaderInterface> uploader,
-                     start_upload_cb.Run(priority));
+  static StatusOr<std::unique_ptr<UploaderInterface>> ProvideUploader(
+      Priority priority,
+      bool need_encryption_key,
+      UploaderInterface::StartCb start_upload_cb) {
+    // TODO(b/170054326): Add periodic key request.
+    // if (time to update key) {
+    //   need_encryption_key = true;
+    // }
+    ASSIGN_OR_RETURN(std::unique_ptr<UploaderInterface> uploader,
+                     start_upload_cb.Run(priority, need_encryption_key));
     return std::make_unique<QueueUploaderInterface>(priority,
                                                     std::move(uploader));
   }
@@ -145,17 +151,13 @@ class Storage::QueueUploaderInterface : public StorageQueue::UploaderInterface {
                                    std::move(processed_cb));
   }
 
-  void Completed(bool need_encryption_key, Status final_status) override {
-    // TODO(b/170054326): Add periodic key request.
-    // if (time to update key) {
-    //   need_encryption_key = true;
-    // }
-    storage_interface_->Completed(need_encryption_key, final_status);
+  void Completed(Status final_status) override {
+    storage_interface_->Completed(final_status);
   }
 
  private:
   const Priority priority_;
-  const std::unique_ptr<Storage::UploaderInterface> storage_interface_;
+  const std::unique_ptr<UploaderInterface> storage_interface_;
 };
 
 class Storage::KeyInStorage {
@@ -429,7 +431,7 @@ class Storage::KeyInStorage {
 
 void Storage::Create(
     const StorageOptions& options,
-    StartUploadCb start_upload_cb,
+    UploaderInterface::StartCb start_upload_cb,
     scoped_refptr<EncryptionModule> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb) {
   // Initialize Storage object, populating all the queues.
@@ -489,13 +491,13 @@ void Storage::Create(
           // Send Upload with need_encryption_key flag and no records.
           StatusOr<std::unique_ptr<UploaderInterface>> uploader =
               storage_->start_upload_cb_.Run(
-                  MANUAL_BATCH);  // Any priority would do.
+                  /*priority=*/MANUAL_BATCH,  // Any priority would do.
+                  /*need_encryption_key=*/true);
           if (!uploader.ok()) {
             Response(uploader.status());
             return;
           }
-          uploader.ValueOrDie()->Completed(/*need_encryption_key=*/true,
-                                           Status::StatusOK());
+          uploader.ValueOrDie()->Completed(Status::StatusOK());
           // Continue initialization without waiting for it to respond.
           // Until the response arrives, we will reject Enqueues.
         }
@@ -506,9 +508,11 @@ void Storage::Create(
       for (const auto& queue_options : queues_options_) {
         StorageQueue::Create(
             /*options=*/queue_options.second,
-            base::BindRepeating(&QueueUploaderInterface::ProvideUploader,
-                                /*priority=*/queue_options.first,
-                                storage_->start_upload_cb_),
+            base::BindRepeating(
+                &QueueUploaderInterface::ProvideUploader,
+                /*priority=*/queue_options.first,
+                !storage_->encryption_module_->has_encryption_key(),
+                storage_->start_upload_cb_),
             storage_->encryption_module_,
             base::BindOnce(&StorageInitContext::ScheduleAddQueue,
                            base::Unretained(this),
@@ -566,7 +570,7 @@ void Storage::Create(
 
 Storage::Storage(const StorageOptions& options,
                  scoped_refptr<EncryptionModule> encryption_module,
-                 StartUploadCb start_upload_cb)
+                 UploaderInterface::StartCb start_upload_cb)
     : options_(options),
       encryption_module_(encryption_module),
       key_in_storage_(std::make_unique<KeyInStorage>(
@@ -630,10 +634,6 @@ void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
   // one(s).
   const Status status = key_in_storage_->UploadKeyFile(signed_encryption_key);
   LOG_IF(ERROR, !status.ok()) << "Failed to upload the new encription key.";
-}
-
-bool Storage::has_encryption_key() const {
-  return !encryption_module_->has_encryption_key();
 }
 
 StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(Priority priority) {

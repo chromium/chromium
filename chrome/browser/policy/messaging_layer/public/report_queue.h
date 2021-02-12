@@ -18,7 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
-#include "components/reporting/storage/storage_module.h"
+#include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -44,7 +44,7 @@ class ReportQueue {
   // Factory
   static std::unique_ptr<ReportQueue> Create(
       std::unique_ptr<ReportQueueConfiguration> config,
-      scoped_refptr<StorageModule> storage);
+      scoped_refptr<StorageModuleInterface> storage);
 
   virtual ~ReportQueue();
   ReportQueue(const ReportQueue& other) = delete;
@@ -79,7 +79,7 @@ class ReportQueue {
 
  protected:
   ReportQueue(std::unique_ptr<ReportQueueConfiguration> config,
-              scoped_refptr<StorageModule> storage);
+              scoped_refptr<StorageModuleInterface> storage);
 
  private:
   void AddRecord(base::StringPiece record,
@@ -97,7 +97,7 @@ class ReportQueue {
   reporting::Record AugmentRecord(base::StringPiece record_data) const;
 
   std::unique_ptr<ReportQueueConfiguration> config_;
-  scoped_refptr<StorageModule> storage_;
+  scoped_refptr<StorageModuleInterface> storage_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

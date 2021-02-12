@@ -15,7 +15,8 @@
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting//proto/record.pb.h"
-#include "components/reporting/storage/storage_module.h"
+#include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
@@ -77,7 +78,7 @@ class ReportingClient {
     // TODO(chromium:1078512) Passing around a raw pointer is unsafe. Wrap
     // CloudPolicyClient and guard access.
     policy::CloudPolicyClient* cloud_policy_client;
-    scoped_refptr<StorageModule> storage;
+    scoped_refptr<StorageModuleInterface> storage;
   };
 
   using CreateReportQueueResponse = StatusOr<std::unique_ptr<ReportQueue>>;
@@ -144,7 +145,7 @@ class ReportingClient {
    public:
     InitializingContext(
         GetCloudPolicyClientCallback get_client_cb,
-        Storage::StartUploadCb start_upload_cb,
+        UploaderInterface::StartCb start_upload_cb,
         UpdateConfigurationCallback update_config_cb,
         InitCompleteCallback init_complete_cb,
         scoped_refptr<InitializationStateTracker> init_state_tracker,
@@ -163,11 +164,11 @@ class ReportingClient {
     void OnCloudPolicyClientConfigured(
         StatusOr<policy::CloudPolicyClient*> client_result);
 
-    // ConfigureStorageModule will build a StorageModule and add it to the
-    // |client_config_|.
+    // ConfigureStorageModule will instantiate a StorageModuleInterface and add
+    // it to the |client_config_|.
     void ConfigureStorageModule();
     void OnStorageModuleConfigured(
-        StatusOr<scoped_refptr<StorageModule>> storage_result);
+        StatusOr<scoped_refptr<StorageModuleInterface>> storage_result);
 
     void CreateUploadClient();
     void OnUploadClientCreated(
@@ -179,7 +180,7 @@ class ReportingClient {
     void Complete(Status status);
 
     GetCloudPolicyClientCallback get_client_cb_;
-    Storage::StartUploadCb start_upload_cb_;
+    UploaderInterface::StartCb start_upload_cb_;
     UpdateConfigurationCallback update_config_cb_;
     scoped_refptr<InitializationStateTracker> init_state_tracker_;
 
@@ -208,9 +209,6 @@ class ReportingClient {
   // Allows a user to asynchronously create a |ReportQueue|. Will create an
   // underlying ReportingClient if it doesn't exists. The callback will contain
   // an error if |storage_| cannot be instantiated for any reason.
-  //
-  // TODO(chromium:1078512): Once the StorageModule is ready, update this
-  // comment with concrete failure conditions.
   static void CreateReportQueue(
       std::unique_ptr<ReportQueueConfiguration> config,
       CreateReportQueueCallback create_cb);
@@ -255,8 +253,9 @@ class ReportingClient {
   void BuildRequestQueue(StatusOr<CreateReportQueueRequest> pop_result);
 
   // TODO(chromium:1078512) Priority is unused, remove it.
-  static StatusOr<std::unique_ptr<Storage::UploaderInterface>> BuildUploader(
-      Priority priority);
+  static StatusOr<std::unique_ptr<UploaderInterface>> BuildUploader(
+      Priority priority,
+      bool need_encryption_key);
 
   // Queue for storing creation requests while the ReportingClient is
   // initializing.
@@ -264,7 +263,7 @@ class ReportingClient {
   scoped_refptr<InitializationStateTracker> init_state_tracker_;
   GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
 
-  scoped_refptr<StorageModule> storage_;
+  scoped_refptr<StorageModuleInterface> storage_;
   std::unique_ptr<UploadClient> upload_client_;
   std::unique_ptr<Configuration> config_;
 };

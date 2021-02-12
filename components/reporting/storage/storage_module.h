@@ -16,6 +16,7 @@
 #include "components/reporting/storage/storage.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -26,9 +27,9 @@ class StorageModule : public StorageModuleInterface {
   // Factory method creates |StorageModule| object.
   static void Create(
       const StorageOptions& options,
-      Storage::StartUploadCb start_upload_cb,
+      UploaderInterface::StartCb start_upload_cb,
       scoped_refptr<EncryptionModule> encryption_module,
-      base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)>
+      base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
           callback);
 
   StorageModule(const StorageModule& other) = delete;
@@ -52,13 +53,6 @@ class StorageModule : public StorageModuleInterface {
   // If the server attached signed encryption key to the response, it needs to
   // be paased here.
   void UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) override;
-
-  // Returns `false` if encryption key has not been found in the Storage during
-  // initialization and not received from the server yet, and `true` otherwise.
-  // The result is lazy: the method may return `false` for some time even after
-  // the key has already been set - this is harmless, since resetting or even
-  // changing the key is OK at any time.
-  bool has_encryption_key() const;
 
  protected:
   // Constructor can only be called by |Create| factory method.

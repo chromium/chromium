@@ -13,6 +13,21 @@ static_library("storage_configuration") {
   deps = [ "//base" ]
 }
 
+static_library("storage_uploader_interface") {
+  sources = [
+    "storage_uploader_interface.cc",
+    "storage_uploader_interface.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_proto",
+  ]
+}
+
 static_library("storage_queue") {
   sources = [
     "storage_queue.cc",
@@ -21,6 +36,7 @@ static_library("storage_queue") {
 
   deps = [
     ":storage_configuration",
+    ":storage_uploader_interface",
     "//base",
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:verification",
@@ -45,6 +61,7 @@ static_library("storage") {
 
   deps = [
     ":storage_queue",
+    ":storage_uploader_interface",
     "//base",
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:verification",
@@ -70,6 +87,7 @@ static_library("storage_module") {
 
   deps = [
     ":storage",
+    ":storage_uploader_interface",
     "//base",
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/proto:record_constants",
@@ -90,6 +108,7 @@ static_library("missive_storage_module") {
 
   deps = [
     ":storage",
+    ":storage_uploader_interface",
     "//base",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
@@ -135,6 +154,7 @@ source_set("unit_tests") {
     ":storage_configuration",
     ":storage_module",
     ":storage_queue",
+    ":storage_uploader_interface",
     ":test_support",
     "//base",
     "//base/test:test_support",

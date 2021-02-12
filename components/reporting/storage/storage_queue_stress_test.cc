@@ -81,7 +81,7 @@ class TestEvent {
   ResType result_;
 };
 
-class TestUploadClient : public StorageQueue::UploaderInterface {
+class TestUploadClient : public UploaderInterface {
  public:
   // Mapping of <generation id, sequencing id> to matching record digest.
   // Whenever a record is uploaded and includes last record digest, this map
@@ -145,10 +145,7 @@ class TestUploadClient : public StorageQueue::UploaderInterface {
     ASSERT_TRUE(false) << "There should be no gaps";
   }
 
-  void Completed(bool need_encryption_key, Status status) override {
-    ASSERT_FALSE(need_encryption_key);
-    ASSERT_OK(status);
-  }
+  void Completed(Status status) override { ASSERT_OK(status); }
 
  private:
   base::Optional<int64_t> generation_id_;
@@ -210,8 +207,7 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     return BuildStorageQueueOptionsPeriodic(base::TimeDelta::Max());
   }
 
-  StatusOr<std::unique_ptr<StorageQueue::UploaderInterface>>
-  BuildTestUploader() {
+  StatusOr<std::unique_ptr<UploaderInterface>> BuildTestUploader() {
     return std::make_unique<TestUploadClient>(&last_record_digest_map_);
   }
 

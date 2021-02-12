@@ -35,6 +35,8 @@
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_module.h"
+#include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -54,7 +56,7 @@ const base::FilePath::CharType kReportingDirectory[] =
 
 // Uploader is passed to Storage in order to upload messages using the
 // UploadClient.
-class ReportingClient::Uploader : public Storage::UploaderInterface {
+class ReportingClient::Uploader : public UploaderInterface {
  public:
   using UploadCallback =
       base::OnceCallback<Status(std::unique_ptr<std::vector<EncryptedRecord>>)>;
@@ -72,7 +74,7 @@ class ReportingClient::Uploader : public Storage::UploaderInterface {
                   uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override;
 
-  void Completed(bool need_encryption_key, Status final_status) override;
+  void Completed(Status final_status) override;
 
  private:
   explicit Uploader(UploadCallback upload_callback_);
@@ -148,8 +150,7 @@ void ReportingClient::Uploader::ProcessGap(
           std::move(processed_cb)));
 }
 
-void ReportingClient::Uploader::Completed(bool need_encryption_key,
-                                          Status final_status) {
+void ReportingClient::Uploader::Completed(Status final_status) {
   if (!final_status.ok()) {
     // No work to do - something went wrong with storage and it no longer wants
     // to upload the records. Let the records die with |this|.
@@ -161,10 +162,6 @@ void ReportingClient::Uploader::Completed(bool need_encryption_key,
     return;
   }
   completed_ = true;
-
-  if (need_encryption_key) {
-    // Attach encryption key information.
-  }
 
   sequenced_task_runner_->PostTask(
       FROM_HERE,
@@ -296,7 +293,7 @@ ReportingClient::CreateReportQueueRequest::create_cb() {
 
 ReportingClient::InitializingContext::InitializingContext(
     GetCloudPolicyClientCallback get_client_cb,
-    Storage::StartUploadCb start_upload_cb,
+    UploaderInterface::StartCb start_upload_cb,
     UpdateConfigurationCallback update_config_cb,
     InitCompleteCallback init_complete_cb,
     scoped_refptr<ReportingClient::InitializationStateTracker>
@@ -388,7 +385,7 @@ void ReportingClient::InitializingContext::ConfigureStorageModule() {
 }
 
 void ReportingClient::InitializingContext::OnStorageModuleConfigured(
-    StatusOr<scoped_refptr<StorageModule>> storage_result) {
+    StatusOr<scoped_refptr<StorageModuleInterface>> storage_result) {
   if (!storage_result.ok()) {
     Complete(Status(error::FAILED_PRECONDITION,
                     base::StrCat({"Unable to build StorageModule: ",
@@ -407,9 +404,9 @@ void ReportingClient::InitializingContext::CreateUploadClient() {
   DCHECK(!instance->upload_client_);
   UploadClient::Create(
       std::move(client_config_->cloud_policy_client),
-      base::BindRepeating(&StorageModule::ReportSuccess,
+      base::BindRepeating(&StorageModuleInterface::ReportSuccess,
                           client_config_->storage),
-      base::BindRepeating(&StorageModule::UpdateEncryptionKey,
+      base::BindRepeating(&StorageModuleInterface::UpdateEncryptionKey,
                           client_config_->storage),
       base::BindOnce(&InitializingContext::OnUploadClientCreated,
                      base::Unretained(this)));
@@ -566,7 +563,7 @@ void ReportingClient::BuildRequestQueue(
   // general thread.
   base::ThreadPool::PostTask(
       FROM_HERE, base::BindOnce(
-                     [](scoped_refptr<StorageModule> storage_module,
+                     [](scoped_refptr<StorageModuleInterface> storage_module,
                         CreateReportQueueRequest report_queue_request) {
                        std::move(report_queue_request.create_cb())
                            .Run(ReportQueue::Create(
@@ -580,14 +577,14 @@ void ReportingClient::BuildRequestQueue(
 }
 
 // static
-StatusOr<std::unique_ptr<Storage::UploaderInterface>>
-ReportingClient::BuildUploader(Priority priority) {
+StatusOr<std::unique_ptr<UploaderInterface>> ReportingClient::BuildUploader(
+    Priority priority,
+    bool need_encryption_key) {
   ReportingClient* const instance = GetInstance();
   DCHECK(instance->upload_client_);
-  return Uploader::Create(
-      base::BindOnce(&UploadClient::EnqueueUpload,
-                     base::Unretained(instance->upload_client_.get()),
-                     !instance->config_->storage->has_encryption_key()));
+  return Uploader::Create(base::BindOnce(
+      &UploadClient::EnqueueUpload,
+      base::Unretained(instance->upload_client_.get()), need_encryption_key));
 }
 
 ReportingClient::TestEnvironment::TestEnvironment(
