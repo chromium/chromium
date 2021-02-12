@@ -56,6 +56,11 @@ class StarViewTest : public InProcessBrowserTest {
 
 // Verifies clicking the star bookmarks the page.
 IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
+  // The url is not bookmarked when the star is pressed when read later is
+  // enabled. This test is replaced by
+  // StarViewTestWithReadLaterEnabled.AddBookmarkFromStarViewMenuBookmarksUrl.
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater))
+    return;
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
@@ -85,6 +90,11 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
 // Verify that clicking the bookmark star a second time hides the bookmark
 // bubble.
 IN_PROC_BROWSER_TEST_F(StarViewTest, HideOnSecondClick) {
+  // The BookmarkBubbleView is not shown when the StarView is first pressed when
+  // the reading list is enabled.
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater))
+    return;
+
   views::View* star_icon = GetStarIcon();
 
   ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -156,6 +166,8 @@ class StarViewTestWithReadLaterEnabled : public InProcessBrowserTest {
 
     views::test::ButtonTestApi(star_icon).NotifyClick(pressed_event);
     views::test::ButtonTestApi(star_icon).NotifyClick(released_event);
+    views::MenuRunner* menu_runner = star_icon->menu_runner_for_test();
+    EXPECT_TRUE(menu_runner->IsRunning());
   }
 
  private:

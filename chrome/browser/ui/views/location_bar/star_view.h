@@ -12,6 +12,10 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
+namespace views {
+class MenuRunner;
+}
+
 class Browser;
 class CommandUpdater;
 class StarMenuModel;
@@ -30,6 +34,7 @@ class StarView : public PageActionIconView,
   ~StarView() override;
 
   StarMenuModel* menu_model_for_test() { return menu_model_.get(); }
+  views::MenuRunner* menu_runner_for_test() { return menu_runner_.get(); }
 
  protected:
   // PageActionIconView:
