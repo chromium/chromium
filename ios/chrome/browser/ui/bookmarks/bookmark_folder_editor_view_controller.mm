@@ -552,8 +552,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            target:nil
                            action:nil];
   deleteButton.tintColor = [UIColor colorNamed:kRedColor];
-  [self.navigationController.toolbar setShadowImage:[UIImage new]
-                                 forToolbarPosition:UIBarPositionAny];
+
+  if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    [self.navigationController.toolbar setShadowImage:[UIImage new]
+                                   forToolbarPosition:UIBarPositionAny];
+  }
+
   [self setToolbarItems:@[ spaceButton, deleteButton, spaceButton ]
                animated:NO];
 }
