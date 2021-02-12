@@ -18,9 +18,6 @@ struct PlaybackProperties {
   bool is_mse;
   bool is_eme;
   bool is_embedded_media_experience;  // Playback from 'Downloads' on Android.
-  // Type of played-back MediaStream, or kNone if the playback is not from a
-  // MediaStream.
-  MediaStreamType media_stream_type;
 };
 
 // Structure describing mutable properties for the current watch time report.

@@ -120,7 +120,6 @@ blink_modules_sources("mediastream") {
     "//media/capture/mojom:image_capture_blink",
     "//media/webrtc",
     "//services/viz/public/cpp/gpu:gpu",
-    "//third_party/blink/public/common",
     "//third_party/blink/renderer/modules/imagecapture:imagecapture",
     "//third_party/libyuv:libyuv",
   ]

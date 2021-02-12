@@ -17,7 +17,6 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -286,15 +285,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   void StopForceBeginFrames(TimerBase*);
 
-  void CreateWatchTimeReporter();
-  void UpdateWatchTimeReporterSecondaryProperties();
-  base::TimeDelta GetCurrentTimeInterval();
-  base::TimeDelta CurrentTimeDelta() const;
-  base::TimeDelta DurationOffset() const;
-  media::PipelineStatistics GetPipelineStatistics();
-
-  base::Optional<media::mojom::MediaStreamType> GetMediaStreamType();
-
   std::unique_ptr<MediaStreamInternalFrameWrapper> internal_frame_;
 
   WebMediaPlayer::NetworkState network_state_;
@@ -394,11 +384,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   bool opaque_ = true;
 
   bool has_first_frame_ = false;
-
-  // Monitors the duration of the media stream.
-  std::unique_ptr<WatchTimeReporter> watch_time_reporter_;
-  base::TimeDelta compositor_duration_offset_;
-  base::TimeDelta audio_duration_offset_;
 
   base::WeakPtr<WebMediaPlayerMS> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerMS> weak_factory_{this};
