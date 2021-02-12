@@ -5687,3 +5687,7 @@ crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/jso
 crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/non-object.tentative.any.sharedworker.html [ Pass Timeout ]
 crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/utf8.tentative.html [ Pass Timeout ]
 crbug.com/1132413 external/wpt/html/semantics/scripting-1/the-script-element/json-module/valid-content-type.tentative.html [ Pass Timeout ]
+
+# Sheriff 2021-02-11
+crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause.js [ Failure Pass ]
+crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause-infinite.js [ Failure Pass ]
