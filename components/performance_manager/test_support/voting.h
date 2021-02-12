@@ -25,8 +25,8 @@ template <class VoteImpl>
 class DummyVoteConsumer : public VoteConsumer<VoteImpl> {
  public:
   using ContextType = typename VoteImpl::ContextType;
-  using AcceptedVote = AcceptedVote<VoteImpl>;
-  using VotingChannel = VotingChannel<VoteImpl>;
+  using AcceptedVote = class AcceptedVote<VoteImpl>;
+  using VotingChannel = class VotingChannel<VoteImpl>;
 
   DummyVoteConsumer();
   ~DummyVoteConsumer() override;
@@ -87,7 +87,7 @@ template <class VoteImpl>
 class DummyVoteObserver : public VoteObserver<VoteImpl> {
  public:
   using ContextType = typename VoteImpl::ContextType;
-  using VoteConsumerDefaultImpl = VoteConsumerDefaultImpl<VoteImpl>;
+  using VoteConsumerDefaultImpl = class VoteConsumerDefaultImpl<VoteImpl>;
 
   DummyVoteObserver();
   ~DummyVoteObserver() override;
