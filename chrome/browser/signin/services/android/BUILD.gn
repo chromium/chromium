@@ -77,11 +77,13 @@ android_library("javatests") {
 }
 
 android_library("junit") {
+  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
   bypass_platform_checks = true
   testonly = true
   sources = [
     "junit/src/org/chromium/chrome/browser/signin/services/ProfileDownloaderTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/SigninHelperTest.java",
+    "junit/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManagerTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
   ]
@@ -94,6 +96,7 @@ android_library("junit") {
     "//components/signin/core/browser/android:java",
     "//components/signin/public/android:java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

@@ -45,7 +45,11 @@ public class AccountPickerBottomSheetCoordinator {
             } else if (reason == StateChangeReason.TAP_SCRIM) {
                 SigninMetricsUtils.logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.DISMISSED_SCRIM);
+            } else {
+                // Return for other dismiss cases so we don't record web signin metrics for them.
+                return;
             }
+            SigninMetricsUtils.logWebSignin();
         }
 
         @Override

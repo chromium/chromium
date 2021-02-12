@@ -3925,6 +3925,7 @@ test("unit_tests") {
       "../browser/android/oom_intervention/near_oom_monitor_unittest.cc",
       "../browser/android/oom_intervention/oom_intervention_decider_unittest.cc",
       "../browser/android/signin/signin_manager_android_unittest.cc",
+      "../browser/android/signin/signin_metrics_utils_unittest.cc",
       "../browser/android/signin/web_signin_bridge_unittest.cc",
       "../browser/android/tab_web_contents_delegate_android_unittest.cc",
       "../browser/android/usage_stats/usage_stats_database_unittest.cc",

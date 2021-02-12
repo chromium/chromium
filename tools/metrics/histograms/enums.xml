@@ -1018,6 +1018,19 @@ Unknown properties are collapsed to zero. -->
   </int>
 </enum>
 
+<enum name="AccountConsistencyPromoAfterDismissal">
+  <int value="0" label="SignedInOnWebWithDefaultDeviceAccount">
+    User signed in with the default device account. This account is the first
+    account in the cookies.
+  </int>
+  <int value="1" label="SignedInOnWebWithNonDefaultDeviceAccount">
+    User signed in with non-default device account.
+  </int>
+  <int value="2" label="SignedInOnWebWithOtherAccount">
+    User signed in with an account not present on device.
+  </int>
+</enum>
+
 <enum name="AccountManagerAccountAdditionResultStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Already in progress"/>
