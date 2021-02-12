@@ -453,6 +453,9 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     // The data is too large to fit in a small QR code, but the larger length
     // now needed may change the selected version.
     version_info = GetVersionForDataSize(large_length_bytes, min_version);
+    if (!version_info) {
+      return base::nullopt;
+    }
   }
 
   if (version_info != version_info_) {

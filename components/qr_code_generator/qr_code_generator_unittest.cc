@@ -53,3 +53,21 @@ TEST(QRCodeGenerator, Generate) {
   ASSERT_TRUE(largest_size);
   ASSERT_LT(*smallest_size, *largest_size);
 }
+
+TEST(QRCodeGenerator, ManySizes) {
+  // Generate larger and larger QR codes until there's a clean failure. Ensures
+  // that there are no edge cases like crbug.com/1177437.
+  QRCodeGenerator qr;
+  std::string input = "!";
+
+  for (size_t i = input.size();; i++) {
+    if (!qr.Generate(base::span<const uint8_t>(
+            reinterpret_cast<const uint8_t*>(input.data()), input.size()))) {
+      break;
+    }
+
+    input.push_back('!');
+  }
+
+  ASSERT_GT(input.size(), 200u);
+}
