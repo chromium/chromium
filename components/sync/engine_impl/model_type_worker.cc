@@ -42,9 +42,10 @@ namespace {
 
 const char kTimeUntilEncryptionKeyFoundHistogramPrefix[] =
     "Sync.ModelTypeTimeUntilEncryptionKeyFound.";
-
 const char kUndecryptablePendingUpdatesDroppedHistogramPrefix[] =
     "Sync.ModelTypeUndecryptablePendingUpdatesDropped.";
+const char kBlockedDueToUndecryptableUpdateHistogramName[] =
+    "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
 
 const int kMinGuResponsesToIgnoreKey = 50;
 
@@ -269,6 +270,12 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
   RemoveKeysNoLongerUnknown();
 
   if (!cryptographer_ || cryptographer_->CanEncrypt()) {
+    if (!entries_pending_decryption_.empty()) {
+      base::UmaHistogramEnumeration(
+          kBlockedDueToUndecryptableUpdateHistogramName,
+          ModelTypeHistogramValue(type_));
+    }
+
     // Encryption keys should've been known in this state.
     for (auto& key_and_info : unknown_encryption_keys_by_name_) {
       key_and_info.second.gu_responses_while_should_have_been_known++;

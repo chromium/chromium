@@ -1336,6 +1336,11 @@ TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   TriggerUpdateFromServer(10, kTag1, kValue1);
   gu_responses_while_should_have_been_known++;
 
+  // The fact that the data type is now blocked should have been recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
+      ModelTypeHistogramValue(worker()->GetModelType()), 1);
+
   // Send empty GetUpdatesResponse. Again, the cryptographer isn't in a pending
   // state, so increase |gu_responses_while_should_have_been_known|.
   worker()->ProcessGetUpdatesResponse(

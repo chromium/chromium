@@ -523,6 +523,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sync.ModelTypeBlockedDueToUndecryptableUpdate"
+    enum="SyncModelTypes" expires_after="2021-08-09">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    Recorded on every GetUpdatesResponse if the data type is blocked because due
+    to the existence of undecryptable updates sent by the server. This is *not*
+    recorded for the cases where sync encryption is in a valid pending state,
+    e.g. user hasn't entered their passphrase yet.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Sync.ModelTypeConfigurationTime.Ephemeral"
     units="ms" expires_after="2021-06-27">
   <owner>jkrcal@chromium.org</owner>
