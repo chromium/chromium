@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/util/values/values_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -20,24 +21,29 @@ using SafeBrowsingState = safe_browsing::SafeBrowsingState;
 
 const int kMetricsLoggingIntervalDay = 1;
 
+// The max length of event timestamps stored in pref.
 const int kTimestampsMaxLength = 30;
+// The quota for ESB disabled metrics. ESB disabled metrics should not be logged
+// more than the quota in a week.
+const int kEsbDisabledMetricsQuota = 3;
 
 std::string EventTypeToPrefKey(const EventType& type) {
   return base::NumberToString(static_cast<int>(type));
 }
 
-std::string SafeBrowsingStateToPrefKey(const SafeBrowsingState state) {
-  switch (state) {
+std::string UserStateToPrefKey(const UserState& user_state) {
+  return base::NumberToString(static_cast<int>(user_state));
+}
+
+UserState SafeBrowsingStateToUserState(const SafeBrowsingState& sb_state) {
+  switch (sb_state) {
     case SafeBrowsingState::ENHANCED_PROTECTION:
-      return base::NumberToString(
-          static_cast<int>(UserState::ENHANCED_PROTECTION));
+      return UserState::ENHANCED_PROTECTION;
     case SafeBrowsingState::STANDARD_PROTECTION:
-      return base::NumberToString(
-          static_cast<int>(UserState::STANDARD_PROTECTION));
+      return UserState::STANDARD_PROTECTION;
     case SafeBrowsingState::NO_SAFE_BROWSING:
       NOTREACHED() << "Unexpected Safe Browsing state.";
-      return base::NumberToString(
-          static_cast<int>(UserState::STANDARD_PROTECTION));
+      return UserState::STANDARD_PROTECTION;
   }
 }
 
@@ -107,20 +113,26 @@ void SafeBrowsingMetricsCollector::ScheduleNextLoggingAfterInterval(
 
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
     EventType event_type) {
-  DictionaryPrefUpdate update(pref_service_,
-                              prefs::kSafeBrowsingEventTimestamps);
-  base::DictionaryValue* mutable_state_dict = update.Get();
-
   SafeBrowsingState sb_state = GetSafeBrowsingState(*pref_service_);
   // Safe Browsing events should not be triggered when Safe Browsing is
   // disabled.
   DCHECK(sb_state != SafeBrowsingState::NO_SAFE_BROWSING);
-  base::Value* event_dict =
-      mutable_state_dict->FindDictKey(SafeBrowsingStateToPrefKey(sb_state));
+  AddSafeBrowsingEventAndUserStateToPref(SafeBrowsingStateToUserState(sb_state),
+                                         event_type);
+}
 
+void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
+    UserState user_state,
+    EventType event_type) {
+  DictionaryPrefUpdate update(pref_service_,
+                              prefs::kSafeBrowsingEventTimestamps);
+  base::DictionaryValue* mutable_state_dict = update.Get();
+
+  base::Value* event_dict =
+      mutable_state_dict->FindDictKey(UserStateToPrefKey(user_state));
   if (!event_dict) {
     event_dict =
-        mutable_state_dict->SetKey(SafeBrowsingStateToPrefKey(sb_state),
+        mutable_state_dict->SetKey(UserStateToPrefKey(user_state),
                                    base::Value(base::Value::Type::DICTIONARY));
   }
 
@@ -141,15 +153,25 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
 
 void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
   if (!pref_service_->GetBoolean(prefs::kSafeBrowsingEnhanced)) {
-    LogEnhancedProtectionDisabledMetrics();
+    AddSafeBrowsingEventAndUserStateToPref(UserState::ENHANCED_PROTECTION,
+                                           EventType::USER_STATE_DISABLED);
+    int disabled_times_last_week = GetEventCountSince(
+        UserState::ENHANCED_PROTECTION, EventType::USER_STATE_DISABLED,
+        base::Time::Now() - base::TimeDelta::FromDays(7));
+    if (disabled_times_last_week <= kEsbDisabledMetricsQuota) {
+      LogEnhancedProtectionDisabledMetrics();
+    }
+  } else {
+    AddSafeBrowsingEventAndUserStateToPref(UserState::ENHANCED_PROTECTION,
+                                           EventType::USER_STATE_ENABLED);
   }
 }
 
 void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
   const base::DictionaryValue* state_dict =
       pref_service_->GetDictionary(prefs::kSafeBrowsingEventTimestamps);
-  const base::Value* event_dict = state_dict->FindDictKey(
-      SafeBrowsingStateToPrefKey(SafeBrowsingState::ENHANCED_PROTECTION));
+  const base::Value* event_dict = state_dict->FindDictKey(UserStateToPrefKey(
+      SafeBrowsingStateToUserState(SafeBrowsingState::ENHANCED_PROTECTION)));
   if (!event_dict) {
     return;
   }
@@ -179,6 +201,29 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
     base::UmaHistogramEnumeration(
         "SafeBrowsing.EsbDisabled.LastBypassEventType", latest_event->type);
   }
+}
+
+int SafeBrowsingMetricsCollector::GetEventCountSince(UserState user_state,
+                                                     EventType event_type,
+                                                     base::Time since_time) {
+  const base::DictionaryValue* state_dict =
+      pref_service_->GetDictionary(prefs::kSafeBrowsingEventTimestamps);
+  const base::Value* event_dict =
+      state_dict->FindDictKey(UserStateToPrefKey(user_state));
+  if (!event_dict) {
+    return 0;
+  }
+  const base::Value* timestamps =
+      event_dict->FindListKey(EventTypeToPrefKey(event_type));
+  if (!timestamps) {
+    return 0;
+  }
+
+  return std::count_if(timestamps->GetList().begin(),
+                       timestamps->GetList().end(),
+                       [&](const base::Value& timestamp) {
+                         return PrefValueToTime(timestamp) > since_time;
+                       });
 }
 
 bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {

@@ -279,4 +279,43 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
                               /* expected_count */ 0);
 }
 
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_NotLoggedIfHitQuotaLimit) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::DATABASE_INTERSTITIAL_BYPASS);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 1);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 2);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 3);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  // The metric is not logged because it is already logged 3 times in a week.
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 3);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(7));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  // The metric is logged again because the oldest entry is more than 7 days
+  // ago.
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
+                              /* expected_count */ 4);
+}
+
 }  // namespace safe_browsing

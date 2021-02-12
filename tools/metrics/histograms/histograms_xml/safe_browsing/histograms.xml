@@ -675,7 +675,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the last bypass event type before a user disables Enhanced Safe
-    Browsing. Logged each time a user disables Enhanced Safe Browsing.
+    Browsing. Logged each time a user disables Enhanced Safe Browsing. Logged at
+    most three times a week.
   </summary>
 </histogram>
 

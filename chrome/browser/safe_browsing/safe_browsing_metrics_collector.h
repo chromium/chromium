@@ -80,6 +80,12 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   void OnEnhancedProtectionPrefChanged();
   void LogEnhancedProtectionDisabledMetrics();
 
+  void AddSafeBrowsingEventAndUserStateToPref(UserState user_state,
+                                              EventType event_type);
+  int GetEventCountSince(UserState user_state,
+                         EventType event_type,
+                         base::Time since_time);
+
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::OneShotTimer metrics_collector_timer_;
