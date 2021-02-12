@@ -170,6 +170,7 @@
 #include "chromeos/login/auth/login_event_recorder.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/login/session/session_termination_manager.h"
+#include "chromeos/memory/memory_ablation_study.h"
 #include "chromeos/network/fast_transition_observer.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
@@ -584,6 +585,7 @@ void ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
 
   system_token_key_permissions_manager_ = platform_keys::
       KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager();
+  memory_ablation_study_ = std::make_unique<MemoryAblationStudy>();
 
   mojo::PendingRemote<media_session::mojom::MediaControllerManager>
       media_controller_manager;

@@ -63,6 +63,7 @@ class IdleActionWarningObserver;
 class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
+class MemoryAblationStudy;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
@@ -215,6 +216,7 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<platform_keys::KeyPermissionsManager>
       system_token_key_permissions_manager_;
+  std::unique_ptr<MemoryAblationStudy> memory_ablation_study_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainPartsChromeos);
 };

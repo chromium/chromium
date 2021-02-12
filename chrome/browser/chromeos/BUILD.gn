@@ -204,6 +204,7 @@ source_set("chromeos") {
     "//chromeos/login/auth",
     "//chromeos/login/login_state",
     "//chromeos/login/session",
+    "//chromeos/memory",
     "//chromeos/network",
     "//chromeos/resources:connectivity_diagnostics_resources_grit",
     "//chromeos/resources:diagnostics_app_resources_grit",
