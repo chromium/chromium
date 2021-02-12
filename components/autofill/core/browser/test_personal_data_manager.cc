@@ -364,10 +364,4 @@ void TestPersonalDataManager::SetNicknameForCardWithGUID(
   NotifyPersonalDataObserver();
 }
 
-void TestPersonalDataManager::PopulateAlternativeStateNameMap(
-    base::OnceClosure callback) {
-  alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
-      std::move(callback));
-}
-
 }  // namespace autofill

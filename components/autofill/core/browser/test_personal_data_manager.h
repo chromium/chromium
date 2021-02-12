@@ -147,11 +147,6 @@ class TestPersonalDataManager : public PersonalDataManager {
     account_info_ = account_info;
   }
 
-  // Calls
-  // AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMapForTesting,
-  // used for testing purposes.
-  void PopulateAlternativeStateNameMap(base::OnceClosure callback);
-
  private:
   std::string timezone_country_code_;
   std::string default_country_code_;
