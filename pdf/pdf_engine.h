@@ -61,6 +61,7 @@ class InputEvent;
 class Thumbnail;
 class UrlLoader;
 struct AccessibilityLinkInfo;
+struct AccessibilityImageInfo;
 struct AccessibilityTextRunInfo;
 struct DocumentAttachmentInfo;
 struct DocumentMetadata;
@@ -283,15 +284,6 @@ class PDFEngine {
         const base::Location& from_here = base::Location::Current()) = 0;
   };
 
-  struct AccessibilityImageInfo {
-    AccessibilityImageInfo();
-    AccessibilityImageInfo(const AccessibilityImageInfo& that);
-    ~AccessibilityImageInfo();
-
-    std::string alt_text;
-    gfx::RectF bounds;
-  };
-
   struct AccessibilityHighlightInfo {
     AccessibilityHighlightInfo();
     AccessibilityHighlightInfo(const AccessibilityHighlightInfo& that);
@@ -435,7 +427,9 @@ class PDFEngine {
       const std::vector<AccessibilityTextRunInfo>& text_runs) = 0;
   // For all the images in page |page_index|, get their alt texts and bounding
   // boxes.
-  virtual std::vector<AccessibilityImageInfo> GetImageInfo(int page_index) = 0;
+  virtual std::vector<AccessibilityImageInfo> GetImageInfo(
+      int page_index,
+      uint32_t text_run_count) = 0;
   // For all the highlights in page |page_index|, get their underlying text
   // ranges and bounding boxes.
   virtual std::vector<AccessibilityHighlightInfo> GetHighlightInfo(

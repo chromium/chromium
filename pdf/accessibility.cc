@@ -23,25 +23,6 @@ bool CompareTextRuns(const T& a, const T& b) {
   return a.text_range.index < b.text_range.index;
 }
 
-std::vector<AccessibilityImageInfo> GetAccessibilityImageInfo(
-    PDFEngine* engine,
-    int32_t page_index,
-    uint32_t text_run_count) {
-  std::vector<PDFEngine::AccessibilityImageInfo> engine_image_infos =
-      engine->GetImageInfo(page_index);
-  std::vector<AccessibilityImageInfo> image_infos;
-  image_infos.reserve(engine_image_infos.size());
-  for (auto& cur_engine_info : engine_image_infos) {
-    AccessibilityImageInfo image_info;
-    image_info.alt_text = std::move(cur_engine_info.alt_text);
-    image_info.bounds = cur_engine_info.bounds;
-    // TODO(mohitb): Update text run index to nearest text run to image bounds.
-    image_info.text_run_index = text_run_count;
-    image_infos.push_back(std::move(image_info));
-  }
-  return image_infos;
-}
-
 std::vector<AccessibilityHighlightInfo> GetAccessibilityHighlightInfo(
     PDFEngine* engine,
     int32_t page_index,
@@ -187,7 +168,7 @@ bool GetAccessibilityInfo(PDFEngine* engine,
   page_info.text_run_count = text_runs.size();
   page_objects.links = engine->GetLinkInfo(page_index, text_runs);
   page_objects.images =
-      GetAccessibilityImageInfo(engine, page_index, page_info.text_run_count);
+      engine->GetImageInfo(page_index, page_info.text_run_count);
   page_objects.highlights =
       GetAccessibilityHighlightInfo(engine, page_index, text_runs);
   page_objects.form_fields = GetAccessibilityFormFieldInfo(

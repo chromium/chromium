@@ -515,13 +515,6 @@ void ShutdownSDK() {
 #endif  // defined(PDF_ENABLE_V8)
 }
 
-PDFEngine::AccessibilityImageInfo::AccessibilityImageInfo() = default;
-
-PDFEngine::AccessibilityImageInfo::AccessibilityImageInfo(
-    const AccessibilityImageInfo& that) = default;
-
-PDFEngine::AccessibilityImageInfo::~AccessibilityImageInfo() = default;
-
 PDFEngine::AccessibilityHighlightInfo::AccessibilityHighlightInfo() = default;
 
 PDFEngine::AccessibilityHighlightInfo::AccessibilityHighlightInfo(
@@ -2606,10 +2599,11 @@ std::vector<AccessibilityLinkInfo> PDFiumEngine::GetLinkInfo(
   return pages_[page_index]->GetLinkInfo(text_runs);
 }
 
-std::vector<PDFEngine::AccessibilityImageInfo> PDFiumEngine::GetImageInfo(
-    int page_index) {
+std::vector<AccessibilityImageInfo> PDFiumEngine::GetImageInfo(
+    int page_index,
+    uint32_t text_run_count) {
   DCHECK(PageIndexInBounds(page_index));
-  return pages_[page_index]->GetImageInfo();
+  return pages_[page_index]->GetImageInfo(text_run_count);
 }
 
 std::vector<PDFEngine::AccessibilityHighlightInfo>

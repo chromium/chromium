@@ -648,8 +648,9 @@ std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
   return link_info;
 }
 
-std::vector<PDFEngine::AccessibilityImageInfo> PDFiumPage::GetImageInfo() {
-  std::vector<PDFEngine::AccessibilityImageInfo> image_info;
+std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
+    uint32_t text_run_count) {
+  std::vector<AccessibilityImageInfo> image_info;
   if (!available_)
     return image_info;
 
@@ -657,8 +658,10 @@ std::vector<PDFEngine::AccessibilityImageInfo> PDFiumPage::GetImageInfo() {
 
   image_info.reserve(images_.size());
   for (const Image& image : images_) {
-    PDFEngine::AccessibilityImageInfo cur_info;
+    AccessibilityImageInfo cur_info;
     cur_info.alt_text = image.alt_text;
+    // TODO(mohitb): Update text run index to nearest text run to image bounds.
+    cur_info.text_run_index = text_run_count;
     cur_info.bounds =
         gfx::RectF(image.bounding_rect.x(), image.bounding_rect.y(),
                    image.bounding_rect.width(), image.bounding_rect.height());

@@ -35,6 +35,7 @@ namespace chrome_pdf {
 class PDFiumEngine;
 class Thumbnail;
 struct AccessibilityLinkInfo;
+struct AccessibilityImageInfo;
 struct AccessibilityTextRunInfo;
 struct AccessibilityTextStyleInfo;
 
@@ -68,7 +69,7 @@ class PDFiumPage {
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
       const std::vector<AccessibilityTextRunInfo>& text_runs);
   // For all the images on the page, get their alt texts and bounding boxes.
-  std::vector<PDFEngine::AccessibilityImageInfo> GetImageInfo();
+  std::vector<AccessibilityImageInfo> GetImageInfo(uint32_t text_run_count);
   // For all the highlights on the page, get their underlying text ranges and
   // bounding boxes.
   std::vector<PDFEngine::AccessibilityHighlightInfo> GetHighlightInfo();
