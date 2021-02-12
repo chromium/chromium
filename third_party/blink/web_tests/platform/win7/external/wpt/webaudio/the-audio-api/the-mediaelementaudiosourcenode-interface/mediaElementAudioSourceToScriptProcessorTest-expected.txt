@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Element Source tests completed
+PASS Channel 0 processed some data
+FAIL All data processed correctly assert_array_approx_equals: comparing expected and rendered buffers (channel 0) lengths differ, expected 44098 got 43970
+Harness: the test ran to completion.
+

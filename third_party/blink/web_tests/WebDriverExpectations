@@ -80,6 +80,7 @@ crbug.com/1020018 [ Linux ] external/wpt/webdriver/tests/get_active_element/get.
 crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_elements_from_shadow_root/find.py [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/new_session/create_alwaysMatch.py>>test_valid[timeouts-value12] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/find_elements_from_shadow_root/user_prompts.py>>test_accept[capabilities0-prompt-] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/find_elements_from_shadow_root/user_prompts.py>>test_accept[capabilities0-alert-None] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/find_elements_from_shadow_root/user_prompts.py>>test_dismiss[capabilities0-alert-None] [ Failure ]
