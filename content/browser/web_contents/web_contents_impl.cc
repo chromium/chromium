@@ -1218,8 +1218,11 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
     // Ensure the visible RVH reflects the new delegate's preferences.
     if (view_)
       view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-    if (GetRenderViewHost())
-      RenderFrameDevToolsAgentHost::WebContentsCreated(this);
+
+    // RenderFrameDevToolsAgentHost should not be told about the main renderer
+    // frame until/unless there is a `delegate_`.
+    if (GetMainFrame()->IsRenderFrameLive())
+      RenderFrameDevToolsAgentHost::WebContentsMainFrameCreated(this);
   }
 }
 
@@ -6313,6 +6316,15 @@ void WebContentsImpl::RenderFrameCreated(RenderFrameHost* render_frame_host) {
         view_->Focus();
       }
     }
+
+    // RenderFrameDevToolsAgentHost should not be told about the main renderer
+    // frame until/unless there is a `delegate_`.
+    if (delegate_) {
+      // TODO(crbug.com/1164280): Under MPArch, with multiple frame trees in a
+      // WebContents, this is intended to just notify about the main frame of
+      // the root page.
+      RenderFrameDevToolsAgentHost::WebContentsMainFrameCreated(this);
+    }
   }
 
   observers_.NotifyObservers(&WebContentsObserver::RenderFrameCreated,
@@ -6789,7 +6801,6 @@ void WebContentsImpl::RenderViewCreated(RenderViewHost* render_view_host) {
                         static_cast<void*>(render_view_host));
   if (delegate_) {
     view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-    RenderFrameDevToolsAgentHost::WebContentsCreated(this);
   }
 }
 

@@ -11,7 +11,7 @@ Auto-attached to the new page: {
             targetId : <string>
             title : 
             type : page
-            url : 
+            url : about:blank#newpage
         }
         waitingForDebugger : true
     }

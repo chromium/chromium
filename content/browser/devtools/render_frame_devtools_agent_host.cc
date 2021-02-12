@@ -196,7 +196,7 @@ void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
 }
 
 // static
-void RenderFrameDevToolsAgentHost::WebContentsCreated(
+void RenderFrameDevToolsAgentHost::WebContentsMainFrameCreated(
     WebContents* web_contents) {
   if (ShouldForceCreation()) {
     // Force agent host.
