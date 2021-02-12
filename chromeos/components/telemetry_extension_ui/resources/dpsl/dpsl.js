@@ -8,5 +8,7 @@
  */
 
 // <include src="../../../system_apps/public/js/message_pipe.js">
+// <include src="interface_definitions.js">
 // <include src="types.js">
-// <include src="api.js">
+// <include src="telemetry_requester.js">
+// <include src="diagnostics_manager.js">

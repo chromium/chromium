@@ -19,12 +19,19 @@ js_type_check("dpsl_closure_compile") {
 }
 
 js_library("dpsl") {
-  sources = [ "api.js" ]
+  sources = [
+    "diagnostics_manager.js",
+    "telemetry_requester.js",
+  ]
   deps = [
+    ":interface_definitions",
     ":types",
-    "//chromeos/components/system_apps/public/js:message_pipe",
   ]
 }
 
 js_library("types") {
+}
+
+js_library("interface_definitions") {
+  deps = [ "//chromeos/components/system_apps/public/js:message_pipe" ]
 }

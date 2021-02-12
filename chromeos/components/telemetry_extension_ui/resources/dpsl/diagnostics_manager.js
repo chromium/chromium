@@ -5,37 +5,17 @@
 /**
  * @fileoverview
  *
- * Diagnostic Processor Support Library (DPSL) is a collection of telemetry and
- * diagnostics interfaces exposed to third-parties:
- *
- *   - chromeos.diagnostics
- *     | Diagnostics interface for running device diagnostics routines (tests).
- *
- *   - chromeos.telemetry
- *     | Telemetry (a.k.a. Probe) interface for getting device telemetry
- *     | information.
+ * Diagnostics interface exposed to third-parties for running device diagnostics
+ * routines (tests).
  */
-
-var chromeos = {};
-
-chromeos.diagnostics = null;
-
-chromeos.telemetry = null;
-
-/**
- * This is only for testing purposes. Please don't use it in the production,
- * because we may silently change or remove it.
- */
-chromeos.test_support = {};
 
 (() => {
-  const messagePipe =
-      new MessagePipe('chrome://telemetry-extension', window.parent);
+  const messagePipe = chromeos.internal.messagePipe;
 
   /**
-   * DPSL Diagnostics Requester.
+   * DPSL Diagnostics Manager.
    */
-  class DiagnosticsRequester {
+  class DiagnosticsManager {
     constructor() {}
 
     /**
@@ -348,45 +328,5 @@ chromeos.test_support = {};
     }
   };
 
-  /**
-   * DPSL Telemetry Requester.
-   * @suppress {checkTypes}
-   */
-  class TelemetryRequester extends EventTarget {
-    constructor() {
-      super();
-      messagePipe.registerHandler(
-          dpsl_internal.Message.SYSTEM_EVENTS_SERVICE_EVENTS, (message) => {
-            const event = /** @type {!dpsl_internal.Event} */ (message);
-            this.dispatchEvent(new Event(event.type));
-          });
-    }
-
-    /**
-     * Requests telemetry info.
-     * @param { !Array<!string> } categories
-     * @return { !Object }
-     * @public
-     */
-    async probeTelemetryInfo(categories) {
-      const response =
-          /** @type {dpsl_internal.ProbeTelemetryInfoResponse} */ (
-              await messagePipe.sendMessage(
-                  dpsl_internal.Message.PROBE_TELEMETRY_INFO, categories));
-      if (response instanceof Error) {
-        throw response;
-      }
-      return response;
-    }
-  };
-
-  globalThis.chromeos.diagnostics = new DiagnosticsRequester();
-  globalThis.chromeos.telemetry = new TelemetryRequester();
-
-  globalThis.chromeos.test_support.messagePipe = function() {
-    console.warn(
-        'messagePipe() is a method for testing purposes only. Please',
-        'do not use it, otherwise your app may be broken in the future.');
-    return messagePipe;
-  }
+  globalThis.chromeos.diagnostics = new DiagnosticsManager();
 })();
