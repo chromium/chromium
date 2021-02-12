@@ -228,6 +228,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
   // Target for supplying the language detection model via the model downloader.
   OPTIMIZATION_TARGET_LANGUAGE_DETECTION = 2;
+  // Target for determining topics present on a page.
+  OPTIMIZATION_TARGET_PAGE_TOPICS = 3;
 }
 
 // The features that only the client can compute during prediction and also

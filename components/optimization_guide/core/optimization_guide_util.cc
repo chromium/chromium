@@ -18,12 +18,14 @@ namespace optimization_guide {
 std::string GetStringNameForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
   switch (optimization_target) {
-    case optimization_guide::proto::OPTIMIZATION_TARGET_UNKNOWN:
+    case proto::OPTIMIZATION_TARGET_UNKNOWN:
       return "Unknown";
-    case optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:
+    case proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:
       return "PainfulPageLoad";
-    case optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION:
+    case proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION:
       return "LanguageDetection";
+    case proto::OPTIMIZATION_TARGET_PAGE_TOPICS:
+      return "PageTopics";
   }
   NOTREACHED();
   return std::string();
