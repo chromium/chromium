@@ -29,9 +29,13 @@ class V8ForegroundTaskRunner : public V8ForegroundTaskRunnerBase {
   void PostDelayedTask(std::unique_ptr<v8::Task> task,
                        double delay_in_seconds) override;
 
+  void PostNonNestableDelayedTask(std::unique_ptr<v8::Task> task,
+                                  double delay_in_seconds) override;
+
   void PostIdleTask(std::unique_ptr<v8::IdleTask> task) override;
 
   bool NonNestableTasksEnabled() const override;
+  bool NonNestableDelayedTasksEnabled() const override;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
