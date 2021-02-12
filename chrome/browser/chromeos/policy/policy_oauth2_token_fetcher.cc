@@ -169,7 +169,7 @@ void PolicyOAuth2TokenFetcherImpl::StartFetchingRefreshToken() {
 void PolicyOAuth2TokenFetcherImpl::StartFetchingAccessToken() {
   std::vector<std::string> scopes;
   scopes.push_back(GaiaConstants::kDeviceManagementServiceOAuth);
-  scopes.push_back(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+  scopes.push_back(GaiaConstants::kGoogleUserInfoEmail);
   access_token_fetcher_ =
       GaiaAccessTokenFetcher::CreateExchangeRefreshTokenForAccessTokenInstance(
           this, system_url_loader_factory_, oauth2_refresh_token_);

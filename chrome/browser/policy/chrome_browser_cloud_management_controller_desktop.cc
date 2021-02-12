@@ -149,7 +149,7 @@ class MachineLevelDeviceAccountInitializerHelper
 
   std::set<std::string> GetRobotOAuthScopes() override {
     return {
-        GaiaConstants::kOAuthWrapBridgeUserInfoScope,
+        GaiaConstants::kGoogleUserInfoEmail,
         GaiaConstants::kFCMOAuthScope,
     };
   }

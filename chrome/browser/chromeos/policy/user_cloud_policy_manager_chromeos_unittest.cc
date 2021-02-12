@@ -283,7 +283,7 @@ class UserCloudPolicyManagerChromeOSTest
       // Issue the access token with the former.
       signin::ScopeSet scopes;
       scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-      scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+      scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
 
       identity_test_env()
           ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
@@ -1163,7 +1163,7 @@ class UserCloudPolicyManagerChromeOSChildTest
   void IssueOAuth2AccessToken(base::TimeDelta token_lifetime) {
     signin::ScopeSet scopes;
     scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-    scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+    scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
     identity_test_env()
         ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
             kOAuthToken, task_runner_->Now() + token_lifetime,

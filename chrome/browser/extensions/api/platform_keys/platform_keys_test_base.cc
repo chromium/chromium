@@ -138,7 +138,7 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
 
   FakeGaia::AccessTokenInfo token_info;
   token_info.scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-  token_info.scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+  token_info.scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
   token_info.audience = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   token_info.token = kTestUserinfoToken;
   token_info.email = account_id_.GetUserEmail();

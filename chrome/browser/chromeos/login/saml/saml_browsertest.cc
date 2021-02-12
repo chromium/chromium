@@ -1231,7 +1231,7 @@ void SAMLEnrollmentTest::SetUpOnMainThread() {
   FakeGaia::AccessTokenInfo token_info;
   token_info.token = kTestUserinfoToken;
   token_info.scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-  token_info.scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+  token_info.scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
   token_info.audience = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   token_info.email = saml_test_users::kFirstUserCorpExampleComEmail;
   fake_gaia_.fake_gaia()->IssueOAuthToken(kTestRefreshToken, token_info);

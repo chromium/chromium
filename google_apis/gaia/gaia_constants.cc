@@ -26,8 +26,6 @@ const char kRemotingService[] = "chromoting";
 
 // OAuth scopes.
 const char kOAuth1LoginScope[] = "https://www.google.com/accounts/OAuthLogin";
-const char kOAuthWrapBridgeUserInfoScope[] =
-    "https://www.googleapis.com/auth/userinfo.email";
 
 // Service/scope names for device management (cloud-based policy) server.
 const char kDeviceManagementServiceOAuth[] =

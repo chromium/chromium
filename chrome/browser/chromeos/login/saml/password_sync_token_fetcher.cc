@@ -158,7 +158,7 @@ void PasswordSyncTokenFetcher::StartAccessTokenFetch() {
   // if the refresh token is available, or that it will be requested once the
   // refresh token is available for the primary account.
   signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+  scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
   scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
 
   access_token_fetcher_ =

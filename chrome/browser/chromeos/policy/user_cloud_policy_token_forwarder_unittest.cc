@@ -175,7 +175,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   void IssueOAuthToken(const std::string& token, base::Time expiration) {
     signin::ScopeSet scopes;
     scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);
-    scopes.insert(GaiaConstants::kOAuthWrapBridgeUserInfoScope);
+    scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
     identity_test_env_profile_adaptor_->identity_test_env()
         ->WaitForAccessTokenRequestIfNecessaryAndRespondWithTokenForScopes(
             token, expiration, std::string() /*id_token*/, scopes);

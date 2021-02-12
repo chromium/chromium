@@ -24,7 +24,6 @@ extern const char kRemotingService[];
 
 // OAuth2 scopes.
 extern const char kOAuth1LoginScope[];
-extern const char kOAuthWrapBridgeUserInfoScope[];
 extern const char kDeviceManagementServiceOAuth[];
 extern const char kAnyApiOAuth2Scope[];
 extern const char kChromeSyncOAuth2Scope[];
