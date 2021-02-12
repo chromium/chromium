@@ -22,7 +22,6 @@ class CSSParserLocalContext;
 class CSSValue;
 class LayoutObject;
 class Node;
-class SVGComputedStyle;
 
 namespace {{namespace}} {
 
@@ -93,7 +92,6 @@ class {{class_name}} final : public {{property.superclass}} {
   const CSSProperty& ResolveDirectionAwareProperty(TextDirection, blink::WritingMode) const override;
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
-      const SVGComputedStyle&,
       const LayoutObject*,
       bool allow_visited_style) const override {
     // Directional properties are resolved by CSSDirectionAwareResolver

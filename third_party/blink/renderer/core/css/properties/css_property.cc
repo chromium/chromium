@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/svg_computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
 namespace blink {
@@ -45,11 +44,10 @@ const CSSValue* CSSProperty::CSSValueFromComputedStyle(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  const SVGComputedStyle& svg_style = style.SvgStyle();
   const CSSProperty& resolved_property =
       ResolveDirectionAwareProperty(style.Direction(), style.GetWritingMode());
   return resolved_property.CSSValueFromComputedStyleInternal(
-      style, svg_style, layout_object, allow_visited_style);
+      style, layout_object, allow_visited_style);
 }
 
 void CSSProperty::FilterWebExposedCSSPropertiesIntoVector(

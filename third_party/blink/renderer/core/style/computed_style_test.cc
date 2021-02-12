@@ -805,11 +805,10 @@ TEST(ComputedStyleTest, StrokeWidthZoomAndCalc) {
           true));
 
   To<Longhand>(GetCSSPropertyStrokeWidth()).ApplyValue(state, *calc_value);
-  auto* computed_value =
-      To<Longhand>(GetCSSPropertyStrokeWidth())
-          .CSSValueFromComputedStyleInternal(*style, style->SvgStyle(),
-                                             nullptr /* layout_object */,
-                                             false /* allow_visited_style */);
+  auto* computed_value = To<Longhand>(GetCSSPropertyStrokeWidth())
+                             .CSSValueFromComputedStyleInternal(
+                                 *style, nullptr /* layout_object */,
+                                 false /* allow_visited_style */);
   ASSERT_TRUE(computed_value);
   auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
   ASSERT_TRUE(numeric_value);
@@ -942,8 +941,7 @@ TEST(ComputedStyleTest, BorderWidthZoom) {
       const Longhand& longhand = To<Longhand>(*property);
       longhand.ApplyValue(state, *test.css_value);
       auto* computed_value = longhand.CSSValueFromComputedStyleInternal(
-          *style, style->SvgStyle(), nullptr /* layout_object */,
-          false /* allow_visited_style */);
+          *style, nullptr /* layout_object */, false /* allow_visited_style */);
       AtomicString prop_name = longhand.GetCSSPropertyName().ToAtomicString();
       ASSERT_TRUE(computed_value) << prop_name;
       auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);

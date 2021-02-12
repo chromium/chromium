@@ -43,7 +43,6 @@ class CORE_EXPORT CustomProperty : public Variable {
 
   const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
-      const SVGComputedStyle&,
       const LayoutObject*,
       bool allow_visited_style) const override;
 

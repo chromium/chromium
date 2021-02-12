@@ -22,7 +22,6 @@ class ComputedStyle;
 class CrossThreadStyleValue;
 class ExecutionContext;
 class LayoutObject;
-class SVGComputedStyle;
 
 class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
  public:
@@ -78,7 +77,6 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
 
   virtual const CSSValue* CSSValueFromComputedStyleInternal(
       const ComputedStyle&,
-      const SVGComputedStyle&,
       const LayoutObject*,
       bool allow_visited_style) const {
     return nullptr;

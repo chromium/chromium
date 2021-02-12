@@ -157,7 +157,6 @@ const CSSValue* CustomProperty::ParseSingleValue(
 
 const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
-    const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
   if (registration_) {
