@@ -264,6 +264,7 @@ class AutofillClient : public RiskDataLoader {
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;
+  virtual const PrefService* GetPrefs() const = 0;
 
   // Gets the sync service associated with the client.
   virtual syncer::SyncService* GetSyncService() = 0;
@@ -295,7 +296,7 @@ class AutofillClient : public RiskDataLoader {
 
   // Gets the virtual URL of the last committed page of this client's
   // associated WebContents.
-  virtual const GURL& GetLastCommittedURL() = 0;
+  virtual const GURL& GetLastCommittedURL() const = 0;
 
   // Gets the security level used for recording histograms for the current
   // context if possible, SECURITY_LEVEL_COUNT otherwise.
@@ -528,14 +529,14 @@ class AutofillClient : public RiskDataLoader {
       const base::string16& profile_full_name) = 0;
 
   // If the context is secure.
-  virtual bool IsContextSecure() = 0;
+  virtual bool IsContextSecure() const = 0;
 
   // Whether it is appropriate to show a signin promo for this user.
   virtual bool ShouldShowSigninPromo() = 0;
 
   // Whether server side cards are supported by the client. If false, only
   // local cards will be shown.
-  virtual bool AreServerCardsSupported() = 0;
+  virtual bool AreServerCardsSupported() const = 0;
 
   // Handles simple actions for the autofill popups.
   virtual void ExecuteCommand(int id) = 0;

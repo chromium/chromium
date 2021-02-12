@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
@@ -133,6 +134,10 @@ ChromeAutofillClient::GetAutocompleteHistoryManager() {
 }
 
 PrefService* ChromeAutofillClient::GetPrefs() {
+  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+}
+
+const PrefService* ChromeAutofillClient::GetPrefs() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext())
       ->GetPrefs();
 }
@@ -184,7 +189,7 @@ AutofillOfferManager* ChromeAutofillClient::GetAutofillOfferManager() {
       web_contents()->GetBrowserContext());
 }
 
-const GURL& ChromeAutofillClient::GetLastCommittedURL() {
+const GURL& ChromeAutofillClient::GetLastCommittedURL() const {
   return web_contents()->GetLastCommittedURL();
 }
 
@@ -667,7 +672,7 @@ void ChromeAutofillClient::DidFillOrPreviewField(
 #endif  // defined(OS_ANDROID)
 }
 
-bool ChromeAutofillClient::IsContextSecure() {
+bool ChromeAutofillClient::IsContextSecure() const {
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents());
   if (!helper)
@@ -694,7 +699,7 @@ bool ChromeAutofillClient::ShouldShowSigninPromo() {
 #endif
 }
 
-bool ChromeAutofillClient::AreServerCardsSupported() {
+bool ChromeAutofillClient::AreServerCardsSupported() const {
   // When in VR, server side cards are not supported.
   return !vr::VrTabHelper::IsInVr(web_contents());
 }

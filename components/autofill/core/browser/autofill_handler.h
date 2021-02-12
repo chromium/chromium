@@ -73,7 +73,8 @@ class AutofillHandler
 
   ~AutofillHandler() override;
 
-  AutofillClient* client() const { return client_; }
+  AutofillClient* client() { return client_; }
+  const AutofillClient* client() const { return client_; }
 
   // Invoked when the value of textfield is changed.
   void OnTextFieldDidChange(const FormData& form,

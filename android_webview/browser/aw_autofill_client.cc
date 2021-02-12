@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -61,6 +62,10 @@ AwAutofillClient::GetAutocompleteHistoryManager() {
 }
 
 PrefService* AwAutofillClient::GetPrefs() {
+  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+}
+
+const PrefService* AwAutofillClient::GetPrefs() const {
   return user_prefs::UserPrefs::Get(
       AwBrowserContext::FromWebContents(web_contents_));
 }
@@ -98,7 +103,7 @@ autofill::AddressNormalizer* AwAutofillClient::GetAddressNormalizer() {
   return nullptr;
 }
 
-const GURL& AwAutofillClient::GetLastCommittedURL() {
+const GURL& AwAutofillClient::GetLastCommittedURL() const {
   return web_contents_->GetLastCommittedURL();
 }
 
@@ -255,7 +260,7 @@ void AwAutofillClient::DidFillOrPreviewField(
     const base::string16& autofilled_value,
     const base::string16& profile_full_name) {}
 
-bool AwAutofillClient::IsContextSecure() {
+bool AwAutofillClient::IsContextSecure() const {
   content::SSLStatus ssl_status;
   content::NavigationEntry* navigation_entry =
       web_contents_->GetController().GetLastCommittedEntry();
@@ -277,7 +282,7 @@ bool AwAutofillClient::ShouldShowSigninPromo() {
   return false;
 }
 
-bool AwAutofillClient::AreServerCardsSupported() {
+bool AwAutofillClient::AreServerCardsSupported() const {
   return true;
 }
 

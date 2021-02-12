@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -62,7 +63,10 @@ class MockAutofillClient : public autofill::TestAutofillClient {
   MockAutofillClient() : prefs_(autofill::test::PrefServiceForTesting()) {}
   ~MockAutofillClient() override = default;
 
-  PrefService* GetPrefs() override { return prefs_.get(); }
+  PrefService* GetPrefs() override {
+    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  }
+  const PrefService* GetPrefs() const override { return prefs_.get(); }
 
  private:
   std::unique_ptr<PrefService> prefs_;

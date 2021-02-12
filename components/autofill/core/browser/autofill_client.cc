@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 
+#include "base/stl_util.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
 

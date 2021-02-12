@@ -25,17 +25,18 @@ bool IsInsecureFormAction(const GURL& action_url) {
 
 namespace autofill {
 
-bool IsFormOrClientNonSecure(AutofillClient* client, const FormData& form) {
+bool IsFormOrClientNonSecure(const AutofillClient* client,
+                             const FormData& form) {
   return !client->IsContextSecure() ||
          (form.action.is_valid() && form.action.SchemeIs("http"));
 }
 
-bool IsFormMixedContent(AutofillClient* client, const FormData& form) {
+bool IsFormMixedContent(const AutofillClient* client, const FormData& form) {
   return client->IsContextSecure() &&
          (form.action.is_valid() && IsInsecureFormAction(form.action));
 }
 
-bool ShouldAllowCreditCardFallbacks(AutofillClient* client,
+bool ShouldAllowCreditCardFallbacks(const AutofillClient* client,
                                     const FormData& form) {
   // Skip the form check if there wasn't a form yet:
   if (form.unique_renderer_id.is_null())

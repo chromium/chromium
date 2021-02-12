@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/autofill_client_impl.h"
 
+#include "base/stl_util.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -26,6 +27,10 @@ AutofillClientImpl::GetAutocompleteHistoryManager() {
 }
 
 PrefService* AutofillClientImpl::GetPrefs() {
+  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+}
+
+const PrefService* AutofillClientImpl::GetPrefs() const {
   NOTREACHED();
   return nullptr;
 }
@@ -70,7 +75,7 @@ autofill::AddressNormalizer* AutofillClientImpl::GetAddressNormalizer() {
   return nullptr;
 }
 
-const GURL& AutofillClientImpl::GetLastCommittedURL() {
+const GURL& AutofillClientImpl::GetLastCommittedURL() const {
   NOTREACHED();
   return GURL::EmptyGURL();
 }
@@ -286,7 +291,7 @@ void AutofillClientImpl::DidFillOrPreviewField(
   NOTREACHED();
 }
 
-bool AutofillClientImpl::IsContextSecure() {
+bool AutofillClientImpl::IsContextSecure() const {
   NOTREACHED();
   return false;
 }
@@ -296,7 +301,7 @@ bool AutofillClientImpl::ShouldShowSigninPromo() {
   return false;
 }
 
-bool AutofillClientImpl::AreServerCardsSupported() {
+bool AutofillClientImpl::AreServerCardsSupported() const {
   NOTREACHED();
   return false;
 }

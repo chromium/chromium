@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/test_autofill_client.h"
 
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -37,6 +38,10 @@ TestAutofillClient::GetAutocompleteHistoryManager() {
 }
 
 PrefService* TestAutofillClient::GetPrefs() {
+  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+}
+
+const PrefService* TestAutofillClient::GetPrefs() const {
   return prefs_.get();
 }
 
@@ -80,7 +85,7 @@ AutofillOfferManager* TestAutofillClient::GetAutofillOfferManager() {
   return autofill_offer_manager_.get();
 }
 
-const GURL& TestAutofillClient::GetLastCommittedURL() {
+const GURL& TestAutofillClient::GetLastCommittedURL() const {
   return last_committed_url_;
 }
 
@@ -260,7 +265,7 @@ void TestAutofillClient::DidFillOrPreviewField(
     const base::string16& autofilled_value,
     const base::string16& profile_full_name) {}
 
-bool TestAutofillClient::IsContextSecure() {
+bool TestAutofillClient::IsContextSecure() const {
   // Simplified secure context check for tests.
   return form_origin_.SchemeIs("https");
 }
@@ -269,7 +274,7 @@ bool TestAutofillClient::ShouldShowSigninPromo() {
   return false;
 }
 
-bool TestAutofillClient::AreServerCardsSupported() {
+bool TestAutofillClient::AreServerCardsSupported() const {
   return true;
 }
 

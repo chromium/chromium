@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/stl_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -41,7 +42,10 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient() = default;
   ~MockAutofillClient() override = default;
 
-  PrefService* GetPrefs() override { return &prefs_; }
+  PrefService* GetPrefs() override {
+    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  }
+  const PrefService* GetPrefs() const override { return &prefs_; }
 
   user_prefs::PrefRegistrySyncable* GetPrefRegistry() {
     return prefs_.registry();

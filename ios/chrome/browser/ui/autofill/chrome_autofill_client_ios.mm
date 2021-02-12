@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_data_importer.h"
@@ -140,6 +141,10 @@ ChromeAutofillClientIOS::GetAutocompleteHistoryManager() {
 }
 
 PrefService* ChromeAutofillClientIOS::GetPrefs() {
+  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+}
+
+const PrefService* ChromeAutofillClientIOS::GetPrefs() const {
   return pref_service_;
 }
 
@@ -176,7 +181,7 @@ AddressNormalizer* ChromeAutofillClientIOS::GetAddressNormalizer() {
   return AddressNormalizerFactory::GetInstance();
 }
 
-const GURL& ChromeAutofillClientIOS::GetLastCommittedURL() {
+const GURL& ChromeAutofillClientIOS::GetLastCommittedURL() const {
   return web_state_->GetLastCommittedURL();
 }
 
@@ -378,7 +383,7 @@ void ChromeAutofillClientIOS::DidFillOrPreviewField(
     const base::string16& autofilled_value,
     const base::string16& profile_full_name) {}
 
-bool ChromeAutofillClientIOS::IsContextSecure() {
+bool ChromeAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
@@ -386,7 +391,7 @@ bool ChromeAutofillClientIOS::ShouldShowSigninPromo() {
   return false;
 }
 
-bool ChromeAutofillClientIOS::AreServerCardsSupported() {
+bool ChromeAutofillClientIOS::AreServerCardsSupported() const {
   return true;
 }
 

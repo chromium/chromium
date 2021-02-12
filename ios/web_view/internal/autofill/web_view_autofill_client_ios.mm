@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
@@ -105,6 +106,10 @@ WebViewAutofillClientIOS::GetAutocompleteHistoryManager() {
 }
 
 PrefService* WebViewAutofillClientIOS::GetPrefs() {
+  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+}
+
+const PrefService* WebViewAutofillClientIOS::GetPrefs() const {
   return pref_service_;
 }
 
@@ -142,7 +147,7 @@ AddressNormalizer* WebViewAutofillClientIOS::GetAddressNormalizer() {
   return nullptr;
 }
 
-const GURL& WebViewAutofillClientIOS::GetLastCommittedURL() {
+const GURL& WebViewAutofillClientIOS::GetLastCommittedURL() const {
   return web_state_->GetLastCommittedURL();
 }
 
@@ -287,7 +292,7 @@ void WebViewAutofillClientIOS::DidFillOrPreviewField(
     const base::string16& autofilled_value,
     const base::string16& profile_full_name) {}
 
-bool WebViewAutofillClientIOS::IsContextSecure() {
+bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
@@ -295,7 +300,7 @@ bool WebViewAutofillClientIOS::ShouldShowSigninPromo() {
   return false;
 }
 
-bool WebViewAutofillClientIOS::AreServerCardsSupported() {
+bool WebViewAutofillClientIOS::AreServerCardsSupported() const {
   return true;
 }
 
