@@ -583,6 +583,10 @@ class PasswordStore : protected PasswordStoreSync,
   // been changed.
   void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
 
+  // Notifies insecure credentials observers added via
+  // AddDatabaseInsecureCredentialsObserver() that data have been changed.
+  void NotifyInsecureCredentialsChanged() override;
+
   void NotifyDeletionsHaveSynced(bool success) override;
 
   void NotifyUnsyncedCredentialsWillBeDeleted(

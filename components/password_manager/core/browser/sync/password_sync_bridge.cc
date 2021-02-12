@@ -477,6 +477,8 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
   // This is used to keep track of all the changes applied to the password
   // store to notify other observers of the password store.
   PasswordStoreChangeList password_store_changes;
+  // Whether local state of insecure credentials changed.
+  bool local_insecure_credentials_changed = false;
   {
     ScopedStoreTransaction transaction(password_store_sync_);
     const base::Time time_now = base::Time::Now();
@@ -566,6 +568,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
           if (!remote_and_local_insecure_credentials_equal) {
             password_store_sync_->UpdateInsecureCredentialsSync(
                 form, remote_insecure_credentials);
+            local_insecure_credentials_changed = true;
           }
         }
         DCHECK_LE(changes.size(), 1U);
@@ -609,8 +612,13 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
           &add_login_error);
       if (base::FeatureList::IsEnabled(
               password_manager::features::kSyncingCompromisedCredentials)) {
-        password_store_sync_->AddInsecureCredentialsSync(
-            InsecureCredentialsFromEntityChange(*entity_change));
+        std::vector<InsecureCredential> credentials =
+            InsecureCredentialsFromEntityChange(*entity_change);
+        if (!credentials.empty()) {
+          local_insecure_credentials_changed = true;
+          password_store_sync_->AddInsecureCredentialsSync(
+              std::move(credentials));
+        }
       }
       base::UmaHistogramEnumeration(
           "PasswordManager.MergeSyncData.AddLoginSyncError", add_login_error);
@@ -679,8 +687,10 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     // there would be no changes to the password store other than the sync
     // metadata changes, and no need to notify observers since they aren't
     // interested in changes to sync metadata.
-    // TODO(1137775): Notify InsecureCredential observers about changes.
     password_store_sync_->NotifyLoginsChanged(password_store_changes);
+    if (local_insecure_credentials_changed) {
+      password_store_sync_->NotifyInsecureCredentialsChanged();
+    }
   }
 
   metrics_util::LogPasswordSyncState(metrics_util::SYNCING_OK);
@@ -715,6 +725,8 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
   // This is used to keep track of all the changes applied to the password store
   // to notify other observers of the password store.
   PasswordStoreChangeList password_store_changes;
+  // Whether local state of insecure credentials changed.
+  bool insecure_credentials_changed = false;
   {
     ScopedStoreTransaction transaction(password_store_sync_);
 
@@ -729,8 +741,14 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
               &add_login_error);
           if (base::FeatureList::IsEnabled(
                   password_manager::features::kSyncingCompromisedCredentials)) {
-            password_store_sync_->AddInsecureCredentialsSync(
-                InsecureCredentialsFromEntityChange(*entity_change));
+            std::vector<InsecureCredential> credentials =
+                InsecureCredentialsFromEntityChange(*entity_change);
+
+            if (!credentials.empty()) {
+              insecure_credentials_changed = true;
+              password_store_sync_->AddInsecureCredentialsSync(
+                  std::move(credentials));
+            }
           }
           base::UmaHistogramEnumeration(
               "PasswordManager.ApplySyncChanges.AddLoginSyncError",
@@ -801,6 +819,7 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
                                               local_insecure_credentials)) {
               password_store_sync_->UpdateInsecureCredentialsSync(
                   form, remote_insecure_credentials);
+              insecure_credentials_changed = true;
             }
           }
           base::UmaHistogramEnumeration(
@@ -871,8 +890,10 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
     // It could be the case that there are no password store changes, and all
     // changes are only metadata changes. In such case, no need to notify
     // observers since they aren't interested in changes to sync metadata.
-    // TODO(1137775): Notify InsecureCredential observers about changes.
     password_store_sync_->NotifyLoginsChanged(password_store_changes);
+    if (insecure_credentials_changed) {
+      password_store_sync_->NotifyInsecureCredentialsChanged();
+    }
   }
   metrics_util::LogApplySyncChangesState(
       metrics_util::ApplySyncChangesState::kApplyOK);

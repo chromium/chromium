@@ -786,6 +786,13 @@ void PasswordStore::NotifyLoginsChanged(
   }
 }
 
+void PasswordStore::NotifyInsecureCredentialsChanged() {
+  insecure_credentials_observers_->Notify(
+      FROM_HERE,
+      &DatabaseInsecureCredentialsObserver::OnInsecureCredentialsChangedIn,
+      base::RetainedRef(this));
+}
+
 void PasswordStore::NotifyDeletionsHaveSynced(bool success) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   // Either all deletions have been committed to the Sync server, or Sync is
@@ -810,10 +817,7 @@ void PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange(
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   PasswordStoreChangeList changes = std::move(callback).Run();
   if (!changes.empty()) {
-    insecure_credentials_observers_->Notify(
-        FROM_HERE,
-        &DatabaseInsecureCredentialsObserver::OnInsecureCredentialsChangedIn,
-        base::RetainedRef(this));
+    NotifyInsecureCredentialsChanged();
     if (sync_bridge_)
       sync_bridge_->ActOnPasswordStoreChanges(changes);
   }

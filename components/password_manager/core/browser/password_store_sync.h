@@ -166,6 +166,9 @@ class PasswordStoreSync {
   // Notifies observers that password store data may have been changed.
   virtual void NotifyLoginsChanged(const PasswordStoreChangeList& changes) = 0;
 
+  // Notifies observers that local list of insecure credentials changed.
+  virtual void NotifyInsecureCredentialsChanged() = 0;
+
   // Notifies any waiting callback that all pending deletions have been
   // committed to the Sync server now, or that Sync definitely won't commit
   // them (because Sync was turned off permanently).

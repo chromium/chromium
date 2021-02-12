@@ -368,6 +368,7 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               NotifyLoginsChanged,
               (const PasswordStoreChangeList&),
               (override));
+  MOCK_METHOD(void, NotifyInsecureCredentialsChanged, (), (override));
   MOCK_METHOD(void, NotifyDeletionsHaveSynced, (bool), (override));
   MOCK_METHOD(void,
               NotifyUnsyncedCredentialsWillBeDeleted,
@@ -576,6 +577,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldApplyMetadataWithEmptySyncChanges) {
   metadata_change_list->UpdateMetadata(kStorageKey, metadata);
 
   EXPECT_CALL(*mock_password_store_sync(), NotifyLoginsChanged).Times(0);
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged)
+      .Times(0);
 
   EXPECT_CALL(*mock_sync_metadata_store_sync(),
               UpdateSyncMetadata(syncer::PASSWORDS, kStorageKey, _));
@@ -603,6 +606,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldApplyRemoteCreation) {
   EXPECT_CALL(
       *mock_password_store_sync(),
       NotifyLoginsChanged(UnorderedElementsAre(ChangeHasPrimaryKey(1))));
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged)
+      .Times(0);
 
   // Processor shouldn't be notified about remote changes.
   EXPECT_CALL(mock_processor(), Put).Times(0);
@@ -653,6 +658,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldApplyRemoteUpdate) {
   EXPECT_CALL(*mock_password_store_sync(),
               NotifyLoginsChanged(
                   UnorderedElementsAre(ChangeHasPrimaryKey(kPrimaryKey))));
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged)
+      .Times(0);
 
   // Processor shouldn't be notified about remote changes.
   EXPECT_CALL(mock_processor(), Put).Times(0);
@@ -681,6 +688,8 @@ TEST_P(PasswordSyncBridgeTest, ShouldApplyRemoteDeletion) {
   EXPECT_CALL(*mock_password_store_sync(),
               NotifyLoginsChanged(
                   UnorderedElementsAre(ChangeHasPrimaryKey(kPrimaryKey))));
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged)
+      .Times(0);
 
   // Processor shouldn't be notified about remote changes.
   EXPECT_CALL(mock_processor(), Delete).Times(0);
@@ -1253,6 +1262,8 @@ TEST_P(PasswordSyncBridgeTest,
 
   EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
 
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged);
+
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
       /*storage_key=*/"", SpecificsToEntity(specifics)));
@@ -1285,6 +1296,7 @@ TEST_P(PasswordSyncBridgeTest,
 
   EXPECT_CALL(*mock_password_store_sync(),
               AddInsecureCredentialsSync(UnorderedElementsAreArray(kIssues)));
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged);
 
   EXPECT_CALL(*mock_password_store_sync(), CommitTransaction());
 
@@ -1388,6 +1400,7 @@ TEST_P(PasswordSyncBridgeTest,
       *mock_password_store_sync(),
       UpdateInsecureCredentialsSync(FormHasSignonRealm(kSignonRealm1),
                                     UnorderedElementsAreArray(kIssues)));
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged);
 
   sync_pb::PasswordSpecifics specifics =
       CreateSpecificsWithSignonRealmAndIssues(kSignonRealm1, kIssuesTypes);
@@ -1432,6 +1445,8 @@ TEST_P(PasswordSyncBridgeTest,
   EXPECT_CALL(*mock_password_store_sync(),
               UpdateLoginSync(FormHasSignonRealm(kSignonRealm1), _));
   EXPECT_CALL(*mock_password_store_sync(), UpdateInsecureCredentialsSync)
+      .Times(0);
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged)
       .Times(0);
 
   syncer::EntityChangeList entity_change_list;
@@ -1478,6 +1493,7 @@ TEST_P(PasswordSyncBridgeTest,
       *mock_password_store_sync(),
       UpdateInsecureCredentialsSync(FormHasSignonRealm(kSignonRealm1),
                                     UnorderedElementsAreArray(kRemoteIssues)));
+  EXPECT_CALL(*mock_password_store_sync(), NotifyInsecureCredentialsChanged);
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
