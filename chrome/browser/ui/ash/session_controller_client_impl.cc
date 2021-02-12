@@ -255,32 +255,29 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
     return;
   }
 
-  if (UserManager::Get()->GetLoggedInUsers().size() >=
-      session_manager::kMaximumNumberOfUserSessions) {
-    return;
-  }
+  DCHECK(UserManager::Get()->GetLoggedInUsers().size() >=
+         session_manager::kMaximumNumberOfUserSessions);
 
   // Launch sign in screen to add another user to current session.
-  if (!UserManager::Get()->GetUsersAllowedForMultiProfile().empty()) {
-    // Don't show the dialog if any logged-in user in the multi-profile session
-    // dismissed it.
-    bool show_intro = true;
-    const user_manager::UserList logged_in_users =
-        UserManager::Get()->GetLoggedInUsers();
-    for (User* user : logged_in_users) {
-      show_intro &=
-          !multi_user_util::GetProfileFromAccountId(user->GetAccountId())
-               ->GetPrefs()
-               ->GetBoolean(prefs::kMultiProfileNeverShowIntro);
-      if (!show_intro)
-        break;
-    }
-    if (show_intro) {
-      session_controller_->ShowMultiprofilesIntroDialog(
-          base::BindOnce(&OnAcceptMultiprofilesIntroDialog));
-    } else {
-      chromeos::UserAddingScreen::Get()->Start();
-    }
+  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiProfile().empty());
+  // Don't show the dialog if any logged-in user in the multi-profile session
+  // dismissed it.
+  bool show_intro = true;
+  const user_manager::UserList logged_in_users =
+      UserManager::Get()->GetLoggedInUsers();
+  for (User* user : logged_in_users) {
+    show_intro &=
+        !multi_user_util::GetProfileFromAccountId(user->GetAccountId())
+             ->GetPrefs()
+             ->GetBoolean(prefs::kMultiProfileNeverShowIntro);
+    if (!show_intro)
+      break;
+  }
+  if (show_intro) {
+    session_controller_->ShowMultiprofilesIntroDialog(
+        base::BindOnce(&OnAcceptMultiprofilesIntroDialog));
+  } else {
+    chromeos::UserAddingScreen::Get()->Start();
   }
 }
 
