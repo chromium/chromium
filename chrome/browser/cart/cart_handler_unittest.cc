@@ -152,6 +152,7 @@ TEST_F(CartHandlerTest, TestEnableFakeData) {
       {{"NtpChromeCartModuleDataParam", "fake"}});
   service_->AddCart(kFakeMerchantKey, kFakeProto);
   service_->AddCart(kMockMerchantBKey, kMockProtoB);
+  task_environment_.RunUntilIdle();
 
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
   auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
@@ -171,6 +172,7 @@ TEST_F(CartHandlerTest, TestDisableFakeData) {
   features.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
   service_->AddCart(kFakeMerchantKey, kFakeProto);
   service_->AddCart(kMockMerchantBKey, kMockProtoB);
+  task_environment_.RunUntilIdle();
 
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
   auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
