@@ -29,6 +29,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
@@ -478,6 +479,7 @@ public class TabsOpenedFromExternalAppTest {
     @Test
     @LargeTest
     @Feature({"Navigation"})
+    @DisabledTest(message = "Flaky test - see: https://crbug.com/1176476")
     public void testNewTabWithNewTabExtra() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
