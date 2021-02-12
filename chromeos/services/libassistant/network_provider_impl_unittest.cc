@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/network_provider_impl.h"
+#include "chromeos/services/libassistant/network_provider_impl.h"
 
 #include <utility>
 #include <vector>
@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
 using network_config::mojom::ConnectionStateType;
 using network_config::mojom::NetworkStatePropertiesPtr;
@@ -23,7 +23,9 @@ using ConnectionStatus = NetworkProviderImpl::ConnectionStatus;
 
 class AssistantNetworkProviderImplTest : public ::testing::Test {
  public:
-  AssistantNetworkProviderImplTest() = default;
+  AssistantNetworkProviderImplTest() {
+    network_provider_.Initialize(&platform_delegate_);
+  }
   ~AssistantNetworkProviderImplTest() override = default;
 
   void PublishConnectionStateType(ConnectionStateType connection_type) {
@@ -61,8 +63,8 @@ class AssistantNetworkProviderImplTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment;
-  FakePlatformDelegate platform_delegate_;
-  NetworkProviderImpl network_provider_{&platform_delegate_};
+  assistant::FakePlatformDelegate platform_delegate_;
+  NetworkProviderImpl network_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantNetworkProviderImplTest);
 };
@@ -104,5 +106,5 @@ TEST_F(AssistantNetworkProviderImplTest, IsOfflineIfThereAreNoNetworks) {
             network_provider_.GetConnectionStatus());
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

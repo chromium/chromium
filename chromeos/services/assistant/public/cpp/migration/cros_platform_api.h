@@ -23,9 +23,6 @@ class CrosPlatformApi {
   CrosPlatformApi() = default;
   virtual ~CrosPlatformApi() = default;
 
-  // Returns the network provider to be used by libassistant.
-  virtual assistant_client::NetworkProvider& GetNetworkProvider() = 0;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(CrosPlatformApi);
 };

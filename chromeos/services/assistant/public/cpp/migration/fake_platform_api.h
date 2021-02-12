@@ -21,9 +21,6 @@ class FakePlatformApi : public CrosPlatformApi {
   FakePlatformApi(const FakePlatformApi&) = delete;
   FakePlatformApi& operator=(const FakePlatformApi&) = delete;
   ~FakePlatformApi() override;
-
-  // CrosPlatformApi implementation:
-  assistant_client::NetworkProvider& GetNetworkProvider() override;
 };
 
 }  // namespace assistant

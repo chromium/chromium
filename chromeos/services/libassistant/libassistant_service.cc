@@ -45,13 +45,8 @@ LibassistantService::LibassistantService(
   service_controller_->AddAndFireAssistantManagerObserver(
       media_controller_.get());
 
-  // |platform_api| can be null during unittests.
-  if (platform_api) {
-    platform_api_
-        ->SetAudioInputProvider(
-            &audio_input_controller_->audio_input_provider())
-        .SetNetworkProvider(&platform_api->GetNetworkProvider());
-  }
+  platform_api_->SetAudioInputProvider(
+      &audio_input_controller_->audio_input_provider());
 }
 
 LibassistantService::~LibassistantService() {

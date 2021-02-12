@@ -10,8 +10,6 @@
 
 #include "chromeos/services/assistant/public/cpp/features.h"
 
-using assistant_client::NetworkProvider;
-
 namespace chromeos {
 namespace assistant {
 
@@ -22,14 +20,9 @@ namespace assistant {
 PlatformApiImpl::PlatformApiImpl(
     chromeos::libassistant::mojom::PlatformDelegate* platform_delegate,
     PowerManagerClient* power_manager_client,
-    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner)
-    : network_provider_(platform_delegate) {}
+    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner) {}
 
 PlatformApiImpl::~PlatformApiImpl() = default;
-
-NetworkProvider& PlatformApiImpl::GetNetworkProvider() {
-  return network_provider_;
-}
 
 }  // namespace assistant
 }  // namespace chromeos

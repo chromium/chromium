@@ -13,10 +13,5 @@ namespace assistant {
 FakePlatformApi::FakePlatformApi() = default;
 FakePlatformApi::~FakePlatformApi() = default;
 
-assistant_client::NetworkProvider& FakePlatformApi::GetNetworkProvider() {
-  NOTIMPLEMENTED();
-  abort();
-}
-
 }  // namespace assistant
 }  // namespace chromeos

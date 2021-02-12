@@ -20,7 +20,8 @@ PlatformApi::PlatformApi()
     : audio_output_provider_(std::make_unique<AudioOutputProviderImpl>(
           media::AudioDeviceDescription::kDefaultDeviceId)),
       fake_auth_provider_(std::make_unique<FakeAuthProvider>()),
-      file_provider_(std::make_unique<FileProviderImpl>()) {
+      file_provider_(std::make_unique<FileProviderImpl>()),
+      network_provider_(std::make_unique<NetworkProviderImpl>()) {
   // Only enable native power features if they are supported by the UI.
   std::unique_ptr<PowerManagerProviderImpl> provider;
   if (assistant::features::IsPowerManagerEnabled()) {
@@ -36,18 +37,13 @@ void PlatformApi::Bind(
     mojom::PlatformDelegate* platform_delegate) {
   audio_output_provider_->Bind(std::move(audio_output_delegate),
                                platform_delegate);
+  network_provider_->Initialize(platform_delegate);
   system_provider_->Initialize(platform_delegate);
 }
 
 PlatformApi& PlatformApi::SetAudioInputProvider(
     assistant_client::AudioInputProvider* provider) {
   audio_input_provider_ = provider;
-  return *this;
-}
-
-PlatformApi& PlatformApi::SetNetworkProvider(
-    assistant_client::NetworkProvider* provider) {
-  network_provider_ = provider;
   return *this;
 }
 

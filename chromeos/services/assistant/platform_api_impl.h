@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "chromeos/services/assistant/platform/network_provider_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
@@ -30,11 +29,7 @@ class PlatformApiImpl : public CrosPlatformApi {
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner);
   ~PlatformApiImpl() override;
 
-  assistant_client::NetworkProvider& GetNetworkProvider() override;
-
  private:
-  NetworkProviderImpl network_provider_;
-
   DISALLOW_COPY_AND_ASSIGN(PlatformApiImpl);
 };
 

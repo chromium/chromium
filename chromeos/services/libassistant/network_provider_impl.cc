@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/platform/network_provider_impl.h"
+#include "chromeos/services/libassistant/network_provider_impl.h"
 
 #include <algorithm>
 #include <vector>
@@ -19,12 +19,14 @@ using ConnectionStateType =
     chromeos::network_config::mojom::ConnectionStateType;
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
 
-NetworkProviderImpl::NetworkProviderImpl(
-    chromeos::libassistant::mojom::PlatformDelegate* delegate)
-    : connection_status_(ConnectionStatus::UNKNOWN) {
-  delegate->BindNetworkConfig(
+NetworkProviderImpl::NetworkProviderImpl()
+    : connection_status_(ConnectionStatus::UNKNOWN) {}
+
+void NetworkProviderImpl::Initialize(
+    mojom::PlatformDelegate* platform_delegate) {
+  platform_delegate->BindNetworkConfig(
       cros_network_config_remote_.BindNewPipeAndPassReceiver());
   cros_network_config_remote_->AddObserver(
       receiver_.BindNewPipeAndPassRemote());
@@ -61,5 +63,5 @@ assistant_client::MdnsResponder* NetworkProviderImpl::GetMdnsResponder() {
   return nullptr;
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos
