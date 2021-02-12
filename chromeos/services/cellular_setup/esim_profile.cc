@@ -6,6 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
@@ -49,8 +51,15 @@ ESimProfile::ESimProfile(const CellularESimProfile& esim_profile_state,
 }
 
 ESimProfile::~ESimProfile() {
-  if (uninstall_callback_ || set_profile_nickname_callback_) {
-    NET_LOG(ERROR) << "Profile destroyed with unfulfilled callbacks";
+  if (install_callback_) {
+    NET_LOG(ERROR) << "Profile destroyed with unfulfilled install callback";
+  }
+  if (uninstall_callback_) {
+    NET_LOG(ERROR) << "Profile destroyed with unfulfilled uninstall callbacks";
+  }
+  if (set_profile_nickname_callback_) {
+    NET_LOG(ERROR)
+        << "Profile destroyed with unfulfilled set profile nickname callbacks";
   }
 }
 
@@ -70,15 +79,17 @@ void ESimProfile::InstallProfile(const std::string& confirmation_code,
   properties_->state = mojom::ProfileState::kInstalling;
   esim_manager_->NotifyESimProfileChanged(this);
 
-  HermesEuiccClient::Get()->InstallPendingProfile(
-      euicc_->path(), path_, confirmation_code,
-      base::BindOnce(&ESimProfile::OnPendingProfileInstallResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  install_callback_ = std::move(callback);
+  EnsureProfileExistsOnEuiccCallback perform_install_profile_callback =
+      base::BindOnce(&ESimProfile::PerformInstallProfile,
+                     weak_ptr_factory_.GetWeakPtr(), confirmation_code);
+  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(base::BindOnce(
+      &ESimProfile::EnsureProfileExistsOnEuicc, weak_ptr_factory_.GetWeakPtr(),
+      std::move(perform_install_profile_callback)));
 }
 
 void ESimProfile::UninstallProfile(UninstallProfileCallback callback) {
-  if (properties_->state == mojom::ProfileState::kInstalling ||
-      properties_->state == mojom::ProfileState::kPending) {
+  if (!IsProfileInstalled()) {
     NET_LOG(ERROR) << "Profile uninstall failed: Profile is not installed.";
     std::move(callback).Run(mojom::ESimOperationResult::kFailure);
     return;
@@ -137,12 +148,12 @@ void ESimProfile::SetProfileNickname(const base::string16& nickname,
   }
 
   set_profile_nickname_callback_ = std::move(callback);
-  // Pass has_already_requested_installed_profiles=false so that a
-  // RequestInstalledProfiles call will be made in case this ESimProfile object
-  // was created from cached profile data.
+  EnsureProfileExistsOnEuiccCallback perform_set_profile_nickname_callback =
+      base::BindOnce(&ESimProfile::PerformSetProfileNickname,
+                     weak_ptr_factory_.GetWeakPtr(), nickname);
   esim_manager_->cellular_inhibitor()->InhibitCellularScanning(base::BindOnce(
-      &ESimProfile::PerformSetProfileNickname, weak_ptr_factory_.GetWeakPtr(),
-      nickname, /*has_already_requested_installed_profiles=*/false));
+      &ESimProfile::EnsureProfileExistsOnEuicc, weak_ptr_factory_.GetWeakPtr(),
+      std::move(perform_set_profile_nickname_callback)));
 }
 
 void ESimProfile::UpdateProperties(
@@ -170,10 +181,14 @@ void ESimProfile::OnProfileRemove() {
     // success since the profile will be removed.
     std::move(uninstall_callback_).Run(mojom::ESimOperationResult::kSuccess);
   }
+
+  // Installation or setting nickname could trigger a request for profiles. If
+  // this profile gets removed at that point, return the pending call with
+  // failure.
+  if (install_callback_) {
+    std::move(install_callback_).Run(mojom::ProfileInstallResult::kFailure);
+  }
   if (set_profile_nickname_callback_) {
-    // Setting nickname could trigger a request for installed profiles. If this
-    // profile gets removed at that point, return pending call with failure
-    // result.
     std::move(set_profile_nickname_callback_)
         .Run(mojom::ESimOperationResult::kFailure);
   }
@@ -185,37 +200,87 @@ mojo::PendingRemote<mojom::ESimProfile> ESimProfile::CreateRemote() {
   return esim_profile_remote;
 }
 
-void ESimProfile::PerformSetProfileNickname(
-    const base::string16& nickname,
-    bool has_already_requested_installed_profiles,
+void ESimProfile::EnsureProfileExistsOnEuicc(
+    EnsureProfileExistsOnEuiccCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error inhibiting cellular device";
-    std::move(set_profile_nickname_callback_)
-        .Run(mojom::ESimOperationResult::kFailure);
+    std::move(callback).Run(/*request_profile_success=*/false,
+                            /*inhibit_lock=*/nullptr);
     return;
   }
 
-  // If a valid profile does not exist on Hermes, then we are using cached
-  // profile data. Make a request for installed profiles so that the profile
-  // will be loaded in hermes.
   if (!ProfileExistsOnEuicc()) {
-    if (has_already_requested_installed_profiles) {
-      // If the profile doesn't exists and installed profiles have already been
-      // requested then give up and return with error. This profile will get
-      // destroyed when ESimProfileHandler updates.
-      NET_LOG(ERROR) << "Unable to find profile in dbus. path="
-                     << path_.value();
-      std::move(set_profile_nickname_callback_)
-          .Run(mojom::ESimOperationResult::kFailure);
-      return;
+    if (IsProfileInstalled()) {
+      HermesEuiccClient::Get()->RequestInstalledProfiles(
+          euicc_->path(),
+          base::BindOnce(&ESimProfile::OnRequestProfiles,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(inhibit_lock)));
+    } else {
+      HermesEuiccClient::Get()->RequestPendingProfiles(
+          euicc_->path(), /*root_smds=*/std::string(),
+          base::BindOnce(&ESimProfile::OnRequestProfiles,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(inhibit_lock)));
     }
+    return;
+  }
 
-    HermesEuiccClient::Get()->RequestInstalledProfiles(
-        euicc_->path(),
-        base::BindOnce(&ESimProfile::OnRequestInstalledProfilesForSetNickname,
-                       weak_ptr_factory_.GetWeakPtr(), nickname,
-                       std::move(inhibit_lock)));
+  std::move(callback).Run(/*request_profile_success=*/true,
+                          std::move(inhibit_lock));
+}
+
+void ESimProfile::OnRequestProfiles(
+    EnsureProfileExistsOnEuiccCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    HermesResponseStatus status) {
+  if (status != HermesResponseStatus::kSuccess) {
+    NET_LOG(ERROR) << "Error requesting profiles to ensure profile exists on "
+                      "Euicc. status="
+                   << static_cast<int>(status);
+    std::move(callback).Run(/*request_profile_success=*/false,
+                            std::move(inhibit_lock));
+    return;
+  }
+
+  // If profile does not exist on Euicc even after request for profiles then
+  // return failure. The profile was removed and this object will get destroyed
+  // when CellularESimProfileHandler updates.
+  if (!ProfileExistsOnEuicc()) {
+    NET_LOG(ERROR) << "Unable to ensure profile exists on Euicc. path="
+                   << path_.value();
+    std::move(callback).Run(/*request_profile_success=*/false,
+                            std::move(inhibit_lock));
+    return;
+  }
+
+  std::move(callback).Run(/*request_profile_success=*/true,
+                          std::move(inhibit_lock));
+}
+
+void ESimProfile::PerformInstallProfile(
+    const std::string& confirmation_code,
+    bool request_profile_success,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!request_profile_success) {
+    std::move(install_callback_).Run(mojom::ProfileInstallResult::kFailure);
+    return;
+  }
+
+  HermesEuiccClient::Get()->InstallPendingProfile(
+      euicc_->path(), path_, confirmation_code,
+      base::BindOnce(&ESimProfile::OnPendingProfileInstallResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(inhibit_lock)));
+}
+
+void ESimProfile::PerformSetProfileNickname(
+    const base::string16& nickname,
+    bool request_profile_success,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!request_profile_success) {
+    std::move(set_profile_nickname_callback_)
+        .Run(mojom::ESimOperationResult::kFailure);
     return;
   }
 
@@ -227,36 +292,20 @@ void ESimProfile::PerformSetProfileNickname(
                      weak_ptr_factory_.GetWeakPtr(), std::move(inhibit_lock)));
 }
 
-void ESimProfile::OnRequestInstalledProfilesForSetNickname(
-    const base::string16& nickname,
-    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
-    HermesResponseStatus status) {
-  if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR)
-        << "Error requesting installed profiles for set nickname. status="
-        << static_cast<int>(status);
-    std::move(set_profile_nickname_callback_)
-        .Run(mojom::ESimOperationResult::kFailure);
-    return;
-  }
-  PerformSetProfileNickname(nickname,
-                            /*has_already_requested_intalled_profiles=*/true,
-                            std::move(inhibit_lock));
-}
-
 void ESimProfile::OnPendingProfileInstallResult(
-    ProfileInstallResultCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status) {
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Error Installing pending profile status="
                    << static_cast<int>(status);
     properties_->state = mojom::ProfileState::kPending;
     esim_manager_->NotifyESimProfileChanged(this);
-    std::move(callback).Run(InstallResultFromStatus(status));
+    std::move(install_callback_).Run(InstallResultFromStatus(status));
     return;
   }
 
-  std::move(callback).Run(mojom::ProfileInstallResult::kSuccess);
+  std::move(install_callback_).Run(mojom::ProfileInstallResult::kSuccess);
+  // inhibit_lock goes out of scope and will uninhibit automatically.
 }
 
 void ESimProfile::OnProfileUninstallResult(bool success) {
@@ -289,11 +338,18 @@ void ESimProfile::OnProfileNicknameSet(
 bool ESimProfile::ProfileExistsOnEuicc() {
   HermesEuiccClient::Properties* euicc_properties =
       HermesEuiccClient::Get()->GetProperties(euicc_->path());
-  const std::vector<dbus::ObjectPath>& installed_profile_paths =
-      euicc_properties->installed_carrier_profiles().value();
-  auto iter = std::find(installed_profile_paths.begin(),
-                        installed_profile_paths.end(), path_);
-  return iter != installed_profile_paths.end();
+  const std::vector<dbus::ObjectPath>& profile_paths =
+      IsProfileInstalled()
+          ? euicc_properties->installed_carrier_profiles().value()
+          : euicc_properties->pending_carrier_profiles().value();
+
+  auto iter = std::find(profile_paths.begin(), profile_paths.end(), path_);
+  return iter != profile_paths.end();
+}
+
+bool ESimProfile::IsProfileInstalled() {
+  return properties_->state != mojom::ProfileState::kPending &&
+         properties_->state != mojom::ProfileState::kInstalling;
 }
 
 }  // namespace cellular_setup
