@@ -22,6 +22,8 @@
 
 goog.provide('KeyMap');
 
+goog.require('KeyCode');
+
 // TODO(dtseng): Only needed for sticky mode.
 goog.require('KeyUtil');
 
@@ -220,547 +222,555 @@ KeyMap = class {
 /** @private {!Object} */
 KeyMap.BINDINGS_ = [
   {
-    'command': 'previousObject',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [37]}}
+    command: 'previousObject',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT]}}
   },
   {
-    'command': 'previousLine',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [38]}}
+    command: 'previousLine',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.UP]}}
   },
   {
-    'command': 'nextObject',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [39]}}
+    command: 'nextObject',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT]}}
   },
   {
-    'command': 'nextLine',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [40]}}
+    command: 'nextLine',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN]}}
   },
   {
-    'command': 'nextCharacter',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [39], 'shiftKey': [true]}}
+    command: 'nextCharacter',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT], shiftKey: [true]}}
   },
   {
-    'command': 'previousCharacter',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [37], 'shiftKey': [true]}}
+    command: 'previousCharacter',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], shiftKey: [true]}}
   },
   {
-    'command': 'nextWord',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [39], 'ctrlKey': [true], 'shiftKey': [true]}
+    command: 'nextWord',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], shiftKey: [true]}
     }
   },
   {
-    'command': 'previousWord',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [37], 'ctrlKey': [true], 'shiftKey': [true]}
+    command: 'previousWord',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], shiftKey: [true]}
     }
   },
   {
-    'command': 'nextButton',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [66]}}
+    command: 'nextButton',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.B]}}
   },
   {
-    'command': 'previousButton',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [66], 'shiftKey': [true]}}
+    command: 'previousButton',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.B], shiftKey: [true]}}
   },
   {
-    'command': 'nextCheckbox',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [88]}}
+    command: 'nextCheckbox',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.X]}}
   },
   {
-    'command': 'previousCheckbox',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [88], 'shiftKey': [true]}}
+    command: 'previousCheckbox',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.X], shiftKey: [true]}}
   },
   {
-    'command': 'nextComboBox',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [67]}}
+    command: 'nextComboBox',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.C]}}
   },
   {
-    'command': 'previousComboBox',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [67], 'shiftKey': [true]}}
+    command: 'previousComboBox',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.C], shiftKey: [true]}}
   },
   {
-    'command': 'nextEditText',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [69]}}
+    command: 'nextEditText',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.E]}}
   },
   {
-    'command': 'previousEditText',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [69], 'shiftKey': [true]}}
+    command: 'previousEditText',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.E], shiftKey: [true]}}
   },
   {
-    'command': 'nextFormField',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [70]}}
+    command: 'nextFormField',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.F]}}
   },
   {
-    'command': 'previousFormField',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [70], 'shiftKey': [true]}}
+    command: 'previousFormField',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.F], shiftKey: [true]}}
   },
   {
-    'command': 'previousGraphic',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [71], 'shiftKey': [true]}}
+    command: 'previousGraphic',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.G], shiftKey: [true]}}
   },
   {
-    'command': 'nextGraphic',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [71]}}
+    command: 'nextGraphic',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.G]}}
   },
   {
-    'command': 'nextHeading',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [72]}}
+    command: 'nextHeading',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.H]}}
   },
   {
-    'command': 'nextHeading1',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [49]}}
+    command: 'nextHeading1',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE]}}
   },
   {
-    'command': 'nextHeading2',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [50]}}
+    command: 'nextHeading2',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO]}}
   },
   {
-    'command': 'nextHeading3',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [51]}}
+    command: 'nextHeading3',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.THREE]}}
   },
   {
-    'command': 'nextHeading4',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [52]}}
+    command: 'nextHeading4',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR]}}
   },
   {
-    'command': 'nextHeading5',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [53]}}
+    command: 'nextHeading5',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE]}}
   },
   {
-    'command': 'nextHeading6',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [54]}}
+    command: 'nextHeading6',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX]}}
   },
   {
-    'command': 'previousHeading',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [72], 'shiftKey': [true]}}
+    command: 'previousHeading',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.H], shiftKey: [true]}}
   },
   {
-    'command': 'previousHeading1',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [49], 'shiftKey': [true]}}
+    command: 'previousHeading1',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE], shiftKey: [true]}}
   },
   {
-    'command': 'previousHeading2',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [50], 'shiftKey': [true]}}
+    command: 'previousHeading2',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO], shiftKey: [true]}}
   },
   {
-    'command': 'previousHeading3',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [51], 'shiftKey': [true]}}
+    command: 'previousHeading3',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.THREE], shiftKey: [true]}}
   },
   {
-    'command': 'previousHeading4',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [52], 'shiftKey': [true]}}
+    command: 'previousHeading4',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR], shiftKey: [true]}}
   },
   {
-    'command': 'previousHeading5',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [53], 'shiftKey': [true]}}
+    command: 'previousHeading5',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE], shiftKey: [true]}}
   },
   {
-    'command': 'previousHeading6',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [54], 'shiftKey': [true]}}
+    command: 'previousHeading6',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX], shiftKey: [true]}}
   },
   {
-    'command': 'nextLink',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [76]}}
+    command: 'nextLink',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.L]}}
   },
   {
-    'command': 'previousLink',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [76], 'shiftKey': [true]}}
+    command: 'previousLink',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.L], shiftKey: [true]}}
   },
   {
-    'command': 'nextTable',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [84]}}
+    command: 'nextTable',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.T]}}
   },
   {
-    'command': 'previousTable',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [84], 'shiftKey': [true]}}
+    command: 'previousTable',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.T], shiftKey: [true]}}
   },
   {
-    'command': 'nextVisitedLink',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [86]}}
+    command: 'nextVisitedLink',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.V]}}
   },
   {
-    'command': 'previousVisitedLink',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [86], 'shiftKey': [true]}}
+    command: 'previousVisitedLink',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.V], shiftKey: [true]}}
   },
   {
-    'command': 'nextLandmark',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [186]}}
+    command: 'nextLandmark',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1]}}
   },
   {
-    'command': 'previousLandmark',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [186], 'shiftKey': [true]}}
+    command: 'previousLandmark',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1], shiftKey: [true]}}
   },
   {
-    'command': 'jumpToBottom',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [39], 'ctrlKey': [true]}}
+    command: 'jumpToBottom',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]}}
   },
   {
-    'command': 'jumpToTop',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [37], 'ctrlKey': [true]}}
+    command: 'jumpToTop',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}}
   },
   {
-    'command': 'forceClickOnCurrentItem',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [32]}}
+    command: 'forceClickOnCurrentItem',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}}
   },
   {
-    'command': 'contextMenu',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [77]}}
+    command: 'contextMenu',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.M]}}
   },
   {
-    'command': 'readFromHere',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [82]}}
+    command: 'readFromHere',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.R]}}
   },
   {
-    'command': 'toggleStickyMode',
-    'sequence':
-        {'skipStripping': false, 'doubleTap': true, 'keys': {'keyCode': [91]}}
-  },
-  {
-    'command': 'passThroughMode',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [27], 'shiftKey': [true]}}
-  },
-  {
-    'command': 'toggleKeyboardHelp',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [190]}}
-  },
-  {
-    'command': 'stopSpeech',
-    'sequence':
-        {'cvoxModifier': false, 'keys': {'ctrlKey': [true], 'keyCode': [17]}}
-  },
-  {
-    'command': 'decreaseTtsRate',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [219], 'shiftKey': [true]}}
-  },
-  {
-    'command': 'increaseTtsRate',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [219]}}
-  },
-  {
-    'command': 'decreaseTtsPitch',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [221], 'shiftKey': [true]}}
-  },
-  {
-    'command': 'increaseTtsPitch',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [221]}}
-  },
-  {
-    'command': 'stopSpeech',
-    'sequence': {'keys': {'ctrlKey': [true], 'keyCode': [17]}}
-  },
-  {
-    'command': 'cyclePunctuationEcho',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 80]}}
-  },
-  {
-    'command': 'showKbExplorerPage',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 75]}}
-  },
-  {
-    'command': 'cycleTypingEcho',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 84]}}
-  },
-  {
-    'command': 'showOptionsPage',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 79]}}
-  },
-  {
-    'command': 'showLogPage',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 87]}}
-  },
-  {
-    'command': 'enableLogging',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 69]}}
-  },
-  {
-    'command': 'disableLogging',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 68]}}
-  },
-  {
-    'command': 'dumpTree',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [68, 84], 'ctrlKey': [true]}}
-  },
-  {
-    'command': 'help',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 84]}}
-  },
-  {
-    'command': 'toggleEarcons',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 69]}}
-  },
-  {
-    'command': 'speakTimeAndDate',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 68]}}
-  },
-  {
-    'command': 'readCurrentTitle',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 87]}}
-  },
-  {
-    'command': 'readCurrentURL',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 85]}}
-  },
-  {
-    'command': 'reportIssue',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 73]}}
-  },
-  {
-    'command': 'toggleSearchWidget',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [191]}}
-  },
-  {
-    'command': 'showHeadingsList',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [72], 'ctrlKey': [true]}}
-  },
-  {
-    'command': 'showFormsList',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [70], 'ctrlKey': [true]}}
-  },
-  {
-    'command': 'showLandmarksList',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [186], 'ctrlKey': [true]}}
-  },
-  {
-    'command': 'showLinksList',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [76], 'ctrlKey': [true]}}
-  },
-  {
-    'command': 'showTablesList',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [84], 'ctrlKey': [true]}}
-  },
-  {
-    'command': 'toggleBrailleCaptions',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 66]}}
-  },
-  {
-    'command': 'toggleBrailleTable',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 71]}}
-  },
-  {
-    'command': 'viewGraphicAsBraille',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [71], 'altKey': [true]}}
-  },
-  {
-    'command': 'toggleSelection',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [83]}}
-  },
-  {
-    'command': 'fullyDescribe',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [75]}}
-  },
-  {
-    'command': 'previousRow',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [38], 'ctrlKey': [true], 'altKey': [true]}
+    command: 'toggleStickyMode',
+    sequence: {
+      skipStripping: false,
+      doubleTap: true,
+      keys: {keyCode: [KeyCode.SEARCH]}
     }
   },
   {
-    'command': 'nextRow',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [40], 'ctrlKey': [true], 'altKey': [true]}
+    command: 'passThroughMode',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.ESCAPE], shiftKey: [true]}
     }
   },
   {
-    'command': 'nextCol',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [39], 'ctrlKey': [true], 'altKey': [true]}
+    command: 'toggleKeyboardHelp',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_PERIOD]}}
+  },
+  {
+    command: 'stopSpeech',
+    sequence: {
+      cvoxModifier: false,
+      keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]}
     }
   },
   {
-    'command': 'previousCol',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [37], 'ctrlKey': [true], 'altKey': [true]}
+    command: 'decreaseTtsRate',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_4], shiftKey: [true]}}
+  },
+  {
+    command: 'increaseTtsRate',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_4]}}
+  },
+  {
+    command: 'decreaseTtsPitch',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_6], shiftKey: [true]}}
+  },
+  {
+    command: 'increaseTtsPitch',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_6]}}
+  },
+  {
+    command: 'stopSpeech',
+    sequence: {keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]}}
+  },
+  {
+    command: 'cyclePunctuationEcho',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.P]}}
+  },
+  {
+    command: 'showKbExplorerPage',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.K]}}
+  },
+  {
+    command: 'cycleTypingEcho',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.T]}}
+  },
+  {
+    command: 'showOptionsPage',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.O]}}
+  },
+  {
+    command: 'showLogPage',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.W]}}
+  },
+  {
+    command: 'enableLogging',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.E]}}
+  },
+  {
+    command: 'disableLogging',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.D]}}
+  },
+  {
+    command: 'dumpTree',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.D, KeyCode.T], ctrlKey: [true]}
     }
   },
   {
-    'command': 'goToRowFirstCell',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {
-        'keyCode': [37],
-        'ctrlKey': [true],
-        'altKey': [true],
-        'shiftKey': [true]
+    command: 'help',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.T]}}
+  },
+  {
+    command: 'toggleEarcons',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.E]}}
+  },
+  {
+    command: 'speakTimeAndDate',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.D]}}
+  },
+  {
+    command: 'readCurrentTitle',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.W]}}
+  },
+  {
+    command: 'readCurrentURL',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.U]}}
+  },
+  {
+    command: 'reportIssue',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.I]}}
+  },
+  {
+    command: 'toggleSearchWidget',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_2]}}
+  },
+  {
+    command: 'showHeadingsList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.H], ctrlKey: [true]}}
+  },
+  {
+    command: 'showFormsList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.F], ctrlKey: [true]}}
+  },
+  {
+    command: 'showLandmarksList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1], ctrlKey: [true]}}
+  },
+  {
+    command: 'showLinksList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.L], ctrlKey: [true]}}
+  },
+  {
+    command: 'showTablesList',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.T], ctrlKey: [true]}}
+  },
+  {
+    command: 'toggleBrailleCaptions',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.B]}}
+  },
+  {
+    command: 'toggleBrailleTable',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.G]}}
+  },
+  {
+    command: 'viewGraphicAsBraille',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.G], altKey: [true]}}
+  },
+  {
+    command: 'toggleSelection',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.S]}}
+  },
+  {
+    command: 'fullyDescribe',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.K]}}
+  },
+  {
+    command: 'previousRow',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.UP], ctrlKey: [true], altKey: [true]}
+    }
+  },
+  {
+    command: 'nextRow',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true], altKey: [true]}
+    }
+  },
+  {
+    command: 'nextCol',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], altKey: [true]}
+    }
+  },
+  {
+    command: 'previousCol',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], altKey: [true]}
+    }
+  },
+  {
+    command: 'goToRowFirstCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {
+        keyCode: [KeyCode.LEFT],
+        ctrlKey: [true],
+        altKey: [true],
+        shiftKey: [true]
       }
     }
   },
   {
-    'command': 'goToColFirstCell',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {
-        'keyCode': [38],
-        'ctrlKey': [true],
-        'altKey': [true],
-        'shiftKey': [true]
+    command: 'goToColFirstCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {
+        keyCode: [KeyCode.UP],
+        ctrlKey: [true],
+        altKey: [true],
+        shiftKey: [true]
       }
     }
   },
   {
-    'command': 'goToColLastCell',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {
-        'keyCode': [40],
-        'ctrlKey': [true],
-        'altKey': [true],
-        'shiftKey': [true]
+    command: 'goToColLastCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {
+        keyCode: [KeyCode.DOWN],
+        ctrlKey: [true],
+        altKey: [true],
+        shiftKey: [true]
       }
     }
   },
   {
-    'command': 'goToFirstCell',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [37], 'altKey': [true], 'shiftKey': [true]}
+    command: 'goToFirstCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.LEFT], altKey: [true], shiftKey: [true]}
     }
   },
   {
-    'command': 'goToLastCell',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [39], 'altKey': [true], 'shiftKey': [true]}
+    command: 'goToLastCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.RIGHT], altKey: [true], shiftKey: [true]}
     }
   },
   {
-    'command': 'goToRowLastCell',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {
-        'keyCode': [39],
-        'ctrlKey': [true],
-        'altKey': [true],
-        'shiftKey': [true]
+    command: 'goToRowLastCell',
+    sequence: {
+      cvoxModifier: true,
+      keys: {
+        keyCode: [KeyCode.RIGHT],
+        ctrlKey: [true],
+        altKey: [true],
+        shiftKey: [true]
       }
     }
   },
   {
-    'command': 'previousGroup',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [38], 'ctrlKey': [true]}}
+    command: 'previousGroup',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.UP], ctrlKey: [true]}}
   },
   {
-    'command': 'nextGroup',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [40], 'ctrlKey': [true]}}
+    command: 'nextGroup',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true]}}
   },
   {
-    'command': 'previousSimilarItem',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [73], 'shiftKey': [true]}}
+    command: 'previousSimilarItem',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.I], shiftKey: [true]}}
   },
   {
-    'command': 'nextSimilarItem',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [73]}}
+    command: 'nextSimilarItem',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.I]}}
   },
   {
-    'command': 'jumpToDetails',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 74]}}
+    command: 'jumpToDetails',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.J]}}
   },
   {
-    'command': 'toggleDarkScreen',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [217]}}
+    command: 'toggleDarkScreen',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.BRIGHTNESS_UP]}}
   },
   {
-    'command': 'toggleSpeechOnOrOff',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [173]}}
+    command: 'toggleSpeechOnOrOff',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.VOLUME_MUTE]}}
   },
   {
-    'command': 'enableChromeVoxArcSupportForCurrentApp',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 219]}}
+    command: 'enableChromeVoxArcSupportForCurrentApp',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_4]}}
   },
   {
-    'command': 'disableChromeVoxArcSupportForCurrentApp',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 221]}}
+    command: 'disableChromeVoxArcSupportForCurrentApp',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_6]}}
   },
   {
-    'command': 'forceClickOnCurrentItem',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [32]}, 'doubleTap': true}
+    command: 'forceClickOnCurrentItem',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}, doubleTap: true}
   },
   {
-    'command': 'showTtsSettings',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 83]}}
+    command: 'showTtsSettings',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.S]}}
   },
   {
-    'command': 'announceBatteryDescription',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [79, 66]}}
+    command: 'announceBatteryDescription',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.B]}}
   },
   {
-    'command': 'announceRichTextDescription',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 70]}}
+    command: 'announceRichTextDescription',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.F]}}
   },
   {
-    'command': 'readPhoneticPronunciation',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 67]}}
+    command: 'readPhoneticPronunciation',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.C]}}
   },
   {
-    'command': 'readLinkURL',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [65, 76]}}
+    command: 'readLinkURL',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.L]}}
   },
   {
-    'command': 'nextList',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [74, 76]}}
+    command: 'nextList',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.J, KeyCode.L]}}
   },
   {
-    'command': 'previousList',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [74, 76], 'shiftKey': [true]}
+    command: 'previousList',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.J, KeyCode.L], shiftKey: [true]}
     }
   },
   {
-    'command': 'resetTextToSpeechSettings',
-    'sequence': {
-      'cvoxModifier': true,
-      'keys': {'keyCode': [220], 'ctrlKey': [true], 'shiftKey': [true]}
+    command: 'resetTextToSpeechSettings',
+    sequence: {
+      cvoxModifier: true,
+      keys: {keyCode: [KeyCode.OEM_5], ctrlKey: [true], shiftKey: [true]}
     }
   },
   {
-    'command': 'logLanguageInformationForCurrentNode',
-    'sequence': {'cvoxModifier': true, 'keys': {'keyCode': [80, 76]}}
+    command: 'logLanguageInformationForCurrentNode',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.L]}}
   },
   {
-    'command': 'copy',
-    'sequence':
-        {'cvoxModifier': true, 'keys': {'keyCode': [67], 'ctrlKey': [true]}}
+    command: 'copy',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.C], ctrlKey: [true]}}
   },
 ];
