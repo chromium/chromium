@@ -237,7 +237,9 @@ class ChromeProvidedSharingOptionsProvider {
         }
         mOrderedFirstPartyOptions.add(createSendTabToSelfFirstPartyOption());
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID)) {
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_HIGHLIGHTS_ANDROID)
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)) {
             mOrderedFirstPartyOptions.add(createHighlightsFirstPartyOption());
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_QRCODE)

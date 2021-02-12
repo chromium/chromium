@@ -20,6 +20,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,6 +44,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -54,6 +56,14 @@ import java.util.Set;
  */
 class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickListener {
     private static final int SHARE_SHEET_ITEM = 0;
+
+    @IntDef({LinkGeneration.FAILURE, LinkGeneration.SUCCESS_LINK, LinkGeneration.SUCCESS_TEXT})
+    @interface LinkGeneration {
+        int FAILURE = 0;
+        int SUCCESS_LINK = 1;
+        int SUCCESS_TEXT = 2;
+    }
+
     private final Context mContext;
     private final LargeIconBridge mIconBridge;
     private final ShareSheetCoordinator mShareSheetCoordinator;
@@ -61,6 +71,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private ShareParams mParams;
     private String mUrl;
     private ScrollView mContentScrollableView;
+    private @LinkGeneration int mLinkGenerationState;
 
     /**
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
@@ -76,6 +87,10 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         mIconBridge = iconBridge;
         mShareSheetCoordinator = shareSheetCoordinator;
         mParams = params;
+        mLinkGenerationState =
+                mParams.getLinkToTextSuccessful() != null && mParams.getLinkToTextSuccessful()
+                ? LinkGeneration.SUCCESS_LINK
+                : LinkGeneration.FAILURE;
         createContentView();
     }
 
@@ -204,6 +219,9 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                         || contentTypes.contains(ContentType.TEXT))) {
             setDefaultIconForPreview(
                     AppCompatResources.getDrawable(mContext, R.drawable.text_icon));
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)) {
+                setLinkImageViewForPreview();
+            }
             title = "";
             subtitle = mParams.getText();
             setSubtitleMaxLines(2);
@@ -263,6 +281,74 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         ImageView imageView = this.getContentView().findViewById(R.id.image_preview);
         imageView.setImageDrawable(drawable);
         centerIcon(imageView);
+    }
+
+    public void updateLinkGenerationState() {
+        if (mLinkGenerationState == LinkGeneration.FAILURE) return;
+        if (mLinkGenerationState == LinkGeneration.SUCCESS_LINK) {
+            mLinkGenerationState = LinkGeneration.SUCCESS_TEXT;
+        } else {
+            mLinkGenerationState = LinkGeneration.SUCCESS_LINK;
+        }
+    }
+
+    private void setLinkImageViewForPreview() {
+        int drawable = 0;
+        int contentDescription = 0;
+
+        switch (mLinkGenerationState) {
+            case LinkGeneration.FAILURE:
+                drawable = R.drawable.link_off;
+                contentDescription = R.string.link_to_text_failure_toast_message_v2;
+                break;
+            case LinkGeneration.SUCCESS_LINK:
+                drawable = R.drawable.link;
+                contentDescription = R.string.link_to_text_success_link_toast_message;
+                break;
+            case LinkGeneration.SUCCESS_TEXT:
+                drawable = R.drawable.link_off;
+                contentDescription = R.string.link_to_text_success_text_toast_message;
+                break;
+        }
+
+        ImageView linkImageView = this.getContentView().findViewById(R.id.image_preview_link);
+        linkImageView.setVisibility(View.VISIBLE);
+        linkImageView.setImageDrawable(AppCompatResources.getDrawable(mContext, drawable));
+        linkImageView.setContentDescription(mContext.getResources().getString(contentDescription));
+        centerIcon(linkImageView);
+
+        linkImageView.setOnClickListener(v -> {
+            updateLinkGenerationState();
+            switch (mLinkGenerationState) {
+                case LinkGeneration.FAILURE:
+                    showToast(R.string.link_to_text_failure_toast_message_v2);
+                    linkImageView.setContentDescription(mContext.getResources().getString(
+                            R.string.link_to_text_failure_toast_message_v2));
+                    break;
+                case LinkGeneration.SUCCESS_LINK:
+                    showToast(R.string.link_to_text_success_link_toast_message);
+                    linkImageView.setImageDrawable(
+                            AppCompatResources.getDrawable(mContext, R.drawable.link));
+                    linkImageView.setContentDescription(mContext.getResources().getString(
+                            R.string.link_to_text_success_link_toast_message));
+                    break;
+                case LinkGeneration.SUCCESS_TEXT:
+                    showToast(R.string.link_to_text_success_text_toast_message);
+                    linkImageView.setImageDrawable(
+                            AppCompatResources.getDrawable(mContext, R.drawable.link_off));
+                    linkImageView.setContentDescription(mContext.getResources().getString(
+                            R.string.link_to_text_success_text_toast_message));
+                    break;
+            }
+        });
+    }
+
+    private void showToast(int resource) {
+        String toastMessage = mContext.getResources().getString(resource);
+        Toast toast = Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT);
+        toast.setGravity(toast.getGravity(), toast.getXOffset(),
+                mContext.getResources().getDimensionPixelSize(R.dimen.y_offset_full_sharesheet));
+        toast.show();
     }
 
     private void centerIcon(ImageView imageView) {

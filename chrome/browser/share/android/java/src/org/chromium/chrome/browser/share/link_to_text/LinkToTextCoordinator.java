@@ -66,7 +66,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                     mContext.getResources().getString(R.string.link_to_text_failure_toast_message);
             Toast toast = Toast.makeText(mContext, toastMessage, Toast.LENGTH_SHORT);
             toast.setGravity(toast.getGravity(), toast.getXOffset(),
-                    mContext.getResources().getDimensionPixelSize(R.dimen.y_offset));
+                    mContext.getResources().getDimensionPixelSize(
+                            R.dimen.y_offset_thirdparty_sharesheet));
             toast.show();
         }
         // After generation results are communicated to users, cleanup to remove tab listener.

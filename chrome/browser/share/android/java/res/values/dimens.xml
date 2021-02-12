@@ -17,5 +17,6 @@
     <dimen name="qrcode_size">200dp</dimen>
 
     <!-- Toast for Link to Text -->
-    <dimen name="y_offset">230dp</dimen>
+    <dimen name="y_offset_thirdparty_sharesheet">230dp</dimen>
+    <dimen name="y_offset_full_sharesheet">345dp</dimen>
 </resources>

@@ -4273,7 +4273,19 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
 
       <message name="IDS_LINK_TO_TEXT_FAILURE_TOAST_MESSAGE" desc="Toast displayed when link to highlighted text was not possible to create.">
-        Can't create link to text. Share link to page.
+        Can’t create link to text. Share link to page.
+      </message>
+
+      <message name="IDS_LINK_TO_TEXT_FAILURE_TOAST_MESSAGE_V2" desc="Toast displayed when link to highlighted text was not possible to create.">
+        Can’t create link to text
+      </message>
+
+      <message name="IDS_LINK_TO_TEXT_SUCCESS_LINK_TOAST_MESSAGE" desc="Toast displayed when link to highlighted text was not possible to create.">
+        Include link to text
+      </message>
+
+      <message name="IDS_LINK_TO_TEXT_SUCCESS_TEXT_TOAST_MESSAGE" desc="Toast displayed when link to highlighted text was not possible to create.">
+        Share text only
       </message>
 
       <message name="IDS_NEW_BADGE" desc="Notification displayed to indicate that there is a new sharing feature.">
