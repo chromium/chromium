@@ -134,10 +134,10 @@ suite('EsimRenameDialog', function() {
     const warningMessage = esimRenameDialog.$$('#warningMessage');
     assertTrue(!!warningMessage);
 
-    esimRenameDialog.isConnectedToESimNetwork = false;
+    esimRenameDialog.showCellularDisconnectWarning = false;
     assertTrue(warningMessage.hidden);
 
-    esimRenameDialog.isConnectedToESimNetwork = true;
+    esimRenameDialog.showCellularDisconnectWarning = true;
     assertFalse(warningMessage.hidden);
   });
 });

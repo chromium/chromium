@@ -113,10 +113,10 @@ suite('EsimRemoveProfileDialog', function() {
     const warningMessage = esimRemoveProfileDialog.$$('#warningMessage');
     assertTrue(!!warningMessage);
 
-    esimRemoveProfileDialog.isConnectedToESimNetwork = false;
+    esimRemoveProfileDialog.showCellularDisconnectWarning = false;
     assertTrue(warningMessage.hidden);
 
-    esimRemoveProfileDialog.isConnectedToESimNetwork = true;
+    esimRemoveProfileDialog.showCellularDisconnectWarning = true;
     assertFalse(warningMessage.hidden);
   });
 });

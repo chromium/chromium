@@ -20,7 +20,8 @@ Polymer({
       value: '',
     },
 
-    isConnectedToESimNetwork: {
+    /** @type {boolean} */
+    showCellularDisconnectWarning: {
       type: Boolean,
       value: false,
     },

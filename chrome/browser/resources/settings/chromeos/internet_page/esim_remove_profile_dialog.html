@@ -33,7 +33,7 @@
     <cr-dialog id="dialog" show-on-attach>
       <div slot="title">[[getTitleString_(esimProfileName_)]]</div>
       <div slot="body">
-        <div id="warningMessage" hidden$="[[!isConnectedToESimNetwork]]">
+        <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
           <iron-icon icon="cellular-setup:warning"></iron-icon>
           $i18n{eSimDialogConnectionWarning}
         </div>

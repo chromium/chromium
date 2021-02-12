@@ -34,7 +34,7 @@
     <cr-dialog id="profileRenameDialog" show-on-attach>
       <div slot="title">$i18n{eSimRenameProfileDialogLabel}</div>
       <div slot="body">
-        <div id="warningMessage" hidden$="[[!isConnectedToESimNetwork]]">
+        <div id="warningMessage" hidden$="[[!showCellularDisconnectWarning]]">
           <iron-icon icon="cellular-setup:warning"></iron-icon>
           $i18n{eSimDialogConnectionWarning}
         </div>

@@ -132,7 +132,7 @@ Polymer({
     cellularSetupDialogPageName_: String,
 
     /** @private {boolean} */
-    isConnectedToESimNetwork_: {
+    hasActivePSimNetwork_: {
       type: Boolean,
       value: false,
     },
@@ -320,8 +320,8 @@ Polymer({
 
   /** NetworkListenerBehavior override */
   onNetworkStateListChanged() {
-    isConnectedToESimNetwork().then((isConnected) => {
-      this.isConnectedToESimNetwork_ = isConnected;
+    hasActivePSimNetwork().then((hasActive) => {
+      this.hasActivePSimNetwork_ = hasActive;
     });
   },
 

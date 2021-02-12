@@ -7,10 +7,10 @@
 // clang-format on
 
 /**
- * Checks if the device is currently connected to an eSIM network.
+ * Checks if the device has a currently active pSIM network.
  * @return {!Promise<boolean>}
  */
-/* #export */ function isConnectedToESimNetwork() {
+/* #export */ function hasActivePSimNetwork() {
   const mojom = chromeos.networkConfig.mojom;
   const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
                             .getMojoServiceRemote();
@@ -21,29 +21,30 @@
         limit: mojom.NO_LIMIT,
       })
       .then((response) => {
-        // Filter for connected networks and check if they are eSIM.
+        // Filter out non-connected networks and check the remaining if they are
+        // pSIM.
         return Promise.all(response.result
                                .filter(network => {
-                                 return network.connectionState ===
-                                     mojom.ConnectionStateType.kConnected;
+                                 return network.connectionState !==
+                                     mojom.ConnectionStateType.kNotConnected;
                                })
-                               .map(networkIsESim_));
+                               .map(networkIsPSim_));
       })
-      .then((networkIsESimResults) => {
-        return networkIsESimResults.some((isESimNetwork) => isESimNetwork);
+      .then((networkIsPSimResults) => {
+        return networkIsPSimResults.some((isPSimNetwork) => isPSimNetwork);
       });
 }
 
 /**
- * Returns whether a network is an eSIM network or not.
+ * Returns whether a network is a pSIM network or not.
  * @private
  * @param {OncMojo.NetworkStateProperties} network
  * @return {!Promise<boolean>}
  */
-function networkIsESim_(network) {
+function networkIsPSim_(network) {
   const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
                             .getMojoServiceRemote();
   return networkConfig.getManagedProperties(network.guid).then((response) => {
-    return response.result.typeProperties.cellular.eid !== null;
+    return !response.result.typeProperties.cellular.eid;
   });
 }
