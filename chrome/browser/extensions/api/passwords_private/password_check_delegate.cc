@@ -347,14 +347,10 @@ void PasswordCheckDelegate::StartPasswordCheck(
     return;
   }
 
-  // In case the Weakness Check feature is enabled start the check, and notify
-  // observers once done.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordsWeaknessCheck)) {
-    insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
-        &PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Start the weakness check, and notify observers once done.
+  insecure_credentials_manager_.StartWeakCheck(base::BindOnce(
+      &PasswordCheckDelegate::RecordAndNotifyAboutCompletedWeakPasswordCheck,
+      weak_ptr_factory_.GetWeakPtr()));
 
   auto progress = base::MakeRefCounted<PasswordCheckProgress>();
   for (const auto& password : saved_passwords_presenter_->GetSavedPasswords())

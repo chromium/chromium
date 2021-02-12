@@ -6711,12 +6711,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(download::features::kSmartSuggestionForLargeDownloads)},
 #endif  // defined(OS_ANDROID)
 
-#if !defined(OS_ANDROID)
-    {"passwords-weakness-check", flag_descriptions::kPasswordsWeaknessCheckName,
-     flag_descriptions::kPasswordsWeaknessCheckDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(password_manager::features::kPasswordsWeaknessCheck)},
-#endif  // !defined(OS_ANDROID)
-
     {"window-naming", flag_descriptions::kWindowNamingName,
      flag_descriptions::kWindowNamingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWindowNaming)},

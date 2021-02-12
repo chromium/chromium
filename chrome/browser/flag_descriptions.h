@@ -2049,9 +2049,6 @@ extern const char kOmniboxKeywordSearchButtonDescription[];
 extern const char kOmniboxRefinedFocusStateName[];
 extern const char kOmniboxRefinedFocusStateDescription[];
 
-extern const char kPasswordsWeaknessCheckName[];
-extern const char kPasswordsWeaknessCheckDescription[];
-
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
 

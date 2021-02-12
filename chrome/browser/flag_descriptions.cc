@@ -1954,8 +1954,7 @@ const char kSafetyCheckAndroidDescription[] =
 
 const char kSafetyCheckWeakPasswordsName[] = "Safety check for weak passwords";
 const char kSafetyCheckWeakPasswordsDescription[] =
-    "If weak passwords were found, show them in safety check."
-    "Requires #passwords-weakness-check to also be enabled.";
+    "If weak passwords were found, show them in safety check.";
 
 const char kProminentDarkModeActiveTabTitleName[] =
     "Prominent Dark Mode Active Tab Titles";
@@ -3558,10 +3557,6 @@ const char kOmniboxShortBookmarkSuggestionsName[] =
 const char kOmniboxShortBookmarkSuggestionsDescription[] =
     "Match very short input words to beginning of words in bookmark "
     "suggestions.";
-
-const char kPasswordsWeaknessCheckName[] = "Passwords weakness check";
-const char kPasswordsWeaknessCheckDescription[] =
-    "Enables checking passwords for weakness in Password Check";
 
 const char kReadLaterFlagId[] = "read-later";
 const char kReadLaterName[] = "Reading List";

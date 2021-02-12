@@ -3980,11 +3980,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "passwords-weakness-check",
-    "owners": [ "irfedorova", "jdoerrie" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "pdf-form-save",
     "owners": [ "thestig" ],
     "expiry_milestone": 89

@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
@@ -37,7 +36,6 @@
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -259,7 +257,6 @@ class PasswordCheckDelegateTest : public ::testing::Test {
                                        &profile_);
   scoped_refptr<TestPasswordStore> store_ =
       CreateAndUseTestPasswordStore(&profile_);
-  base::test::ScopedFeatureList scoped_feature_list_;
   SavedPasswordsPresenter presenter_{store_};
   PasswordCheckDelegate delegate_{&profile_, &presenter_};
 };
@@ -287,25 +284,8 @@ TEST_F(PasswordCheckDelegateTest, VerifyCastingOfCompromisedCredentialTypes) {
       "");
 }
 
-// Verify that weak credentials will not be found if kPasswordsWeaknessCheck is
-// disabled.
-TEST_F(PasswordCheckDelegateTest, DisablePasswordsWeaknessCheck) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kPasswordsWeaknessCheck);
-  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
-  RunUntilIdle();
-  delegate().StartPasswordCheck();
-  RunUntilIdle();
-
-  EXPECT_THAT(delegate().GetWeakCredentials(), IsEmpty());
-}
-
 // Verify that GetWeakCredentials() correctly represents weak credentials.
 TEST_F(PasswordCheckDelegateTest, GetWeakCredentialsFillsFieldsCorrectly) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordsWeaknessCheck);
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
   store().AddLogin(MakeSavedAndroidPassword(
       kExampleApp, kUsername2, "Example App", kExampleCom, kWeakPassword2));
@@ -326,9 +306,6 @@ TEST_F(PasswordCheckDelegateTest, GetWeakCredentialsFillsFieldsCorrectly) {
 
 // Verify that computation of weak credentials notifies observers.
 TEST_F(PasswordCheckDelegateTest, WeakCheckNotifiesObservers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordsWeaknessCheck);
   const char* const kEventName =
       api::passwords_private::OnWeakCredentialsChanged::kEventName;
 
@@ -344,9 +321,6 @@ TEST_F(PasswordCheckDelegateTest, WeakCheckNotifiesObservers) {
 
 // Verifies that the weak check will be run if the user is signed out.
 TEST_F(PasswordCheckDelegateTest, WeakCheckWhenUserSignedOut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordsWeaknessCheck);
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
   RunUntilIdle();
   delegate().StartPasswordCheck();
