@@ -1502,17 +1502,10 @@ TEST_P(ThreadPoolImplTest, UpdatePrioritySequenceScheduled_MustUseForeground) {
   TestUpdatePrioritySequenceScheduled(this, ThreadPolicy::MUST_USE_FOREGROUND);
 }
 
-// The test times out flakily on ASAN bots: https://crbug.com/1175764.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_UpdatePriorityFromBestEffortNoThreadPolicy \
-  DISABLED_UpdatePriorityFromBestEffortNoThreadPolicy
-#else
-#define MAYBE_UpdatePriorityFromBestEffortNoThreadPolicy \
-  UpdatePriorityFromBestEffortNoThreadPolicy
-#endif
 // Verify that a ThreadPolicy has to be specified in TaskTraits to increase
 // TaskPriority from BEST_EFFORT.
-TEST_P(ThreadPoolImplTest, MAYBE_UpdatePriorityFromBestEffortNoThreadPolicy) {
+TEST_P(ThreadPoolImplTest, UpdatePriorityFromBestEffortNoThreadPolicy) {
+  testing::GTEST_FLAG(death_test_style) = "threadsafe";
   StartThreadPool();
   {
     auto task_runner = thread_pool_->CreateUpdateableSequencedTaskRunner(
