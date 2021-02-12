@@ -5,10 +5,10 @@
 #include "ash/test/test_widget_builder.h"
 
 #include "ash/shell.h"
-#include "ash/window_factory.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/aura/window.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 

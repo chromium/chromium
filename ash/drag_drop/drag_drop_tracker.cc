@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
-#include "ash/window_factory.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
@@ -39,7 +38,8 @@ std::unique_ptr<aura::Window> CreateCaptureWindow(
   static CaptureWindowActivationDelegate* activation_delegate_instance = NULL;
   if (!activation_delegate_instance)
     activation_delegate_instance = new CaptureWindowActivationDelegate;
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow(delegate);
+  std::unique_ptr<aura::Window> window =
+      std::make_unique<aura::Window>(delegate);
   // Set type of window as popup to prevent different window manager codes
   // trying to manage this window.
   window->SetType(aura::client::WINDOW_TYPE_POPUP);

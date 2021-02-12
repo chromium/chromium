@@ -1493,8 +1493,6 @@ component("ash") {
     "wallpaper/wallpaper_widget_controller.h",
     "wallpaper/wallpaper_window_state_manager.cc",
     "wallpaper/wallpaper_window_state_manager.h",
-    "window_factory.cc",
-    "window_factory.h",
     "window_tree_host_lookup.cc",
     "window_user_data.h",
     "wm/always_on_top_controller.cc",

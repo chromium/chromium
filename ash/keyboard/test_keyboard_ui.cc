@@ -6,7 +6,6 @@
 
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/shell.h"
-#include "ash/window_factory.h"
 #include "ash/wm/window_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/aura/window.h"
@@ -21,7 +20,7 @@ TestKeyboardUI::~TestKeyboardUI() = default;
 
 aura::Window* TestKeyboardUI::LoadKeyboardWindow(LoadCallback callback) {
   DCHECK(!keyboard_window_);
-  keyboard_window_ = window_factory::NewWindow(&delegate_);
+  keyboard_window_ = std::make_unique<aura::Window>(&delegate_);
   keyboard_window_->Init(ui::LAYER_NOT_DRAWN);
 
   // Set a default size for the keyboard.

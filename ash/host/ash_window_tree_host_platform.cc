@@ -8,9 +8,6 @@
 
 #include "ash/host/root_window_transformer.h"
 #include "ash/host/transformer_helper.h"
-#include "ash/shell.h"
-#include "ash/shell_delegate.h"
-#include "ash/window_factory.h"
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/aura/null_window_targeter.h"
@@ -49,7 +46,7 @@ class ScopedEnableUnadjustedMouseEventsOzone
 AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(
     ui::PlatformWindowInitProperties properties)
     : aura::WindowTreeHostPlatform(std::move(properties),
-                                   window_factory::NewWindow()),
+                                   std::make_unique<aura::Window>(nullptr)),
       transformer_helper_(this),
       input_controller_(
           ui::OzonePlatform::GetInstance()->GetInputController()) {
@@ -57,7 +54,7 @@ AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(
 }
 
 AshWindowTreeHostPlatform::AshWindowTreeHostPlatform()
-    : aura::WindowTreeHostPlatform(window_factory::NewWindow()),
+    : aura::WindowTreeHostPlatform(std::make_unique<aura::Window>(nullptr)),
       transformer_helper_(this) {
   CreateCompositor(viz::FrameSinkId(),
                    /* force_software_compositor */ false,

@@ -17,7 +17,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_factory.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
@@ -649,8 +648,8 @@ class DestroyedWindowObserver : public aura::WindowObserver {
 TEST_F(RootWindowControllerTest, DontDeleteWindowsNotOwnedByParent) {
   DestroyedWindowObserver observer1;
   aura::test::TestWindowDelegate delegate1;
-  std::unique_ptr<aura::Window> window1 =
-      window_factory::NewWindow(&delegate1, aura::client::WINDOW_TYPE_CONTROL);
+  std::unique_ptr<aura::Window> window1 = std::make_unique<aura::Window>(
+      &delegate1, aura::client::WINDOW_TYPE_CONTROL);
   window1->set_owned_by_parent(false);
   observer1.SetWindow(window1.get());
   window1->Init(ui::LAYER_NOT_DRAWN);
@@ -658,7 +657,8 @@ TEST_F(RootWindowControllerTest, DontDeleteWindowsNotOwnedByParent) {
       window1.get(), Shell::GetPrimaryRootWindow(), gfx::Rect());
 
   DestroyedWindowObserver observer2;
-  std::unique_ptr<aura::Window> window2 = window_factory::NewWindow();
+  std::unique_ptr<aura::Window> window2 =
+      std::make_unique<aura::Window>(nullptr);
   window2->set_owned_by_parent(false);
   observer2.SetWindow(window2.get());
   window2->Init(ui::LAYER_NOT_DRAWN);

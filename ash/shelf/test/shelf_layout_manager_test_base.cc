@@ -9,7 +9,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
-#include "ash/window_factory.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/workspace_controller.h"
@@ -178,7 +177,7 @@ void ShelfLayoutManagerTestBase::UpdateAutoHideStateNow() {
 }
 
 aura::Window* ShelfLayoutManagerTestBase::CreateTestWindow() {
-  aura::Window* window = window_factory::NewWindow().release();
+  aura::Window* window = new aura::Window(nullptr);
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
@@ -188,7 +187,7 @@ aura::Window* ShelfLayoutManagerTestBase::CreateTestWindow() {
 
 aura::Window* ShelfLayoutManagerTestBase::CreateTestWindowInParent(
     aura::Window* root_window) {
-  aura::Window* window = window_factory::NewWindow().release();
+  aura::Window* window = new aura::Window(nullptr);
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);

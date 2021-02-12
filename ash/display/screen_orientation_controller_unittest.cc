@@ -19,7 +19,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
-#include "ash/window_factory.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -108,7 +107,7 @@ void Unlock(aura::Window* window) {
 
 // Creates a window of type WINDOW_TYPE_CONTROL.
 std::unique_ptr<aura::Window> CreateControlWindow() {
-  std::unique_ptr<aura::Window> window = window_factory::NewWindow(
+  std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
       nullptr, aura::client::WindowType::WINDOW_TYPE_CONTROL);
   window->Init(ui::LAYER_NOT_DRAWN);
   window->set_owned_by_parent(false);

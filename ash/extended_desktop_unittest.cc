@@ -11,7 +11,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/window_factory.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
@@ -649,7 +648,7 @@ TEST_F(ExtendedDesktopTest, PostMoveParentTransientChild) {
   wm::ActivateWindow(window);
   // Create a transient child window of |window| without parenting to |window|
   // yet.
-  std::unique_ptr<aura::Window> child = window_factory::NewWindow();
+  std::unique_ptr<aura::Window> child = std::make_unique<aura::Window>(nullptr);
   child->SetType(aura::client::WINDOW_TYPE_NORMAL);
   child->Init(ui::LAYER_TEXTURED);
   child->SetBounds(gfx::Rect(50, 50, 50, 50));

@@ -5,10 +5,10 @@
 #include "ash/test/test_window_builder.h"
 
 #include "ash/shell.h"
-#include "ash/window_factory.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/aura/window.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -97,7 +97,7 @@ std::unique_ptr<aura::Window> TestWindowBuilder::Build() {
   DCHECK(!built_);
   built_ = true;
   std::unique_ptr<aura::Window> window =
-      window_factory::NewWindow(delegate_, window_type_);
+      std::make_unique<aura::Window>(delegate_, window_type_);
   window->Init(layer_type_);
   window->AcquireAllPropertiesFrom(std::move(init_properties_));
   if (window_id_ != aura::Window::kInitialId)

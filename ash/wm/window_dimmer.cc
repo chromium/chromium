@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/window_factory.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -26,9 +25,7 @@ WindowDimmer::WindowDimmer(aura::Window* parent,
                            bool animate,
                            Delegate* delegate)
     : parent_(parent),
-      window_(
-          window_factory::NewWindow(nullptr, aura::client::WINDOW_TYPE_NORMAL)
-              .release()),
+      window_(new aura::Window(nullptr, aura::client::WINDOW_TYPE_NORMAL)),
       delegate_(delegate) {
   window_->Init(ui::LAYER_SOLID_COLOR);
   window_->SetName("Dimming Window");

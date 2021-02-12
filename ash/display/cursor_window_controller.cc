@@ -19,11 +19,11 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/window_factory.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/env.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursors_aura.h"
@@ -295,7 +295,7 @@ void CursorWindowController::SetContainer(aura::Window* container) {
   } else {
     // Reusing the window does not work when the display is disconnected.
     // Just creates a new one instead. crbug.com/384218.
-    cursor_window_ = window_factory::NewWindow(delegate_.get());
+    cursor_window_ = std::make_unique<aura::Window>(delegate_.get());
     cursor_window_->SetTransparent(true);
     cursor_window_->Init(ui::LAYER_TEXTURED);
     cursor_window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
