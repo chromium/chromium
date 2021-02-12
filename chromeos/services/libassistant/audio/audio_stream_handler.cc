@@ -12,24 +12,28 @@
 namespace chromeos {
 namespace libassistant {
 
-AudioStreamHandler::AudioStreamHandler(
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(task_runner), weak_factory_(this) {}
+AudioStreamHandler::AudioStreamHandler()
+    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      weak_factory_(this) {}
 
-AudioStreamHandler::~AudioStreamHandler() = default;
+AudioStreamHandler::~AudioStreamHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void AudioStreamHandler::StartAudioDecoder(
     chromeos::assistant::mojom::AssistantAudioDecoderFactory*
         audio_decoder_factory,
     assistant_client::AudioOutput::Delegate* delegate,
     InitCB on_inited) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   mojo::PendingRemote<AssistantAudioDecoderClient> client;
   client_receiver_.Bind(client.InitWithNewPipeAndPassReceiver());
 
   mojo::PendingRemote<chromeos::assistant::mojom::AssistantMediaDataSource>
       data_source;
   media_data_source_ = std::make_unique<AudioMediaDataSource>(
-      data_source.InitWithNewPipeAndPassReceiver(), task_runner_);
+      data_source.InitWithNewPipeAndPassReceiver());
 
   audio_decoder_factory->CreateAssistantAudioDecoder(
       audio_decoder_.BindNewPipeAndPassReceiver(), std::move(client),
@@ -55,12 +59,25 @@ void AudioStreamHandler::OnNewBuffers(
 }
 
 // TODO(wutao): Needs to pass |playback_timestamp| to LibAssistant.
+// Called from the Libassistant thread.
 void AudioStreamHandler::FillBuffer(
     void* buffer,
     int buffer_size,
     int64_t playback_timestamp,
     assistant_client::Callback1<int> on_filled) {
   DCHECK(!on_filled_);
+
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&AudioStreamHandler::FillBufferOnMainThread,
+                                weak_factory_.GetWeakPtr(), buffer, buffer_size,
+                                std::move(on_filled)));
+}
+
+void AudioStreamHandler::FillBufferOnMainThread(
+    void* buffer,
+    int buffer_size,
+    assistant_client::Callback1<int> on_filled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   on_filled_ = std::move(on_filled);
   buffer_to_copy_ = buffer;
@@ -69,16 +86,19 @@ void AudioStreamHandler::FillBuffer(
   FillDecodedBuffer(buffer, buffer_size);
 }
 
+// Called from the Libassistant thread.
 void AudioStreamHandler::OnEndOfStream() {
   if (delegate_)
     delegate_->OnEndOfStream();
 }
 
+// Called from the Libassistant thread.
 void AudioStreamHandler::OnError(assistant_client::AudioOutput::Error error) {
   if (delegate_)
     delegate_->OnError(error);
 }
 
+// Called from the Libassistant thread.
 void AudioStreamHandler::OnStopped() {
   stopped_ = true;
 
@@ -95,18 +115,8 @@ void AudioStreamHandler::OnDecoderInitialized(bool success,
                                               uint32_t bytes_per_sample,
                                               uint32_t samples_per_second,
                                               uint32_t channels) {
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AudioStreamHandler::OnDecoderInitializedOnThread,
-                     weak_factory_.GetWeakPtr(), success, bytes_per_sample,
-                     samples_per_second, channels));
-}
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-void AudioStreamHandler::OnDecoderInitializedOnThread(
-    bool success,
-    uint32_t bytes_per_sample,
-    uint32_t samples_per_second,
-    uint32_t channels) {
   if (!success) {
     // In the case that both |OpenDecoder()| and |CloseDecoder()| were called,
     // there is no need to call |OnError()|, since we are going to call
@@ -132,11 +142,15 @@ void AudioStreamHandler::OnDecoderInitializedOnThread(
 }
 
 void AudioStreamHandler::StopDelegate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   delegate_->OnStopped();
   delegate_ = nullptr;
 }
 
 void AudioStreamHandler::FillDecodedBuffer(void* buffer, int buffer_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (on_filled_ && (decoded_data_.size() > 0 || no_more_data_)) {
     int size_copied = 0;
     // Fill buffer with data not more than requested.
@@ -155,26 +169,30 @@ void AudioStreamHandler::FillDecodedBuffer(void* buffer, int buffer_size) {
         decoded_data_.pop_front();
     }
 
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&AudioStreamHandler::OnFillBufferOnThread,
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&AudioStreamHandler::OnFillBuffer,
                                   weak_factory_.GetWeakPtr(),
                                   std::move(on_filled_), size_copied));
   }
 
   if (decoded_data_.empty() && !no_more_data_) {
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&AudioStreamHandler::DecodeOnThread,
-                                          weak_factory_.GetWeakPtr()));
+    main_task_runner_->PostTask(FROM_HERE,
+                                base::BindOnce(&AudioStreamHandler::Decode,
+                                               weak_factory_.GetWeakPtr()));
   }
 }
 
-void AudioStreamHandler::OnFillBufferOnThread(
+void AudioStreamHandler::OnFillBuffer(
     assistant_client::Callback1<int> on_filled,
     int num_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   on_filled(num_bytes);
 }
 
-void AudioStreamHandler::DecodeOnThread() {
+void AudioStreamHandler::Decode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (is_decoding_)
     return;
 

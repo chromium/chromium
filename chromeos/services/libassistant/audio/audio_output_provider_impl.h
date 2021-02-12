@@ -31,9 +31,7 @@ namespace libassistant {
 
 class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
  public:
-  AudioOutputProviderImpl(
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      const std::string& device_id);
+  explicit AudioOutputProviderImpl(const std::string& device_id);
   ~AudioOutputProviderImpl() override;
 
   void Bind(
@@ -69,7 +67,6 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   AudioInputImpl loop_back_input_;
   VolumeControlImpl volume_control_impl_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   mojo::Remote<chromeos::assistant::mojom::AssistantAudioDecoderFactory>
       audio_decoder_factory_;
   std::string device_id_;

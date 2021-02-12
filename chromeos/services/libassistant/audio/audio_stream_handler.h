@@ -25,11 +25,9 @@ class AudioStreamHandler
   using InitCB =
       base::OnceCallback<void(const assistant_client::OutputStreamFormat&)>;
 
-  explicit AudioStreamHandler(
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  AudioStreamHandler();
   ~AudioStreamHandler() override;
 
-  // Called on main thread.
   void StartAudioDecoder(
       chromeos::assistant::mojom::AssistantAudioDecoderFactory*
           audio_decoder_factory,
@@ -37,11 +35,9 @@ class AudioStreamHandler
       InitCB start_device_owner_on_main_thread);
 
   // chromeos::assistant::mojom::AssistantAudioDecoderClient overrides:
-  // Called by |audio_decoder_| on utility thread.
   void OnNewBuffers(const std::vector<std::vector<uint8_t>>& buffers) override;
 
   // assistant_client::AudioOutput::Delegate overrides:
-  // Called by AudioDeviceOwner on main thread.
   void FillBuffer(void* buffer,
                   int buffer_size,
                   int64_t playback_timestamp,
@@ -51,29 +47,25 @@ class AudioStreamHandler
   void OnStopped() override;
 
  private:
-  // Calls AudioDeviceOwner to start on main thread.
   void OnDecoderInitialized(bool success,
                             uint32_t bytes_per_sample,
                             uint32_t samples_per_second,
                             uint32_t channels);
-  void OnDecoderInitializedOnThread(bool success,
-                                    uint32_t bytes_per_sample,
-                                    uint32_t samples_per_second,
-                                    uint32_t channels);
   void StopDelegate();
 
-  // Called by |FillBuffer()| to fill available data. If no available data, it
-  // will call |DecodeOnThread()| to get more data.
+  void FillBufferOnMainThread(void* buffer,
+                              int buffer_size,
+                              assistant_client::Callback1<int> on_filled);
+
+  // Called by |FillBufferOnMainThread()| to fill available data. If no
+  // available data, it will call |Decode()| to get more data.
   void FillDecodedBuffer(void* buffer, int buffer_size);
 
-  // Fills buffer to AudioDeviceOwner on main thread.
-  void OnFillBufferOnThread(assistant_client::Callback1<int> on_decoded,
-                            int num_bytes);
+  void OnFillBuffer(assistant_client::Callback1<int> on_decoded, int num_bytes);
 
-  // Calls |audio_decoder_| to decode on main thread.
-  void DecodeOnThread();
+  void Decode();
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   assistant_client::AudioOutput::Delegate* delegate_;
 
   mojo::Receiver<AssistantAudioDecoderClient> client_receiver_{this};
@@ -99,6 +91,11 @@ class AudioStreamHandler
   InitCB start_device_owner_on_main_thread_;
 
   base::circular_deque<std::vector<uint8_t>> decoded_data_;
+
+  // The callbacks from Libassistant are called on a different sequence,
+  // so this sequence checker ensures that no other methods are called on the
+  // libassistant sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AudioStreamHandler> weak_factory_;
 

@@ -17,7 +17,6 @@ namespace libassistant {
 
 PlatformApi::PlatformApi()
     : audio_output_provider_(std::make_unique<AudioOutputProviderImpl>(
-          /*background_task_runner=*/base::SequencedTaskRunnerHandle::Get(),
           media::AudioDeviceDescription::kDefaultDeviceId)),
       fake_auth_provider_(std::make_unique<FakeAuthProvider>()) {
   // Only enable native power features if they are supported by the UI.

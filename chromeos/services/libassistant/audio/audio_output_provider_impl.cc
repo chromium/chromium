@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/libassistant/audio/audio_stream_handler.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
@@ -27,42 +28,36 @@ bool IsEncodedFormat(const assistant_client::OutputStreamFormat& format) {
              assistant_client::OutputStreamEncoding::STREAM_OPUS_IN_OGG;
 }
 
+// Instances of this class will be owned by Libassistant, so any public method
+// (including the constructor and destructor) can and will be called from other
+// threads.
 class AudioOutputImpl : public assistant_client::AudioOutput {
  public:
   AudioOutputImpl(
       mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       chromeos::assistant::mojom::AssistantAudioDecoderFactory*
           audio_decoder_factory,
       mojom::AudioOutputDelegate* audio_output_delegate,
       assistant_client::OutputStreamType type,
       assistant_client::OutputStreamFormat format,
       const std::string& device_id)
-      : stream_factory_(std::move(stream_factory)),
-        main_task_runner_(task_runner),
-        background_thread_task_runner_(background_task_runner),
+      : main_task_runner_(main_task_runner),
+        stream_factory_(std::move(stream_factory)),
         audio_decoder_factory_(audio_decoder_factory),
         audio_output_delegate_(audio_output_delegate),
         stream_type_(type),
-        format_(format),
-        audio_stream_handler_(
-            std::make_unique<AudioStreamHandler>(task_runner)),
-        device_owner_(std::make_unique<AudioDeviceOwner>(task_runner,
-                                                         background_task_runner,
-                                                         device_id)) {}
+        format_(format) {
+    // The constructor runs on the Libassistant thread, so we need to detach the
+    // main sequence checker.
+    DETACH_FROM_SEQUENCE(main_sequence_checker_);
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&AudioOutputImpl::InitializeOnMainThread,
+                                  weak_ptr_factory_.GetWeakPtr(), device_id));
+  }
 
   ~AudioOutputImpl() override {
-    // This ensures that it will be executed after StartOnMainThread.
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](std::unique_ptr<AudioDeviceOwner> device_owner,
-               scoped_refptr<base::SequencedTaskRunner> background_runner) {
-              // Ensures |device_owner| is destructed on the correct thread.
-              background_runner->DeleteSoon(FROM_HERE, device_owner.release());
-            },
-            std::move(device_owner_), background_thread_task_runner_));
+    main_task_runner_->DeleteSoon(FROM_HERE, device_owner_.release());
     main_task_runner_->DeleteSoon(FROM_HERE, audio_stream_handler_.release());
   }
 
@@ -82,7 +77,16 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
   }
 
  private:
+  void InitializeOnMainThread(const std::string& device_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+    audio_stream_handler_ = std::make_unique<AudioStreamHandler>();
+    device_owner_ = std::make_unique<AudioDeviceOwner>(device_id);
+  }
+
   void StartOnMainThread(assistant_client::AudioOutput::Delegate* delegate) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
     // TODO(llin): Remove getting audio focus here after libassistant handles
     // acquiring audio focus for the internal media player.
     if (stream_type_ == assistant_client::OutputStreamType::STREAM_MEDIA) {
@@ -93,17 +97,19 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
     if (IsEncodedFormat(format_)) {
       audio_stream_handler_->StartAudioDecoder(
           audio_decoder_factory_, delegate,
-          base::BindOnce(&AudioDeviceOwner::StartOnMainThread,
+          base::BindOnce(&AudioDeviceOwner::Start,
                          base::Unretained(device_owner_.get()),
                          audio_output_delegate_, audio_stream_handler_.get(),
                          std::move(stream_factory_)));
     } else {
-      device_owner_->StartOnMainThread(audio_output_delegate_, delegate,
-                                       std::move(stream_factory_), format_);
+      device_owner_->Start(audio_output_delegate_, delegate,
+                           std::move(stream_factory_), format_);
     }
   }
 
   void StopOnMainThread() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
     // TODO(llin): Remove abandoning audio focus here after libassistant handles
     // abandoning audio focus for the internal media player.
     if (stream_type_ == assistant_client::OutputStreamType::STREAM_MEDIA) {
@@ -114,24 +120,33 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
       device_owner_->SetDelegate(nullptr);
       audio_stream_handler_->OnStopped();
     } else {
-      background_thread_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&AudioDeviceOwner::StopOnBackgroundThread,
-                                    base::Unretained(device_owner_.get())));
+      device_owner_->Stop();
     }
   }
 
-  mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> background_thread_task_runner_;
+
+  mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
   chromeos::assistant::mojom::AssistantAudioDecoderFactory*
-      audio_decoder_factory_;
-  mojom::AudioOutputDelegate* const audio_output_delegate_;
+      audio_decoder_factory_ GUARDED_BY_CONTEXT(main_sequence_checker_);
+  mojom::AudioOutputDelegate* const audio_output_delegate_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
 
+  // Accessed from both Libassistant and main sequence, so should remain
+  // |const|.
   const assistant_client::OutputStreamType stream_type_;
-  assistant_client::OutputStreamFormat format_;
 
-  std::unique_ptr<AudioStreamHandler> audio_stream_handler_;
-  std::unique_ptr<AudioDeviceOwner> device_owner_;
+  assistant_client::OutputStreamFormat format_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+
+  std::unique_ptr<AudioStreamHandler> audio_stream_handler_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+  std::unique_ptr<AudioDeviceOwner> device_owner_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
+
+  // This class is used both from the Libassistant and main thread.
+  SEQUENCE_CHECKER(main_sequence_checker_);
 
   base::WeakPtrFactory<AudioOutputImpl> weak_ptr_factory_{this};
 
@@ -140,13 +155,10 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
 
 }  // namespace
 
-AudioOutputProviderImpl::AudioOutputProviderImpl(
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    const std::string& device_id)
+AudioOutputProviderImpl::AudioOutputProviderImpl(const std::string& device_id)
     : loop_back_input_(media::AudioDeviceDescription::kLoopbackInputDeviceId),
       volume_control_impl_(),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      background_task_runner_(background_task_runner),
       device_id_(device_id) {}
 
 void AudioOutputProviderImpl::Bind(
@@ -165,6 +177,7 @@ void AudioOutputProviderImpl::Bind(
 
 AudioOutputProviderImpl::~AudioOutputProviderImpl() = default;
 
+// Called from the Libassistant thread.
 assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
     assistant_client::OutputStreamType type,
     const assistant_client::OutputStreamFormat& stream_format) {
@@ -176,12 +189,13 @@ assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
                      stream_factory.InitWithNewPipeAndPassReceiver()));
   // Owned by one arbitrary thread inside libassistant. It will be destroyed
   // once assistant_client::AudioOutput::Delegate::OnStopped() is called.
-  return new AudioOutputImpl(
-      std::move(stream_factory), main_task_runner_, background_task_runner_,
-      audio_decoder_factory_.get(), audio_output_delegate_.get(), type,
-      stream_format, device_id_);
+  return new AudioOutputImpl(std::move(stream_factory), main_task_runner_,
+                             audio_decoder_factory_.get(),
+                             audio_output_delegate_.get(), type, stream_format,
+                             device_id_);
 }
 
+// Called from the Libassistant thread.
 std::vector<assistant_client::OutputStreamEncoding>
 AudioOutputProviderImpl::GetSupportedStreamEncodings() {
   return std::vector<assistant_client::OutputStreamEncoding>{
@@ -193,19 +207,23 @@ AudioOutputProviderImpl::GetSupportedStreamEncodings() {
   };
 }
 
+// Called from the Libassistant thread.
 assistant_client::AudioInput* AudioOutputProviderImpl::GetReferenceInput() {
   return &loop_back_input_;
 }
 
+// Called from the Libassistant thread.
 bool AudioOutputProviderImpl::SupportsPlaybackTimestamp() const {
   // TODO(muyuanli): implement.
   return false;
 }
 
+// Called from the Libassistant thread.
 assistant_client::VolumeControl& AudioOutputProviderImpl::GetVolumeControl() {
   return volume_control_impl_;
 }
 
+// Called from the Libassistant thread.
 void AudioOutputProviderImpl::RegisterAudioEmittingStateCallback(
     AudioEmittingStateCallback callback) {
   // TODO(muyuanli): implement.

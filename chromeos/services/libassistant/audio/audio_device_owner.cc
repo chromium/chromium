@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/sequence_checker.h"
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/limits.h"
@@ -81,28 +82,31 @@ media::AudioParameters GetAudioParametersFromBufferFormat(
 
 }  // namespace
 
-AudioDeviceOwner::AudioDeviceOwner(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    const std::string& device_id)
-    : main_task_runner_(task_runner),
-      background_task_runner_(background_task_runner),
-      device_id_(device_id) {}
+AudioDeviceOwner::AudioDeviceOwner(const std::string& device_id)
+    : device_id_(device_id) {}
 
 AudioDeviceOwner::~AudioDeviceOwner() {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void AudioDeviceOwner::StartOnMainThread(
+void AudioDeviceOwner::Start(
     mojom::AudioOutputDelegate* audio_output_delegate,
     assistant_client::AudioOutput::Delegate* delegate,
     mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
     const assistant_client::OutputStreamFormat& format) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!output_device_);
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+
+  base::AutoLock lock(lock_);
 
   delegate_ = delegate;
   format_ = format;
+  audio_param_ = GetAudioParametersFromBufferFormat(format_);
+  audio_data_.resize(GetBufferSizeInBytesFromBufferFormat(format_));
+  // |audio_fifo_| contains 8x the number of frames to render.
+  audio_fifo_ = std::make_unique<media::AudioBlockFifo>(
+      format.pcm_num_channels, audio_param_.frames_per_buffer(), 8);
+
   // TODO(wutao): There is a bug LibAssistant sends wrong format. Do not run
   // in this case.
   if (format_.pcm_num_channels >
@@ -111,33 +115,15 @@ void AudioDeviceOwner::StartOnMainThread(
     return;
   }
 
-  audio_param_ = GetAudioParametersFromBufferFormat(format_);
-
-  // |audio_fifo_| contains 8x the number of frames to render.
-  audio_fifo_ = std::make_unique<media::AudioBlockFifo>(
-      format.pcm_num_channels, audio_param_.frames_per_buffer(), 8);
-  audio_data_.resize(GetBufferSizeInBytesFromBufferFormat(format_));
-
-  {
-    base::AutoLock lock(lock_);
-    ScheduleFillLocked(base::TimeTicks::Now());
-  }
+  ScheduleFillLocked(base::TimeTicks::Now());
 
   // |stream_factory| is null in unittest.
-  if (stream_factory) {
-    // |AudioDeviceOwner| is destroyed on background thread. Thus, it's safe to
-    // use base::Unretained.
-    background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AudioDeviceOwner::StartDeviceOnBackgroundThread,
-                       base::Unretained(this), std::move(stream_factory)));
-    audio_output_delegate->AddMediaSessionObserver(
-        session_receiver_.BindNewPipeAndPassRemote());
-  }
+  if (stream_factory)
+    StartDevice(std::move(stream_factory), audio_output_delegate);
 }
 
-void AudioDeviceOwner::StopOnBackgroundThread() {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+void AudioDeviceOwner::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   output_device_.reset();
   base::AutoLock lock(lock_);
   if (delegate_) {
@@ -148,10 +134,7 @@ void AudioDeviceOwner::StopOnBackgroundThread() {
 
 void AudioDeviceOwner::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr info) {
-  // |output_device_| is only accessed on background thread.
-  ENSURE_BACKGROUND_THREAD(&AudioDeviceOwner::MediaSessionInfoChanged,
-                           std::move(info));
-
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // We only handle media ducking case here as intended. Other media
   // operactions, such as pausing and resuming, are handled by Libassistant
   // |MediaManager| API in |AssistantManagerServiceImpl|.
@@ -163,14 +146,21 @@ void AudioDeviceOwner::MediaSessionInfoChanged(
     output_device_->SetVolume(is_ducking ? kDuckingVolume : 1.0);
 }
 
-void AudioDeviceOwner::StartDeviceOnBackgroundThread(
-    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+void AudioDeviceOwner::StartDevice(
+    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
+    mojom::AudioOutputDelegate* audio_output_delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  lock_.AssertAcquired();
+
   output_device_ = std::make_unique<audio::OutputDevice>(
       std::move(stream_factory), audio_param_, this, device_id_);
   output_device_->Play();
+
+  audio_output_delegate->AddMediaSessionObserver(
+      session_receiver_.BindNewPipeAndPassRemote());
 }
 
+// Runs on audio renderer thread (started internally in |output_device_|).
 int AudioDeviceOwner::Render(base::TimeDelta delay,
                              base::TimeTicks delay_timestamp,
                              int prior_frames_skipped,
@@ -209,6 +199,7 @@ int AudioDeviceOwner::Render(base::TimeDelta delay,
   return dest->frames();
 }
 
+// Runs on audio renderer thread (started internally in |output_device_|).
 void AudioDeviceOwner::OnRenderError() {
   DVLOG(1) << "OnRenderError()";
   base::AutoLock lock(lock_);
@@ -218,10 +209,12 @@ void AudioDeviceOwner::OnRenderError() {
 
 void AudioDeviceOwner::SetDelegate(
     assistant_client::AudioOutput::Delegate* delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AutoLock lock(lock_);
   delegate_ = delegate;
 }
 
+// Runs on audio renderer thread (started internally in |output_device_|).
 void AudioDeviceOwner::ScheduleFillLocked(const base::TimeTicks& time) {
   lock_.AssertAcquired();
   if (is_filling_)
@@ -242,6 +235,7 @@ void AudioDeviceOwner::ScheduleFillLocked(const base::TimeTicks& time) {
       [this](int num) { this->BufferFillDone(num); });
 }
 
+// Runs on audio renderer thread (started internally in |output_device_|).
 void AudioDeviceOwner::BufferFillDone(int num_bytes) {
   base::AutoLock lock(lock_);
   is_filling_ = false;

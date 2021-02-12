@@ -123,12 +123,10 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   audio_output_delegate.set_num_of_bytes_to_fill(200);
   audio_output_delegate.Reset();
 
-  auto owner = std::make_unique<AudioDeviceOwner>(
-      base::SequencedTaskRunnerHandle::Get(),
-      base::SequencedTaskRunnerHandle::Get(), "test device");
+  auto owner = std::make_unique<AudioDeviceOwner>("test device");
   // Upon start, it will start to fill the buffer.
-  owner->StartOnMainThread(&audio_output_delegate_mojom, &audio_output_delegate,
-                           mojo::NullRemote(), format);
+  owner->Start(&audio_output_delegate_mojom, &audio_output_delegate,
+               mojo::NullRemote(), format);
   audio_output_delegate.Wait();
 
   audio_output_delegate.Reset();

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 
 namespace chromeos {
@@ -22,31 +23,32 @@ constexpr uint32_t kMaxBytesToDecode = 512;
 }  // namespace
 
 AudioMediaDataSource::AudioMediaDataSource(
-    mojo::PendingReceiver<AssistantMediaDataSource> receiver,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    mojo::PendingReceiver<AssistantMediaDataSource> receiver)
     : receiver_(this, std::move(receiver)),
-      task_runner_(task_runner),
+      task_runner_(base::SequencedTaskRunnerHandle::Get()),
       weak_factory_(this) {}
 
 AudioMediaDataSource::~AudioMediaDataSource() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (read_callback_) {
     // During shutdown, it is possible we received a call to |Read()| but have
     // not received the data from Libassistant yet. In that case we must still
     // call the |read_callback_| to satisfy the mojom API contract.
-    std::move(read_callback_).Run({});
+    OnFillBuffer(0);
   }
 }
 
 void AudioMediaDataSource::Read(uint32_t size, ReadCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Note: mojom calls are sequenced, so we should not receive a second call to
   // Read() before we consumed the previous |read_callback_|.
   DCHECK(!read_callback_);
   read_callback_ = std::move(callback);
 
   if (!delegate_) {
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&AudioMediaDataSource::OnFillBuffer,
-                                          weak_factory_.GetWeakPtr(), 0));
+    OnFillBuffer(0);
     return;
   }
 
@@ -67,6 +69,7 @@ void AudioMediaDataSource::Read(uint32_t size, ReadCallback callback) {
 }
 
 void AudioMediaDataSource::OnFillBuffer(int bytes_filled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(read_callback_);
   source_buffer_.resize(bytes_filled);
   std::move(read_callback_).Run(source_buffer_);

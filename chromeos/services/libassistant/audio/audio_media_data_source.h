@@ -23,28 +23,29 @@ namespace libassistant {
 class AudioMediaDataSource
     : public chromeos::assistant::mojom::AssistantMediaDataSource {
  public:
-  AudioMediaDataSource(
+  explicit AudioMediaDataSource(
       mojo::PendingReceiver<
-          chromeos::assistant::mojom::AssistantMediaDataSource> receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+          chromeos::assistant::mojom::AssistantMediaDataSource> receiver);
   ~AudioMediaDataSource() override;
 
   // chromeos::assistant::mojom::MediaDataSource implementation.
-  // Called by utility process. Must be called after |set_delegate()|.
+  // Must be called after |set_delegate()|.
   // The caller must wait for callback to finish before issuing the next read.
   void Read(uint32_t size, ReadCallback callback) override;
 
-  // Called by AudioStreamHandler on main thread.
   void set_delegate(assistant_client::AudioOutput::Delegate* delegate) {
     delegate_ = delegate;
   }
 
  private:
-  // Called on main thread.
   void OnFillBuffer(int bytes_filled);
 
   mojo::Receiver<AssistantMediaDataSource> receiver_;
 
+  // The callback from |delegate_| runs on a different sequence, so this
+  // sequence checker prevents the other methods from being called on the wrong
+  // sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   assistant_client::AudioOutput::Delegate* delegate_ = nullptr;
