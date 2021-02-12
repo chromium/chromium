@@ -19,7 +19,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "base/scoped_generic.h"
@@ -32,7 +31,6 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_devinfo.h"
 #include "components/device_event_log/device_event_log.h"
-#include "services/device/public/cpp/device_features.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace device {
@@ -133,10 +131,10 @@ class SerialDeviceEnumeratorWin::UiThreadHelper
   void Initialize(base::WeakPtr<SerialDeviceEnumeratorWin> enumerator) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     enumerator_ = std::move(enumerator);
-    // Note that this uses GUID_DEVINTERFACE_COMPORT regardless of the state of
-    // features::kUseSerialBusEnumerator because it doesn't seem to make a
-    // difference and ports which aren't enumerable by device interface GUID
-    // don't generate WM_DEVICECHANGE events.
+    // Note that this uses GUID_DEVINTERFACE_COMPORT even though we use
+    // GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR for enumeration because it
+    // doesn't seem to make a difference and ports which aren't enumerable by
+    // device interface don't generate WM_DEVICECHANGE events.
     device_observer_.Add(
         DeviceMonitorWin::GetForDeviceInterface(GUID_DEVINTERFACE_COMPORT));
   }
@@ -245,18 +243,14 @@ void SerialDeviceEnumeratorWin::DoInitialEnumeration() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   // Make a device interface query to find all serial devices.
+  //
+  // By using this GUID without passing DIGCF_DEVICEINTERFACE we get to
+  // enumerate all of the devices matching this GUID as a class, which is
+  // different from an interface and seems to find some otherwise unenumerable
+  // devices.  https://crbug.com/1119497
   base::win::ScopedDevInfo dev_info;
-  if (base::FeatureList::IsEnabled(features::kUseSerialBusEnumerator)) {
-    // By using this GUID without passing DIGCF_DEVICEINTERFACE we get to
-    // enumerate all of the devices matching this GUID as a class, which is
-    // different from an interface and seems to find some otherwise unenumerable
-    // devices.  https://crbug.com/1119497
-    dev_info.reset(SetupDiGetClassDevs(
-        &GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR, nullptr, 0, DIGCF_PRESENT));
-  } else {
-    dev_info.reset(SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, nullptr, 0,
-                                       DIGCF_DEVICEINTERFACE | DIGCF_PRESENT));
-  }
+  dev_info.reset(SetupDiGetClassDevs(&GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR,
+                                     nullptr, 0, DIGCF_PRESENT));
   if (!dev_info.is_valid())
     return;
 

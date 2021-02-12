@@ -24,10 +24,6 @@ DEVICE_FEATURES_EXPORT extern const base::Feature
     kMacCoreLocationImplementation;
 DEVICE_FEATURES_EXPORT extern const base::Feature kMacCoreLocationBackend;
 
-#if defined(OS_WIN)
-DEVICE_FEATURES_EXPORT extern const base::Feature kUseSerialBusEnumerator;
-#endif  // defined(OS_WIN)
-
 }  // namespace features
 
 #endif  // SERVICES_DEVICE_PUBLIC_CPP_DEVICE_FEATURES_H_
