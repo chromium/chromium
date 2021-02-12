@@ -265,11 +265,6 @@ void av1_calc_indices_dim2_c(const int* data,
                              uint8_t* indices,
                              int n,
                              int k);
-void av1_calc_indices_dim2_sse2(const int* data,
-                                const int* centroids,
-                                uint8_t* indices,
-                                int n,
-                                int k);
 void av1_calc_indices_dim2_avx2(const int* data,
                                 const int* centroids,
                                 uint8_t* indices,
@@ -1543,7 +1538,14 @@ void av1_nn_predict_c(const float* input_nodes,
                       const NN_CONFIG* const nn_config,
                       int reduce_prec,
                       float* const output);
-#define av1_nn_predict av1_nn_predict_c
+void av1_nn_predict_sse3(const float* input_nodes,
+                         const NN_CONFIG* const nn_config,
+                         int reduce_prec,
+                         float* const output);
+RTCD_EXTERN void (*av1_nn_predict)(const float* input_nodes,
+                                   const NN_CONFIG* const nn_config,
+                                   int reduce_prec,
+                                   float* const output);
 
 void av1_quantize_b_c(const tran_low_t* coeff_ptr,
                       intptr_t n_coeffs,
@@ -2088,7 +2090,7 @@ static void setup_rtcd_internal(void) {
   av1_calc_indices_dim1 = av1_calc_indices_dim1_sse2;
   if (flags & HAS_AVX2)
     av1_calc_indices_dim1 = av1_calc_indices_dim1_avx2;
-  av1_calc_indices_dim2 = av1_calc_indices_dim2_sse2;
+  av1_calc_indices_dim2 = av1_calc_indices_dim2_c;
   if (flags & HAS_AVX2)
     av1_calc_indices_dim2 = av1_calc_indices_dim2_avx2;
   av1_compute_cross_correlation = av1_compute_cross_correlation_c;
@@ -2244,6 +2246,9 @@ static void setup_rtcd_internal(void) {
     av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_sse4_1;
   if (flags & HAS_AVX2)
     av1_lowbd_fwd_txfm = av1_lowbd_fwd_txfm_avx2;
+  av1_nn_predict = av1_nn_predict_c;
+  if (flags & HAS_SSE3)
+    av1_nn_predict = av1_nn_predict_sse3;
   av1_quantize_fp = av1_quantize_fp_sse2;
   if (flags & HAS_AVX2)
     av1_quantize_fp = av1_quantize_fp_avx2;
