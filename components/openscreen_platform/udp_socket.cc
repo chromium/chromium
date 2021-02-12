@@ -176,7 +176,6 @@ void UdpSocket::BindCallback(int32_t result,
                                  net::ErrorToString(result)));
     return;
   }
-  client_->OnBound(this);
 
   // This is an approximate value for number of packets, and may need to be
   // adjusted when we have real world data.
@@ -190,6 +189,7 @@ void UdpSocket::BindCallback(int32_t result,
       listener_.Bind(std::move(pending_listener_));
     }
   }
+  client_->OnBound(this);
 }
 
 void UdpSocket::JoinGroupCallback(int32_t result) {
