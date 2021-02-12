@@ -24,7 +24,6 @@
 #include "chrome/browser/chromeos/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/chromeos/scanning/scanning_type_converters.h"
 #include "chromeos/components/scanning/scanning_uma.h"
-#include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -45,13 +44,6 @@ constexpr int kJpgQuality = 100;
 
 // The max progress percent that can be reported for a scanned page.
 constexpr uint32_t kMaxProgressPercent = 100;
-
-// Contains information extracted from a PNG image necessary for conversion to
-// PDF.
-struct PngImageData {
-  SkImageInfo png_info;
-  std::vector<uint8_t> pixels;
-};
 
 // Creates a filename for a scanned image using |start_time|, |page_number|, and
 // |file_ext|.
@@ -107,58 +99,26 @@ std::string PngToJpg(const std::string& png_img) {
 
 // Creates a new page for the PDF document and adds |image_data| to the page.
 // Returns whether the page was successfully created.
-bool AddPdfPage(sk_sp<SkDocument> pdf_doc, PngImageData& image_data) {
-  SkBitmap img_bitmap;
-  if (!img_bitmap.setInfo(image_data.png_info,
-                          image_data.png_info.minRowBytes())) {
-    LOG(ERROR) << "Unable to set bitmap image info.";
+bool AddPdfPage(sk_sp<SkDocument> pdf_doc, const sk_sp<SkData>& image_data) {
+  const sk_sp<SkImage> image = SkImage::MakeFromEncoded(image_data);
+  if (!image) {
+    LOG(ERROR) << "Unable to generate image from encoded image data.";
     return false;
   }
 
-  img_bitmap.setPixels(static_cast<void*>(image_data.pixels.data()));
-  SkCanvas* page_canvas = pdf_doc->beginPage(image_data.png_info.width(),
-                                             image_data.png_info.height());
+  SkCanvas* page_canvas = pdf_doc->beginPage(image->width(), image->height());
   if (!page_canvas) {
     LOG(ERROR) << "Unable to access PDF page canvas.";
     return false;
   }
-  page_canvas->drawImage(img_bitmap.asImage(), /*left=*/0, /*top=*/0);
+
+  page_canvas->drawImage(image, /*left=*/0, /*top=*/0);
   pdf_doc->endPage();
   return true;
 }
 
-// Given PNG image data, returns the image info and pixels as a struct.
-base::Optional<PngImageData> GetPngData(sk_sp<SkData> img_data) {
-  PngImageData acquired_data;
-  std::unique_ptr<SkCodec> png_codec = SkCodec::MakeFromData(img_data, nullptr);
-  if (!png_codec) {
-    LOG(ERROR) << "Unable to make SkCodec from data.";
-    return base::nullopt;
-  }
-
-  acquired_data.png_info = png_codec->getInfo();
-  if (acquired_data.png_info.isEmpty()) {
-    LOG(ERROR) << "Unable to get image info from codec.";
-    return base::nullopt;
-  }
-
-  // Calculations for vector size provided by SkCodec.h.
-  acquired_data.pixels =
-      std::vector<uint8_t>(acquired_data.png_info.computeMinByteSize());
-  auto result = png_codec->getPixels(
-      acquired_data.png_info, static_cast<void*>(acquired_data.pixels.data()),
-      acquired_data.png_info.minRowBytes());
-  if (result != SkCodec::kSuccess) {
-    LOG(ERROR) << "Unable to get pixels from codec. Returned error: "
-               << SkCodec::ResultToString(result);
-    return base::nullopt;
-  }
-
-  return acquired_data;
-}
-
-// Converts |png_images| into a single PDF and writes the PDF to |file_path|.
-// Returns whether the PDF was successfully saved.
+// Converts |png_images| into JPGs, adds them to a single PDF, and writes the
+// PDF to |file_path|. Returns whether the PDF was successfully saved.
 bool SaveAsPdf(const std::vector<std::string>& png_images,
                const base::FilePath& file_path) {
   SkFILEWStream pdf_outfile(file_path.value().c_str());
@@ -170,25 +130,25 @@ bool SaveAsPdf(const std::vector<std::string>& png_images,
   sk_sp<SkDocument> pdf_doc = SkPDF::MakeDocument(&pdf_outfile);
   SkASSERT(pdf_doc);
   for (const auto& png_img : png_images) {
+    const std::string jpg_img = PngToJpg(png_img);
+    if (jpg_img.empty()) {
+      LOG(ERROR) << "Unable to convert PNG image to JPG.";
+      return false;
+    }
+
     SkDynamicMemoryWStream img_stream;
-    if (!img_stream.write(png_img.c_str(), png_img.size())) {
+    if (!img_stream.write(jpg_img.c_str(), jpg_img.size())) {
       LOG(ERROR) << "Unable to write image to dynamic memory stream.";
       return false;
     }
 
-    sk_sp<SkData> img_data = img_stream.detachAsData();
+    const sk_sp<SkData> img_data = img_stream.detachAsData();
     if (img_data->isEmpty()) {
       LOG(ERROR) << "Stream data is empty.";
       return false;
     }
 
-    base::Optional<PngImageData> acquired_data = GetPngData(img_data);
-    if (!acquired_data.has_value()) {
-      LOG(ERROR) << "Unable to process image data.";
-      return false;
-    }
-
-    if (!AddPdfPage(pdf_doc, acquired_data.value())) {
+    if (!AddPdfPage(pdf_doc, img_data)) {
       LOG(ERROR) << "Unable to add new PDF page.";
       return false;
     }
