@@ -8,6 +8,7 @@
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -28,6 +29,13 @@ VideoTrackReader::VideoTrackReader(ScriptState* script_state,
       track_(track) {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
+
+  ExecutionContext::From(script_state)
+      ->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kDeprecation,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "VideoTrackReader is deprecated; use MediaStreamTrackProcessor "
+          "instead."));
 }
 
 void VideoTrackReader::start(V8VideoFrameOutputCallback* callback,

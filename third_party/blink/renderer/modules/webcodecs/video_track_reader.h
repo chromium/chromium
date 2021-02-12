@@ -16,6 +16,8 @@ namespace blink {
 
 class ScriptState;
 
+// Note: This class is deprecated. Use MediaStreamTrackProcessor instead.
+// TODO(crbug.com/1157610): remove this class.
 class MODULES_EXPORT VideoTrackReader final
     : public ScriptWrappable,
       public ExecutionContextLifecycleObserver,
