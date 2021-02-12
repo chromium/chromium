@@ -2948,10 +2948,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kEnableBluetoothVerboseLogsForGooglers)},
-    {"show-bluetooth-device-battery",
-     flag_descriptions::kShowBluetoothDeviceBatteryName,
-     flag_descriptions::kShowBluetoothDeviceBatteryDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kShowBluetoothDeviceBattery)},
     {"show-taps", flag_descriptions::kShowTapsName,
      flag_descriptions::kShowTapsDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(ash::switches::kShowTaps)},

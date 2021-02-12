@@ -227,11 +227,8 @@ void BluezDBusManager::InitializeClients() {
       bluetooth_object_manager::kBluetoothObjectManagerServiceName);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kShowBluetoothDeviceBattery)) {
-    client_bundle_->bluetooth_battery_client()->Init(GetSystemBus(),
-                                                     bluetooth_service_name);
-  }
+  client_bundle_->bluetooth_battery_client()->Init(GetSystemBus(),
+                                                   bluetooth_service_name);
 #endif
 
   if (!alternate_bus_)
