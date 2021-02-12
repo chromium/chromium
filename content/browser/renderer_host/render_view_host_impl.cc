@@ -600,44 +600,10 @@ void RenderViewHostImpl::RenderViewCreated(
     RenderFrameHostImpl* local_main_frame) {
   renderer_view_created_ = true;
   if (local_main_frame) {
-    // Emebedders hears about the view being created in the renderer, then about
-    // the frame.
-
-    // The delegate's notification about the RenderView being created is not
-    // actually sent until/unless the main frame is also created and present for
-    // the RenderView. It is not sent for an inactive RenderView since that type
-    // of RenderView did not historically exist before site isolation.
-    DispatchRenderViewCreated();
-
     // If there is a main frame in this RenderViewHost, then the renderer-side
     // main frame will be created along with the RenderView. The RenderFrameHost
     // initializes its RenderWidgetHost as well, if it exists.
     local_main_frame->RenderFrameCreated();
-  }
-}
-
-void RenderViewHostImpl::DispatchRenderViewCreated() {
-  // We only send RenderViewCreated if there is a current or pending main frame
-  // RenderFrameHost (current or pending).  Don't send notifications if this is
-  // an inactive RVH that is either used by subframe RFHs or not used by any
-  // RFHs at all (e.g., when created for the opener chain).
-  //
-  // While it would be nice to uniformly dispatch RenderViewCreated for all
-  // cases, some existing code (e.g., ExtensionViewHost) assumes it won't
-  // hear RenderViewCreated for a RVH created for an OOPIF.
-  //
-  // TODO(alexmos, creis): Revisit this as part of migrating RenderViewCreated
-  // usage to RenderFrameCreated.  See https://crbug.com/763548.
-  DCHECK(GetMainFrame());
-
-  // This is only done the first time a RenderView is created. Note that if a
-  // process and RenderView are recreated, no notification would be sent. This
-  // does allow the RenderFrameHostManager to call this method every time it
-  // makes a speculative frame, in the case that we avoided sending the dispatch
-  // due to GetMainFrame() being null when the RenderView was made.
-  if (!has_notified_about_creation_) {
-    delegate_->RenderViewCreated(this);
-    has_notified_about_creation_ = true;
   }
 }
 

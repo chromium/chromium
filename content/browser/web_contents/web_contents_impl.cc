@@ -6791,12 +6791,6 @@ void WebContentsImpl::InnerWebContentsDetached(
     OnAudioStateChanged();
 }
 
-void WebContentsImpl::RenderViewCreated(RenderViewHost* render_view_host) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderViewCreated",
-                        "render_view_host",
-                        static_cast<void*>(render_view_host));
-}
-
 void WebContentsImpl::RenderViewReady(RenderViewHost* rvh) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RenderViewReady",
                         "render_view_host", static_cast<void*>(rvh));

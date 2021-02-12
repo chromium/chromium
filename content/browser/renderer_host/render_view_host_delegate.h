@@ -69,11 +69,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // jam as reviewers before you use this method. http://crbug.com/82582
   virtual WebContents* GetAsWebContents();
 
-  // The RenderView is being constructed (message sent to the renderer process
-  // to construct a RenderView).  Now is a good time to send other setup events
-  // to the RenderView.  This precedes any other commands to the RenderView.
-  virtual void RenderViewCreated(RenderViewHost* render_view_host) {}
-
   // The RenderView has been constructed.
   virtual void RenderViewReady(RenderViewHost* render_view_host) {}
 

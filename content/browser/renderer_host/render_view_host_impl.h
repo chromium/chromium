@@ -168,27 +168,8 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Called when the RenderView in the renderer process has been created, at
   // which point IsRenderViewLive() becomes true, and the mojo connections to
-  // the renderer process for this view now exist. This will also call
-  // DispatchRenderViewCreated() to tell the content embedder, if
-  // `local_main_frame` exists.
+  // the renderer process for this view now exist.
   void RenderViewCreated(RenderFrameHostImpl* local_main_frame);
-
-  // Generate RenderViewCreated events for observers through the delegate.
-  // These events are only generated for active RenderViewHosts (which have a
-  // RenderFrameHost for the main frame) as well as inactive RenderViewHosts
-  // that have a pending main frame navigation; i.e., this is done only when
-  // GetMainFrame() is non-null.
-  //
-  // This function also ensures that a particular RenderViewHost never
-  // dispatches these events more than once.  For example, if a RenderViewHost
-  // transitions from active to inactive after a cross-process navigation
-  // (where it no longer has a main frame RenderFrameHost), and then back to
-  // active after another cross-process navigation, this function will filter
-  // out the second notification.
-  //
-  // TODO(alexmos): Deprecate RenderViewCreated and remove this.  See
-  // https://crbug.com/763548.
-  void DispatchRenderViewCreated();
 
   // Returns the `AgentSchedulingGroupHost` this view is associated with (via
   // the widget).
@@ -431,13 +412,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   std::unique_ptr<PageLifecycleStateManager> page_lifecycle_state_manager_;
 
   bool updating_web_preferences_ = false;
-
-  // This tracks whether this RenderViewHost has notified observers about its
-  // creation with RenderViewCreated.  RenderViewHosts may transition from
-  // active (with a RenderFrameHost for the main frame) to inactive state and
-  // then back to active, and for the latter transition, this avoids firing
-  // duplicate RenderViewCreated events.
-  bool has_notified_about_creation_ = false;
 
   // ---------- Per page state START ------------------------------------------
   // The following members will get reset when this RVH commits a navigation to

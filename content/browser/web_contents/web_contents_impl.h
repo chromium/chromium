@@ -792,7 +792,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // RenderFrameHostDelegate has the same method, so list it there because this
   // interface is going away.
   // WebContents* GetAsWebContents() override;
-  void RenderViewCreated(RenderViewHost* render_view_host) override;
   void RenderViewReady(RenderViewHost* render_view_host) override;
   void RenderViewTerminated(RenderViewHost* render_view_host,
                             base::TerminationStatus status,
