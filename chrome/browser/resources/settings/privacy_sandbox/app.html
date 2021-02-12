@@ -52,7 +52,7 @@
 
 <settings-prefs prefs="{{prefs}}"></settings-prefs>
 <div id="page-container">
-  <h1 id="page-heading">$i18n{privacySandboxPageHeading}</h1>
+  <h1 id="page-heading">$i18n{privacySandboxTitle}</h1>
   <picture>
     <source class="banner"
         srcset="chrome://settings/images/privacy_sandbox_banner_dark.svg"
@@ -65,41 +65,31 @@
       $i18n{privacySandboxPageHeading}
     </h2>
   </div>
-  <div>$i18n{privacySandboxPageHeading}</div>
-  <div>
-    <h2 class="section-header" tabindex="-1">
-      $i18n{privacySandboxPageHeading}
-    </h2>
-  </div>
-  <div>$i18n{privacySandboxPageHeading}</div>
-  <div>
-    <ul>
-      <li><span>$i18n{privacySandboxPageHeading}</span></li>
-      <li><span>$i18n{privacySandboxPageHeading}</span></li>
-      <li><span>$i18n{privacySandboxPageHeading}</span></li>
-    </ul>
-  </div>
-  <div>
-    <h2 class="section-header" tabindex="-1">
-      $i18n{privacySandboxPageHeading}
-    </h2>
-  </div>
+  <p>$i18n{privacySandboxPageExplanation1}</p>
+  <p>$i18n{privacySandboxPageExplanation2}</p>
+  <p>$i18n{privacySandboxPageExplanation3}</p>
+  <p>$i18nRaw{privacySandboxPageExplanation4}</p>
   <div class="card">
     <settings-toggle-button id="apiToggleButton" class="hr"
         pref="{{prefs.privacy_sandbox.apis_enabled}}"
-        label="$i18n{privacySandboxPageHeading}"
+        label="$i18n{privacySandboxPageSettingTitle}"
         on-change="onApiToggleButtonChange_">
     </settings-toggle-button>
     <div class="cr-row continuation">
-        <div class="secondary">$i18n{privacySandboxPageHeading}</div>
+      <div class="secondary">$i18n{privacySandboxPageSettingExplanation1}</div>
     </div>
     <div class="cr-row continuation">
-        <div class="secondary">$i18n{privacySandboxPageHeading}</div>
+      <div class="secondary">
+        <ul>
+          <li><span>$i18n{privacySandboxPageSettingExplanation2}</span></li>
+          <li><span>$i18n{privacySandboxPageSettingExplanation3}</span></li>
+        </ul>
+      </div>
     </div>
     <div class="cr-row continuation">
       <cr-button class="cr-button" id="learnMoreButton" role="button"
           tabindex="0" on-click="onLearnMoreButtonClick_">
-        $i18n{passwordViewDetails}
+        $i18n{privacySandboxPageDetails}
       </cr-button>
     </div>
   </div>

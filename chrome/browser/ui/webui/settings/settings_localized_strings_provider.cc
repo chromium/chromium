@@ -1448,10 +1448,32 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
     static constexpr webui::LocalizedString kLocalizedStringsBehindFlag[] = {
         {"privacySandboxPageHeading",
          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING},
+        {"privacySandboxPageExplanation1",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1},
+        {"privacySandboxPageExplanation2",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION2},
+        {"privacySandboxPageExplanation3",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION3},
+        {"privacySandboxPageSettingTitle",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_TITLE},
+        {"privacySandboxPageSettingExplanation1",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION1},
+        {"privacySandboxPageSettingExplanation2",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION2},
+        {"privacySandboxPageSettingExplanation3",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION3},
+        {"privacySandboxPageDetails",
+         IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_DETAILS},
     };
     html_source->AddLocalizedStrings(kLocalizedStringsBehindFlag);
 
     html_source->AddString("privacySandboxURL", chrome::kPrivacySandboxURL);
+
+    // TODO(crbug/1152336): Replace with the target URL once it's available.
+    html_source->AddString("privacySandboxPageExplanation4",
+                           l10n_util::GetStringFUTF16(
+                               IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION4,
+                               base::ASCIIToUTF16(chrome::kPrivacySandboxURL)));
   }
 }
 
