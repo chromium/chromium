@@ -78,7 +78,7 @@ public class TabUnitTest {
         doReturn(mContext).when(mWeakReferenceContext).get();
         doReturn(mContext).when(mContext).getApplicationContext();
 
-        mTab = new TabImpl(TAB1_ID, null, false, null);
+        mTab = new TabImpl(TAB1_ID, false, null, null);
         mTab.addObserver(mObserver);
         CriticalPersistedTabData.from(mTab).addObserver(mCriticalPersistedTabDataObserver);
     }

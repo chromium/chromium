@@ -72,7 +72,7 @@ public class FilePersistedTabDataStorageTest {
         });
         semaphore.acquire();
 
-        File file = persistedTabDataStorage.getFile(TAB_ID_1, DATA_ID_1);
+        File file = FilePersistedTabDataStorage.getFile(TAB_ID_1, DATA_ID_1);
         Assert.assertTrue(file.exists());
 
         ThreadUtils.runOnUiThreadBlocking(

@@ -118,7 +118,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     /**
      * Tab id to be used as a source tab in SyncedTabDelegate.
      */
-    private final int mSourceTabId;
+    private int mSourceTabId = INVALID_TAB_ID;
 
     private boolean mIsClosing;
     private boolean mIsShowingErrorPage;
@@ -197,6 +197,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
     private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
+    private boolean mUsedCriticalPersistedTabData;
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -207,20 +208,19 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * Package-private. Use {@link TabBuilder} to create an instance.
      *
      * @param id The id this tab should be identified with.
-     * @param parent The tab that caused this tab to be opened.
      * @param incognito Whether or not this tab is incognito.
      * @param launchType Type indicating how this tab was launched.
+     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
      */
     @SuppressLint("HandlerLeak")
-    TabImpl(int id, Tab parent, boolean incognito, @Nullable @TabLaunchType Integer launchType) {
+    TabImpl(int id, boolean incognito, @Nullable @TabLaunchType Integer launchType,
+            @Nullable byte[] serializedCriticalPersistedTabData) {
         mIsTabSaveEnabledSupplier.set(false);
         mId = TabIdManager.getInstance().generateValidId(id);
         mIncognito = incognito;
-        if (parent == null) {
-            mSourceTabId = INVALID_TAB_ID;
-        } else {
-            CriticalPersistedTabData.from(this).setParentId(parent.getId());
-            mSourceTabId = parent.isIncognito() == incognito ? parent.getId() : INVALID_TAB_ID;
+        if (serializedCriticalPersistedTabData != null && useCriticalPersistedTabData()) {
+            CriticalPersistedTabData.build(this, serializedCriticalPersistedTabData, true);
+            mUsedCriticalPersistedTabData = true;
         }
 
         // Override the configuration for night mode to always stay in light mode until all UIs in
@@ -827,15 +827,18 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * @param initiallyHidden Only used if {@code webContents} is {@code null}.  Determines
      *        whether or not the newly created {@link WebContents} will be hidden or not.
      * @param tabState State containing information about this Tab, if it was persisted.
-     * @param serializedCriticalPersistedTabData {@link CriticalPersistedTabData} in serialized
-     * form. {@link CriticalPersistedTabData} is a replacement for {@link TabState}
      */
     void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
             LoadUrlParams loadUrlParams, WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory, boolean initiallyHidden,
-            TabState tabState, @Nullable byte[] serializedCriticalPersistedTabData) {
+            TabState tabState) {
         try {
             TraceEvent.begin("Tab.initialize");
+
+            if (parent != null) {
+                CriticalPersistedTabData.from(this).setParentId(parent.getId());
+                mSourceTabId = parent.isIncognito() == mIncognito ? parent.getId() : INVALID_TAB_ID;
+            }
 
             CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(mLaunchType);
             mCreationState = creationState;
@@ -846,9 +849,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
             TabHelpers.initTabHelpers(this, parent);
 
-            if (serializedCriticalPersistedTabData != null && useCriticalPersistedTabData()) {
-                CriticalPersistedTabData.build(this, serializedCriticalPersistedTabData, true);
-            } else if (tabState != null) {
+            if (tabState != null) {
                 restoreFieldsFromState(tabState);
             }
 
@@ -889,7 +890,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             String appId = null;
             Boolean hasThemeColor = null;
             int themeColor = 0;
-            if (serializedCriticalPersistedTabData != null && useCriticalPersistedTabData()) {
+            if (mUsedCriticalPersistedTabData) {
                 appId = CriticalPersistedTabData.from(this).getOpenerAppId();
                 themeColor = CriticalPersistedTabData.from(this).getThemeColor();
                 hasThemeColor = themeColor != TabState.UNSPECIFIED_THEME_COLOR
@@ -930,6 +931,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     void restoreFieldsFromState(TabState state) {
         assert state != null;
+        assert !mUsedCriticalPersistedTabData;
         CriticalPersistedTabData.from(this).setWebContentsState(state.contentsState);
         CriticalPersistedTabData.from(this).setTimestampMillis(state.timestampMillis);
         CriticalPersistedTabData.from(this).setUrl(

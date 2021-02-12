@@ -240,7 +240,7 @@ public class BrowsingDataBridgeTest {
             TabState state = TabStateExtractor.from(tab);
             mActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
             frozen[0] = mActivityTestRule.getActivity().getCurrentTabCreator().createFrozenTab(
-                    state, null, tab.getId(), 1);
+                    state, null, tab.getId(), tab.isIncognito(), 1);
             restored[0] = WebContentsStateBridge.restoreContentsFromByteBuffer(
                     TabStateExtractor.from(frozen[0]).contentsState, false);
         });

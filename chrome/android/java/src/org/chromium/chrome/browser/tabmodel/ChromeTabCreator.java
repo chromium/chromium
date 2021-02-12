@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabParentIntent;
+import org.chromium.chrome.browser.tab.TabResolver;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -373,12 +374,14 @@ public class ChromeTabCreator extends TabCreator {
     }
 
     @Override
-    public Tab createFrozenTab(
-            TabState state, byte[] serializedCriticalPersistedTabData, int id, int index) {
+    public Tab createFrozenTab(TabState state, byte[] serializedCriticalPersistedTabData, int id,
+            boolean isIncognito, int index) {
         TabModelSelector selector = mActivity.getTabModelSelector();
-        Tab parent = selector != null ? selector.getTabById(state.parentId) : null;
-        boolean selectTab = mOrderController.willOpenInForeground(
-                TabLaunchType.FROM_RESTORE, state.isIncognito());
+        TabResolver resolver = (tabId) -> {
+            return selector != null ? selector.getTabById(tabId) : null;
+        };
+        boolean selectTab =
+                mOrderController.willOpenInForeground(TabLaunchType.FROM_RESTORE, isIncognito);
         AsyncTabParams asyncParams = mAsyncTabParamsManager.remove(id);
         Tab tab = null;
         @TabLaunchType
@@ -390,9 +393,9 @@ public class ChromeTabCreator extends TabCreator {
 
             TabReparentingParams params = (TabReparentingParams) asyncParams;
             tab = params.getTabToReparent();
-            if (tab.isIncognito() != state.isIncognito()) {
-                throw new IllegalStateException("Incognito state mismatch. TabState: "
-                        + state.isIncognito() + ". Tab: " + tab.isIncognito());
+            if (tab.isIncognito() != isIncognito) {
+                throw new IllegalStateException("Incognito state mismatch. TabState: " + isIncognito
+                        + ". Tab: " + tab.isIncognito());
             }
             ReparentingTask.from(tab).finish(
                     ReparentingDelegateFactory.createReparentingTaskDelegate(
@@ -411,8 +414,8 @@ public class ChromeTabCreator extends TabCreator {
         if (tab == null) {
             tab = TabBuilder.createFromFrozenState()
                           .setId(id)
-                          .setParent(parent)
-                          .setIncognito(state.isIncognito())
+                          .setTabResolver(resolver)
+                          .setIncognito(isIncognito)
                           .setWindow(mNativeWindow)
                           .setDelegateFactory(createDefaultTabDelegateFactory())
                           .setInitiallyHidden(!selectTab)
@@ -421,7 +424,7 @@ public class ChromeTabCreator extends TabCreator {
                           .build();
         }
 
-        if (state.isIncognito() != mIncognito) {
+        if (isIncognito != mIncognito) {
             throw new IllegalStateException("Incognito state mismatch. TabState: "
                     + state.isIncognito() + ". Creator: " + mIncognito);
         }
