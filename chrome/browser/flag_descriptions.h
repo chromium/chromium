@@ -2937,9 +2937,6 @@ extern const char kPaintPreviewStartupDescription[];
 #endif  // ENABLE_PAINT_PREVIEW && defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-extern const char kPdfViewerUpdateName[];
-extern const char kPdfViewerUpdateDescription[];
-
 extern const char kPdfViewerDocumentPropertiesName[];
 extern const char kPdfViewerDocumentPropertiesDescription[];
 

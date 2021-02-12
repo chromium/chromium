@@ -173,7 +173,7 @@ export class Viewport {
     // Set to a default zoom manager - used in tests.
     this.setZoomManager(new InactiveZoomManager(this.getZoom.bind(this), 1));
 
-    // Case where |chrome_pdf::features::kPDFViewerUpdate| is disabled.
+    // Print Preview
     if (this.window_ === document.documentElement ||
         // Necessary check since during testing a fake DOM element is used.
         !(this.window_ instanceof HTMLElement)) {
@@ -186,7 +186,7 @@ export class Viewport {
       // |resizeCallback| to be called on the mock |window_| object (legacy).
       this.window_.resizeCallback = this.resizeWrapper_.bind(this);
     } else {
-      // Case where |chrome_pdf::features::kPDFViewerUpdate| is enabled.
+      // Standard PDF viewer
       this.window_.addEventListener('scroll', this.updateViewport_.bind(this));
       const resizeObserver = new ResizeObserver(_ => this.resizeWrapper_());
       const target = this.window_.parentElement;

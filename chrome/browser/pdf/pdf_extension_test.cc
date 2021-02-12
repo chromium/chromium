@@ -391,7 +391,6 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   // Hooks to set up feature flags.
   virtual const std::vector<base::Feature> GetEnabledFeatures() const {
     std::vector<base::Feature> enabled;
-    enabled.push_back(chrome_pdf::features::kPDFViewerUpdate);
     if (ShouldEnablePdfViewerPresentationMode()) {
       enabled.push_back(chrome_pdf::features::kPdfViewerPresentationMode);
     }
@@ -3107,7 +3106,6 @@ class PDFExtensionAccessibilityTreeDumpTest
   const std::vector<base::Feature> GetEnabledFeatures() const override {
     std::vector<base::Feature> enabled = {
         chrome_pdf::features::kAccessiblePDFForm,
-        chrome_pdf::features::kPDFViewerUpdate,
     };
     return enabled;
   }

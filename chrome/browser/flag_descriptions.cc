@@ -5003,11 +5003,6 @@ const char kPaintPreviewStartupDescription[] =
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 
-const char kPdfViewerUpdateName[] = "PDF Viewer Update";
-const char kPdfViewerUpdateDescription[] =
-    "When enabled, the PDF viewer will display an updated UI with new "
-    "options and features.";
-
 const char kPdfViewerDocumentPropertiesName[] =
     "PDF Viewer Document Properties";
 const char kPdfViewerDocumentPropertiesDescription[] =
