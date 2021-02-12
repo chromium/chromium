@@ -60,6 +60,10 @@ const AXMode = {
   kLabelImages: 1 << 5,
   kPDF: 1 << 6,
 
+  get kAXModeBasic() {
+    return AXMode.kNativeAPIs | AXMode.kWebContents;
+  },
+
   get kAXModeWebContentsOnly() {
     return AXMode.kWebContents | AXMode.kInlineTextBoxes |
         AXMode.kScreenReader | AXMode.kHTML;

@@ -41,7 +41,7 @@ class WindowsAccessibilityEnabler
     // enable basic web accessibility support. (Full screen reader support is
     // detected later when specific more advanced APIs are accessed.)
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+        ui::kAXModeBasic);
   }
 
   void OnScreenReaderHoneyPotQueried() override {
@@ -53,7 +53,7 @@ class WindowsAccessibilityEnabler
     screen_reader_honeypot_queried_ = true;
     if (acc_name_called_) {
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+          ui::kAXModeBasic);
     }
   }
 
@@ -64,7 +64,7 @@ class WindowsAccessibilityEnabler
     acc_name_called_ = true;
     if (screen_reader_honeypot_queried_) {
       BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-          ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents);
+          ui::kAXModeBasic);
     }
   }
 

@@ -604,8 +604,7 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
       content::WebContents::FromRenderViewHost(rvh);
   // No matter the state of the current web_contents, we want to force the mode
   // because we are about to show the accessibility tree
-  web_contents->SetAccessibilityMode(
-      ui::AXMode(ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents));
+  web_contents->SetAccessibilityMode(ui::AXMode(ui::kAXModeBasic));
   // Enable AXMode to access to AX objects.
   ui::AXPlatformNode::NotifyAddAXModeFlags(ui::kAXModeComplete);
 

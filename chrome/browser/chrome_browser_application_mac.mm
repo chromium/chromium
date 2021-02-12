@@ -355,6 +355,20 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   return [super accessibilityFocusedUIElement];
 }
 
+- (NSAccessibilityRole)accessibilityRole {
+  // For non-VoiceOver AT, such as Voice Control, Apple recommends turning on
+  // a11y when an AT accesses the 'accessibilityRole' property. This function
+  // is accessed frequently so we only change the accessibility state when
+  // accessibility is disabled.
+  content::BrowserAccessibilityState* accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+  if (!accessibility_state->GetAccessibilityMode().has_mode(
+          ui::kAXModeBasic.mode())) {
+    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeBasic);
+  }
+  return [super accessibilityRole];
+}
+
 - (void)addNativeEventProcessorObserver:
     (content::NativeEventProcessorObserver*)observer {
   _observers.AddObserver(observer);
