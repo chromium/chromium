@@ -111,6 +111,11 @@ scoped_refptr<network::SharedURLLoaderFactory> GetSigninURLLoaderFactory();
 void SaveSyncPasswordDataToProfile(const UserContext& user_context,
                                    Profile* profile);
 
+// Returns time remaining to the next online login. The value can be negative
+// which means that online login should have been already happened in the past.
+base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
+                                   base::TimeDelta offline_signin_limit);
+
 }  // namespace login
 
 }  // namespace chromeos

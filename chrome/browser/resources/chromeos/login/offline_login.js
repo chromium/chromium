@@ -13,8 +13,7 @@ Polymer({
   behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
 
   EXTERNAL_API: [
-    'loadParams',
-    'reset',
+    'loadParams', 'reset', 'proceedToPasswordPage', 'showOnlineRequiredDialog'
   ],
 
   properties: {
@@ -123,6 +122,15 @@ Polymer({
     this.setEmail(params.email);
   },
 
+  proceedToPasswordPage() {
+    this.switchToPasswordCard(this.email_, true /* animated */);
+  },
+
+  showOnlineRequiredDialog() {
+    this.disabled = true;
+    this.$.onlineRequiredDialog.showModal();
+  },
+
   onForgotPasswordClicked_() {
     this.disabled = true;
     this.$.forgotPasswordDlg.showModal();
@@ -130,6 +138,11 @@ Polymer({
 
   onForgotPasswordCloseTap_() {
     this.$.forgotPasswordDlg.close();
+  },
+
+  onOnlineRequiredDialogCloseTap_() {
+    this.$.onlineRequiredDialog.close();
+    this.userActed('cancel');
   },
 
   onDialogOverlayClosed_() {
@@ -201,7 +214,7 @@ Polymer({
 
   onEmailSubmitted_() {
     if (this.$.emailInput.validate()) {
-      this.switchToPasswordCard(this.email_, true /* animated */);
+      chrome.send('OfflineLogin.onEmailSubmitted', [this.email_]);
     } else {
       this.$.emailInput.focusInput();
     }

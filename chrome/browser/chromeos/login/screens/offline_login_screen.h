@@ -47,6 +47,8 @@ class OfflineLoginScreen
   void HandleCompleteAuth(const std::string& username,
                           const std::string& password);
 
+  void HandleEmailSubmitted(const std::string& username);
+
   // NetworkStateInformer::NetworkStateInformerObserver:
   void OnNetworkReady() override;
   void UpdateState(NetworkError::ErrorReason reason) override;

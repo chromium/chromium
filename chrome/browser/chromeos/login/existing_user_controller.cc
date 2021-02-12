@@ -294,15 +294,6 @@ void SetLoginExtensionApiLaunchExtensionIdPref(const AccountId& account_id,
   prefs->CommitPendingWrite();
 }
 
-// Returns time remaining to the next online login. The value can be negative
-// which means that online login should have been already happened in the past.
-base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
-                                   base::TimeDelta offline_signin_limit) {
-  const base::Time now = base::DefaultClock::GetInstance()->Now();
-  // Time left to the next forced online signin.
-  return offline_signin_limit - (now - last_online_signin);
-}
-
 base::Optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
     const UserContext& user_context,
     bool has_incomplete_migration) {
@@ -546,8 +537,8 @@ bool ExistingUserController::ForceOnlineFlagChanged(
 
     const base::Time last_online_signin =
         user_manager::known_user::GetLastOnlineSignin(user->GetAccountId());
-    base::TimeDelta time_to_next_online_signin =
-        TimeToOnlineSignIn(last_online_signin, offline_signin_limit.value());
+    base::TimeDelta time_to_next_online_signin = login::TimeToOnlineSignIn(
+        last_online_signin, offline_signin_limit.value());
     if (time_to_next_online_signin > base::TimeDelta() &&
         time_to_next_online_signin < min_delta) {
       min_delta = time_to_next_online_signin;

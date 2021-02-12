@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/login/signin_partition_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
@@ -155,6 +156,13 @@ void SaveSyncPasswordDataToProfile(const UserContext& user_context,
         password_manager::metrics_util::GaiaPasswordHashChange::
             SAVED_ON_CHROME_SIGNIN);
   }
+}
+
+base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
+                                   base::TimeDelta offline_signin_limit) {
+  const base::Time now = base::DefaultClock::GetInstance()->Now();
+  // Time left to the next forced online signin.
+  return offline_signin_limit - (now - last_online_signin);
 }
 
 }  // namespace login

@@ -5,9 +5,11 @@
 #include "chrome/browser/chromeos/login/screens/offline_login_screen.h"
 
 #include "base/bind.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/login/helper.h"
 #include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
@@ -148,6 +150,33 @@ void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
   }
   user_context.SetIsUsingOAuth(false);
   LoginDisplayHost::default_host()->CompleteLogin(user_context);
+}
+
+void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
+  bool offline_limit_expired = false;
+
+  const std::string sanitized_email = gaia::SanitizeEmail(email);
+  const AccountId account_id = user_manager::known_user::GetAccountId(
+      sanitized_email, std::string(), AccountType::UNKNOWN);
+  const base::Optional<base::TimeDelta> offline_signin_interval =
+      user_manager::known_user::GetOfflineSigninLimit(account_id);
+
+  // Further checks only if the limit is set.
+  if (offline_signin_interval) {
+    const base::Time last_online_signin =
+        user_manager::known_user::GetLastOnlineSignin(account_id);
+
+    offline_limit_expired =
+        login::TimeToOnlineSignIn(last_online_signin,
+                                  offline_signin_interval.value()) <=
+        base::TimeDelta();
+  }
+
+  if (offline_limit_expired) {
+    view_->ShowOnlineRequiredDialog();
+  } else {
+    view_->ShowPasswordPage();
+  }
 }
 
 void OfflineLoginScreen::StartIdleDetection() {

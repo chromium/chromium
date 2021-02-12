@@ -38,6 +38,12 @@ class OfflineLoginView {
   // TODO(dkuzmin): merge this function with Show() in future and use
   // ShowScreenWithData in handler.
   virtual void LoadParams(base::DictionaryValue& params) = 0;
+
+  // Proceeds to the password input dialog.
+  virtual void ShowPasswordPage() = 0;
+
+  // Shows error pop-up when the user cannot login offline.
+  virtual void ShowOnlineRequiredDialog() = 0;
 };
 
 class OfflineLoginScreenHandler : public BaseScreenHandler,
@@ -54,6 +60,7 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
  private:
   void HandleCompleteAuth(const std::string& username,
                           const std::string& password);
+  void HandleEmailSubmitted(const std::string& username);
 
   // OfflineLoginView:
   void Show() override;
@@ -62,6 +69,8 @@ class OfflineLoginScreenHandler : public BaseScreenHandler,
   void Unbind() override;
   void Reset() override;
   void LoadParams(base::DictionaryValue& params) override;
+  void ShowPasswordPage() override;
+  void ShowOnlineRequiredDialog() override;
 
   // BaseScreenHandler:
   void RegisterMessages() override;

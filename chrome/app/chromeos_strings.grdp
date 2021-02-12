@@ -1356,6 +1356,15 @@
   <message name="IDS_OFFLINE_LOGIN_CLOSE_BUTTON_TEXT" desc="Text shown on forgot password dialog close button during offline signin flow.">
     Close
   </message>
+  <message name="IDS_OFFLINE_LOGIN_WARNING_TITLE" desc="Title shown on warning dialog when policy does not allow to proceed with offline login.">
+    No network
+  </message>
+  <message name="IDS_OFFLINE_LOGIN_WARNING_TEXT" desc="Text shown on warning dialog when policy does not allow to proceed with offline login.">
+    Your administrator requires this user to sign in while the device is online
+  </message>
+  <message name="IDS_OFFLINE_LOGIN_OK_BUTTON_TEXT" desc="Text shown on the ok button of warning dialog during offline signin flow.">
+    Ok
+  </message>
   <message name="IDS_ALLOWLIST_ERROR_TRY_AGAIN_BUTTON" desc="The text of the try again button on the allowlist error UI.">
     Try again
   </message>

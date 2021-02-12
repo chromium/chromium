@@ -263,5 +263,20 @@
         </cr-button>
       </div>
     </cr-dialog>
+    <cr-dialog id="onlineRequiredDialog"
+        on-close="onDialogOverlayClosed_">
+      <div slot="title">
+        [[i18nDynamic(locale, 'offlineLoginWarningTitle')]]
+      </div>
+      <div slot="body">
+        [[i18nDynamic(locale, 'offlineLoginWarning')]]
+      </div>
+      <div slot="button-container">
+        <cr-button autofocus on-click="onOnlineRequiredDialogCloseTap_"
+            class="action-button">
+          [[i18nDynamic(locale, 'offlineLoginOkBtn')]]
+        </cr-button>
+      </div>
+    </cr-dialog>
   </template>
 </dom-module>
