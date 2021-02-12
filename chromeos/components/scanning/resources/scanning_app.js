@@ -37,12 +37,6 @@ import {colorModeFromString, fileTypeFromString, pageSizeFromString, tokenToStri
 import {ScanningBrowserProxy, ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
- * The default save directory for completed scans.
- * @const {string}
- */
-const DEFAULT_SAVE_DIRECTORY = '/home/chronos/user/MyFiles';
-
-/**
  * URL for the Scanning help page.
  * @const {string}
  */
@@ -250,10 +244,12 @@ Polymer({
   /** @override */
   created() {
     this.scanService_ = getScanService();
-    this.selectedFilePath = DEFAULT_SAVE_DIRECTORY;
-
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
     this.browserProxy_.initialize();
+    this.browserProxy_.getMyFilesPath().then(
+        /* @type {string} */ (myFilesPath) => {
+          this.selectedFilePath = myFilesPath;
+        });
   },
 
   /** @override */

@@ -130,4 +130,13 @@ TEST_F(ScanningPathsProviderImplTest, MyFilesPath) {
                             web_ui_.get(), my_files_path));
 }
 
+// Validates that the correct MyFiles path is returned.
+TEST_F(ScanningPathsProviderImplTest, GetMyFilesPath) {
+  const base::FilePath my_files_path =
+      file_manager::util::GetMyFilesFolderForProfile(profile_);
+
+  EXPECT_EQ(my_files_path,
+            scanning_paths_provider_.GetMyFilesPath(web_ui_.get()));
+}
+
 }  // namespace chromeos.

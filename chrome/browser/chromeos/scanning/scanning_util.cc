@@ -13,9 +13,6 @@ namespace scanning {
 
 namespace {
 
-// Path to the active user's "My files" folder.
-constexpr char kActiveUserMyFilesPath[] = "/home/chronos/user/MyFiles";
-
 // Determines if |path_to_file| is a supported file path for the Files app. Only
 // files under the |drive_path| and |my_files_path| paths are allowed to be
 // opened to from the Scan app.
@@ -29,8 +26,7 @@ bool FilePathSupported(const base::FilePath& drive_path,
   if (drive_path.IsParent(path_to_file))
     return true;
 
-  if (path_to_file.DirName() == base::FilePath(kActiveUserMyFilesPath) ||
-      my_files_path.IsParent(path_to_file))
+  if (my_files_path.IsParent(path_to_file))
     return true;
 
   return false;
@@ -48,13 +44,7 @@ bool ShowFileInFilesApp(const base::FilePath& drive_path,
   if (!base::PathExists(path_to_file))
     return false;
 
-  // Replace the MyFiles alias with the full MyFiles path.
-  base::FilePath path_to_use(path_to_file);
-  if (path_to_use.DirName().value() == kActiveUserMyFilesPath) {
-    path_to_use = my_files_path.Append(path_to_file.BaseName());
-  }
-
-  platform_util::ShowItemInFolder(Profile::FromWebUI(web_ui), path_to_use);
+  platform_util::ShowItemInFolder(Profile::FromWebUI(web_ui), path_to_file);
   return true;
 }
 

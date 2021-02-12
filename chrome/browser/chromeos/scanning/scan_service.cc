@@ -40,9 +40,6 @@ namespace {
 
 namespace mojo_ipc = scanning::mojom;
 
-// Path to the active user's "My files" folder.
-constexpr char kActiveUserMyFilesPath[] = "/home/chronos/user/MyFiles";
-
 // The conversion quality when converting from PNG to JPG.
 constexpr int kJpgQuality = 100;
 
@@ -485,8 +482,7 @@ void ScanService::ClearScanState() {
 }
 
 bool ScanService::FilePathSupported(const base::FilePath& file_path) {
-  if (file_path == base::FilePath(kActiveUserMyFilesPath) ||
-      file_path == my_files_path_ ||
+  if (file_path == my_files_path_ ||
       (!file_path.ReferencesParent() &&
        (my_files_path_.IsParent(file_path) ||
         google_drive_path_.IsParent(file_path)))) {

@@ -51,6 +51,11 @@ void ScanningHandler::RegisterMessages() {
       "getPluralString",
       base::BindRepeating(&ScanningHandler::HandleGetPluralString,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "getMyFilesPath",
+      base::BindRepeating(&ScanningHandler::HandleGetMyFilesPath,
+                          base::Unretained(this)));
 }
 
 void ScanningHandler::HandleInitialize(const base::ListValue* args) {
@@ -124,6 +129,19 @@ void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
       string_id_map_.find(name)->second, count);
   ResolveJavascriptCallback(base::Value(callback),
                             base::Value(localized_string));
+}
+
+void ScanningHandler::HandleGetMyFilesPath(const base::ListValue* args) {
+  if (!IsJavascriptAllowed())
+    return;
+
+  CHECK_EQ(1U, args->GetSize());
+  const std::string& callback = args->GetList()[0].GetString();
+
+  const base::FilePath my_files_path =
+      scanning_paths_provider_->GetMyFilesPath(web_ui());
+  ResolveJavascriptCallback(base::Value(callback),
+                            base::Value(my_files_path.value()));
 }
 
 // Uses the full filepath and the base directory (lowest level directory in the

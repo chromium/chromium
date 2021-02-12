@@ -60,6 +60,12 @@ export class ScanningBrowserProxy {
    * @param {!ScanJobSettingsForMetrics} scanJobSettings
    */
   recordScanJobSettings(scanJobSettings) {}
+
+  /**
+   * Returns the MyFiles path for the current user.
+   * @return {!Promise<string>}
+   */
+  getMyFilesPath() {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -87,6 +93,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   recordScanJobSettings(scanJobSettings) {
     chrome.send('recordScanJobSettings', [scanJobSettings]);
+  }
+
+  /** @override */
+  getMyFilesPath() {
+    return sendWithPromise('getMyFilesPath');
   }
 }
 

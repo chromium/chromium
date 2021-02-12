@@ -42,4 +42,10 @@ std::string ScanningPathsProviderImpl::GetBaseNameFromPath(
   return path.BaseName().value();
 }
 
+base::FilePath ScanningPathsProviderImpl::GetMyFilesPath(
+    content::WebUI* web_ui) {
+  return file_manager::util::GetMyFilesFolderForProfile(
+      Profile::FromWebUI(web_ui));
+}
+
 }  // namespace chromeos

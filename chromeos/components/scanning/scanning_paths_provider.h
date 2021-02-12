@@ -25,6 +25,9 @@ class ScanningPathsProvider {
   // desired display name.
   virtual std::string GetBaseNameFromPath(content::WebUI* web_ui,
                                           const base::FilePath& path) = 0;
+
+  // Gets the MyFiles path for the current user.
+  virtual base::FilePath GetMyFilesPath(content::WebUI* web_ui) = 0;
 };
 
 }  // namespace chromeos

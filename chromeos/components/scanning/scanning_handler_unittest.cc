@@ -122,6 +122,10 @@ class TestScanningPathsProvider : public ScanningPathsProvider {
                                   const base::FilePath& path) override {
     return path.BaseName().value();
   }
+
+  base::FilePath GetMyFilesPath(content::WebUI* web_ui) override {
+    return base::FilePath(kTestFilePath);
+  }
 };
 
 bool ShowFileInFilesApp(const base::FilePath& drive_path,
@@ -231,6 +235,20 @@ TEST_F(ScanningHandlerTest, ShowFileInLocation) {
       GetCallData(call_data_count_before_call);
   // Expect true from call to ShowFileInFilesApp().
   EXPECT_TRUE(call_data.arg3()->GetBool());
+}
+
+// Validates that invoking the getMyFilesPath Web UI event returns the correct
+// path.
+TEST_F(ScanningHandlerTest, GetMyFilesPath) {
+  const size_t call_data_count_before_call = web_ui_.call_data().size();
+  base::ListValue args;
+  args.Append(kHandlerFunctionName);
+  web_ui_.HandleReceivedMessage("getMyFilesPath", &args);
+
+  const content::TestWebUI::CallData& call_data =
+      GetCallData(call_data_count_before_call);
+  EXPECT_EQ(base::FilePath(kTestFilePath).value(),
+            call_data.arg3()->GetString());
 }
 
 }  // namespace chromeos.

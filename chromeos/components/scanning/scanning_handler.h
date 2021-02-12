@@ -77,6 +77,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // Returns a localized, pluralized string.
   void HandleGetPluralString(const base::ListValue* args);
 
+  // Gets the MyFiles path for the current user.
+  void HandleGetMyFilesPath(const base::ListValue* args);
+
   SelectFilePolicyCreator select_file_policy_creator_;
 
   std::string scan_location_callback_id_;

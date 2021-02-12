@@ -28,6 +28,7 @@ class ScanningPathsProviderImpl : public ScanningPathsProvider {
   // ScanningPathsProvider:
   std::string GetBaseNameFromPath(content::WebUI* web_ui,
                                   const base::FilePath& path) override;
+  base::FilePath GetMyFilesPath(content::WebUI* web_ui) override;
 };
 
 }  // namespace chromeos

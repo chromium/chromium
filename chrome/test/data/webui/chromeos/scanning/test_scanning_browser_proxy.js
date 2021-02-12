@@ -19,6 +19,7 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
       'showFileInLocation',
       'getPluralString',
       'recordScanJobSettings',
+      'getMyFilesPath',
     ]);
 
     /** @private {?SelectedPath} */
@@ -26,6 +27,9 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
 
     /** @private {?string} */
     this.pathToFile_ = null;
+
+    /** @private {string} */
+    this.myFilesPath_ = '';
   }
 
   /** @override */
@@ -65,6 +69,12 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   /** @override */
   recordScanJobSettings() {}
 
+  /** @override */
+  getMyFilesPath() {
+    this.methodCalled('getMyFilesPath');
+    return Promise.resolve(this.myFilesPath_);
+  }
+
   /** @param {!SelectedPath} selectedPath */
   setSelectedPath(selectedPath) {
     this.selectedPath_ = selectedPath;
@@ -73,5 +83,10 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   /** @param {string} pathToFile */
   setPathToFile(pathToFile) {
     this.pathToFile_ = pathToFile;
+  }
+
+  /** @param {string} myFilesPath */
+  setMyFilesPath(myFilesPath) {
+    this.myFilesPath_ = myFilesPath;
   }
 }
