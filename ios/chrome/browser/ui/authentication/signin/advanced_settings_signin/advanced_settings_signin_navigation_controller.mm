@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_navigation_controller.h"
 
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -17,6 +19,17 @@ using l10n_util::GetNSString;
 @implementation AdvancedSettingsSigninNavigationController
 
 #pragma mark - UINavigationController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+
+  if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
+    self.navigationBar.barTintColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
+    self.toolbar.barTintColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+    self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  }
+}
 
 - (void)pushViewController:(UIViewController*)viewController
                   animated:(BOOL)animated {
