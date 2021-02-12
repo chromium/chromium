@@ -39,6 +39,7 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   using Action = ash::SearchResultAction;
   using Actions = ash::SearchResultActions;
   using DisplayIndex = ash::SearchResultDisplayIndex;
+  using OmniboxType = ash::SearchResultOmniboxType;
 
   SearchResult();
   virtual ~SearchResult();
@@ -116,6 +117,11 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   DisplayIndex display_index() const { return metadata_->display_index; }
   void set_display_index(DisplayIndex display_index) {
     metadata_->display_index = display_index;
+  }
+
+  OmniboxType omnibox_type() const { return metadata_->omnibox_type; }
+  void set_omnibox_type(OmniboxType omnibox_type) {
+    metadata_->omnibox_type = omnibox_type;
   }
 
   float position_priority() const { return metadata_->position_priority; }

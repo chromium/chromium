@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -23,6 +24,8 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/search_engines/util.h"
+#include "extensions/common/image_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -37,6 +40,32 @@ namespace app_list {
 namespace {
 
 constexpr SkColor kListIconColor = gfx::kGoogleGrey700;
+
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("cros_launcher_omnibox", R"(
+        semantics {
+          sender: "Chrome OS Launcher"
+          description:
+            "Chrome OS provides search suggestions when a user types a query "
+            "into the launcher. This request downloads an image icon for a "
+            "suggested result in order to provide more information."
+          trigger:
+            "Change of results for the query typed by the user into the "
+            "launcher."
+          data:
+            "URL of the image to be downloaded. This URL corresponds to "
+            "search suggestions for the user's query."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Search autocomplete and suggestions can be disabled in Chrome OS "
+            "settings. Image icons cannot be disabled separately to this."
+          policy_exception_justification:
+            "No content is uploaded or saved, this request downloads a "
+            "publicly available image."
+        })");
 
 int ACMatchStyleToTagStyle(int styles) {
   int tag_styles = 0;
@@ -151,7 +180,7 @@ const gfx::VectorIcon& TypeToAnswerIcon(int type) {
 gfx::ImageSkia CreateAnswerIcon(const gfx::VectorIcon& vector_icon) {
   const auto& icon = gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE);
   const int dimension =
-      ash::AppListConfig::instance().search_list_icon_dimension();
+      ash::AppListConfig::instance().search_list_answer_icon_dimension();
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       dimension / 2, gfx::kGoogleBlue600, icon);
 }
@@ -203,10 +232,12 @@ OmniboxResult::OmniboxResult(Profile* profile,
   SetMetricsType(GetSearchResultType());
 
   if (app_list_features::IsOmniboxRichEntitiesEnabled()) {
-    SetIsAnswer(match_.answer.has_value());
-    if (is_answer()) {
+    if (match_.answer.has_value()) {
+      SetOmniboxType(OmniboxType::kAnswer);
       // The answer subtype overrides the match subtype.
       set_result_subtype(static_cast<int>(match_.answer->type()));
+    } else if (!match_.image_url.is_empty()) {
+      SetOmniboxType(OmniboxType::kRichImage);
     }
   }
 
@@ -246,6 +277,11 @@ void OmniboxResult::InvokeAction(int action_index) {
     default:
       NOTREACHED();
   }
+}
+
+void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
+  if (bitmap)
+    SetIcon(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
 }
 
 ash::SearchResultType OmniboxResult::GetSearchResultType() const {
@@ -310,13 +346,22 @@ GURL OmniboxResult::DestinationURL() const {
 void OmniboxResult::UpdateIcon() {
   if (app_list_features::IsOmniboxRichEntitiesEnabled() &&
       IsRichEntityResult()) {
+    // Determine if we have a local icon. Calculator and non-weather answer
+    // results have local icons.
     if (match_.type == AutocompleteMatchType::CALCULATOR) {
       SetIcon(CreateAnswerIcon(omnibox::kCalculatorIcon));
     } else if (match_.answer) {
-      SetIcon(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())));
+      if (match_.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER &&
+          !match_.answer->image_url().is_empty()) {
+        // Weather icons are downloaded. Check this first so that the local
+        // default answer icon can be used as a fallback if the URL is missing.
+        FetchRichEntityImage(match_.answer->image_url());
+      } else {
+        SetIcon(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())));
+      }
     } else if (!match_.image_url.is_empty()) {
-      // TODO(crbug.com/1130372): If |match_.image_url| exists, download the
-      // image and set it as the result icon.
+      // All remaining rich entity icons will have their image downloaded.
+      FetchRichEntityImage(match_.image_url);
     }
   } else {
     BookmarkModel* bookmark_model =
@@ -334,7 +379,7 @@ void OmniboxResult::UpdateIcon() {
 
 void OmniboxResult::UpdateTitleAndDetails() {
   if (app_list_features::IsOmniboxRichEntitiesEnabled()) {
-    if (is_answer()) {
+    if (match_.answer.has_value()) {
       const auto& additional_text =
           GetAdditionalText(match_.answer->first_line());
       // TODO(crbug.com/1130372): Use placeholders or a l10n-friendly way to
@@ -398,6 +443,17 @@ bool OmniboxResult::IsUrlResultWithDescription() const {
 bool OmniboxResult::IsRichEntityResult() const {
   return match_.type == AutocompleteMatchType::CALCULATOR || match_.answer ||
          !match_.image_url.is_empty();
+}
+
+void OmniboxResult::FetchRichEntityImage(const GURL& url) {
+  if (!bitmap_fetcher_) {
+    bitmap_fetcher_ =
+        std::make_unique<BitmapFetcher>(url, this, kTrafficAnnotation);
+  }
+  bitmap_fetcher_->Init(/*referrer=*/std::string(),
+                        net::ReferrerPolicy::NEVER_CLEAR,
+                        network::mojom::CredentialsMode::kOmit);
+  bitmap_fetcher_->Start(profile_->GetURLLoaderFactory().get());
 }
 
 void OmniboxResult::SetZeroSuggestionActions() {

@@ -272,6 +272,8 @@ AppListConfig::AppListConfig(AppListConfigType type)
       search_tile_badge_icon_dimension_(22),
       search_tile_badge_icon_offset_(5),
       search_list_icon_dimension_(20),
+      search_list_answer_icon_dimension_(24),
+      search_list_image_icon_dimension_(32),
       search_list_icon_vertical_bar_dimension_(48),
       search_list_badge_icon_dimension_(14),
       suggestion_chip_icon_dimension_(20),
@@ -389,6 +391,10 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
       search_tile_badge_icon_offset_(
           base_config.search_tile_badge_icon_offset_),
       search_list_icon_dimension_(base_config.search_list_icon_dimension_),
+      search_list_answer_icon_dimension_(
+          base_config.search_list_answer_icon_dimension_),
+      search_list_image_icon_dimension_(
+          base_config.search_list_image_icon_dimension_),
       search_list_icon_vertical_bar_dimension_(
           base_config.search_list_icon_vertical_bar_dimension_),
       search_list_badge_icon_dimension_(

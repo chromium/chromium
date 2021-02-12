@@ -54,8 +54,6 @@ class APP_LIST_EXPORT SearchResultView
   // Sets/gets SearchResult displayed by this view.
   void OnResultChanged() override;
 
-  void SetDisplayIcon(const gfx::ImageSkia& source);
-
  private:
   friend class test::SearchResultListViewTest;
 
@@ -101,7 +99,7 @@ class APP_LIST_EXPORT SearchResultView
 
   void SetIconImage(const gfx::ImageSkia& source,
                     views::ImageView* const icon,
-                    const int icon_dimension);
+                    const gfx::Size& size);
 
   // SearchResultActionsViewDelegate overrides:
   void OnSearchResultActionActivated(size_t index) override;
@@ -110,15 +108,19 @@ class APP_LIST_EXPORT SearchResultView
   // Invoked when the context menu closes.
   void OnMenuClosed();
 
+  // Whether this result is one of the rich entity types.
+  bool IsAnswer() const;
+  bool IsRichImage() const;
+
   // Parent list view. Owned by views hierarchy.
   SearchResultListView* list_view_;
 
   AppListViewDelegate* view_delegate_;
 
   views::ImageView* icon_;  // Owned by views hierarchy.
-  // If a |display_icon_| is set, we will show |display_icon_|, not |icon_|.
-  views::ImageView* display_icon_;  // Owned by views hierarchy.
-  views::ImageView* badge_icon_;    // Owned by views hierarchy.
+  // Rich image results will show |image_icon_| instead of |icon_|.
+  views::ImageView* image_icon_;  // Owned by views hierarchy.
+  views::ImageView* badge_icon_;  // Owned by views hierarchy.
   std::unique_ptr<gfx::RenderText> title_text_;
   std::unique_ptr<gfx::RenderText> details_text_;
 

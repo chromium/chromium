@@ -78,6 +78,12 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return search_tile_badge_icon_offset_;
   }
   int search_list_icon_dimension() const { return search_list_icon_dimension_; }
+  int search_list_answer_icon_dimension() const {
+    return search_list_answer_icon_dimension_;
+  }
+  int search_list_image_icon_dimension() const {
+    return search_list_image_icon_dimension_;
+  }
   int search_list_icon_vertical_bar_dimension() const {
     return search_list_icon_vertical_bar_dimension_;
   }
@@ -213,6 +219,16 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return gfx::Size(search_list_icon_dimension_, search_list_icon_dimension_);
   }
 
+  gfx::Size search_list_answer_icon_size() const {
+    return gfx::Size(search_list_answer_icon_dimension_,
+                     search_list_answer_icon_dimension_);
+  }
+
+  gfx::Size search_list_image_icon_size() const {
+    return gfx::Size(search_list_image_icon_dimension_,
+                     search_list_image_icon_dimension_);
+  }
+
   gfx::Size search_list_badge_icon_size() const {
     return gfx::Size(search_list_badge_icon_dimension_,
                      search_list_badge_icon_dimension_);
@@ -318,6 +334,12 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The icon dimension of list views in search result page view.
   const int search_list_icon_dimension_;
+
+  // The icon dimension of answer list views in search result page view.
+  const int search_list_answer_icon_dimension_;
+
+  // The dimension of image icons for list views in search result page view.
+  const int search_list_image_icon_dimension_;
 
   // The vertical bar icon dimension of list views in search result page view.
   const int search_list_icon_vertical_bar_dimension_;
