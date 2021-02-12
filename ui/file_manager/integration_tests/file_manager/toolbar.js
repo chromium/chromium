@@ -25,8 +25,31 @@ testcase.toolbarDeleteWithMenuItemNoEntrySelected = async () => {
 };
 
 /**
- * Tests Delete button keeps focus after closing confirmation
- * dialog.
+ * Tests that the toolbar Delete button opens the delete confirm dialog and
+ * that the dialog cancel button has the focus by default.
+ */
+testcase.toolbarDeleteButtonOpensDeleteConfirmDialog = async () => {
+  // Open Files app.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.desktop]);
+
+  // Select My Desktop Background.png
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [ENTRIES.desktop.nameText]));
+
+  // Click the toolbar Delete button.
+  await remoteCall.simulateUiClick(appId, '#delete-button');
+
+  // Check: the delete confirm dialog should appear.
+  await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+  // Check: the dialog cancel button should be focused by default.
+  await remoteCall.waitForElement(appId, 'button.cr-dialog-cancel:focus');
+};
+
+/**
+ * Tests that the toolbar Delete button keeps focus after the delete confirm
+ * dialog is closed.
  */
 testcase.toolbarDeleteButtonKeepFocus = async () => {
   // Open Files app.
@@ -37,18 +60,20 @@ testcase.toolbarDeleteButtonKeepFocus = async () => {
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'selectFile', appId, [ENTRIES.desktop.nameText]));
 
+  // Click the toolbar Delete button.
   await remoteCall.simulateUiClick(appId, '#delete-button');
 
-  // Confirm that the confirmation dialog is shown.
+  // Check: the Delete button should lose focus.
+  await remoteCall.waitForElementLost(appId, '#delete-button:focus');
+
+  // Wait until the delete confirm dialog appears.
   await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
 
-  // Press cancel button.
+  // Click the dialog cancel button.
   await remoteCall.waitAndClickElement(appId, 'button.cr-dialog-cancel');
 
-  // Check focused element is Delete button.
-  const focusedElement =
-      await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
-  chrome.test.assertEq('delete-button', focusedElement.attributes['id']);
+  // Check: the toolbar Delete button should be focused.
+  await remoteCall.waitForElement(appId, '#delete-button:focus');
 };
 
 /**
@@ -80,7 +105,6 @@ testcase.toolbarDeleteEntry = async () => {
   // Select My Desktop Background.png
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'selectFile', appId, ['My Desktop Background.png']));
-
 
   // Click delete button in the toolbar.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(

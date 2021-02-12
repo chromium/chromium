@@ -108,6 +108,7 @@
      */
     this.deleteConfirmDialog = new FilesConfirmDialog(this.element);
     this.deleteConfirmDialog.setOkLabel(str('DELETE_BUTTON_LABEL'));
+    this.deleteConfirmDialog.focusCancelButton = true;
 
     /**
      * Confirm dialog for file move operation.

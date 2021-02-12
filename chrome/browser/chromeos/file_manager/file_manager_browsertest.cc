@@ -487,6 +487,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("toolbarDeleteWithMenuItemNoEntrySelected"),
+        TestCase("toolbarDeleteButtonOpensDeleteConfirmDialog"),
         TestCase("toolbarDeleteButtonKeepFocus"),
         TestCase("toolbarDeleteEntry").InGuestMode(),
         TestCase("toolbarDeleteEntry"),
