@@ -4,6 +4,7 @@
 
 #include "components/payments/content/installable_payment_app_crawler.h"
 
+#include <limits>
 #include <utility>
 
 #include "base/bind.h"
@@ -465,6 +466,7 @@ bool InstallablePaymentAppCrawler::DownloadAndDecodeWebAppIcon(
       web_contents, downloader_->FindTestServerURL(best_icon_url),
       IconSizeCalculator::IdealIconHeight(native_view),
       IconSizeCalculator::MinimumIconHeight(),
+      /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
       base::BindOnce(
           &InstallablePaymentAppCrawler::OnPaymentWebAppIconDownloadAndDecoded,
           weak_ptr_factory_.GetWeakPtr(), method_manifest_url,

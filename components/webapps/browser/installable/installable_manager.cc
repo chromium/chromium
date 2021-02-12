@@ -5,6 +5,7 @@
 #include "components/webapps/browser/installable/installable_manager.h"
 
 #include <algorithm>
+#include <limits>
 #include <utility>
 
 #include "base/bind.h"
@@ -41,8 +42,14 @@ namespace webapps {
 
 namespace {
 
-// This constant is the maximum dimension size in pixels for screenshots.
+// Minimum dimension size in pixels for screenshots.
+const int kMinimumScreenshotSizeInPx = 320;
+
+// Maximum dimension size in pixels for screenshots.
 const int kMaximumScreenshotSizeInPx = 3840;
+
+// Maximum dimension size in pixels for icons.
+const int kMaximumIconSizeInPx = std::numeric_limits<int>::max();
 
 // This constant is the icon size on Android (48dp) multiplied by the scale
 // factor of a Nexus 5 device (3x). It is the currently advertised minimum icon
@@ -815,7 +822,7 @@ void InstallableManager::CheckAndFetchBestIcon(int ideal_icon_size_in_px,
   } else {
     bool can_download_icon = content::ManifestIconDownloader::Download(
         GetWebContents(), icon_url, ideal_icon_size_in_px,
-        minimum_icon_size_in_px,
+        minimum_icon_size_in_px, kMaximumIconSizeInPx,
         base::BindOnce(&InstallableManager::OnIconFetched,
                        weak_factory_.GetWeakPtr(), icon_url, usage));
     if (can_download_icon)
@@ -854,12 +861,12 @@ void InstallableManager::CheckAndFetchScreenshots() {
     if (downloaded_screenshots_.count(url.src) > 0)
       continue;
 
-    int ideal_size_in_px = url.sizes.empty() ? 320
+    int ideal_size_in_px = url.sizes.empty() ? kMinimumScreenshotSizeInPx
                                              : std::max(url.sizes[0].width(),
                                                         url.sizes[0].height());
     bool can_download = content::ManifestIconDownloader::Download(
-        GetWebContents(), url.src, ideal_size_in_px,
-        /*minimum_icon_size_in_px=*/320,
+        GetWebContents(), url.src, ideal_size_in_px, kMinimumScreenshotSizeInPx,
+        kMaximumScreenshotSizeInPx,
         base::BindOnce(&InstallableManager::OnScreenshotFetched,
                        weak_factory_.GetWeakPtr(), url.src),
         /*square_only=*/false);

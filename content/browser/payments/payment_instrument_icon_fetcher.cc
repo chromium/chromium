@@ -4,6 +4,7 @@
 
 #include "content/browser/payments/payment_instrument_icon_fetcher.h"
 
+#include <limits>
 #include <utility>
 
 #include "base/base64.h"
@@ -101,6 +102,7 @@ void DownloadBestMatchingIcon(
       web_contents, icon_url,
       payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
+      /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
       base::BindOnce(&OnIconFetched, web_contents, copy_icons,
                      std::move(callback)),
       false /* square_only */);

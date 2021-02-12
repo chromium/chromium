@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/webapk/webapk_icon_hasher.h"
 
+#include <limits>
 #include <set>
 
 #include "base/macros.h"
@@ -98,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(WebApkIconHasherBrowserTest,
   {
     base::RunLoop run_loop;
     content::ManifestIconDownloader::Download(
-        web_contents, kIconUrl, 0, 0,
+        web_contents, kIconUrl, 0, 0, std::numeric_limits<int>::max(),
         base::BindOnce(&OnDownloadedManifestIcon, run_loop.QuitClosure()),
         false /* square_only */);
     run_loop.Run();

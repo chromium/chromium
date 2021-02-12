@@ -5,6 +5,7 @@
 #include "chrome/browser/android/shortcut_helper.h"
 
 #include <jni.h>
+#include <limits>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -65,6 +66,7 @@ void AddWebappWithSkBitmap(content::WebContents* web_contents,
   content::ManifestIconDownloader::Download(
       web_contents, info.splash_image_url, info.ideal_splash_image_size_in_px,
       info.minimum_splash_image_size_in_px,
+      /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
       base::BindOnce(&ShortcutHelper::StoreWebappSplashImage, webapp_id));
 }
 

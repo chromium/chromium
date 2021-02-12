@@ -4,6 +4,8 @@
 
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 
+#include <limits>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
@@ -97,6 +99,7 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
       web_contents(), primary_icon_url_,
       WebappsIconUtils::GetIdealHomescreenIconSizeInPx(),
       WebappsIconUtils::GetMinimumHomescreenIconSizeInPx(),
+      /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
       base::BindOnce(&AppBannerManagerAndroid::OnNativeAppIconFetched,
                      weak_factory_.GetWeakPtr()));
 }

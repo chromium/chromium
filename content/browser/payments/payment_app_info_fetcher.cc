@@ -4,6 +4,7 @@
 
 #include "content/browser/payments/payment_app_info_fetcher.h"
 
+#include <limits>
 #include <utility>
 
 #include "base/base64.h"
@@ -283,6 +284,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
       web_contents, icon_url_,
       payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
+      /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
       base::BindOnce(&PaymentAppInfoFetcher::SelfDeleteFetcher::OnIconFetched,
                      weak_ptr_factory_.GetWeakPtr()),
       false /* square_only */);
