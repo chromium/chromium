@@ -4685,13 +4685,6 @@ const FeatureEntry kFeatureEntries[] = {
          download::features::kUseDownloadOfflineContentProvider)},
 
 #if defined(OS_ANDROID)
-    {"update-notification-scheduling-integration",
-     flag_descriptions::kUpdateNotificationSchedulingIntegrationName,
-     flag_descriptions::kUpdateNotificationSchedulingIntegrationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kUpdateNotificationSchedulingIntegration)},
-
     {"screen-capture-android", flag_descriptions::kUserMediaScreenCapturingName,
      flag_descriptions::kUserMediaScreenCapturingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kUserMediaScreenCapturing)},
@@ -4704,17 +4697,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kPrefetchNotificationSchedulingIntegration)},
-#endif
-
-#if defined(OS_ANDROID)
-    {"update-notification-scheduling-show-immediately",
-     flag_descriptions::kUpdateNotificationServiceImmediateShowOptionName,
-     flag_descriptions::
-         kUpdateNotificationServiceImmediateShowOptionDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::
-             kUpdateNotificationScheduleServiceImmediateShowOption)},
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

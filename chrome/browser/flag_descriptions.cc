@@ -3302,12 +3302,6 @@ const char kUpdateMenuTypeInlineUpdateDownloadCanceled[] =
 const char kUpdateMenuTypeInlineUpdateInstallFailed[] =
     "Inline Update Error: Install Failed";
 
-const char kUpdateNotificationSchedulingIntegrationName[] =
-    "Enable update notification using notification scheduling system";
-const char kUpdateNotificationSchedulingIntegrationDescription[] =
-    "if enable update notification will hook up to notification scheduling "
-    "system in native side";
-
 const char kUserMediaScreenCapturingName[] = "Screen Capture API";
 const char kUserMediaScreenCapturingDescription[] =
     "Allows sites to request a video stream of your screen.";
@@ -3317,11 +3311,6 @@ const char kPrefetchNotificationSchedulingIntegrationName[] =
 const char kPrefetchNotificationSchedulingIntegrationDescription[] =
     "if enable prefetch notification service and background task will hook up "
     "to notification scheduling system in native side";
-
-const char kUpdateNotificationServiceImmediateShowOptionName[] =
-    "Update notification service debug options";
-const char kUpdateNotificationServiceImmediateShowOptionDescription[] =
-    "Show update notification right immediately";
 
 const char kUseChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";

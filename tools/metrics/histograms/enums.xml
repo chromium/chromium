@@ -43566,8 +43566,6 @@ from previous Chrome versions.
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
   <int value="-1524323669" label="InstalledAppsInCbd:enabled"/>
   <int value="-1521339691" label="UseGles2ForOopR:disabled"/>
-  <int value="-1521296022"
-      label="UpdateNotificationScheduleServiceImmediateShowOption:disabled"/>
   <int value="-1521160841" label="DismissNtpPromos:enabled"/>
   <int value="-1520952503" label="SearchReadyOmnibox:enabled"/>
   <int value="-1520855274" label="PWAFullCodeCache:disabled"/>
@@ -44018,8 +44016,6 @@ from previous Chrome versions.
   <int value="-1155543191" label="CopylessPaste:disabled"/>
   <int value="-1154834060" label="OmniboxRichAutocompletion:disabled"/>
   <int value="-1154819618" label="FilesNG:enabled"/>
-  <int value="-1154394293"
-      label="UpdateNotificationScheduleServiceImmediateShowOption:enabled"/>
   <int value="-1154343236" label="VrBrowsingTabsView:disabled"/>
   <int value="-1153892430"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:enabled"/>
@@ -44132,8 +44128,6 @@ from previous Chrome versions.
   <int value="-1046627610" label="password-import:enabled"/>
   <int value="-1045900007" label="NoCreditCardAbort:disabled"/>
   <int value="-1045882995" label="UseNewDoodleApi:enabled"/>
-  <int value="-1044244605"
-      label="UpdateNotificationSchedulingIntegration:enabled"/>
   <int value="-1043883835" label="Sharesheet:enabled"/>
   <int value="-1042723808"
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:enabled"/>
@@ -45870,8 +45864,6 @@ from previous Chrome versions.
   <int value="603988014" label="NetworkService:enabled"/>
   <int value="604334859" label="Prerender2:enabled"/>
   <int value="605150752" label="WebUSB:disabled"/>
-  <int value="606061406"
-      label="UpdateNotificationSchedulingIntegration:disabled"/>
   <int value="606288133" label="enable-print-preview-register-promos"/>
   <int value="606512202" label="AutofillCreditCardPopupLayout:enabled"/>
   <int value="606723570" label="SharingUseDeviceInfo:disabled"/>

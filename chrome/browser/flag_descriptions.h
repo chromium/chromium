@@ -1902,11 +1902,6 @@ extern const char kUpdateMenuTypeInlineUpdateDownloadFailed[];
 extern const char kUpdateMenuTypeInlineUpdateDownloadCanceled[];
 extern const char kUpdateMenuTypeInlineUpdateInstallFailed[];
 
-extern const char kUpdateNotificationSchedulingIntegrationName[];
-extern const char kUpdateNotificationSchedulingIntegrationDescription[];
-extern const char kUpdateNotificationServiceImmediateShowOptionName[];
-extern const char kUpdateNotificationServiceImmediateShowOptionDescription[];
-
 extern const char kUserMediaScreenCapturingName[];
 extern const char kUserMediaScreenCapturingDescription[];
 
