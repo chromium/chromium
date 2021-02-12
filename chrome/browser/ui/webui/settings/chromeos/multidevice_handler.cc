@@ -281,7 +281,7 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
       base::BindOnce(&MultideviceHandler::OnSetFeatureStateEnabledResult,
                      callback_weak_ptr_factory_.GetWeakPtr(), callback_id));
 
-  if (feature == multidevice_setup::mojom::Feature::kPhoneHub) {
+  if (enabled && feature == multidevice_setup::mojom::Feature::kPhoneHub) {
     phonehub::util::LogFeatureOptInEntryPoint(
         phonehub::util::OptInEntryPoint::kSettings);
   }
