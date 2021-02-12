@@ -8,11 +8,9 @@
 
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/download/download_test_util.h"
 #include "ios/chrome/browser/download/pass_kit_mime_type.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -76,13 +74,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
   self.testServer->RegisterRequestHandler(base::BindRepeating(&GetResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSInfobarUIReboot);
-  config.features_disabled.push_back(kInfobarUIRebootOnlyiOS13);
-  return config;
 }
 
 // Tests that Chrome presents PassKit error infobar if pkpass file cannot be

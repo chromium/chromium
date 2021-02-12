@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
@@ -18,7 +16,6 @@
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
@@ -50,8 +47,6 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
     : public PlatformTest {
  public:
   TranslateInfobarOverlayTranslateOverlayTabHelperTest() {
-    scoped_feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                          {kInfobarUIRebootOnlyiOS13});
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
@@ -76,7 +71,6 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   web::FakeWebState web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   FakeTranslateInfoBarDelegate* delegate_ = nullptr;

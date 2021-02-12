@@ -6,14 +6,11 @@
 
 #include "base/guid.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 #include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,8 +24,6 @@ class SaveCardInfobarBannerInteractionHandlerTest : public PlatformTest {
       : delegate_factory_(),
         prefs_(autofill::test::PrefServiceForTesting()),
         card_(base::GenerateGUID(), "https://www.example.com/") {
-    scoped_feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                          {kInfobarUIRebootOnlyiOS13});
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveCard,
         MockAutofillSaveCardInfoBarDelegateMobileFactory::
@@ -42,7 +37,6 @@ class SaveCardInfobarBannerInteractionHandlerTest : public PlatformTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   SaveCardInfobarBannerInteractionHandler handler_;
   MockAutofillSaveCardInfoBarDelegateMobileFactory delegate_factory_;
   std::unique_ptr<PrefService> prefs_;

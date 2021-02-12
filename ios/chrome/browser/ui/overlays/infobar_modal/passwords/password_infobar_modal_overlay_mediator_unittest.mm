@@ -6,8 +6,6 @@
 
 #import "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
@@ -17,7 +15,6 @@
 #include "ios/chrome/browser/overlays/public/overlay_response.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_password_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,8 +55,6 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
                              PresentPasswordSettings::ResponseSupport()}),
         delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
-    scoped_feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                          {kInfobarUIRebootOnlyiOS13});
     request_ = OverlayRequest::CreateWithConfig<
         PasswordInfobarModalOverlayRequestConfig>(&infobar_);
     callback_installer_.InstallCallbacks(request_.get());
@@ -79,7 +74,6 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   GURL url_;
   InfoBarIOS infobar_;
   MockOverlayRequestCallbackReceiver callback_receiver_;

@@ -45,7 +45,6 @@ source_set("unit_tests") {
   deps = [
     ":translate",
     "//base/test:test_support",
-    "//components/infobars/core:feature_flags",
     "//components/translate/core/browser:test_support",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/overlays",

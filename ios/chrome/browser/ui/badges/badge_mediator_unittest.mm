@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/ui/badges/badge_mediator.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_badge_model.h"
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
@@ -25,7 +23,6 @@
 #import "ios/chrome/browser/ui/badges/badge_item.h"
 #import "ios/chrome/browser/ui/badges/badge_type.h"
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -87,8 +84,6 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
       : badge_consumer_([[FakeBadgeConsumer alloc] init]),
         browser_state_(TestChromeBrowserState::Builder().Build()),
         web_state_list_(&web_state_list_delegate_) {
-    feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                   {kInfobarUIRebootOnlyiOS13});
     OverlayPresenter::FromBrowser(browser(), OverlayModality::kInfobarBanner)
         ->SetPresentationContext(&overlay_presentation_context_);
     badge_mediator_ = [[BadgeMediator alloc] initWithBrowser:browser()];
@@ -158,7 +153,6 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
     return InfobarBadgeTabHelper::FromWebState(web_state());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment environment_;
   FakeBadgeConsumer* badge_consumer_;
   std::unique_ptr<ChromeBrowserState> browser_state_;

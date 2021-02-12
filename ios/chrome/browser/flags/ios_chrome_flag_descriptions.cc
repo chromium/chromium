@@ -226,14 +226,6 @@ const char kInfobarOverlayUIDescription[] =
     "When enabled alongside the Infobar UI Reboot, infobars will be presented "
     "using OverlayPresenter.";
 
-const char kInfobarUIRebootName[] = "Infobar UI Reboot";
-const char kInfobarUIRebootDescription[] =
-    "When enabled, Infobar will use the new UI.";
-
-const char kInfobarUIRebootOnlyiOS13Name[] = "Infobar UI Reboot iOS13";
-const char kInfobarUIRebootOnlyiOS13Description[] =
-    "When enabled, Infobar will use the new UI only on iOS13";
-
 const char kSigninNotificationInfobarUsernameInTitleName[] =
     "Sign-in notification infobar title";
 const char kSigninNotificationInfobarUsernameInTitleDescription[] =
@@ -368,10 +360,6 @@ const char kSafetyCheckIOSDescription[] =
     "When enabled, the iOS version of safety check is available in Chrome "
     "settings.";
 
-const char kSaveCardInfobarMessagesUIName[] = "Save Card Infobar Messages UI";
-const char kSaveCardInfobarMessagesUIDescription[] =
-    "When enabled, Save Card Infobar uses the new Messages UI.";
-
 const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
 const char kScreenTimeIntegrationDescription[] =
     "Enables integration with ScreenTime in iOS 14.0 and above.";
@@ -428,11 +416,6 @@ const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "
     "managed by the toolbar container coordinator rather than BVC.";
-
-const char kTranslateInfobarMessagesUIName[] =
-    "Enable Translate Infobar Messages UI";
-const char kTranslateInfobarMessagesUIDescription[] =
-    "When enabled, the Translate Infobar uses the new Messages UI.";
 
 const char kURLBlocklistIOSName[] = "URL Blocklist Policy";
 const char kURLBlocklistIOSDescription[] =

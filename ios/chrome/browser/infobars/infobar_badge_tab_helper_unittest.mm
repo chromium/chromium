@@ -4,15 +4,12 @@
 
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_badge_tab_helper_delegate.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/ui/badges/badge_item.h"
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -33,9 +30,6 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
  protected:
   InfobarBadgeTabHelperTest()
       : delegate_([[FakeInfobarTabHelperDelegate alloc] init]) {
-    // Enable kIOSInfobarUIReboot flag.
-    feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                   {kInfobarUIRebootOnlyiOS13});
 
     // Setup navigation manager. Needed for InfobarManager.
     web_state_.SetNavigationManager(
@@ -68,7 +62,6 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
     return InfobarBadgeTabHelper::FromWebState(&web_state_);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   web::FakeWebState web_state_;
   FakeInfobarTabHelperDelegate* delegate_ = nil;
 };

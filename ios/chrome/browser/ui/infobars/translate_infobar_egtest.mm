@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -18,7 +17,6 @@
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_translate_modal_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -262,13 +260,6 @@ void TestResponseProvider::GetLanguageResponse(
 - (void)tearDown {
   [TranslateAppInterface tearDown];
   [super tearDown];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSInfobarUIReboot);
-  config.features_disabled.push_back(kInfobarUIRebootOnlyiOS13);
-  return config;
 }
 
 #pragma mark - Test Cases

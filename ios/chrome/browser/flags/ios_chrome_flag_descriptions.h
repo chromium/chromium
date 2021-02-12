@@ -202,15 +202,6 @@ extern const char kIllustratedEmptyStatesDescription[];
 extern const char kInfobarOverlayUIName[];
 extern const char kInfobarOverlayUIDescription[];
 
-// Title and description for the flag to enable the new UI Reboot on Infobars.
-extern const char kInfobarUIRebootName[];
-extern const char kInfobarUIRebootDescription[];
-
-// Title and description for the flag to enable the new UI Reboot on Infobars
-// only on iOS13.
-extern const char kInfobarUIRebootOnlyiOS13Name[];
-extern const char kInfobarUIRebootOnlyiOS13Description[];
-
 // Title and description for the flag to enable feature_engagement::Tracker
 // demo mode.
 extern const char kInProductHelpDemoModeName[];
@@ -306,11 +297,6 @@ extern const char kSafeBrowsingRealTimeLookupDescription[];
 extern const char kSafetyCheckIOSName[];
 extern const char kSafetyCheckIOSDescription[];
 
-// Title and description for the flag that enables Messages UI on
-// SaveCard Infobars.
-extern const char kSaveCardInfobarMessagesUIName[];
-extern const char kSaveCardInfobarMessagesUIDescription[];
-
 // Title and description for the flag to enable integration with the ScreenTime
 // system.
 extern const char kScreenTimeIntegrationName[];
@@ -371,11 +357,6 @@ extern const char kSyncSandboxDescription[];
 // implementation.
 extern const char kToolbarContainerName[];
 extern const char kToolbarContainerDescription[];
-
-// Title and description for the flag to enable the Messages UI for Translate
-// Infobars.
-extern const char kTranslateInfobarMessagesUIName[];
-extern const char kTranslateInfobarMessagesUIDescription[];
 
 // Title and description for the flag to enable URLBlocklist/URLAllowlist
 // enterprise policy.

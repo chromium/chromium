@@ -156,8 +156,6 @@
 
 - (void)dismissInfobarBannerAnimated:(BOOL)animated
                           completion:(void (^)())completion {
-  DCHECK(IsInfobarUIRebootEnabled());
-
   for (InfobarCoordinator* infobarCoordinator in self.infobarCoordinators) {
     if (infobarCoordinator.infobarBannerState !=
         InfobarBannerPresentationState::NotPresented) {
@@ -193,7 +191,6 @@
 #pragma mark - Accessors
 
 - (InfobarBannerPresentationState)infobarBannerState {
-  DCHECK(IsInfobarUIRebootEnabled());
   for (InfobarCoordinator* infobarCoordinator in self.infobarCoordinators) {
     if (infobarCoordinator.infobarBannerState !=
         InfobarBannerPresentationState::NotPresented) {
@@ -210,7 +207,6 @@
 
 - (void)addInfoBarWithDelegate:(id<InfobarUIDelegate>)infoBarDelegate
                     skipBanner:(BOOL)skipBanner {
-  DCHECK(IsInfobarUIRebootEnabled());
   InfobarCoordinator* infobarCoordinator =
       static_cast<InfobarCoordinator*>(infoBarDelegate);
 
@@ -238,9 +234,7 @@
 }
 
 - (void)infobarManagerWillChange {
-  if (IsInfobarUIRebootEnabled()) {
-    [self dismissInfobarBannerAnimated:NO completion:nil];
-  }
+  [self dismissInfobarBannerAnimated:NO completion:nil];
   self.infobarCoordinators = [NSMutableArray array];
   self.infobarCoordinatorsToPresent = [NSMutableArray array];
 }
@@ -250,7 +244,6 @@
 }
 
 - (void)updateLayoutAnimated:(BOOL)animated {
-  DCHECK(IsInfobarUIRebootEnabled());
   // TODO(crbug.com/927064): NO-OP - This shouldn't be needed in the new UI
   // since we use autolayout for the contained Infobars.
 }

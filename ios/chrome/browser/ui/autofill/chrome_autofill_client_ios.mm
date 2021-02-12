@@ -64,16 +64,9 @@ namespace {
 // Creates and returns an infobar for saving credit cards.
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
     std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate) {
-  if (IsSaveCardInfobarMessagesUIEnabled()) {
-    InfobarSaveCardCoordinator* coordinator =
-        [[InfobarSaveCardCoordinator alloc]
-            initWithInfoBarDelegate:delegate.get()];
-    return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate));
-  } else {
-    SaveCardInfoBarController* controller = [[SaveCardInfoBarController alloc]
-        initWithInfoBarDelegate:delegate.get()];
-    return std::make_unique<InfoBarIOS>(controller, std::move(delegate));
-  }
+  InfobarSaveCardCoordinator* coordinator = [[InfobarSaveCardCoordinator alloc]
+      initWithInfoBarDelegate:delegate.get()];
+  return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate));
 }
 
 CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(

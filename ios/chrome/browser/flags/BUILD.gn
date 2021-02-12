@@ -22,7 +22,6 @@ source_set("flags") {
     "//components/feature_engagement/public",
     "//components/flags_ui",
     "//components/flags_ui:switches",
-    "//components/infobars/core:feature_flags",
     "//components/invalidation/impl:feature_list",
     "//components/ntp_tiles",
     "//components/omnibox/browser",

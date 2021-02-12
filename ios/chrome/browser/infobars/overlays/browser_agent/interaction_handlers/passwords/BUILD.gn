@@ -44,7 +44,6 @@ source_set("unit_tests") {
   deps = [
     ":passwords",
     "//base/test:test_support",
-    "//components/infobars/core:feature_flags",
     "//components/password_manager/core/browser:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",

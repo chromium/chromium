@@ -8,20 +8,17 @@
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_responses.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #include "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
-#include "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
 #include "testing/gtest_mac.h"
@@ -82,8 +79,6 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
                             {SaveCardMainAction::ResponseSupport()}),
         mediator_delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
-    scoped_feature_list_.InitWithFeatures({kIOSInfobarUIReboot},
-                                          {kInfobarUIRebootOnlyiOS13});
 
     autofill::LegalMessageLines legal_message_lines =
         autofill::LegalMessageLines(
@@ -121,7 +116,6 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PrefService> prefs_;
   autofill::AutofillSaveCardInfoBarDelegateMobile* delegate_;
   std::unique_ptr<InfoBarIOS> infobar_;

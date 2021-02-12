@@ -130,7 +130,6 @@ source_set("eg2_tests") {
   ]
 
   deps = [
-    "//components/infobars/core:feature_flags",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/download:mime_types",

@@ -1051,9 +1051,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)userEnteredTabSwitcher {
   // TODO(crbug.com/977761): In preparation for dismissing BVC, make sure any
   // ongoing ViewController presentations are stopped.
-  if (IsInfobarUIRebootEnabled() &&
-      (self.infobarContainerCoordinator.infobarBannerState !=
-       InfobarBannerPresentationState::NotPresented)) {
+  if (self.infobarContainerCoordinator.infobarBannerState !=
+      InfobarBannerPresentationState::NotPresented) {
     [self.infobarContainerCoordinator dismissInfobarBannerAnimated:NO
                                                         completion:nil];
   }
@@ -1552,8 +1551,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // TODO(crbug.com/976411):This should probably move to the BannerVC once/if
   // the dismiss event from BVC is observable.
-  if (IsInfobarUIRebootEnabled() &&
-      !base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
+  if (!base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
     [self.infobarContainerCoordinator baseViewWillDisappear];
     if (self.infobarContainerCoordinator.infobarBannerState !=
         InfobarBannerPresentationState::NotPresented) {
@@ -1827,8 +1825,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // controller that allows interaction with the rest of the App while its being
   // presented. Dismiss it in case the user or system has triggered another
   // presentation.
-  if (IsInfobarUIRebootEnabled() &&
-      !base::FeatureList::IsEnabled(kInfobarOverlayUI) &&
+  if (!base::FeatureList::IsEnabled(kInfobarOverlayUI) &&
       (self.infobarContainerCoordinator.infobarBannerState !=
        InfobarBannerPresentationState::NotPresented)) {
     [self.infobarContainerCoordinator
@@ -3620,8 +3617,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/965688): An Infobar message is currently the only presented
   // controller that allows interaction with the rest of the App while its being
   // presented. Dismiss it in case the user or system has triggered repost form.
-  if (IsInfobarUIRebootEnabled() &&
-      !base::FeatureList::IsEnabled(kInfobarOverlayUI) &&
+  if (!base::FeatureList::IsEnabled(kInfobarOverlayUI) &&
       (self.infobarContainerCoordinator.infobarBannerState !=
        InfobarBannerPresentationState::NotPresented)) {
     [self.infobarContainerCoordinator

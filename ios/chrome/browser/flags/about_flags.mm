@@ -34,7 +34,6 @@
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/flags_ui/flags_ui_switches.h"
-#include "components/infobars/core/infobar_feature.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/ntp_tiles/switches.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -366,9 +365,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestName,
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(omnibox::kLocalHistoryZeroSuggest)},
-    {"infobar-ui-reboot", flag_descriptions::kInfobarUIRebootName,
-     flag_descriptions::kInfobarUIRebootDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIOSInfobarUIReboot)},
     {"snapshot-draw-view", flag_descriptions::kSnapshotDrawViewName,
      flag_descriptions::kSnapshotDrawViewDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSnapshotDrawView)},
@@ -414,14 +410,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEmbedderBlockRestoreUrlName,
      flag_descriptions::kEmbedderBlockRestoreUrlDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEmbedderBlockRestoreUrl)},
-    {"messages-save-card-infobar",
-     flag_descriptions::kSaveCardInfobarMessagesUIName,
-     flag_descriptions::kSaveCardInfobarMessagesUIDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSaveCardInfobarMessagesUI)},
-    {"messages-translate-infobar",
-     flag_descriptions::kTranslateInfobarMessagesUIName,
-     flag_descriptions::kTranslateInfobarMessagesUIDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kTranslateInfobarMessagesUI)},
     {"autofill-save-card-dismiss-on-navigation",
      flag_descriptions::kAutofillSaveCardDismissOnNavigationName,
      flag_descriptions::kAutofillSaveCardDismissOnNavigationDescription,
@@ -452,10 +440,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"managed-bookmarks-ios", flag_descriptions::kManagedBookmarksIOSName,
      flag_descriptions::kManagedBookmarksIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kManagedBookmarksIOS)},
-    {"infobar-ui-reboot-only-ios13",
-     flag_descriptions::kInfobarUIRebootOnlyiOS13Name,
-     flag_descriptions::kInfobarUIRebootOnlyiOS13Description, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kInfobarUIRebootOnlyiOS13)},
     {"edit-bookmarks-ios", flag_descriptions::kEditBookmarksIOSName,
      flag_descriptions::kEditBookmarksIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEditBookmarksIOS)},

@@ -93,27 +93,17 @@ translate::TranslateManager* ChromeIOSTranslateClient::GetTranslateManager() {
 
 std::unique_ptr<infobars::InfoBar> ChromeIOSTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
-  if (IsTranslateInfobarMessagesUIEnabled()) {
-    bool skip_banner = delegate->translate_step() ==
-                       translate::TranslateStep::TRANSLATE_STEP_TRANSLATING;
-    if (IsInfobarOverlayUIEnabled()) {
-      return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
-                                          std::move(delegate), skip_banner);
-    } else {
-      TranslateInfobarCoordinator* coordinator =
-          [[TranslateInfobarCoordinator alloc]
-              initWithInfoBarDelegate:delegate.get()];
-      return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate),
-                                          skip_banner);
-    }
+  bool skip_banner = delegate->translate_step() ==
+                     translate::TranslateStep::TRANSLATE_STEP_TRANSLATING;
+  if (IsInfobarOverlayUIEnabled()) {
+    return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
+                                        std::move(delegate), skip_banner);
   } else {
-    TranslateInfoBarController* controller = [[TranslateInfoBarController alloc]
-        initWithInfoBarDelegate:delegate.get()];
-    controller.languageSelectionHandler = language_selection_handler_;
-    controller.translateOptionSelectionHandler =
-        translate_option_selection_handler_;
-    controller.translateNotificationHandler = translate_notification_handler_;
-    return std::make_unique<InfoBarIOS>(controller, std::move(delegate));
+    TranslateInfobarCoordinator* coordinator =
+        [[TranslateInfobarCoordinator alloc]
+            initWithInfoBarDelegate:delegate.get()];
+    return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate),
+                                        skip_banner);
   }
 }
 
