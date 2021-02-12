@@ -67,6 +67,9 @@ class MockAXObject : public AXObject {
   AXObject* ComputeParentImpl() const final { return nullptr; }
   Document* GetDocument() const final { return &AXObjectCache().GetDocument(); }
   void AddChildren() final {}
+  ax::mojom::blink::Role DetermineAccessibilityRole() override {
+    return ax::mojom::blink::Role::kUnknown;
+  }
 };
 
 unsigned MockAXObject::num_children_changed_calls_ = 0;

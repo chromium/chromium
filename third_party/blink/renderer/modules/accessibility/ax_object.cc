@@ -106,12 +106,10 @@ Node* GetParentNodeForComputeParent(Node* node) {
 }
 
 #if DCHECK_IS_ON()
-bool IsValidRole(ax::mojom::blink::Role role, bool is_virtual_object) {
+bool IsValidRole(ax::mojom::blink::Role role) {
   // Check for illegal roles that should not be assigned in Blink.
   switch (role) {
     case ax::mojom::blink::Role::kUnknown:
-      // Role::kUnknown is allowed on virtual objects with no set role.
-      return is_virtual_object;
     case ax::mojom::blink::Role::kColumn:
     case ax::mojom::blink::Role::kTableHeaderContainer:
     case ax::mojom::blink::Role::kIgnored:
@@ -663,9 +661,8 @@ void AXObject::Init(AXObject* parent_if_known) {
   // ParentObject(), although it can use the DOM parent.
   role_ = DetermineAccessibilityRole();
 #if DCHECK_IS_ON()
-  DCHECK(IsValidRole(role_, IsVirtualObject()))
-      << "Illegal " << role_ << " for " << GetNode() << " "
-      << GetLayoutObject();
+  DCHECK(IsValidRole(role_)) << "Illegal " << role_ << " for " << GetNode()
+                             << " " << GetLayoutObject();
 #endif
 
   // Determine the parent as soon as possible.
@@ -3310,11 +3307,6 @@ AXRestriction AXObject::Restriction() const {
 
   // This is a node that is not readonly and not disabled.
   return kRestrictionNone;
-}
-
-ax::mojom::blink::Role AXObject::DetermineAccessibilityRole() {
-  aria_role_ = DetermineAriaRoleAttribute();
-  return aria_role_;
 }
 
 ax::mojom::blink::Role AXObject::AriaRoleAttribute() const {

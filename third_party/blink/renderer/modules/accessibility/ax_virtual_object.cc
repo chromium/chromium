@@ -99,6 +99,16 @@ String AXVirtualObject::TextAlternative(bool recursive,
                              &found_text_alternative);
 }
 
+ax::mojom::blink::Role AXVirtualObject::DetermineAccessibilityRole() {
+  aria_role_ = DetermineAriaRoleAttribute();
+
+  // If no role was assigned, fall back to role="generic".
+  if (aria_role_ == ax::mojom::blink::Role::kUnknown)
+    aria_role_ = ax::mojom::blink::Role::kGenericContainer;
+
+  return aria_role_;
+}
+
 void AXVirtualObject::Trace(Visitor* visitor) const {
   visitor->Trace(accessible_node_);
   AXObject::Trace(visitor);
