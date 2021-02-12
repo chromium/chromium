@@ -7033,7 +7033,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImportantFile.FileDeleteRetryExceededError"
-    enum="PlatformFileError" expires_after="2021-03-21">
+    enum="PlatformFileError" expires_after="2021-05-31">
   <owner>grt@chromium.org</owner>
   <owner>xaerox@yandex-team.ru</owner>
   <summary>
@@ -7089,7 +7089,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImportantFile.TempFileFailures" enum="TempFileFailure"
-    expires_after="2021-03-21">
+    expires_after="2021-05-31">
   <owner>grt@chromium.org</owner>
   <owner>lassey@google.com</owner>
   <summary>
