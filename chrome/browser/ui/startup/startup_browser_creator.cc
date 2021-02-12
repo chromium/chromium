@@ -595,8 +595,10 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
     pref.type = SessionStartupPref::LAST;
   }
 
-  // A browser starting for a profile being unlocked should always restore.
-  if (!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile()) {
+  bool is_guest =
+      profile->IsGuestSession() || profile->IsEphemeralGuestProfile();
+
+  if (!is_guest) {
     ProfileAttributesEntry* entry = nullptr;
     bool has_entry =
         g_browser_process->profile_manager()
@@ -607,7 +609,8 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
       pref.type = SessionStartupPref::LAST;
   }
 
-  if (pref.type == SessionStartupPref::LAST && profile->IsOffTheRecord()) {
+  if (pref.type == SessionStartupPref::LAST &&
+      (is_guest || profile->IsOffTheRecord())) {
     // We don't store session information when incognito. If the user has
     // chosen to restore last session and launched incognito, fallback to
     // default launch behavior.
