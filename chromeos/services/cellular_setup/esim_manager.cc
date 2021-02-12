@@ -4,8 +4,11 @@
 
 #include "chromeos/services/cellular_setup/esim_manager.h"
 
+#include <sstream>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
 #include "chromeos/services/cellular_setup/euicc.h"
@@ -16,6 +19,24 @@
 
 namespace chromeos {
 namespace cellular_setup {
+namespace {
+
+void LogEuiccPaths(const std::set<dbus::ObjectPath>& new_euicc_paths) {
+  if (new_euicc_paths.empty()) {
+    NET_LOG(EVENT) << "EUICC list updated; no EUICCs present";
+    return;
+  }
+
+  std::stringstream ss("[");
+  for (const auto& new_path : new_euicc_paths)
+    ss << new_path.value() << ", ";
+  ss.seekp(-2, ss.cur);  // Remove last ", " from the stream.
+  ss << "]";
+
+  NET_LOG(EVENT) << "EUICC list updated; paths: " << ss.str();
+}
+
+}  // namespace
 
 ESimManager::ESimManager()
     : ESimManager(NetworkHandler::Get()->cellular_esim_profile_handler(),
@@ -104,18 +125,25 @@ void ESimManager::NotifyESimProfileListChanged(Euicc* euicc) {
 }
 
 void ESimManager::UpdateAvailableEuiccs() {
-  NET_LOG(EVENT) << "Updating available Euiccs";
+  NET_LOG(DEBUG) << "Updating available Euiccs";
+
   std::set<dbus::ObjectPath> new_euicc_paths;
   bool available_euiccs_changed = false;
+
   for (auto& euicc_path : HermesManagerClient::Get()->GetAvailableEuiccs()) {
     available_euiccs_changed |= CreateEuiccIfNew(euicc_path);
     new_euicc_paths.insert(euicc_path);
   }
+
   available_euiccs_changed |= RemoveUntrackedEuiccs(new_euicc_paths);
-  if (available_euiccs_changed) {
-    for (auto& observer : observers_)
-      observer->OnAvailableEuiccListChanged();
-  }
+
+  if (!available_euiccs_changed)
+    return;
+
+  LogEuiccPaths(new_euicc_paths);
+
+  for (auto& observer : observers_)
+    observer->OnAvailableEuiccListChanged();
 }
 
 bool ESimManager::RemoveUntrackedEuiccs(

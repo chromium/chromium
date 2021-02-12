@@ -11,6 +11,7 @@
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
@@ -79,6 +80,7 @@ void ESimProfile::InstallProfile(const std::string& confirmation_code,
   properties_->state = mojom::ProfileState::kInstalling;
   esim_manager_->NotifyESimProfileChanged(this);
 
+  NET_LOG(USER) << "Installing profile with path " << path().value();
   install_callback_ = std::move(callback);
   EnsureProfileExistsOnEuiccCallback perform_install_profile_callback =
       base::BindOnce(&ESimProfile::PerformInstallProfile,
@@ -95,6 +97,7 @@ void ESimProfile::UninstallProfile(UninstallProfileCallback callback) {
     return;
   }
 
+  NET_LOG(USER) << "Uninstalling profile with path " << path().value();
   uninstall_callback_ = std::move(callback);
   esim_manager_->cellular_esim_uninstall_handler()->UninstallESim(
       properties_->iccid, path_, euicc_->path(),
@@ -111,6 +114,7 @@ void ESimProfile::EnableProfile(EnableProfileCallback callback) {
     return;
   }
 
+  NET_LOG(USER) << "Enabling profile with path " << path().value();
   HermesProfileClient::Get()->EnableCarrierProfile(
       path_,
       base::BindOnce(&ESimProfile::OnESimOperationResult,
@@ -126,6 +130,7 @@ void ESimProfile::DisableProfile(DisableProfileCallback callback) {
     return;
   }
 
+  NET_LOG(USER) << "Disabling profile with path " << path().value();
   HermesProfileClient::Get()->DisableCarrierProfile(
       path_,
       base::BindOnce(&ESimProfile::OnESimOperationResult,
@@ -147,6 +152,7 @@ void ESimProfile::SetProfileNickname(const base::string16& nickname,
     return;
   }
 
+  NET_LOG(USER) << "Setting profile nickname for path " << path().value();
   set_profile_nickname_callback_ = std::move(callback);
   EnsureProfileExistsOnEuiccCallback perform_set_profile_nickname_callback =
       base::BindOnce(&ESimProfile::PerformSetProfileNickname,

@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_inhibitor.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/esim_profile.h"
@@ -58,13 +59,17 @@ void Euicc::InstallProfileFromActivationCode(
   ESimProfile* profile_info = nullptr;
   mojom::ProfileInstallResult status =
       GetPendingProfileInfoFromActivationCode(activation_code, &profile_info);
+
+  // Return early if profile was found but not in the correct state.
   if (profile_info && status != mojom::ProfileInstallResult::kSuccess) {
-    // Return early if profile was found but not in the correct state.
+    NET_LOG(ERROR) << "EUICC could not install profile: " << status;
     std::move(callback).Run(status, mojo::NullRemote());
     return;
   }
 
   if (profile_info) {
+    NET_LOG(USER) << "Installing profile with path "
+                  << profile_info->path().value();
     profile_info->InstallProfile(
         confirmation_code,
         base::BindOnce(
@@ -78,6 +83,7 @@ void Euicc::InstallProfileFromActivationCode(
   }
 
   // Try installing directly with activation code.
+  NET_LOG(USER) << "Attempting installation with code " << activation_code;
   esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
       base::BindOnce(&Euicc::PerformInstallProfileFromActivationCode,
                      weak_ptr_factory_.GetWeakPtr(), activation_code,
