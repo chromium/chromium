@@ -881,7 +881,7 @@
   },
   {
     "name": "desktop-detailed-language-settings",
-    "owners": [ "joshsantana", "chrome-langauge@google.com" ],
+    "owners": [ "joshsantana", "chrome-language@google.com" ],
     "expiry_milestone": 93
   },
   {
