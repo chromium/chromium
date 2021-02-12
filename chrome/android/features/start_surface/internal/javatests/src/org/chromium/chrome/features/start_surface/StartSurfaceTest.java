@@ -1389,6 +1389,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @DisabledTest(message = "https://crbug.com/1176084")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_BackButton() throws ExecutionException {
@@ -1413,13 +1414,6 @@ public class StartSurfaceTest {
         // Verifies a new Tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
         pressBack();
-
-        if (isInstantReturn()
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                        && Build.VERSION.SDK_INT <= Build.VERSION_CODES.P)) {
-            // Fix the issue that failed to perform a single click on the back button.
-            return;
-        }
 
         CriteriaHelper.pollUiThread(() -> cta.getLayoutManager().overviewVisible());
         // Verifies the new Tab is deleted.
