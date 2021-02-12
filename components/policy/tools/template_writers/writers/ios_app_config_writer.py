@@ -7,6 +7,49 @@ from xml.dom import minidom
 import json
 from writers import xml_formatted_writer
 
+_POLICY_TYPE_TO_XML_TAG = {
+    'string': 'string',
+    'int': 'integer',
+    'int-enum': 'integer',
+    'string-enum': 'string',
+    'string-enum-list': 'stringArray',
+    'main': 'boolean',
+    'list': 'stringArray',
+    'dict': 'string',
+}
+
+_POLICY_TYPE_TO_INPUT_TYPE = {
+    'string': 'input',
+    'int': 'input',
+    'int-enum': 'select',
+    'string-enum': 'select',
+    'string-enum-list': 'multiselect',
+    'main': 'checkbox',
+    'list': 'list',
+    'dict': 'input'
+}
+
+_JSON_SCHEMA_TYPES = [
+    "string", "number", "integer", "boolean", "null", "object", "array"
+]
+
+
+class Error(Exception):
+  pass
+
+
+def _ParseSchemaTypeValueToString(value, type):
+  '''Parses the value of a given JSON schema type to a string.
+  '''
+  if type not in _JSON_SCHEMA_TYPES:
+    raise Error('schema type "{}" not supported'.format(type))
+
+  if type == 'integer':
+    return '{0:d}'.format(value)
+
+  # Use the default string parser.
+  return str(value)
+
 
 def GetWriter(config):
   '''Factory method for instanciating the IOSAppConfigWriter. Every Writer needs
@@ -21,7 +64,7 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
   '''
 
   def _WritePolicyPresentation(self, policy, field_group):
-    element_type = self.policy_type_to_input_type[policy['type']]
+    element_type = _POLICY_TYPE_TO_INPUT_TYPE[policy['type']]
     if element_type:
       attributes = {'type': element_type, 'keyName': policy['name']}
       field = self.AddElement(field_group, 'field', attributes)
@@ -31,8 +74,12 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
       if 'enum' in policy['type']:
         options = self.AddElement(field, 'options', {})
         for item in policy['items']:
-          self._AddLocalizedElement(options, 'option', str(item['caption']),
-                                    {'value': str(item['value'])})
+          self._AddLocalizedElement(
+              options, 'option', str(item['caption']), {
+                  'value':
+                  _ParseSchemaTypeValueToString(item['value'],
+                                                policy['schema']['type'])
+              })
 
   def _AddLocalizedElement(self,
                            parent,
@@ -82,16 +129,19 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
     attrs = {'nullable': 'true'}
     if 'schema' in policy:
       if 'minimum' in policy['schema']:
-        attrs['min'] = policy['schema']['minimum']
+        attrs['min'] = _ParseSchemaTypeValueToString(
+            policy['schema']['minimum'], policy['schema']['type'])
       if 'maximum' in policy['schema']:
-        attrs['max'] = policy['schema']['maximum']
+        attrs['max'] = _ParseSchemaTypeValueToString(
+            policy['schema']['maximum'], policy['schema']['type'])
 
     constraint = self.AddElement(parent, 'constraint', attrs)
     if 'enum' in policy['type']:
       values_element = self.AddElement(constraint, 'values', {})
       for v in policy['schema']['enum']:
         value = self.AddElement(values_element, 'value', {})
-        self.AddText(value, str(v))
+        self.AddText(value,
+                     _ParseSchemaTypeValueToString(v, policy['schema']['type']))
 
   def IsFuturePolicySupported(self, policy):
     # For now, include all future policies in appconfig.xml.
@@ -132,7 +182,7 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
                                          {'defaultLocale': 'en-US'})
 
   def WritePolicy(self, policy):
-    element_type = self.policy_type_to_xml_tag[policy['type']]
+    element_type = _POLICY_TYPE_TO_XML_TAG[policy['type']]
     if element_type:
       attributes = {'keyName': policy['name']}
       # Add a "future=true" attribute for future policies.
@@ -147,26 +197,6 @@ class IOSAppConfigWriter(xml_formatted_writer.XMLFormattedWriter):
   def Init(self):
     self._doc = self.CreateDocument()
     self._app_config = self._doc.documentElement
-    self.policy_type_to_xml_tag = {
-        'string': 'string',
-        'int': 'integer',
-        'int-enum': 'integer',
-        'string-enum': 'string',
-        'string-enum-list': 'stringArray',
-        'main': 'boolean',
-        'list': 'stringArray',
-        'dict': 'string',
-    }
-    self.policy_type_to_input_type = {
-        'string': 'input',
-        'int': 'input',
-        'int-enum': 'select',
-        'string-enum': 'select',
-        'string-enum-list': 'multiselect',
-        'main': 'checkbox',
-        'list': 'list',
-        'dict': 'input'
-    }
 
   def GetTemplateText(self):
     return self.ToPrettyXml(self._doc)

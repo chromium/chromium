@@ -7372,7 +7372,7 @@
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 1800000, 'maximum': 86400000 },
-      'supported_on': ['chrome_os:11-', 'chrome.*:79-'],
+      'supported_on': ['chrome_os:11-', 'chrome.*:79-', 'ios:90-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
