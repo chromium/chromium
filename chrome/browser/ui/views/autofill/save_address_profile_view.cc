@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "ui/gfx/color_utils.h"
 
 namespace autofill {
 
@@ -57,6 +60,19 @@ void SaveAddressProfileView::Hide() {
     controller_->OnBubbleClosed();
 
   controller_ = nullptr;
+}
+
+void SaveAddressProfileView::OnThemeChanged() {
+  LocationBarBubbleDelegateView::OnThemeChanged();
+  // TODO(crbug.com/1167060): Update upon having final mocks.
+  int id = color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor())
+               ? IDR_SAVE_PASSWORD_MULTI_DEVICE_DARK
+               : IDR_SAVE_PASSWORD_MULTI_DEVICE;
+
+  auto image_view = std::make_unique<NonAccessibleImageView>();
+  image_view->SetImage(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id));
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 }  // namespace autofill
