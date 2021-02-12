@@ -10,8 +10,14 @@
 namespace extensions {
 
 FilesExtensionFunction::FilesExtensionFunction()
+#if defined(OFFICAL_BUILD)
+    : file_app_id_(file_manager::kFileManagerAppId) {
+}
+#else
     : file_app_id_(file_manager::kFileManagerAppId),
-      swa_url_(chromeos::file_manager::kChromeUIFileManagerURL) {}
+      swa_url_(chromeos::file_manager::kChromeUIFileManagerURL) {
+}
+#endif
 
 FilesExtensionFunction::~FilesExtensionFunction() = default;
 
@@ -26,8 +32,12 @@ const std::string& FilesExtensionFunction::extension_id_or_file_app_id() const {
 }
 
 bool FilesExtensionFunction::is_swa_mode() const {
+#if defined(OFFICAL_BUILD)
+  return false;
+#else
   return source_url().GetOrigin() == swa_url_ &&
          source_context_type() == Feature::WEBUI_CONTEXT;
+#endif
 }
 
 }  // namespace extensions
