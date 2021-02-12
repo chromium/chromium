@@ -15,6 +15,7 @@
       debugger;
     }
   `);
+  await TestRunner.showPanel('sources');
 
   SourcesTestRunner.startDebuggerTest(step1);
 

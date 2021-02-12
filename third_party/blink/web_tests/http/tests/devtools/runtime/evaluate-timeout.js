@@ -25,6 +25,7 @@
         debugger;
     }
   `);
+  await TestRunner.showPanel('sources');
 
   await SourcesTestRunner.startDebuggerTestPromise();
   await SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();
