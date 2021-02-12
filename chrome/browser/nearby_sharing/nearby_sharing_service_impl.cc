@@ -200,7 +200,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     NotificationDisplayService* notification_display_service,
     Profile* profile,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-    NearbyProcessManager* process_manager,
+    chromeos::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client)
     : profile_(profile),
       nearby_connections_manager_(std::move(nearby_connections_manager)),
@@ -243,7 +243,10 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  nearby_process_observer_.Add(process_manager_);
+  process_reference_ = process_manager->GetNearbyProcessReference(
+      base::BindOnce(&NearbySharingServiceImpl::OnNearbyProcessStopped,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   power_client_->AddObserver(this);
   certificate_manager_->AddObserver(this);
 
@@ -286,10 +289,8 @@ void NearbySharingServiceImpl::Shutdown() {
   // Destroy NearbyNotificationManager as its profile has been shut down.
   nearby_notification_manager_.reset();
 
-  // Stop listening to NearbyProcessManager events and stop the utility process.
-  nearby_process_observer_.Remove(process_manager_);
-  if (process_manager_->IsActiveProfile(profile_))
-    process_manager_->StopProcess(profile_);
+  // Stop the utility process.
+  process_manager_->Shutdown();
 
   power_client_->RemoveObserver(this);
   certificate_manager_->RemoveObserver(this);
@@ -872,31 +873,35 @@ NearbySharingServiceImpl::GetCertificateManager() {
   return certificate_manager_.get();
 }
 
-void NearbySharingServiceImpl::OnNearbyProfileChanged(Profile* profile) {
-  // TODO(crbug.com/1084576): Notify UI about the new active profile.
-  if (profile) {
-    NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile changed";
-  } else {
-    NS_LOG(VERBOSE) << __func__ << ": Active Nearby profile cleared";
-  }
-  InvalidateSurfaceState();
-}
-
-void NearbySharingServiceImpl::OnNearbyProcessStarted() {
-  DCHECK(profile_);
-  if (process_manager_->IsActiveProfile(profile_)) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Nearby process started for active profile";
-  }
-}
-
 void NearbySharingServiceImpl::OnNearbyProcessStopped() {
-  DCHECK(profile_);
+  DCHECK(process_reference_);
   InvalidateSurfaceState();
-  if (process_manager_->IsActiveProfile(profile_)) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Nearby process stopped for active profile";
+  process_reference_.reset();
+  NS_LOG(VERBOSE) << __func__ << ": Nearby process stopped";
+}
+
+sharing::mojom::NearbySharingDecoder*
+NearbySharingServiceImpl::GetNearbySharingDecoder() {
+  if (!process_reference_) {
+    process_reference_ = process_manager_->GetNearbyProcessReference(
+        base::BindOnce(&NearbySharingServiceImpl::OnNearbyProcessStopped,
+                       base::Unretained(this)));
+
+    if (!process_reference_) {
+      NS_LOG(WARNING) << __func__
+                      << "Failed to get a reference to the nearby process.";
+      return nullptr;
+    }
   }
+
+  sharing::mojom::NearbySharingDecoder* decoder =
+      process_reference_->GetNearbySharingDecoder().get();
+
+  if (!decoder)
+    NS_LOG(WARNING) << __func__
+                    << "Failed to get decoder from process reference.";
+
+  return decoder;
 }
 
 void NearbySharingServiceImpl::OnIncomingConnection(
@@ -905,7 +910,12 @@ void NearbySharingServiceImpl::OnIncomingConnection(
     NearbyConnection* connection) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(connection);
-  DCHECK(profile_);
+  DCHECK(process_reference_);
+
+  sharing::mojom::NearbySharingDecoder* decoder = GetNearbySharingDecoder();
+  if (!decoder) {
+    return;
+  }
 
   // Sync down data from Nearby server when the receiving flow starts, making
   // our best effort to have fresh contact and certificate data. There is no
@@ -930,13 +940,11 @@ void NearbySharingServiceImpl::OnIncomingConnection(
       base::BindOnce(&NearbySharingServiceImpl::RefreshUIOnDisconnection,
                      weak_ptr_factory_.GetWeakPtr(), placeholder_share_target));
 
-  process_manager_->GetOrStartNearbySharingDecoder(profile_)
-      ->DecodeAdvertisement(
-          endpoint_info,
-          base::BindOnce(
-              &NearbySharingServiceImpl::OnIncomingAdvertisementDecoded,
-              weak_ptr_factory_.GetWeakPtr(), endpoint_id,
-              std::move(placeholder_share_target)));
+  decoder->DecodeAdvertisement(
+      endpoint_info,
+      base::BindOnce(&NearbySharingServiceImpl::OnIncomingAdvertisementDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), endpoint_id,
+                     std::move(placeholder_share_target)));
 }
 
 void NearbySharingServiceImpl::FlushMojoForTesting() {
@@ -1229,13 +1237,16 @@ void NearbySharingServiceImpl::HandleEndpointDiscovered(
     return;
   }
 
-  DCHECK(profile_);
-  process_manager_->GetOrStartNearbySharingDecoder(profile_)
-      ->DecodeAdvertisement(
-          endpoint_info,
-          base::BindOnce(
-              &NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded,
-              weak_ptr_factory_.GetWeakPtr(), endpoint_id));
+  sharing::mojom::NearbySharingDecoder* decoder = GetNearbySharingDecoder();
+  if (!decoder) {
+    FinishEndpointDiscoveryEvent();
+    return;
+  }
+
+  decoder->DecodeAdvertisement(
+      endpoint_info,
+      base::BindOnce(&NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), endpoint_id));
 }
 
 void NearbySharingServiceImpl::HandleEndpointLost(
@@ -1394,10 +1405,6 @@ bool NearbySharingServiceImpl::ShouldStopNearbyProcess() {
   if (!profile_)
     return false;
 
-  // Cannot stop process without being the active profile.
-  if (!process_manager_->IsActiveProfile(profile_))
-    return false;
-
   // We're currently advertising.
   if (advertising_power_level_ != PowerLevel::kUnknown)
     return false;
@@ -1422,7 +1429,7 @@ void NearbySharingServiceImpl::OnProcessShutdownTimerFired() {
   if (ShouldStopNearbyProcess()) {
     NS_LOG(INFO) << __func__
                  << ": Shutdown Process timer fired, shutting down process";
-    process_manager_->StopProcess(profile_);
+    process_manager_->Shutdown();
   }
 }
 
@@ -1440,13 +1447,6 @@ void NearbySharingServiceImpl::InvalidateScanningState() {
     StopScanning();
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping discovery because the system is suspended.";
-    return;
-  }
-
-  if (!process_manager_->IsActiveProfile(profile_)) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Stopping discovery because profile was not active";
-    StopScanning();
     return;
   }
 
@@ -1513,14 +1513,6 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
     return;
   }
 
-  if (!process_manager_->IsActiveProfile(profile_)) {
-    StopFastInitiationAdvertising();
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Stopping fast init advertising because profile was not active";
-    return;
-  }
-
   // Screen is off. Do no work.
   if (is_screen_locked_) {
     StopFastInitiationAdvertising();
@@ -1580,13 +1572,6 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
     NS_LOG(VERBOSE)
         << __func__
         << ": Stopping advertising because the system is suspended.";
-    return;
-  }
-
-  if (!process_manager_->IsActiveProfile(profile_)) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Stopping advertising because profile was not active";
-    StopAdvertising();
     return;
   }
 
@@ -2652,7 +2637,7 @@ void NearbySharingServiceImpl::RunPairedKeyVerification(
   DCHECK(share_target_info);
 
   share_target_info->set_frames_reader(std::make_unique<IncomingFramesReader>(
-      process_manager_, profile_, share_target_info->connection()));
+      process_manager_, share_target_info->connection()));
 
   bool restrict_to_contacts =
       share_target.is_incoming &&

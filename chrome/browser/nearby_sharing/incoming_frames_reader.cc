@@ -9,8 +9,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connection.h"
-#include "chrome/browser/nearby_sharing/nearby_process_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 
 namespace {
@@ -25,17 +23,17 @@ std::ostream& operator<<(std::ostream& out,
 }  // namespace
 
 IncomingFramesReader::IncomingFramesReader(
-    NearbyProcessManager* process_manager,
-    Profile* profile,
+    chromeos::nearby::NearbyProcessManager* process_manager,
     NearbyConnection* connection)
-    : process_manager_(process_manager),
-      profile_(profile),
-      connection_(connection) {
-  DCHECK(process_manager_);
-  DCHECK(profile_);
-  DCHECK(connection_);
+    : connection_(connection) {
+  DCHECK(process_manager);
+  DCHECK(connection);
 
-  nearby_process_observer_.Add(process_manager);
+  if (process_manager) {
+    process_reference_ = process_manager->GetNearbyProcessReference(
+        base::BindOnce(&IncomingFramesReader::OnNearbyProcessStopped,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 IncomingFramesReader::~IncomingFramesReader() = default;
@@ -93,10 +91,6 @@ void IncomingFramesReader::ReadFrame(
   ReadNextFrame();
 }
 
-void IncomingFramesReader::OnNearbyProfileChanged(Profile* profile) {}
-
-void IncomingFramesReader::OnNearbyProcessStarted() {}
-
 void IncomingFramesReader::OnNearbyProcessStopped() {
   is_process_stopped_ = true;
   Done(base::nullopt);
@@ -133,7 +127,17 @@ void IncomingFramesReader::OnDataReadFromConnection(
     return;
   }
 
-  process_manager_->GetOrStartNearbySharingDecoder(profile_)->DecodeFrame(
+  // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
+  // process.
+  if (!process_reference_) {
+    NS_LOG(WARNING)
+        << __func__
+        << ": Cannot decode frame. Not currently bound to nearby process";
+    Done(base::nullopt);
+    return;
+  }
+
+  process_reference_->GetNearbySharingDecoder()->DecodeFrame(
       *bytes, base::BindOnce(&IncomingFramesReader::OnFrameDecoded,
                              weak_ptr_factory_.GetWeakPtr()));
 }
