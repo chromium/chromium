@@ -145,12 +145,12 @@ public class WebViewApkApplication extends Application {
             return false;
         }
         LibraryLoader.getInstance().switchCommandLineForWebView();
-        WebViewApkApplicationJni.get().initializePakResources();
+        WebViewApkApplicationJni.get().initializeGlobalsAndResources();
         return true;
     }
 
     @NativeMethods
     interface Natives {
-        void initializePakResources();
+        void initializeGlobalsAndResources();
     }
 }

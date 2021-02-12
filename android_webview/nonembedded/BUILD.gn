@@ -129,12 +129,18 @@ source_set("component_updater") {
 }
 
 source_set("nonembedded") {
-  sources = [ "webview_apk_application.cc" ]
+  sources = [
+    "webview_apk_application.cc",
+    "webview_apk_process.cc",
+    "webview_apk_process.h",
+  ]
   deps = [
     ":component_updater",
     ":nonembedded_jni_headers",
     "//android_webview/common",
     "//base",
+    "//components/prefs",
+    "//components/update_client",
 
     # Called via JNI by LicenseContentProvider in :nonembedded_java.
     "//components/about_ui:about_ui_android",
