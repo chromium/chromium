@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.language.settings;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
+import org.chromium.chrome.browser.language.R;
 
 import java.util.Locale;
 

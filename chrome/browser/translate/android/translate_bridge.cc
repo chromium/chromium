@@ -6,8 +6,8 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/TranslateBridge_jni.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/language/android/jni_headers/TranslateBridge_jni.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

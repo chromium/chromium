@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -151,9 +151,7 @@ public class LanguageListPreference extends Preference {
                 TintedDrawable.constructTintedDrawable(
                         getContext(), R.drawable.plus, R.color.default_control_color_active),
                 null, null, null);
-        mAddLanguageButton.setOnClickListener(view -> {
-            mLauncher.launchAddLanguage();
-        });
+        mAddLanguageButton.setOnClickListener(view -> { mLauncher.launchAddLanguage(); });
 
         mRecyclerView = (RecyclerView) holder.findViewById(R.id.language_list);
         LinearLayoutManager layoutMangager = new LinearLayoutManager(getContext());

@@ -1690,7 +1690,7 @@
         errorLine1="        holder.mStartIcon.setOnTouchListener((v, event) -> {"
         errorLine2="        ^">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
             line="173"
             column="9"/>
     </issue>
@@ -1701,7 +1701,7 @@
         errorLine1="        holder.mStartIcon.setOnTouchListener((v, event) -> {"
         errorLine2="                                             ^">
         <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
+            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
             line="173"
             column="46"/>
     </issue>
@@ -1910,7 +1910,7 @@
         errorLine1="        android:clickable=&quot;true&quot;"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/res/layout/languages_preference.xml"
+            file="../../chrome/browser/language/android/java/res/layout/languages_preference.xml"
             line="32"
             column="9"/>
     </issue>
