@@ -68,6 +68,21 @@ bool IsSecondaryUser() {
          !session_controller->IsUserPrimary();
 }
 
+bool IsESimSupported() {
+  const DeviceStateProperties* cellular_device =
+      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+          NetworkType::kCellular);
+
+  if (!cellular_device || !cellular_device->sim_infos)
+    return false;
+
+  for (const auto& sim_info : *cellular_device->sim_infos) {
+    if (!sim_info->eid.empty())
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 NetworkSectionHeaderView::NetworkSectionHeaderView(int title_id)
@@ -279,6 +294,26 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
   if (!chromeos::features::IsCellularActivationUiEnabled())
     return;
 
+  if (IsESimSupported()) {
+    PerformAddExtraButtons(enabled);
+    return;
+  }
+
+  // Fetch the available networks, all of which should be PSIM networks.
+  // If any are unactivated, PerformAddExtraButtons() should be called.
+  Shell::Get()
+      ->system_tray_model()
+      ->network_state_model()
+      ->cros_network_config()
+      ->GetNetworkStateList(
+          NetworkFilter::New(
+              FilterType::kVisible, NetworkType::kCellular,
+              /*limit=*/chromeos::network_config::mojom::kNoLimit),
+          base::BindOnce(&MobileSectionHeaderView::OnCellularNetworksFetched,
+                         weak_ptr_factory_.GetWeakPtr(), enabled));
+}
+
+void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
   TopShortcutButton* add_cellular_button = new TopShortcutButton(
       base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
                           base::Unretained(this)),
@@ -286,6 +321,22 @@ void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
       IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL);
   add_cellular_button->SetEnabled(enabled);
   container()->AddView(TriView::Container::END, add_cellular_button);
+}
+
+void MobileSectionHeaderView::OnCellularNetworksFetched(
+    bool enabled,
+    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+        networks) {
+  if (networks.empty())
+    return;
+
+  for (const auto& network : networks) {
+    if (network->type_state->get_cellular()->activation_state !=
+        chromeos::network_config::mojom::ActivationStateType::kActivated) {
+      PerformAddExtraButtons(enabled);
+      return;
+    }
+  }
 }
 
 void MobileSectionHeaderView::AddCellularButtonPressed() {
