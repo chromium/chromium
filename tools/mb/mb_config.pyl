@@ -779,6 +779,7 @@
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_google',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_google',
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google',
+      'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google',
       'android-webview-pie-arm64-fyi-rel': 'android_release_trybot_arm64_webview_google',
       'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_google',
       'android-11-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google',
