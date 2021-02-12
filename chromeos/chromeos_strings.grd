@@ -896,7 +896,13 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_PORTAL_STATE" desc="Settings > Internet, label in network details page for the captive portal state.">
         Portal State
       </message>
-      <message name="IDS_ONC_PORTAL_STATE_NO_INTERNET" desc="Settings > Internet, text in network details page when no internet connection is avialable.">
+      <message name="IDS_ONC_PORTAL_STATE_UNKNOWN" desc="Settings > Internet, label when the captive portal state is unknown">
+        Unknown
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_ONLINE" desc="Settings > Internet, label when the captive portal state is online and there is no portal state is detected">
+        Online
+      </message>
+      <message name="IDS_ONC_PORTAL_STATE_NO_INTERNET" desc="Settings > Internet, text in network details page when no internet connection is available.">
         No internet
       </message>
       <message name="IDS_ONC_NOT_CONNECTED" desc="Settings > Internet, text in network summary when a network is not connecting or connected.">

@@ -90,6 +90,46 @@ Polymer({
   },
 
   /**
+   * Returns a boolean flag to show the PortalState attribute. The information
+   * is not meaningful in all cases and should be hidden to prevent confusion.
+   * @private
+   * @param {chromeos.networkHealth.mojom.Network} network
+   * @return {boolean}
+   */
+  showPortalState_(network) {
+    const NetworkState = chromeos.networkHealth.mojom.NetworkState;
+    const PortalState = chromeos.networkConfig.mojom.PortalState;
+
+    if (network.state === NetworkState.kOnline &&
+        network.portalState === PortalState.kOnline) {
+      return false;
+    }
+
+    const notApplicableStates = [
+      NetworkState.kUninitialized,
+      NetworkState.kDisabled,
+      NetworkState.kProhibited,
+      NetworkState.kConnecting,
+      NetworkState.kNotConnected,
+    ];
+    if (notApplicableStates.includes(network.state)) {
+      return false;
+    }
+
+    return true;
+  },
+
+  /**
+   * Returns a string for the given PortalState.
+   * @private
+   * @param {chromeos.networkConfig.mojom.PortalState} state
+   * @return {string}
+   */
+  getPortalStateString_(state) {
+    return this.i18n('OncPortalState' + OncMojo.getPortalStateString(state));
+  },
+
+  /**
    * Returns a string for the given NetworkType.
    * @private
    * @param {chromeos.networkConfig.mojom.NetworkType} type

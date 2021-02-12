@@ -56,6 +56,16 @@
             [[getNetworkStateString_(network.state)]]
           </span>
         </div>
+        <template is="dom-if" if="[[showPortalState_(network)]]">
+          <div class="network-attribute-container">
+            <div class="network-attribute-label">
+              [[i18n('OncPortalState')]]
+            </div>
+            <span class="network-attribute-value">
+              [[getPortalStateString_(network.portalState)]]
+            </span>
+          </div>
+        </template>
         <template is="dom-if" if="[[network.signalStrength]]">
           <div class="network-attribute-container">
             <div class="network-attribute-label">

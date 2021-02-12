@@ -40,6 +40,13 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"OncMacAddress", IDS_ONC_MAC_ADDRESS},
     {"OncIpv4Address", IDS_ONC_IPV4_ADDRESS},
     {"OncIpv6Address", IDS_ONC_IPV6_ADDRESS},
+    {"OncPortalState", IDS_ONC_PORTAL_STATE},
+    {"OncPortalStateOnline", IDS_ONC_PORTAL_STATE_ONLINE},
+    {"OncPortalStateUnknown", IDS_ONC_PORTAL_STATE_UNKNOWN},
+    {"OncPortalStateNoInternet", IDS_ONC_PORTAL_STATE_NO_INTERNET},
+    {"OncPortalStatePortal", IDS_ONC_PORTAL_STATE_PORTAL},
+    {"OncPortalStatePortalSuspected", IDS_ONC_PORTAL_STATE_PORTAL_SUSPECTED},
+    {"OncPortalStateProxyAuthRequired", IDS_ONC_PORTAL_STATE_PROXY_AUTH},
 
 };
 

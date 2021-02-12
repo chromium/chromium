@@ -61,6 +61,9 @@ struct Network {
   // can have multiple addresses (local, global, temporary etc.). This is only
   // intended to be used for display and is not meant to be parsed.
   array<string> ipv6_addresses;
+  // An enum of the network's captive portal state. This information is
+  // supplementary to the NetworkState.
+  chromeos.network_config.mojom.PortalState portal_state = kUnknown;
 };
 
 // Aggregate structure for all of the network health state.

@@ -74,6 +74,7 @@ mojom::NetworkPtr CreateNetwork(
     net->state = ConnectionStateToNetworkState(net_prop->connection_state);
     net->name = net_prop->name;
     net->guid = net_prop->guid;
+    net->portal_state = net_prop->portal_state;
     if (chromeos::network_config::NetworkTypeMatchesType(
             net_prop->type, network_config::mojom::NetworkType::kWireless)) {
       net->signal_strength = network_health::mojom::UInt32Value::New(

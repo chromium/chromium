@@ -36,6 +36,7 @@ std::string GetFormattedString(
 
     output << "Type: " << net->type << "\n";
     output << "State: " << net->state << "\n";
+    output << "Portal State: " << net->portal_state << "\n";
     output << "Signal Strength: "
            << (net->signal_strength
                    ? base::NumberToString(net->signal_strength->value)
