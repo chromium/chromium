@@ -7756,6 +7756,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="KeyboardAccessory.AccessoryActionImpression"
     enum="AccessoryAction" expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records whenever users faces an action in the accessory bar or
     one of its sheets.
@@ -7765,6 +7766,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="KeyboardAccessory.AccessoryActionSelected"
     enum="AccessoryAction" expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records whenever users select an action in the accessory bar
     or one of its sheets.
@@ -7785,6 +7787,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="KeyboardAccessory.AccessorySheetSuggestionCount" units="count"
     expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records how many suggestions a user faced when opening a
     sheet. The base histogram counts impressions across all sheets.
@@ -7792,8 +7795,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessorySheetSuggestionsSelected"
-    enum="AccessorySuggestionType" expires_after="2021-03-21">
+    enum="AccessorySuggestionType" expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records which type of suggestion was selected from an open
     sheet.
@@ -7801,8 +7805,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessorySheetTriggered"
-    enum="AccessorySheetTrigger" expires_after="2021-07-18">
+    enum="AccessorySheetTrigger" expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
+  <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records how often the bottom sheet was opened or closed by a
     user and the overall count of closures. Closing buckets may be logged up to
@@ -7811,7 +7816,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessoryToggleClicked"
-    enum="AccessoryToggleType" expires_after="2021-06-20">
+    enum="AccessoryToggleType" expires_after="2021-07-27">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -7822,7 +7827,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessoryToggleImpression"
-    enum="AccessoryToggleType" expires_after="2021-06-20">
+    enum="AccessoryToggleType" expires_after="2021-07-27">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
