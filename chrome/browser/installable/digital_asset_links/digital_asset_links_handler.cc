@@ -280,6 +280,7 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
           trigger:
             "When the related application makes a claim to have the queried"
             "relationship with the web domain"
+          data: "None"
           destination: WEBSITE
         }
         policy {
