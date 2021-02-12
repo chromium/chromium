@@ -60,13 +60,21 @@ class NGGridLayoutAlgorithmTest
     algorithm.CacheGridItemsTrackSpanProperties(row_track_collection_,
                                                 &grid_items_);
 
+    for (auto& grid_item : grid_items_) {
+      grid_item.SetIndices(column_track_collection_);
+      grid_item.SetIndices(row_track_collection_);
+    }
+
+    grid_geometry_ = {algorithm.InitializeTrackSizes(&column_track_collection_),
+                      algorithm.InitializeTrackSizes(&row_track_collection_)};
+
     // Resolve inline size.
     algorithm.ComputeUsedTrackSizes(
-        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
         &column_track_collection_, &grid_items_);
     // Resolve block size.
     algorithm.ComputeUsedTrackSizes(
-        NGGridLayoutAlgorithm::SizingConstraint::kLayout,
+        NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
         &row_track_collection_, &grid_items_);
   }
 
@@ -74,6 +82,15 @@ class NGGridLayoutAlgorithmTest
       GridTrackSizingDirection track_direction) {
     return (track_direction == kForColumns) ? column_track_collection_
                                             : row_track_collection_;
+  }
+
+  LayoutUnit BaseRowSizeForChild(const NGGridLayoutAlgorithm& algorithm,
+                                 wtf_size_t index) {
+    LayoutUnit offset, size;
+    algorithm.ComputeOffsetAndSize(grid_items_.item_data[index],
+                                   grid_geometry_.row_geometry, kForRows,
+                                   kIndefiniteSize, &offset, &size);
+    return size;
   }
 
   // Helper methods to access private data on NGGridLayoutAlgorithm. This class
@@ -171,7 +188,51 @@ class NGGridLayoutAlgorithmTest
 
   NGGridLayoutAlgorithmTrackCollection column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection row_track_collection_;
+
+  NGGridLayoutAlgorithm::GridGeometry grid_geometry_;
 };
+
+TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid1 {
+      display: grid;
+      grid-gap: 10px;
+      grid-template-columns: 100px;
+      grid-template-rows: auto auto 100px 100px auto 100px;
+    }
+    </style>
+    <div id="grid1">
+      <div style="grid-row: 1/2;"></div>
+      <div style="grid-row: 2/4;"></div>
+      <div style="grid-row: 3/5;"></div>
+      <div style="grid-row: 6/7;"></div>
+      <div style="grid-row: 4/6;"></div>
+    </div>
+  )HTML");
+
+  NGBlockNode node(GetLayoutBoxByElementId("grid1"));
+
+  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node);
+
+  NGGridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  BuildGridItemsAndTrackCollections(algorithm);
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 0), kIndefiniteSize);
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 1), kIndefiniteSize);
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 2), LayoutUnit(210));
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 3), LayoutUnit(100));
+  EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), kIndefiniteSize);
+}
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
