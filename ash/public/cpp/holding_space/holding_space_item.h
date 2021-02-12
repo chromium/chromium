@@ -95,6 +95,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // are loaded when the image is next needed.
   void InvalidateImage();
 
+  // Returns true if this item is a screen capture.
+  bool IsScreenCapture() const;
+
   const std::string& id() const { return id_; }
 
   Type type() const { return type_; }

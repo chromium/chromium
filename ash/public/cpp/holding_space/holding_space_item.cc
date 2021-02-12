@@ -143,6 +143,18 @@ void HoldingSpaceItem::InvalidateImage() {
     image_->Invalidate();
 }
 
+bool HoldingSpaceItem::IsScreenCapture() const {
+  switch (type_) {
+    case HoldingSpaceItem::Type::kScreenshot:
+    case HoldingSpaceItem::Type::kScreenRecording:
+      return true;
+    case HoldingSpaceItem::Type::kDownload:
+    case HoldingSpaceItem::Type::kNearbyShare:
+    case HoldingSpaceItem::Type::kPinnedFile:
+      return false;
+  }
+}
+
 HoldingSpaceItem::HoldingSpaceItem(Type type,
                                    const std::string& id,
                                    const base::FilePath& file_path,
