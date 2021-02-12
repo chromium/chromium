@@ -2715,6 +2715,9 @@ extern const char kSharesheetContentPreviewsDescription[];
 extern const char kSharesheetName[];
 extern const char kSharesheetDescription[];
 
+extern const char kChromeOSSharingHubName[];
+extern const char kChromeOSSharingHubDescription[];
+
 extern const char kShowBluetoothDebugLogToggleName[];
 extern const char kShowBluetoothDebugLogToggleDescription[];
 

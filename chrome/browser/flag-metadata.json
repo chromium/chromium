@@ -550,6 +550,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "chromeos-sharing-hub",
+    "owners": [ "ramyan", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "clear-cross-browsing-context-group-main-frame-name",
     "owners": [ "shuuran", "kaustubhag" ],
     "expiry_milestone": 92

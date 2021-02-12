@@ -561,6 +561,9 @@ extern const base::Feature kSharesheet;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSharesheetContentPreviews;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kChromeOSSharingHub;
 #endif
 
 #if defined(OS_MAC)

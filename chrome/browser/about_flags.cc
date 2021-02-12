@@ -6582,6 +6582,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharesheetContentPreviewsName,
      flag_descriptions::kSharesheetContentPreviewsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kSharesheetContentPreviews)},
+
+    {"chromeos-sharing-hub", flag_descriptions::kChromeOSSharingHubName,
+     flag_descriptions::kChromeOSSharingHubDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kChromeOSSharingHub)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"schemeful-same-site", flag_descriptions::kSchemefulSameSiteName,
