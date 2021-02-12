@@ -21,10 +21,12 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/gpu/av1_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/vaapi/av1_vaapi_video_decoder_delegate.h"
 #include "media/gpu/vaapi/h264_vaapi_video_decoder_delegate.h"
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
@@ -39,8 +41,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
-#include "media/gpu/av1_decoder.h"
-#include "media/gpu/vaapi/av1_vaapi_video_decoder_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
@@ -961,7 +961,6 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
         new H265Decoder(std::move(accelerator), profile_, color_space_));
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   else if (profile_ >= AV1PROFILE_MIN && profile_ <= AV1PROFILE_MAX) {
     auto accelerator =
         std::make_unique<AV1VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
@@ -969,7 +968,6 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
 
     decoder_.reset(new AV1Decoder(std::move(accelerator), profile_));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   else {
     return Status(StatusCode::kDecoderUnsupportedProfile)
         .WithData("profile", profile_);

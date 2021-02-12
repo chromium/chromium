@@ -402,12 +402,7 @@ const ProfileCodecMap& GetProfileCodecMap() {
           {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
       // VaapiWrapper does not support Profile 3.
       //{VP9PROFILE_PROFILE3, VAProfileVP9Profile3},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-          // TODO(hiroh): Remove if-macro once libva for linux-chrome is upreved
-          // to 2.9.0 or newer.
-          // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
           {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         // VaapiWrapper does not support AV1 Profile 1.
         // {AV1PROFILE_PROFILE_HIGH, VAProfileAV1Profile1},
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -444,13 +439,8 @@ bool IsVAProfileSupported(VAProfile va_profile) {
 
 bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
   if (!IsModeEncoding(mode)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (va_profile == VAProfileAV1Profile0 &&
-        !base::FeatureList::IsEnabled(kVaapiAV1Decoder)) {
-      return true;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    return false;
+    return va_profile == VAProfileAV1Profile0 &&
+           !base::FeatureList::IsEnabled(kVaapiAV1Decoder);
   }
 
   // TODO(posciak): Remove once VP8 encoding is to be enabled by default.

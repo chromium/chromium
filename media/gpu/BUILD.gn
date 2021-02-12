@@ -311,8 +311,7 @@ source_set("common") {
     "//ui/gfx/geometry",
   ]
 
-  if ((is_chromeos_ash && use_vaapi) || is_win) {
-    assert(use_libgav1_parser)
+  if (use_libgav1_parser) {
     sources += [
       "av1_decoder.cc",
       "av1_decoder.h",
@@ -503,7 +502,7 @@ source_set("unit_tests") {
     sources += [ "vp8_decoder_unittest.cc" ]
   }
 
-  if ((is_chromeos_ash && use_vaapi) || is_win) {
+  if (use_libgav1_parser) {
     sources += [ "av1_decoder_unittest.cc" ]
     deps += [
       "//build:chromeos_buildflags",
@@ -612,7 +611,7 @@ if (proprietary_codecs && enable_platform_hevc) {
   }
 }
 
-if ((is_chromeos_ash && use_vaapi) || is_win) {
+if (use_libgav1_parser) {
   fuzzer_test("media_av1_decoder_fuzzer") {
     sources = [ "av1_decoder_fuzzertest.cc" ]
     deps = [

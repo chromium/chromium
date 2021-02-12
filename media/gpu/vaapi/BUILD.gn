@@ -30,10 +30,13 @@ generate_stubs("libva_stubs") {
 }
 
 source_set("vaapi") {
+  assert(use_libgav1_parser)
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
     "accelerated_video_encoder.cc",
     "accelerated_video_encoder.h",
+    "av1_vaapi_video_decoder_delegate.cc",
+    "av1_vaapi_video_decoder_delegate.h",
     "h264_encoder.cc",
     "h264_encoder.h",
     "h264_vaapi_video_decoder_delegate.cc",
@@ -112,10 +115,7 @@ source_set("vaapi") {
   ]
 
   if (is_chromeos_ash) {
-    assert(use_libgav1_parser)
     sources += [
-      "av1_vaapi_video_decoder_delegate.cc",
-      "av1_vaapi_video_decoder_delegate.h",
       "vaapi_jpeg_encode_accelerator.cc",
       "vaapi_jpeg_encode_accelerator.h",
       "vaapi_mjpeg_decode_accelerator.cc",

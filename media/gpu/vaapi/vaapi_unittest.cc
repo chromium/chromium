@@ -43,12 +43,7 @@ base::Optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
     {VP8PROFILE_ANY, VAProfileVP8Version0_3},
     {VP9PROFILE_PROFILE0, VAProfileVP9Profile0},
     {VP9PROFILE_PROFILE2, VAProfileVP9Profile2},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(hiroh): Remove if-macro once libva for linux-chrome is upreved to
-    // 2.9.0 or newer.
-    // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
     {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
-#endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     {HEVCPROFILE_MAIN, VAProfileHEVCMain},
     {HEVCPROFILE_MAIN10, VAProfileHEVCMain10},
@@ -73,12 +68,7 @@ base::Optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
     {"VAProfileVP8Version0_3", VAProfileVP8Version0_3},
     {"VAProfileVP9Profile0", VAProfileVP9Profile0},
     {"VAProfileVP9Profile2", VAProfileVP9Profile2},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(hiroh): Remove if-macro once libva for linux-chrome is upreved to
-    // 2.9.0 or newer.
-    // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
     {"VAProfileAV1Profile0", VAProfileAV1Profile0},
-#endif
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     {"VAProfileHEVCMain", VAProfileHEVCMain},
     {"VAProfileHEVCMain10", VAProfileHEVCMain10},
