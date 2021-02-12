@@ -31,6 +31,7 @@
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_ui.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/browser/renderer_host/file_utilities_host_impl.h"
 #include "content/browser/renderer_host/media/media_devices_dispatcher_host.h"
@@ -1225,6 +1226,15 @@ void PopulateBinderMapWithContext(
 void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   PopulateServiceWorkerBinders(host, map);
+}
+
+// AgentSchedulingGroup
+void PopulateBinderMapWithContext(
+    AgentSchedulingGroupHost* host,
+    mojo::BinderMapWithContext<AgentSchedulingGroupHost*>* map) {}
+void PopulateBinderMap(AgentSchedulingGroupHost* host, mojo::BinderMap* map) {}
+AgentSchedulingGroupHost* GetContextForHost(AgentSchedulingGroupHost* host) {
+  return host;
 }
 
 }  // namespace internal

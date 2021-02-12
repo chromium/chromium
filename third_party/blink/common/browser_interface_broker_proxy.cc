@@ -43,6 +43,10 @@ void BrowserInterfaceBrokerProxy::GetInterface(
   GetInterface(mojo::GenericPendingReceiver(name, std::move(pipe)));
 }
 
+bool BrowserInterfaceBrokerProxy::is_bound() const {
+  return broker_.is_bound();
+}
+
 bool BrowserInterfaceBrokerProxy::SetBinderForTesting(
     const std::string& name,
     base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)> binder) const {

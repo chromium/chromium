@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 
 namespace IPC {
@@ -42,10 +43,12 @@ class CONTENT_EXPORT AgentSchedulingGroup
  public:
   AgentSchedulingGroup(
       RenderThread& render_thread,
-      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap);
+      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap,
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote);
   AgentSchedulingGroup(
       RenderThread& render_thread,
-      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
+      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote);
   ~AgentSchedulingGroup() override;
 
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;

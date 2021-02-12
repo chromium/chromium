@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
@@ -66,6 +67,18 @@ WebThreadScheduler& AgentGroupSchedulerImpl::GetMainThreadScheduler() {
 
 AgentGroupScheduler& AgentGroupSchedulerImpl::AsAgentGroupScheduler() {
   return *this;
+}
+
+void AgentGroupSchedulerImpl::BindInterfaceBroker(
+    mojo::PendingRemote<mojom::BrowserInterfaceBroker> remote_broker) {
+  DCHECK(!broker_.is_bound());
+  broker_.Bind(std::move(remote_broker), default_task_runner_);
+}
+
+BrowserInterfaceBrokerProxy&
+AgentGroupSchedulerImpl::GetBrowserInterfaceBroker() {
+  DCHECK(broker_.is_bound());
+  return broker_;
 }
 
 }  // namespace scheduler

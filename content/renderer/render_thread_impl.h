@@ -416,10 +416,14 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // mojom::Renderer:
   void CreateAgentSchedulingGroup(
-      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap) override;
+      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap,
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
+      override;
   void CreateAssociatedAgentSchedulingGroup(
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
-          agent_scheduling_group) override;
+          agent_scheduling_group,
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
+      override;
   void OnNetworkConnectionChanged(
       net::NetworkChangeNotifier::ConnectionType type,
       double max_bandwidth_mbps) override;

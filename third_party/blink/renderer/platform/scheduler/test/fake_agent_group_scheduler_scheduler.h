@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_AGENT_GROUP_SCHEDULER_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FAKE_AGENT_GROUP_SCHEDULER_SCHEDULER_H_
 
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
@@ -35,6 +36,13 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
   WebThreadScheduler& GetMainThreadScheduler() override {
     return web_thread_scheduler_;
   }
+
+  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
+    return GetEmptyBrowserInterfaceBroker();
+  }
+
+  void BindInterfaceBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>) override {}
 
  private:
   WebThreadScheduler& web_thread_scheduler_;

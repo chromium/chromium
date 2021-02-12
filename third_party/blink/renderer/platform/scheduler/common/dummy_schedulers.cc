@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -177,6 +178,12 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   }
   WebThreadScheduler& GetMainThreadScheduler() override {
     return *main_thread_scheduler_;
+  }
+  void BindInterfaceBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)
+      override {}
+  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
+    return GetEmptyBrowserInterfaceBroker();
   }
 
  private:

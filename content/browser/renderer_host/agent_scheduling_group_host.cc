@@ -336,6 +336,12 @@ void AgentSchedulingGroupHost::CreateFrameProxy(
       std::move(replicated_state), frame_token, devtools_frame_token);
 }
 
+void AgentSchedulingGroupHost::ReportNoBinderForInterface(
+    const std::string& error) {
+  broker_receiver_.ReportBadMessage(error +
+                                    " for the agent scheduling group scope");
+}
+
 // static
 void AgentSchedulingGroupHost::
     set_agent_scheduling_group_host_factory_for_testing(
@@ -389,6 +395,7 @@ void AgentSchedulingGroupHost::ResetIPC() {
   remote_route_provider_.reset();
   route_provider_receiver_.reset();
   associated_interface_provider_receivers_.Clear();
+  broker_receiver_.reset();
   channel_ = nullptr;
 }
 
@@ -409,9 +416,10 @@ void AgentSchedulingGroupHost::SetUpIPC() {
   DCHECK(!receiver_.is_bound());
   DCHECK(!remote_route_provider_.is_bound());
   DCHECK(!route_provider_receiver_.is_bound());
+  DCHECK(!broker_receiver_.is_bound());
 
-  // After this function returns, all of `this`'s associated mojo interfaces
-  // need to be bound, and associated "properly" - in
+  // After this function returns, all of `this`'s mojo interfaces need to be
+  // bound, and associated interfaces need to be associated "properly" - in
   // `features::MBIMode::kEnabledPerRenderProcessHost` and
   // `features::MBIMode::kEnabledPerSiteInstance` mode that means they are
   // associated with the ASG's legacy IPC channel, and in
@@ -429,7 +437,8 @@ void AgentSchedulingGroupHost::SetUpIPC() {
   //    IPC channel/pipe.
   if (GetMBIMode() == features::MBIMode::kLegacy) {
     process_.GetRendererInterface()->CreateAssociatedAgentSchedulingGroup(
-        mojo_remote_.BindNewEndpointAndPassReceiver());
+        mojo_remote_.BindNewEndpointAndPassReceiver(),
+        broker_receiver_.BindNewPipeAndPassRemote());
   } else {
     auto io_task_runner = GetIOThreadTaskRunner({});
 
@@ -437,7 +446,8 @@ void AgentSchedulingGroupHost::SetUpIPC() {
     PendingRemote<IPC::mojom::ChannelBootstrap> bootstrap;
 
     process_.GetRendererInterface()->CreateAgentSchedulingGroup(
-        bootstrap.InitWithNewPipeAndPassReceiver());
+        bootstrap.InitWithNewPipeAndPassReceiver(),
+        broker_receiver_.BindNewPipeAndPassRemote());
 
     auto channel_factory = ChannelMojo::CreateServerFactory(
         bootstrap.PassPipe(), /*ipc_task_runner=*/io_task_runner,

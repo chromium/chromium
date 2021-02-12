@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_SCHEDULER_WEB_AGENT_GROUP_SCHEDULER_H_
 
 #include "base/single_thread_task_runner.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -27,6 +29,10 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler {
   virtual ~WebAgentGroupScheduler() = default;
 
   virtual AgentGroupScheduler& AsAgentGroupScheduler() = 0;
+
+  // Bind this AgentSchedulingGroup's BrowserInterfaceBroker.
+  virtual void BindInterfaceBroker(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>) = 0;
 
   // Default task runner for an AgentSchedulingGroup.
   // Default task runners for different AgentSchedulingGroup would be

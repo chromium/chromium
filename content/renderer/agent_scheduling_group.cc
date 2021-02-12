@@ -51,7 +51,8 @@ static features::MBIMode GetMBIMode() {
 // AgentSchedulingGroup:
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
-    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap)
+    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap,
+    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
               ->CreateAgentGroupScheduler()),
@@ -60,6 +61,8 @@ AgentSchedulingGroup::AgentSchedulingGroup(
       receiver_(this) {
   DCHECK(agent_group_scheduler_);
   DCHECK_NE(GetMBIMode(), features::MBIMode::kLegacy);
+
+  agent_group_scheduler_->BindInterfaceBroker(std::move(broker_remote));
 
   channel_ = SyncChannel::Create(
       /*listener=*/this, /*ipc_task_runner=*/render_thread_.GetIOTaskRunner(),
@@ -82,7 +85,8 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
-    PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver)
+    PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
+    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
               ->CreateAgentGroupScheduler()),
@@ -92,6 +96,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
                 agent_group_scheduler_->DefaultTaskRunner()) {
   DCHECK(agent_group_scheduler_);
   DCHECK_EQ(GetMBIMode(), features::MBIMode::kLegacy);
+  agent_group_scheduler_->BindInterfaceBroker(std::move(broker_remote));
 }
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
