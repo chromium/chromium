@@ -69,6 +69,7 @@ class WebviewController : public CastWebContents::Delegate,
   FRIEND_TEST_ALL_PREFIXES(WebviewTest, SetInsets);
   FRIEND_TEST_ALL_PREFIXES(WebviewTest, UserDataOverrideOnFirstRequest);
   FRIEND_TEST_ALL_PREFIXES(WebviewTest, UserDataOverride);
+  FRIEND_TEST_ALL_PREFIXES(WebviewTest, VerifyNavigationDelegation);
 
   content::WebContents* GetWebContents() override;
 

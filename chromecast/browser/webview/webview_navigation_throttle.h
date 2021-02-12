@@ -33,8 +33,6 @@ class WebviewNavigationThrottle : public content::NavigationThrottle {
   void ProcessNavigationDecision(webview::NavigationDecision decision);
 
  private:
-  scoped_refptr<base::SequencedTaskRunner> response_task_runner_;
-
   base::WeakPtr<WebviewController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(WebviewNavigationThrottle);

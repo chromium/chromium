@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/task/post_task.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -12,6 +13,7 @@
 #include "chromecast/browser/webview/webview_browser_context.h"
 #include "chromecast/browser/webview/webview_controller.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -86,10 +88,32 @@ class WebviewTest : public content::BrowserTestBase {
     run_loop_->Run();
   }
 
+  // Handle an inbound "request" (simulated gRPC call from client)
+  // asynchronously.
+  void SubmitWebviewRequest(WebviewController* controller,
+                            const webview::WebviewRequest& request) {
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(&WebviewController::ProcessRequest,
+                                  base::Unretained(controller), request));
+  }
+
+  // Asynchronously submit an attempt to navigate from one page to another.
+  void SubmitNavigation(content::WebContents* web_contents,
+                        const std::string& path) {
+    GURL url = embedded_test_server()->GetURL("foo.com", path);
+    base::PostTask(
+        FROM_HERE, {content::BrowserThread::UI},
+        base::BindOnce(
+            [](content::WebContents* web_contents, const GURL& url) {
+              ignore_result(content::NavigateToURL(web_contents, url));
+            },
+            web_contents, url));
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
-    if (absolute_url.path() != "/test")
+    if (absolute_url.path() != "/test" && absolute_url.path() != "/test2")
       return std::unique_ptr<net::test_server::HttpResponse>();
 
     auto http_response =
@@ -103,6 +127,18 @@ class WebviewTest : public content::BrowserTestBase {
   std::string OnTimeout() {
     Quit();
     return "Timeout in webview browsertest";
+  }
+
+  std::function<bool(const std::unique_ptr<webview::WebviewResponse>& response)>
+  CheckForPageLoadedEvent(const std::string& path) {
+    return [path](const std::unique_ptr<webview::WebviewResponse>& response) {
+      if (!response->has_page_event() ||
+          response->page_event().current_page_state() !=
+              webview::AsyncPageEvent_State_LOADED)
+        return false;
+      GURL url(response->page_event().url());
+      return url.path() == path;
+    };
   }
 
   void Quit() { run_loop_->QuitWhenIdle(); }
@@ -130,8 +166,64 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, Navigate) {
 
   webview::WebviewRequest nav;
   nav.mutable_navigate()->set_url(test_url.spec());
-  webview.ProcessRequest(nav);
+  SubmitWebviewRequest(&webview, nav);
 
+  RunMessageLoop();
+}
+
+// Verify the navigation request process
+IN_PROC_BROWSER_TEST_F(WebviewTest, VerifyNavigationDelegation) {
+  WebviewController webview(context_.get(), &client_, true);
+
+  EXPECT_CALL(client_, EnqueueSend(_)).Times(testing::AnyNumber());
+
+  EXPECT_CALL(client_, EnqueueSend(Truly(
+                           // Look for our initial page load event
+                           CheckForPageLoadedEvent("/test"))))
+      .Times(testing::AtLeast(1))
+      .WillOnce(
+          [this, &webview](std::unique_ptr<webview::WebviewResponse> response) {
+            // Turn on navigation delegation in the webview.
+            webview::WebviewRequest test_settings_request;
+            test_settings_request.mutable_update_settings()
+                ->set_has_navigation_delegate(true);
+            SubmitWebviewRequest(&webview, test_settings_request);
+
+            // And now ask to navigate to the second page.
+            SubmitNavigation(webview.GetWebContents(), "/test2");
+          });
+
+  EXPECT_CALL(
+      client_,
+      EnqueueSend(
+          // Look for navigation events.
+          Truly([](const std::unique_ptr<webview::WebviewResponse>& response) {
+            return response->has_navigation_event();
+          })))
+      .Times(testing::AtLeast(1))
+      .WillOnce(
+          // Respond with our navigation decision (NAVIGATE)
+          [this, &webview](std::unique_ptr<webview::WebviewResponse> response) {
+            webview::WebviewRequest nav_decision_request;
+            nav_decision_request.set_navigation_decision(
+                webview::NavigationDecision::NAVIGATE);
+
+            // Submit the navigation decision back to the controller.
+            SubmitWebviewRequest(&webview, nav_decision_request);
+          });
+
+  // Checks for secondary page (/test2) loaded event.
+  EXPECT_CALL(client_, EnqueueSend(Truly(CheckForPageLoadedEvent("/test2"))))
+      .Times(testing::AtLeast(1))
+      .WillOnce([this](std::unique_ptr<webview::WebviewResponse> response) {
+        Quit();
+      });
+
+  GURL test_url = embedded_test_server()->GetURL("foo.com", "/test");
+
+  webview::WebviewRequest nav;
+  nav.mutable_navigate()->set_url(test_url.spec());
+  SubmitWebviewRequest(&webview, nav);
   RunMessageLoop();
 }
 
@@ -181,6 +273,9 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, SetInsets) {
             request.mutable_set_insets()->set_left(0);
             request.mutable_set_insets()->set_bottom(200);
             request.mutable_set_insets()->set_right(0);
+            // Note this one needs to be processed synchronously (not through
+            // SubmitWebviewRequest) because we check the results immediately
+            // after.
             webview.ProcessRequest(request);
 
             gfx::Size size_after = webview.GetWebContents()
@@ -196,12 +291,11 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, SetInsets) {
   webview::WebviewRequest resize;
   resize.mutable_resize()->set_width(800);
   resize.mutable_resize()->set_height(600);
-  webview.ProcessRequest(resize);
+  SubmitWebviewRequest(&webview, resize);
 
   webview::WebviewRequest nav;
   nav.mutable_navigate()->set_url(test_url.spec());
-  webview.ProcessRequest(nav);
-
+  SubmitWebviewRequest(&webview, nav);
   RunMessageLoop();
 }
 
@@ -235,11 +329,11 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverrideOnFirstRequest) {
         // can disable the override.
         webview::WebviewRequest update_settings;
         update_settings.mutable_update_settings()->set_javascript_enabled(true);
-        webview.ProcessRequest(update_settings);
+        SubmitWebviewRequest(&webview, update_settings);
 
         webview::WebviewRequest reload;
         reload.mutable_reload();
-        webview.ProcessRequest(reload);
+        SubmitWebviewRequest(&webview, reload);
       })
       .WillOnce([&](std::unique_ptr<webview::WebviewResponse> response) {
         std::string header_value;
@@ -257,11 +351,11 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverrideOnFirstRequest) {
   update_settings.mutable_update_settings()->set_javascript_enabled(true);
   update_settings.mutable_update_settings()->mutable_user_agent()->set_value(
       kUserAgentOverride);
-  webview.ProcessRequest(update_settings);
+  SubmitWebviewRequest(&webview, update_settings);
 
   webview::WebviewRequest navigate;
   navigate.mutable_navigate()->set_url(test_url.spec());
-  webview.ProcessRequest(navigate);
+  SubmitWebviewRequest(&webview, navigate);
 
   RunMessageLoop();
 }
@@ -297,11 +391,11 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverride) {
         update_settings.mutable_update_settings()
             ->mutable_user_agent()
             ->set_value(kUserAgentOverride);
-        webview.ProcessRequest(update_settings);
+        SubmitWebviewRequest(&webview, update_settings);
 
         webview::WebviewRequest reload;
         reload.mutable_reload();
-        webview.ProcessRequest(reload);
+        SubmitWebviewRequest(&webview, reload);
       })
       .WillOnce([&](std::unique_ptr<webview::WebviewResponse> response) {
         std::string header_value;
@@ -317,11 +411,11 @@ IN_PROC_BROWSER_TEST_F(WebviewTest, UserDataOverride) {
   // web page.
   webview::WebviewRequest update_settings;
   update_settings.mutable_update_settings()->set_javascript_enabled(true);
-  webview.ProcessRequest(update_settings);
+  SubmitWebviewRequest(&webview, update_settings);
 
   webview::WebviewRequest navigate;
   navigate.mutable_navigate()->set_url(test_url.spec());
-  webview.ProcessRequest(navigate);
+  SubmitWebviewRequest(&webview, navigate);
 
   RunMessageLoop();
 }
