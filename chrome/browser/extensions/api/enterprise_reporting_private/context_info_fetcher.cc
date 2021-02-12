@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/version_info/version_info.h"
 #include "device_management_backend.pb.h"
 
 namespace extensions {
@@ -49,7 +50,7 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
       GetAnalysisConnectorProviders(enterprise_connectors::BULK_DATA_ENTRY);
   info.realtime_url_check_mode = GetRealtimeUrlCheckMode();
   info.on_security_event_providers = GetOnSecurityEventProviders();
-  info.browser_version = GetBrowserVersion();
+  info.browser_version = version_info::GetVersionNumber();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
@@ -102,11 +103,6 @@ std::vector<std::string> ContextInfoFetcher::GetOnSecurityEventProviders() {
   // TODO(crbug.com/1169219): Add code here and in ConnectorsService to obtain
   // the providers of this policy.
   return {};
-}
-
-std::string ContextInfoFetcher::GetBrowserVersion() {
-  // TODO(crbug.com/1169222): Add code to obtain the browser version.
-  return "";
 }
 
 }  // namespace enterprise_reporting

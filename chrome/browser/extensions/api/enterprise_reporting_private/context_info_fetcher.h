@@ -63,8 +63,6 @@ class ContextInfoFetcher {
 
   std::vector<std::string> GetOnSecurityEventProviders();
 
-  std::string GetBrowserVersion();
-
   content::BrowserContext* browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.

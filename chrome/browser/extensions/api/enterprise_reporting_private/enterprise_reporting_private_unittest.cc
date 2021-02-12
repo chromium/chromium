@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_WIN)
@@ -327,11 +328,7 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
   EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
-
-  // TODO(crbug.com/1169222): Change this assertion once this attribute is
-  // implemented, as it should be returned even when no special context applies
-  // to the browser.
-  EXPECT_EQ("", info.browser_version);
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
 }
 
 }  // namespace extensions

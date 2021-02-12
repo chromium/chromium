@@ -15,6 +15,7 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 
 namespace enterprise_reporting_private =
@@ -134,11 +135,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateGetContextInfoBrowserTest,
   EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
             info.realtime_url_check_mode);
   EXPECT_TRUE(info.on_security_event_providers.empty());
-
-  // TODO(crbug.com/1169222): Change this assertion once this attribute is
-  // implemented, as it should be returned even when no special context applies
-  // to the browser.
-  EXPECT_EQ("", info.browser_version);
+  EXPECT_EQ(version_info::GetVersionNumber(), info.browser_version);
 }
 
 }  // namespace extensions
