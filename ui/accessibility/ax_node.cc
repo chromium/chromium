@@ -1244,7 +1244,20 @@ bool AXNode::IsIgnored() const {
 }
 
 bool AXNode::IsIgnoredForTextNavigation() const {
-  return data().role == ax::mojom::Role::kSplitter;
+  if (data().role == ax::mojom::Role::kSplitter)
+    return true;
+
+  // A generic container without any unignored children that is not editable
+  // should not be used for text-based navigation. Such nodes don't make sense
+  // for screen readers to land on, since no text will be announced and no
+  // action is possible.
+  if (data().role == ax::mojom::Role::kGenericContainer &&
+      !GetUnignoredChildCount() &&
+      !data().HasState(ax::mojom::State::kEditable)) {
+    return true;
+  }
+
+  return false;
 }
 
 bool AXNode::IsInvisibleOrIgnored() const {

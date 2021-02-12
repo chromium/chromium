@@ -1489,24 +1489,23 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // ++++++3 kStaticText
   // ++++++++4 kInlineTextBox
   // ++++5 kGenericContainer ignored
-  // ++++6 kGenericContainer
+  // ++++6 kButton
   ui::AXNodeData root_1;
   ui::AXNodeData heading_2;
   ui::AXNodeData static_text_3;
   ui::AXNodeData inline_box_4;
   ui::AXNodeData generic_container_5;
-  ui::AXNodeData generic_container_6;
+  ui::AXNodeData button_6;
 
   root_1.id = 1;
   heading_2.id = 2;
   static_text_3.id = 3;
   inline_box_4.id = 4;
   generic_container_5.id = 5;
-  generic_container_6.id = 6;
+  button_6.id = 6;
 
   root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {heading_2.id, generic_container_5.id,
-                      generic_container_6.id};
+  root_1.child_ids = {heading_2.id, generic_container_5.id, button_6.id};
 
   heading_2.role = ax::mojom::Role::kHeading;
   heading_2.child_ids = {static_text_3.id};
@@ -1523,9 +1522,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
   generic_container_5.AddState(ax::mojom::State::kIgnored);
 
-  generic_container_6.role = ax::mojom::Role::kGenericContainer;
-  generic_container_6.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  button_6.role = ax::mojom::Role::kButton;
 
   ui::AXTreeUpdate update;
   ui::AXTreeData tree_data;
@@ -1538,7 +1535,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes.push_back(static_text_3);
   update.nodes.push_back(inline_box_4);
   update.nodes.push_back(generic_container_5);
-  update.nodes.push_back(generic_container_6);
+  update.nodes.push_back(button_6);
 
   Init(update);
 
@@ -1609,12 +1606,18 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // ++++4 kSplitter
   // ++++5 kStaticText
   // ++++++6 kInlineTextBox bar
+  // ++++7 genericContainer
+  // ++++8 kStaticText
+  // ++++++9 kInlineTextBox baz
   ui::AXNodeData root_1;
   ui::AXNodeData static_text_2;
   ui::AXNodeData inline_box_3;
   ui::AXNodeData splitter_4;
   ui::AXNodeData static_text_5;
   ui::AXNodeData inline_box_6;
+  ui::AXNodeData generic_container_7;
+  ui::AXNodeData static_text_8;
+  ui::AXNodeData inline_box_9;
 
   root_1.id = 1;
   static_text_2.id = 2;
@@ -1622,9 +1625,13 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   splitter_4.id = 4;
   static_text_5.id = 5;
   inline_box_6.id = 6;
+  generic_container_7.id = 7;
+  static_text_8.id = 8;
+  inline_box_9.id = 9;
 
   root_1.role = ax::mojom::Role::kRootWebArea;
-  root_1.child_ids = {static_text_2.id, splitter_4.id, static_text_5.id};
+  root_1.child_ids = {static_text_2.id, splitter_4.id, static_text_5.id,
+                      generic_container_7.id, static_text_8.id};
 
   static_text_2.role = ax::mojom::Role::kStaticText;
   static_text_2.child_ids = {inline_box_3.id};
@@ -1644,14 +1651,27 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   inline_box_6.role = ax::mojom::Role::kInlineTextBox;
   inline_box_6.SetName("bar");
 
+  generic_container_7.role = ax::mojom::Role::kGenericContainer;
+  generic_container_7.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  static_text_8.role = ax::mojom::Role::kStaticText;
+  static_text_8.child_ids = {inline_box_9.id};
+  static_text_8.SetName("bar");
+
+  inline_box_9.role = ax::mojom::Role::kInlineTextBox;
+  inline_box_9.SetName("baz");
+
   ui::AXTreeUpdate update;
   ui::AXTreeData tree_data;
   tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.tree_data = tree_data;
   update.has_tree_data = true;
   update.root_id = root_1.id;
-  update.nodes = {root_1,     static_text_2, inline_box_3,
-                  splitter_4, static_text_5, inline_box_6};
+  update.nodes = {
+      root_1,        static_text_2, inline_box_3,        splitter_4,
+      static_text_5, inline_box_6,  generic_container_7, static_text_8,
+      inline_box_9};
 
   Init(update);
 
@@ -1659,13 +1679,19 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
 
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"foo\n\xFFFC\nbar");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider,
+                          L"foo\n\xFFFC\nbar\n\xFFFC\nbaz");
 
   int count;
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
       TextPatternRangeEndpoint_Start, TextUnit_Paragraph, /*count*/ 1, &count));
   ASSERT_EQ(1, count);
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"bar");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"bar\n\xFFFC\nbaz");
+
+  ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Paragraph, /*count*/ 1, &count));
+  ASSERT_EQ(1, count);
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"baz");
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
@@ -5309,7 +5335,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   tree_update.nodes[4].SetName(".5.");
 
   tree_update.nodes[5].id = 6;
-  tree_update.nodes[5].role = ax::mojom::Role::kGenericContainer;
+  tree_update.nodes[5].role = ax::mojom::Role::kButton;
   tree_update.nodes[5].child_ids = {9};
 
   tree_update.nodes[6].id = 7;
