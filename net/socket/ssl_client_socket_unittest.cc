@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1254,7 +1255,7 @@ int MakeHTTPRequest(StreamSocket* socket) {
   TestCompletionCallback callback;
   while (!request.empty()) {
     auto request_buffer =
-        base::MakeRefCounted<StringIOBuffer>(request.as_string());
+        base::MakeRefCounted<StringIOBuffer>(std::string(request));
     int rv = callback.GetResult(
         socket->Write(request_buffer.get(), request_buffer->size(),
                       callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -2800,7 +2801,7 @@ TEST_F(SSLClientSocketTest, ConnectSignedCertTimestampsTLSExtension) {
   base::StringPiece sct_ext("\x00\x06\x00\x04test", 8);
 
   SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.signed_cert_timestamps_tls_ext = sct_ext.as_string();
+  ssl_options.signed_cert_timestamps_tls_ext = std::string(sct_ext);
   ASSERT_TRUE(StartTestServer(ssl_options));
 
   auto ct_verifier = std::make_unique<MockCTVerifier>();

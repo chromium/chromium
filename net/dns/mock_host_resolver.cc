@@ -18,6 +18,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
@@ -58,7 +59,7 @@ int ParseAddressList(const std::string& host_list,
            host_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     IPAddress ip_address;
     if (!ip_address.AssignFromIPLiteral(address)) {
-      LOG(WARNING) << "Not a supported IP literal: " << address.as_string();
+      LOG(WARNING) << "Not a supported IP literal: " << address;
       return ERR_UNEXPECTED;
     }
     addrlist->push_back(IPEndPoint(ip_address, 0));

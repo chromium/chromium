@@ -66,7 +66,7 @@ bool DataURL::Parse(const GURL& url,
     } else if (charset_value.empty() &&
                base::StartsWith(*iter, kCharsetTag,
                                 base::CompareCase::INSENSITIVE_ASCII)) {
-      charset_value = iter->substr(kCharsetTag.size()).as_string();
+      charset_value = std::string(iter->substr(kCharsetTag.size()));
       // The grammar for charset is not specially defined in RFC2045 and
       // RFC2397. It just needs to be a token.
       if (!HttpUtil::IsToken(charset_value))
@@ -133,7 +133,7 @@ bool DataURL::Parse(const GURL& url,
       std::string temp;
       if (!(mime_type_value.compare(0, 5, "text/") == 0 ||
             mime_type_value.find("xml") != std::string::npos)) {
-        temp = raw_body.as_string();
+        temp = std::string(raw_body);
         base::EraseIf(temp, base::IsAsciiWhitespace<char>);
         raw_body = temp;
       }

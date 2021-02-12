@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -144,7 +145,7 @@ void StreamDelegateSendImmediate::OnHeadersReceived(
                                         pushed_request_headers);
   if (data_.data()) {
     scoped_refptr<StringIOBuffer> buf =
-        base::MakeRefCounted<StringIOBuffer>(data_.as_string());
+        base::MakeRefCounted<StringIOBuffer>(std::string(data_));
     stream()->SendData(buf.get(), buf->size(), MORE_DATA_TO_SEND);
   }
 }
@@ -153,7 +154,7 @@ StreamDelegateWithBody::StreamDelegateWithBody(
     const base::WeakPtr<SpdyStream>& stream,
     base::StringPiece data)
     : StreamDelegateBase(stream),
-      buf_(base::MakeRefCounted<StringIOBuffer>(data.as_string())) {}
+      buf_(base::MakeRefCounted<StringIOBuffer>(std::string(data))) {}
 
 StreamDelegateWithBody::~StreamDelegateWithBody() = default;
 

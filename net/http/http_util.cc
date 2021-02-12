@@ -197,7 +197,7 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
         ++offset;
       }
 
-      param_value = TrimLWS(param_value).as_string();
+      param_value = std::string(TrimLWS(param_value));
 
       offset = content_type_str.find_first_of(';', offset);
     }
@@ -584,7 +584,7 @@ bool UnquoteImpl(base::StringPiece str, bool strict_quotes, std::string* out) {
 std::string HttpUtil::Unquote(base::StringPiece str) {
   std::string result;
   if (!UnquoteImpl(str, false, &result))
-    return str.as_string();
+    return std::string(str);
 
   return result;
 }

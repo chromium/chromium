@@ -8,6 +8,7 @@
 
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
@@ -200,7 +201,7 @@ bool FindMatchingSingleResponse(CBS* responses,
   // TODO(ekasper): only compute the hashes on demand.
   std::string issuer_key_sha256_hash = crypto::SHA256HashString(issuer_spk);
   std::string issuer_key_sha1_hash =
-      base::SHA1HashString(issuer_spk.as_string());
+      base::SHA1HashString(std::string(issuer_spk));
 
   while (CBS_len(responses) > 0) {
     CBS single_response, cert_id;

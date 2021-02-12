@@ -13,6 +13,7 @@
 #endif
 
 #include "base/check_op.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -253,7 +254,7 @@ std::string TrimEndingDot(base::StringPiece host) {
   if (len > 1 && host_trimmed[len - 1] == '.') {
     host_trimmed.remove_suffix(1);
   }
-  return host_trimmed.as_string();
+  return std::string(host_trimmed);
 }
 
 std::string GetHostOrSpecFromURL(const GURL& url) {
@@ -264,7 +265,7 @@ std::string GetSuperdomain(base::StringPiece domain) {
   size_t dot_pos = domain.find('.');
   if (dot_pos == std::string::npos)
     return "";
-  return domain.substr(dot_pos + 1).as_string();
+  return std::string(domain.substr(dot_pos + 1));
 }
 
 bool IsSubdomainOf(base::StringPiece subdomain, base::StringPiece superdomain) {

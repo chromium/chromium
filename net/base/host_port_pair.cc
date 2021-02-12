@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -45,7 +46,7 @@ HostPortPair HostPortPair::FromString(const std::string& str) {
   if (!IsPortValid(port))
     return HostPortPair();
   HostPortPair host_port_pair;
-  host_port_pair.set_host(key_port[0].as_string());
+  host_port_pair.set_host(std::string(key_port[0]));
   host_port_pair.set_port(static_cast<uint16_t>(port));
   return host_port_pair;
 }

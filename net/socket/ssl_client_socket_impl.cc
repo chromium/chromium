@@ -1129,7 +1129,7 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   cert_verification_result_ = context_->cert_verifier()->Verify(
       CertVerifier::RequestParams(
           server_cert_, host_and_port_.host(), ssl_config_.GetCertVerifyFlags(),
-          ocsp_response.as_string(), sct_list.as_string()),
+          std::string(ocsp_response), std::string(sct_list)),
       &server_cert_verify_result_,
       base::BindOnce(&SSLClientSocketImpl::OnVerifyComplete,
                      base::Unretained(this)),

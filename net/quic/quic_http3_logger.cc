@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "net/http/http_log_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -76,8 +77,8 @@ base::ListValue ElideQuicHeaderListForNetLog(
     base::StringPiece value = header.second;
     headers_list.Append(NetLogStringValue(
         base::StrCat({key, ": ",
-                      ElideHeaderValueForNetLog(capture_mode, key.as_string(),
-                                                value.as_string())})));
+                      ElideHeaderValueForNetLog(capture_mode, std::string(key),
+                                                std::string(value))})));
   }
   return headers_list;
 }

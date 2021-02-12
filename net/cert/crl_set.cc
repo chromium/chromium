@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -349,7 +350,7 @@ CRLSet::Result CRLSet::CheckSerial(
   while (serial.size() > 1 && serial[0] == 0x00)
     serial.remove_prefix(1);
 
-  auto it = crls_.find(issuer_spki_hash.as_string());
+  auto it = crls_.find(std::string(issuer_spki_hash));
   if (it == crls_.end())
     return UNKNOWN;
 

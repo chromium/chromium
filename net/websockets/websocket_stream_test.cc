@@ -17,6 +17,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -495,7 +496,7 @@ class WebSocketStreamCreateBasicAuthTest : public WebSocketStreamCreateTest {
         url, NoSubProtocols(), HttpRequestHeaders(),
         helper_.BuildAuthSocketData(kUnauthorizedResponse,
                                     RequestExpectation(base64_user_pass),
-                                    response2.as_string()));
+                                    std::string(response2)));
   }
 
   static std::string RequestExpectation(base::StringPiece base64_user_pass) {

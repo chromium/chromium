@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
@@ -1080,7 +1081,7 @@ spdy::Http2HeaderBlock SpdyTestUtil::ConstructHeaderBlock(
   std::string scheme, host, path;
   ParseUrl(url, &scheme, &host, &path);
   spdy::Http2HeaderBlock headers;
-  headers[spdy::kHttp2MethodHeader] = method.as_string();
+  headers[spdy::kHttp2MethodHeader] = std::string(method);
   headers[spdy::kHttp2AuthorityHeader] = host.c_str();
   headers[spdy::kHttp2SchemeHeader] = scheme.c_str();
   headers[spdy::kHttp2PathHeader] = path.c_str();

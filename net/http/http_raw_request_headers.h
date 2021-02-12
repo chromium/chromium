@@ -38,7 +38,7 @@ class NET_EXPORT HttpRawRequestHeaders {
 
   void Add(base::StringPiece key, base::StringPiece value);
   void set_request_line(base::StringPiece line) {
-    request_line_ = line.as_string();
+    request_line_ = std::string(line);
   }
 
   const HeaderVector& headers() const { return headers_; }

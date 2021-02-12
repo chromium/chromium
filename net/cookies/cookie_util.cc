@@ -476,8 +476,8 @@ void ParseRequestCookieLine(const std::string& header_value,
         // i points to ';' or end of string.
       }
     }
-    parsed_cookies->emplace_back(cookie_name.as_string(),
-                                 cookie_value.as_string());
+    parsed_cookies->emplace_back(std::string(cookie_name),
+                                 std::string(cookie_value));
     // Eat ';'.
     if (i != header_value.end()) ++i;
   }

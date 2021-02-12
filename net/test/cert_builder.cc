@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/asn1_util.h"
@@ -102,7 +103,7 @@ std::unique_ptr<CertBuilder> CertBuilder::FromStaticCert(CRYPTO_BUFFER* cert,
   base::StringPiece subject_tlv;
   CHECK(asn1::ExtractSubjectFromDERCert(
       x509_util::CryptoBufferAsStringPiece(cert), &subject_tlv));
-  builder->subject_tlv_ = subject_tlv.as_string();
+  builder->subject_tlv_ = std::string(subject_tlv);
   return builder;
 }
 
@@ -467,7 +468,7 @@ scoped_refptr<X509Certificate> CertBuilder::GetX509CertificateChain() {
 }
 
 std::string CertBuilder::GetDER() {
-  return x509_util::CryptoBufferAsStringPiece(GetCertBuffer()).as_string();
+  return std::string(x509_util::CryptoBufferAsStringPiece(GetCertBuffer()));
 }
 
 void CertBuilder::Invalidate() {

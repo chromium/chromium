@@ -216,7 +216,7 @@ std::vector<PoolingTestParams> GetPoolingTestParams() {
 std::string ConstructDataFrameForVersion(base::StringPiece body,
                                          quic::ParsedQuicVersion version) {
   if (!version.HasIetfQuicFrames()) {
-    return body.as_string();
+    return std::string(body);
   }
   std::unique_ptr<char[]> buffer;
   auto header_length =

@@ -8,6 +8,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/cert/internal/cert_error_params.h"
@@ -34,7 +35,7 @@ bool GetValue(base::StringPiece prefix,
   }
 
   *has_value = true;
-  *value = line.substr(prefix.size()).as_string();
+  *value = std::string(line.substr(prefix.size()));
   return true;
 }
 
@@ -264,7 +265,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
       // The errors start on the next line, and extend until the end of the
       // file.
       std::string prefix =
-          std::string("\n") + kExpectedErrors.as_string() + std::string("\n");
+          std::string("\n") + std::string(kExpectedErrors) + std::string("\n");
       size_t errors_start = file_data.find(prefix);
       if (errors_start == std::string::npos) {
         ADD_FAILURE() << "expected_errors not found";
