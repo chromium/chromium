@@ -1386,7 +1386,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void HideTopmostPopupElement() const;
   // This hides all visible popups up to, but not including,
   // |endpoint|. If |endpoint| is nullptr, all popups are hidden.
-  void HideAllPopupsUntil(HTMLPopupElement* endpoint);
+  void HideAllPopupsUntil(const HTMLPopupElement* endpoint);
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().

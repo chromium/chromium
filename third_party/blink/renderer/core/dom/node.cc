@@ -2860,24 +2860,7 @@ void Node::HandleLocalEvents(Event& event) {
       DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
       // There is a popup visible - check if this event should "light dismiss"
       // one or more popups.
-      const AtomicString& event_type = event.type();
-      if (event_type == event_type_names::kClick) {
-        HTMLPopupElement* closest_popup_parent = nullptr;
-        for (Node* current_node = event.target()->ToNode(); current_node;
-             current_node = current_node->parentNode()) {
-          if (auto* popup = DynamicTo<HTMLPopupElement>(current_node)) {
-            closest_popup_parent = popup;
-            break;
-          }
-        }
-        GetDocument().HideAllPopupsUntil(closest_popup_parent);
-      } else if (event_type == event_type_names::kKeydown) {
-        const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
-        if (key_event && key_event->key() == "Escape") {
-          // Escape key just pops the topmost <popup> off the stack.
-          GetDocument().HideTopmostPopupElement();
-        }
-      }
+      HTMLPopupElement::HandleLightDismiss(event);
     }
   }
 

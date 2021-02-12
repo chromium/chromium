@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -97,6 +98,48 @@ Element* HTMLPopupElement::AnchorElement() const {
   if (Element* anchor = GetTreeScope().getElementById(anchor_id))
     return anchor;
   return nullptr;
+}
+
+void HTMLPopupElement::HandleLightDismiss(const Event& event) {
+  auto* target_node = event.target()->ToNode();
+  if (!target_node)
+    return;
+  auto& document = target_node->GetDocument();
+  DCHECK(document.PopupShowing());
+  const AtomicString& event_type = event.type();
+  if (event_type == event_type_names::kClick) {
+    // We need to walk up from the clicked element to see if there
+    // is a parent popup, or the anchor for a popup. There can be
+    // multiple popups for a single anchor element, but we will
+    // stop on any of them. Therefore, just store the popup that
+    // is highest (last) on the popup stack for each anchor.
+    HeapHashMap<Member<const Element>, Member<const HTMLPopupElement>> anchors;
+    for (auto popup : document.PopupElementStack()) {
+      if (auto* anchor = popup->AnchorElement()) {
+        anchors.Set(anchor, popup);
+      }
+    }
+    const HTMLPopupElement* closest_popup_parent = nullptr;
+    for (Node* current_node = target_node; current_node;
+         current_node = current_node->parentNode()) {
+      if (auto* popup = DynamicTo<HTMLPopupElement>(current_node)) {
+        closest_popup_parent = popup;
+        break;
+      }
+      Element* current_element = DynamicTo<Element>(current_node);
+      if (current_element && anchors.Contains(current_element)) {
+        closest_popup_parent = anchors.at(current_element);
+        break;
+      }
+    }
+    document.HideAllPopupsUntil(closest_popup_parent);
+  } else if (event_type == event_type_names::kKeydown) {
+    const KeyboardEvent* key_event = DynamicTo<KeyboardEvent>(event);
+    if (key_event && key_event->key() == "Escape") {
+      // Escape key just pops the topmost <popup> off the stack.
+      document.HideTopmostPopupElement();
+    }
+  }
 }
 
 }  // namespace blink

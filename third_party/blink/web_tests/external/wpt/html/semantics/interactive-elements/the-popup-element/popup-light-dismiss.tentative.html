@@ -8,7 +8,6 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script src="resources/popup-utils.js"></script>
 
 <body>
 
@@ -33,80 +32,80 @@
 <script>
   function clickOn(element) {
     const actions = new test_driver.Actions();
-    actions.pointerMove(0, 0, {origin: element});
-    actions.pointerDown({button: actions.ButtonType.LEFT});
-    actions.pointerUp({button: actions.ButtonType.LEFT});
-    return actions.send();
+    return actions.pointerMove(0, 0, {origin: element})
+      .pointerDown({button: actions.ButtonType.LEFT})
+      .pointerUp({button: actions.ButtonType.LEFT})
+      .send();
   }
 
-  function pressKey(key) {
-    const actions = new test_driver.Actions();
-    actions.keyDown(key);
-    actions.keyUp(key);
-    return actions.send();
-  }
+  const popup1 = document.querySelector('#p1');
+  const button1 = document.querySelector('#b1');
+  const popup2 = document.querySelector('#p2');
+  const outside = document.querySelector('#outside');
+  const inside1 = document.querySelector('#inside1');
+  const inside2 = document.querySelector('#inside2');
 
   (async function() {
     setup({ explicit_done: true });
 
-    const popup1 = document.querySelector('#p1');
-    const popup2 = document.querySelector('#p2');
-    const outside = document.querySelector('#outside');
-    const inside1 = document.querySelector('#inside1');
-    const inside2 = document.querySelector('#inside2');
+    let popup1HideCount = 0;
+    popup1.addEventListener('hide',(e) => {
+      ++popup1HideCount;
+      e.preventDefault(); // 'hide' should not be cancellable.
+    });
+    let popup2HideCount = 0;
+    popup2.addEventListener('hide',(e) => {
+      ++popup2HideCount;
+      e.preventDefault(); // 'hide' should not be cancellable.
+    });
 
     assert_false(popup1.open);
     popup1.show();
+    let p1HideCount = popup1HideCount;
     assert_true(popup1.open);
     await clickOn(outside);
     test(t => {
       assert_false(popup1.open);
+      assert_equals(popup1HideCount,p1HideCount+1);
     },'Clicking outside a popup will dismiss the popup');
 
     assert_false(popup1.open);
     popup1.show();
+    p1HideCount = popup1HideCount;
     await clickOn(inside1);
     test(t => {
       assert_true(popup1.open);
-      popup1.hide();
+      assert_equals(popup1HideCount,p1HideCount);
     },'Clicking inside a popup does not close that popup');
 
-
-    popup1.show();
     popup2.show();
+    p1HideCount = popup1HideCount;
+    let p2HideCount = popup2HideCount;
     await clickOn(inside2);
     test(t => {
       assert_true(popup1.open);
       assert_true(popup2.open);
-      popup1.hide();
+      assert_equals(popup1HideCount,p1HideCount,'popup1');
+      assert_equals(popup2HideCount,p2HideCount,'popup2');
     },'Clicking inside a child popup shouldn\'t close either popup');
 
-    assert_false(popup1.open);
-    assert_false(popup2.open);
-    popup1.show();
     popup2.show();
+    p1HideCount = popup1HideCount;
+    p2HideCount = popup2HideCount;
     await clickOn(inside1);
     test(t => {
       assert_true(popup1.open);
+      assert_equals(popup1HideCount,p1HideCount);
       assert_false(popup2.open);
-      popup1.hide();
+      assert_equals(popup2HideCount,p2HideCount+1);
     },'Clicking inside a parent popup should close child popup');
 
-    // TODO(crbug.com/893480) This test is disabled, until keyDown
-    // and keyUp are supported in Chromium.
-    // popup1.show();
-    // popup2.show();
-    // const escape_key = "\uE00C";
-    // await pressKey(escape_key);
-    // test(t => {
-    //   assert_true(popup1.open);
-    //   assert_false(popup2.open);
-    // },'Escape key should close top level popup');
-    // await pressKey(escape_key);
-    // test(t => {
-    //   assert_false(popup1.open);
-    //   assert_false(popup2.open);
-    // },'Escape key should close top level popup (part 2)');
+    p1HideCount = popup1HideCount;
+    await clickOn(button1);
+    test(t => {
+      assert_true(popup1.open);
+      assert_equals(popup1HideCount,p1HideCount);
+    },'Clicking on anchor element shouldn\'t close its popup');
 
     done();
   })();

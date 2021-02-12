@@ -30,6 +30,8 @@ class HTMLPopupElement final : public HTMLElement {
 
   Element* AnchorElement() const;
 
+  static void HandleLightDismiss(const Event&);
+
  private:
   void ScheduleHideEvent();
   void MarkStyleDirty();

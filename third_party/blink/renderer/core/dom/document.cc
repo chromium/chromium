@@ -7329,7 +7329,7 @@ void Document::HideTopmostPopupElement() const {
     return;
   popup_element_stack_.back()->hide();
 }
-void Document::HideAllPopupsUntil(HTMLPopupElement* endpoint) {
+void Document::HideAllPopupsUntil(const HTMLPopupElement* endpoint) {
   while (!popup_element_stack_.IsEmpty() &&
          popup_element_stack_.back() != endpoint) {
     popup_element_stack_.back()->hide();
