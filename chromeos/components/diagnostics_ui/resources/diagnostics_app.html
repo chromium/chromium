@@ -73,8 +73,9 @@
     </div>
   </div>
   <div class="session-log-container">
-    <cr-button on-click="onSessionLogClick_" id="sessionLogButton">
-      <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon> 
+    <cr-button on-click="onSessionLogClick_" id="sessionLogButton"
+        hidden="[[!isLoggedIn_]]">
+      <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
       <span>[[i18n('sessionLog')]]</span>
     </cr-button>
   </div>

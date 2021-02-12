@@ -69,6 +69,12 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /** @private {boolean} */
+    isLoggedIn_: {
+      type: Boolean,
+      value: loadTimeData.getBoolean('isLoggedIn'),
+    },
   },
 
   /** @override */

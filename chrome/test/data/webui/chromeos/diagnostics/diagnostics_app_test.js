@@ -130,6 +130,16 @@ export function appTestSuite() {
     return page.$$('cr-toast').open;
   }
 
+  /**
+   * @param {boolean} isLoggedIn
+   * @suppress {visibility} // access private member
+   * @return {!Promise}
+   */
+  function changeLoggedInState(isLoggedIn) {
+    page.isLoggedIn_ = isLoggedIn;
+    return flushTasks();
+  }
+
   test('LandingPageLoaded', () => {
     return initializeDiagnosticsApp(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
@@ -221,5 +231,21 @@ export function appTestSuite() {
                 loadTimeData.getString('sessionLogToastTextFailure'));
           });
         });
+  });
+
+  test('SessionLogHiddenWhenNotLoggedIn', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => changeLoggedInState(/* isLoggedIn */ (false)))
+        .then(() => assertFalse(isVisible(getSessionLogButton())));
+  });
+
+  test('SessionLogShownWhenLoggedIn', () => {
+    return initializeDiagnosticsApp(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => changeLoggedInState(/* isLoggedIn */ (true)))
+        .then(() => assertTrue(isVisible(getSessionLogButton())));
   });
 }

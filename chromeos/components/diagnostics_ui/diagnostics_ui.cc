@@ -18,6 +18,7 @@
 #include "chromeos/components/diagnostics_ui/url_constants.h"
 #include "chromeos/grit/chromeos_diagnostics_app_resources.h"
 #include "chromeos/grit/chromeos_diagnostics_app_resources_map.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -123,6 +124,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+  source->AddBoolean("isLoggedIn", LoginState::Get()->IsUserLoggedIn());
 }
 
 }  // namespace
