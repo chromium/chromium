@@ -207,8 +207,10 @@ void MediaStringView::InitLayout() {
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetPreferredSize(
       gfx::Size(kMusicNoteIconSizeDip, kMusicNoteIconSizeDip));
-  icon_->SetImage(gfx::CreateVectorIcon(kMusicNoteIcon, kMusicNoteIconSizeDip,
-                                        SK_ColorWHITE));
+  icon_->SetImage(gfx::CreateVectorIcon(
+      kMusicNoteIcon, kMusicNoteIconSizeDip,
+      ambient::util::GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
 
   media_text_container_ = AddChildView(std::make_unique<views::View>());
   media_text_container_->SetPaintToLayer();
@@ -227,13 +229,13 @@ void MediaStringView::InitLayout() {
   media_text_->layer()->SetFillsBoundsOpaquely(false);
 
   // Defines the appearance.
-  constexpr SkColor kTextColor = SK_ColorWHITE;
   constexpr int kDefaultFontSizeDip = 64;
   constexpr int kMediaStringFontSizeDip = 18;
   media_text_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   media_text_->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
   media_text_->SetAutoColorReadabilityEnabled(false);
-  media_text_->SetEnabledColor(kTextColor);
+  media_text_->SetEnabledColor(ambient::util::GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
   media_text_->SetFontList(
       ambient::util::GetDefaultFontlist()
           .DeriveWithSizeDelta(kMediaStringFontSizeDip - kDefaultFontSizeDip)
