@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2759453070259087442">הרחבת קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="NUMBER_OF_TABS" /> כרטיסיות.</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
+<translation id="3291470810748040983">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
-<translation id="3340978935015468852">הגדרות</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}many{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="3940195383040445971">מעקב אחר המחירים בכרטיסיות</translation>
 <translation id="3996880007329611795">לקבלת התראות</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">המשך הגלישה</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
 <translation id="4648718555153979859">הכרטיסיות שלך מסודרות כאן בקבוצה</translation>
-<translation id="4831000417970606741">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה. אפשר להשבית את ההתראות ב<ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">זוהתה הנחה במחיר</translation>
 <translation id="5007392906805964215">עיון</translation>
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>

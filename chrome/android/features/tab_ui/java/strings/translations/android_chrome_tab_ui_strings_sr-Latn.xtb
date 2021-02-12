@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Deli grupu</translation>
 <translation id="2759453070259087442">Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> dodatnim karticama (<ph name="NUMBER_OF_TABS" />).</translation>
 <translation id="2977480621796371840">Ukloni iz grupe</translation>
+<translation id="3291470810748040983">Dobićete obaveštenje kada postoji niža cena na otvorenoj kartici</translation>
 <translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
-<translation id="3340978935015468852">podešavanja</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skupite <ph name="TABS_COUNT_ONE" /> karticu.}one{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="3940195383040445971">Prati cene na karticama</translation>
 <translation id="3996880007329611795">Obaveštavaj me</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Nastavite sa pregledanjem</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4648718555153979859">Kartice su grupisane zajedno ovde</translation>
-<translation id="4831000417970606741">Dobićete obaveštenje kada postoji niža cena na otvorenoj kartici. Obaveštenja možete da isključite u odeljku <ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">Uočeno je sniženje</translation>
 <translation id="5007392906805964215">Pregledaj</translation>
 <translation id="5073204694187207510">Sakrijte prikaz mreže na celom ekranu</translation>

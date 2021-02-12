@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Ուղարկել խումբը</translation>
 <translation id="2759453070259087442">Ծավալել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։</translation>
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
+<translation id="3291470810748040983">Դուք ծանուցում կստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
-<translation id="3340978935015468852">կարգավորումներում</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
 <translation id="3940195383040445971">Հետագծել գները ներդիրներում</translation>
 <translation id="3996880007329611795">Ստանալ ծանուցումներ</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
 <translation id="4450893287417543264">Այլևս ցույց չտալ</translation>
 <translation id="4648718555153979859">Ձեր ներդիրները խմբավորվում են այստեղ</translation>
-<translation id="4831000417970606741">Դուք ծանուցում կստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի։ Դուք կարող եք անջատել ծանուցումները <ph name="SETTINGS" />ում։</translation>
 <translation id="492284538114688557">Հայտնաբերվել է գնի իջեցում</translation>
 <translation id="5007392906805964215">Դիտել</translation>
 <translation id="5073204694187207510">Թաքցնել լիաէկրան ցանցը</translation>

@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Deel groep</translation>
 <translation id="2759453070259087442">Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies uit.</translation>
 <translation id="2977480621796371840">Verwyder uit groep</translation>
+<translation id="3291470810748040983">Jy sal 'n opletberig kry wanneer daar 'n laer prys in 'n oop oortjie is</translation>
 <translation id="3328308545011660196">Voorstel: <ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
-<translation id="3340978935015468852">instellings</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
 <translation id="3996880007329611795">Word in kennis gestel</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Hou aan blaai</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="4648718555153979859">Jou oortjies word hier saamgegroepeer</translation>
-<translation id="4831000417970606741">Jy sal 'n opletberig kry wanneer daar 'n laer prys in 'n oop oortjie is. Jy kan opletberigte afskakel in <ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">Prysdaling is opgemerk</translation>
 <translation id="5007392906805964215">Gaan na</translation>
 <translation id="5073204694187207510">Versteek volskermrooster</translation>

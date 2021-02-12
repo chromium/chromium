@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2759453070259087442">Zabaldu <ph name="NUMBER_OF_TABS" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.</translation>
 <translation id="2977480621796371840">Kendu taldetik</translation>
+<translation id="3291470810748040983">Alerta bat jasoko duzu irekita daukazun fitxa bateko produkturen baten prezioa jaisten denean</translation>
 <translation id="3328308545011660196">Iradokizuna: <ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>
-<translation id="3340978935015468852">ezarpenak</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Tolestu <ph name="TABS_COUNT_ONE" /> fitxa.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}}</translation>
 <translation id="3940195383040445971">Egin prezioen jarraipena fitxetan</translation>
 <translation id="3996880007329611795">Jaso alertak</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Jarraitu arakatzen</translation>
 <translation id="4450893287417543264">Ez erakutsi berriro</translation>
 <translation id="4648718555153979859">Fitxak taldekatuta daude hemen</translation>
-<translation id="4831000417970606741">Alerta bat jasoko duzu irekita daukazun fitxa bateko produkturen baten prezioa jaisten denean. Alertak desaktibatzeko, joan <ph name="SETTINGS" /> atalera.</translation>
 <translation id="492284538114688557">Prezio-jaitsiera bat hauteman da</translation>
 <translation id="5007392906805964215">Berrikusi</translation>
 <translation id="5073204694187207510">Ezkutatu pantaila osoko sareta</translation>

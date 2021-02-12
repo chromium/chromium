@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Trimite grupul</translation>
 <translation id="2759453070259087442">Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="NUMBER_OF_TABS" /> file.</translation>
 <translation id="2977480621796371840">Elimină din grup</translation>
+<translation id="3291470810748040983">Vei primi o alertă atunci când scade prețul dintr-o filă deschisă.</translation>
 <translation id="3328308545011660196">Sugestie: <ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
-<translation id="3340978935015468852">setări</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Restrânge <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="3940195383040445971">Urmărește prețurile din file</translation>
 <translation id="3996880007329611795">Primește notificări</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Continuă navigarea</translation>
 <translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
-<translation id="4831000417970606741">Vei primi o alertă atunci când scade prețul dintr-o filă deschisă. Poți dezactiva alertele în <ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">S-a detectat o scădere de preț</translation>
 <translation id="5007392906805964215">Examinează</translation>
 <translation id="5073204694187207510">Ascunde grila pe ecran complet</translation>

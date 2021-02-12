@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">குழுவைப் பகிர்</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> தாவல் குழுவை விரிவாக்கும்.</translation>
 <translation id="2977480621796371840">குழுவிலிருந்து அகற்று</translation>
+<translation id="3291470810748040983">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெறுவீர்கள்</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
-<translation id="3340978935015468852">அமைப்புகள்</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> தாவல் குழுவைச் சுருக்கும்.}}</translation>
 <translation id="3940195383040445971">தாவல்களில் விலையைக் கண்காணித்தல்</translation>
 <translation id="3996880007329611795">அறிவிப்பைப் பெறுக</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">உலாவலைத் தொடர்க</translation>
 <translation id="4450893287417543264">மீண்டும் காட்டாதே</translation>
 <translation id="4648718555153979859">உங்கள் தாவல்கள் இங்கு குழுவாக்கப்பட்டுள்ளன</translation>
-<translation id="4831000417970606741">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெறுவீர்கள். <ph name="SETTINGS" /> இல் விழிப்பூட்டல்களை முடக்கலாம்.</translation>
 <translation id="492284538114688557">விலைச் சரிவு கண்டறியப்பட்டது</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>

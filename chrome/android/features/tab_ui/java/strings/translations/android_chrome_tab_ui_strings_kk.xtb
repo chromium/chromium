@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Топты бөлісу</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> қойындылар тобына <ph name="NUMBER_OF_TABS" /> қойынды қосыңыз.</translation>
 <translation id="2977480621796371840">Топтан өшіру</translation>
+<translation id="3291470810748040983">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді.</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
-<translation id="3340978935015468852">параметрлер</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> қойындылар тобын жию.}}</translation>
 <translation id="3940195383040445971">Бағаны қойындыларда бақылау</translation>
 <translation id="3996880007329611795">Хабарландыру алу</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Үздіксіз көру</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
 <translation id="4648718555153979859">Қойындылар осы жерге топтастырылады.</translation>
-<translation id="4831000417970606741">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді. Оларды "<ph name="SETTINGS" />" бөлімінен өшіре аласыз.</translation>
 <translation id="492284538114688557">Бағасы арзандады</translation>
 <translation id="5007392906805964215">Көру</translation>
 <translation id="5073204694187207510">Толық экрандық торды жасыру</translation>

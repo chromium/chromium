@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">مشاركة المجموعة</translation>
 <translation id="2759453070259087442">توسيع مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" بإضافة <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>
 <translation id="2977480621796371840">الإزالة من مجموعة</translation>
+<translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
-<translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{تصغير علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
 <translation id="3996880007329611795">تلقّي إشعارات</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">التصفح المستمر</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="4648718555153979859">يتم جمع علامات التبويب معًا هنا</translation>
-<translation id="4831000417970606741">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة. يمكنك إيقاف التنبيهات من خلال <ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">تم رصد انخفاض في السعر.</translation>
 <translation id="5007392906805964215">مراجعة</translation>
 <translation id="5073204694187207510">إخفاء شبكة ملء الشاشة</translation>

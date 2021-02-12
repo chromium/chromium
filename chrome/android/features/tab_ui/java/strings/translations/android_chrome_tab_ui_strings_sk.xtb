@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Zdieľať skupinu</translation>
 <translation id="2759453070259087442">Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> pomocou <ph name="NUMBER_OF_TABS" /> kariet.</translation>
 <translation id="2977480621796371840">Odstrániť zo skupiny</translation>
+<translation id="3291470810748040983">Keď bude na otvorenej karte nižšia cena, dostanete upozornenie</translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
-<translation id="3340978935015468852">nastavenia</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Zbaliť <ph name="TABS_COUNT_ONE" /> kartu}few{Zbaliť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami}many{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Zbaliť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami}}</translation>
 <translation id="3940195383040445971">Sledovať ceny na kartách</translation>
 <translation id="3996880007329611795">Dostávať upozornenia</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Pokračovať v prehliadaní</translation>
 <translation id="4450893287417543264">Nabudúce nezobrazovať</translation>
 <translation id="4648718555153979859">Tu sú zoskupené vaše karty</translation>
-<translation id="4831000417970606741">Keď bude na otvorenej karte nižšia cena, dostanete upozornenie. Upozornenia môžete vypnúť v sekcii <ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">Zistil sa pokles ceny</translation>
 <translation id="5007392906805964215">Prezrieť</translation>
 <translation id="5073204694187207510">Skryť mriežku na celú obrazovku</translation>

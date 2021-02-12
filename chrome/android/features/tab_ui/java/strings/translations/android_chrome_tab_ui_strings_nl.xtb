@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Groep delen</translation>
 <translation id="2759453070259087442">De tabbladgroep <ph name="TITLE_OF_GROUP" /> uitvouwen met <ph name="NUMBER_OF_TABS" /> tabbladen.</translation>
 <translation id="2977480621796371840">Uit groep verwijderen</translation>
+<translation id="3291470810748040983">Je krijgt een melding als er een lagere prijs is op een geopend tabblad</translation>
 <translation id="3328308545011660196">Suggestie: <ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
-<translation id="3340978935015468852">instellingen</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{De tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
 <translation id="3940195383040445971">Prijzen volgen op tabbladen</translation>
 <translation id="3996880007329611795">Meldingen krijgen</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Verder browsen</translation>
 <translation id="4450893287417543264">Niet meer tonen</translation>
 <translation id="4648718555153979859">Je tabbladen zijn hier gegroepeerd</translation>
-<translation id="4831000417970606741">Je krijgt een melding als er een lagere prijs is op een geopend tabblad. Je kunt meldingen uitzetten via de <ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">Prijsdaling opgemerkt</translation>
 <translation id="5007392906805964215">Bekijken</translation>
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>

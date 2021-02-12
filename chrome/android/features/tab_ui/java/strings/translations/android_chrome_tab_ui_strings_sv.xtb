@@ -17,8 +17,8 @@
 <translation id="2671423594960767771">Dela grupp</translation>
 <translation id="2759453070259087442">Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
 <translation id="2977480621796371840">Ta bort från gruppen</translation>
+<translation id="3291470810748040983">Du får en avisering när det finns ett lägre pris på en öppen flik</translation>
 <translation id="3328308545011660196">Förslag: <ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
-<translation id="3340978935015468852">inställningar</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="3940195383040445971">Bevaka priser på flikar</translation>
 <translation id="3996880007329611795">Få aviseringar</translation>
@@ -26,7 +26,6 @@
 <translation id="4212246570487010370">Fortsätt surfa</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="4648718555153979859">Dina flikar samlas här</translation>
-<translation id="4831000417970606741">Du får en avisering när det finns ett lägre pris på en öppen flik. Du kan stänga av aviseringar i <ph name="SETTINGS" />.</translation>
 <translation id="492284538114688557">Prissänkning upptäcktes</translation>
 <translation id="5007392906805964215">Granska</translation>
 <translation id="5073204694187207510">Dölj helskärmsrutnät</translation>
