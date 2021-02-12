@@ -5776,13 +5776,14 @@ ci.win_builder(
 
 ci.cipd_builder(
     name = "rts-model-packager",
+    builderless = False,
+    executable = "recipe:chromium_rts/create_model",
+    schedule = "0 10 * * *",  # at 2 AM PST, once a day.
+    triggered_by = [],
+    execution_timeout = 6 * time.hour,
+    cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "rts",
         short_name = "create-model",
     ),
-    executable = "recipe:chromium_rts/create_model",
-    schedule = "0 10 * * *",  # at 2 AM PST, once a day.
-    triggered_by = [],
-    cores = 32,
-    execution_timeout = 6 * time.hour,
 )
