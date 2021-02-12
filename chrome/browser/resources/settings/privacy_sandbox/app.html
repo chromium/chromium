@@ -6,6 +6,10 @@
     width: 120px;
   }
 
+  .box-last {
+    padding-bottom: 12px;
+  }
+
   .card {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
@@ -86,7 +90,7 @@
         </ul>
       </div>
     </div>
-    <div class="cr-row continuation">
+    <div class="cr-row continuation box-last">
       <cr-button class="cr-button" id="learnMoreButton" role="button"
           tabindex="0" on-click="onLearnMoreButtonClick_">
         $i18n{privacySandboxPageDetails}
