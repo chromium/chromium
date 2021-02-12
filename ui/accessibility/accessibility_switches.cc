@@ -40,10 +40,6 @@ const char kEnableExperimentalAccessibilityLanguageDetectionDynamic[] =
 const char kEnableExperimentalAccessibilitySwitchAccessText[] =
     "enable-experimental-accessibility-switch-access-text";
 
-// Enables annotations feature that hasn't launched yet.
-const char kEnableExperimentalAccessibilityChromeVoxAnnotations[] =
-    "enable-experimental-accessibility-chromevox-annotations";
-
 // Enables Switch Access point scanning. This feature hasn't launched yet.
 const char kEnableSwitchAccessPointScanning[] =
     "enable-switch-access-point-scanning";

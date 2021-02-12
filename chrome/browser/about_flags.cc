@@ -3868,13 +3868,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessSetupGuide)},
-    {"enable-experimental-accessibility-chromevox-annotations",
-     flag_descriptions::kExperimentalAccessibilityChromeVoxAnnotationsName,
-     flag_descriptions::
-         kExperimentalAccessibilityChromeVoxAnnotationsDescription,
-     kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::kEnableExperimentalAccessibilityChromeVoxAnnotations)},
     {"enable-experimental-kernel-vm-support",
      flag_descriptions::kKernelnextVMsName,
      flag_descriptions::kKernelnextVMsDescription, kOsCrOS,

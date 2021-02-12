@@ -4306,11 +4306,6 @@ const char kExoLockNotificationDescription[] =
     "Show a notification bubble once an application has switched to "
     "non-immersive fullscreen mode or obtained pointer lock.";
 
-const char kExperimentalAccessibilityChromeVoxAnnotationsName[] =
-    "Enable experimental ChromeVox annotations feature.";
-const char kExperimentalAccessibilityChromeVoxAnnotationsDescription[] =
-    "Allows users to create custom annotations for elements using ChromeVox.";
-
 const char kExperimentalAccessibilityDictationExtensionName[] =
     "Experimental accessibility dictation extension.";
 const char kExperimentalAccessibilityDictationExtensionDescription[] =

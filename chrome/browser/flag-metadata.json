@@ -1602,11 +1602,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "enable-experimental-accessibility-chromevox-annotations",
-    "owners": [ "akihiroota" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "enable-experimental-accessibility-dictation-extension",
     "owners": [ "akihiroota" ],
     "expiry_milestone": 92
