@@ -8,10 +8,12 @@
 #include "base/strings/utf_string_conversions.h"
 
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
+#include "ui/aura/window.h"
+#include "ui/base/ime/chromeos/ime_bridge.h"
 
 namespace chromeos {
 
-EmojiHandler::EmojiHandler() : selection_range_set(false) {}
+EmojiHandler::EmojiHandler() {}
 EmojiHandler::~EmojiHandler() = default;
 
 void EmojiHandler::RegisterMessages() {
@@ -29,7 +31,19 @@ void EmojiHandler::HandleInsertEmoji(const base::ListValue* args) {
 
   const std::string& emoji = args->GetList()[0].GetString();
 
-  ui::TextInputClient* input_client = EmojiPickerDialog::input_client;
+  // Hide emoji picker window to restore focus to original text field
+  if (EmojiPickerDialog::window) {
+    EmojiPickerDialog::window->Hide();
+  }
+
+  ui::InputMethod* input_method =
+      ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  if (!input_method) {
+    LOG(WARNING) << "no input_method found";
+    return;
+  }
+
+  ui::TextInputClient* input_client = input_method->GetTextInputClient();
 
   if (!input_client) {
     LOG(WARNING) << "no input_client found";
@@ -39,11 +53,7 @@ void EmojiHandler::HandleInsertEmoji(const base::ListValue* args) {
   if (input_client->GetTextInputType() ==
       ui::TextInputType::TEXT_INPUT_TYPE_NONE) {
     LOG(WARNING) << "attempt to insert into input_client with type none";
-  }
-
-  if (!selection_range_set) {
-    input_client->SetEditableSelectionRange(EmojiPickerDialog::selection_range);
-    selection_range_set = true;
+    return;
   }
 
   input_client->InsertText(

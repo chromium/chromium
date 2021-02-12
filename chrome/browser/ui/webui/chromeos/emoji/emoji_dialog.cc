@@ -19,8 +19,7 @@ namespace chromeos {
 
 constexpr gfx::Size kDefaultWindowSize(340, 390);
 
-ui::TextInputClient* EmojiPickerDialog::input_client = nullptr;
-gfx::Range EmojiPickerDialog::selection_range = gfx::Range();
+gfx::NativeWindow EmojiPickerDialog::window = nullptr;
 
 EmojiPickerDialog::EmojiPickerDialog() {
   set_can_resize(false);
@@ -29,15 +28,11 @@ EmojiPickerDialog::EmojiPickerDialog() {
 void EmojiPickerDialog::Show() {
   ui::InputMethod* input_method =
       ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  if (input_method) {
-    input_client = input_method->GetTextInputClient();
-  }
-  if (input_client) {
-    input_client->GetEditableSelectionRange(&selection_range);
-  }
-  const auto caret_bounds =
+  const ui::TextInputClient* input_client =
+      input_method ? input_method->GetTextInputClient() : nullptr;
+  const gfx::Rect caret_bounds =
       input_client ? input_client->GetCaretBounds() : gfx::Rect();
-  gfx::NativeWindow window = chrome::ShowWebDialog(
+  window = chrome::ShowWebDialog(
       nullptr, ProfileManager::GetActiveUserProfile(), new EmojiPickerDialog());
   // For now, this can overflow the screen.
   if (input_client) {
@@ -75,7 +70,7 @@ void EmojiPickerDialog::OnDialogShown(content::WebUI* webui) {
 }
 
 void EmojiPickerDialog::OnDialogClosed(const std::string& json_retval) {
-  input_client = nullptr;
+  window = nullptr;
   delete this;
 }
 

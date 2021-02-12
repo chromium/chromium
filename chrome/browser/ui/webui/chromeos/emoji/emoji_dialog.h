@@ -36,10 +36,8 @@ class EmojiPickerDialog : public ui::WebDialogDelegate {
 
   content::WebUI* webui_ = nullptr;
 
-  // Input field which was focused before the EmojiDialog was opened.
-  static ui::TextInputClient* input_client;
-  // Selection range of input_client before the EmojiDialog was opened.
-  static gfx::Range selection_range;
+  // Window for the emoji picker.  Used by the handler to close the window.
+  static gfx::NativeWindow window;
   friend class EmojiHandler;
 
   DISALLOW_COPY_AND_ASSIGN(EmojiPickerDialog);

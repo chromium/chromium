@@ -22,8 +22,6 @@ class EmojiHandler : public content::WebUIMessageHandler {
 
   void HandleInsertEmoji(const base::ListValue* args);
 
-  bool selection_range_set;
-
   DISALLOW_COPY_AND_ASSIGN(EmojiHandler);
 };
 
