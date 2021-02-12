@@ -116,10 +116,10 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
     HoldingSpaceItemView* view,
     const ui::GestureEvent& event) {
   // When a long press or two finger tap gesture occurs we are going to show the
-  // context menu. Ensure that the pressed `view` is the only view selected.
+  // context menu. Ensure that the pressed `view` is part of the selection.
   if (event.type() == ui::ET_GESTURE_LONG_PRESS ||
       event.type() == ui::ET_GESTURE_TWO_FINGER_TAP) {
-    SetSelection(view);
+    view->SetSelected(true);
     return;
   }
   // If a scroll begin gesture is received while the context menu is showing,
@@ -131,10 +131,12 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
     view->StartDrag(event, ui::mojom::DragEventSource::kTouch);
     return;
   }
-  // When a tap gesture occurs, we select and open only the item corresponding
-  // to the tapped `view`.
+  // When a tap gesture occurs, we select and open the corresponding tapped
+  // `view`. If the `view` was not already part of the current selection, it
+  // will become the entire selection.
   if (event.type() == ui::ET_GESTURE_TAP) {
-    SetSelection(view);
+    if (!view->selected())
+      SetSelection(view);
     OpenItems(GetSelection());
   }
 }

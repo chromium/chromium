@@ -32,6 +32,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "url/gurl.h"
@@ -45,11 +46,11 @@ constexpr char kTestUser[] = "user@test";
 // Helpers ---------------------------------------------------------------------
 
 // A wrapper around `views::View::GetVisible()` with a null check for `view`.
-bool IsViewVisible(views::View* view) {
+bool IsViewVisible(const views::View* view) {
   return view && view->GetVisible();
 }
 
-void Click(views::View* view, int flags) {
+void Click(const views::View* view, int flags = ui::EF_NONE) {
   auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
@@ -57,7 +58,27 @@ void Click(views::View* view, int flags) {
   event_generator.ClickLeftButton();
 }
 
-void PressKey(views::View* view, ui::KeyboardCode key_code, int flags) {
+void GestureTap(const views::View* view) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.GestureTapAt(view->GetBoundsInScreen().CenterPoint());
+}
+
+void LongPress(const views::View* view) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveTouch(view->GetBoundsInScreen().CenterPoint());
+  ui::GestureEvent long_press(
+      event_generator.current_screen_location().x(),
+      event_generator.current_screen_location().y(), ui::EF_NONE,
+      ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  event_generator.Dispatch(&long_press);
+}
+
+void PressKey(const views::View* view,
+              ui::KeyboardCode key_code,
+              int flags = ui::EF_NONE) {
   auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.PressKey(key_code, flags);
@@ -1833,7 +1854,7 @@ TEST_P(HoldingSpaceTrayTest, PlaceholderContainsFilesAppChip) {
 
   // Click the chip and expect a call to open the Files app.
   EXPECT_CALL(*client(), OpenMyFiles);
-  Click(files_app_chip, 0);
+  Click(files_app_chip);
 
   // After having been acted upon by the user, there should be a single click
   // event logged to the Files app chip histogram.
@@ -1859,14 +1880,14 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
       HoldingSpaceItemView::Cast(download_chips[0]);
 
   // Click a download item chip. The view should be selected
-  Click(download_chips[0], 0);
+  Click(download_chips[0]);
   ASSERT_TRUE(holding_space_item->selected());
 
   // Press the enter key. We expect the client to open the selected item.
   EXPECT_CALL(
       *client(),
       OpenItems(testing::ElementsAre(holding_space_item->item()), testing::_));
-  PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN, 0);
+  PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN);
 
   test_api()->Show();
 
@@ -1886,7 +1907,7 @@ TEST_P(HoldingSpaceTrayTest, EnterKeyOpensSelectedFiles) {
               OpenItems(testing::ElementsAre(holding_space_item_2->item(),
                                              holding_space_item->item()),
                         testing::_));
-  PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN, 0);
+  PressKey(download_chips[0], ui::KeyboardCode::VKEY_RETURN);
 }
 
 // Clicking on tote buble background should deselect any selected items.
@@ -1907,12 +1928,12 @@ TEST_P(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
       HoldingSpaceItemView::Cast(download_chips[1])};
 
   // Click an item chip. The view should be selected.
-  Click(download_chips[0], 0);
+  Click(download_chips[0]);
   ASSERT_TRUE(item_views[0]->selected());
   ASSERT_FALSE(item_views[1]->selected());
 
   // Clicking on the parent view should deselect item.
-  Click(download_chips[0]->parent(), 0);
+  Click(download_chips[0]->parent());
   ASSERT_FALSE(item_views[0]->selected());
   ASSERT_FALSE(item_views[1]->selected());
 
@@ -1923,9 +1944,94 @@ TEST_P(HoldingSpaceTrayTest, ClickBackgroundToDeselectItems) {
   ASSERT_TRUE(item_views[1]->selected());
 
   // Clicking on the parent view should deselect both items.
-  Click(download_chips[0]->parent(), 0);
+  Click(download_chips[0]->parent());
   ASSERT_FALSE(item_views[0]->selected());
   ASSERT_FALSE(item_views[1]->selected());
+}
+
+// It should be possible to select multiple items in touch mode.
+TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
+  StartSession();
+
+  // Add a few holding space items.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake2"));
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake3"));
+
+  // Show the bubble and cache holding space item views.
+  test_api()->Show();
+  const std::vector<views::View*> pinned_file_chips =
+      test_api()->GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 3u);
+  std::array<HoldingSpaceItemView*, 3> item_views = {
+      HoldingSpaceItemView::Cast(pinned_file_chips[0]),
+      HoldingSpaceItemView::Cast(pinned_file_chips[1]),
+      HoldingSpaceItemView::Cast(pinned_file_chips[2])};
+
+  // Long press an item. The view should be selected and a context menu shown.
+  LongPress(item_views[0]);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+  EXPECT_TRUE(views::MenuController::GetActiveInstance());
+
+  // Close the context menu. The view that was long pressed should still be
+  // selected.
+  PressKey(item_views[0], ui::KeyboardCode::VKEY_ESCAPE);
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+
+  // Long press another item. Both views that were long pressed should be
+  // selected and a context menu shown.
+  LongPress(item_views[1]);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+  EXPECT_TRUE(views::MenuController::GetActiveInstance());
+
+  // Close the context menu. Both views that were long pressed should still be
+  // selected.
+  PressKey(item_views[0], ui::KeyboardCode::VKEY_ESCAPE);
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+
+  // Tap one of the selected views. Both items should be opened.
+  EXPECT_CALL(*client(), OpenItems)
+      .WillOnce(
+          testing::Invoke([&](const std::vector<const HoldingSpaceItem*>& items,
+                              HoldingSpaceClient::SuccessCallback callback) {
+            ASSERT_EQ(items.size(), 2u);
+            // NOTE: Since `item_views` are indexed in reverse chronological
+            // order of their creation, it is expected that the order of their
+            // respective `items` be reversed when selected.
+            EXPECT_EQ(item_views[0]->item(), items[1]);
+            EXPECT_EQ(item_views[1]->item(), items[0]);
+          }));
+  GestureTap(item_views[0]);
+  testing::Mock::VerifyAndClearExpectations(client());
+
+  // Long press the same two views to reselect them.
+  LongPress(item_views[0]);
+  LongPress(item_views[1]);
+  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+
+  // Tap an unselected view. Only the view which was previously unselected
+  // should be open.
+  EXPECT_CALL(*client(), OpenItems)
+      .WillOnce(
+          testing::Invoke([&](const std::vector<const HoldingSpaceItem*>& items,
+                              HoldingSpaceClient::SuccessCallback callback) {
+            ASSERT_EQ(items.size(), 1u);
+            EXPECT_EQ(items[0], item_views[2]->item());
+          }));
+  GestureTap(item_views[2]);
+  testing::Mock::VerifyAndClearExpectations(client());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());

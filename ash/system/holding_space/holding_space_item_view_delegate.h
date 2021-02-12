@@ -120,7 +120,11 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   // Builds and returns a raw pointer to `context_menu_model_`.
   ui::SimpleMenuModel* BuildMenuModel();
 
-  // Returns the subset of `views_` which are currently selected.
+  // TODO(crbug.com/1177451): Stabilize ordering.
+  // Returns the subset of `views_` which are currently selected. Note that
+  // ordering of the selection may be unstable as it is based on the creation
+  // order of holding space item views which are destroyed/re-created during
+  // section animations.
   std::vector<const HoldingSpaceItemView*> GetSelection();
 
   // Marks `view` as selected. All other `views_` are marked unselected.
