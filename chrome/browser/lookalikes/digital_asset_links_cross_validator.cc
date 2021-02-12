@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 
+#include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace {
@@ -14,9 +15,13 @@ DigitalAssetLinkCrossValidator::DigitalAssetLinkCrossValidator(
     Profile* profile,
     const url::Origin& lookalike_domain,
     const url::Origin& target_domain,
+    base::TimeDelta timeout,
+    base::Clock* clock,
     ResultCallback callback)
     : lookalike_domain_(lookalike_domain),
       target_domain_(target_domain),
+      timeout_(timeout),
+      clock_(clock),
       callback_(std::move(callback)),
       asset_link_handler_(
           std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
@@ -26,6 +31,8 @@ DigitalAssetLinkCrossValidator::~DigitalAssetLinkCrossValidator() = default;
 
 void DigitalAssetLinkCrossValidator::Start() {
   // Fetch and validate the manifest from the lookalike site.
+  start_time_ = clock_->Now();
+  asset_link_handler_->SetTimeoutDuration(timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
       lookalike_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
       {{"namespace", "web"}, {"site", target_domain_.Serialize()}},
@@ -36,12 +43,16 @@ void DigitalAssetLinkCrossValidator::Start() {
 
 void DigitalAssetLinkCrossValidator::OnFetchLookalikeManifestComplete(
     digital_asset_links::RelationshipCheckResult result) {
-  // Fail if the first manifest failed.
-  if (result != digital_asset_links::RelationshipCheckResult::kSuccess) {
+  // Fail if the first manifest failed or we reached the timeout.
+  base::TimeDelta elapsed = clock_->Now() - start_time_;
+  if (result != digital_asset_links::RelationshipCheckResult::kSuccess ||
+      elapsed >= timeout_) {
     std::move(callback_).Run(false);
     return;
   }
+  timeout_ = timeout_ - elapsed;
   // Swap current and target domains and validate the new manifest.
+  asset_link_handler_->SetTimeoutDuration(timeout_);
   asset_link_handler_->CheckDigitalAssetLinkRelationship(
       target_domain_.Serialize(), kDigitalAssetLinkRecordType, base::nullopt,
       {{"namespace", "web"}, {"site", lookalike_domain_.Serialize()}},

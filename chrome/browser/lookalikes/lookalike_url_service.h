@@ -51,6 +51,7 @@ class LookalikeUrlService : public KeyedService {
   const std::vector<DomainInfo> GetLatestEngagedSites() const;
 
   void SetClockForTesting(base::Clock* clock);
+  base::Clock* clock() const { return clock_; }
 
  private:
   void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);

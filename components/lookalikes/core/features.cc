@@ -16,5 +16,7 @@ const base::Feature kLookalikeInterstitialForPunycode{
 const base::Feature kLookalikeDigitalAssetLinks{
     "LookalikeDigitalAssetLinks", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const char kLookalikeDigitalAssetLinksTimeoutParameter[] = "timeout";
+
 }  // namespace features
 }  // namespace lookalikes

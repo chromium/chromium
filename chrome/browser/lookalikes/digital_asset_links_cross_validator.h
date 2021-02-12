@@ -6,11 +6,16 @@
 #define CHROME_BROWSER_LOOKALIKES_DIGITAL_ASSET_LINKS_CROSS_VALIDATOR_H_
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/installable/digital_asset_links/digital_asset_links_handler.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 class Profile;
+
+namespace base {
+class Clock;
+}
 
 // Fetches and validates Digital Asset Links manifests from the lookalike and
 // target sites.
@@ -27,7 +32,10 @@ class DigitalAssetLinkCrossValidator {
   DigitalAssetLinkCrossValidator(Profile* profile,
                                  const url::Origin& lookalike_domain,
                                  const url::Origin& target_domain,
+                                 base::TimeDelta timeout,
+                                 base::Clock* clock,
                                  ResultCallback callback);
+
   ~DigitalAssetLinkCrossValidator();
 
   void Start();
@@ -40,6 +48,9 @@ class DigitalAssetLinkCrossValidator {
 
   const url::Origin lookalike_domain_;
   const url::Origin target_domain_;
+  base::TimeDelta timeout_;
+  base::Time start_time_;
+  const base::Clock* clock_;
   ResultCallback callback_;
 
   std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler>

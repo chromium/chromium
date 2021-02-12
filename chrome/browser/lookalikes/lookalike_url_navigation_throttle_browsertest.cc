@@ -50,6 +50,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -1611,6 +1612,7 @@ class LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest
   struct TestSite {
     std::string hostname;
     std::string manifest;
+    bool slow_load = false;
   };
 
   // Sets up the site |lookalike_hostname| to serve a manifest with contents
@@ -1622,11 +1624,12 @@ class LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest
                               const std::string& lookalike_manifest,
                               const char* target_hostname,
                               const std::string& target_manifest,
-                              const char* expected_suggested_hostname) {
+                              const char* expected_suggested_hostname,
+                              bool slow_load = false) {
     const GURL kNavigatedUrl = MakeURL(lookalike_hostname);
     const std::vector<TestSite> sites{
-        {lookalike_hostname, lookalike_manifest},
-        {target_hostname, target_manifest},
+        {lookalike_hostname, lookalike_manifest, slow_load},
+        {target_hostname, target_manifest, slow_load},
     };
     SetUpManifests(sites);
 
@@ -1669,6 +1672,9 @@ class LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest
                    content::URLLoaderInterceptor::RequestParams* params) {
     for (const TestSite& site : sites) {
       if (params->url_request.url == MakeManifestURL(site.hostname)) {
+        if (site.slow_load) {
+          test_clock()->Advance(base::TimeDelta::FromMinutes(15));
+        }
         if (!site.manifest.empty()) {
           // Serve manifest contents:
           std::string headers =
@@ -1744,6 +1750,17 @@ IN_PROC_BROWSER_TEST_P(
     ValidAssetLinks_IgnoreInterstitial) {
   TestNoInterstitial("googlé.com", MakeManifestWithTarget("google.com"),
                      "google.com", MakeManifestWithTarget("googlé.com"));
+}
+
+// Similar to ValidAssetLinks_IgnoreInterstitial, but the manifest fetches
+// timeout.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleDigitalAssetLinksBrowserTest,
+    ValidAssetLinks_Timeout_ShowInterstitial) {
+  TestExpectInterstitial("googlé.com", MakeManifestWithTarget("google.com"),
+                         "google.com", MakeManifestWithTarget("googlé.com"),
+                         /*expected_suggested_url=*/"google.com",
+                         /*slow_load=*/true);
 }
 
 // Both lookalike and target sites serve asset links. Lookalike site's manifest
