@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/cache_storage_context.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
-#include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
 
 namespace base {
@@ -53,7 +53,6 @@ class CONTENT_EXPORT CacheStorageContextImpl : public CacheStorageContext {
   // Init and Shutdown are for use on the UI thread when the profile,
   // storagepartition is being setup and torn down.
   void Init(const base::FilePath& user_data_directory,
-            scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
             scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
             mojo::PendingRemote<storage::mojom::BlobStorageContext>
                 blob_storage_context);
@@ -75,6 +74,8 @@ class CONTENT_EXPORT CacheStorageContextImpl : public CacheStorageContext {
       override;
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                        observer) override;
+  void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
+                              policy_updates) override;
 
   scoped_refptr<CacheStorageManager> cache_manager() {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -94,16 +95,16 @@ class CONTENT_EXPORT CacheStorageContextImpl : public CacheStorageContext {
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
           blob_storage_context);
 
-  void ShutdownOnTaskRunner();
+  void ShutdownOnTaskRunner(std::set<url::Origin> origins_to_purge_on_shutdown);
 
   // Initialized at construction.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  // The set of origins whose storage should be cleared on shutdown.
+  std::set<url::Origin> origins_to_purge_on_shutdown_;
+
   // Initialized in Init(); true if the user data directory is empty.
   bool is_incognito_ = false;
-
-  // Initialized in Init().
-  scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
 
   // Created and accessed on the target sequence.  Released on the target
   // sequence in ShutdownOnTaskRunner() or the destructor via

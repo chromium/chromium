@@ -2467,6 +2467,10 @@ class CacheStorageControlForBadOrigin
                        observer) override {
     NOTREACHED();
   }
+  void ApplyPolicyUpdates(std::vector<storage::mojom::StoragePolicyUpdatePtr>
+                              policy_updates) override {
+    NOTREACHED();
+  }
 };
 
 }  // namespace

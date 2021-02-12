@@ -121,10 +121,6 @@ TestStoragePartition::GetCacheStorageControl() {
   return cache_storage_control_.get();
 }
 
-CacheStorageContext* TestStoragePartition::GetCacheStorageContext() {
-  return cache_storage_context_;
-}
-
 GeneratedCodeCacheContext*
 TestStoragePartition::GetGeneratedCodeCacheContext() {
   return generated_code_cache_context_;

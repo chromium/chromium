@@ -125,11 +125,7 @@ class TestStoragePartition : public StoragePartition {
   }
   SharedWorkerService* GetSharedWorkerService() override;
 
-  void set_cache_storage_context(CacheStorageContext* context) {
-    cache_storage_context_ = context;
-  }
   storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
-  CacheStorageContext* GetCacheStorageContext() override;
 
   void set_generated_code_cache_context(GeneratedCodeCacheContext* context) {
     generated_code_cache_context_ = context;
@@ -233,7 +229,6 @@ class TestStoragePartition : public StoragePartition {
   DedicatedWorkerService* dedicated_worker_service_ = nullptr;
   SharedWorkerService* shared_worker_service_ = nullptr;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
-  CacheStorageContext* cache_storage_context_ = nullptr;
   GeneratedCodeCacheContext* generated_code_cache_context_ = nullptr;
   PlatformNotificationContext* platform_notification_context_ = nullptr;
   DevToolsBackgroundServicesContext* devtools_background_services_context_ =

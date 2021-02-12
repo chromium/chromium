@@ -19,7 +19,6 @@
 #include "url/gurl.h"
 
 using content::BrowserThread;
-using content::CacheStorageContext;
 using content::StorageUsageInfo;
 
 namespace browsing_data {

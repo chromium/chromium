@@ -4,6 +4,7 @@
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
@@ -53,4 +54,8 @@ interface CacheStorageControl {
 
   // Adds an observer that will receive cache change callbacks.
   AddObserver(pending_remote<CacheStorageObserver> observer);
+
+  // Applies changes to data retention policy which are relevant at shutdown.
+  // See StoragePolicyUpdate.
+  ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates);
 };

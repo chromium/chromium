@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/browser/quota/special_storage_policy.h"
 #include "url/origin.h"
 
 namespace content {
@@ -48,14 +47,12 @@ CacheStorageContextImpl::~CacheStorageContextImpl() {
 
 void CacheStorageContextImpl::Init(
     const base::FilePath& user_data_directory,
-    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   is_incognito_ = user_data_directory.empty();
-  special_storage_policy_ = std::move(special_storage_policy);
 
   scoped_refptr<base::SequencedTaskRunner> cache_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -80,7 +77,8 @@ void CacheStorageContextImpl::Shutdown() {
   receivers_.Clear();
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&CacheStorageContextImpl::ShutdownOnTaskRunner, this));
+      base::BindOnce(&CacheStorageContextImpl::ShutdownOnTaskRunner, this,
+                     std::move(origins_to_purge_on_shutdown_)));
 }
 
 void CacheStorageContextImpl::Bind(
@@ -174,6 +172,16 @@ void CacheStorageContextImpl::AddObserver(
           base::RetainedRef(this), std::move(observer)));
 }
 
+void CacheStorageContextImpl::ApplyPolicyUpdates(
+    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
+  for (const auto& update : policy_updates) {
+    if (!update->purge_on_shutdown)
+      origins_to_purge_on_shutdown_.erase(update->origin);
+    else
+      origins_to_purge_on_shutdown_.insert(std::move(update->origin));
+  }
+}
+
 void CacheStorageContextImpl::CreateCacheStorageManagerOnTaskRunner(
     const base::FilePath& user_data_directory,
     scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
@@ -210,41 +218,21 @@ void CacheStorageContextImpl::CreateCacheStorageManagerOnTaskRunner(
       {blink::mojom::StorageType::kTemporary});
 }
 
-void CacheStorageContextImpl::ShutdownOnTaskRunner() {
+void CacheStorageContextImpl::ShutdownOnTaskRunner(
+    std::set<url::Origin> origins_to_purge_on_shutdown) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  // Delete session-only ("clear on exit") origins.
-  if (special_storage_policy_ &&
-      special_storage_policy_->HasSessionOnlyOrigins()) {
-    cache_manager_->GetAllOriginsUsage(
-        storage::mojom::CacheStorageOwner::kCacheAPI,
-        base::BindOnce(
-            [](scoped_refptr<CacheStorageManager> cache_manager,
-               scoped_refptr<storage::SpecialStoragePolicy>
-                   special_storage_policy,
-               const std::vector<storage::mojom::StorageUsageInfoPtr>
-                   usage_info) {
-              for (const auto& info : usage_info) {
-                if (special_storage_policy->IsStorageSessionOnly(
-                        info->origin.GetURL()) &&
-                    !special_storage_policy->IsStorageProtected(
-                        info->origin.GetURL())) {
-                  cache_manager->DeleteOriginData(
-                      info->origin,
-                      storage::mojom::CacheStorageOwner::kCacheAPI,
+  for (const auto& origin : origins_to_purge_on_shutdown) {
+    cache_manager_->DeleteOriginData(
+        origin, storage::mojom::CacheStorageOwner::kCacheAPI,
 
-                      // Retain a reference to the manager until the deletion is
-                      // complete, since it internally uses weak pointers for
-                      // the various stages of deletion and nothing else will
-                      // keep it alive during shutdown.
-                      base::BindOnce(
-                          [](scoped_refptr<CacheStorageManager> cache_manager,
-                             blink::mojom::QuotaStatusCode) {},
-                          cache_manager));
-                }
-              }
-            },
-            cache_manager_, special_storage_policy_));
+        // Retain a reference to the manager until the deletion is
+        // complete, since it internally uses weak pointers for
+        // the various stages of deletion and nothing else will
+        // keep it alive during shutdown.
+        base::BindOnce([](scoped_refptr<CacheStorageManager> cache_manager,
+                          blink::mojom::QuotaStatusCode) {},
+                       cache_manager_));
   }
 
   // Release |cache_manager_|. New clients will get a nullptr if they request

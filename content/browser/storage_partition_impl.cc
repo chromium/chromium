@@ -1096,9 +1096,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
   if (GetServiceWorkerContext())
     GetServiceWorkerContext()->Shutdown();
 
-  if (cache_storage_context_)
-    cache_storage_context_->Shutdown();
-
   if (GetPlatformNotificationContext())
     GetPlatformNotificationContext()->Shutdown();
 
@@ -1218,12 +1215,10 @@ void StoragePartitionImpl::Initialize(
       std::move(file_system_access_context), GetIOThreadTaskRunner({}),
       /*task_runner=*/nullptr);
 
-  cache_storage_context_ = base::MakeRefCounted<CacheStorageContextImpl>();
-  cache_storage_context_->Init(
-      path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
+  cache_storage_control_wrapper_ = std::make_unique<CacheStorageControlWrapper>(
+      GetIOThreadTaskRunner({}), path,
+      browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
       ChromeBlobStorageContext::GetRemoteFor(browser_context_));
-  cache_storage_context_->Bind(
-      cache_storage_control_.BindNewPipeAndPassReceiver());
 
   service_worker_context_ = new ServiceWorkerContextWrapper(browser_context_);
   service_worker_context_->set_storage_partition(this);
@@ -1493,13 +1488,7 @@ QuotaContext* StoragePartitionImpl::GetQuotaContext() {
 storage::mojom::CacheStorageControl*
 StoragePartitionImpl::GetCacheStorageControl() {
   DCHECK(initialized_);
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  return cache_storage_control_.get();
-}
-
-CacheStorageContextImpl* StoragePartitionImpl::GetCacheStorageContext() {
-  DCHECK(initialized_);
-  return cache_storage_context_.get();
+  return cache_storage_control_wrapper_.get();
 }
 
 ServiceWorkerContextWrapper* StoragePartitionImpl::GetServiceWorkerContext() {

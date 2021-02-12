@@ -567,6 +567,8 @@ source_set("browser") {
     "cache_storage/cache_storage_cache_observer.h",
     "cache_storage/cache_storage_context_impl.cc",
     "cache_storage/cache_storage_context_impl.h",
+    "cache_storage/cache_storage_control_wrapper.cc",
+    "cache_storage/cache_storage_control_wrapper.h",
     "cache_storage/cache_storage_dispatcher_host.cc",
     "cache_storage/cache_storage_dispatcher_host.h",
     "cache_storage/cache_storage_handle.h",

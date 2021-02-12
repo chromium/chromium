@@ -31,7 +31,7 @@
 #include "content/browser/bluetooth/bluetooth_allowed_devices_map.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/buckets/bucket_context.h"
-#include "content/browser/cache_storage/cache_storage_context_impl.h"
+#include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/content_index/content_index_context_impl.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
@@ -158,8 +158,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
   FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() override;
   storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
-  // TODO(enne): transition callers of this to GetCacheStorageControl
-  CacheStorageContextImpl* GetCacheStorageContext() override;
   ServiceWorkerContextWrapper* GetServiceWorkerContext() override;
   DedicatedWorkerServiceImpl* GetDedicatedWorkerService() override;
   SharedWorkerServiceImpl* GetSharedWorkerService() override;
@@ -529,8 +527,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<DOMStorageContextWrapper> dom_storage_context_;
   std::unique_ptr<LockManager> lock_manager_;
   std::unique_ptr<IndexedDBControlWrapper> indexed_db_control_wrapper_;
-  scoped_refptr<CacheStorageContextImpl> cache_storage_context_;
-  mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
+  std::unique_ptr<CacheStorageControlWrapper> cache_storage_control_wrapper_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   std::unique_ptr<DedicatedWorkerServiceImpl> dedicated_worker_service_;
   std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service_;
