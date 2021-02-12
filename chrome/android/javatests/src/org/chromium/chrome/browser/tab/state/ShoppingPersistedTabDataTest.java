@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,10 +30,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
@@ -40,6 +44,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
@@ -52,12 +58,18 @@ import java.util.concurrent.atomic.AtomicReference;
  * Test relating to {@link ShoppingPersistedTabData}
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class ShoppingPersistedTabDataTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
     public JniMocker mMocker = new JniMocker();
+
+    @Rule
+    public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     private static final int TAB_ID = 1;
     private static final boolean IS_INCOGNITO = false;
@@ -98,6 +110,9 @@ public class ShoppingPersistedTabDataTest {
 
     private static final String EMPTY_RESPONSE = "{}";
 
+    private static final String DEFAULT_ENDPOINT = "https://memex-pa.googleapis.com/v1/annotations";
+    private static final String ENDPOINT_OVERRIDE = "my-endpoint.com";
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -129,22 +144,19 @@ public class ShoppingPersistedTabDataTest {
 
     @SmallTest
     @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_time_to_live_ms/-1000"})
     public void testShoppingPriceChange() {
         shoppingPriceChange(createTabOnUiThread(TAB_ID, IS_INCOGNITO));
     }
 
     @SmallTest
     @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_time_to_live_ms/-1000"})
     public void testShoppingPriceChangeExtraFetchAfterChange() {
         Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
         long mLastPriceChangeTimeMs = shoppingPriceChange(tab);
-        final Semaphore updateTtlSemaphore = new Semaphore(0);
-        // Set TimeToLive such that a refetch will be forced
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PersistedTabData.from(tab, ShoppingPersistedTabData.class).setTimeToLiveMs(-1000);
-            updateTtlSemaphore.release();
-        });
-        acquireSemaphore(updateTtlSemaphore);
         final Semaphore semaphore = new Semaphore(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
@@ -210,9 +222,6 @@ public class ShoppingPersistedTabDataTest {
                         shoppingPersistedTabData.getPreviousPriceMicros());
                 Assert.assertEquals(ShoppingPersistedTabData.NO_TRANSITIONS_OCCURRED,
                         shoppingPersistedTabData.getLastPriceChangeTimeMs());
-                // By setting time to live to be a negative number, an update
-                // will be forced in the subsequent call
-                shoppingPersistedTabData.setTimeToLiveMs(-1000);
                 initialSemaphore.release();
             });
         });
@@ -623,6 +632,21 @@ public class ShoppingPersistedTabDataTest {
         ShoppingPersistedTabData deserialized =
                 new ShoppingPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         Assert.assertEquals(42_000_000L, deserialized.getPriceMicros());
+    }
+
+    // TODO(crbug.com/1168345) Create end to end test overriding the endpoint
+    @SmallTest
+    @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_endpoint/my-endpoint.com"})
+    public void testEndpointOverride() {
+        Assert.assertEquals(ENDPOINT_OVERRIDE, ShoppingPersistedTabData.ENDPOINT.getValue());
+    }
+
+    @SmallTest
+    @Test
+    public void testEndpointNoOverride() {
+        Assert.assertEquals(DEFAULT_ENDPOINT, ShoppingPersistedTabData.ENDPOINT.getValue());
     }
 
     private void verifyEndpointFetcherCalled(int numTimes) {
