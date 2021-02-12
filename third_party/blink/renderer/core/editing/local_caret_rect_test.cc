@@ -995,4 +995,30 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterIneditableInline) {
             LocalCaretRectOfPosition(PositionWithAffinity(position)));
 }
 
+// https://crbug.com/1155399
+TEST_P(ParameterizedLocalCaretRectTest, OptionWithDisplayContents) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/10px Ahem; width: 300px }"
+      "option { display: contents; }");
+  SetBodyContent("<option>a</option>");
+  const Element* body = GetDocument().body();
+  const Element* option = GetDocument().QuerySelector("option");
+  LocalCaretRect empty;
+  LocalCaretRect start(body->GetLayoutObject(), PhysicalRect(0, 0, 1, 10));
+  LocalCaretRect end(body->GetLayoutObject(), PhysicalRect(299, 0, 1, 10));
+
+  // LocalCaretRectOfPosition shouldn't crash
+  for (const Position& p : {Position::BeforeNode(*body), Position(body, 0)})
+    EXPECT_EQ(start, LocalCaretRectOfPosition(PositionWithAffinity(p)));
+  for (const Position& p :
+       {Position::BeforeNode(*option), Position(option, 0), Position(option, 1),
+        Position::LastPositionInNode(*option), Position::AfterNode(*option)})
+    EXPECT_EQ(empty, LocalCaretRectOfPosition(PositionWithAffinity(p)));
+  for (const Position& p :
+       {Position(body, 1), Position::LastPositionInNode(*body),
+        Position::AfterNode(*body)})
+    EXPECT_EQ(end, LocalCaretRectOfPosition(PositionWithAffinity(p)));
+}
+
 }  // namespace blink

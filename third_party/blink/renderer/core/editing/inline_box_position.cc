@@ -197,6 +197,7 @@ template <typename Strategy>
 PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
     const PositionTemplate<Strategy>& position,
     int recursion_depth) {
+  DCHECK(position.IsNotNull());
   if (recursion_depth >= kBlockFlowAdjustmentMaxRecursionDepth) {
     // TODO(editing-dev): This function enters infinite recursion in some cases.
     // Find the root cause and fix it. See https://crbug.com/857266
@@ -209,7 +210,9 @@ PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
   // |LayoutObject::CreatePositionWithAffinity()|.
   const PositionTemplate<Strategy>& downstream_equivalent =
       DownstreamIgnoringEditingBoundaries(position);
-  if (downstream_equivalent != position) {
+  DCHECK(downstream_equivalent.IsNotNull());
+  if (downstream_equivalent != position &&
+      downstream_equivalent.AnchorNode()->GetLayoutObject()) {
     return ComputeInlineAdjustedPositionAlgorithm(
         PositionWithAffinityTemplate<Strategy>(downstream_equivalent,
                                                TextAffinity::kUpstream),
@@ -217,7 +220,9 @@ PositionWithAffinityTemplate<Strategy> AdjustBlockFlowPositionToInline(
   }
   const PositionTemplate<Strategy>& upstream_equivalent =
       UpstreamIgnoringEditingBoundaries(position);
-  if (upstream_equivalent == position)
+  DCHECK(upstream_equivalent.IsNotNull());
+  if (upstream_equivalent == position ||
+      !upstream_equivalent.AnchorNode()->GetLayoutObject())
     return PositionWithAffinityTemplate<Strategy>();
 
   return ComputeInlineAdjustedPositionAlgorithm(
@@ -232,6 +237,7 @@ PositionWithAffinityTemplate<Strategy> ComputeInlineAdjustedPositionAlgorithm(
     int recursion_depth) {
   // TODO(yoichio): We don't assume |position| is canonicalized no longer and
   // there are few cases failing to compute. Fix it: crbug.com/812535.
+  DCHECK(position.IsNotNull());
   DCHECK(!position.AnchorNode()->IsShadowRoot()) << position;
   DCHECK(position.GetPosition().AnchorNode()->GetLayoutObject()) << position;
   const LayoutObject& layout_object =
