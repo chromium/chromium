@@ -63,6 +63,6 @@ SwitchAccessE2ETest = class extends E2ETestBase {
    */
   waitForPredicate(predicate, callback) {
     this.listenUntil(
-        predicate, NavigationManager.desktopNode, 'childrenChanged', callback);
+        predicate, Navigator.instance.desktopNode, 'childrenChanged', callback);
   }
 };

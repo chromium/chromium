@@ -22,7 +22,7 @@ import {SwitchAccessPredicate} from './switch_access_predicate.js';
 const AutomationNode = chrome.automation.AutomationNode;
 
 /** This class handles navigation amongst the elements onscreen. */
-export class NavigationManager extends NavigatorInterface {
+export class ItemScanManager extends NavigatorInterface {
   /**
    * @param {!AutomationNode} desktop
    */

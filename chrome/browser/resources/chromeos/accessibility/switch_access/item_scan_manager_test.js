@@ -4,8 +4,8 @@
 
 GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
-/** Test fixture for the navigation manager. */
-SwitchAccessNavigationManagerTest = class extends SwitchAccessE2ETest {
+/** Test fixture for the item scan manager. */
+SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
@@ -55,7 +55,7 @@ function currentNode() {
   return Navigator.instance.node_;
 }
 
-TEST_F('SwitchAccessNavigationManagerTest', 'MoveTo', function() {
+TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', function() {
   const website = `<div id="outerGroup">
                      <div id="group">
                        <input type="text">
@@ -118,7 +118,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveTo', function() {
   });
 });
 
-TEST_F('SwitchAccessNavigationManagerTest', 'JumpTo', function() {
+TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', function() {
   const website = `<div id="group1">
                      <input type="text">
                      <button></button>
@@ -158,7 +158,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'JumpTo', function() {
   });
 });
 
-TEST_F('SwitchAccessNavigationManagerTest', 'SelectButton', function() {
+TEST_F('SwitchAccessItemScanManagerTest', 'SelectButton', function() {
   const website = `<button id="test" aria-pressed=false>First Button</button>
       <button>Second Button</button>
       <script>
@@ -189,7 +189,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'SelectButton', function() {
   });
 });
 
-TEST_F('SwitchAccessNavigationManagerTest', 'EnterGroup', function() {
+TEST_F('SwitchAccessItemScanManagerTest', 'EnterGroup', function() {
   const website = `<div id="group">
                      <button></button>
                      <button></button>
@@ -219,7 +219,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'EnterGroup', function() {
   });
 });
 
-TEST_F('SwitchAccessNavigationManagerTest', 'MoveForward', function() {
+TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', function() {
   const website = `<div>
                      <button id="button1"></button>
                      <button id="button2"></button>
@@ -274,7 +274,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveForward', function() {
   });
 });
 
-TEST_F('SwitchAccessNavigationManagerTest', 'MoveBackward', function() {
+TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', function() {
   const website = `<div>
                      <button id="button1"></button>
                      <button id="button2"></button>
@@ -328,7 +328,7 @@ TEST_F('SwitchAccessNavigationManagerTest', 'MoveBackward', function() {
 });
 
 TEST_F(
-    'SwitchAccessNavigationManagerTest', 'NodeUndefinedBeforeTreeChangeRemoved',
+    'SwitchAccessItemScanManagerTest', 'NodeUndefinedBeforeTreeChangeRemoved',
     function() {
       const website = `<div>
                      <button id="button1"></button>

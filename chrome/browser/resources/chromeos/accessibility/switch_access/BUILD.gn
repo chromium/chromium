@@ -60,9 +60,9 @@ run_jsbundler("switch_access_copied_files") {
     "icons/showContextMenu.svg",
     "icons/textSelectionEnd.svg",
     "icons/textSelectionStart.svg",
+    "item_scan_manager.js",
     "menu_manager.js",
     "metrics.js",
-    "navigation_manager.js",
     "navigator.js",
     "nodes/back_button_node.js",
     "nodes/basic_node.js",
@@ -106,7 +106,7 @@ js2gtest("switch_access_extjs_tests") {
   test_type = "extension"
   sources = [
     "auto_scan_manager_test.js",
-    "navigation_manager_test.js",
+    "item_scan_manager_test.js",
     "nodes/basic_node_test.js",
     "nodes/desktop_node_test.js",
     "nodes/group_node_test.js",
@@ -147,11 +147,11 @@ js_type_check("closure_compile") {
     ":focus_ring_manager",
     ":group_node",
     ":history",
+    ":item_scan_manager",
     ":keyboard_node",
     ":menu_manager",
     ":metrics",
     ":modal_dialog_node",
-    ":navigation_manager",
     ":navigator",
     ":preference_manager",
     ":slider_node",
@@ -228,7 +228,7 @@ js_library("commands") {
   deps = [
     ":action_manager",
     ":auto_scan_manager",
-    ":navigation_manager",
+    ":item_scan_manager",
   ]
   externs_list = [ "$externs_path/accessibility_private.js" ]
 }
@@ -335,7 +335,7 @@ js_library("modal_dialog_node") {
   externs_list = [ "$externs_path/automation.js" ]
 }
 
-js_library("navigation_manager") {
+js_library("item_scan_manager") {
   deps = [
     ":action_manager",
     ":basic_node",
@@ -406,8 +406,8 @@ js_library("switch_access") {
   deps = [
     ":auto_scan_manager",
     ":commands",
+    ":item_scan_manager",
     ":menu_manager",
-    ":navigation_manager",
     ":preference_manager",
     ":switch_access_constants",
     "../common:constants",

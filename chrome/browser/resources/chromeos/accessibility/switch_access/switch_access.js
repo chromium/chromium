@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Commands} from './commands.js';
-import {NavigationManager} from './navigation_manager.js';
+import {ItemScanManager} from './item_scan_manager.js';
 import {Navigator} from './navigator.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';
 import {PreferenceManager} from './preference_manager.js';
@@ -21,8 +21,8 @@ export class SwitchAccess {
     SwitchAccess.instance = new SwitchAccess();
 
     chrome.automation.getDesktop((desktop) => {
-      // NavigationManager must be initialized first.
-      Navigator.setSingletonInstance(new NavigationManager(desktop));
+      // ItemScanManager must be initialized first.
+      Navigator.setSingletonInstance(new ItemScanManager(desktop));
 
       Commands.initialize();
       KeyboardRootNode.startWatchingVisibility();
