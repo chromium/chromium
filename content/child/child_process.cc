@@ -17,7 +17,6 @@
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/cpu_time_metrics.h"
 #include "content/common/mojo_core_library_support.h"
@@ -89,8 +88,6 @@ ChildProcess::ChildProcess(base::ThreadPriority io_thread_priority,
   }
 
   tracing::InitTracingPostThreadPoolStartAndFeatureList();
-
-  power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();
 
 #if defined(OS_ANDROID)
   SetupCpuTimeMetrics();

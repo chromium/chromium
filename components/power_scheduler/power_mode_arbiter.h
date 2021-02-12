@@ -69,6 +69,8 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   PowerMode GetActiveModeForTesting();
 
  private:
+  class ChargingPowerModeVoter;
+
   // PowerModeVoter::Delegate implementation:
   void OnVoterDestroyed(PowerModeVoter*) override;
   void SetVote(PowerModeVoter*, PowerMode) override;
@@ -92,6 +94,9 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
       GUARDED_BY(lock_);
   base::TimeTicks next_pending_vote_update_time_ GUARDED_BY(lock_);
   TracedPowerMode active_mode_ GUARDED_BY(lock_);
+
+  // Owned by the arbiter but otherwise behaves like a regular voter.
+  std::unique_ptr<ChargingPowerModeVoter> charging_voter_;
 };
 
 }  // namespace power_scheduler

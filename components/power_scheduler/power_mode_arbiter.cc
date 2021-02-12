@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "base/power_monitor/power_monitor.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -19,6 +21,32 @@
 #include "components/power_scheduler/traced_power_mode.h"
 
 namespace power_scheduler {
+
+// Created and owned by the arbiter on thread pool initialization because there
+// has to be exactly one per process, and //base can't depend on the
+// power_scheduler component.
+class PowerModeArbiter::ChargingPowerModeVoter : base::PowerObserver {
+ public:
+  ChargingPowerModeVoter()
+      : charging_voter_(PowerModeArbiter::GetInstance()->NewVoter(
+            "PowerModeVoter.Charging")) {
+    base::PowerMonitor::AddObserver(this);
+    if (base::PowerMonitor::IsInitialized())
+      OnPowerStateChange(base::PowerMonitor::IsOnBatteryPower());
+  }
+
+  ~ChargingPowerModeVoter() override {
+    base::PowerMonitor::RemoveObserver(this);
+  }
+
+  void OnPowerStateChange(bool on_battery_power) override {
+    charging_voter_->VoteFor(on_battery_power ? PowerMode::kIdle
+                                              : PowerMode::kCharging);
+  }
+
+ private:
+  std::unique_ptr<PowerModeVoter> charging_voter_;
+};
 
 PowerModeArbiter::Observer::~Observer() = default;
 
@@ -44,9 +72,16 @@ void PowerModeArbiter::OnThreadPoolAvailable() {
     return;
 
   // Currently only used for the delayed votes.
-  task_runner_ = base::ThreadPool::CreateTaskRunner(
+  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  // Create the charging voter on the task runner sequence, so that charging
+  // state notifications are received there.
+  task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
+                           PowerModeArbiter::GetInstance()->charging_voter_ =
+                               std::make_unique<ChargingPowerModeVoter>();
+                         }));
 
   // Check if we need to post a task to update pending votes.
   base::TimeTicks next_effective_time;

@@ -938,8 +938,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
 
     tracing::InitTracingPostThreadPoolStartAndFeatureList();
 
-    power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();
-
 #if defined(OS_ANDROID)
     SetupCpuTimeMetrics();
     // For child processes, this requires allowing of the
@@ -958,6 +956,9 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
     // initializing it again if it has already been initialized.
     base::PowerMonitor::Initialize(
         std::make_unique<base::PowerMonitorDeviceSource>());
+
+    // Requires base::PowerMonitor to be initialized first.
+    power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();
 
     mojo_ipc_support_ =
         std::make_unique<MojoIpcSupport>(BrowserTaskExecutor::CreateIOThread());
