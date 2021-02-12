@@ -226,9 +226,12 @@ class InstallStageTracker : public KeyedService {
     // force-installed to anything else.
     OVERRIDDEN_BY_SETTINGS = 27,
 
+    // The extension is marked as replaced by system app.
+    REPLACED_BY_SYSTEM_APP = 28,
+
     // Magic constant used by the histogram macros.
     // Always update it to the max value.
-    kMaxValue = OVERRIDDEN_BY_SETTINGS,
+    kMaxValue = REPLACED_BY_SYSTEM_APP,
   };
 
   // Status for the app returned by server while fetching manifest when status
