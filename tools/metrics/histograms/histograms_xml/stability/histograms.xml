@@ -264,6 +264,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Stability.Experimental.BrowserCrash" enum="Boolean"
+    expires_after="2021-06-15">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Logged at the same time as the kBrowserCrash bucket of Stability.Counts2,
+    for debugging crbug.com/1176977.
+  </summary>
+</histogram>
+
 <histogram name="Stability.Experimental.Counts" enum="StabilityEventType"
     expires_after="2021-01-15">
   <obsolete>
@@ -274,6 +284,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Collects various counters related to stability. The majority of them are
     crash types.
+  </summary>
+</histogram>
+
+<histogram name="Stability.Experimental.Counts2" enum="StabilityEventType"
+    expires_after="2021-06-15">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Like Stability.Counts2, but logged as a sparse histogram for debugging
+    crbug.com/1176977.
   </summary>
 </histogram>
 
