@@ -365,25 +365,25 @@ void QueryParser::ParseQueryNodes(const base::string16& query,
 }
 
 // static
-bool QueryParser::DoesQueryMatch(const base::string16& text,
-                                 const QueryNodeVector& query_nodes,
+bool QueryParser::DoesQueryMatch(const base::string16& find_in_text,
+                                 const QueryNodeVector& find_nodes,
                                  Snippet::MatchPositions* match_positions) {
-  if (query_nodes.empty())
+  if (find_nodes.empty())
     return false;
 
   QueryWordVector query_words;
-  base::string16 lower_text = base::i18n::ToLower(text);
-  ExtractQueryWords(lower_text, &query_words);
+  base::string16 lower_find_in_text = base::i18n::ToLower(find_in_text);
+  ExtractQueryWords(lower_find_in_text, &query_words);
 
   if (query_words.empty())
     return false;
 
   Snippet::MatchPositions matches;
-  for (size_t i = 0; i < query_nodes.size(); ++i) {
-    if (!query_nodes[i]->HasMatchIn(query_words, &matches))
+  for (auto& find_node : find_nodes) {
+    if (!find_node->HasMatchIn(query_words, &matches))
       return false;
   }
-  if (lower_text.length() != text.length()) {
+  if (lower_find_in_text.length() != find_in_text.length()) {
     // The lower case string differs from the original string. The matches are
     // meaningless.
     // TODO(sky): we need a better way to align the positions so that we don't
@@ -397,13 +397,13 @@ bool QueryParser::DoesQueryMatch(const base::string16& text,
 }
 
 // static
-bool QueryParser::DoesQueryMatch(const QueryWordVector& query_words,
-                                 const QueryNodeVector& query_nodes) {
-  if (query_nodes.empty() || query_words.empty())
+bool QueryParser::DoesQueryMatch(const QueryWordVector& find_in_words,
+                                 const QueryNodeVector& find_nodes) {
+  if (find_nodes.empty() || find_in_words.empty())
     return false;
 
-  for (size_t i = 0; i < query_nodes.size(); ++i) {
-    if (!query_nodes[i]->HasMatchIn(query_words))
+  for (auto& find_node : find_nodes) {
+    if (!find_node->HasMatchIn(find_in_words))
       return false;
   }
   return true;

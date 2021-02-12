@@ -110,17 +110,18 @@ class QueryParser {
                               MatchingAlgorithm matching_algorithm,
                               QueryNodeVector* nodes);
 
-  // Returns true if the string text matches the query nodes created by a call
-  // to ParseQuery. If the query does match, each of the matching positions in
-  // the text is added to |match_positions|.
-  static bool DoesQueryMatch(const base::string16& text,
-                             const QueryNodeVector& nodes,
+  // Returns true if all of the |find_nodes| are found in |find_in_text|.
+  // |find_nodes| should have been created by calling |ParseQuery()|. If all
+  // nodes were successfully found, each of the matching positions in the text
+  // is added to |match_positions|.
+  static bool DoesQueryMatch(const base::string16& find_in_text,
+                             const QueryNodeVector& find_nodes,
                              Snippet::MatchPositions* match_positions);
 
-  // Returns true if all of the |words| match the query |nodes| created by a
-  // call to ParseQuery.
-  static bool DoesQueryMatch(const QueryWordVector& words,
-                             const QueryNodeVector& nodes);
+  // Returns true if all of the |find_nodes| are found in |find_in_words|.
+  // find_nodes| should have been created by calling |ParseQuery()|.
+  static bool DoesQueryMatch(const QueryWordVector& find_in_words,
+                             const QueryNodeVector& find_nodes);
 
   // Extracts the words from |text|, placing each word into |words|.
   static void ExtractQueryWords(const base::string16& text,
