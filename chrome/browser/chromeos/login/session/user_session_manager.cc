@@ -1595,6 +1595,7 @@ void UserSessionManager::CompleteProfileCreateAfterAuthTransfer(
 
 void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (user_manager->IsLoggedInAsUserWithGaiaAccount()) {
     if (user_context_.GetAuthFlow() == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
       user_manager::known_user::UpdateUsingSAML(user_context_.GetAccountId(),
@@ -1602,6 +1603,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
       user_manager::known_user::UpdateIsUsingSAMLPrincipalsAPI(
           user_context_.GetAccountId(),
           user_context_.IsUsingSamlPrincipalsApi());
+      user->set_using_saml(true);
     }
     PasswordSyncTokenVerifier* password_sync_token_verifier =
         PasswordSyncTokenVerifierFactory::GetForProfile(profile);
@@ -1629,8 +1631,6 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
 
   profile->OnLogin();
 
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
   NotifyUserProfileLoaded(profile, user);
 
   // Initialize various services only for primary user.
