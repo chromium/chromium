@@ -113,8 +113,9 @@ public interface TabSwitcher {
         /**
          * Called by the StartSurfaceLayout when the system back button is pressed.
          * @return Whether or not the TabSwitcher consumed the event.
+         * @param isOnHomepage Whether the Start surface is showing.
          */
-        boolean onBackPressed();
+        boolean onBackPressed(boolean isOnHomepage);
 
         /**
          * Enable recording the first meaningful paint event of the Grid Tab Switcher.
