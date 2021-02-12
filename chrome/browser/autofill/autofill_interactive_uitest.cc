@@ -255,9 +255,8 @@ content::RenderFrameHost* RenderFrameHostForName(
 
 // AutofillInteractiveTestBase ------------------------------------------------
 
-// Test fixtures derive from this class and indicate via constructor parameter
-// if feature kAutofillExpandedPopupViews is enabled. This class hierarchy
-// allows test fixtures to have distinct list of test parameters.
+// Test fixtures derive from this class. This class hierarchy allows test
+// fixtures to have distinct list of test parameters.
 //
 // TODO(crbug.com/832707): Parametrize this class to ensure that all tests in
 //                         this run with all possible valid combinations of
