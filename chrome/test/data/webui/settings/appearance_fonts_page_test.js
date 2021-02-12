@@ -55,13 +55,13 @@ suite('AppearanceFontHandler', function() {
     return fontsBrowserProxy.whenCalled('fetchFontsData');
   });
 
-  test('minimum font size sample', async () => {
+  test('minimum font size preview', async () => {
     fontsPage.prefs = {webkit: {webprefs: {minimum_font_size: {value: 0}}}};
-    assertTrue(fontsPage.$.minimumSizeSample.hidden);
+    assertTrue(fontsPage.$.minimumSizeFontPreview.hidden);
     fontsPage.set('prefs.webkit.webprefs.minimum_font_size.value', 6);
-    assertFalse(fontsPage.$.minimumSizeSample.hidden);
+    assertFalse(fontsPage.$.minimumSizeFontPreview.hidden);
     fontsPage.set('prefs.webkit.webprefs.minimum_font_size.value', 0);
-    assertTrue(fontsPage.$.minimumSizeSample.hidden);
+    assertTrue(fontsPage.$.minimumSizeFontPreview.hidden);
   });
 
   test('font preview size', async () => {

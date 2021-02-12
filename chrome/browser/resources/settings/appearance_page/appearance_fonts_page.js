@@ -122,6 +122,6 @@ Polymer({
 
   /** @private */
   onMinimumSizeChange_() {
-    this.$.minimumSizeSample.hidden = this.computeMinimumFontSize_() <= 0;
+    this.$.minimumSizeFontPreview.hidden = this.computeMinimumFontSize_() <= 0;
   },
 });
