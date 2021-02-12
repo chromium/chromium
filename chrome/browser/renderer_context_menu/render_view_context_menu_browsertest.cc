@@ -1443,8 +1443,9 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
   ASSERT_TRUE(response_received);
 }
 
+// TODO(http://crbug.com/1177587): Resolve flake and re-enable test.
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
-                       LensImageSearchWithValidImage) {
+                       DISABLED_LensImageSearchWithValidImage) {
   static const char kValidImage[] = "/image_search/valid.png";
   SetupAndLoadImagePage(kValidImage);
 
