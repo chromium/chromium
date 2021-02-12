@@ -6,12 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_MANAGER_H_
 
 #include "base/trace_event/memory_dump_provider.h"
+#include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
 class ParkableImage;
+
+PLATFORM_EXPORT extern const base::Feature kParkableImagesToDisk;
 
 // Manages parkable images, which are used in blink::BitmapImage. Currently,
 // only records metrics for this. In the future we will park eligible images
@@ -26,25 +29,79 @@ class PLATFORM_EXPORT ParkableImageManager
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs&,
                     base::trace_event::ProcessMemoryDump*) override;
 
+  // Number of parked and unparked images.
+  size_t Size() const LOCKS_EXCLUDED(lock_);
+
+  static bool IsParkableImagesToDiskEnabled() {
+    return base::FeatureList::IsEnabled(kParkableImagesToDisk);
+  }
+
  private:
   struct Statistics;
 
   friend class ParkableImage;
   friend class base::NoDestructor<ParkableImageManager>;
+  friend class ParkableImageBaseTest;
 
   ParkableImageManager() = default;
 
-  void Add(ParkableImage* image);
-  void Remove(ParkableImage* image);
+  DiskDataAllocator& data_allocator() const;
 
-  Statistics ComputeStatistics() const;
+  // Register and unregister a ParkableImage with the manager. ParkableImage
+  // should call these when created/destructed.
+  void Add(ParkableImage* image) LOCKS_EXCLUDED(lock_);
+  void Remove(ParkableImage* image) LOCKS_EXCLUDED(lock_);
 
-  void RecordStatisticsAfter5Minutes() const;
+  void ScheduleDelayedParkingTaskIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MaybeParkImages() LOCKS_EXCLUDED(lock_);
 
+  Statistics ComputeStatistics() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  void RecordStatisticsAfter5Minutes() const LOCKS_EXCLUDED(lock_);
+
+  void MoveImage(ParkableImage* image,
+                 WTF::HashSet<ParkableImage*>* from,
+                 WTF::HashSet<ParkableImage*>* to)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Keeps track of whether the image is unparked or on disk. ParkableImage
+  // should call these when written to or read from disk.
+  void OnWrittenToDisk(ParkableImage* image) LOCKS_EXCLUDED(lock_);
+  void OnReadFromDisk(ParkableImage* image) LOCKS_EXCLUDED(lock_);
+
+  void SetDataAllocatorForTesting(
+      std::unique_ptr<DiskDataAllocator> allocator) {
+    allocator_for_testing_ = std::move(allocator);
+  }
+
+  void ResetForTesting();
+  constexpr static auto kDelayedParkingInterval =
+      base::TimeDelta::FromSeconds(2);
   constexpr static const char* kAllocatorDumpName = "parkable_images";
 
-  WTF::HashSet<ParkableImage*> images_;
+  mutable Mutex lock_;
+
+  // The following two sets are used to keep track of all ParkableImages that
+  // have been created. ParkableImages are added to |unparked_images_| upon
+  // creation, and removed from whichever set they are in at the time of their
+  // destruction.
+  //
+  // Parking or Unparking a ParkableImage moves the image to the appropriate
+  // set, using |OnReadFromDisk| and |OnWrittenToDisk|.
+  //
+  // |unparked_images_| keeps track of all images that have a in-memory
+  // representation.
+  //
+  // |on_disk_images_| keeps track of all images that do not have an in-memory
+  // representation. Accessing the data for any image in |on_disk_images_|
+  // involves a read from disk.
+  WTF::HashSet<ParkableImage*> unparked_images_ GUARDED_BY(lock_);
+  WTF::HashSet<ParkableImage*> on_disk_images_ GUARDED_BY(lock_);
+
+  bool has_pending_parking_task_ GUARDED_BY(lock_) = false;
   bool has_posted_accounting_task_ = false;
+
+  std::unique_ptr<DiskDataAllocator> allocator_for_testing_;
 };
 
 }  // namespace blink
