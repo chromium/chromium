@@ -8,6 +8,7 @@
   --oobe-header-font-family: "Google Sans", Roboto, sans-serif;
 
   --oobe-header-font-size: 28px;
+  --oobe-header-line-height: 36px;
   --oobe-modal-dialog-header-font-size: 15px;
   --oobe-default-font-size: 13px;
 
@@ -34,6 +35,7 @@
       font-family: var(--oobe-header-font-family);
       font-size: var(--oobe-header-font-size);
       font-weight: var(--oobe-default-font-weight);
+      line-height: var(--oobe-header-line-height);
   };
 
   /* OOBE Modal Dialog
