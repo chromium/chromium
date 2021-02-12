@@ -97,14 +97,22 @@ export function formatErrorStack(error) {
 }
 
 /**
+ * @type {?TestingErrorCallback}
+ */
+let onTestingError = null;
+
+/**
  * @type {?AppWindow}
  */
 const appWindow = window['appWindow'];
 
 /**
  * Initializes error collecting functions.
+ * @param {?TestingErrorCallback} onError Callback for reporting error in
+ *     testing run. Set to null in non testing run.
  */
-export function initialize() {
+export function initialize(onError) {
+  onTestingError = onError;
   window.addEventListener('unhandledrejection', (e) => {
     reportError(
         ErrorType.UNCAUGHT_PROMISE, ErrorLevel.ERROR,
@@ -149,6 +157,12 @@ export function reportError(type, level, error) {
   }
   triggeredErrorSet.add(hash);
 
+  // TODO(crbug.com/980846): Remove the old error reporting logic once the
+  // implementation using TestBridge on Tast side is ready.
+  if (onTestingError !== null) {
+    onTestingError({type, level, stack: formatErrorStack(error), time});
+    return;
+  }
   if (appWindow !== null) {
     appWindow.reportError({type, level, stack: formatErrorStack(error), time});
     return;

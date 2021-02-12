@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 view_files = [
+  "background.html",
   "main.html",
   "untrusted_script_loader.html",
 ]
