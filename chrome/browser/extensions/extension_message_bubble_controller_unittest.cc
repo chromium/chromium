@@ -432,8 +432,10 @@ class ExtensionMessageBubbleTestWithParam
 // Test that the bubble correctly treats dismissal due to deactivation.
 // Currently, the NTP bubble is the only one that has flexible behavior (toggled
 // by a feature).
+// TODO(https://crbug.com/1177315): This test is flaky. When the flake is fixed,
+// re-enable this test.
 TEST_P(ExtensionMessageBubbleTestWithParam,
-       BubbleCorrectlyReshowsOnDeactivationDismissal) {
+       DISABLED_BubbleCorrectlyReshowsOnDeactivationDismissal) {
   const bool kAcknowledgeOnDeactivate = GetParam();
   base::test::ScopedFeatureList feature_list;
   if (kAcknowledgeOnDeactivate) {
