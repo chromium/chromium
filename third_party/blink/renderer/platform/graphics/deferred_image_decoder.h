@@ -105,7 +105,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
 
   // Copy of the data that is passed in, used by deferred decoding.
   // Allows creating readonly snapshots that may be read in another thread.
-  scoped_refptr<ParkableImage> parkable_image_;
+  std::unique_ptr<ParkableImage> parkable_image_;
   std::unique_ptr<ImageDecoder> metadata_decoder_;
 
   String filename_extension_;
