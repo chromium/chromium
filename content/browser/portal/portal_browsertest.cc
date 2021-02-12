@@ -1736,8 +1736,49 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   WebContentsImpl* portal_contents = portal->GetPortalContents();
   RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
 
-  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   TestNavigationObserver iframe_navigation_observer(portal_contents);
+  EXPECT_TRUE(ExecJs(portal_main_frame,
+                     JsReplace("var iframe = document.createElement('iframe');"
+                               "iframe.src = $1;"
+                               "document.body.appendChild(iframe);",
+                               url)));
+  iframe_navigation_observer.Wait();
+  EXPECT_EQ(url, iframe_navigation_observer.last_navigation_url());
+
+  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
+
+  // Simulate renderer sending LocalFrameHost::DidFocusFrame IPC.
+  RenderFrameHostImpl* iframe =
+      portal_main_frame->child_at(0)->current_frame_host();
+  iframe->DidFocusFrame();
+
+  // WebContents focus should not have changed, but portal's frame tree's
+  // focused frame should have updated.
+  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
+  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), iframe);
+}
+
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
+                       DidFocusIPCFromCrossProcessFrameInsidePortal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
+
+  GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
+  WebContentsImpl* portal_contents = portal->GetPortalContents();
+
+  // Ensures b.com is isolated from a.com (even on Android).
+  IsolateOriginsForTesting(embedded_test_server(), portal_contents, {"b.com"});
+  RenderFrameHostImpl* portal_main_frame = portal_contents->GetMainFrame();
+
+  TestNavigationObserver iframe_navigation_observer(portal_contents);
+  GURL b_url = embedded_test_server()->GetURL("b.com", "/title1.html");
   EXPECT_TRUE(ExecJs(portal_main_frame,
                      JsReplace("var iframe = document.createElement('iframe');"
                                "iframe.src = $1;"
@@ -1746,31 +1787,24 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromFrameInsidePortal) {
   iframe_navigation_observer.Wait();
   EXPECT_EQ(b_url, iframe_navigation_observer.last_navigation_url());
 
-  web_contents_impl->SetAsFocusedWebContentsIfNecessary();
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), nullptr);
 
-  // Simulate renderer sending LocalFrameHost::DidFocusFrame IPC.
-  RenderFrameHostImpl* iframe_rfhi =
-      portal_main_frame->child_at(0)->current_frame_host();
-  iframe_rfhi->DidFocusFrame();
-
-  // Focus should not have changed.
-  EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
-  EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
-
-  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
-    return;
+  FrameTreeNode* iframe_ftn = portal_main_frame->child_at(0);
+  RenderFrameHostImpl* rfhi = iframe_ftn->current_frame_host();
+  RenderFrameProxyHost* rfph =
+      iframe_ftn->render_manager()->GetRenderFrameProxyHost(
+          portal_main_frame->GetSiteInstance());
 
   // Simulate renderer sending RemoteFrameHost::DidFocusFrame IPC.
-  RenderFrameProxyHost* iframe_rfph =
-      portal_main_frame->child_at(0)->render_manager()->GetRenderFrameProxyHost(
-          portal_main_frame->GetSiteInstance());
-  iframe_rfph->DidFocusFrame();
+  rfph->DidFocusFrame();
 
-  // Focus should not have changed.
+  // WebContents focus should not have changed, but portal's frame tree's
+  // focused frame should have updated.
   EXPECT_EQ(web_contents_impl->GetFocusedWebContents(), web_contents_impl);
   EXPECT_EQ(web_contents_impl->GetFocusedFrame(), main_frame);
+  EXPECT_EQ(portal_contents->GetFocusedFrame(), rfhi);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {

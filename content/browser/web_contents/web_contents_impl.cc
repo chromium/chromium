@@ -7245,7 +7245,7 @@ void WebContentsImpl::EnsureOpenerProxiesExist(RenderFrameHost* source_rfh) {
 void WebContentsImpl::SetAsFocusedWebContentsIfNecessary() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::SetAsFocusedWebContentsIfNecessary");
-  DCHECK(!portal());
+  DCHECK(!GetOuterWebContents() || !IsPortal());
   // Only change focus if we are not currently focused.
   WebContentsImpl* old_contents = GetFocusedWebContents();
   if (old_contents == this)
@@ -7271,13 +7271,13 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetFocusedFrame",
                         "frame_tree_node", static_cast<void*>(node),
                         "source_site_instance", static_cast<void*>(source));
-  DCHECK(!portal());
   frame_tree_.SetFocusedFrame(node, source);
 
   if (auto* inner_contents = node_.GetInnerWebContentsInFrame(node)) {
     // |this| is an outer WebContents and |node| represents an inner
     // WebContents. Transfer the focus to the inner contents if |this| is
     // focused.
+    DCHECK(!inner_contents->IsPortal());
     if (GetFocusedWebContents() == this)
       inner_contents->SetAsFocusedWebContentsIfNecessary();
   } else if (node_.OuterContentsFrameTreeNode() &&

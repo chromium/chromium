@@ -8195,9 +8195,6 @@ bool Document::IsSlotAssignmentOrLegacyDistributionDirty() const {
 }
 
 bool Document::IsFocusAllowed() const {
-  if (GetFrame() && GetFrame()->GetPage()->InsidePortal())
-    return false;
-
   if (!GetFrame() || GetFrame()->IsMainFrame() ||
       LocalFrame::HasTransientUserActivation(GetFrame())) {
     // 'autofocus' runs Element::focus asynchronously at which point the

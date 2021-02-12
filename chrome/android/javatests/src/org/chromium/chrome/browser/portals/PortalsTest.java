@@ -64,6 +64,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -163,6 +164,15 @@ public class PortalsTest {
         });
         observer.getQueryCallback().waitForCallback(0);
         return observer.getHistoryQueryResults();
+    }
+
+    private WebContents getPortalContents(Tab tab) throws ExecutionException {
+        final WebContents portalContents = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<? extends WebContents> innerContents = tab.getWebContents().getInnerWebContents();
+            Assert.assertEquals(1, innerContents.size());
+            return innerContents.get(0);
+        });
+        return portalContents;
     }
 
     /**
@@ -270,6 +280,25 @@ public class PortalsTest {
         Assert.assertEquals("true",
                 JavaScriptUtils.runJavascriptWithAsyncResult(
                         tab.getWebContents(), "buttonBlurred()"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Portals"})
+    public void testAutofocusAcrossActivation() throws Exception {
+        mActivityTestRule.startMainActivityWithURL(
+                mTestServer.getURL("/chrome/test/data/portal/autofocus.html"));
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final WebContents portalContents = getPortalContents(tab);
+        Assert.assertEquals("true",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        portalContents, "checkActiveElement()"));
+        Assert.assertEquals("false",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        portalContents, "focusEventDispatched"));
+        executeScriptAndAwaitSwap(tab, "activate()");
+        JavaScriptUtils.runJavascriptWithAsyncResult(tab.getWebContents(),
+                "focusPromise.then(() => domAutomationController.send(true));");
     }
 
     /**
@@ -700,11 +729,7 @@ public class PortalsTest {
                 JavaScriptUtils.runJavascriptWithAsyncResult(
                         tab.getWebContents(), "queryGeolocationPermission()"));
         // Check portal for geolocation permission status and assert that it is denied.
-        final WebContents portalContents = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<? extends WebContents> innerContents = tab.getWebContents().getInnerWebContents();
-            Assert.assertEquals(1, innerContents.size());
-            return innerContents.get(0);
-        });
+        final WebContents portalContents = getPortalContents(tab);
         Assert.assertEquals("\"denied\"",
                 JavaScriptUtils.runJavascriptWithAsyncResult(
                         portalContents, "queryGeolocationPermission()"));
@@ -731,11 +756,7 @@ public class PortalsTest {
         // Activate portal while dialog is visible.
         executeScriptAndAwaitSwap(tab, "activatePortal()");
         JavaScriptUtils.runJavascriptWithAsyncResult(tab.getWebContents(), "waitForAdoption()");
-        final WebContents portalContents = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<? extends WebContents> innerContents = tab.getWebContents().getInnerWebContents();
-            Assert.assertEquals(1, innerContents.size());
-            return innerContents.get(0);
-        });
+        final WebContents portalContents = getPortalContents(tab);
         // Permission should be denied.
         Assert.assertEquals("false",
                 JavaScriptUtils.runJavascriptWithAsyncResult(
@@ -758,11 +779,7 @@ public class PortalsTest {
         // Activate portal and adopt predecessor.
         executeScriptAndAwaitSwap(tab, "activatePortal()");
         JavaScriptUtils.runJavascriptWithAsyncResult(tab.getWebContents(), "waitForAdoption()");
-        final WebContents portalContents = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<? extends WebContents> innerContents = tab.getWebContents().getInnerWebContents();
-            Assert.assertEquals(1, innerContents.size());
-            return innerContents.get(0);
-        });
+        final WebContents portalContents = getPortalContents(tab);
         // Request for geolocation should be denied.
         JavaScriptUtils.executeJavaScript(portalContents, "requestLocation()");
         Assert.assertEquals("false",

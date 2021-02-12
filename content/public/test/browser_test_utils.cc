@@ -658,7 +658,7 @@ void NavigateToURLBlockUntilNavigationsComplete(
   params.transition_type = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
   web_contents->GetController().LoadURLWithParams(params);
-  web_contents->Focus();
+  web_contents->GetOutermostWebContents()->Focus();
 
   // Wait until the expected number of navigations finish.
   same_tab_observer.Wait();
