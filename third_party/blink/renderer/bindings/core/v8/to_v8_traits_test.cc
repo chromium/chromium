@@ -116,72 +116,52 @@ TEST(ToV8TraitsTest, FloatAndDouble) {
 TEST(ToV8TraitsTest, String) {
   const V8TestingScope scope;
   const String string("string");
-  const AtomicString atomic_string("atomicString");
-  const char* const charptr_string = "arrayString";
+  const char* const charptr_string = "charptrString";
   // ByteString
   TEST_TOV8_TRAITS(scope, IDLByteStringV2, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLByteStringV2, "atomicString", atomic_string);
-  TEST_TOV8_TRAITS(scope, IDLByteStringV2, "arrayString", charptr_string);
+  TEST_TOV8_TRAITS(scope, IDLByteStringV2, "charptrString", charptr_string);
   // DOMString
   TEST_TOV8_TRAITS(scope, IDLStringV2, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLStringV2, "atomicString", atomic_string);
-  TEST_TOV8_TRAITS(scope, IDLStringV2, "arrayString", charptr_string);
+  TEST_TOV8_TRAITS(scope, IDLStringV2, "charptrString", charptr_string);
   TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyStringV2, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyStringV2, "atomicString",
-                   atomic_string);
-  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyStringV2, "arrayString",
+  TEST_TOV8_TRAITS(scope, IDLStringTreatNullAsEmptyStringV2, "charptrString",
                    charptr_string);
   // USVString
   TEST_TOV8_TRAITS(scope, IDLUSVStringV2, "string", string);
-  TEST_TOV8_TRAITS(scope, IDLUSVStringV2, "atomicString", atomic_string);
-  TEST_TOV8_TRAITS(scope, IDLUSVStringV2, "arrayString", charptr_string);
+  TEST_TOV8_TRAITS(scope, IDLUSVStringV2, "charptrString", charptr_string);
   // [StringContext=TrustedHTML] DOMString
   TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTMLV2, "string",
                    string);
-  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTMLV2, "atomicString",
-                   atomic_string);
-  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTMLV2, "arrayString",
+  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedHTMLV2, "charptrString",
                    charptr_string);
   TEST_TOV8_TRAITS(scope,
                    IDLStringStringContextTrustedHTMLTreatNullAsEmptyStringV2,
                    "string", string);
   TEST_TOV8_TRAITS(scope,
                    IDLStringStringContextTrustedHTMLTreatNullAsEmptyStringV2,
-                   "atomicString", atomic_string);
-  TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedHTMLTreatNullAsEmptyStringV2,
-                   "arrayString", charptr_string);
+                   "charptrString", charptr_string);
   // [StringContext=TrustedScript] DOMString
   TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScriptV2, "string",
                    string);
-  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScriptV2, "atomicString",
-                   atomic_string);
-  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScriptV2, "arrayString",
-                   charptr_string);
+  TEST_TOV8_TRAITS(scope, IDLStringStringContextTrustedScriptV2,
+                   "charptrString", charptr_string);
   TEST_TOV8_TRAITS(scope,
                    IDLStringStringContextTrustedScriptTreatNullAsEmptyStringV2,
                    "string", string);
   TEST_TOV8_TRAITS(scope,
                    IDLStringStringContextTrustedScriptTreatNullAsEmptyStringV2,
-                   "atomicString", atomic_string);
-  TEST_TOV8_TRAITS(scope,
-                   IDLStringStringContextTrustedScriptTreatNullAsEmptyStringV2,
-                   "arrayString", charptr_string);
+                   "charptrString", charptr_string);
   // [StringContext=TrustedScriptURL] USVString
   TEST_TOV8_TRAITS(scope, IDLUSVStringStringContextTrustedScriptURLV2, "string",
                    string);
   TEST_TOV8_TRAITS(scope, IDLUSVStringStringContextTrustedScriptURLV2,
-                   "atomicString", atomic_string);
-  TEST_TOV8_TRAITS(scope, IDLUSVStringStringContextTrustedScriptURLV2,
-                   "arrayString", charptr_string);
+                   "charptrString", charptr_string);
 }
 
 TEST(ToV8TraitsTest, EmptyString) {
   const V8TestingScope scope;
   const String empty_string("");
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty_string);
-  const AtomicString empty_atomic_string("");
-  TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty_atomic_string);
   const char* const empty = "";
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", empty);
 }
@@ -190,8 +170,6 @@ TEST(ToV8TraitsTest, NullStringInputForNoneNullableType) {
   const V8TestingScope scope;
   const String null_string;
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", null_string);
-  const AtomicString null_atomic_string;
-  TEST_TOV8_TRAITS(scope, IDLStringV2, "", null_atomic_string);
   const char* const null = nullptr;
   TEST_TOV8_TRAITS(scope, IDLStringV2, "", null);
 }

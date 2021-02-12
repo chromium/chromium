@@ -167,19 +167,6 @@ struct ToV8Traits<
     // if |value| is a null string, V8String() returns an empty string.
     return V8String(script_state->GetIsolate(), value);
   }
-
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const AtomicString& value)
-      WARN_UNUSED_RESULT {
-    // if |value| is a null string, V8String() returns an empty string.
-    return V8String(script_state->GetIsolate(), value);
-  }
-
-  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
-                                        const char* value) WARN_UNUSED_RESULT {
-    // if |value| is a nullptr, V8String() returns an empty string.
-    return V8String(script_state->GetIsolate(), value);
-  }
 };
 
 // ScriptWrappable
