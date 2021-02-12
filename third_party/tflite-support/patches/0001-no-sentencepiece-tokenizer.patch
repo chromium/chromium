@@ -1,0 +1,40 @@
+From 7faac3ddcbc05275d797dda64a9b9d7f2279ae1c Mon Sep 17 00:00:00 2001
+From: Sophie Chang <sophiechang@chromium.org>
+Date: Thu, 11 Feb 2021 00:53:47 +0000
+Subject: [PATCH] no sentencepiece tokenizer
+
+---
+ .../cc/text/tokenizers/tokenizer_utils.cc             | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/third_party/tflite-support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc b/third_party/tflite-support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
+index 352c4a8c5e4f..46786fd7faf8 100644
+--- a/third_party/tflite-support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
++++ b/third_party/tflite-support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
+@@ -20,7 +20,6 @@ limitations under the License.
+ #include "tensorflow_lite_support/cc/port/status_macros.h"
+ #include "tensorflow_lite_support/cc/text/tokenizers/bert_tokenizer.h"
+ #include "tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.h"
+-#include "tensorflow_lite_support/cc/text/tokenizers/sentencepiece_tokenizer.h"
+ #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
+ 
+ namespace tflite {
+@@ -73,16 +72,6 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
+       return absl::make_unique<BertTokenizer>(vocab_buffer.data(),
+                                               vocab_buffer.size());
+     }
+-    case ProcessUnitOptions_SentencePieceTokenizerOptions: {
+-      const tflite::SentencePieceTokenizerOptions* options =
+-          tokenizer_process_unit->options_as<SentencePieceTokenizerOptions>();
+-      ASSIGN_OR_RETURN(absl::string_view model_buffer,
+-                       CheckAndLoadFirstAssociatedFile(
+-                           options->sentencePiece_model(), metadata_extractor));
+-      // TODO(b/160647204): Extract sentence piece model vocabulary
+-      return absl::make_unique<SentencePieceTokenizer>(model_buffer.data(),
+-                                                       model_buffer.size());
+-    }
+     case ProcessUnitOptions_RegexTokenizerOptions: {
+       const tflite::RegexTokenizerOptions* options =
+           tokenizer_process_unit->options_as<RegexTokenizerOptions>();
+-- 
+2.30.0.478.g8a0d178c01-goog

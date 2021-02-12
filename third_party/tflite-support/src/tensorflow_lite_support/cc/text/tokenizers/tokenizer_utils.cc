@@ -20,7 +20,6 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/text/tokenizers/bert_tokenizer.h"
 #include "tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.h"
-#include "tensorflow_lite_support/cc/text/tokenizers/sentencepiece_tokenizer.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
 
 namespace tflite {
@@ -72,16 +71,6 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
                                                        metadata_extractor));
       return absl::make_unique<BertTokenizer>(vocab_buffer.data(),
                                               vocab_buffer.size());
-    }
-    case ProcessUnitOptions_SentencePieceTokenizerOptions: {
-      const tflite::SentencePieceTokenizerOptions* options =
-          tokenizer_process_unit->options_as<SentencePieceTokenizerOptions>();
-      ASSIGN_OR_RETURN(absl::string_view model_buffer,
-                       CheckAndLoadFirstAssociatedFile(
-                           options->sentencePiece_model(), metadata_extractor));
-      // TODO(b/160647204): Extract sentence piece model vocabulary
-      return absl::make_unique<SentencePieceTokenizer>(model_buffer.data(),
-                                                       model_buffer.size());
     }
     case ProcessUnitOptions_RegexTokenizerOptions: {
       const tflite::RegexTokenizerOptions* options =

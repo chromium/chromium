@@ -24,11 +24,13 @@ Modifications:
 - Remove external file handlers support for memory mapping files to support Windows
   (0001-remove-unsupported-memory-map-from-file-handler.patch)
 - Fixes sign compare issues in tflite-support (0001-task-utils-sign-compare.patch)
+- Remove support for sentencepiece tokenizers (0001-no-sentencepiece-tokenizer.patch)
 
 Third party dependencies:
 - tflite
 - libzip
 - utf
+- tensorflow-text
 
 Update Process:
 1) Clone the tflite-support github repo at the desired commit into src/
