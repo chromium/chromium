@@ -1227,7 +1227,8 @@ void LayoutTableSection::LayoutRows() {
         if (LayoutTableRow* next_row_object = grid_[r + 1].row)
           row_logical_height -= next_row_object->PaginationStrut();
       }
-      DCHECK_GE(row_logical_height, 0);
+      // crbug.com/1175700
+      row_logical_height = std::max(row_logical_height, LayoutUnit());
       row->SetLogicalHeight(row_logical_height);
       row->UpdateAfterLayout();
     }
