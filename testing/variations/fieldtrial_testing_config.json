@@ -861,25 +861,25 @@
             ],
             "experiments": [
                 {
-                    "name": "AutofillFixFillableFieldTypes_2021_02_12",
+                    "name": "AutofillFixFillableFieldTypes_2021-02-12",
                     "enable_features": [
                         "AutofillFixFillableFieldTypes"
                     ]
                 },
                 {
-                    "name": "EnableAutofillSectionUponRedundantNameInfo_2021_02_12",
+                    "name": "EnableAutofillSectionUponRedundantNameInfo_2021-02-12",
                     "enable_features": [
                         "AutofillSectionUponRedundantNameInfo"
                     ]
                 },
                 {
-                    "name": "AutofillEnableLabelPrecedenceForTurkishAddresses_2021_02_12",
+                    "name": "AutofillEnableLabelPrecedenceForTurkishAddresses_2021-02-12",
                     "enable_features": [
                         "AutofillEnableLabelPrecedenceForTurkishAddresses"
                     ]
                 },
                 {
-                    "name": "AutofillEnableDependentLocalityParsing_2021_02_12",
+                    "name": "AutofillEnableDependentLocalityParsing_2021-02-12",
                     "enable_features": [
                         "AutofillEnableDependentLocalityParsing"
                     ]
