@@ -4452,6 +4452,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UrlLoadParams params = UrlLoadParams::InNewTab(helpUrl);
   params.append_to = kCurrentTab;
   params.user_initiated = NO;
+  params.in_incognito = self.isOffTheRecord;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
