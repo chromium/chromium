@@ -573,9 +573,9 @@ bool ShellSurfaceBase::IsInputEnabled(Surface*) const {
 }
 
 void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
-  if (is_popup_) {
-    // TODO(oshima): Consider supporting shadow type.
-    DLOG(WARNING) << "popup does not support frame decoration";
+  if (!IsFrameDecorationSupported(frame_type)) {
+    DLOG(WARNING)
+        << "popup does not support frame decoration other than NONE/SHADOW.";
     return;
   }
 
@@ -602,7 +602,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
   if (!widget_)
     return;
 
-  // Override redirect window can request NONE/SHADOW. The shadow
+  // Override redirect window and popup can request NONE/SHADOW. The shadow
   // will be updated in next commit.
   if (!widget_->non_client_view() && !frame_enabled())
     return;
@@ -1029,7 +1029,11 @@ void ShellSurfaceBase::UpdateShadow() {
   if (!shadow_bounds_) {
     wm::SetShadowElevation(window, wm::kShadowElevationNone);
   } else {
-    wm::SetShadowElevation(window, wm::kShadowElevationDefault);
+    // Use a small style shadow for popup surface.
+    if (frame_type_ == SurfaceFrameType::SHADOW && is_popup_)
+      wm::SetShadowElevation(window, wm::kShadowElevationMenuOrTooltip);
+    else
+      wm::SetShadowElevation(window, wm::kShadowElevationDefault);
 
     ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
     // Maximized/Fullscreen window does not create a shadow.
@@ -1212,6 +1216,15 @@ void ShellSurfaceBase::CommitWidget() {
 
   if (size_constraint_changed)
     widget_->OnSizeConstraintsChanged();
+}
+
+bool ShellSurfaceBase::IsFrameDecorationSupported(SurfaceFrameType frame_type) {
+  if (!is_popup_)
+    return true;
+
+  // Popup doesn't support frame types other than NONE/SHADOW.
+  return frame_type == SurfaceFrameType::SHADOW ||
+         frame_type == SurfaceFrameType::NONE;
 }
 
 }  // namespace exo

@@ -297,6 +297,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   void CommitWidget();
 
+  bool IsFrameDecorationSupported(SurfaceFrameType frame_type);
+
   aura::Window* parent_ = nullptr;
   bool activatable_ = true;
   bool can_minimize_ = true;
