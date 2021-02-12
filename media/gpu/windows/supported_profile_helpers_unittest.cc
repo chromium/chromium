@@ -170,6 +170,25 @@ class SupportedResolutionResolverTest : public ::testing::Test {
   base::flat_map<GUID, gfx::Size, GUIDComparison> max_size_for_guids_;
 };
 
+TEST_F(SupportedResolutionResolverTest, CanDisableAV1) {
+  DONT_RUN_ON_WIN_7();
+
+  // Do all the things to normally enable AV1:
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
+
+  // Enable the av1 decoder.
+  EnableDecoders({DXVA_ModeAV1_VLD_Profile0});
+  SetMaxResolution(DXVA_ModeAV1_VLD_Profile0, kSquare8k);
+
+  const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_, false);
+  auto av1_supported_res = supported_resolutions.find(AV1PROFILE_PROFILE_MAIN);
+
+  // There should be no supported av1 resolutions.
+  ASSERT_EQ(av1_supported_res, supported_resolutions.end());
+}
+
 TEST_F(SupportedResolutionResolverTest, HasH264SupportByDefault) {
   DONT_RUN_ON_WIN_7();
   AssertDefaultSupport(

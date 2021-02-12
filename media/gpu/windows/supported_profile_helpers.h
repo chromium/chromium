@@ -33,7 +33,8 @@ using SupportedResolutionRangeMap =
 MEDIA_GPU_EXPORT
 SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     ComD3D11Device device,
-    const gpu::GpuDriverBugWorkarounds& workarounds);
+    const gpu::GpuDriverBugWorkarounds& workarounds,
+    bool provide_av1_resolutions = true);
 
 }  // namespace media
 

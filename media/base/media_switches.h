@@ -117,6 +117,7 @@ MEDIA_EXPORT extern const base::Feature kD3D11PrintCodecOnCrash;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoder;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderIgnoreWorkarounds;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderVP9Profile2;
+MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderAV1;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderSkipMultithreaded;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderAlwaysCopy;
 MEDIA_EXPORT extern const base::Feature kD3D11VideoDecoderAllowOverlay;
