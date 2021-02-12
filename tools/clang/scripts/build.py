@@ -733,8 +733,6 @@ def main():
     if cc is not None:  instrument_args.append('-DCMAKE_C_COMPILER=' + cc)
     if cxx is not None: instrument_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
     if lld is not None: instrument_args.append('-DCMAKE_LINKER=' + lld)
-    if args.thinlto:
-      instrument_args.append('-DLLVM_ENABLE_LTO=Thin')
 
     RunCommand(['cmake'] + instrument_args + [os.path.join(LLVM_DIR, 'llvm')],
                msvc_arch='x64')
