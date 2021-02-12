@@ -5834,6 +5834,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFontAccessPersistentDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFontAccessPersistent)},
 
+    {"compute-pressure", flag_descriptions::kComputePressureAPIName,
+     flag_descriptions::kComputePressureAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kComputePressure)},
+
     {"mouse-subframe-no-implicit-capture",
      flag_descriptions::kMouseSubframeNoImplicitCaptureName,
      flag_descriptions::kMouseSubframeNoImplicitCaptureDescription, kOsAll,

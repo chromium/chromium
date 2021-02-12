@@ -43404,6 +43404,7 @@ from previous Chrome versions.
   <int value="-1665720309"
       label="ArcNativeBridge64BitSupportExperiment:disabled"/>
   <int value="-1664795930" label="StorageAccessAPI:disabled"/>
+  <int value="-1664290318" label="ComputePressure:enabled"/>
   <int value="-1663410466" label="top-document-isolation"/>
   <int value="-1663125441" label="OptInImeMenu:enabled"/>
   <int value="-1662646099" label="NTPOfflinePageSuggestions:enabled"/>
@@ -43844,6 +43845,7 @@ from previous Chrome versions.
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
   <int value="-1292615467"
       label="OmniboxSuggestionTransparencyOptions:disabled"/>
+  <int value="-1291963295" label="ComputePressure:disabled"/>
   <int value="-1290471006"
       label="EnableHistoryFaviconsGoogleServerQuery:enabled"/>
   <int value="-1290053302"

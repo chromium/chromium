@@ -352,6 +352,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"BlockHTMLParserOnStyleSheets",
            blink::features::kBlockHTMLParserOnStyleSheets},
           {"COLRV1Fonts", blink::features::kCOLRV1Fonts},
+          {"ComputePressure", blink::features::kComputePressure},
           {"CSSColorSchemeUARendering", features::kCSSColorSchemeUARendering},
           {"DeclarativeShadowDOM", blink::features::kDeclarativeShadowDOM},
           {"FeaturePolicyForClientHints",
