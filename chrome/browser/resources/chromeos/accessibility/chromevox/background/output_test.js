@@ -892,7 +892,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
               {value: 'name', start: 0, end: 6},
               {value: new Output.EarconAction('SLIDER'), start: 0, end: 6},
               {value: 'role', start: 7, end: 13},
-              {value: 'valueForRange', start: 14, end: 15}
+              {value: 'value', start: 14, end: 15}
             ],
             o);
 
@@ -903,7 +903,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
             [
               {value: 'name', start: 0, end: 6},
               {value: 'role', start: 7, end: 25},
-              {value: 'valueForRange', start: 26, end: 27}
+              {value: 'value', start: 26, end: 27}
             ],
             o);
 
@@ -914,7 +914,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
             [
               {value: 'name', start: 0, end: 6},
               {value: 'role', start: 7, end: 12},
-              {value: 'valueForRange', start: 13, end: 14}
+              {value: 'value', start: 13, end: 14}
             ],
             o);
 
@@ -926,7 +926,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'RangeOutput', function() {
               {value: 'name', start: 0, end: 6},
               {value: new Output.EarconAction('LISTBOX'), start: 0, end: 6},
               {value: 'role', start: 7, end: 18},
-              {value: 'valueForRange', start: 19, end: 20}
+              {value: 'value', start: 19, end: 20}
             ],
             o);
       });

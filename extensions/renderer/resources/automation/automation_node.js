@@ -417,14 +417,12 @@ var GetStandardActions = natives.GetStandardActions;
  */
 var GetDefaultActionVerb = natives.GetDefaultActionVerb;
 
-
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {automation.HasPopup}
  */
 var GetHasPopup = natives.GetHasPopup;
-
 
 /**
  * @param {string} axTreeID The id of the accessibility tree.
@@ -439,8 +437,6 @@ var GetNextTextMatch = natives.GetNextTextMatch;
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
  * @return {?Array<number>} A list of column header ids.
-
- * @return {?number} The id of the column header, if it exists.
  */
 var GetTableCellColumnHeaders = natives.GetTableCellColumnHeaders;
 
@@ -581,6 +577,13 @@ var CreateAutomationPosition = natives.CreateAutomationPosition;
  */
 var GetSortDirection = natives.GetSortDirection;
 
+/**
+ * @param {string} axTreeId The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {string} .
+ */
+var GetValue = natives.GetValue;
+
 var logging = requireNative('logging');
 var utils = require('utils');
 
@@ -685,6 +688,10 @@ AutomationNodeImpl.prototype = {
 
   get sortDirection() {
     return GetSortDirection(this.treeID, this.id);
+  },
+
+  get value() {
+    return GetValue(this.treeID, this.id);
   },
 
   get unclippedLocation() {
@@ -1319,28 +1326,28 @@ AutomationNodeImpl.prototype = {
 };
 
 var stringAttributes = [
-    'accessKey',
-    'ariaInvalidValue',
-    'autoComplete',
-    'checkedStateDescription',
-    'className',
-    'containerLiveRelevant',
-    'containerLiveStatus',
-    'description',
-    'display',
-    'fontFamily',
-    'htmlTag',
-    'imageDataUrl',
-    'innerHtml',
-    'language',
-    'liveRelevant',
-    'liveStatus',
-    'placeholder',
-    'roleDescription',
-    'textInputType',
-    'tooltip',
-    'url',
-    'value'];
+  'accessKey',
+  'ariaInvalidValue',
+  'autoComplete',
+  'checkedStateDescription',
+  'className',
+  'containerLiveRelevant',
+  'containerLiveStatus',
+  'description',
+  'display',
+  'fontFamily',
+  'htmlTag',
+  'imageDataUrl',
+  'innerHtml',
+  'language',
+  'liveRelevant',
+  'liveStatus',
+  'placeholder',
+  'roleDescription',
+  'textInputType',
+  'tooltip',
+  'url'
+];
 
 var boolAttributes = [
   'busy', 'clickable', 'containerLiveAtomic', 'containerLiveBusy',
@@ -1943,6 +1950,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
         'tableRowCount',
         'unclippedLocation',
         'underline',
+        'value',
       ]),
 });
 

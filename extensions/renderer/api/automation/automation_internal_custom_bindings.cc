@@ -1684,6 +1684,14 @@ void AutomationInternalCustomBindings::AddRoutes() {
                   .ToLocalChecked());
         }
       });
+  RouteNodeIDFunction("GetValue", [](v8::Isolate* isolate,
+                                     v8::ReturnValue<v8::Value> result,
+                                     AutomationAXTreeWrapper* tree_wrapper,
+                                     ui::AXNode* node) {
+    const std::string value_str = node->GetValueForControl();
+    result.Set(
+        v8::String::NewFromUtf8(isolate, value_str.c_str()).ToLocalChecked());
+  });
   RouteNodeIDPlusEventFunction(
       "EventListenerAdded",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,

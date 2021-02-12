@@ -353,11 +353,14 @@ class AX_EXPORT AXNode final {
   // Returns empty string if no appropriate language was found.
   std::string GetLanguage() const;
 
-  // Returns the value of a control such as a text field, a slider, a <select>
-  // element, a date picker or an ARIA combo box. In order to minimize
-  // cross-process communication between the renderer and the browser, this
-  // method may compute the value from the control's inner text in the case of a
-  // text field.
+  // Returns the value of a control such as a plain text field, a content
+  // editable, a submit button, a slider, a progress bar, a scroll bar, a meter,
+  // a spinner, a <select> element, a date picker or an ARIA combo box. In order
+  // to minimize cross-process communication between the renderer and the
+  // browser, this method may compute the value from the control's inner text in
+  // the case of a content editable. For range controls, such as sliders and
+  // scroll bars, the value of aria-valuetext takes priority over the value of
+  // aria-valuenow.
   std::string GetValueForControl() const;
 
   //
